@@ -100,8 +100,7 @@
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">CmdSet</span>
 
 
-<div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.dice.html#evennia.contrib.rpg.dice.dice.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">dicenum</span><span class="p">,</span> <span class="n">dicetype</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-         <span class="n">conditional</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.dice.html#evennia.contrib.rpg.dice.dice.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">dicenum</span><span class="p">,</span> <span class="n">dicetype</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a standard dice roller.</span>
 
@@ -182,6 +181,7 @@
             <span class="k">return</span> <span class="n">outcome</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">result</span></div>
+
 
 <span class="c1"># legacy alias</span>
 <span class="n">roll_dice</span> <span class="o">=</span> <span class="n">roll</span>

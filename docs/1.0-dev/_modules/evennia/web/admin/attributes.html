@@ -69,28 +69,30 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">attr_key</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;The main identifier of the Attribute. For Nicks, this is the pattern-matching string.&quot;</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Attribute Name&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;The main identifier of the Attribute. For Nicks, this is the pattern-matching string.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">attr_category</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Category&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Categorization. Unset (default) gives a category of `None`, which is &quot;</span>
-                  <span class="s2">&quot;is what is searched with e.g. `obj.db.attrname`. For &#39;nick&#39;-type attributes, this is usually &quot;</span>
-                  <span class="s2">&quot;&#39;inputline&#39; or &#39;channel&#39;.&quot;</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span>
+        <span class="s2">&quot;is what is searched with e.g. `obj.db.attrname`. For &#39;nick&#39;-type attributes, this is usually &quot;</span>
+        <span class="s2">&quot;&#39;inputline&#39; or &#39;channel&#39;.&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">attr_value</span> <span class="o">=</span> <span class="n">PickledFormField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Value to pickle/save. Db-objects are serialized as a list &quot;</span>
         <span class="s2">&quot;containing `__packed_dbobj__` (they can&#39;t easily be added from here). Nicks &quot;</span>
         <span class="s2">&quot;store their pattern-replacement here.&quot;</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">attr_type</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;nick&quot;</span><span class="p">,</span> <span class="s2">&quot;nick&quot;</span><span class="p">)],</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Unset for regular Attributes, &#39;nick&#39; for Nick-replacement usage.&quot;</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">attr_lockstring</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Locks&quot;</span><span class="p">,</span>
@@ -104,10 +106,10 @@
 
 <div class="viewcode-block" id="AttributeForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">         If we have an Attribute, then we&#39;ll prepopulate our instance with the fields we&#39;d expect it</span>
-<span class="sd">         to have based on the Attribute. attr_key, attr_category, attr_value, attr_type,</span>
-<span class="sd">         and attr_lockstring all refer to the corresponding Attribute fields. The initial data of the form fields will</span>
-<span class="sd">         similarly be populated.</span>
+<span class="sd">        If we have an Attribute, then we&#39;ll prepopulate our instance with the fields we&#39;d expect it</span>
+<span class="sd">        to have based on the Attribute. attr_key, attr_category, attr_value, attr_type,</span>
+<span class="sd">        and attr_lockstring all refer to the corresponding Attribute fields. The initial data of the form fields will</span>
+<span class="sd">        similarly be populated.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

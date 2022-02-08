@@ -97,8 +97,10 @@
     <span class="n">MSSP_META_MODULE</span><span class="o">=</span><span class="s2">&quot;evennia.game_template.server.conf.mssp&quot;</span><span class="p">,</span>
     <span class="n">WEB_PLUGINS_MODULE</span><span class="o">=</span><span class="s2">&quot;server.conf.web_plugins&quot;</span><span class="p">,</span>
     <span class="n">LOCK_FUNC_MODULES</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;evennia.locks.lockfuncs&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia.game_template.server.conf.lockfuncs&quot;</span><span class="p">),</span>
-    <span class="n">INPUT_FUNC_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.server.inputfuncs&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;evennia.game_template.server.conf.inputfuncs&quot;</span><span class="p">],</span>
+    <span class="n">INPUT_FUNC_MODULES</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;evennia.server.inputfuncs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;evennia.game_template.server.conf.inputfuncs&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
     <span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.game_template.world.prototypes&quot;</span><span class="p">],</span>
     <span class="n">CMDSET_UNLOGGEDIN</span><span class="o">=</span><span class="s2">&quot;evennia.game_template.commands.default_cmdsets.UnloggedinCmdSet&quot;</span><span class="p">,</span>
     <span class="n">CMDSET_SESSION</span><span class="o">=</span><span class="s2">&quot;evennia.game_template.commands.default_cmdsets.SessionCmdSet&quot;</span><span class="p">,</span>
@@ -112,7 +114,8 @@
         <span class="s2">&quot;evennia.contrib.base_systems&quot;</span><span class="p">,</span>
         <span class="s2">&quot;evennia.contrib.full_systems&quot;</span><span class="p">,</span>
         <span class="s2">&quot;evennia.contrib.tutorials&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;evennia.contrib.utils&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;evennia.contrib.utils&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
     <span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.accounts.accounts.DefaultAccount&quot;</span><span class="p">,</span>
     <span class="n">BASE_OBJECT_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span><span class="p">,</span>
     <span class="n">BASE_CHARACTER_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.objects.objects.DefaultCharacter&quot;</span><span class="p">,</span>
@@ -120,22 +123,26 @@
     <span class="n">BASE_EXIT_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.objects.objects.DefaultExit&quot;</span><span class="p">,</span>
     <span class="n">BASE_CHANNEL_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.comms.comms.DefaultChannel&quot;</span><span class="p">,</span>
     <span class="n">BASE_SCRIPT_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
-    <span class="n">BASE_BATCHPROCESS_PATHS</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.game_template.world&quot;</span><span class="p">,</span>
-                             <span class="s2">&quot;evennia.contrib&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia.contrib.tutorials&quot;</span><span class="p">],</span>
+    <span class="n">BASE_BATCHPROCESS_PATHS</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;evennia.game_template.world&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;evennia.contrib&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;evennia.contrib.tutorials&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
     <span class="n">FILE_HELP_ENTRY_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.game_template.world.help_entries&quot;</span><span class="p">],</span>
-    <span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.funcparser&quot;</span><span class="p">,</span>
-                                          <span class="s2">&quot;evennia.game_template.server.conf.inlinefuncs&quot;</span><span class="p">],</span>
-    <span class="n">FUNCPARSER_PROTOTYPE_PARSING_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.prototypes.protfuncs&quot;</span><span class="p">,</span>
-                                          <span class="s2">&quot;evennia.game_template.server.conf.prototypefuncs&quot;</span><span class="p">],</span>
+    <span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;evennia.utils.funcparser&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;evennia.game_template.server.conf.inlinefuncs&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">FUNCPARSER_PROTOTYPE_PARSING_MODULES</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;evennia.prototypes.protfuncs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;evennia.game_template.server.conf.prototypefuncs&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
     <span class="n">BASE_GUEST_TYPECLASS</span><span class="o">=</span><span class="s2">&quot;evennia.accounts.accounts.DefaultGuest&quot;</span><span class="p">,</span>
     <span class="c1"># a special flag; test with settings._TEST_ENVIRONMENT to see if code runs in a test</span>
     <span class="n">_TEST_ENVIRONMENT</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="o">**</span><span class="n">all_from_module</span><span class="p">(</span><span class="n">settings_default</span><span class="p">),</span>
-    <span class="o">**</span><span class="n">DEFAULT_SETTING_RESETS</span>
-<span class="p">}</span>
+<span class="n">DEFAULT_SETTINGS</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">all_from_module</span><span class="p">(</span><span class="n">settings_default</span><span class="p">),</span> <span class="o">**</span><span class="n">DEFAULT_SETTING_RESETS</span><span class="p">}</span>
 <span class="n">DEFAULT_SETTINGS</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;DATABASES&quot;</span><span class="p">)</span>  <span class="c1"># we want different dbs tested in CI</span>
 
 
@@ -196,6 +203,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evennia test environment mixin</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">account_typeclass</span> <span class="o">=</span> <span class="n">DefaultAccount</span>
     <span class="n">object_typeclass</span> <span class="o">=</span> <span class="n">DefaultObject</span>
     <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">DefaultCharacter</span>
@@ -225,8 +233,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
     <span class="c1"># Set up fake prototype module for allowing tests to use named prototypes.</span>
-<div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">],</span>
-                       <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="EvenniaTestMixin.create_rooms"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestMixin.create_rooms">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span>
+        <span class="n">PROTOTYPE_MODULES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;evennia.utils.tests.data.prototypes_example&quot;</span><span class="p">],</span> <span class="n">DEFAULT_HOME</span><span class="o">=</span><span class="s2">&quot;#1&quot;</span>
+    <span class="p">)</span>
     <span class="k">def</span> <span class="nf">create_rooms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Room&quot;</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;room_desc&quot;</span>
@@ -304,8 +313,10 @@
             <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
             <span class="n">settings</span><span class="o">.</span><span class="n">PROTOTYPE_MODULES</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backups</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">: Teardown error. If you overrode the `setUp()` method &quot;</span>
-                                 <span class="s2">&quot;in your test, make sure you also added `super().setUp()`!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">: Teardown error. If you overrode the `setUp()` method &quot;</span>
+                <span class="s2">&quot;in your test, make sure you also added `super().setUp()`!&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">del</span> <span class="n">SESSIONS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">sessid</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">teardown_accounts</span><span class="p">()</span>
@@ -457,8 +468,9 @@
         <span class="n">receiver_mapping</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="c1"># a mapping {receiver: msg, ...}</span>
-            <span class="n">receiver_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">recv</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">msg</span> <span class="k">else</span> <span class="kc">None</span>
-                                <span class="k">for</span> <span class="n">recv</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">receiver_mapping</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">recv</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">msg</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">recv</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># a single expected string and thus a single receiver (defaults to caller)</span>
             <span class="n">receiver</span> <span class="o">=</span> <span class="n">receiver</span> <span class="k">if</span> <span class="n">receiver</span> <span class="k">else</span> <span class="n">caller</span>
@@ -529,8 +541,9 @@
             <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">unmocked_msg_methods</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span>
 
             <span class="c1"># Get the first element of a tuple if msg received a tuple instead of a string</span>
-            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                          <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smsg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">)</span> <span class="k">for</span> <span class="n">smsg</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">]</span>
+            <span class="n">stored_msg</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smsg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">smsg</span><span class="p">)</span> <span class="k">for</span> <span class="n">smsg</span> <span class="ow">in</span> <span class="n">stored_msg</span>
+            <span class="p">]</span>
             <span class="k">if</span> <span class="n">expected_msg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># no expected_msg; just build the returned_msgs dict</span>
 
@@ -546,16 +559,17 @@
                 <span class="c1"># to write the comparison string. We also strip ansi before this</span>
                 <span class="c1"># comparison since otherwise it would mess with the regex.</span>
                 <span class="n">returned_msg</span> <span class="o">=</span> <span class="n">msg_sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">_RE_STRIP_EVMENU</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
-                        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">mess</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">))</span>
-                    <span class="k">for</span> <span class="n">mess</span> <span class="ow">in</span> <span class="n">stored_msg</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">_RE_STRIP_EVMENU</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="n">mess</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">noansi</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">mess</span> <span class="ow">in</span> <span class="n">stored_msg</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
                 <span class="c1"># this is the actual test</span>
                 <span class="k">if</span> <span class="n">expected_msg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">returned_msg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned_msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">expected_msg</span><span class="p">):</span>
                     <span class="c1"># failed the test</span>
                     <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_ERROR_FORMAT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">expected_msg</span><span class="o">=</span><span class="n">expected_msg</span><span class="p">,</span> <span class="n">returned_msg</span><span class="o">=</span><span class="n">returned_msg</span><span class="p">)</span>
+                            <span class="n">expected_msg</span><span class="o">=</span><span class="n">expected_msg</span><span class="p">,</span> <span class="n">returned_msg</span><span class="o">=</span><span class="n">returned_msg</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="c1"># passed!</span>
                 <span class="n">returned_msgs</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">=</span> <span class="n">returned_msg</span>
@@ -567,6 +581,7 @@
 
 <span class="c1"># Base testing classes</span>
 
+
 <div class="viewcode-block" id="BaseEvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="o">**</span><span class="n">DEFAULT_SETTINGS</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseEvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -574,11 +589,13 @@
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
+
 <div class="viewcode-block" id="EvenniaTestCase"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTestCase">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For use with gamedir settings; Just like the normal test case, only for naming consistency.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
@@ -588,6 +605,7 @@
 <span class="sd">    This class parent has all default objects and uses only default settings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
+
 
 <div class="viewcode-block" id="EvenniaTest"><a class="viewcode-back" href="../../../api/evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest">[docs]</a><span class="k">class</span> <span class="nc">EvenniaTest</span><span class="p">(</span><span class="n">EvenniaTestMixin</span><span class="p">,</span> <span class="n">TestCase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

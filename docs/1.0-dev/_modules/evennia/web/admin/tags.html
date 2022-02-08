@@ -62,9 +62,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">db_key</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Key/Name&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;The main key identifier&quot;</span>
-    <span class="p">)</span>
+    <span class="n">db_key</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Key/Name&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;The main key identifier&quot;</span><span class="p">)</span>
     <span class="n">db_category</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Category&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Used for grouping tags. Unset (default) gives a category of None&quot;</span><span class="p">,</span>
@@ -74,15 +72,22 @@
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="s2">&quot;alias&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;permission&quot;</span><span class="p">,</span> <span class="s2">&quot;permission&quot;</span><span class="p">)],</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Tags are used for different things. Unset for regular tags.&quot;</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">db_model</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Model&quot;</span> <span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help_text</span> <span class="o">=</span> <span class="s2">&quot;Each Tag can only &#39;attach&#39; to one type of entity.&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">([(</span><span class="s2">&quot;objectdb&quot;</span><span class="p">,</span> <span class="s2">&quot;objectdb&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;accountdb&quot;</span><span class="p">,</span> <span class="s2">&quot;accountdb&quot;</span><span class="p">),</span>
-                  <span class="p">(</span><span class="s2">&quot;scriptdb&quot;</span><span class="p">,</span> <span class="s2">&quot;scriptdb&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;channeldb&quot;</span><span class="p">,</span> <span class="s2">&quot;channeldb&quot;</span><span class="p">),</span>
-                  <span class="p">(</span><span class="s2">&quot;helpentry&quot;</span><span class="p">,</span> <span class="s2">&quot;helpentry&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;msg&quot;</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">)])</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Each Tag can only &#39;attach&#39; to one type of entity.&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="s2">&quot;objectdb&quot;</span><span class="p">,</span> <span class="s2">&quot;objectdb&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;accountdb&quot;</span><span class="p">,</span> <span class="s2">&quot;accountdb&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;scriptdb&quot;</span><span class="p">,</span> <span class="s2">&quot;scriptdb&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;channeldb&quot;</span><span class="p">,</span> <span class="s2">&quot;channeldb&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;helpentry&quot;</span><span class="p">,</span> <span class="s2">&quot;helpentry&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;msg&quot;</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">db_data</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span>
@@ -119,7 +124,7 @@
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="s2">&quot;alias&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;permission&quot;</span><span class="p">,</span> <span class="s2">&quot;permission&quot;</span><span class="p">)],</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Tags are used for different things. Unset for regular tags.&quot;</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">tag_data</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span>
@@ -133,10 +138,10 @@
 
 <div class="viewcode-block" id="InlineTagForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.tags.html#evennia.web.admin.tags.InlineTagForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">         If we have a tag, then we&#39;ll prepopulate our instance with the fields we&#39;d expect it</span>
-<span class="sd">         to have based on the tag. tag_key, tag_category, tag_type, and tag_data all refer to</span>
-<span class="sd">         the corresponding tag fields. The initial data of the form fields will similarly be</span>
-<span class="sd">         populated.</span>
+<span class="sd">        If we have a tag, then we&#39;ll prepopulate our instance with the fields we&#39;d expect it</span>
+<span class="sd">        to have based on the tag. tag_key, tag_category, tag_type, and tag_data all refer to</span>
+<span class="sd">        the corresponding tag fields. The initial data of the form fields will similarly be</span>
+<span class="sd">        populated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">tagkey</span> <span class="o">=</span> <span class="kc">None</span>
@@ -184,6 +189,7 @@
 <span class="sd">    Object, where the handler is an AliasHandler, PermissionsHandler, or TagHandler, based on the</span>
 <span class="sd">    type of tag.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Tag&quot;</span>
     <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Tags&quot;</span>
 
@@ -264,16 +270,9 @@
     <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span>
             <span class="kc">None</span><span class="p">,</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">),</span>
-                    <span class="p">(</span><span class="s2">&quot;db_tagtype&quot;</span><span class="p">,</span> <span class="s2">&quot;db_model&quot;</span><span class="p">),</span>
-                    <span class="s2">&quot;db_data&quot;</span>
-                <span class="p">)</span>
-            <span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">((</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;db_tagtype&quot;</span><span class="p">,</span> <span class="s2">&quot;db_model&quot;</span><span class="p">),</span> <span class="s2">&quot;db_data&quot;</span><span class="p">)},</span>
         <span class="p">),</span>
     <span class="p">)</span></div>
-
 </pre></div>
 
             <div class="clearer"></div>

@@ -123,14 +123,13 @@
 <span class="sd">    into a room but only acts as a target for finding the exit&#39;s destination.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">symbol</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
-    <span class="n">target_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;the small cave&#39;</span><span class="p">)</span></div>
+
+    <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span>
+    <span class="n">target_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;the small cave&quot;</span><span class="p">)</span></div>
 
 
 <span class="c1"># extends the default legend</span>
-<span class="n">LEGEND_MAP1</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="n">TransitionToCave</span>
-<span class="p">}</span>
+<span class="n">LEGEND_MAP1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">TransitionToCave</span><span class="p">}</span>
 
 
 <span class="c1"># link coordinates to rooms</span>
@@ -138,70 +137,62 @@
     <span class="c1"># node/room prototypes</span>
     <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Dungeon Entrance&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;To the east, a narrow opening leads into darkness.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;To the east, a narrow opening leads into darkness.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Under the foilage of a giant tree&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;High above the branches of a giant tree blocks out the sunlight. A slide &quot;</span>
-        <span class="s2">&quot;leading down from the upper branches ends here.&quot;</span>
+        <span class="s2">&quot;leading down from the upper branches ends here.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;The slide&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A slide leads down to the ground from here. It looks like a one-way trip.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A slide leads down to the ground from here. It looks like a one-way trip.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Thorny path&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;To the east is a pathway of thorns. If you get through, you don&#39;t think you&#39;ll be &quot;</span>
-               <span class="s2">&quot;able to get back here the same way.&quot;</span>
+        <span class="s2">&quot;able to get back here the same way.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;By a large tree&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;You are standing at the root of a great tree.&quot;</span>
-    <span class="p">},</span>
-    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;At the top of the tree&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;You are at the top of the tree.&quot;</span>
-    <span class="p">},</span>
+    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;By a large tree&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;You are standing at the root of a great tree.&quot;</span><span class="p">},</span>
+    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;At the top of the tree&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;You are at the top of the tree.&quot;</span><span class="p">},</span>
     <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Dense foilage&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The foilage to the east is extra dense. It will take forever to get through it.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The foilage to the east is extra dense. It will take forever to get through it.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;On a huge branch&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;To the east is a glowing light, may be a teleporter to a higher branch.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;To the east is a glowing light, may be a teleporter to a higher branch.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;On an enormous branch&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;To the west is a glowing light. It may be a teleporter to a lower branch.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;To the west is a glowing light. It may be a teleporter to a lower branch.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A gorgeous view&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The view from here is breathtaking, showing the forest stretching far and wide.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The view from here is breathtaking, showing the forest stretching far and wide.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="c1"># default rooms</span>
-    <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
+    <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Among the branches of a giant tree&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;These branches are wide enough to easily walk on. There&#39;s green all around.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;These branches are wide enough to easily walk on. There&#39;s green all around.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="c1"># directional prototypes</span>
-    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark passage into the underworld.&quot;</span>
-    <span class="p">},</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark passage into the underworld.&quot;</span><span class="p">},</span>
 <span class="p">}</span>
 
 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">PROTOTYPES_MAP1</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="c1"># we don&#39;t want to give exits the room typeclass!</span>
-        <span class="n">prot</span><span class="p">[</span><span class="s1">&#39;prototype_parent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ROOM_PARENT</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ROOM_PARENT</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">prot</span><span class="p">[</span><span class="s1">&#39;prototype_parent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EXIT_PARENT</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EXIT_PARENT</span>
 
 
 <span class="n">XYMAP_DATA_MAP1</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="s2">&quot;the large tree&quot;</span><span class="p">,</span>
     <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAP1</span><span class="p">,</span>
     <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="n">LEGEND_MAP1</span><span class="p">,</span>
-    <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="n">PROTOTYPES_MAP1</span>
+    <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="n">PROTOTYPES_MAP1</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># -------------------------------------- map2</span>
@@ -230,14 +221,13 @@
 <span class="sd">    into a room by only acts as a target for finding the exit&#39;s destination.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">symbol</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
-    <span class="n">target_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;the large tree&#39;</span><span class="p">)</span></div>
+
+    <span class="n">symbol</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span>
+    <span class="n">target_map_xyz</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;the large tree&quot;</span><span class="p">)</span></div>
 
 
 <span class="c1"># this extends the default legend (that defines #,-+ etc)</span>
-<span class="n">LEGEND_MAP2</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">TransitionToLargeTree</span>
-<span class="p">}</span>
+<span class="n">LEGEND_MAP2</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">TransitionToLargeTree</span><span class="p">}</span>
 
 <span class="c1"># prototypes for specific locations</span>
 <span class="n">PROTOTYPES_MAP2</span> <span class="o">=</span> <span class="p">{</span>
@@ -245,64 +235,54 @@
     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;The entrance&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;This is the entrance to a small cave leading into the ground. &quot;</span>
-                <span class="s2">&quot;Light sifts in from the outside, while cavernous passages disappear &quot;</span>
-                <span class="s2">&quot;into darkness.&quot;</span>
+        <span class="s2">&quot;Light sifts in from the outside, while cavernous passages disappear &quot;</span>
+        <span class="s2">&quot;into darkness.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A gruesome sight.&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Something was killed here recently. The smell is unbearable.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Something was killed here recently. The smell is unbearable.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark pathway&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The path splits three ways here. To the north a faint light can be seen.&quot;</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The path splits three ways here. To the north a faint light can be seen.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Stagnant water&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A pool of stagnant, black water dominates this small chamber. To the nortwest &quot;</span>
-                <span class="s2">&quot;a faint light can be seen.&quot;</span>
+        <span class="s2">&quot;a faint light can be seen.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
-    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark alcove&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;This alcove is empty.&quot;</span>
-    <span class="p">},</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark alcove&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;This alcove is empty.&quot;</span><span class="p">},</span>
     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;South-west corner of the atrium&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sunlight sifts down into a large underground chamber. Weeds and grass sprout &quot;</span>
-                <span class="s2">&quot;between the stones.&quot;</span>
+        <span class="s2">&quot;between the stones.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;South-east corner of the atrium&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sunlight sifts down into a large underground chamber. Weeds and grass sprout &quot;</span>
-                <span class="s2">&quot;between the stones.&quot;</span>
+        <span class="s2">&quot;between the stones.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;North-west corner of the atrium&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sunlight sifts down into a large underground chamber. Weeds and grass sprout &quot;</span>
-                <span class="s2">&quot;between the stones.&quot;</span>
+        <span class="s2">&quot;between the stones.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;North-east corner of the atrium&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Sunlight sifts down into a large underground chamber. Weeds and grass sprout &quot;</span>
-                <span class="s2">&quot;between the stones. To the east is a dark passage.&quot;</span>
+        <span class="s2">&quot;between the stones. To the east is a dark passage.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="p">{</span>
         <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Craggy crevice&quot;</span><span class="p">,</span>
         <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;This is the deepest part of the dungeon. The path shrinks away and there &quot;</span>
-                <span class="s2">&quot;is no way to continue deeper.&quot;</span>
+        <span class="s2">&quot;is no way to continue deeper.&quot;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="c1"># default fallback for undefined nodes</span>
-    <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark room&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark, but empty, room.&quot;</span>
-    <span class="p">},</span>
+    <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark room&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark, but empty, room.&quot;</span><span class="p">},</span>
     <span class="c1"># directional prototypes</span>
-    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A narrow path to the fresh air of the outside world.&quot;</span>
-    <span class="p">},</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A narrow path to the fresh air of the outside world.&quot;</span><span class="p">},</span>
     <span class="c1"># directional fallbacks for unset directions</span>
-    <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">):</span> <span class="p">{</span>
-        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark passage&quot;</span>
-    <span class="p">}</span>
+    <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A dark passage&quot;</span><span class="p">},</span>
 <span class="p">}</span>
 
 <span class="c1"># this is required by the prototypes, but we add it all at once so we don&#39;t</span>
@@ -310,9 +290,9 @@
 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">PROTOTYPES_MAP2</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="c1"># we don&#39;t want to give exits the room typeclass!</span>
-        <span class="n">prot</span><span class="p">[</span><span class="s1">&#39;prototype_parent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ROOM_PARENT</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ROOM_PARENT</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">prot</span><span class="p">[</span><span class="s1">&#39;prototype_parent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EXIT_PARENT</span>
+        <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EXIT_PARENT</span>
 
 
 <span class="n">XYMAP_DATA_MAP2</span> <span class="o">=</span> <span class="p">{</span>
@@ -320,17 +300,11 @@
     <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="s2">&quot;the small cave&quot;</span><span class="p">,</span>
     <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="n">LEGEND_MAP2</span><span class="p">,</span>
     <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="n">PROTOTYPES_MAP2</span><span class="p">,</span>
-    <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;map_visual_range&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;map_mode&quot;</span><span class="p">:</span> <span class="s1">&#39;scan&#39;</span>
-    <span class="p">}</span>
+    <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;map_visual_range&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;map_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;scan&quot;</span><span class="p">},</span>
 <span class="p">}</span>
 
 <span class="c1"># This is read by the parser</span>
-<span class="n">XYMAP_DATA_LIST</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">XYMAP_DATA_MAP1</span><span class="p">,</span>
-    <span class="n">XYMAP_DATA_MAP2</span>
-<span class="p">]</span>
+<span class="n">XYMAP_DATA_LIST</span> <span class="o">=</span> <span class="p">[</span><span class="n">XYMAP_DATA_MAP1</span><span class="p">,</span> <span class="n">XYMAP_DATA_MAP2</span><span class="p">]</span>
 </pre></div>
 
             <div class="clearer"></div>

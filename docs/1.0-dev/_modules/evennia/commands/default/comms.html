@@ -62,16 +62,15 @@
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 <span class="n">CHANNEL_DEFAULT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
-    <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHANNEL_TYPECLASS</span><span class="p">)</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHANNEL_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHANNEL_TYPECLASS</span>
+<span class="p">)</span>
 
 
 <span class="c1"># limit symbol import for API</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;CmdChannel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdObjectChannel&quot;</span><span class="p">,</span>
-
     <span class="s2">&quot;CmdPage&quot;</span><span class="p">,</span>
-
     <span class="s2">&quot;CmdIRC2Chan&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdIRCStatus&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CmdRSS2Chan&quot;</span><span class="p">,</span>
@@ -249,6 +248,7 @@
 <span class="sd">        ban mychannel1,mychannel2= EvilUser : Was banned for spamming.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;@channel&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;@chan&quot;</span><span class="p">,</span> <span class="s2">&quot;@channels&quot;</span><span class="p">]</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;Comms&quot;</span>
@@ -257,8 +257,25 @@
     <span class="c1"># the manage: lock  controls access to /create/destroy/desc/lock/unlock switches</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:not pperm(channel_banned);admin:all();manage:all();changelocks:perm(Admin)&quot;</span>
     <span class="n">switch_options</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;history&quot;</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="s2">&quot;unsub&quot;</span><span class="p">,</span> <span class="s2">&quot;mute&quot;</span><span class="p">,</span> <span class="s2">&quot;unmute&quot;</span><span class="p">,</span> <span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="s2">&quot;unalias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;create&quot;</span><span class="p">,</span> <span class="s2">&quot;destroy&quot;</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="s2">&quot;lock&quot;</span><span class="p">,</span> <span class="s2">&quot;unlock&quot;</span><span class="p">,</span> <span class="s2">&quot;boot&quot;</span><span class="p">,</span> <span class="s2">&quot;ban&quot;</span><span class="p">,</span> <span class="s2">&quot;unban&quot;</span><span class="p">,</span> <span class="s2">&quot;who&quot;</span><span class="p">,)</span>
+        <span class="s2">&quot;list&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;history&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sub&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unsub&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mute&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unmute&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;alias&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unalias&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;create&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;destroy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lock&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unlock&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;boot&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ban&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;unban&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;who&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="c1"># disable this in child command classes if wanting on-character channels</span>
     <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -295,17 +312,24 @@
             <span class="n">channels</span> <span class="o">=</span> <span class="n">CHANNEL_DEFAULT_TYPECLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">channel_search</span><span class="p">(</span><span class="n">channelname</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">)</span>
 
         <span class="c1"># check permissions</span>
-        <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">channel</span> <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span>
-                    <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;listen&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;control&#39;</span><span class="p">)]</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">channel</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span>
+            <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;listen&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
 
         <span class="k">if</span> <span class="n">handle_errors</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No channel found matching &#39;</span><span class="si">{</span><span class="n">channelname</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                         <span class="s2">&quot;(could also be due to missing access).&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;No channel found matching &#39;</span><span class="si">{</span><span class="n">channelname</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="s2">&quot;(could also be due to missing access).&quot;</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Multiple possible channel matches/alias for &quot;</span>
-                         <span class="s2">&quot;&#39;</span><span class="si">{channelname}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;Multiple possible channel matches/alias for &quot;</span>
+                    <span class="s2">&quot;&#39;</span><span class="si">{channelname}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">return</span> <span class="n">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -354,6 +378,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                 <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[-]&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;[-]&quot;</span> <span class="ow">in</span> <span class="n">line</span> <span class="k">else</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">)</span>
             <span class="p">)</span>
+
         <span class="c1"># asynchronously tail the log file</span>
         <span class="n">tail_log_file</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">start_index</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">send_msg</span><span class="p">)</span></div>
 
@@ -533,7 +558,8 @@
         <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;send:all();listen:all();control:id(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="o">.</span><span class="n">id</span>
 
         <span class="n">new_chan</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span>
-            <span class="n">name</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">)</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="n">lockstring</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sub_to_channel</span><span class="p">(</span><span class="n">new_chan</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_chan</span><span class="p">,</span> <span class="s2">&quot;&quot;</span></div>
 
@@ -556,14 +582,14 @@
 
         <span class="n">channel_key</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">key</span>
         <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rChannel </span><span class="si">{</span><span class="n">channel_key</span><span class="si">}</span><span class="s2"> is being destroyed. &quot;</span>
-                       <span class="s2">&quot;Make sure to clean any channel aliases.|n&quot;</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;|rChannel </span><span class="si">{</span><span class="n">channel_key</span><span class="si">}</span><span class="s2"> is being destroyed. &quot;</span>
+                <span class="s2">&quot;Make sure to clean any channel aliases.|n&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">bypass_mute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">channel</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-            <span class="s2">&quot;Channel </span><span class="si">{}</span><span class="s2"> was deleted by </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel_key</span><span class="p">,</span> <span class="n">caller</span><span class="p">)</span>
-        <span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="s2">&quot;Channel </span><span class="si">{}</span><span class="s2"> was deleted by </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel_key</span><span class="p">,</span> <span class="n">caller</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="CmdChannel.set_lock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.set_lock">[docs]</a>    <span class="k">def</span> <span class="nf">set_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">lockstring</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -652,8 +678,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
             <span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> was booted from channel by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel Boot: </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> (Channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">, &quot;</span>
-                       <span class="sa">f</span><span class="s2">&quot;Reason: </span><span class="si">{</span><span class="n">reason</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">, Caller: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Channel Boot: </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> (Channel: </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Reason: </span><span class="si">{</span><span class="n">reason</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">, Caller: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="CmdChannel.ban_user"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel.ban_user">[docs]</a>    <span class="k">def</span> <span class="nf">ban_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
@@ -726,7 +754,7 @@
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="n">mute_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">mutelist</span><span class="p">)</span>
         <span class="n">online_list</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">online</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s1">&#39;control&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">):</span>
             <span class="c1"># for those with channel control, show also offline users</span>
             <span class="n">all_subs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
@@ -736,8 +764,10 @@
         <span class="n">who_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">all_subs</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-            <span class="n">conditions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;muting&quot;</span> <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">mute_list</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                          <span class="s2">&quot;offline&quot;</span> <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">online_list</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">conditions</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;muting&quot;</span> <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">in</span> <span class="n">mute_list</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;offline&quot;</span> <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">online_list</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">conditions</span> <span class="o">=</span> <span class="p">[</span><span class="n">cond</span> <span class="k">for</span> <span class="n">cond</span> <span class="ow">in</span> <span class="n">conditions</span> <span class="k">if</span> <span class="n">cond</span><span class="p">]</span>
             <span class="n">cond_text</span> <span class="o">=</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">conditions</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span> <span class="k">if</span> <span class="n">conditions</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
             <span class="n">who_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">cond_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -785,7 +815,7 @@
             <span class="s2">&quot;locks&quot;</span><span class="p">,</span>
             <span class="s2">&quot;description&quot;</span><span class="p">,</span>
             <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span>
-            <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span>
+            <span class="n">maxwidth</span><span class="o">=</span><span class="n">_DEFAULT_WIDTH</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">subscribed</span><span class="p">:</span>
 
@@ -798,14 +828,14 @@
             <span class="n">my_aliases</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_channel_aliases</span><span class="p">(</span><span class="n">chan</span><span class="p">))</span>
             <span class="n">comtable</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="o">*</span><span class="p">(</span>
-                  <span class="n">chanid</span><span class="p">,</span>
-                  <span class="s2">&quot;</span><span class="si">{key}{aliases}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                      <span class="n">key</span><span class="o">=</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                      <span class="n">aliases</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="o">+</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-                  <span class="p">),</span>
-                  <span class="n">my_aliases</span><span class="p">,</span>
-                  <span class="n">locks</span><span class="p">,</span>
-                  <span class="n">chan</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
+                    <span class="n">chanid</span><span class="p">,</span>
+                    <span class="s2">&quot;</span><span class="si">{key}{aliases}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">key</span><span class="o">=</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                        <span class="n">aliases</span><span class="o">=</span><span class="s2">&quot;;&quot;</span> <span class="o">+</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">my_aliases</span><span class="p">,</span>
+                    <span class="n">locks</span><span class="p">,</span>
+                    <span class="n">chan</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">comtable</span></div>
@@ -841,11 +871,14 @@
                 <span class="n">substatus</span> <span class="o">=</span> <span class="s2">&quot;|gYes|n&quot;</span>
             <span class="n">my_aliases</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_channel_aliases</span><span class="p">(</span><span class="n">chan</span><span class="p">))</span>
             <span class="n">comtable</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="o">*</span><span class="p">(</span><span class="n">substatus</span><span class="p">,</span>
-                  <span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                  <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                  <span class="n">my_aliases</span><span class="p">,</span>
-                  <span class="n">chan</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">))</span>
+                <span class="o">*</span><span class="p">(</span>
+                    <span class="n">substatus</span><span class="p">,</span>
+                    <span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                    <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">my_aliases</span><span class="p">,</span>
+                    <span class="n">chan</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="n">comtable</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">comtable</span></div>
@@ -860,16 +893,17 @@
         <span class="n">switches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
         <span class="n">channel_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhslist</span> <span class="k">if</span> <span class="n">name</span><span class="p">]</span>
 
-        <span class="c1">#from evennia import set_trace;set_trace()</span>
+        <span class="c1"># from evennia import set_trace;set_trace()</span>
 
-        <span class="k">if</span> <span class="s1">&#39;all&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># show all available channels</span>
             <span class="n">subscribed</span><span class="p">,</span> <span class="n">available</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_channels</span><span class="p">()</span>
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_all_channels</span><span class="p">(</span><span class="n">subscribed</span><span class="p">,</span> <span class="n">available</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                 <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wAvailable channels|n (use no argument to &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;only show your subscriptions)</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;only show your subscriptions)</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">channel_names</span><span class="p">:</span>
@@ -877,15 +911,16 @@
             <span class="n">subscribed</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_channels</span><span class="p">()</span>
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_subbed_channels</span><span class="p">(</span><span class="n">subscribed</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wChannel subscriptions|n &quot;</span>
-                     <span class="sa">f</span><span class="s2">&quot;(use |w/all|n to see all available):</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wChannel subscriptions|n &quot;</span> <span class="sa">f</span><span class="s2">&quot;(use |w/all|n to see all available):</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage[/switches]: channel [= message]&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;create&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;create&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># create a new channel</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;manage&quot;</span><span class="p">):</span>
@@ -907,7 +942,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;unalias&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;unalias&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># remove a personal alias (no channel needed)</span>
             <span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">alias</span><span class="p">:</span>
@@ -926,11 +961,10 @@
             <span class="c1"># channels without a space in their name), we need to check if the</span>
             <span class="c1"># first &#39;channel name&#39; is in fact &#39;channelname text&#39;</span>
             <span class="n">no_rhs_channel_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">possible_lhs_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">no_rhs_channel_name</span><span class="p">):]</span>
-            <span class="k">if</span> <span class="n">possible_lhs_message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;=&#39;</span><span class="p">:</span>
+            <span class="n">possible_lhs_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">no_rhs_channel_name</span><span class="p">)</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="n">possible_lhs_message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
                 <span class="n">possible_lhs_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="n">channel_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">no_rhs_channel_name</span><span class="p">)</span>
-
 
         <span class="n">channels</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
@@ -939,16 +973,20 @@
             <span class="c1"># &#39;listen/control&#39; perms.</span>
             <span class="n">found_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">handle_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found_channels</span><span class="p">:</span>
-                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No channel found matching &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                              <span class="s2">&quot;(could also be due to missing access).&quot;</span><span class="p">)</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;No channel found matching &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="s2">&quot;(could also be due to missing access).&quot;</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_channels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Multiple possible channel matches/alias for &quot;</span>
-                              <span class="s2">&quot;&#39;</span><span class="si">{channel_name}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">found_channels</span><span class="p">))</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="s2">&quot;Multiple possible channel matches/alias for &quot;</span>
+                    <span class="s2">&quot;&#39;</span><span class="si">{channel_name}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">found_channels</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">channels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">found_channels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
             <span class="k">return</span>
 
         <span class="c1"># we have at least one channel at this point</span>
@@ -967,30 +1005,35 @@
                 <span class="k">if</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">subscribed</span><span class="p">:</span>
                     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_subbed_channels</span><span class="p">([</span><span class="n">channel</span><span class="p">])</span>
                     <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Channel |w</span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">header</span><span class="si">}</span><span class="se">\n</span><span class="s2">(use |w</span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &lt;msg&gt;|n (or a channel-alias) &quot;</span>
-                             <span class="sa">f</span><span class="s2">&quot;to chat and the &#39;channel&#39; command &quot;</span>
-                             <span class="sa">f</span><span class="s2">&quot;to customize)</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">header</span><span class="si">}</span><span class="se">\n</span><span class="s2">(use |w</span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &lt;msg&gt;|n (or a channel-alias) &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;to chat and the &#39;channel&#39; command &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;to customize)</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">available</span><span class="p">:</span>
                     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_all_channels</span><span class="p">([],</span> <span class="p">[</span><span class="n">channel</span><span class="p">])</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wNot subscribed to this channel|n (use /list to &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;show all subscriptions)</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="sa">f</span><span class="s2">&quot;show all subscriptions)</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;history&#39;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s1">&#39;hist&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;history&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;hist&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># view channel history</span>
 
             <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">or</span> <span class="mi">0</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The history index (describing how many lines to go back) &quot;</span>
-                         <span class="s2">&quot;must be an integer &gt;= 0.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;The history index (describing how many lines to go back) &quot;</span>
+                    <span class="s2">&quot;must be an integer &gt;= 0.&quot;</span>
+                <span class="p">)</span>
                 <span class="k">return</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_channel_history</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">start_index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;sub&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;sub&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># subscribe to a channel</span>
             <span class="n">aliases</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
@@ -999,26 +1042,29 @@
             <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_alias</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span>
-                <span class="n">alias_txt</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span>
-                <span class="n">alias_txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; using alias(es) </span><span class="si">{</span><span class="n">alias_txt</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">aliases</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are now subscribed &quot;</span>
-                         <span class="sa">f</span><span class="s2">&quot;to the channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}{</span><span class="n">alias_txt</span><span class="si">}</span><span class="s2">. Use /alias to &quot;</span>
-                         <span class="s2">&quot;add additional aliases for referring to the channel.&quot;</span><span class="p">)</span>
+                <span class="n">alias_txt</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span>
+                <span class="n">alias_txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; using alias(es) </span><span class="si">{</span><span class="n">alias_txt</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">aliases</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;You are now subscribed &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;to the channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}{</span><span class="n">alias_txt</span><span class="si">}</span><span class="s2">. Use /alias to &quot;</span>
+                    <span class="s2">&quot;add additional aliases for referring to the channel.&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;unsub&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;unsub&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># un-subscribe from a channel</span>
             <span class="n">success</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unsub_from_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You un-subscribed from channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. &quot;</span>
-                         <span class="s2">&quot;All aliases were cleared.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;You un-subscribed from channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. &quot;</span> <span class="s2">&quot;All aliases were cleared.&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;alias&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;alias&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># create a new personal alias for a channel</span>
             <span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">alias</span><span class="p">:</span>
@@ -1028,7 +1074,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added/updated your alias &#39;</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&#39; for channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;mute&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;mute&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># mute a given channel</span>
             <span class="n">success</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mute_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
@@ -1037,7 +1083,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;unmute&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;unmute&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># unmute a given channel</span>
             <span class="n">success</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unmute_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
@@ -1046,7 +1092,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;destroy&#39;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s1">&#39;delete&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;destroy&quot;</span> <span class="ow">in</span> <span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># destroy a channel we control</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;manage&quot;</span><span class="p">):</span>
@@ -1070,10 +1116,10 @@
                 <span class="s2">&quot;remove all users&#39; aliases. </span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span>
                 <span class="n">yes_action</span><span class="o">=</span><span class="n">_perform_delete</span><span class="p">,</span>
                 <span class="n">no_action</span><span class="o">=</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s2">&quot;N&quot;</span>
+                <span class="n">default</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;desc&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;desc&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># set channel description</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;manage&quot;</span><span class="p">):</span>
@@ -1093,7 +1139,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_desc</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Updated channel description.&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;lock&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;lock&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># add a lockstring to channel</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;changelocks&quot;</span><span class="p">):</span>
@@ -1117,7 +1163,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not add/update lock: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;unlock&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;unlock&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># remove/update lockstring from channel</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;changelocks&quot;</span><span class="p">):</span>
@@ -1141,7 +1187,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not remove lock: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;boot&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;boot&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># boot a user from channel(s)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;admin&quot;</span><span class="p">):</span>
@@ -1176,8 +1222,9 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot boot </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> from channel </span><span class="si">{</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="n">channames</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)</span>
-            <span class="n">reasonwarn</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;. Also note that your reason will be echoed to the channel&quot;</span>
-                          <span class="k">if</span> <span class="n">reason</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">reasonwarn</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;. Also note that your reason will be echoed to the channel&quot;</span> <span class="k">if</span> <span class="n">reason</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">)</span>
             <span class="n">ask_yes_no</span><span class="p">(</span>
                 <span class="n">caller</span><span class="p">,</span>
                 <span class="n">prompt</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Are you sure you want to boot user </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> from &quot;</span>
@@ -1185,11 +1232,11 @@
                 <span class="s2">&quot;</span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span>
                 <span class="n">yes_action</span><span class="o">=</span><span class="n">_boot_user</span><span class="p">,</span>
                 <span class="n">no_action</span><span class="o">=</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span>
+                <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;ban&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;ban&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># ban a user from channel(s)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;admin&quot;</span><span class="p">):</span>
@@ -1203,8 +1250,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You need &#39;control&#39;-access to view bans on channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
 
-                <span class="n">bans</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Channel bans &quot;</span>
-                        <span class="s2">&quot;(to ban, use channel/ban channel[,channel,...] = username [:reason]&quot;</span><span class="p">]</span>
+                <span class="n">bans</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;Channel bans &quot;</span>
+                    <span class="s2">&quot;(to ban, use channel/ban channel[,channel,...] = username [:reason]&quot;</span>
+                <span class="p">]</span>
                 <span class="n">bans</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_list_bans</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bans</span><span class="p">))</span>
                 <span class="k">return</span>
@@ -1233,8 +1282,9 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot boot </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> from channel </span><span class="si">{</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="n">channames</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)</span>
-            <span class="n">reasonwarn</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;. Also note that your reason will be echoed to the channel&quot;</span>
-                          <span class="k">if</span> <span class="n">reason</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">reasonwarn</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;. Also note that your reason will be echoed to the channel&quot;</span> <span class="k">if</span> <span class="n">reason</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">)</span>
             <span class="n">ask_yes_no</span><span class="p">(</span>
                 <span class="n">caller</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;Are you sure you want to ban user </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> from &quot;</span>
@@ -1245,7 +1295,7 @@
             <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;unban&#39;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;unban&quot;</span> <span class="ow">in</span> <span class="n">switches</span><span class="p">:</span>
             <span class="c1"># unban a previously banned user from channel</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;admin&quot;</span><span class="p">):</span>
@@ -1456,7 +1506,6 @@
                         <span class="n">receiver</span><span class="o">=</span><span class="n">receiver</span><span class="p">,</span>
                         <span class="n">message</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
                     <span class="p">)</span>
-
                 <span class="p">)</span>
             <span class="n">lastpages</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">listing</span><span class="p">)</span>
 
@@ -1506,6 +1555,7 @@
         <span class="k">return</span> <span class="n">table</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;No irc bots found.&quot;</span>
+
 
 <div class="viewcode-block" id="CmdIRC2Chan"><a class="viewcode-back" href="../../../../api/evennia.commands.default.comms.html#evennia.commands.default.comms.CmdIRC2Chan">[docs]</a><span class="k">class</span> <span class="nc">CmdIRC2Chan</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

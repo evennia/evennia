@@ -84,6 +84,7 @@
 
 <span class="c1"># Commands for the state when the lid covering the button is closed.</span>
 
+
 <div class="viewcode-block" id="CmdPushLidClosed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.red_button.red_button.html#evennia.contrib.tutorials.red_button.red_button.CmdPushLidClosed">[docs]</a><span class="k">class</span> <span class="nc">CmdPushLidClosed</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Push the red button (lid closed)</span>
@@ -163,23 +164,27 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> tries to smash the glass of the button.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> tries to smash the glass of the button.&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;You smash your hand against the glass&quot;</span>
-                      <span class="s2">&quot; with all your might. The lid won&#39;t budge&quot;</span>
-                      <span class="s2">&quot; but you cause quite the tremor through the button&#39;s mount.&quot;</span>
-                      <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It looks like the button&#39;s lamp stopped working for the time being, &quot;</span>
-                      <span class="s2">&quot;but the lid is still as closed as ever.&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;You smash your hand against the glass&quot;</span>
+                <span class="s2">&quot; with all your might. The lid won&#39;t budge&quot;</span>
+                <span class="s2">&quot; but you cause quite the tremor through the button&#39;s mount.&quot;</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It looks like the button&#39;s lamp stopped working for the time being, &quot;</span>
+                <span class="s2">&quot;but the lid is still as closed as ever.&quot;</span>
+            <span class="p">)</span>
             <span class="c1"># self.obj is the button itself</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">break_lamp</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="mf">0.6</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You hit the lid hard. It doesn&#39;t move an inch.&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;You place a well-aimed fist against the glass of the lid.&quot;</span>
-                      <span class="s2">&quot; Unfortunately all you get is a pain in your hand. Maybe&quot;</span>
-                      <span class="s2">&quot; you should just try to just ... open the lid instead?&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;You place a well-aimed fist against the glass of the lid.&quot;</span>
+                <span class="s2">&quot; Unfortunately all you get is a pain in your hand. Maybe&quot;</span>
+                <span class="s2">&quot; you should just try to just ... open the lid instead?&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
@@ -207,8 +212,8 @@
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;the lid will soon close again.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> opens the lid of the button.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> opens the lid of the button.&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">to_open_state</span><span class="p">()</span></div></div>
 
 
@@ -242,6 +247,7 @@
 <span class="c1"># Commands for the state when the button&#39;s protective cover is open - now the</span>
 <span class="c1"># push command will work. You can also close the lid again.</span>
 
+
 <div class="viewcode-block" id="CmdPushLidOpen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.red_button.red_button.html#evennia.contrib.tutorials.red_button.red_button.CmdPushLidOpen">[docs]</a><span class="k">class</span> <span class="nc">CmdPushLidOpen</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Push the red button</span>
@@ -267,15 +273,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># pause a little between each message.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You reach out to press the big red button ...&quot;</span><span class="p">)</span>
-        <span class="k">yield</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># pause 2s before next message</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># pause 2s before next message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|wBOOOOM! A bright light blinds you!|n&quot;</span><span class="p">)</span>
-        <span class="k">yield</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># pause 1s before next message</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># pause 1s before next message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|xThe world goes dark ...|n&quot;</span><span class="p">)</span>
 
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> presses the button. BOOM! </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is blinded by a flash!&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> presses the button. BOOM! </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is blinded by a flash!&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">blind_target</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div>
 
 
@@ -301,8 +307,8 @@
         <span class="c1"># this will clean out scripts dependent on lid being open.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You close the button&#39;s lid. It clicks back into place.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> closes the button&#39;s lid.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> closes the button&#39;s lid.&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="LidOpenCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.red_button.red_button.html#evennia.contrib.tutorials.red_button.red_button.LidOpenCmdSet">[docs]</a><span class="k">class</span> <span class="nc">LidOpenCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
@@ -327,6 +333,7 @@
 
 <span class="c1"># Commands for when the button has been pushed and the player is blinded. This</span>
 <span class="c1"># replaces commands on the player making them &#39;blind&#39; for a while.</span>
+
 
 <div class="viewcode-block" id="CmdBlindLook"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.red_button.red_button.html#evennia.contrib.tutorials.red_button.red_button.CmdBlindLook">[docs]</a><span class="k">class</span> <span class="nc">CmdBlindLook</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -359,12 +366,14 @@
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You fumble around, hands outstretched. You bump your knee.&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># trying to look</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;You are temporarily blinded by the flash. &quot;</span>
-                      <span class="s2">&quot;Until it wears off, all you can do is feel around blindly.&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;You are temporarily blinded by the flash. &quot;</span>
+                <span class="s2">&quot;Until it wears off, all you can do is feel around blindly.&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> stumbles around, blinded.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> stumbles around, blinded.&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdBlindHelp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.red_button.red_button.html#evennia.contrib.tutorials.red_button.red_button.CmdBlindHelp">[docs]</a><span class="k">class</span> <span class="nc">CmdBlindHelp</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -462,20 +471,26 @@
 <span class="sd">    `button = create_object(RedButton, ..., attributes=[(&#39;desc&#39;, &#39;my desc&#39;)])`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># these are the pre-set descriptions. Setting attributes will override</span>
     <span class="c1"># these on the fly.</span>
 
-    <span class="n">desc_closed_lid</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
-                       <span class="s2">&quot;A closed glass lid protects it.&quot;</span><span class="p">)</span>
-    <span class="n">desc_open_lid</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
-                     <span class="s2">&quot;Its glass cover is open and the button exposed.&quot;</span><span class="p">)</span>
+    <span class="n">desc_closed_lid</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span> <span class="s2">&quot;A closed glass lid protects it.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">desc_open_lid</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;This is a large red button, inviting yet evil-looking. &quot;</span>
+        <span class="s2">&quot;Its glass cover is open and the button exposed.&quot;</span>
+    <span class="p">)</span>
     <span class="n">auto_close_msg</span> <span class="o">=</span> <span class="s2">&quot;The button&#39;s glass lid silently slides back in place.&quot;</span>
     <span class="n">lamp_breaks_msg</span> <span class="o">=</span> <span class="s2">&quot;The lamp flickers, the button going dark.&quot;</span>
     <span class="n">desc_add_lamp_broken</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The big red button has stopped blinking for the time being.&quot;</span>
     <span class="c1"># note that this is a list. A random message will display each time</span>
-    <span class="n">blink_msgs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;The red button flashes briefly.&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;The red button blinks invitingly.&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;The red button flashes. You know you wanna push it!&quot;</span><span class="p">]</span>
+    <span class="n">blink_msgs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;The red button flashes briefly.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;The red button blinks invitingly.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;The red button flashes. You know you wanna push it!&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
 
 <div class="viewcode-block" id="RedButton.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.red_button.red_button.html#evennia.contrib.tutorials.red_button.red_button.RedButton.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -565,9 +580,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LidOpenCmdSet</span><span class="p">)</span>
 
         <span class="c1"># wait 20s then call self.to_closed_state with a message as argument</span>
-        <span class="n">delay</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_closed_state</span><span class="p">,</span>
-              <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">auto_close_msg</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_close_msg</span><span class="p">,</span>
-              <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">delay</span><span class="p">(</span>
+            <span class="mi">35</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_closed_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">auto_close_msg</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_close_msg</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_unblind_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -578,7 +593,8 @@
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You blink feverishly as your eyesight slowly returns.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> seems to be recovering their eyesight, blinking feverishly.&quot;</span><span class="p">,</span>
-            <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+            <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="RedButton.blind_target"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.red_button.red_button.html#evennia.contrib.tutorials.red_button.red_button.RedButton.blind_target">[docs]</a>    <span class="k">def</span> <span class="nf">blind_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -596,8 +612,7 @@
 
         <span class="c1"># wait 20s then call self._unblind to remove blindness effect. The</span>
         <span class="c1"># persistent=True means the delay should survive a server reload.</span>
-        <span class="n">delay</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unblind_target</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span>
-              <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">delay</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unblind_target</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_unbreak_lamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

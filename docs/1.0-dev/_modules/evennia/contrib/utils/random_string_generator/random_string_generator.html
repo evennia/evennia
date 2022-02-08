@@ -198,8 +198,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_find_elements</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;evennia.contrib.utils.random_string_generator.RandomStringGenerator for </span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;&lt;evennia.contrib.utils.random_string_generator.RandomStringGenerator for </span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -211,7 +213,8 @@
             <span class="n">script</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;generator_script&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
             <span class="n">script</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span>
-                <span class="s2">&quot;evennia.contrib.utils.random_string_generator.RandomStringGeneratorScript&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;evennia.contrib.utils.random_string_generator.RandomStringGeneratorScript&quot;</span>
+            <span class="p">)</span>
 
         <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="n">script</span>
         <span class="k">return</span> <span class="n">script</span>

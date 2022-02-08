@@ -135,8 +135,8 @@
 <span class="sd">in the docstring for each function.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MagicCombatRules"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules">[docs]</a><span class="k">class</span> <span class="nc">MagicCombatRules</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">BasicCombatRules</span><span class="p">):</span>
 
+<div class="viewcode-block" id="MagicCombatRules"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules">[docs]</a><span class="k">class</span> <span class="nc">MagicCombatRules</span><span class="p">(</span><span class="n">tb_basic</span><span class="o">.</span><span class="n">BasicCombatRules</span><span class="p">):</span>
 <div class="viewcode-block" id="MagicCombatRules.spell_healing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_healing">[docs]</a>    <span class="k">def</span> <span class="nf">spell_healing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caster</span><span class="p">,</span> <span class="n">spell_name</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Spell that restores HP to a target or targets.</span>
@@ -367,11 +367,7 @@
         <span class="s2">&quot;attack_name&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;A jet of flame&quot;</span><span class="p">,</span> <span class="s2">&quot;jets of flame&quot;</span><span class="p">),</span>
         <span class="s2">&quot;damage_range&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">35</span><span class="p">),</span>
     <span class="p">},</span>
-    <span class="s2">&quot;cure wounds&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;spellfunc&quot;</span><span class="p">:</span> <span class="n">COMBAT_RULES</span><span class="o">.</span><span class="n">spell_healing</span><span class="p">,</span>
-        <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;anychar&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cost&quot;</span><span class="p">:</span> <span class="mi">5</span>
-    <span class="p">},</span>
+    <span class="s2">&quot;cure wounds&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;spellfunc&quot;</span><span class="p">:</span> <span class="n">COMBAT_RULES</span><span class="o">.</span><span class="n">spell_healing</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;anychar&quot;</span><span class="p">,</span> <span class="s2">&quot;cost&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
     <span class="s2">&quot;mass cure wounds&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;spellfunc&quot;</span><span class="p">:</span> <span class="n">COMBAT_RULES</span><span class="o">.</span><span class="n">spell_healing</span><span class="p">,</span>
         <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;anychar&quot;</span><span class="p">,</span>
@@ -418,6 +414,7 @@
 <span class="sd">    and maximum HP, access to combat commands and magic.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">rules</span> <span class="o">=</span> <span class="n">COMBAT_RULES</span>
 
 <div class="viewcode-block" id="TBMagicCharacter.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

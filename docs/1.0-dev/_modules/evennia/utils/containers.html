@@ -176,11 +176,12 @@
 
         <span class="n">typeclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="n">script</span> <span class="o">=</span> <span class="n">typeclass</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">db_key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">db_account__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">db_obj__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="n">db_key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">db_account__isnull</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">db_obj__isnull</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="p">[</span><span class="n">key</span><span class="p">]}</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;persistent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;persistent&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;persistent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;persistent&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="n">compare_hash</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dumps</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
 
@@ -188,8 +189,9 @@
             <span class="n">script_hash</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_script_settings&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;settings_hash&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">script_hash</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># legacy - store the hash anew and assume no change</span>
-                <span class="n">script</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;global_script_settings&quot;</span><span class="p">,</span> <span class="n">compare_hash</span><span class="p">,</span>
-                                      <span class="n">category</span><span class="o">=</span><span class="s2">&quot;settings_hash&quot;</span><span class="p">)</span>
+                <span class="n">script</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="s2">&quot;global_script_settings&quot;</span><span class="p">,</span> <span class="n">compare_hash</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;settings_hash&quot;</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="n">script_hash</span> <span class="o">!=</span> <span class="n">compare_hash</span><span class="p">:</span>
                 <span class="c1"># wipe the old version and create anew</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GLOBAL_SCRIPTS: Settings changed for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">typeclass</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
@@ -206,8 +208,7 @@
                 <span class="k">return</span> <span class="kc">None</span>
 
             <span class="c1"># store a hash representation of the setup</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_global_script_settings&quot;</span><span class="p">,</span>
-                                  <span class="n">compare_hash</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;settings_hash&quot;</span><span class="p">)</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_global_script_settings&quot;</span><span class="p">,</span> <span class="n">compare_hash</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;settings_hash&quot;</span><span class="p">)</span>
             <span class="n">script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">script</span>
@@ -242,7 +243,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;GlobalScriptContainer could not start import global script </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+                        <span class="sa">f</span><span class="s2">&quot;GlobalScriptContainer could not start import global script </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GlobalScriptContainer.get"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

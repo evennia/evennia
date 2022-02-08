@@ -73,7 +73,8 @@
 <span class="sd">    efficiently querying the room in the database based on XY coordinates.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="XYZManager.filter_xyz"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager.filter_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">filter_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="XYZManager.filter_xyz"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager.filter_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">filter_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter queryset based on XYZ position on the grid. The Z-position is the name of the XYMap</span>
 <span class="sd">        Set a coordinate to `&#39;*&#39;` to act as a wildcard (setting all coords to `*` will thus find</span>
@@ -91,23 +92,28 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">xyz</span>
-        <span class="n">wildcard</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+        <span class="n">wildcard</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="bp">self</span>
-            <span class="o">.</span><span class="n">filter_family</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filter_family</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_X_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_X_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Y_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Y_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYZManager.get_xyz"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager.get_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">get_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZManager.get_xyz"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager.get_xyz">[docs]</a>    <span class="k">def</span> <span class="nf">get_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Always return a single matched entity directly. This accepts no `*`-wildcards.</span>
 <span class="sd">        This will also find children of XYZRooms on the given coordinates.</span>
@@ -135,8 +141,9 @@
 
         <span class="c1"># error - mimic default get() behavior but with a little more info</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">xyz</span>
-        <span class="n">inp</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query: xyz=(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">), &quot;</span> <span class="o">+</span>
-               <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="n">inp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Query: xyz=(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">), &quot;</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">ncount</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">MultipleObjectsReturned</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -150,8 +157,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="XYZExitManager.filter_xyz_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager.filter_xyz_exit">[docs]</a>    <span class="k">def</span> <span class="nf">filter_xyz_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span>
-                        <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZExitManager.filter_xyz_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager.filter_xyz_exit">[docs]</a>    <span class="k">def</span> <span class="nf">filter_xyz_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Used by exits (objects with a source and -destination property).</span>
 <span class="sd">        Find all exits out of a source or to a particular destination. This will also find</span>
@@ -180,32 +186,43 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">xyz</span>
         <span class="n">xdest</span><span class="p">,</span> <span class="n">ydest</span><span class="p">,</span> <span class="n">zdest</span> <span class="o">=</span> <span class="n">xyz_destination</span>
-        <span class="n">wildcard</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+        <span class="n">wildcard</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="bp">self</span>
-            <span class="o">.</span><span class="n">filter_family</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filter_family</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_X_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_X_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Y_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Y_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">xdest</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">xdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_XDEST_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">xdest</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">xdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_XDEST_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">ydest</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ydest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_YDEST_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">ydest</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ydest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_YDEST_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">Q</span><span class="p">()</span> <span class="k">if</span> <span class="n">zdest</span> <span class="o">==</span> <span class="n">wildcard</span>
-                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">zdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_ZDEST_TAG_CATEGORY</span><span class="p">))</span>
+                <span class="n">Q</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">zdest</span> <span class="o">==</span> <span class="n">wildcard</span>
+                <span class="k">else</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">zdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_ZDEST_TAG_CATEGORY</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYZExitManager.get_xyz_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager.get_xyz_exit">[docs]</a>    <span class="k">def</span> <span class="nf">get_xyz_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">),</span> <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZExitManager.get_xyz_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager.get_xyz_exit">[docs]</a>    <span class="k">def</span> <span class="nf">get_xyz_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Used by exits (objects with a source and -destination property). Get a single</span>
 <span class="sd">        exit. All source/destination coordinates (as well as the map&#39;s name) are required.</span>
@@ -241,8 +258,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
-                <span class="bp">self</span>
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_X_TAG_CATEGORY</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_Y_TAG_CATEGORY</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">xdest</span><span class="p">),</span> <span class="n">db_tags__db_category</span><span class="o">=</span><span class="n">MAP_XDEST_TAG_CATEGORY</span><span class="p">)</span>
@@ -251,10 +267,12 @@
                 <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-            <span class="n">inp</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;xyz=(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">),xyz_destination=(</span><span class="si">{</span><span class="n">xdest</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ydest</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">zdest</span><span class="si">}</span><span class="s2">),&quot;</span> <span class="o">+</span>
-                   <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
-            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span>
-                                          <span class="sa">f</span><span class="s2">&quot;matching query </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span></div></div>
+            <span class="n">inp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;xyz=(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">),xyz_destination=(</span><span class="si">{</span><span class="n">xdest</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ydest</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">zdest</span><span class="si">}</span><span class="s2">),&quot;</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;matching query </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span>
+            <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="XYZRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom">[docs]</a><span class="k">class</span> <span class="nc">XYZRoom</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="p">):</span>
@@ -286,10 +304,10 @@
 
     <span class="c1"># default settings for map visualization</span>
     <span class="n">map_display</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">map_mode</span> <span class="o">=</span> <span class="s1">&#39;nodes&#39;</span>  <span class="c1"># or &#39;scan&#39;</span>
+    <span class="n">map_mode</span> <span class="o">=</span> <span class="s2">&quot;nodes&quot;</span>  <span class="c1"># or &#39;scan&#39;</span>
     <span class="n">map_visual_range</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">map_character_symbol</span> <span class="o">=</span> <span class="s2">&quot;|g@|n&quot;</span>
-    <span class="n">map_align</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span>
+    <span class="n">map_align</span> <span class="o">=</span> <span class="s2">&quot;c&quot;</span>
     <span class="n">map_target_path_style</span> <span class="o">=</span> <span class="s2">&quot;|y</span><span class="si">{display_symbol}</span><span class="s2">|n&quot;</span>
     <span class="n">map_fill_all</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">map_separator_char</span> <span class="o">=</span> <span class="s2">&quot;|x~|n&quot;</span>
@@ -309,8 +327,10 @@
             <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># don&#39;t cache unfinished coordinate (probably tags have not finished saving)</span>
-                <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="k">if</span> <span class="n">coord</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">coord</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">coord</span>
-                             <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+                <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="k">if</span> <span class="n">coord</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">coord</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">coord</span>
+                    <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="c1"># cache result, convert to correct types (tags are strings)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="k">if</span> <span class="n">coord</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">coord</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
 
@@ -332,7 +352,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xymap</span>
 
 <div class="viewcode-block" id="XYZRoom.create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creation method aware of XYZ coordinates.</span>
 
@@ -358,14 +378,18 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">xyz</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;XYRroom.create got `xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2">` - needs a valid (X,Y,Z) &quot;</span>
-                          <span class="s2">&quot;coordinate of ints/strings.&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;XYRroom.create got `xyz=</span><span class="si">{</span><span class="n">xyz</span><span class="si">}</span><span class="s2">` - needs a valid (X,Y,Z) &quot;</span>
+                <span class="s2">&quot;coordinate of ints/strings.&quot;</span>
+            <span class="p">]</span>
 
         <span class="n">existing_query</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">existing_query</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">existing_room</span> <span class="o">=</span> <span class="n">existing_query</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;XYRoom XYZ=(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">) already exists &quot;</span>
-                          <span class="sa">f</span><span class="s2">&quot;(existing room is named &#39;</span><span class="si">{</span><span class="n">existing_room</span><span class="o">.</span><span class="n">db_key</span><span class="si">}</span><span class="s2">&#39;)!&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;XYRoom XYZ=(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">) already exists &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(existing room is named &#39;</span><span class="si">{</span><span class="n">existing_room</span><span class="o">.</span><span class="n">db_key</span><span class="si">}</span><span class="s2">&#39;)!&quot;</span>
+            <span class="p">]</span>
 
         <span class="n">tags</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">MAP_X_TAG_CATEGORY</span><span class="p">),</span>
@@ -452,26 +476,29 @@
         <span class="n">xyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span>
         <span class="n">xymap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyzgrid</span><span class="o">.</span><span class="n">get_map</span><span class="p">(</span><span class="n">xyz</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="n">xymap</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;map_display&#39;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_display&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_display</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">xymap</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_display&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_display&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_display</span><span class="p">)):</span>
 
             <span class="c1"># show the near-area map.</span>
             <span class="n">map_character_symbol</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s1">&#39;map_character_symbol&#39;</span><span class="p">,</span>
-                <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_character_symbol&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_character_symbol</span><span class="p">))</span>
+                <span class="s2">&quot;map_character_symbol&quot;</span><span class="p">,</span>
+                <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_character_symbol&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_character_symbol</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="n">map_visual_range</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">&quot;map_visual_range&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_visual_range&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_visual_range</span><span class="p">))</span>
-            <span class="n">map_mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">&quot;map_mode&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_mode&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mode</span><span class="p">))</span>
-            <span class="n">map_align</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">&quot;map_align&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_align&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_align</span><span class="p">))</span>
+                <span class="s2">&quot;map_visual_range&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_visual_range&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_visual_range</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">map_mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_mode&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_mode&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_mode</span><span class="p">))</span>
+            <span class="n">map_align</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_align&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_align&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_align</span><span class="p">))</span>
             <span class="n">map_target_path_style</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="s2">&quot;map_target_path_style&quot;</span><span class="p">,</span>
-                <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_target_path_style&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_target_path_style</span><span class="p">))</span>
+                <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_target_path_style&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_target_path_style</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="n">map_area_client</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">&quot;map_fill_all&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_fill_all&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_fill_all</span><span class="p">))</span>
+                <span class="s2">&quot;map_fill_all&quot;</span><span class="p">,</span> <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_fill_all&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_fill_all</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="n">map_separator_char</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="s2">&quot;map_separator_char&quot;</span><span class="p">,</span>
-                <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_separator_char&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_separator_char</span><span class="p">))</span>
+                <span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;map_separator_char&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_separator_char</span><span class="p">),</span>
+            <span class="p">)</span>
 
             <span class="n">client_width</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">looker</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_client_size</span><span class="p">()</span>
 
@@ -480,15 +507,14 @@
             <span class="k">if</span> <span class="n">map_area_client</span><span class="p">:</span>
                 <span class="n">display_width</span> <span class="o">=</span> <span class="n">client_width</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">display_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">map_width</span><span class="p">,</span>
-                                    <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">room_desc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)))</span>
+                <span class="n">display_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">map_width</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">room_desc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)))</span>
 
             <span class="c1"># align map</span>
             <span class="n">map_indent</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">sep_width</span> <span class="o">=</span> <span class="n">display_width</span>
-            <span class="k">if</span> <span class="n">map_align</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">map_align</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
                 <span class="n">map_indent</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">display_width</span> <span class="o">-</span> <span class="n">map_width</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">map_align</span> <span class="o">==</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">map_align</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
                 <span class="n">map_indent</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">display_width</span> <span class="o">-</span> <span class="n">map_width</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
 
             <span class="c1"># data set by the goto/path-command, for displaying the shortest path</span>
@@ -504,7 +530,7 @@
                 <span class="n">target_path_style</span><span class="o">=</span><span class="n">map_target_path_style</span><span class="p">,</span>
                 <span class="n">character</span><span class="o">=</span><span class="n">map_character_symbol</span><span class="p">,</span>
                 <span class="n">max_size</span><span class="o">=</span><span class="p">(</span><span class="n">display_width</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="n">indent</span><span class="o">=</span><span class="n">map_indent</span>
+                <span class="n">indent</span><span class="o">=</span><span class="n">map_indent</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">sep</span> <span class="o">=</span> <span class="n">map_separator_char</span> <span class="o">*</span> <span class="n">sep_width</span>
             <span class="n">map_display</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">|n</span><span class="se">\n</span><span class="si">{</span><span class="n">map_display</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -565,8 +591,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xyz_destination</span>
 
 <div class="viewcode-block" id="XYZExit.create"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.create">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">),</span> <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">),</span>
-               <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">,</span>
+        <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span>
+        <span class="n">xyz_destination</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">),</span>
+        <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creation method aware of coordinates.</span>
 
@@ -601,26 +635,36 @@
                 <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;XYExit.create need either `xyz=(X,Y,Z)` coordinate or a `location`.&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">source</span> <span class="o">=</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-                <span class="n">tags</span><span class="o">.</span><span class="n">extend</span><span class="p">(((</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">MAP_X_TAG_CATEGORY</span><span class="p">),</span>
-                             <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">MAP_Y_TAG_CATEGORY</span><span class="p">),</span>
-                             <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">)))</span>
+                <span class="n">tags</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">MAP_X_TAG_CATEGORY</span><span class="p">),</span>
+                        <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">MAP_Y_TAG_CATEGORY</span><span class="p">),</span>
+                        <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">MAP_Z_TAG_CATEGORY</span><span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">if</span> <span class="n">destination</span><span class="p">:</span>
             <span class="n">dest</span> <span class="o">=</span> <span class="n">destination</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">xdest</span><span class="p">,</span> <span class="n">ydest</span><span class="p">,</span> <span class="n">zdest</span> <span class="o">=</span> <span class="n">xyz_destination</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;XYExit.create need either `xyz_destination=(X,Y,Z)` coordinate &quot;</span>
-                              <span class="s2">&quot;or a `destination`.&quot;</span><span class="p">]</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span>
+                    <span class="s2">&quot;XYExit.create need either `xyz_destination=(X,Y,Z)` coordinate &quot;</span>
+                    <span class="s2">&quot;or a `destination`.&quot;</span>
+                <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">dest</span> <span class="o">=</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="n">xdest</span><span class="p">,</span> <span class="n">ydest</span><span class="p">,</span> <span class="n">zdest</span><span class="p">))</span>
-                <span class="n">tags</span><span class="o">.</span><span class="n">extend</span><span class="p">(((</span><span class="nb">str</span><span class="p">(</span><span class="n">xdest</span><span class="p">),</span> <span class="n">MAP_XDEST_TAG_CATEGORY</span><span class="p">),</span>
-                             <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ydest</span><span class="p">),</span> <span class="n">MAP_YDEST_TAG_CATEGORY</span><span class="p">),</span>
-                             <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">zdest</span><span class="p">),</span> <span class="n">MAP_ZDEST_TAG_CATEGORY</span><span class="p">)))</span>
+                <span class="n">tags</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xdest</span><span class="p">),</span> <span class="n">MAP_XDEST_TAG_CATEGORY</span><span class="p">),</span>
+                        <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ydest</span><span class="p">),</span> <span class="n">MAP_YDEST_TAG_CATEGORY</span><span class="p">),</span>
+                        <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">zdest</span><span class="p">),</span> <span class="n">MAP_ZDEST_TAG_CATEGORY</span><span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">DefaultExit</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span>
-            <span class="n">account</span><span class="o">=</span><span class="n">account</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+            <span class="n">key</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="n">account</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

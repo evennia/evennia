@@ -84,7 +84,6 @@
 <span class="n">_STRIP_MXP</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-
 <span class="k">def</span> <span class="nf">_NA</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
     <span class="k">return</span> <span class="s2">&quot;N/A&quot;</span>
 
@@ -137,9 +136,7 @@
         <span class="c1"># nick replacement</span>
         <span class="n">puppet</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span>
         <span class="k">if</span> <span class="n">puppet</span><span class="p">:</span>
-            <span class="n">txt</span> <span class="o">=</span> <span class="n">puppet</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span>
-                <span class="n">txt</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="n">puppet</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">txt</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span>
                 <span class="n">txt</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;inputline&quot;</span><span class="p">),</span> <span class="n">include_account</span><span class="o">=</span><span class="kc">False</span>

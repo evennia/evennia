@@ -465,8 +465,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mergetype_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_current</span><span class="o">.</span><span class="n">actual_mergetype</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">new_current</span></div>
 
-<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CmdSetHandler.add"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a cmdset to the handler, on top of the old ones, unless it</span>
 <span class="sd">        is set as the default one (it will then end up at the bottom of the stack)</span>
@@ -493,9 +492,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;permanent&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span><span class="s2">&quot;obj.cmdset.add() kwarg &#39;permanent&#39; has changed name to &quot;</span>
-                           <span class="s2">&quot;&#39;persistent&#39; and now defaults to True.&quot;</span><span class="p">)</span>
-            <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;permanent&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">persistent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">persistent</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span>
+                <span class="s2">&quot;obj.cmdset.add() kwarg &#39;permanent&#39; has changed name to &quot;</span>
+                <span class="s2">&quot;&#39;persistent&#39; and now defaults to True.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;permanent&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">persistent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">persistent</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">)):</span>
             <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Only CmdSets can be added to the cmdsethandler!&quot;</span><span class="p">)</span>
@@ -533,9 +534,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;permanent&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span><span class="s2">&quot;obj.cmdset.add_default() kwarg &#39;permanent&#39; has changed name to &quot;</span>
-                           <span class="s2">&quot;&#39;persistent&#39;.&quot;</span><span class="p">)</span>
-            <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;permanent&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">persistent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">persistent</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span>
+                <span class="s2">&quot;obj.cmdset.add_default() kwarg &#39;permanent&#39; has changed name to &#39;persistent&#39;.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;permanent&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">persistent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">persistent</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">emit_to_obj</span><span class="o">=</span><span class="n">emit_to_obj</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="n">persistent</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdSetHandler.remove"><a class="viewcode-back" href="../../../api/evennia.commands.cmdsethandler.html#evennia.commands.cmdsethandler.CmdSetHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_cmdset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

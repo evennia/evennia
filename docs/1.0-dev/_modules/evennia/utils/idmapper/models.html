@@ -355,6 +355,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pk</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_get_pk_val</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">pk</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">new</span> <span class="ow">or</span> <span class="n">pk</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="p">[</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
             <span class="k">if</span> <span class="n">new</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>

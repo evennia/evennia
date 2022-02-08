@@ -555,7 +555,7 @@
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_EMOTE_NOMATCH_ERROR</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()))</span>
         <span class="k">elif</span> <span class="n">nmatches</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># a unique match - parse into intermediary representation</span>
-            <span class="n">case</span> <span class="o">=</span> <span class="s1">&#39;~&#39;</span>  <span class="c1"># retain original case of sdesc</span>
+            <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;~&quot;</span>  <span class="c1"># retain original case of sdesc</span>
             <span class="k">if</span> <span class="n">case_sensitive</span><span class="p">:</span>
                 <span class="c1"># case sensitive mode</span>
                 <span class="c1"># internal flags for the case used for the original /query</span>
@@ -568,14 +568,14 @@
                     <span class="c1"># self-refs are kept as-is, others are parsed by case</span>
                     <span class="n">matchtext</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_PREFIX</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">istitle</span><span class="p">():</span>
-                        <span class="n">case</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span>
+                        <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;t&quot;</span>
                     <span class="k">elif</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
-                        <span class="n">case</span> <span class="o">=</span> <span class="s1">&#39;^&#39;</span>
+                        <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;^&quot;</span>
                     <span class="k">elif</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
-                        <span class="n">case</span> <span class="o">=</span> <span class="s1">&#39;v&#39;</span>
+                        <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span>
 
             <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">istart0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">key</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="n">istart</span> <span class="o">+</span> <span class="n">maxscore</span><span class="p">:]</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">istart0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">key</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="n">istart</span> <span class="o">+</span> <span class="n">maxscore</span> <span class="p">:]</span>
             <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
 
         <span class="k">else</span><span class="p">:</span>
@@ -643,8 +643,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">case_sensitive</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;case_sensitive&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">emote</span><span class="p">,</span> <span class="n">obj_mapping</span> <span class="o">=</span> <span class="n">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span>
-                                                     <span class="n">case_sensitive</span><span class="o">=</span><span class="n">case_sensitive</span><span class="p">)</span>
+        <span class="n">emote</span><span class="p">,</span> <span class="n">obj_mapping</span> <span class="o">=</span> <span class="n">parse_sdescs_and_recogs</span><span class="p">(</span>
+            <span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="n">case_sensitive</span>
+        <span class="p">)</span>
         <span class="n">emote</span><span class="p">,</span> <span class="n">language_mapping</span> <span class="o">=</span> <span class="n">parse_language</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">EmoteError</span><span class="p">,</span> <span class="n">LanguageError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="c1"># handle all error messages, don&#39;t hide actual coding errors</span>
@@ -657,8 +658,8 @@
     <span class="c1"># (the text could have nested object mappings).</span>
     <span class="n">emote</span> <span class="o">=</span> <span class="n">_RE_REF</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;{{#\1}}&quot;</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
     <span class="c1"># if anonymous_add is passed as a kwarg, collect and remove it from kwargs</span>
-    <span class="k">if</span> <span class="s1">&#39;anonymous_add&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">anonymous_add</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;anonymous_add&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;anonymous_add&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">anonymous_add</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;anonymous_add&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">anonymous_add</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">obj_mapping</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">skey</span><span class="p">)):</span>
         <span class="c1"># no self-reference in the emote - add to the end</span>
         <span class="n">obj_mapping</span><span class="p">[</span><span class="n">skey</span><span class="p">]</span> <span class="o">=</span> <span class="n">sender</span>
@@ -712,12 +713,13 @@
             <span class="p">)</span>
         <span class="c1"># make sure receiver always sees their real name</span>
         <span class="n">rkey_start</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">receiver</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">rkey_keep_case</span> <span class="o">=</span> <span class="n">rkey_start</span> <span class="o">+</span> <span class="s1">&#39;~&#39;</span>  <span class="c1"># signifies keeping the case</span>
+        <span class="n">rkey_keep_case</span> <span class="o">=</span> <span class="n">rkey_start</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span>  <span class="c1"># signifies keeping the case</span>
         <span class="k">for</span> <span class="n">rkey</span> <span class="ow">in</span> <span class="p">(</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">receiver_sdesc_mapping</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">rkey_start</span><span class="p">)):</span>
             <span class="c1"># we could have #%i^, #%it etc depending on input case - we want the</span>
             <span class="c1"># self-reference to retain case.</span>
             <span class="n">receiver_sdesc_mapping</span><span class="p">[</span><span class="n">rkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_sdesc</span><span class="p">(</span>
-                <span class="n">receiver</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">rkey_keep_case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">receiver</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">rkey_keep_case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
 
         <span class="c1"># do the template replacement of the sdesc/recog {#num} markers</span>
         <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">sendemote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_sdesc_mapping</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -1751,14 +1753,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sdesc</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="n">ref</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ref&#39;</span><span class="p">,</span> <span class="s1">&#39;~&#39;</span><span class="p">)</span>  <span class="c1"># ~ to keep sdesc unchanged</span>
-        <span class="k">if</span> <span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ref&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>  <span class="c1"># ~ to keep sdesc unchanged</span>
+        <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
             <span class="c1"># we only want to capitalize the first letter if there are many words</span>
             <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">sdesc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="s1">&#39;^&#39;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="s2">&quot;^&quot;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
             <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="s1">&#39;v&#39;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="s2">&quot;v&quot;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
             <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">return</span> <span class="s2">&quot;|b</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">sdesc</span></div>
 

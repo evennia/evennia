@@ -92,16 +92,20 @@
         <span class="n">prot_value</span> <span class="o">=</span> <span class="n">prototype</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># check if it&#39;s an attribute</span>
-        <span class="k">for</span> <span class="n">attrtuple</span> <span class="ow">in</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;attrs&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">for</span> <span class="n">attrtuple</span> <span class="ow">in</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;attrs&quot;</span><span class="p">,</span> <span class="p">[]):</span>
             <span class="k">if</span> <span class="n">attrtuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">fieldname</span><span class="p">:</span>
                 <span class="n">prot_value</span> <span class="o">=</span> <span class="n">attrtuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fieldname</span><span class="si">}</span><span class="s2"> not found in prototype</span><span class="se">\n</span><span class="si">{</span><span class="n">prototype</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                                 <span class="s2">&quot;(neither as prototype-field or as an Attribute&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fieldname</span><span class="si">}</span><span class="s2"> not found in prototype</span><span class="se">\n</span><span class="si">{</span><span class="n">prototype</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;(neither as prototype-field or as an Attribute&quot;</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">prot_value</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in prototype</span><span class="se">\n</span><span class="si">{</span><span class="n">prototype</span><span class="si">}</span><span class="se">\n</span><span class="s2">$protkey can only reference static &quot;</span>
-                           <span class="sa">f</span><span class="s2">&quot;values/attributes (found </span><span class="si">{</span><span class="n">prot_value</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Error in prototype</span><span class="se">\n</span><span class="si">{</span><span class="n">prototype</span><span class="si">}</span><span class="se">\n</span><span class="s2">$protkey can only reference static &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;values/attributes (found </span><span class="si">{</span><span class="n">prot_value</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">funcparser_callable_eval</span><span class="p">(</span><span class="n">prot_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">funcparser</span><span class="o">.</span><span class="n">ParsingError</span><span class="p">:</span>

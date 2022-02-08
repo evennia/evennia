@@ -113,7 +113,7 @@
                         <span class="k">for</span> <span class="n">cmdname</span> <span class="ow">in</span> <span class="p">[</span><span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">cmd</span><span class="o">.</span><span class="n">aliases</span>
                         <span class="k">if</span> <span class="n">cmdname</span>
                         <span class="ow">and</span> <span class="n">l_raw_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmdname</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">):]))</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">)</span> <span class="p">:]))</span>
                     <span class="p">]</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -132,7 +132,7 @@
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="n">cmdname</span>
                         <span class="ow">and</span> <span class="n">l_raw_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmdname</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">):]))</span>
+                        <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">l_raw_string</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmdname</span><span class="p">)</span> <span class="p">:]))</span>
                     <span class="p">):</span>
                         <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">create_match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">raw_cmdname</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -167,7 +167,10 @@
         <span class="c1"># the user might be trying to identify the command</span>
         <span class="c1"># with a #num-command style syntax. We expect the regex to</span>
         <span class="c1"># contain the groups &quot;number&quot; and &quot;name&quot;.</span>
-        <span class="n">mindex</span><span class="p">,</span> <span class="n">new_raw_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">),</span> <span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;args&quot;</span><span class="p">))</span>
+        <span class="n">mindex</span><span class="p">,</span> <span class="n">new_raw_string</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">),</span>
+            <span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">num_ref_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;args&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">mindex</span><span class="p">),</span> <span class="n">new_raw_string</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
@@ -224,9 +227,7 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">matches</span> <span class="ow">and</span> <span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">:</span>
         <span class="c1"># still no match. Try to strip prefixes</span>
-        <span class="n">raw_string</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">raw_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">raw_string</span>
-        <span class="p">)</span>
+        <span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">raw_string</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">build_matches</span><span class="p">(</span><span class="n">raw_string</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># only select command matches we are actually allowed to call.</span>

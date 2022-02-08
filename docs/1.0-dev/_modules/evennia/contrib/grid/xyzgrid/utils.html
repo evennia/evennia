@@ -72,13 +72,15 @@
 
 <span class="c1"># errors for Map system</span>
 
-<div class="viewcode-block" id="MapError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError">[docs]</a><span class="k">class</span> <span class="nc">MapError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 
+<div class="viewcode-block" id="MapError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError">[docs]</a><span class="k">class</span> <span class="nc">MapError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
 <div class="viewcode-block" id="MapError.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">node_or_link</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">node_or_link</span><span class="p">:</span>
-            <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                      <span class="sa">f</span><span class="s2">&quot;at XYZ=(</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="n">X</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="n">Y</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s2">) &quot;</span><span class="p">)</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;at XYZ=(</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="n">X</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="n">Y</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">node_or_link</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s2">) &quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">node_or_link</span> <span class="o">=</span> <span class="n">node_or_link</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div></div>
@@ -94,6 +96,7 @@
 <span class="sd">    leads to another map.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 </pre></div>
 

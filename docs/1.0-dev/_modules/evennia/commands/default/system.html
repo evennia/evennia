@@ -635,13 +635,15 @@
                 <span class="k">if</span> <span class="n">delmode</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot remove a core Evennia service (named &#39;Evennia*&#39;).&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;|RYou seem to be shutting down a core Evennia &quot;</span>
-                          <span class="s2">&quot;service (named &#39;Evennia*&#39;).</span><span class="se">\n</span><span class="s2">Note that stopping &quot;</span>
-                          <span class="s2">&quot;some TCP port services will *not* disconnect users &quot;</span>
-                          <span class="s2">&quot;*already* connected on those ports, but *may* &quot;</span>
-                          <span class="s2">&quot;instead cause spurious errors for them.</span><span class="se">\n</span><span class="s2">To safely &quot;</span>
-                          <span class="s2">&quot;and permanently remove ports, change settings file &quot;</span>
-                          <span class="s2">&quot;and restart the server.|n</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;|RYou seem to be shutting down a core Evennia &quot;</span>
+                    <span class="s2">&quot;service (named &#39;Evennia*&#39;).</span><span class="se">\n</span><span class="s2">Note that stopping &quot;</span>
+                    <span class="s2">&quot;some TCP port services will *not* disconnect users &quot;</span>
+                    <span class="s2">&quot;*already* connected on those ports, but *may* &quot;</span>
+                    <span class="s2">&quot;instead cause spurious errors for them.</span><span class="se">\n</span><span class="s2">To safely &quot;</span>
+                    <span class="s2">&quot;and permanently remove ports, change settings file &quot;</span>
+                    <span class="s2">&quot;and restart the server.|n</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">delmode</span><span class="p">:</span>
@@ -653,9 +655,11 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">service</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rErrors were reported when stopping this service</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                               <span class="s2">&quot;If there are remaining problems, try reloading &quot;</span>
-                               <span class="s2">&quot;or rebooting the server.&quot;</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;|rErrors were reported when stopping this service</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="s2">&quot;If there are remaining problems, try reloading &quot;</span>
+                        <span class="s2">&quot;or rebooting the server.&quot;</span>
+                    <span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|g... Stopped service &#39;</span><span class="si">%s</span><span class="s2">&#39;.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -668,9 +672,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">service</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rErrors were reported when starting this service</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                           <span class="s2">&quot;If there are remaining problems, try reloading the server, changing the &quot;</span>
-                           <span class="s2">&quot;settings if it&#39;s a non-standard service.|n&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;|rErrors were reported when starting this service</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;If there are remaining problems, try reloading the server, changing the &quot;</span>
+                    <span class="s2">&quot;settings if it&#39;s a non-standard service.|n&quot;</span>
+                <span class="p">)</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gService started.|n&quot;</span><span class="p">)</span></div></div>
 
 
@@ -1015,8 +1021,8 @@
 <div class="viewcode-block" id="CmdTasks.coll_date_func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTasks.coll_date_func">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">coll_date_func</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Replace regex characters in date string and collect deferred function name.&quot;&quot;&quot;</span>
-        <span class="n">t_comp_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
-        <span class="n">t_func_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">t_comp_date</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">t_func_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
         <span class="n">t_func_mem_ref</span> <span class="o">=</span> <span class="n">t_func_name</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_func_name</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">t_comp_date</span><span class="p">,</span> <span class="n">t_func_mem_ref</span></div>
 
@@ -1036,19 +1042,19 @@
         <span class="c1"># verify manipulating the correct task</span>
         <span class="n">task_args</span> <span class="o">=</span> <span class="n">_TASK_HANDLER</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task_args</span><span class="p">:</span>  <span class="c1"># check if the task is still active</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Task completed while waiting for input.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Task completed while waiting for input.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># make certain a task with matching IDs has not been created</span>
             <span class="n">t_comp_date</span><span class="p">,</span> <span class="n">t_func_mem_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll_date_func</span><span class="p">(</span><span class="n">task_args</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_comp_date</span> <span class="o">!=</span> <span class="n">t_comp_date</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_func_mem_ref</span> <span class="o">!=</span> <span class="n">t_func_mem_ref</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Task completed while waiting for input.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Task completed while waiting for input.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
 
         <span class="c1"># Do the action requested by command caller</span>
         <span class="n">action_return</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_action</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action_request</span><span class="si">}</span><span class="s1"> request completed.&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The task function </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action_request</span><span class="si">}</span><span class="s1"> returned: </span><span class="si">{</span><span class="n">action_return</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action_request</span><span class="si">}</span><span class="s2"> request completed.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The task function </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action_request</span><span class="si">}</span><span class="s2"> returned: </span><span class="si">{</span><span class="n">action_return</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdTasks.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.system.html#evennia.commands.default.system.CmdTasks.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># get a reference of the global task handler</span>
@@ -1057,9 +1063,9 @@
             <span class="kn">from</span> <span class="nn">evennia.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span> <span class="k">as</span> <span class="n">_TASK_HANDLER</span>
         <span class="c1"># handle no tasks active.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_TASK_HANDLER</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;There are no active tasks.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;There are no active tasks.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Likely the task has completed and been removed.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Likely the task has completed and been removed.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># handle caller&#39;s request to manipulate a task(s)</span>
@@ -1075,8 +1081,8 @@
             <span class="c1"># if the argument is a task id, proccess the action on a single task</span>
             <span class="k">if</span> <span class="n">arg_is_id</span><span class="p">:</span>
 
-                <span class="n">err_arg_msg</span> <span class="o">=</span> <span class="s1">&#39;Switch and task ID are required when manipulating a task.&#39;</span>
-                <span class="n">task_comp_msg</span> <span class="o">=</span> <span class="s1">&#39;Task completed while processing request.&#39;</span>
+                <span class="n">err_arg_msg</span> <span class="o">=</span> <span class="s2">&quot;Switch and task ID are required when manipulating a task.&quot;</span>
+                <span class="n">task_comp_msg</span> <span class="o">=</span> <span class="s2">&quot;Task completed while processing request.&quot;</span>
 
                 <span class="c1"># handle missing arguments or switches</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
@@ -1089,14 +1095,16 @@
 
                 <span class="c1"># handle task no longer existing</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1"> does not exist.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
 
                 <span class="c1"># get a reference of the function caller requested</span>
                 <span class="n">switch_action</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">action_request</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">switch_action</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">, is not an acceptable task action or &#39;</span> \
-                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">task_comp_msg</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, is not an acceptable task action or &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task_comp_msg</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
 
                 <span class="c1"># verify manipulating the correct task</span>
                 <span class="k">if</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">_TASK_HANDLER</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
@@ -1106,25 +1114,29 @@
                         <span class="k">return</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">t_comp_date</span><span class="p">,</span> <span class="n">t_func_mem_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll_date_func</span><span class="p">(</span><span class="n">task_args</span><span class="p">)</span>
-                        <span class="n">t_func_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                        <span class="n">t_func_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
                         <span class="n">t_func_name</span> <span class="o">=</span> <span class="n">t_func_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_func_name</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">None</span>
 
                 <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># make certain the task has not been called yet.</span>
-                    <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">action_request</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s1"> task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1"> with completion date &#39;</span>
-                              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">t_comp_date</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">t_func_name</span><span class="si">}</span><span class="s1">) </span><span class="se">{{</span><span class="s1">options</span><span class="se">}}</span><span class="s1">?&#39;</span><span class="p">)</span>
-                    <span class="n">no_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;No </span><span class="si">{</span><span class="n">action_request</span><span class="si">}</span><span class="s1"> processed.&#39;</span>
+                    <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">action_request</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> task </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> with completion date &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t_comp_date</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">t_func_name</span><span class="si">}</span><span class="s2">) </span><span class="se">{{</span><span class="s2">options</span><span class="se">}}</span><span class="s2">?&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">no_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">action_request</span><span class="si">}</span><span class="s2"> processed.&quot;</span>
                     <span class="c1"># record variables for use in do_task_action method</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="n">task_id</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">t_comp_date</span> <span class="o">=</span> <span class="n">t_comp_date</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">t_func_mem_ref</span> <span class="o">=</span> <span class="n">t_func_mem_ref</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">task_action</span> <span class="o">=</span> <span class="n">switch_action</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">action_request</span> <span class="o">=</span> <span class="n">action_request</span>
-                    <span class="n">ask_yes_no</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
-                               <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
-                               <span class="n">yes_action</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">do_task_action</span><span class="p">,</span>
-                               <span class="n">no_action</span><span class="o">=</span><span class="n">no_msg</span><span class="p">,</span>
-                               <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
-                               <span class="n">allow_abort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">ask_yes_no</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+                        <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+                        <span class="n">yes_action</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">do_task_action</span><span class="p">,</span>
+                        <span class="n">no_action</span><span class="o">=</span><span class="n">no_msg</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+                        <span class="n">allow_abort</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
                     <span class="k">return</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">task_comp_msg</span><span class="p">)</span>
@@ -1144,7 +1156,7 @@
 
                 <span class="c1"># call requested action on all tasks with the function name</span>
                 <span class="k">for</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">task_args</span> <span class="ow">in</span> <span class="n">current_tasks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">t_func_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                    <span class="n">t_func_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task_args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
                     <span class="n">t_func_name</span> <span class="o">=</span> <span class="n">t_func_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_func_name</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">None</span>
                     <span class="c1"># skip this task if it is not for the function desired</span>
                     <span class="k">if</span> <span class="n">arg_func_name</span> <span class="o">!=</span> <span class="n">t_func_name</span><span class="p">:</span>
@@ -1154,33 +1166,39 @@
                     <span class="n">switch_action</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">action_request</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">switch_action</span><span class="p">:</span>
                         <span class="n">action_return</span> <span class="o">=</span> <span class="n">switch_action</span><span class="p">()</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Task action </span><span class="si">{</span><span class="n">action_request</span><span class="si">}</span><span class="s1"> completed on task ID </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The task function </span><span class="si">{</span><span class="n">action_request</span><span class="si">}</span><span class="s1"> returned: </span><span class="si">{</span><span class="n">action_return</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task action </span><span class="si">{</span><span class="n">action_request</span><span class="si">}</span><span class="s2"> completed on task ID </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The task function </span><span class="si">{</span><span class="n">action_request</span><span class="si">}</span><span class="s2"> returned: </span><span class="si">{</span><span class="n">action_return</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="c1"># provide a message if not tasks of the function name was found</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">name_match_found</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No tasks deferring function name </span><span class="si">{</span><span class="n">arg_func_name</span><span class="si">}</span><span class="s1"> found.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No tasks deferring function name </span><span class="si">{</span><span class="n">arg_func_name</span><span class="si">}</span><span class="s2"> found.&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
         <span class="c1"># check if an maleformed request was created</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Task command misformed.&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Proper format tasks[/switch] [function name or task id]&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Task command misformed.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Proper format tasks[/switch] [function name or task id]&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># No task manupilation requested, build a table of tasks and display it</span>
         <span class="c1"># get the width of screen in characters</span>
         <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">()</span>
         <span class="c1"># create table header and list to hold tasks data and actions</span>
-        <span class="n">tasks_header</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Task ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Completion Date&#39;</span><span class="p">,</span> <span class="s1">&#39;Function&#39;</span><span class="p">,</span> <span class="s1">&#39;Arguments&#39;</span><span class="p">,</span> <span class="s1">&#39;KWARGS&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;persistent&#39;</span><span class="p">)</span>
+        <span class="n">tasks_header</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Task ID&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Completion Date&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Function&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Arguments&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;KWARGS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;persistent&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="c1"># empty list of lists, the size of the header</span>
         <span class="n">tasks_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks_header</span><span class="p">))]</span>
         <span class="k">for</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">_TASK_HANDLER</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># collect data from the task</span>
             <span class="n">t_comp_date</span><span class="p">,</span> <span class="n">t_func_mem_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coll_date_func</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-            <span class="n">t_func_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="n">t_func_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
             <span class="n">t_func_name</span> <span class="o">=</span> <span class="n">t_func_name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_func_name</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="n">t_args</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
             <span class="n">t_kwargs</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
@@ -1190,9 +1208,10 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks_header</span><span class="p">)):</span>
                 <span class="n">tasks_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="c1"># create and display the table</span>
-        <span class="n">tasks_table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="o">*</span><span class="n">tasks_header</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">tasks_list</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="s1">&#39;cells&#39;</span><span class="p">,</span>
-                              <span class="n">align</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
-        <span class="n">actions</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">switch</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">switch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_options</span><span class="p">)</span>
+        <span class="n">tasks_table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">tasks_header</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">tasks_list</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+        <span class="p">)</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">switch</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">switch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switch_options</span><span class="p">)</span>
         <span class="n">helptxt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Actions: </span><span class="si">{</span><span class="n">iter_to_str</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tasks_table</span><span class="p">)</span> <span class="o">+</span> <span class="n">helptxt</span><span class="p">)</span></div></div>
 </pre></div>

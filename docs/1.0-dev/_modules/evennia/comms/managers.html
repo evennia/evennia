@@ -257,7 +257,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_accounts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_hide_from_objects</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s1">&#39;script&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;script&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_receivers_scripts</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">CommError</span></div>
@@ -299,7 +299,7 @@
             <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_sender_accounts__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_accounts__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">styp</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
             <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_sender_objects__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_objects__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">styp</span> <span class="o">==</span> <span class="s1">&#39;script&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">styp</span> <span class="o">==</span> <span class="s2">&quot;script&quot;</span><span class="p">:</span>
             <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_sender_scripts__pk</span><span class="o">=</span><span class="n">spk</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sender_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">()</span>
@@ -308,16 +308,16 @@
         <span class="k">if</span> <span class="n">receiver</span><span class="p">:</span>
             <span class="n">rpk</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">pk</span>
         <span class="k">if</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s2">&quot;account&quot;</span><span class="p">:</span>
-            <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_accounts__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_accounts__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">))</span>
+            <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_accounts__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_accounts__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
             <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_objects__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Q</span><span class="p">(</span><span class="n">db_hide_from_objects__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s1">&#39;script&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s2">&quot;script&quot;</span><span class="p">:</span>
             <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">(</span><span class="n">db_receivers_scripts__pk</span><span class="o">=</span><span class="n">rpk</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">rtyp</span> <span class="o">==</span> <span class="s2">&quot;channel&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
                 <span class="s2">&quot;Msg.objects.search don&#39;t accept channel recipients since &quot;</span>
-                <span class="s2">&quot;Channels no longer accepts Msg objects.&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;Channels no longer accepts Msg objects.&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">receiver_restrict</span> <span class="o">=</span> <span class="n">Q</span><span class="p">()</span>
         <span class="c1"># filter by full text</span>
@@ -331,8 +331,9 @@
     <span class="c1"># back-compatibility alias</span>
     <span class="n">message_search</span> <span class="o">=</span> <span class="n">search_message</span>
 
-<div class="viewcode-block" id="MsgManager.create_message"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.create_message">[docs]</a>    <span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="MsgManager.create_message"><a class="viewcode-back" href="../../../api/evennia.comms.managers.html#evennia.comms.comms.MsgManager.create_message">[docs]</a>    <span class="k">def</span> <span class="nf">create_message</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">senderobj</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">receivers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new communication Msg. Msgs represent a unit of</span>
 <span class="sd">        database-persistent communication between entites.</span>
@@ -357,7 +358,7 @@
 <span class="sd">            it&#39;s up to the command definitions to limit this as desired.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;channels&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;channels&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
                 <span class="s2">&quot;create_message() does not accept &#39;channel&#39; kwarg anymore &quot;</span>
                 <span class="s2">&quot;- channels no longer accept Msg objects.&quot;</span>
@@ -380,6 +381,7 @@
 
         <span class="n">new_message</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">new_message</span></div></div>
+
 
 <span class="c1">#</span>
 <span class="c1"># Channel manager</span>

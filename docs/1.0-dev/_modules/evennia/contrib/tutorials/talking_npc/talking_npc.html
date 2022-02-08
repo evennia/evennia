@@ -107,8 +107,10 @@
 
 
 <div class="viewcode-block" id="info3"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.talking_npc.talking_npc.html#evennia.contrib.tutorials.talking_npc.talking_npc.info3">[docs]</a><span class="k">def</span> <span class="nf">info3</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&#39;Well ... I&#39;m sort of busy so, have to go. NPC business. &quot;</span>
-            <span class="s2">&quot;Important stuff. You wouldn&#39;t understand.&#39;&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;&#39;Well ... I&#39;m sort of busy so, have to go. NPC business. &quot;</span>
+        <span class="s2">&quot;Important stuff. You wouldn&#39;t understand.&#39;&quot;</span>
+    <span class="p">)</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Oookay ... I won&#39;t keep you. Bye.&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;END&quot;</span><span class="p">},</span>
@@ -133,15 +135,15 @@
 
 <div class="viewcode-block" id="CmdTalk"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.talking_npc.talking_npc.html#evennia.contrib.tutorials.talking_npc.talking_npc.CmdTalk">[docs]</a><span class="k">class</span> <span class="nc">CmdTalk</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">   Talks to an npc</span>
+<span class="sd">    Talks to an npc</span>
 
-<span class="sd">   Usage:</span>
-<span class="sd">     talk</span>
+<span class="sd">    Usage:</span>
+<span class="sd">      talk</span>
 
-<span class="sd">   This command is only available if a talkative non-player-character</span>
-<span class="sd">   (NPC) is actually present. It will strike up a conversation with</span>
-<span class="sd">   that NPC and give you options on what to talk about.</span>
-<span class="sd">   &quot;&quot;&quot;</span>
+<span class="sd">    This command is only available if a talkative non-player-character</span>
+<span class="sd">    (NPC) is actually present. It will strike up a conversation with</span>
+<span class="sd">    that NPC and give you options on what to talk about.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;talk&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
@@ -155,8 +157,11 @@
 
         <span class="c1"># Initiate the menu. Change this if you are putting this on</span>
         <span class="c1"># some other custom NPC class.</span>
-        <span class="n">EvMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;evennia.contrib.tutorials.talking_npc.talking_npc&quot;</span><span class="p">,</span>
-               <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;menu_start_node&quot;</span><span class="p">)</span></div></div>
+        <span class="n">EvMenu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span>
+            <span class="s2">&quot;evennia.contrib.tutorials.talking_npc.talking_npc&quot;</span><span class="p">,</span>
+            <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;menu_start_node&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TalkingCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.talking_npc.talking_npc.html#evennia.contrib.tutorials.talking_npc.talking_npc.TalkingCmdSet">[docs]</a><span class="k">class</span> <span class="nc">TalkingCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>

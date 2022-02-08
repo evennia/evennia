@@ -83,11 +83,15 @@
 <span class="sd">            obj (Object):  The object on which the</span>
 <span class="sd">                handler is defined</span>
 
+<span class="sd">        Notes:</span>
+<span class="sd">            This was changed from using `set` to using `dict` internally</span>
+<span class="sd">            in order to retain insertion order.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_idcache</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__instance_cache__</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.load"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -105,10 +109,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="p">{</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="p">{</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">][</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.get"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -123,11 +127,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">content_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">pks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">content_type</span><span class="p">]</span>
+            <span class="n">pks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">content_type</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span>
+            <span class="n">pks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
-            <span class="n">pks</span> <span class="o">=</span> <span class="n">pks</span> <span class="o">-</span> <span class="p">{</span><span class="n">excl</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">excl</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">exclude</span><span class="p">)}</span>
+            <span class="n">pks</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pks</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="n">excl</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">excl</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">exclude</span><span class="p">)}</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_idcache</span><span class="p">[</span><span class="n">pk</span><span class="p">]</span> <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">pks</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -149,9 +153,9 @@
 <span class="sd">            obj (Object): object to add</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">][</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.remove"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -161,15 +165,10 @@
 <span class="sd">            obj (Object): object to remove</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="c1"># not in pk cache, but can happen deletions happens</span>
-            <span class="c1"># remotely from out-of-thread.</span>
-            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">_content_types</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span><span class="p">[</span><span class="n">ctype</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ContentsHandler.clear"><a class="viewcode-back" href="../../../api/evennia.objects.models.html#evennia.objects.models.ContentsHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -177,7 +176,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pkcache</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_typecache</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span></div></div>
 
 

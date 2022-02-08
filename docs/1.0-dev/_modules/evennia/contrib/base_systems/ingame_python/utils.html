@@ -215,7 +215,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">seconds</span><span class="p">,</span> <span class="n">usual</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">get_next_wait</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
     <span class="n">script</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span>
-        <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">seconds</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span>
+        <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript&quot;</span><span class="p">,</span>
+        <span class="n">interval</span><span class="o">=</span><span class="n">seconds</span><span class="p">,</span>
+        <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">script</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
     <span class="n">script</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;event on </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>

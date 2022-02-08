@@ -83,8 +83,10 @@
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
+
 <span class="n">django</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 <span class="kn">import</span> <span class="nn">evennia</span>  <span class="c1"># noqa</span>
+
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>  <span class="c1"># noqa</span>
@@ -256,6 +258,7 @@
 <span class="sd">    with the receive time on both ends.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;dummyrunner_echo_response&quot;</span>
 
 <div class="viewcode-block" id="CmdDummyRunnerEchoResponse.func"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.CmdDummyRunnerEchoResponse.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -270,8 +273,10 @@
 <span class="sd">    Dummyrunner injected cmdset.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="DummyRunnerCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyRunnerCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdDummyRunnerEchoResponse</span><span class="p">())</span></div></div>
+
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Helper functions</span>
@@ -327,6 +332,7 @@
 <span class="c1"># Client classes</span>
 <span class="c1"># ------------------------------------------------------------</span>
 
+
 <div class="viewcode-block" id="DummyClient"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient">[docs]</a><span class="k">class</span> <span class="nc">DummyClient</span><span class="p">(</span><span class="n">telnet</span><span class="o">.</span><span class="n">StatefulTelnetProtocol</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles connection to a running Evennia server,</span>
@@ -338,11 +344,13 @@
 <div class="viewcode-block" id="DummyClient.report"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">clientkey</span><span class="p">):</span>
         <span class="n">pad</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">25</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
         <span class="n">tim</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_timestamp</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">clientkey</span><span class="si">}{</span><span class="n">pad</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
-              <span class="sa">f</span><span class="s2">&quot;conn: </span><span class="si">{</span><span class="n">NCONNECTED</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
-              <span class="sa">f</span><span class="s2">&quot;welcome screen: </span><span class="si">{</span><span class="n">NLOGIN_SCREEN</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
-              <span class="sa">f</span><span class="s2">&quot;authing: </span><span class="si">{</span><span class="n">NLOGGING_IN</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
-              <span class="sa">f</span><span class="s2">&quot;loggedin/tot: </span><span class="si">{</span><span class="n">NLOGGED_IN</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">NCLIENTS</span><span class="si">}</span><span class="s2"> (after </span><span class="si">{</span><span class="n">tim</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">clientkey</span><span class="si">}{</span><span class="n">pad</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;conn: </span><span class="si">{</span><span class="n">NCONNECTED</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;welcome screen: </span><span class="si">{</span><span class="n">NLOGIN_SCREEN</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;authing: </span><span class="si">{</span><span class="n">NLOGGING_IN</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;loggedin/tot: </span><span class="si">{</span><span class="n">NLOGGED_IN</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">NCLIENTS</span><span class="si">}</span><span class="s2"> (after </span><span class="si">{</span><span class="n">tim</span><span class="si">}</span><span class="s2">s)&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DummyClient.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -384,7 +392,7 @@
             <span class="c1"># (unclear why this would be - overload?)</span>
             <span class="c1"># try sending a look to get something to start with</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;?? retrying welcome screen&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
             <span class="c1"># make sure to check again later</span>
             <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_welcome_screen</span><span class="p">)</span>
 
@@ -405,8 +413,10 @@
         <span class="n">TOTAL_LAG_MEASURES</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">TIME_ALL_LOGIN</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.. running 30s average: ~</span><span class="si">{</span><span class="n">avgrate</span><span class="si">}</span><span class="s2"> actions/s &quot;</span>
-              <span class="sa">f</span><span class="s2">&quot;lag: </span><span class="si">{</span><span class="n">lag</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s (in: </span><span class="si">{</span><span class="n">lag_in</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s, out: </span><span class="si">{</span><span class="n">lag_out</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;.. running 30s average: ~</span><span class="si">{</span><span class="n">avgrate</span><span class="si">}</span><span class="s2"> actions/s &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;lag: </span><span class="si">{</span><span class="n">lag</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s (in: </span><span class="si">{</span><span class="n">lag_in</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s, out: </span><span class="si">{</span><span class="n">lag_out</span><span class="si">:</span><span class="s2">.2</span><span class="si">}</span><span class="s2">s)&quot;</span>
+        <span class="p">)</span>
 
         <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_print_statistics</span><span class="p">)</span>
 
@@ -435,7 +445,7 @@
                 <span class="c1"># negotiation)</span>
                 <span class="c1"># start client tick</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
-                <span class="n">df</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">TIMESTEP</span> <span class="o">*</span> <span class="mf">0.001</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">TIMESTEP</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">TIMESTEP</span> <span class="o">*</span> <span class="mf">0.001</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">TIMESTEP</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
                 <span class="c1"># dither next attempt with random time</span>
                 <span class="n">timestep</span> <span class="o">=</span> <span class="n">TIMESTEP</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">df</span> <span class="o">+</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">df</span><span class="p">))</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">timestep</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
@@ -519,7 +529,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logging_out</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;-&gt; logout/disconnect (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">istep</span><span class="si">}</span><span class="s2"> actions)&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="DummyClient.step"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -563,7 +573,7 @@
                 <span class="c1"># the send as possible</span>
                 <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timestamp</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">action_started</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">istep</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -647,17 +657,19 @@
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="n">nclients</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">nclients</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="n">INFO_STARTING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">nclients</span><span class="o">=</span><span class="n">nclients</span><span class="p">,</span>
-        <span class="n">port</span><span class="o">=</span><span class="n">TELNET_PORT</span><span class="p">,</span>
-        <span class="n">idmapper_cache_size</span><span class="o">=</span><span class="n">IDMAPPER_CACHE_MAXSIZE</span><span class="p">,</span>
-        <span class="n">timestep</span><span class="o">=</span><span class="n">TIMESTEP</span><span class="p">,</span>
-        <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">TIMESTEP</span><span class="p">,</span>
-        <span class="n">chance_of_login</span><span class="o">=</span><span class="n">CHANCE_OF_LOGIN</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">chance_of_action</span><span class="o">=</span><span class="n">CHANCE_OF_ACTION</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">avg_rate</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">TIMESTEP</span><span class="p">)</span> <span class="o">*</span> <span class="n">CHANCE_OF_ACTION</span><span class="p">,</span>
-        <span class="n">avg_rate_total</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">TIMESTEP</span><span class="p">)</span> <span class="o">*</span> <span class="n">CHANCE_OF_ACTION</span> <span class="o">*</span> <span class="n">nclients</span>
-    <span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="n">INFO_STARTING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">nclients</span><span class="o">=</span><span class="n">nclients</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">TELNET_PORT</span><span class="p">,</span>
+            <span class="n">idmapper_cache_size</span><span class="o">=</span><span class="n">IDMAPPER_CACHE_MAXSIZE</span><span class="p">,</span>
+            <span class="n">timestep</span><span class="o">=</span><span class="n">TIMESTEP</span><span class="p">,</span>
+            <span class="n">rate</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">TIMESTEP</span><span class="p">,</span>
+            <span class="n">chance_of_login</span><span class="o">=</span><span class="n">CHANCE_OF_LOGIN</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">chance_of_action</span><span class="o">=</span><span class="n">CHANCE_OF_ACTION</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">avg_rate</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">TIMESTEP</span><span class="p">)</span> <span class="o">*</span> <span class="n">CHANCE_OF_ACTION</span><span class="p">,</span>
+            <span class="n">avg_rate_total</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">TIMESTEP</span><span class="p">)</span> <span class="o">*</span> <span class="n">CHANCE_OF_ACTION</span> <span class="o">*</span> <span class="n">nclients</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="c1"># run the dummyrunner</span>
     <span class="n">TIME_START</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>

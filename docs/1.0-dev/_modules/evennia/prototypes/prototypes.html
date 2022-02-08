@@ -173,8 +173,9 @@
                 <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
                     <span class="c1"># attrs must be on form [(key, value, category, lockstr)]</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;Prototype&#39;s &#39;attr&#39; field must &quot;</span>
-                                         <span class="sa">f</span><span class="s2">&quot;be a list of tuples: </span><span class="si">{</span><span class="n">prototype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="s2">&quot;Prototype&#39;s &#39;attr&#39; field must &quot;</span> <span class="sa">f</span><span class="s2">&quot;be a list of tuples: </span><span class="si">{</span><span class="n">prototype</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
                     <span class="k">elif</span> <span class="n">attr</span><span class="p">:</span>
                         <span class="n">nattr</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">nattr</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -189,14 +190,15 @@
 
             <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span>
                 <span class="c1"># homogenize any prototype-parents embedded directly as dicts</span>
-                <span class="n">protparents</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prototype_parent&#39;</span><span class="p">,</span> <span class="p">[])</span>
+                <span class="n">protparents</span> <span class="o">=</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">,</span> <span class="p">[])</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protparents</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="n">protparents</span> <span class="o">=</span> <span class="p">[</span><span class="n">protparents</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">protparents</span><span class="p">):</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                         <span class="c1"># recursively homogenize directly embedded prototype parents</span>
                         <span class="n">homogenized_parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">custom_keys</span><span class="o">=</span><span class="n">custom_keys</span><span class="p">))</span>
+                            <span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">custom_keys</span><span class="o">=</span><span class="n">custom_keys</span><span class="p">)</span>
+                        <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># normal prototype-parent names are added as-is</span>
                         <span class="n">homogenized_parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
@@ -212,7 +214,7 @@
     <span class="k">if</span> <span class="n">homogenized_tags</span><span class="p">:</span>
         <span class="n">homogenized</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">homogenized_tags</span>
     <span class="k">if</span> <span class="n">homogenized_parents</span><span class="p">:</span>
-        <span class="n">homogenized</span><span class="p">[</span><span class="s1">&#39;prototype_parent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">homogenized_parents</span>
+        <span class="n">homogenized</span><span class="p">[</span><span class="s2">&quot;prototype_parent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">homogenized_parents</span>
 
     <span class="c1"># add required missing parts that had defaults before</span>
 
@@ -231,6 +233,7 @@
 
 
 <span class="c1"># module/dict-based prototypes</span>
+
 
 <div class="viewcode-block" id="load_module_prototypes"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.load_module_prototypes">[docs]</a><span class="k">def</span> <span class="nf">load_module_prototypes</span><span class="p">(</span><span class="o">*</span><span class="n">mod_or_prototypes</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -275,12 +278,16 @@
             <span class="c1"># prototype dicts that must have &#39;prototype_key&#39; set.</span>
             <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">prototype_list</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prot</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prototype read from </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">.PROTOTYPE_LIST &quot;</span>
-                                   <span class="sa">f</span><span class="s2">&quot;is not a dict (skipping): </span><span class="si">{</span><span class="n">prot</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Prototype read from </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">.PROTOTYPE_LIST &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;is not a dict (skipping): </span><span class="si">{</span><span class="n">prot</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
                     <span class="k">continue</span>
                 <span class="k">elif</span> <span class="s2">&quot;prototype_key&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prot</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prototype read from </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">.PROTOTYPE_LIST &quot;</span>
-                                   <span class="sa">f</span><span class="s2">&quot;is missing the &#39;prototype_key&#39; (skipping): </span><span class="si">{</span><span class="n">prot</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Prototype read from </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">.PROTOTYPE_LIST &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;is missing the &#39;prototype_key&#39; (skipping): </span><span class="si">{</span><span class="n">prot</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
                     <span class="k">continue</span>
                 <span class="n">prots</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">],</span> <span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prot</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -312,7 +319,8 @@
             <span class="p">{</span>
                 <span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">actual_prot_key</span><span class="p">,</span>
                 <span class="s2">&quot;prototype_desc&quot;</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_desc&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;prototype_desc&quot;</span> <span class="ow">in</span> <span class="n">prototype</span> <span class="k">else</span> <span class="p">(</span><span class="n">mod</span> <span class="ow">or</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)),</span>
+                    <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_desc&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;prototype_desc&quot;</span> <span class="ow">in</span> <span class="n">prototype</span> <span class="k">else</span> <span class="p">(</span><span class="n">mod</span> <span class="ow">or</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)</span>
+                <span class="p">),</span>
                 <span class="s2">&quot;prototype_locks&quot;</span><span class="p">:</span> <span class="p">(</span>
                     <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">]</span>
                     <span class="k">if</span> <span class="s2">&quot;prototype_locks&quot;</span> <span class="ow">in</span> <span class="n">prototype</span>
@@ -334,9 +342,11 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mod_or_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="c1"># a single prototype; we must make sure it has its key</span>
-            <span class="n">prototype_key</span> <span class="o">=</span> <span class="n">mod_or_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prototype_key&#39;</span><span class="p">)</span>
+            <span class="n">prototype_key</span> <span class="o">=</span> <span class="n">mod_or_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype_key</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The prototype </span><span class="si">{</span><span class="n">mod_or_prototype</span><span class="si">}</span><span class="s2"> does not contain a &#39;prototype_key&#39;&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The prototype </span><span class="si">{</span><span class="n">mod_or_prototype</span><span class="si">}</span><span class="s2"> does not contain a &#39;prototype_key&#39;&quot;</span>
+                <span class="p">)</span>
             <span class="n">prots</span> <span class="o">=</span> <span class="p">[(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">mod_or_dict</span><span class="p">)]</span>
             <span class="n">mod</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
@@ -349,7 +359,7 @@
         <span class="k">for</span> <span class="n">prototype_key</span><span class="p">,</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">prots</span><span class="p">:</span>
             <span class="n">prototype</span> <span class="o">=</span> <span class="n">_cleanup_prototype</span><span class="p">(</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">prot</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="n">mod</span><span class="p">)</span>
             <span class="c1"># the key can change since in-proto key is given prio over variable-name-based keys</span>
-            <span class="n">actual_prototype_key</span> <span class="o">=</span> <span class="n">prototype</span><span class="p">[</span><span class="s1">&#39;prototype_key&#39;</span><span class="p">]</span>
+            <span class="n">actual_prototype_key</span> <span class="o">=</span> <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">actual_prototype_key</span> <span class="ow">in</span> <span class="n">_MODULE_PROTOTYPES</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">override</span><span class="p">:</span>
                 <span class="c1"># don&#39;t override - useful to still let settings replace dynamic inserts</span>
@@ -504,23 +514,26 @@
     <span class="n">stored_prototype</span> <span class="o">=</span> <span class="n">DbPrototype</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_key__iexact</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">stored_prototype</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">{prototype_key}</span><span class="s2"> was not found.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">prototype_key</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">{prototype_key}</span><span class="s2"> was not found.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prototype_key</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="n">stored_prototype</span> <span class="o">=</span> <span class="n">stored_prototype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">caller</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">stored_prototype</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span>
-                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{caller}</span><span class="s2"> needs explicit &#39;edit&#39; permissions to &quot;</span>
-                  <span class="s2">&quot;delete prototype </span><span class="si">{prototype_key}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                      <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype_key</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">{caller}</span><span class="s2"> needs explicit &#39;edit&#39; permissions to &quot;</span>
+                    <span class="s2">&quot;delete prototype </span><span class="si">{prototype_key}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype_key</span><span class="o">=</span><span class="n">prototype_key</span><span class="p">)</span>
             <span class="p">)</span>
     <span class="n">stored_prototype</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="search_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.search_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_iterators</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">no_db</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="search_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.search_prototype">[docs]</a><span class="k">def</span> <span class="nf">search_prototype</span><span class="p">(</span>
+    <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_iterators</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_db</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find prototypes based on key and/or tags, or all prototypes.</span>
 
@@ -562,7 +575,7 @@
 
     <span class="c1"># prototype keys are always in lowecase</span>
     <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
-      <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="c1"># search module prototypes</span>
 
@@ -629,10 +642,10 @@
         <span class="n">nmodules</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">module_prototypes</span><span class="p">)</span>
         <span class="n">ndbprots</span> <span class="o">=</span> <span class="n">db_matches</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="k">if</span> <span class="n">db_matches</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span>
-                <span class="s2">&quot;Found </span><span class="si">{num}</span><span class="s2"> matching prototypes among </span><span class="si">{module_prototypes}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">num</span><span class="o">=</span><span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span><span class="p">,</span>
-                    <span class="n">module_prototypes</span><span class="o">=</span><span class="n">module_prototypes</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{num}</span><span class="s2"> matching prototypes among </span><span class="si">{module_prototypes}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">num</span><span class="o">=</span><span class="n">nmodules</span> <span class="o">+</span> <span class="n">ndbprots</span><span class="p">,</span> <span class="n">module_prototypes</span><span class="o">=</span><span class="n">module_prototypes</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">return_iterators</span><span class="p">:</span>
@@ -712,7 +725,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># get the correct slice, adjusted for the db-prototypes</span>
             <span class="n">pageno</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pageno</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_npages_db</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">modprot_list</span><span class="p">[</span><span class="n">pageno</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">:</span> <span class="n">pageno</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">]</span></div>
+            <span class="k">return</span> <span class="n">modprot_list</span><span class="p">[</span><span class="n">pageno</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="p">:</span> <span class="n">pageno</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="PrototypeEvMore.page_formatter"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.PrototypeEvMore.page_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">page_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -851,12 +864,15 @@
         <span class="k">if</span> <span class="n">is_prototype_base</span><span class="p">:</span>
             <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2"> requires `typeclass` &quot;</span> <span class="s2">&quot;or &#39;prototype_parent&#39;.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">)</span>
+                    <span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2"> can only be used as a mixin since it lacks &quot;</span>
-                  <span class="s2">&quot;&#39;typeclass&#39; or &#39;prototype_parent&#39; keys.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">(</span>
+                    <span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2"> can only be used as a mixin since it lacks &quot;</span>
+                    <span class="s2">&quot;&#39;typeclass&#39; or &#39;prototype_parent&#39; keys.&quot;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">)</span>
             <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">strict</span> <span class="ow">and</span> <span class="n">typeclass</span><span class="p">:</span>
@@ -864,9 +880,10 @@
             <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{err}</span><span class="s2">: Prototype </span><span class="si">{protkey}</span><span class="s2"> is based on typeclass </span><span class="si">{typeclass}</span><span class="s2">, &quot;</span>
-                  <span class="s2">&quot;which could not be imported!&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                      <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">{err}</span><span class="s2">: Prototype </span><span class="si">{protkey}</span><span class="s2"> is based on typeclass </span><span class="si">{typeclass}</span><span class="s2">, &quot;</span>
+                    <span class="s2">&quot;which could not be imported!&quot;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="n">typeclass</span><span class="p">)</span>
             <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">prototype_parent</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype_parent</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -882,20 +899,24 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">protstring</span> <span class="o">=</span> <span class="n">protstring</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">protkey</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">protstring</span> <span class="o">==</span> <span class="n">protkey</span><span class="p">:</span>
-                <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2"> tries to parent itself.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">))</span>
+                <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2"> tries to parent itself.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="n">protparent</span> <span class="o">=</span> <span class="n">protparents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">protstring</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">protparent</span><span class="p">:</span>
                 <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2">&#39;s `prototype_parent` (named &#39;</span><span class="si">{parent}</span><span class="s2">&#39;) &quot;</span>
-                      <span class="s2">&quot;was not found.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">protstring</span><span class="p">)</span>
+                    <span class="n">_</span><span class="p">(</span>
+                        <span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2">&#39;s `prototype_parent` (named &#39;</span><span class="si">{parent}</span><span class="s2">&#39;) &quot;</span>
+                        <span class="s2">&quot;was not found.&quot;</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">protstring</span><span class="p">)</span>
                 <span class="p">)</span>
 
         <span class="c1"># check for infinite recursion</span>
         <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;visited&quot;</span><span class="p">]:</span>
             <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{protkey}</span><span class="s2"> has infinite nesting of prototypes.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span> <span class="ow">or</span> <span class="n">prototype</span><span class="p">)</span>
+                    <span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span> <span class="ow">or</span> <span class="n">prototype</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]:</span>
@@ -917,9 +938,11 @@
     <span class="c1"># if we get back to the current level without a typeclass it&#39;s an error.</span>
     <span class="k">if</span> <span class="n">strict</span> <span class="ow">and</span> <span class="n">is_prototype_base</span> <span class="ow">and</span> <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;typeclass&quot;</span><span class="p">]:</span>
         <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2"> has no `typeclass` defined anywhere in its parent</span><span class="se">\n</span><span class="s2"> &quot;</span>
-              <span class="s2">&quot;chain. Add `typeclass`, or a `prototype_parent` pointing to a &quot;</span>
-              <span class="s2">&quot;prototype with a typeclass.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">(</span>
+                <span class="s2">&quot;Prototype </span><span class="si">{protkey}</span><span class="s2"> has no `typeclass` defined anywhere in its parent</span><span class="se">\n</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;chain. Add `typeclass`, or a `prototype_parent` pointing to a &quot;</span>
+                <span class="s2">&quot;prototype with a typeclass.&quot;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protkey</span><span class="o">=</span><span class="n">protkey</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">_flags</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -943,8 +966,9 @@
     <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;prototype_locks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prototype_locks</span></div>
 
 
-<div class="viewcode-block" id="protfunc_parser"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.protfunc_parser">[docs]</a><span class="k">def</span> <span class="nf">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">available_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="protfunc_parser"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.protfunc_parser">[docs]</a><span class="k">def</span> <span class="nf">protfunc_parser</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">,</span> <span class="n">available_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a prototype value string for a protfunc and process it.</span>
 
@@ -1171,8 +1195,9 @@
     <span class="n">stype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">stype</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span><span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">stype</span><span class="p">([</span><span class="n">value_to_obj_or_any</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">dbid_to_obj</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ObjectDB</span><span class="p">)</span></div>

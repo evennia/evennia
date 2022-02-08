@@ -51,8 +51,10 @@
 
 <div class="viewcode-block" id="TestGeneralContext.test_general_context"><a class="viewcode-back" href="../../../../api/evennia.web.utils.tests.html#evennia.web.utils.tests.TestGeneralContext.test_general_context">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.GAME_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;test_name&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.GAME_SLOGAN&quot;</span><span class="p">,</span> <span class="s2">&quot;test_game_slogan&quot;</span><span class="p">)</span>
-    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED&quot;</span><span class="p">,</span>
-           <span class="s2">&quot;websocket_client_enabled_testvalue&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span>
+        <span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;websocket_client_enabled_testvalue&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBCLIENT_ENABLED&quot;</span><span class="p">,</span> <span class="s2">&quot;webclient_enabled_testvalue&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;websocket_client_port_testvalue&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.web.utils.general_context.WEBSOCKET_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;websocket_client_url_testvalue&quot;</span><span class="p">)</span>
@@ -81,7 +83,7 @@
                 <span class="s2">&quot;websocket_port&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket_client_port_testvalue&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;websocket_url&quot;</span><span class="p">:</span> <span class="s2">&quot;websocket_client_url_testvalue&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;rest_api_enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">&quot;server_hostname&quot;</span><span class="p">:</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+                <span class="s2">&quot;server_hostname&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;ssh_enabled&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s2">&quot;ssh_ports&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s2">&quot;telnet_enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>

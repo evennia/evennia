@@ -54,10 +54,8 @@
 <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
 
 
-<div class="viewcode-block" id="AuditingTest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span>
-    <span class="n">AUDIT_MASKS</span><span class="o">=</span><span class="p">[])</span>
+<div class="viewcode-block" id="AuditingTest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="n">AUDIT_MASKS</span><span class="o">=</span><span class="p">[])</span>
 <span class="k">class</span> <span class="nc">AuditingTest</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
-
 <div class="viewcode-block" id="AuditingTest.setup_session"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest.setup_session">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.sessionhandler._ServerSession&quot;</span><span class="p">,</span> <span class="n">AuditedServerSession</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">setup_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Overrides default one in EvenniaTest&quot;&quot;&quot;</span>
@@ -71,8 +69,10 @@
         <span class="n">SESSIONS</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span></div>
 
-<div class="viewcode-block" id="AuditingTest.test_mask"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest.test_mask">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_CALLBACK&quot;</span><span class="p">,</span>
-           <span class="s2">&quot;evennia.contrib.utils.auditing.outputs.to_syslog&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="AuditingTest.test_mask"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest.test_mask">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span>
+        <span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_CALLBACK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;evennia.contrib.utils.auditing.outputs.to_syslog&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_IN&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_OUT&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -142,8 +142,10 @@
         <span class="k">for</span> <span class="n">secret</span> <span class="ow">in</span> <span class="n">secrets</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">secret</span><span class="p">),</span> <span class="n">secret</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AuditingTest.test_audit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest.test_audit">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_CALLBACK&quot;</span><span class="p">,</span>
-           <span class="s2">&quot;evennia.contrib.utils.auditing.outputs.to_syslog&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="AuditingTest.test_audit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest.test_audit">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span>
+        <span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_CALLBACK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;evennia.contrib.utils.auditing.outputs.to_syslog&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_IN&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.utils.auditing.server.AUDIT_OUT&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_audit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

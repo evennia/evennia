@@ -304,7 +304,8 @@
 <span class="k">def</span> <span class="nf">_format_protfuncs</span><span class="p">():</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">sorted_funcs</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">protlib</span><span class="o">.</span><span class="n">FUNC_PARSER</span><span class="o">.</span><span class="n">callables</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">protlib</span><span class="o">.</span><span class="n">FUNC_PARSER</span><span class="o">.</span><span class="n">callables</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="p">]</span>
     <span class="k">for</span> <span class="n">protfunc_name</span><span class="p">,</span> <span class="n">protfunc</span> <span class="ow">in</span> <span class="n">sorted_funcs</span><span class="p">:</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -2155,8 +2156,9 @@
     <span class="n">objects</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;objects&quot;</span><span class="p">]</span>
     <span class="n">back_node</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;back_node&quot;</span><span class="p">]</span>
     <span class="n">diff</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">num_changed</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="n">diff</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">objects</span><span class="p">,</span>
-                                                              <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+    <span class="n">num_changed</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">batch_update_objects_with_prototype</span><span class="p">(</span>
+        <span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="n">diff</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">objects</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span>
+    <span class="p">)</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|g</span><span class="si">{num}</span><span class="s2"> objects were updated successfully.|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">num_changed</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">back_node</span>
 
@@ -2396,7 +2398,7 @@
 
 
 <div class="viewcode-block" id="node_prototype_save"><a class="viewcode-back" href="../../../api/evennia.prototypes.menus.html#evennia.prototypes.menus.node_prototype_save">[docs]</a><span class="k">def</span> <span class="nf">node_prototype_save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save prototype to disk &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Save prototype to disk&quot;&quot;&quot;</span>
     <span class="c1"># these are only set if we selected &#39;yes&#39; to save on a previous pass</span>
     <span class="n">prototype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="c1"># set to True/False if answered, None if first pass</span>

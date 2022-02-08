@@ -146,7 +146,7 @@
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Identifier for single external sender, for use with senders &quot;</span>
-                  <span class="s2">&quot;not represented by a regular database model.&quot;</span>
+        <span class="s2">&quot;not represented by a regular database model.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">db_receivers_accounts</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
@@ -179,7 +179,7 @@
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Identifier for single external receiver, for use with recievers &quot;</span>
-                  <span class="s2">&quot;not represented by a regular database model.&quot;</span>
+        <span class="s2">&quot;not represented by a regular database model.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># header could be used for meta-info about the message if your system needs</span>
@@ -328,7 +328,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">receivers</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">db_receiver_external</span> <span class="o">=</span> <span class="n">receivers</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;db_receiver_external&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_receiver_external&quot;</span><span class="p">])</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">receivers</span><span class="p">):</span>

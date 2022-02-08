@@ -67,6 +67,7 @@
 <span class="sd">    Serialize Attribute views.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">value_display</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
     <span class="n">db_value</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">write_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -193,6 +194,7 @@
 <span class="sd">    Shortened serializer for list views.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">shared_fields</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;id&quot;</span><span class="p">,</span>
         <span class="s2">&quot;db_key&quot;</span><span class="p">,</span>
@@ -257,6 +259,7 @@
 <span class="sd">    Shortened representation for listings.]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="ObjectListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ObjectListSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultObject</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
@@ -303,10 +306,12 @@
 <span class="sd">    A shortened form for listing.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="AccountListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.AccountListSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">DefaultAccount</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="n">fi</span> <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">TypeclassListSerializerMixin</span><span class="o">.</span><span class="n">shared_fields</span> <span class="k">if</span> <span class="n">fi</span> <span class="o">!=</span> <span class="s2">&quot;db_key&quot;</span><span class="p">]</span>
+            <span class="n">fi</span> <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">TypeclassListSerializerMixin</span><span class="o">.</span><span class="n">shared_fields</span> <span class="k">if</span> <span class="n">fi</span> <span class="o">!=</span> <span class="s2">&quot;db_key&quot;</span>
+        <span class="p">]</span>
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
 
 
@@ -315,6 +320,7 @@
 <span class="sd">    Serializing Account.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">attributes</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
@@ -337,6 +343,7 @@
 <span class="sd">    Shortened form for listing.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="ScriptListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.ScriptListSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ScriptDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
@@ -354,26 +361,37 @@
 <span class="sd">    Serializers Help entries (not a typeclass).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">tags</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">()</span>
 
 <div class="viewcode-block" id="HelpSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">HelpEntry</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_entrytext&quot;</span><span class="p">,</span> <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="s2">&quot;aliases&quot;</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;db_key&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;db_entrytext&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;aliases&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
+
 
 <div class="viewcode-block" id="HelpListSerializer"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpListSerializer">[docs]</a><span class="k">class</span> <span class="nc">HelpListSerializer</span><span class="p">(</span><span class="n">TypeclassListSerializerMixin</span><span class="p">,</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shortened form for listings.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="HelpListSerializer.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.serializers.html#evennia.web.api.serializers.HelpListSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">HelpEntry</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;db_key&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span></div></div>
 </pre></div>

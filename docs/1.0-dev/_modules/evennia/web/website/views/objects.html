@@ -53,8 +53,7 @@
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">messages</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 <span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
-<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">EvenniaCreateView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">,</span> <span class="n">EvenniaUpdateView</span><span class="p">,</span> <span class="n">EvenniaDetailView</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">EvenniaCreateView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">,</span> <span class="n">EvenniaUpdateView</span><span class="p">,</span> <span class="n">EvenniaDetailView</span>
 
 
 <div class="viewcode-block" id="ObjectDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDetailView</span><span class="p">(</span><span class="n">EvenniaDetailView</span><span class="p">):</span>
@@ -77,8 +76,9 @@
     <span class="c1">#</span>
     <span class="c1"># So when you extend it, this line should look simple, like:</span>
     <span class="c1"># model = Object</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
-                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span>
+    <span class="p">)</span>
 
     <span class="c1"># What HTML template you wish to use to display this page.</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/object_detail.html&quot;</span>
@@ -181,8 +181,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
-                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span><span class="p">)</span></div>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ObjectDeleteView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDeleteView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ObjectDetailView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">):</span>
@@ -197,8 +198,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
-                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span>
+    <span class="p">)</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;website/object_confirm_delete.html&quot;</span>
 
     <span class="c1"># -- Evennia constructs --</span>
@@ -220,8 +222,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span>
-                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_OBJECT_TYPECLASS</span>
+    <span class="p">)</span>
 
     <span class="c1"># -- Evennia constructs --</span>
     <span class="n">access_type</span> <span class="o">=</span> <span class="s2">&quot;edit&quot;</span>

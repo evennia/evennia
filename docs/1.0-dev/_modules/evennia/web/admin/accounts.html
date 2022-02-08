@@ -120,13 +120,13 @@
     <span class="p">)</span>
 
     <span class="n">is_superuser</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
-        <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Superuser status&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Superuser status&quot;</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Superusers bypass all in-game locks and has all &quot;</span>
-                  <span class="s2">&quot;permissions without explicitly assigning them. Usually &quot;</span>
-                  <span class="s2">&quot;only one superuser (user #1) is needed and only a superuser &quot;</span>
-                  <span class="s2">&quot;can create another superuser.&lt;BR&gt;&quot;</span>
-                  <span class="s2">&quot;Only Superusers can change the user/group permissions below.&quot;</span>
+        <span class="s2">&quot;permissions without explicitly assigning them. Usually &quot;</span>
+        <span class="s2">&quot;only one superuser (user #1) is needed and only a superuser &quot;</span>
+        <span class="s2">&quot;can create another superuser.&lt;BR&gt;&quot;</span>
+        <span class="s2">&quot;Only Superusers can change the user/group permissions below.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
 <div class="viewcode-block" id="AccountChangeForm.clean_username"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.AccountChangeForm.clean_username">[docs]</a>    <span class="k">def</span> <span class="nf">clean_username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -207,11 +207,13 @@
     <span class="n">model</span> <span class="o">=</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">through</span>
     <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;accountdb&quot;</span></div>
 
+
 <div class="viewcode-block" id="ObjectPuppetInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline">[docs]</a><span class="k">class</span> <span class="nc">ObjectPuppetInline</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">StackedInline</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inline creation of puppet-Object in Account.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">ObjectCreateForm</span>
 
     <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Puppeted Object&quot;</span>
@@ -227,19 +229,26 @@
                 <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">(</span>
                     <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">),</span>
                     <span class="p">(</span><span class="s2">&quot;db_location&quot;</span><span class="p">,</span> <span class="s2">&quot;db_home&quot;</span><span class="p">,</span> <span class="s2">&quot;db_destination&quot;</span><span class="p">),</span>
-                     <span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Object currently puppeted by the account (note that this &quot;</span>
-                               <span class="s2">&quot;will go away if account logs out or unpuppets)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;will go away if account logs out or unpuppets)&quot;</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">extra</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span> <span class="s2">&quot;db_destination&quot;</span><span class="p">,</span>
-                       <span class="s2">&quot;db_location&quot;</span><span class="p">,</span> <span class="s2">&quot;db_home&quot;</span><span class="p">,</span> <span class="s2">&quot;db_account&quot;</span><span class="p">,</span>
-                       <span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">,</span> <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">)</span>
+    <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_destination&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_location&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_home&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_account&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># disable adding/deleting this inline - read-only!</span>
 <div class="viewcode-block" id="ObjectPuppetInline.has_add_permission"><a class="viewcode-back" href="../../../../api/evennia.web.admin.accounts.html#evennia.web.admin.accounts.ObjectPuppetInline.has_add_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_add_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -255,7 +264,15 @@
 <span class="sd">    This is the main creation screen for Users/accounts</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;is_staff&quot;</span><span class="p">,</span> <span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span> <span class="s2">&quot;db_date_created&quot;</span><span class="p">)</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;is_staff&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">)</span>
     <span class="n">form</span> <span class="o">=</span> <span class="n">AccountChangeForm</span>
     <span class="n">add_form</span> <span class="o">=</span> <span class="n">AccountCreationForm</span>
@@ -319,6 +336,7 @@
         <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
 
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbserialize</span><span class="o">.</span><span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
+
     <span class="n">serialized_string</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;Copy &amp; paste this string into an Attribute&#39;s `value` field to store this account there.&quot;</span>
     <span class="p">)</span>
@@ -331,8 +349,8 @@
         <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span>
             <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="s1">&#39;&lt;a href=&quot;</span><span class="si">{url}</span><span class="s1">&quot;&gt;</span><span class="si">{name}</span><span class="s1">&lt;/a&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">url</span><span class="o">=</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:objects_objectdb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]),</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
+                    <span class="n">url</span><span class="o">=</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:objects_objectdb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">db_key</span>
+                <span class="p">)</span>
                 <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_account</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
@@ -358,9 +376,7 @@
         <span class="n">form</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_form</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">disabled_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
-            <span class="n">disabled_fields</span> <span class="o">|=</span> <span class="p">{</span>
-                <span class="s1">&#39;is_superuser&#39;</span><span class="p">,</span> <span class="s1">&#39;user_permissions&#39;</span><span class="p">,</span> <span class="s1">&#39;user_groups&#39;</span>
-            <span class="p">}</span>
+            <span class="n">disabled_fields</span> <span class="o">|=</span> <span class="p">{</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span> <span class="s2">&quot;user_permissions&quot;</span><span class="p">,</span> <span class="s2">&quot;user_groups&quot;</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">disabled_fields</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">form</span><span class="o">.</span><span class="n">base_fields</span><span class="p">:</span>
                 <span class="n">form</span><span class="o">.</span><span class="n">base_fields</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>

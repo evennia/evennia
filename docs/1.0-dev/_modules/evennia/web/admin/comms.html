@@ -59,8 +59,10 @@
 <span class="sd">    Inline display for Msg-tags.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">model</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">db_tags</span><span class="o">.</span><span class="n">through</span>
     <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;msg&quot;</span></div>
+
 
 <div class="viewcode-block" id="MsgForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.comms.html#evennia.web.admin.comms.MsgForm">[docs]</a><span class="k">class</span> <span class="nc">MsgForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -77,7 +79,7 @@
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">}),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Optional header for the message; it could be a title or &quot;</span>
-                  <span class="s2">&quot;metadata depending on msg-use.&quot;</span>
+        <span class="s2">&quot;metadata depending on msg-use.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
@@ -88,7 +90,6 @@
         <span class="s2">&quot;This string should be on the form &quot;</span>
         <span class="s2">&quot;&lt;i&gt;type:lockfunction(args);type2:lockfunction2(args);...&quot;</span><span class="p">,</span>
     <span class="p">)</span></div>
-
 
 
 <div class="viewcode-block" id="MsgAdmin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.comms.html#evennia.web.admin.comms.MsgAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Msg</span><span class="p">)</span>
@@ -109,11 +110,19 @@
     <span class="p">)</span>
     <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;start_of_message&quot;</span><span class="p">)</span>
     <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;-id&quot;</span><span class="p">]</span>
-    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;=id&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_message&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;^db_sender_accounts__db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_sender_objects__db_key&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;^db_sender_scripts__db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_sender_external&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;^db_receivers_accounts__db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_receivers_objects__db_key&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;^db_receivers_scripts__db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_receiver_external&quot;</span><span class="p">]</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;=id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_date_created&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_message&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_sender_accounts__db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_sender_objects__db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_sender_scripts__db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_sender_external&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_receivers_accounts__db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_receivers_objects__db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_receivers_scripts__db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_receiver_external&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
     <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;serialized_string&quot;</span><span class="p">]</span>
     <span class="n">save_as</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">save_on_top</span> <span class="o">=</span> <span class="kc">True</span>
@@ -122,21 +131,36 @@
 
     <span class="n">raw_id_fields</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;db_sender_accounts&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;db_sender_objects&quot;</span><span class="p">,</span> <span class="s2">&quot;db_sender_scripts&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;db_receivers_accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;db_receivers_objects&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;db_receivers_scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;db_hide_from_accounts&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;db_hide_from_objects&quot;</span><span class="p">)</span>
+        <span class="s2">&quot;db_sender_objects&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_sender_scripts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_receivers_accounts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_receivers_objects&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_receivers_scripts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_hide_from_accounts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_hide_from_objects&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span>
             <span class="kc">None</span><span class="p">,</span>
             <span class="p">{</span>
                 <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="p">(</span><span class="s2">&quot;db_sender_accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;db_sender_objects&quot;</span><span class="p">,</span> <span class="s2">&quot;db_sender_scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;db_sender_external&quot;</span><span class="p">),</span>
-                    <span class="p">(</span><span class="s2">&quot;db_receivers_accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;db_receivers_objects&quot;</span><span class="p">,</span> <span class="s2">&quot;db_receivers_scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;db_receiver_external&quot;</span><span class="p">),</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;db_sender_accounts&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;db_sender_objects&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;db_sender_scripts&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;db_sender_external&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;db_receivers_accounts&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;db_receivers_objects&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;db_receivers_scripts&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;db_receiver_external&quot;</span><span class="p">,</span>
+                    <span class="p">),</span>
                     <span class="p">(</span><span class="s2">&quot;db_hide_from_accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;db_hide_from_objects&quot;</span><span class="p">),</span>
                     <span class="s2">&quot;db_header&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;db_message&quot;</span><span class="p">,</span> <span class="s2">&quot;serialized_string&quot;</span>
+                    <span class="s2">&quot;db_message&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;serialized_string&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">},</span>
         <span class="p">),</span>
@@ -146,12 +170,14 @@
         <span class="n">senders</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">senders</span> <span class="k">if</span> <span class="n">o</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">senders</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">senders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
     <span class="n">sender</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="s2">&quot;If multiple, only the first is shown.&quot;</span>
 
 <div class="viewcode-block" id="MsgAdmin.receiver"><a class="viewcode-back" href="../../../../api/evennia.web.admin.comms.html#evennia.web.admin.comms.MsgAdmin.receiver">[docs]</a>    <span class="k">def</span> <span class="nf">receiver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="n">receivers</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">receivers</span> <span class="k">if</span> <span class="n">o</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">receivers</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">receivers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
     <span class="n">receiver</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="s2">&quot;If multiple, only the first is shown.&quot;</span>
 
 <div class="viewcode-block" id="MsgAdmin.start_of_message"><a class="viewcode-back" href="../../../../api/evennia.web.admin.comms.html#evennia.web.admin.comms.MsgAdmin.start_of_message">[docs]</a>    <span class="k">def</span> <span class="nf">start_of_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -168,6 +194,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbserialize</span><span class="o">.</span><span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
 
     <span class="n">serialized_string</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="p">(</span>
@@ -184,7 +211,6 @@
         <span class="n">help_texts</span><span class="p">[</span><span class="s2">&quot;serialized_string&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialized_string</span><span class="o">.</span><span class="n">help_text</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;help_texts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">help_texts</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_form</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
-
 
 
 <div class="viewcode-block" id="ChannelAttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.comms.html#evennia.web.admin.comms.ChannelAttributeInline">[docs]</a><span class="k">class</span> <span class="nc">ChannelAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
@@ -212,6 +238,7 @@
 <span class="sd">    Form for accessing channels.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="ChannelForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.comms.html#evennia.web.admin.comms.ChannelForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">ChannelDB</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;__all__&quot;</span></div>
@@ -235,8 +262,14 @@
 
     <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">ChannelTagInline</span><span class="p">,</span> <span class="n">ChannelAttributeInline</span><span class="p">]</span>
     <span class="n">form</span> <span class="o">=</span> <span class="n">ChannelForm</span>
-    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;no_of_subscribers&quot;</span><span class="p">,</span> <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;db_date_created&quot;</span><span class="p">)</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;no_of_subscribers&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
     <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;-id&quot;</span><span class="p">,</span> <span class="s2">&quot;-db_key&quot;</span><span class="p">]</span>
     <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tags__db_key&quot;</span><span class="p">]</span>
@@ -254,7 +287,7 @@
                     <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;db_account_subscriptions&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;db_object_subscriptions&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;serialized_string&quot;</span>
+                    <span class="s2">&quot;serialized_string&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">},</span>
         <span class="p">),</span>
@@ -286,6 +319,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbserialize</span><span class="o">.</span><span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
 
     <span class="n">serialized_string</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="p">(</span>

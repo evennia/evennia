@@ -255,7 +255,7 @@
         <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span>
         <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;this defines what &#39;type&#39; of entity this is. This variable holds &quot;</span>
-                  <span class="s2">&quot;a Python path to a module with a valid Evennia Typeclass.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;a Python path to a module with a valid Evennia Typeclass.&quot;</span><span class="p">,</span>
         <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># Creation date. This is not changed once the object is created.</span>
@@ -265,19 +265,19 @@
         <span class="s2">&quot;locks&quot;</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;locks limit access to an entity. A lock is defined as a &#39;lock string&#39; &quot;</span>
-                  <span class="s2">&quot;on the form &#39;type:lockfunctions&#39;, defining what functionality is locked and &quot;</span>
-                  <span class="s2">&quot;how to determine access. Not defining a lock means no access is granted.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;on the form &#39;type:lockfunctions&#39;, defining what functionality is locked and &quot;</span>
+        <span class="s2">&quot;how to determine access. Not defining a lock means no access is granted.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># many2many relationships</span>
     <span class="n">db_attributes</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Attribute</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;attributes on this object. An attribute can hold any pickle-able &quot;</span>
-                  <span class="s2">&quot;python object (see docs for special cases).&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;python object (see docs for special cases).&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">db_tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Tag</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tags on this object. Tags are simple string markers to identify, &quot;</span>
-                  <span class="s2">&quot;group and alias objects.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group and alias objects.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Database manager</span>
@@ -526,6 +526,14 @@
     <span class="c1">#</span>
     <span class="c1"># Object manipulation methods</span>
     <span class="c1">#</span>
+
+<div class="viewcode-block" id="TypedObject.at_init"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when this object is loaded into cache. This is  more reliable</span>
+<span class="sd">        than to override `__init__`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="TypedObject.search"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.search">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

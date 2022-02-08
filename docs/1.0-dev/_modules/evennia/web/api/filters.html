@@ -154,9 +154,11 @@
 
 <div class="viewcode-block" id="AccountDBFilterSet.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.AccountDBFilterSet.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">AccountDB</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">fi</span> <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="p">(</span><span class="n">SHARED_FIELDS</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;db_is_connected&quot;</span><span class="p">,</span> <span class="s2">&quot;db_is_bot&quot;</span><span class="p">])</span>
-                  <span class="k">if</span> <span class="n">fi</span> <span class="o">!=</span> <span class="s1">&#39;db_key&#39;</span><span class="p">]</span></div></div>
-
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">fi</span>
+            <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="p">(</span><span class="n">SHARED_FIELDS</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;db_is_connected&quot;</span><span class="p">,</span> <span class="s2">&quot;db_is_bot&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">fi</span> <span class="o">!=</span> <span class="s2">&quot;db_key&quot;</span>
+        <span class="p">]</span></div></div>
 
 
 <div class="viewcode-block" id="ScriptDBFilterSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.filters.html#evennia.web.api.filters.ScriptDBFilterSet">[docs]</a><span class="k">class</span> <span class="nc">ScriptDBFilterSet</span><span class="p">(</span><span class="n">BaseTypeclassFilterSet</span><span class="p">):</span>
@@ -182,11 +184,10 @@
 <span class="sd">    Filter for help entries</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">name</span> <span class="o">=</span> <span class="n">CharFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;filter_name&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
     <span class="n">category</span> <span class="o">=</span> <span class="n">CharFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;filter_name&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;db_category&quot;</span><span class="p">)</span>
     <span class="n">alias</span> <span class="o">=</span> <span class="n">AliasFilter</span><span class="p">(</span><span class="n">lookup_expr</span><span class="o">=</span><span class="s2">&quot;iexact&quot;</span><span class="p">)</span></div>
-
-
 </pre></div>
 
             <div class="clearer"></div>

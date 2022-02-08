@@ -149,7 +149,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_file</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channelname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+                <span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channelname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_file</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.set_log_filename"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.set_log_filename">[docs]</a>    <span class="k">def</span> <span class="nf">set_log_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -497,8 +498,13 @@
         <span class="c1"># needing to use the `channel` command explicitly.</span>
         <span class="n">msg_nick_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_msg_nick_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
         <span class="n">msg_nick_replacement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_msg_nick_replacement</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channelname</span><span class="o">=</span><span class="n">chan_key</span><span class="p">)</span>
-        <span class="n">user</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">msg_nick_pattern</span><span class="p">,</span> <span class="n">msg_nick_replacement</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span>
-                             <span class="n">pattern_is_regex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">msg_nick_pattern</span><span class="p">,</span>
+            <span class="n">msg_nick_replacement</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inputline&quot;</span><span class="p">,</span>
+            <span class="n">pattern_is_regex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">chan_key</span> <span class="o">!=</span> <span class="n">alias</span><span class="p">:</span>
             <span class="c1"># this allows for using the alias for general channel lookups</span>
@@ -588,7 +594,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bypass_mute</span><span class="p">:</span>
             <span class="n">receivers</span> <span class="o">=</span> <span class="p">[</span><span class="n">receiver</span> <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">receivers</span> <span class="k">if</span> <span class="n">receiver</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutelist</span><span class="p">]</span>
 
-        <span class="n">send_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;senders&#39;</span><span class="p">:</span> <span class="n">senders</span><span class="p">,</span> <span class="s1">&#39;bypass_mute&#39;</span><span class="p">:</span> <span class="n">bypass_mute</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
+        <span class="n">send_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;senders&quot;</span><span class="p">:</span> <span class="n">senders</span><span class="p">,</span> <span class="s2">&quot;bypass_mute&quot;</span><span class="p">:</span> <span class="n">bypass_mute</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
 
         <span class="c1"># pre-send hook</span>
         <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_pre_msg</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span>
@@ -868,27 +874,37 @@
 
     <span class="c1"># TODO Evennia 1.0+ removed hooks. Remove in 1.1.</span>
 <div class="viewcode-block" id="DefaultChannel.message_transform"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.message_transform">[docs]</a>    <span class="k">def</span> <span class="nf">message_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.message_transform is no longer used in 1.0+. &quot;</span>
-                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Channel.message_transform is no longer used in 1.0+. &quot;</span>
+            <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.distribute_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.distribute_message">[docs]</a>    <span class="k">def</span> <span class="nf">distribute_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">online</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.distribute_message is no longer used in 1.0+.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.format_senders"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_senders">[docs]</a>    <span class="k">def</span> <span class="nf">format_senders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.format_senders is no longer used in 1.0+. &quot;</span>
-                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Channel.format_senders is no longer used in 1.0+. &quot;</span>
+            <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.pose_transform"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pose_transform">[docs]</a>    <span class="k">def</span> <span class="nf">pose_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">sender_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.pose_transform is no longer used in 1.0+. &quot;</span>
-                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Channel.pose_transform is no longer used in 1.0+. &quot;</span>
+            <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.format_external"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_external">[docs]</a>    <span class="k">def</span> <span class="nf">format_external</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">senders</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.format_external is no longer used in 1.0+. &quot;</span>
-                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Channel.format_external is no longer used in 1.0+. &quot;</span>
+            <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.format_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.format_message">[docs]</a>    <span class="k">def</span> <span class="nf">format_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msgobj</span><span class="p">,</span> <span class="n">emit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.format_message is no longer used in 1.0+. &quot;</span>
-                           <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Channel.format_message is no longer used in 1.0+. &quot;</span>
+            <span class="s2">&quot;Use Account/Object.at_pre_channel_msg instead.&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultChannel.pre_send_message"><a class="viewcode-back" href="../../../api/evennia.comms.comms.html#evennia.comms.comms.DefaultChannel.pre_send_message">[docs]</a>    <span class="k">def</span> <span class="nf">pre_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Channel.pre_send_message was renamed to Channel.at_pre_msg.&quot;</span><span class="p">)</span></div>

@@ -73,7 +73,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="s2">&quot;20171025161153-1&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Dummy_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">Something</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="p">(</span><span class="n">Something</span><span class="p">,)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">start_room</span> <span class="o">=</span> <span class="s2">&quot;testing_room_start_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">gid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[]</span></div>
@@ -87,12 +87,12 @@
             <span class="n">c_login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span>
             <span class="p">(</span>
                 <span class="n">Something</span><span class="p">,</span>  <span class="c1"># create</span>
-                <span class="s1">&#39;yes&#39;</span><span class="p">,</span>  <span class="c1"># confirm creation</span>
+                <span class="s2">&quot;yes&quot;</span><span class="p">,</span>  <span class="c1"># confirm creation</span>
                 <span class="n">Something</span><span class="p">,</span>  <span class="c1"># connect</span>
                 <span class="s2">&quot;dig </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">start_room</span><span class="p">,</span>
                 <span class="s2">&quot;teleport </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">start_room</span><span class="p">,</span>
                 <span class="s2">&quot;py from evennia.server.profiling.dummyrunner import DummyRunnerCmdSet;&quot;</span>
-                <span class="s2">&quot;self.cmdset.add(DummyRunnerCmdSet, persistent=False)&quot;</span>
+                <span class="s2">&quot;self.cmdset.add(DummyRunnerCmdSet, persistent=False)&quot;</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span></div>
 
@@ -128,7 +128,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestDummyrunnerSettings.test_c_digs"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.tests.html#evennia.server.profiling.tests.TestDummyrunnerSettings.test_c_digs">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_digs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_digs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;dig/tel testing_room_1 = exit_1, exit_1&quot;</span><span class="p">,</span> <span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c_digs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;dig/tel testing_room_1 = exit_1, exit_1&quot;</span><span class="p">,))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">exits</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;exit_1&quot;</span><span class="p">,</span> <span class="s2">&quot;exit_1&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_client_lists</span><span class="p">()</span></div>
 

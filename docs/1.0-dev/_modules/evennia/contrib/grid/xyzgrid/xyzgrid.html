@@ -70,6 +70,7 @@
 <span class="sd">    Main grid class. This organizes the Maps based on their name/Z-coordinate.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="XYZGrid.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        What we store persistently is data used to create each map (the legends, names etc)</span>
@@ -130,7 +131,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYZGrid.get_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_exit">[docs]</a>    <span class="k">def</span> <span class="nf">get_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;north&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.get_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_exit">[docs]</a>    <span class="k">def</span> <span class="nf">get_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get one or more exit object at coordinate.</span>
 
@@ -144,7 +145,7 @@
 <span class="sd">            Queryset: A queryset of XYZExit(s) found.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;db_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
         <span class="k">return</span> <span class="n">XYZExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz_exit</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="XYZGrid.maps_from_module"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.maps_from_module">[docs]</a>    <span class="k">def</span> <span class="nf">maps_from_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_path</span><span class="p">):</span>
@@ -169,7 +170,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">mapdata</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find or load map from </span><span class="si">{</span><span class="n">module_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
-            <span class="n">mapdata</span><span class="p">[</span><span class="s1">&#39;module_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module_path</span>
+            <span class="n">mapdata</span><span class="p">[</span><span class="s2">&quot;module_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module_path</span>
         <span class="k">return</span> <span class="n">map_data_list</span></div>
 
 <div class="viewcode-block" id="XYZGrid.reload"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -196,9 +197,9 @@
             <span class="c1"># we reload the map from module</span>
             <span class="n">new_mapdata</span> <span class="o">=</span> <span class="n">loaded_mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">zcoord</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">new_mapdata</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s1">&#39;module_path&#39;</span> <span class="ow">in</span> <span class="n">old_mapdata</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">mapdata</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps_from_module</span><span class="p">(</span><span class="n">old_mapdata</span><span class="p">[</span><span class="s1">&#39;module_path&#39;</span><span class="p">]):</span>
-                        <span class="n">loaded_mapdata</span><span class="p">[</span><span class="n">mapdata</span><span class="p">[</span><span class="s1">&#39;zcoord&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">mapdata</span>
+                <span class="k">if</span> <span class="s2">&quot;module_path&quot;</span> <span class="ow">in</span> <span class="n">old_mapdata</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">mapdata</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps_from_module</span><span class="p">(</span><span class="n">old_mapdata</span><span class="p">[</span><span class="s2">&quot;module_path&quot;</span><span class="p">]):</span>
+                        <span class="n">loaded_mapdata</span><span class="p">[</span><span class="n">mapdata</span><span class="p">[</span><span class="s2">&quot;zcoord&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">mapdata</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># nowhere to reload from - use what we have</span>
                     <span class="n">loaded_mapdata</span><span class="p">[</span><span class="n">zcoord</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_mapdata</span>
@@ -240,7 +241,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">mapdata</span> <span class="ow">in</span> <span class="n">mapdatas</span><span class="p">:</span>
-            <span class="n">zcoord</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;zcoord&#39;</span><span class="p">)</span>
+            <span class="n">zcoord</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;zcoord&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">zcoord</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;XYZGrid.add_map data must contain &#39;zcoord&#39;.&quot;</span><span class="p">)</span>
 
@@ -262,7 +263,7 @@
             <span class="k">if</span> <span class="n">remove_objects</span><span class="p">:</span>
                 <span class="c1"># we can&#39;t batch-delete because we want to run the .delete</span>
                 <span class="c1"># method that also wipes exits and moves content to save locations</span>
-                <span class="k">for</span> <span class="n">xyzroom</span> <span class="ow">in</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">zcoord</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">xyzroom</span> <span class="ow">in</span> <span class="n">XYZRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">zcoord</span><span class="p">)):</span>
                     <span class="n">xyzroom</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
 
@@ -276,7 +277,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_map</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">zcoord</span> <span class="k">for</span> <span class="n">zcoord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">map_data</span><span class="p">),</span> <span class="n">remove_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="XYZGrid.spawn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.spawn">[docs]</a>    <span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="XYZGrid.spawn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.spawn">[docs]</a>    <span class="k">def</span> <span class="nf">spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create/recreate/update the in-game grid based on the stored Maps or for a specific Map</span>
 <span class="sd">        or coordinate.</span>
@@ -297,7 +298,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">xyz</span>
-        <span class="n">wildcard</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+        <span class="n">wildcard</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
 
         <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">wildcard</span><span class="p">:</span>
             <span class="n">xymaps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span>
@@ -335,8 +336,10 @@
         <span class="n">xyzgrid</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">xyzgrid</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">xyzgrid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="p">(</span><span class="s2">&quot;Warning: More than one XYZGrid instances were found. This is an error and &quot;</span>
-         <span class="s2">&quot;only the first one will be used. Delete the other one(s) manually.&quot;</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;Warning: More than one XYZGrid instances were found. This is an error and &quot;</span>
+            <span class="s2">&quot;only the first one will be used. Delete the other one(s) manually.&quot;</span>
+        <span class="p">)</span>
     <span class="n">xyzgrid</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>

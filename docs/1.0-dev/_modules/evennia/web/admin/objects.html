@@ -105,9 +105,11 @@
         <span class="sa">f</span><span class="s2">&quot;&lt;BR&gt;If you are creating a Character you usually need &lt;B&gt;</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="si">}</span><span class="s2">&lt;/B&gt; &quot;</span>
         <span class="s2">&quot;or a subclass of that. &lt;BR&gt;If your custom class is not found in the list, it may not be imported &quot;</span>
         <span class="s2">&quot;into Evennia yet.&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">adminutils</span><span class="o">.</span><span class="n">get_and_load_typeclasses</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ObjectDB</span><span class="p">))</span>
+        <span class="n">choices</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">adminutils</span><span class="o">.</span><span class="n">get_and_load_typeclasses</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ObjectDB</span><span class="p">),</span>
+    <span class="p">)</span>
 
-    <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Locks&quot;</span><span class="p">,</span>
+    <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Locks&quot;</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">}),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;In-game lock definition string. If not given, defaults will be used. &quot;</span>
@@ -134,29 +136,32 @@
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Location&quot;</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">widget</span><span class="o">=</span><span class="n">ForeignKeyRawIdWidget</span><span class="p">(</span>
-            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s1">&#39;db_location&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="p">),</span>
+            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s2">&quot;db_location&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span>
+        <span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;The (current) in-game location.&lt;BR&gt;&quot;</span>
-                  <span class="s2">&quot;Usually a Room but can be&lt;BR&gt;&quot;</span>
-                  <span class="s2">&quot;empty for un-puppeted Characters.&quot;</span>
+        <span class="s2">&quot;Usually a Room but can be&lt;BR&gt;&quot;</span>
+        <span class="s2">&quot;empty for un-puppeted Characters.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">db_home</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span>
         <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Home&quot;</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">widget</span><span class="o">=</span><span class="n">ForeignKeyRawIdWidget</span><span class="p">(</span>
-            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s1">&#39;db_location&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="p">),</span>
+            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s2">&quot;db_location&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span>
+        <span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fallback in-game location.&lt;BR&gt;&quot;</span>
-                  <span class="s2">&quot;All objects should usually have&lt;BR&gt;&quot;</span>
-                  <span class="s2">&quot;a home location.&quot;</span>
-        <span class="p">)</span>
+        <span class="s2">&quot;All objects should usually have&lt;BR&gt;&quot;</span>
+        <span class="s2">&quot;a home location.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">db_destination</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span>
         <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Destination&quot;</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">widget</span><span class="o">=</span><span class="n">ForeignKeyRawIdWidget</span><span class="p">(</span>
-            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s1">&#39;db_destination&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Only used by Exits.&quot;</span>
-        <span class="p">)</span>
+            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s2">&quot;db_destination&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span>
+        <span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Only used by Exits.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="ObjectCreateForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectCreateForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -199,9 +204,10 @@
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Puppeting Account&quot;</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">widget</span><span class="o">=</span><span class="n">ForeignKeyRawIdWidget</span><span class="p">(</span>
-            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s1">&#39;db_account&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="p">),</span>
+            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s2">&quot;db_account&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span>
+        <span class="p">),</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;An Account puppeting this Object (if any).&lt;BR&gt;Note that when a user logs &quot;</span>
-                  <span class="s2">&quot;off/unpuppets, this&lt;BR&gt;field will be empty again. This is normal.&quot;</span>
+        <span class="s2">&quot;off/unpuppets, this&lt;BR&gt;field will be empty again. This is normal.&quot;</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -213,10 +219,24 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">ObjectTagInline</span><span class="p">,</span> <span class="n">ObjectAttributeInline</span><span class="p">]</span>
-    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span> <span class="s2">&quot;db_location&quot;</span><span class="p">,</span> <span class="s2">&quot;db_destination&quot;</span><span class="p">,</span> <span class="s2">&quot;db_account&quot;</span><span class="p">,</span> <span class="s2">&quot;db_date_created&quot;</span><span class="p">)</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_location&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_destination&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_account&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
     <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;-id&quot;</span><span class="p">]</span>
-    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;=id&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_account__db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;^db_location__db_key&quot;</span><span class="p">]</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;=id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_account__db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_location__db_key&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
     <span class="n">raw_id_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_destination&quot;</span><span class="p">,</span> <span class="s2">&quot;db_location&quot;</span><span class="p">,</span> <span class="s2">&quot;db_home&quot;</span><span class="p">,</span> <span class="s2">&quot;db_account&quot;</span><span class="p">)</span>
     <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;serialized_string&quot;</span><span class="p">,</span> <span class="s2">&quot;link_button&quot;</span><span class="p">)</span>
 
@@ -239,7 +259,7 @@
                     <span class="p">(</span><span class="s2">&quot;db_account&quot;</span><span class="p">,</span> <span class="s2">&quot;link_button&quot;</span><span class="p">),</span>
                     <span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;serialized_string&quot;</span>
+                    <span class="s2">&quot;serialized_string&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">},</span>
         <span class="p">),</span>
@@ -265,6 +285,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbserialize</span><span class="o">.</span><span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
 
     <span class="n">serialized_string</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="p">(</span>
@@ -310,7 +331,7 @@
             <span class="n">path</span><span class="p">(</span>
                 <span class="s2">&quot;account-object-link/&lt;int:pk&gt;&quot;</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">admin_site</span><span class="o">.</span><span class="n">admin_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_object_to_account</span><span class="p">),</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;object-account-link&quot;</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;object-account-link&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">]</span>
         <span class="k">return</span> <span class="n">custom_urls</span> <span class="o">+</span> <span class="n">urls</span></div>
@@ -318,8 +339,9 @@
 <div class="viewcode-block" id="ObjectAdmin.link_button"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.link_button">[docs]</a>    <span class="k">def</span> <span class="nf">link_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">format_html</span><span class="p">(</span>
             <span class="s1">&#39;&lt;a class=&quot;button&quot; href=&quot;</span><span class="si">{}</span><span class="s1">&quot;&gt;Link to Account&lt;/a&gt;&amp;nbsp;&#39;</span><span class="p">,</span>
-            <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:object-account-link&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">])</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:object-account-link&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]),</span>
         <span class="p">)</span></div>
+
     <span class="n">link_button</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s2">&quot;Create attrs/locks for puppeting&quot;</span>
     <span class="n">link_button</span><span class="o">.</span><span class="n">allow_tags</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -347,20 +369,23 @@
                 <span class="n">lock</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;puppet&quot;</span><span class="p">)</span>
                 <span class="n">lock</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; or pid(</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lock</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">request</span><span class="p">,</span>
-                              <span class="s2">&quot;Did the following (where possible): &quot;</span>
-                              <span class="sa">f</span><span class="s2">&quot;Set Account.db._last_puppet = </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">, &quot;</span>
-                              <span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> to Account.db._playable_characters list, &quot;</span>
-                              <span class="sa">f</span><span class="s2">&quot;Added &#39;puppet:pid(</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&#39; lock to </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span>
+                <span class="s2">&quot;Did the following (where possible): &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Set Account.db._last_puppet = </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> to Account.db._playable_characters list, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Added &#39;puppet:pid(</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&#39; lock to </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Account must be connected for this action &quot;</span>
-                              <span class="s2">&quot;(set Puppeting Account and save this page first).&quot;</span><span class="p">,</span>
-                              <span class="n">level</span><span class="o">=</span><span class="n">messages</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span>
+                <span class="s2">&quot;Account must be connected for this action &quot;</span>
+                <span class="s2">&quot;(set Puppeting Account and save this page first).&quot;</span><span class="p">,</span>
+                <span class="n">level</span><span class="o">=</span><span class="n">messages</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># stay on the same page</span>
         <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:objects_objectdb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]))</span></div>
-
-
 
 <div class="viewcode-block" id="ObjectAdmin.save_model"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.save_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

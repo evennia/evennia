@@ -67,14 +67,16 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
 
-<span class="n">LIMBO_DESC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need</span>
-<span class="s2">help, want to contribute, report issues or just join the community.</span>
+<span class="n">LIMBO_DESC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need</span>
+<span class="sd">help, want to contribute, report issues or just join the community.</span>
 
-<span class="s2">As a privileged user, write |wbatchcommand tutorial_world.build|n to build</span>
-<span class="s2">tutorial content. Once built, try |wintro|n for starting help and |wtutorial|n to</span>
-<span class="s2">play the demo game.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="sd">As a privileged user, write |wbatchcommand tutorial_world.build|n to build</span>
+<span class="sd">tutorial content. Once built, try |wintro|n for starting help and |wtutorial|n to</span>
+<span class="sd">play the demo game.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
 
 
 <span class="n">WARNING_POSTGRESQL_FIX</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -141,7 +143,8 @@
         <span class="n">superuser_character</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
         <span class="n">superuser_character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
-            <span class="n">character_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">superuser</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">character_typeclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">superuser</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">nohome</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
 
     <span class="n">superuser_character</span><span class="o">.</span><span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">character_typeclass</span>
     <span class="n">superuser_character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is User #1.&quot;</span><span class="p">)</span>
@@ -176,6 +179,7 @@
         <span class="n">superuser_character</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">limbo_obj</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">superuser_character</span><span class="o">.</span><span class="n">home</span><span class="p">:</span>
         <span class="n">superuser_character</span><span class="o">.</span><span class="n">home</span> <span class="o">=</span> <span class="n">limbo_obj</span></div>
+
 
 <div class="viewcode-block" id="at_initial_setup"><a class="viewcode-back" href="../../../api/evennia.server.initial_setup.html#evennia.server.initial_setup.at_initial_setup">[docs]</a><span class="k">def</span> <span class="nf">at_initial_setup</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -234,7 +238,7 @@
 <span class="sd">            the function will exit immediately.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">last_step</span> <span class="ow">in</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">last_step</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
         <span class="c1"># this means we don&#39;t need to handle setup since</span>
         <span class="c1"># it already ran sucessfully once. -1 is the legacy</span>
         <span class="c1"># value for existing databases.</span>
@@ -242,15 +246,15 @@
 
     <span class="c1"># setup sequence</span>
     <span class="n">setup_sequence</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;create_objects&#39;</span><span class="p">:</span> <span class="n">create_objects</span><span class="p">,</span>
-        <span class="s1">&#39;at_initial_setup&#39;</span><span class="p">:</span> <span class="n">at_initial_setup</span><span class="p">,</span>
-        <span class="s1">&#39;collectstatic&#39;</span><span class="p">:</span> <span class="n">collectstatic</span><span class="p">,</span>
-        <span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="n">reset_server</span><span class="p">,</span>
+        <span class="s2">&quot;create_objects&quot;</span><span class="p">:</span> <span class="n">create_objects</span><span class="p">,</span>
+        <span class="s2">&quot;at_initial_setup&quot;</span><span class="p">:</span> <span class="n">at_initial_setup</span><span class="p">,</span>
+        <span class="s2">&quot;collectstatic&quot;</span><span class="p">:</span> <span class="n">collectstatic</span><span class="p">,</span>
+        <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="n">reset_server</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># determine the sequence so we can skip ahead</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">setup_sequence</span><span class="p">)</span>
-    <span class="n">steps</span> <span class="o">=</span> <span class="n">steps</span><span class="p">[</span><span class="n">steps</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">last_step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">last_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">:]</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">steps</span><span class="p">[</span><span class="n">steps</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">last_step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">last_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span> <span class="p">:]</span>
 
     <span class="c1"># step through queue from last completed function. Once completed,</span>
     <span class="c1"># the &#39;done&#39; key should be set.</span>
@@ -263,7 +267,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># save the step</span>
             <span class="n">ServerConfig</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">conf</span><span class="p">(</span><span class="s2">&quot;last_initial_setup_step&quot;</span><span class="p">,</span> <span class="n">stepname</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">stepname</span> <span class="o">==</span> <span class="s1">&#39;done&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">stepname</span> <span class="o">==</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span>
                 <span class="c1"># always exit on &#39;done&#39;</span>
                 <span class="k">break</span></div>
 </pre></div>

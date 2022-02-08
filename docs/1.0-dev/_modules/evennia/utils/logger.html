@@ -414,9 +414,9 @@
 <span class="sd">        the previous log to the start of the new one.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">append_tail</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_lines_to_append</span>
-                       <span class="k">if</span> <span class="n">num_lines_to_append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                       <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_lines_to_append</span><span class="p">)</span>
+        <span class="n">append_tail</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">num_lines_to_append</span> <span class="k">if</span> <span class="n">num_lines_to_append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_lines_to_append</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">append_tail</span><span class="p">:</span>
             <span class="n">logfile</span><span class="o">.</span><span class="n">LogFile</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span>
@@ -553,6 +553,7 @@
     <span class="k">global</span> <span class="n">_LOGDIR</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOGDIR</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
         <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOG_DIR</span>
 
     <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_LOGDIR</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
@@ -615,7 +616,7 @@
             <span class="n">lines_found</span> <span class="o">=</span> <span class="n">filehandle</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
             <span class="n">block_count</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="c1"># return the right number of lines</span>
-        <span class="n">lines_found</span> <span class="o">=</span> <span class="n">lines_found</span><span class="p">[</span><span class="o">-</span><span class="n">nlines</span> <span class="o">-</span> <span class="n">offset</span><span class="p">:</span> <span class="o">-</span><span class="n">offset</span> <span class="k">if</span> <span class="n">offset</span> <span class="k">else</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">lines_found</span> <span class="o">=</span> <span class="n">lines_found</span><span class="p">[</span><span class="o">-</span><span class="n">nlines</span> <span class="o">-</span> <span class="n">offset</span> <span class="p">:</span> <span class="o">-</span><span class="n">offset</span> <span class="k">if</span> <span class="n">offset</span> <span class="k">else</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
             <span class="n">callback</span><span class="p">(</span><span class="n">lines_found</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>

@@ -74,8 +74,8 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">class_from_module</span>
 
 <span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
-<span class="n">_RE_LEND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;\n$|\r$|\r\n$|\r\x00$|&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
-<span class="n">_RE_LINEBREAK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">br</span><span class="s2">&quot;\n\r|\r\n|\n|\r&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+<span class="n">_RE_LEND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rb</span><span class="s2">&quot;\n$|\r$|\r\n$|\r\x00$|&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+<span class="n">_RE_LINEBREAK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rb</span><span class="s2">&quot;\n\r|\r\n|\n|\r&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
 <span class="n">_RE_SCREENREADER_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
     <span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">SCREENREADER_REGEX_STRIP</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span>
 <span class="p">)</span>
@@ -105,6 +105,7 @@
 <span class="sd">    This exists only to name this better in logs.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">noisy</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="TelnetServerFactory.logPrefix"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetServerFactory.logPrefix">[docs]</a>    <span class="k">def</span> <span class="nf">logPrefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -134,6 +135,7 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dataReceived</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+
             <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Malformed telnet input: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TelnetProtocol.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.portal.telnet.html#evennia.server.portal.telnet.TelnetProtocol.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -500,8 +502,9 @@
                     <span class="n">prompt</span> <span class="o">=</span> <span class="n">mxp_parse</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
             <span class="n">prompt</span> <span class="o">=</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">IAC</span><span class="p">,</span> <span class="n">IAC</span> <span class="o">+</span> <span class="n">IAC</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span><span class="p">,</span>
-                                           <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="n">prompt</span> <span class="o">+=</span> <span class="n">IAC</span> <span class="o">+</span> <span class="n">GA</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mccp_compress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>

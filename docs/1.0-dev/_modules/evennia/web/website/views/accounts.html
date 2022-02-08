@@ -66,8 +66,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">,</span>
-                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_ACCOUNT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ACCOUNT_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_ACCOUNT_TYPECLASS</span>
+    <span class="p">)</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">AccountForm</span></div>
 
 
@@ -115,7 +116,6 @@
 
         <span class="c1"># Redirect the user to the login page</span>
         <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">success_url</span><span class="p">)</span></div></div>
-
 </pre></div>
 
             <div class="clearer"></div>

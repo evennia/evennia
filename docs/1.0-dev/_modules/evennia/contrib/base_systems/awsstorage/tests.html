@@ -163,7 +163,11 @@
 
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="o">.</span><span class="n">return_value</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">upload_fileobj</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">content</span><span class="p">,</span> <span class="n">ExtraArgs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ContentType&quot;</span><span class="p">:</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="s2">&quot;ACL&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">default_acl</span><span class="p">,}</span>
+            <span class="n">content</span><span class="p">,</span>
+            <span class="n">ExtraArgs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;ContentType&quot;</span><span class="p">:</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ACL&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">default_acl</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_save_with_acl"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_save_with_acl">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_save_with_acl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -178,7 +182,11 @@
 
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="o">.</span><span class="n">return_value</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">upload_fileobj</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">content</span><span class="p">,</span> <span class="n">ExtraArgs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ContentType&quot;</span><span class="p">:</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="s2">&quot;ACL&quot;</span><span class="p">:</span> <span class="s2">&quot;private&quot;</span><span class="p">,}</span>
+            <span class="n">content</span><span class="p">,</span>
+            <span class="n">ExtraArgs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;ContentType&quot;</span><span class="p">:</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ACL&quot;</span><span class="p">:</span> <span class="s2">&quot;private&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_content_type"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_content_type">[docs]</a>    <span class="k">def</span> <span class="nf">test_content_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -193,7 +201,11 @@
 
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">Object</span><span class="o">.</span><span class="n">return_value</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">upload_fileobj</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">content</span><span class="p">,</span> <span class="n">ExtraArgs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ContentType&quot;</span><span class="p">:</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ACL&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">default_acl</span><span class="p">,}</span>
+            <span class="n">content</span><span class="p">,</span>
+            <span class="n">ExtraArgs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;ContentType&quot;</span><span class="p">:</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ACL&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">default_acl</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_save_gzipped"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_save_gzipped">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_save_gzipped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -421,7 +433,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">uploaded_content</span><span class="p">,</span> <span class="n">written_content</span><span class="p">)</span>
         <span class="n">multipart</span><span class="o">.</span><span class="n">complete</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span>
             <span class="n">MultipartUpload</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;Parts&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;ETag&quot;</span><span class="p">:</span> <span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;PartNumber&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;ETag&quot;</span><span class="p">:</span> <span class="s2">&quot;456&quot;</span><span class="p">,</span> <span class="s2">&quot;PartNumber&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},]</span>
+                <span class="s2">&quot;Parts&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;ETag&quot;</span><span class="p">:</span> <span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="s2">&quot;PartNumber&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;ETag&quot;</span><span class="p">:</span> <span class="s2">&quot;456&quot;</span><span class="p">,</span> <span class="s2">&quot;PartNumber&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+                <span class="p">]</span>
             <span class="p">}</span>
         <span class="p">)</span></div>
 
@@ -436,7 +451,10 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_get_or_create_bucket</span><span class="p">(</span><span class="s2">&quot;testbucketname&quot;</span><span class="p">)</span>
         <span class="n">Bucket</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span>
-            <span class="n">ACL</span><span class="o">=</span><span class="s2">&quot;public-read&quot;</span><span class="p">,</span> <span class="n">CreateBucketConfiguration</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;LocationConstraint&quot;</span><span class="p">:</span> <span class="s2">&quot;sa-east-1&quot;</span><span class="p">,}</span>
+            <span class="n">ACL</span><span class="o">=</span><span class="s2">&quot;public-read&quot;</span><span class="p">,</span>
+            <span class="n">CreateBucketConfiguration</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;LocationConstraint&quot;</span><span class="p">:</span> <span class="s2">&quot;sa-east-1&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_auto_creating_bucket_with_acl"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_auto_creating_bucket_with_acl">[docs]</a>    <span class="k">def</span> <span class="nf">test_auto_creating_bucket_with_acl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -451,22 +469,28 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">_get_or_create_bucket</span><span class="p">(</span><span class="s2">&quot;testbucketname&quot;</span><span class="p">)</span>
         <span class="n">Bucket</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span>
-            <span class="n">ACL</span><span class="o">=</span><span class="s2">&quot;public-read&quot;</span><span class="p">,</span> <span class="n">CreateBucketConfiguration</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;LocationConstraint&quot;</span><span class="p">:</span> <span class="s2">&quot;sa-east-1&quot;</span><span class="p">,}</span>
+            <span class="n">ACL</span><span class="o">=</span><span class="s2">&quot;public-read&quot;</span><span class="p">,</span>
+            <span class="n">CreateBucketConfiguration</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;LocationConstraint&quot;</span><span class="p">:</span> <span class="s2">&quot;sa-east-1&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_exists"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_exists">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;file.txt&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">head_object</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="s2">&quot;file.txt&quot;</span><span class="p">,</span>
+            <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">bucket_name</span><span class="p">,</span>
+            <span class="n">Key</span><span class="o">=</span><span class="s2">&quot;file.txt&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_exists_false"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_exists_false">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_exists_false</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">head_object</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">ClientError</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Code&quot;</span><span class="p">:</span> <span class="s2">&quot;404&quot;</span><span class="p">,</span> <span class="s2">&quot;Message&quot;</span><span class="p">:</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">}},</span> <span class="s2">&quot;HeadObject&quot;</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">&quot;Error&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Code&quot;</span><span class="p">:</span> <span class="s2">&quot;404&quot;</span><span class="p">,</span> <span class="s2">&quot;Message&quot;</span><span class="p">:</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">}},</span>
+            <span class="s2">&quot;HeadObject&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;file.txt&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">head_object</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="s2">&quot;file.txt&quot;</span><span class="p">,</span>
+            <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">bucket_name</span><span class="p">,</span>
+            <span class="n">Key</span><span class="o">=</span><span class="s2">&quot;file.txt&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="S3Boto3StorageTests.test_storage_exists_doesnt_create_bucket"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.awsstorage.tests.html#evennia.contrib.base_systems.awsstorage.tests.S3Boto3StorageTests.test_storage_exists_doesnt_create_bucket">[docs]</a>    <span class="k">def</span> <span class="nf">test_storage_exists_doesnt_create_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -487,8 +511,14 @@
         <span class="c1">#   4.txt</span>
         <span class="n">pages</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">{</span>
-                <span class="s2">&quot;CommonPrefixes&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;Prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;some&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;Prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;other&quot;</span><span class="p">},],</span>
-                <span class="s2">&quot;Contents&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;2.txt&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;4.txt&quot;</span><span class="p">},],</span>
+                <span class="s2">&quot;CommonPrefixes&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;Prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;some&quot;</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;Prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;other&quot;</span><span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;Contents&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;2.txt&quot;</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;4.txt&quot;</span><span class="p">},</span>
+                <span class="p">],</span>
             <span class="p">},</span>
         <span class="p">]</span>
 
@@ -507,7 +537,14 @@
         <span class="c1">#   some/path/1.txt</span>
         <span class="c1">#   some/2.txt</span>
         <span class="n">pages</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;CommonPrefixes&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;Prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;some/path&quot;</span><span class="p">},],</span> <span class="s2">&quot;Contents&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;some/2.txt&quot;</span><span class="p">},],},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;CommonPrefixes&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;Prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;some/path&quot;</span><span class="p">},</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;Contents&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="s2">&quot;some/2.txt&quot;</span><span class="p">},</span>
+                <span class="p">],</span>
+            <span class="p">},</span>
         <span class="p">]</span>
 
         <span class="n">paginator</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>

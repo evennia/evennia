@@ -79,8 +79,9 @@
 <span class="c1"># Portal-SessionHandler class</span>
 <span class="c1"># -------------------------------------------------------------</span>
 
-<span class="n">DOS_PROTECTION_MSG</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{servername}</span><span class="s2"> DoS protection is active.&quot;</span>
-                       <span class="s2">&quot;You are queued to connect in </span><span class="si">{num}</span><span class="s2"> seconds ...&quot;</span><span class="p">)</span>
+<span class="n">DOS_PROTECTION_MSG</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="s2">&quot;</span><span class="si">{servername}</span><span class="s2"> DoS protection is active.&quot;</span> <span class="s2">&quot;You are queued to connect in </span><span class="si">{num}</span><span class="s2"> seconds ...&quot;</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="PortalSessionHandler"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler">[docs]</a><span class="k">class</span> <span class="nc">PortalSessionHandler</span><span class="p">(</span><span class="n">SessionHandler</span><span class="p">):</span>
@@ -159,9 +160,12 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_CONNECTION_QUEUE</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">session</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span>
                     <span class="n">text</span><span class="o">=</span><span class="p">(</span>
-                        <span class="p">(</span><span class="n">DOS_PROTECTION_MSG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                         <span class="n">servername</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span><span class="p">,</span>
-                         <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">_CONNECTION_QUEUE</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MIN_TIME_BETWEEN_CONNECTS</span><span class="p">),),</span>
+                        <span class="p">(</span>
+                            <span class="n">DOS_PROTECTION_MSG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">servername</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span><span class="p">,</span>
+                                <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">_CONNECTION_QUEUE</span><span class="p">)</span> <span class="o">*</span> <span class="n">_MIN_TIME_BETWEEN_CONNECTS</span><span class="p">,</span>
+                            <span class="p">),</span>
+                        <span class="p">),</span>
                         <span class="p">{},</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
@@ -484,8 +488,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">amp_protocol</span><span class="o">.</span><span class="n">send_MsgPortal2Server</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
             <span class="c1"># eventual local echo (text input only)</span>
-            <span class="k">if</span> <span class="s1">&#39;text&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LOCALECHO&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">])</span></div>
+            <span class="k">if</span> <span class="s2">&quot;text&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOCALECHO&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="PortalSessionHandler.data_out"><a class="viewcode-back" href="../../../../api/evennia.server.portal.portalsessionhandler.html#evennia.server.portal.portalsessionhandler.PortalSessionHandler.data_out">[docs]</a>    <span class="k">def</span> <span class="nf">data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

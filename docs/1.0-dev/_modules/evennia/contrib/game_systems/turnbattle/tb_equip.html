@@ -285,6 +285,7 @@
 <span class="sd">    Fights persist until only one participant is left with any HP or all</span>
 <span class="sd">    remaining participants choose to end the combat with the &#39;disengage&#39; command.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">rules</span> <span class="o">=</span> <span class="n">COMBAT_RULES</span></div>
 
 
@@ -300,6 +301,7 @@
 <span class="sd">    A weapon which can be wielded in combat with the &#39;wield&#39; command.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">rules</span> <span class="o">=</span> <span class="n">COMBAT_RULES</span>
 
 <div class="viewcode-block" id="TBEWeapon.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -555,8 +557,9 @@
         <span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon&quot;</span><span class="p">,</span>
-                                   <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That&#39;s not a weapon!&quot;</span><span class="p">)</span>
             <span class="c1"># Remember to update the path to the weapon typeclass if you move this module!</span>
             <span class="k">return</span>
@@ -639,8 +642,9 @@
         <span class="n">armor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">armor</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">armor</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor&quot;</span><span class="p">,</span>
-                                  <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">armor</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That&#39;s not armor!&quot;</span><span class="p">)</span>
             <span class="c1"># Remember to update the path to the armor typeclass if you move this module!</span>
             <span class="k">return</span>

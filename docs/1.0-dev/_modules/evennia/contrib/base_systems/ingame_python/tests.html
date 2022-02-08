@@ -73,17 +73,27 @@
 <div class="viewcode-block" id="TestEventHandler.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestEventHandler.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create the event handler.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.scripts.EventHandler&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.scripts.EventHandler&quot;</span>
+        <span class="p">)</span>
 
         <span class="c1"># Copy old events if necessary</span>
         <span class="k">if</span> <span class="n">OLD_EVENTS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">OLD_EVENTS</span><span class="p">)</span>
 
         <span class="c1"># Alter typeclasses</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventExit&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestEventHandler.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestEventHandler.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -295,17 +305,27 @@
 <div class="viewcode-block" id="TestCmdCallback.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestCmdCallback.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create the callback handler.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.scripts.EventHandler&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.scripts.EventHandler&quot;</span>
+        <span class="p">)</span>
 
         <span class="c1"># Copy old events if necessary</span>
         <span class="k">if</span> <span class="n">OLD_EVENTS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">OLD_EVENTS</span><span class="p">)</span>
 
         <span class="c1"># Alter typeclasses</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventExit&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCmdCallback.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestCmdCallback.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -474,17 +494,27 @@
 <div class="viewcode-block" id="TestDefaultCallbacks.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestDefaultCallbacks.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create the callback handler.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.scripts.EventHandler&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.scripts.EventHandler&quot;</span>
+        <span class="p">)</span>
 
         <span class="c1"># Copy old events if necessary</span>
         <span class="k">if</span> <span class="n">OLD_EVENTS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">OLD_EVENTS</span><span class="p">)</span>
 
         <span class="c1"># Alter typeclasses</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="o">.</span><span class="n">swap_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.typeclasses.EventExit&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestDefaultCallbacks.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.tests.html#evennia.contrib.base_systems.ingame_python.tests.TestDefaultCallbacks.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

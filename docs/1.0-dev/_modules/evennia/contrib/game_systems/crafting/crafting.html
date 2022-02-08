@@ -709,8 +709,8 @@
             <span class="n">consumable_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
-            <span class="n">tool_kwargs</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
-            <span class="n">consumable_kwargs</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
+            <span class="n">tool_kwargs</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
+            <span class="n">consumable_kwargs</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
 
         <span class="n">tool_key</span> <span class="o">=</span> <span class="n">tool_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">cons_key</span> <span class="o">=</span> <span class="n">consumable_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1008,6 +1008,7 @@
 <span class="sd">        things in the current location, like a furnace, windmill or anvil.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;craft&quot;</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>

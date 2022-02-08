@@ -71,14 +71,17 @@
 
     <span class="n">nobjs</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
     <span class="n">nobjs</span> <span class="o">=</span> <span class="n">nobjs</span> <span class="ow">or</span> <span class="mi">1</span>  <span class="c1"># fix zero-div error with empty database</span>
-    <span class="n">Character</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">,</span>
-                                  <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHARACTER_TYPECLASS</span><span class="p">)</span>
+    <span class="n">Character</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHARACTER_TYPECLASS</span>
+    <span class="p">)</span>
     <span class="n">nchars</span> <span class="o">=</span> <span class="n">Character</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-    <span class="n">Room</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span><span class="p">,</span>
-                             <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_ROOM_TYPECLASS</span><span class="p">)</span>
+    <span class="n">Room</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_ROOM_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_ROOM_TYPECLASS</span>
+    <span class="p">)</span>
     <span class="n">nrooms</span> <span class="o">=</span> <span class="n">Room</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-    <span class="n">Exit</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span><span class="p">,</span>
-                             <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_EXIT_TYPECLASS</span><span class="p">)</span>
+    <span class="n">Exit</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_EXIT_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_EXIT_TYPECLASS</span>
+    <span class="p">)</span>
     <span class="n">nexits</span> <span class="o">=</span> <span class="n">Exit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
     <span class="n">nothers</span> <span class="o">=</span> <span class="n">nobjs</span> <span class="o">-</span> <span class="n">nchars</span> <span class="o">-</span> <span class="n">nrooms</span> <span class="o">-</span> <span class="n">nexits</span>
 

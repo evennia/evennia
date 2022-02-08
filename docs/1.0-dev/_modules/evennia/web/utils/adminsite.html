@@ -59,7 +59,8 @@
 <span class="sd">    This is imported in INSTALLED_APPS instead of django.contrib.admin.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">default_site</span> <span class="o">=</span> <span class="s1">&#39;evennia.web.utils.adminsite.EvenniaAdminSite&#39;</span></div>
+
+    <span class="n">default_site</span> <span class="o">=</span> <span class="s2">&quot;evennia.web.utils.adminsite.EvenniaAdminSite&quot;</span></div>
 
 
 <div class="viewcode-block" id="EvenniaAdminSite"><a class="viewcode-back" href="../../../../api/evennia.web.utils.adminsite.html#evennia.web.utils.adminsite.EvenniaAdminSite">[docs]</a><span class="k">class</span> <span class="nc">EvenniaAdminSite</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">AdminSite</span><span class="p">):</span>
@@ -68,10 +69,21 @@
 <span class="sd">    admin.register in the admin/ folder, this is what is being registered to.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">site_header</span> <span class="o">=</span> <span class="s2">&quot;Evennia web admin&quot;</span>
 
-    <span class="n">app_order</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;objects&quot;</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;comms&quot;</span><span class="p">,</span> <span class="s2">&quot;help&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;sites&quot;</span><span class="p">,</span> <span class="s2">&quot;flatpages&quot;</span><span class="p">,</span> <span class="s2">&quot;auth&quot;</span><span class="p">]</span>
+    <span class="n">app_order</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;accounts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;objects&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;scripts&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;comms&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;help&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;server&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sites&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;flatpages&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;auth&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
 
 <div class="viewcode-block" id="EvenniaAdminSite.get_app_list"><a class="viewcode-back" href="../../../../api/evennia.web.utils.adminsite.html#evennia.web.utils.adminsite.EvenniaAdminSite.get_app_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_app_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
         <span class="n">app_list</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_app_list</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>

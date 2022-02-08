@@ -80,7 +80,16 @@
 <div class="viewcode-block" id="TestEvenniaRESTApi.get_view_details"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.get_view_details">[docs]</a>    <span class="k">def</span> <span class="nf">get_view_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Helper function for generating list of named tuples&quot;&quot;&quot;</span>
         <span class="n">View</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
-            <span class="s2">&quot;View&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;view_name&quot;</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;serializer&quot;</span><span class="p">,</span> <span class="s2">&quot;list_serializer&quot;</span><span class="p">,</span> <span class="s2">&quot;create_data&quot;</span><span class="p">,</span> <span class="s2">&quot;retrieve_data&quot;</span><span class="p">]</span>
+            <span class="s2">&quot;View&quot;</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;view_name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;obj&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;list&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;serializer&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;list_serializer&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;create_data&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;retrieve_data&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
         <span class="p">)</span>
         <span class="n">views</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">View</span><span class="p">(</span>

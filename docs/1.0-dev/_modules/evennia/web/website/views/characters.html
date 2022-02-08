@@ -70,8 +70,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># -- Django constructs --</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">,</span>
-                              <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHARACTER_TYPECLASS</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FALLBACK_CHARACTER_TYPECLASS</span>
+    <span class="p">)</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharacterForm</span>
     <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;character-manage&quot;</span><span class="p">)</span>
 
@@ -241,6 +242,7 @@
 <span class="sd">    ObjectDeleteView) can delete a character they own.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># using the character form fails there</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">EvenniaForm</span></div>
 
@@ -293,7 +295,6 @@
             <span class="c1"># Call the Django &quot;form failed&quot; hook</span>
             <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Your character could not be created.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">form_invalid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div></div>
-
 </pre></div>
 
             <div class="clearer"></div>

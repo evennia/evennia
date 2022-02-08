@@ -316,7 +316,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">rpsystem</span><span class="o">.</span><span class="n">regex_tuple_from_key_alias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="p">)</span>
         <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="c1"># print(f&quot;t1: {t1 - t0}, t2: {t2 - t1}&quot;)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertLess</span><span class="p">(</span><span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span><span class="p">,</span> <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertLess</span><span class="p">(</span><span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span><span class="p">,</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">4</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="n">Anything</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">key</span><span class="p">))</span></div></div>
 
 

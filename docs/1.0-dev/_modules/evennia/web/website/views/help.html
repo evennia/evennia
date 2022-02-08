@@ -75,12 +75,12 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        help_category (str): The category for the help entry.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">help_category</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s1">&#39;help_category&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s2">&quot;help_category&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">help_category</span><span class="p">:</span>
-        <span class="n">help_category</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s1">&#39;db_help_category&#39;</span><span class="p">,</span> <span class="n">DEFAULT_HELP_CATEGORY</span><span class="p">)</span>
+        <span class="n">help_category</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s2">&quot;db_help_category&quot;</span><span class="p">,</span> <span class="n">DEFAULT_HELP_CATEGORY</span><span class="p">)</span>
     <span class="c1"># if one does not exist, create a category for ease of use with web views html templates</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s1">&#39;web_help_category&#39;</span><span class="p">):</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s1">&#39;web_help_category&#39;</span><span class="p">,</span> <span class="n">slugify</span><span class="p">(</span><span class="n">help_category</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s2">&quot;web_help_category&quot;</span><span class="p">):</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s2">&quot;web_help_category&quot;</span><span class="p">,</span> <span class="n">slugify</span><span class="p">(</span><span class="n">help_category</span><span class="p">))</span>
     <span class="n">help_category</span> <span class="o">=</span> <span class="n">help_category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">slugify</span><span class="p">(</span><span class="n">help_category</span><span class="p">)</span> <span class="k">if</span> <span class="n">slugify_cat</span> <span class="k">else</span> <span class="n">help_category</span></div>
 
@@ -94,13 +94,13 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        help_topic (str): The topic of the help entry. Default is &#39;unknown_topic&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">help_topic</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">help_topic</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="c1"># if object has no key, assume it is a db help entry.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">help_topic</span><span class="p">:</span>
-        <span class="n">help_topic</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s1">&#39;db_key&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown_topic&#39;</span><span class="p">)</span>
+        <span class="n">help_topic</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown_topic&quot;</span><span class="p">)</span>
     <span class="c1"># if one does not exist, create a key for ease of use with web views html templates</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s1">&#39;web_help_key&#39;</span><span class="p">):</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s1">&#39;web_help_key&#39;</span><span class="p">,</span> <span class="n">slugify</span><span class="p">(</span><span class="n">help_topic</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s2">&quot;web_help_key&quot;</span><span class="p">):</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">help_entry</span><span class="p">,</span> <span class="s2">&quot;web_help_key&quot;</span><span class="p">,</span> <span class="n">slugify</span><span class="p">(</span><span class="n">help_topic</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">help_topic</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
 
@@ -121,9 +121,9 @@
 <span class="sd">        `can_list_topic` is also returning False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">cmd_or_topic</span><span class="p">,</span> <span class="s2">&quot;evennia.commands.command.Command&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s1">&#39;read&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">cmd_or_topic</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="collect_topics"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.collect_topics">[docs]</a><span class="k">def</span> <span class="nf">collect_topics</span><span class="p">(</span><span class="n">account</span><span class="p">):</span>
@@ -141,7 +141,7 @@
     <span class="c1"># collect commands of account and all puppets</span>
     <span class="c1"># skip a command if an entry is recorded with the same topics, category and help entry</span>
     <span class="n">cmd_help_topics</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">account</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;AnonymousUser&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">account</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;AnonymousUser&quot;</span><span class="p">:</span>
         <span class="c1"># create list of account and account&#39;s puppets</span>
         <span class="n">puppets</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">+</span> <span class="p">[</span><span class="n">account</span><span class="p">]</span>
         <span class="c1"># add the account&#39;s and puppets&#39; commands to cmd_help_topics list</span>
@@ -154,7 +154,7 @@
                 <span class="c1"># also check the &#39;cmd:&#39; lock here</span>
                 <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset</span><span class="p">:</span>
                     <span class="c1"># skip the command if the puppet does not have access</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">puppet</span><span class="p">,</span> <span class="s1">&#39;cmd&#39;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">puppet</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">):</span>
                         <span class="k">continue</span>
                     <span class="c1"># skip the command if the puppet does not have read access</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">can_read_topic</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">puppet</span><span class="p">):</span>
@@ -163,10 +163,11 @@
                     <span class="n">entry_exists</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="k">for</span> <span class="n">verify_cmd</span> <span class="ow">in</span> <span class="n">cmd_help_topics</span><span class="p">:</span>
                         <span class="k">if</span> <span class="p">(</span>
-                                <span class="n">verify_cmd</span><span class="o">.</span><span class="n">key</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span> <span class="ow">and</span>
-                                <span class="n">verify_cmd</span><span class="o">.</span><span class="n">help_category</span> <span class="o">==</span> <span class="n">cmd</span><span class="o">.</span><span class="n">help_category</span> <span class="ow">and</span>
-                                <span class="n">verify_cmd</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">==</span> <span class="n">cmd</span><span class="o">.</span><span class="vm">__doc__</span>
-                            <span class="p">):</span>
+                            <span class="n">verify_cmd</span><span class="o">.</span><span class="n">key</span>
+                            <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span>
+                            <span class="ow">and</span> <span class="n">verify_cmd</span><span class="o">.</span><span class="n">help_category</span> <span class="o">==</span> <span class="n">cmd</span><span class="o">.</span><span class="n">help_category</span>
+                            <span class="ow">and</span> <span class="n">verify_cmd</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">==</span> <span class="n">cmd</span><span class="o">.</span><span class="vm">__doc__</span>
+                        <span class="p">):</span>
                             <span class="n">entry_exists</span> <span class="o">=</span> <span class="kc">True</span>
                             <span class="k">break</span>
                     <span class="k">if</span> <span class="n">entry_exists</span><span class="p">:</span>
@@ -190,15 +191,14 @@
 
     <span class="c1"># Collect commands into a dictionary, read access verified at puppet level</span>
     <span class="n">cmd_help_topics</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">cmd</span><span class="o">.</span><span class="n">auto_help_display_key</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;auto_help_display_key&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">cmd</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">auto_help_display_key</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;auto_help_display_key&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">cmd</span>
         <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmd_help_topics</span>
     <span class="p">}</span>
 
     <span class="k">return</span> <span class="n">cmd_help_topics</span><span class="p">,</span> <span class="n">db_help_topics</span><span class="p">,</span> <span class="n">file_help_topics</span></div>
 
 
-<div class="viewcode-block" id="HelpMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpMixin">[docs]</a><span class="k">class</span> <span class="nc">HelpMixin</span><span class="p">():</span>
+<div class="viewcode-block" id="HelpMixin"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpMixin">[docs]</a><span class="k">class</span> <span class="nc">HelpMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a &quot;mixin&quot;, a modifier of sorts.</span>
 
@@ -266,7 +266,7 @@
         <span class="c1"># Makes sure the page has a sensible title.</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
         <span class="n">topic</span> <span class="o">=</span> <span class="n">get_help_topic</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s1"> detail&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2"> detail&quot;</span>
 
 <div class="viewcode-block" id="HelpDetailView.get_context_data"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.help.html#evennia.web.website.views.help.HelpDetailView.get_context_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -314,7 +314,7 @@
             <span class="n">context</span><span class="p">[</span><span class="s2">&quot;topic_previous&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Get the help entry text</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Failed to find entry.&#39;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Failed to find entry.&quot;</span>
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;evennia.commands.command.Command&quot;</span><span class="p">):</span>
             <span class="n">text</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__doc__</span>
         <span class="k">elif</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;evennia.help.models.HelpEntry&quot;</span><span class="p">):</span>
@@ -339,8 +339,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># Get the queryset for the help entries the user can access</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">queryset</span><span class="p">:</span>
@@ -365,9 +365,7 @@
 
         <span class="c1"># Check if this object was requested in a valid manner</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;No (</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">)s found matching the query.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No (</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">)s found matching the query.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># cache the object if one was found</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>

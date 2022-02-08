@@ -286,7 +286,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="s2">&quot;NAMES </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IRCBot.irc_RPL_NAMREPLY"><a class="viewcode-back" href="../../../../api/evennia.server.portal.irc.html#evennia.server.portal.irc.IRCBot.irc_RPL_NAMREPLY">[docs]</a>    <span class="k">def</span> <span class="nf">irc_RPL_NAMREPLY</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;&quot;Handles IRC NAME request returns (nicklist)&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; &quot;Handles IRC NAME request returns (nicklist)&quot;&quot;&quot;</span>
         <span class="n">channel</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">channel</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
             <span class="k">return</span>

@@ -146,7 +146,8 @@
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="se">\n</span><span class="s2">The XYZgrid contrib requires &quot;</span>
-        <span class="s2">&quot;the SciPy package. Install with `pip install scipy&#39;.&quot;</span><span class="p">)</span>
+        <span class="s2">&quot;the SciPy package. Install with `pip install scipy&#39;.&quot;</span>
+    <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">variable_from_module</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">is_iter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -164,9 +165,7 @@
 <span class="n">_LOADED_PROTOTYPES</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_XYZROOMCLASS</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">MAP_DATA_KEYS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;zcoord&quot;</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="s2">&quot;legend&quot;</span><span class="p">,</span> <span class="s2">&quot;prototypes&quot;</span><span class="p">,</span> <span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="s2">&quot;module_path&quot;</span>
-<span class="p">]</span>
+<span class="n">MAP_DATA_KEYS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;zcoord&quot;</span><span class="p">,</span> <span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="s2">&quot;legend&quot;</span><span class="p">,</span> <span class="s2">&quot;prototypes&quot;</span><span class="p">,</span> <span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="s2">&quot;module_path&quot;</span><span class="p">]</span>
 
 <span class="n">DEFAULT_LEGEND</span> <span class="o">=</span> <span class="n">xymap_legend</span><span class="o">.</span><span class="n">LEGEND</span>
 
@@ -214,11 +213,11 @@
 <span class="sd">    but recommended for readability!</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">mapcorner_symbol</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span>
+    <span class="n">mapcorner_symbol</span> <span class="o">=</span> <span class="s2">&quot;+&quot;</span>
     <span class="n">max_pathfinding_length</span> <span class="o">=</span> <span class="mi">500</span>
-    <span class="n">empty_symbol</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+    <span class="n">empty_symbol</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
     <span class="c1"># we normally only accept one single character for the legend key</span>
-    <span class="n">legend_key_exceptions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">legend_key_exceptions</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
 
 <div class="viewcode-block" id="XYMap.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_module_or_dict</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="n">xyzgrid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -252,7 +251,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_LOADED_PROTOTYPES</span><span class="p">:</span>
             <span class="c1"># inject default prototypes, but don&#39;t override prototype-keys loaded from</span>
             <span class="c1"># settings, if they exist (that means the user wants to replace the defaults)</span>
-            <span class="n">protlib</span><span class="o">.</span><span class="n">load_module_prototypes</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.grid.xyzgrid.prototypes&quot;</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">protlib</span><span class="o">.</span><span class="n">load_module_prototypes</span><span class="p">(</span>
+                <span class="s2">&quot;evennia.contrib.grid.xyzgrid.prototypes&quot;</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
             <span class="n">_LOADED_PROTOTYPES</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span>
@@ -306,7 +307,7 @@
         <span class="n">nnodes</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="p">:</span>
             <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;XYMap(Z=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_X</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_Y</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> nodes&gt;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;XYMap(Z=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_X</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_Y</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> nodes&gt;&quot;</span>
 
 <div class="viewcode-block" id="XYMap.log"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyzgrid</span><span class="p">:</span>
@@ -359,34 +360,41 @@
                 <span class="n">mapdata</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;XYMAP_DATA&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mapdata</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span><span class="s2">&quot;No valid XYMAP_DATA or XYMAP_DATA_LIST could be found from &quot;</span>
-                           <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">map_module_or_dict</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
+                <span class="s2">&quot;No valid XYMAP_DATA or XYMAP_DATA_LIST could be found from &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">map_module_or_dict</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># validate</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mapdata</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">MAP_DATA_KEYS</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mapdata has keys </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">mapdata</span><span class="p">)</span><span class="si">}</span><span class="s2">, but only &quot;</span>
-                           <span class="sa">f</span><span class="s2">&quot;keys </span><span class="si">{</span><span class="n">MAP_DATA_KEYS</span><span class="si">}</span><span class="s2"> are allowed.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Mapdata has keys </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">mapdata</span><span class="p">)</span><span class="si">}</span><span class="s2">, but only &quot;</span> <span class="sa">f</span><span class="s2">&quot;keys </span><span class="si">{</span><span class="n">MAP_DATA_KEYS</span><span class="si">}</span><span class="s2"> are allowed.&quot;</span>
+            <span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;legend&#39;</span><span class="p">,</span> <span class="n">DEFAULT_LEGEND</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;legend&quot;</span><span class="p">,</span> <span class="n">DEFAULT_LEGEND</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend_key_exceptions</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Map-legend key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; is invalid: All keys must &quot;</span>
-                                   <span class="s2">&quot;be exactly one character long. Use the node/link&#39;s &quot;</span>
-                                   <span class="s2">&quot;`.display_symbol` property to change how it is &quot;</span>
-                                   <span class="s2">&quot;displayed.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;map&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapdata</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">mapdata</span><span class="p">[</span><span class="s1">&#39;map&#39;</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Map-legend key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; is invalid: All keys must &quot;</span>
+                        <span class="s2">&quot;be exactly one character long. Use the node/link&#39;s &quot;</span>
+                        <span class="s2">&quot;`.display_symbol` property to change how it is &quot;</span>
+                        <span class="s2">&quot;displayed.&quot;</span>
+                    <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;map&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapdata</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">mapdata</span><span class="p">[</span><span class="s2">&quot;map&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span><span class="s2">&quot;No map found. Add &#39;map&#39; key to map-data dict.&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prototypes&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototypes&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_iter</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">2</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prototype override key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is malformed: It must be a &quot;</span>
-                               <span class="s2">&quot;coordinate (X, Y) for nodes or (X, Y, direction) for links; &quot;</span>
-                               <span class="s2">&quot;where direction is a supported direction string (&#39;n&#39;, &#39;ne&#39;, etc).&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Prototype override key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is malformed: It must be a &quot;</span>
+                    <span class="s2">&quot;coordinate (X, Y) for nodes or (X, Y, direction) for links; &quot;</span>
+                    <span class="s2">&quot;where direction is a supported direction string (&#39;n&#39;, &#39;ne&#39;, etc).&quot;</span>
+                <span class="p">)</span>
 
         <span class="c1"># store/update result</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Z</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;zcoord&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mapstring</span> <span class="o">=</span> <span class="n">mapdata</span><span class="p">[</span><span class="s1">&#39;map&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prototypes&#39;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;options&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Z</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;zcoord&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapstring</span> <span class="o">=</span> <span class="n">mapdata</span><span class="p">[</span><span class="s2">&quot;map&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototypes&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">mapdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="p">{})</span>
 
         <span class="c1"># merge the custom legend onto the default legend to allow easily</span>
         <span class="c1"># overriding only parts of it</span>
@@ -399,8 +407,9 @@
                 <span class="c1"># nothing more to do</span>
                 <span class="k">continue</span>
             <span class="c1"># we need to load the prototype dict onto each for ease of access. Note that</span>
-            <span class="n">proto</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                             <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">proto</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span>
+                <span class="n">prototype</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">node_or_link_class</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">proto</span></div>
 
 <div class="viewcode-block" id="XYMap.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -433,7 +442,8 @@
             <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;The mapstring must have at least two &#39;</span><span class="si">{</span><span class="n">mapcorner_symbol</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
                 <span class="s2">&quot;symbols marking the upper- and bottom-left corners of the &quot;</span>
-                <span class="s2">&quot;grid area.&quot;</span><span class="p">)</span>
+                <span class="s2">&quot;grid area.&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># find the the position (in the string as a whole) of the top-left corner-marker</span>
         <span class="n">maplines</span> <span class="o">=</span> <span class="n">mapstring</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -448,13 +458,15 @@
         <span class="c1"># find the position (in the string as a whole) of the bottom-left corner-marker</span>
         <span class="c1"># this is always in a stright line down from the first marker</span>
         <span class="n">botleft_marker_x</span><span class="p">,</span> <span class="n">botleft_marker_y</span> <span class="o">=</span> <span class="n">topleft_marker_x</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">for</span> <span class="n">botleft_marker_y</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">maplines</span><span class="p">[</span><span class="n">topleft_marker_y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]):</span>
+        <span class="k">for</span> <span class="n">botleft_marker_y</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">maplines</span><span class="p">[</span><span class="n">topleft_marker_y</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]):</span>
             <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">mapcorner_symbol</span><span class="p">)</span> <span class="o">==</span> <span class="n">topleft_marker_x</span><span class="p">:</span>
                 <span class="k">break</span>
         <span class="k">if</span> <span class="n">botleft_marker_y</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No bottom-left corner-marker (</span><span class="si">{</span><span class="n">mapcorner_symbol</span><span class="si">}</span><span class="s2">) found! &quot;</span>
-                                 <span class="s2">&quot;Make sure it lines up with the top-left corner-marker &quot;</span>
-                                 <span class="sa">f</span><span class="s2">&quot;(found at column </span><span class="si">{</span><span class="n">topleft_marker_x</span><span class="si">}</span><span class="s2"> of the string).&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No bottom-left corner-marker (</span><span class="si">{</span><span class="n">mapcorner_symbol</span><span class="si">}</span><span class="s2">) found! &quot;</span>
+                <span class="s2">&quot;Make sure it lines up with the top-left corner-marker &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(found at column </span><span class="si">{</span><span class="n">topleft_marker_x</span><span class="si">}</span><span class="s2"> of the string).&quot;</span>
+            <span class="p">)</span>
         <span class="c1"># the actual coordinate is dy below the topleft marker so we need to shift</span>
         <span class="n">botleft_marker_y</span> <span class="o">+=</span> <span class="n">topleft_marker_y</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -485,8 +497,7 @@
                 <span class="n">mapnode_or_link_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">mapnode_or_link_class</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Symbol &#39;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">&#39; on XY=(</span><span class="si">{</span><span class="n">ix</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">iy</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">) &quot;</span>
-                        <span class="s2">&quot;is not found in LEGEND.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Symbol &#39;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">&#39; on XY=(</span><span class="si">{</span><span class="n">ix</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">iy</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">) &quot;</span> <span class="s2">&quot;is not found in LEGEND.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mapnode_or_link_class</span><span class="p">,</span> <span class="s2">&quot;node_index&quot;</span><span class="p">):</span>
                     <span class="c1"># A mapnode. Mapnodes can only be placed on even grid positions, where</span>
@@ -496,7 +507,8 @@
                         <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">&quot;Symbol &#39;</span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">&#39; on XY=(</span><span class="si">{</span><span class="n">ix</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">iy</span> <span class="o">/</span> <span class="mi">2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">) marks a &quot;</span>
                             <span class="s2">&quot;MapNode but is located between integer (X,Y) positions (only &quot;</span>
-                            <span class="s2">&quot;Links can be placed between coordinates)!&quot;</span><span class="p">)</span>
+                            <span class="s2">&quot;Links can be placed between coordinates)!&quot;</span>
+                        <span class="p">)</span>
 
                     <span class="c1"># save the node to several different maps for different uses</span>
                     <span class="c1"># in both coordinate systems</span>
@@ -504,14 +516,17 @@
                     <span class="n">max_X</span><span class="p">,</span> <span class="n">max_Y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_X</span><span class="p">,</span> <span class="n">iX</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_Y</span><span class="p">,</span> <span class="n">iY</span><span class="p">)</span>
                     <span class="n">node_index</span> <span class="o">+=</span> <span class="mi">1</span>
 
-                    <span class="n">xygrid</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="n">XYgrid</span><span class="p">[</span><span class="n">iX</span><span class="p">][</span><span class="n">iY</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index_map</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span> <span class="o">=</span> \
-                        <span class="n">mapnode_or_link_class</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ix</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">iy</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">,</span>
-                                              <span class="n">node_index</span><span class="o">=</span><span class="n">node_index</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">char</span><span class="p">,</span> <span class="n">xymap</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+                    <span class="n">xygrid</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="n">XYgrid</span><span class="p">[</span><span class="n">iX</span><span class="p">][</span><span class="n">iY</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index_map</span><span class="p">[</span>
+                        <span class="n">node_index</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">mapnode_or_link_class</span><span class="p">(</span>
+                        <span class="n">x</span><span class="o">=</span><span class="n">ix</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">iy</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">,</span> <span class="n">node_index</span><span class="o">=</span><span class="n">node_index</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">char</span><span class="p">,</span> <span class="n">xymap</span><span class="o">=</span><span class="bp">self</span>
+                    <span class="p">)</span>
 
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># we have a link at this xygrid position (this is ok everywhere)</span>
-                    <span class="n">xygrid</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapnode_or_link_class</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ix</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">iy</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">char</span><span class="p">,</span>
-                                                           <span class="n">xymap</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+                    <span class="n">xygrid</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapnode_or_link_class</span><span class="p">(</span>
+                        <span class="n">x</span><span class="o">=</span><span class="n">ix</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">iy</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">char</span><span class="p">,</span> <span class="n">xymap</span><span class="o">=</span><span class="bp">self</span>
+                    <span class="p">)</span>
 
                 <span class="c1"># store the symbol mapping for transition lookups</span>
                 <span class="n">symbol_map</span><span class="p">[</span><span class="n">char</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xygrid</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="p">])</span>
@@ -541,20 +556,23 @@
                 <span class="n">node_coord</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span>
                 <span class="c1"># load prototype from override, or use default</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">node</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">flatten_prototype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="n">node_coord</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">node</span><span class="o">.</span><span class="n">prototype</span><span class="p">)),</span>
-                        <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">flatten_prototype</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="n">node_coord</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">node</span><span class="o">.</span><span class="n">prototype</span><span class="p">)</span>
+                        <span class="p">),</span>
+                        <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Room prototype malformed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
                 <span class="c1"># do the same for links (x, y, direction) coords</span>
                 <span class="k">for</span> <span class="n">direction</span><span class="p">,</span> <span class="n">maplink</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">first_links</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">maplink</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">flatten_prototype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                            <span class="n">node_coord</span> <span class="o">+</span> <span class="p">(</span><span class="n">direction</span><span class="p">,),</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">maplink</span><span class="o">.</span><span class="n">prototype</span><span class="p">)),</span>
-                            <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span>
+                        <span class="n">maplink</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="n">flatten_prototype</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="n">node_coord</span> <span class="o">+</span> <span class="p">(</span><span class="n">direction</span><span class="p">,),</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">prototypes</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">maplink</span><span class="o">.</span><span class="n">prototype</span><span class="p">),</span>
+                            <span class="p">),</span>
+                            <span class="n">no_db</span><span class="o">=</span><span class="n">_NO_DB_PROTOTYPES</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">MapParserError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exit prototype malformed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">maplink</span><span class="p">)</span>
@@ -581,8 +599,10 @@
 <span class="sd">            This performs a depth-first pass down the the given dist.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">def</span> <span class="nf">_scan_neighbors</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                            <span class="n">xmin</span><span class="o">=</span><span class="n">BIGVAL</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">BIGVAL</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">_scan_neighbors</span><span class="p">(</span>
+            <span class="n">start_node</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="n">BIGVAL</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">BIGVAL</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">):</span>
 
             <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">start_node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">start_node</span><span class="o">.</span><span class="n">y</span>
             <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">))</span>
@@ -600,9 +620,15 @@
                         <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">ymax</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
                     <span class="n">points</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">_scan_neighbors</span><span class="p">(</span>
-                        <span class="n">end_node</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="n">dist</span><span class="p">,</span>
-                        <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
-                        <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="n">end_node</span><span class="p">,</span>
+                        <span class="n">points</span><span class="p">,</span>
+                        <span class="n">dist</span><span class="o">=</span><span class="n">dist</span><span class="p">,</span>
+                        <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
+                        <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span>
+                        <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+                        <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
+                        <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">points</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span>
 
@@ -623,14 +649,16 @@
             <span class="c1"># check if the solution for this grid was already solved previously.</span>
 
             <span class="n">mapstr</span><span class="p">,</span> <span class="n">dist_matrix</span><span class="p">,</span> <span class="n">pathfinding_routes</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pathfinder_baked_filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pathfinder_baked_filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">mapstr</span><span class="p">,</span> <span class="n">dist_matrix</span><span class="p">,</span> <span class="n">pathfinding_routes</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fil</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">()</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">mapstr</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapstring</span>
-                    <span class="ow">and</span> <span class="n">dist_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                    <span class="ow">and</span> <span class="n">pathfinding_routes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">mapstr</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapstring</span>
+                <span class="ow">and</span> <span class="n">dist_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="n">pathfinding_routes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">):</span>
                 <span class="c1"># this is important - it means the map hasn&#39;t changed so</span>
                 <span class="c1"># we can re-use the stored data!</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dist_matrix</span> <span class="o">=</span> <span class="n">dist_matrix</span>
@@ -648,16 +676,20 @@
 
         <span class="c1"># solve using Dijkstra&#39;s algorithm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dist_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathfinding_routes</span> <span class="o">=</span> <span class="n">dijkstra</span><span class="p">(</span>
-            <span class="n">pathfinding_matrix</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">return_predecessors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_pathfinding_length</span><span class="p">)</span>
+            <span class="n">pathfinding_matrix</span><span class="p">,</span>
+            <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">return_predecessors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_pathfinding_length</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathfinder_baked_filename</span><span class="p">:</span>
             <span class="c1"># try to cache the results</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pathfinder_baked_filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
-                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">mapstring</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathfinding_routes</span><span class="p">),</span>
-                            <span class="n">fil</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pathfinder_baked_filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapstring</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathfinding_routes</span><span class="p">),</span> <span class="n">fil</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="mi">4</span>
+                <span class="p">)</span></div>
 
-<div class="viewcode-block" id="XYMap.spawn_nodes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">)):</span>
+<div class="viewcode-block" id="XYMap.spawn_nodes"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the nodes of this XYMap into actual in-world rooms by spawning their</span>
 <span class="sd">        related prototypes in the correct coordinate positions. This must be done *first*</span>
@@ -680,12 +712,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_XYZROOMCLASS</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.contrib.grid.xyzgrid.xyzroom</span> <span class="kn">import</span> <span class="n">XYZRoom</span> <span class="k">as</span> <span class="n">_XYZROOMCLASS</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">xy</span>
-        <span class="n">wildcard</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+        <span class="n">wildcard</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
         <span class="n">spawned</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># find existing nodes, in case some rooms need to be removed</span>
-        <span class="n">map_coords</span> <span class="o">=</span> <span class="p">[(</span><span class="n">node</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span>
-                      <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">X</span><span class="p">))]</span>
+        <span class="n">map_coords</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">Y</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">X</span><span class="p">))</span>
+        <span class="p">]</span>
         <span class="k">for</span> <span class="n">existing_room</span> <span class="ow">in</span> <span class="n">_XYZROOMCLASS</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter_xyz</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">)):</span>
             <span class="n">roomX</span><span class="p">,</span> <span class="n">roomY</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">existing_room</span><span class="o">.</span><span class="n">xyz</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">roomX</span><span class="p">,</span> <span class="n">roomY</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">map_coords</span><span class="p">:</span>
@@ -699,7 +733,7 @@
                 <span class="n">spawned</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">spawned</span></div>
 
-<div class="viewcode-block" id="XYMap.spawn_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_links">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.spawn_links"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_links">[docs]</a>    <span class="k">def</span> <span class="nf">spawn_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert links of this XYMap into actual in-game exits by spawning their related</span>
 <span class="sd">        prototypes. It&#39;s possible to only spawn a specic exit by specifying the node and</span>
@@ -718,7 +752,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">xy</span>
-        <span class="n">wildcard</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+        <span class="n">wildcard</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">nodes</span><span class="p">:</span>
             <span class="n">nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index_map</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">Z</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">X</span><span class="p">))</span>
@@ -748,8 +782,10 @@
 
         <span class="n">iX</span><span class="p">,</span> <span class="n">iY</span> <span class="o">=</span> <span class="n">xy</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">iX</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_X</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">iY</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_Y</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_node_from_coord got coordinate </span><span class="si">{</span><span class="n">xy</span><span class="si">}</span><span class="s2"> which is &quot;</span>
-                           <span class="sa">f</span><span class="s2">&quot;outside the grid size of (0,0) - (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_X</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_Y</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;get_node_from_coord got coordinate </span><span class="si">{</span><span class="n">xy</span><span class="si">}</span><span class="s2"> which is &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;outside the grid size of (0,0) - (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_X</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_Y</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">XYgrid</span><span class="p">[</span><span class="n">iX</span><span class="p">][</span><span class="n">iY</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -795,8 +831,10 @@
             <span class="n">istartnode</span> <span class="o">=</span> <span class="n">startnode</span><span class="o">.</span><span class="n">node_index</span>
             <span class="n">inextnode</span> <span class="o">=</span> <span class="n">endnode</span><span class="o">.</span><span class="n">node_index</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Map.get_shortest_path received start/end nodes </span><span class="si">{</span><span class="n">startnode</span><span class="si">}</span><span class="s2"> and &quot;</span>
-                           <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">endnode</span><span class="si">}</span><span class="s2">. They must both be MapNodes (not Links)&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Map.get_shortest_path received start/end nodes </span><span class="si">{</span><span class="n">startnode</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">endnode</span><span class="si">}</span><span class="s2">. They must both be MapNodes (not Links)&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathfinding_routes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">calculate_path_matrix</span><span class="p">()</span>
@@ -824,13 +862,18 @@
 
         <span class="k">return</span> <span class="n">directions</span><span class="p">,</span> <span class="n">path</span></div>
 
-<div class="viewcode-block" id="XYMap.get_visual_range"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_visual_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_visual_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nodes&#39;</span><span class="p">,</span>
-                         <span class="n">character</span><span class="o">=</span><span class="s1">&#39;@&#39;</span><span class="p">,</span>
-                         <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                         <span class="n">target_path_style</span><span class="o">=</span><span class="s2">&quot;|y</span><span class="si">{display_symbol}</span><span class="s2">|n&quot;</span><span class="p">,</span>
-                         <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                         <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                         <span class="n">return_str</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="XYMap.get_visual_range"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_visual_range">[docs]</a>    <span class="k">def</span> <span class="nf">get_visual_range</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">xy</span><span class="p">,</span>
+        <span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nodes&quot;</span><span class="p">,</span>
+        <span class="n">character</span><span class="o">=</span><span class="s2">&quot;@&quot;</span><span class="p">,</span>
+        <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">target_path_style</span><span class="o">=</span><span class="s2">&quot;|y</span><span class="si">{display_symbol}</span><span class="s2">|n&quot;</span><span class="p">,</span>
+        <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">return_str</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a part of the grid centered on a specific point and extended a certain number</span>
 <span class="sd">        of nodes or grid points in every direction.</span>
@@ -918,7 +961,7 @@
             <span class="c1"># nothing but ourselves or emptiness</span>
             <span class="k">return</span> <span class="n">character</span> <span class="k">if</span> <span class="n">character</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">empty_symbol</span>
 
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;nodes&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;nodes&quot;</span><span class="p">:</span>
             <span class="c1"># dist measures only full, reachable nodes.</span>
             <span class="n">points</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_topology_around_coord</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="n">dist</span><span class="p">)</span>
 
@@ -930,7 +973,7 @@
             <span class="k">for</span> <span class="p">(</span><span class="n">ix0</span><span class="p">,</span> <span class="n">iy0</span><span class="p">)</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
                 <span class="n">gridmap</span><span class="p">[</span><span class="n">iy0</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">][</span><span class="n">ix0</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">]</span> <span class="o">=</span> <span class="n">display_map</span><span class="p">[</span><span class="n">iy0</span><span class="p">][</span><span class="n">ix0</span><span class="p">]</span>
 
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;scan&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;scan&quot;</span><span class="p">:</span>
             <span class="c1"># scan-mode - dist measures individual grid points</span>
 
             <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ix</span> <span class="o">-</span> <span class="n">dist</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">ix</span> <span class="o">+</span> <span class="n">dist</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -939,8 +982,10 @@
             <span class="n">gridmap</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">display_map</span><span class="p">[</span><span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">]]</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Map.get_visual_range &#39;mode&#39; was &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                           <span class="s2">&quot;- it must be either &#39;scan&#39; or &#39;nodes&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MapError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Map.get_visual_range &#39;mode&#39; was &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="s2">&quot;- it must be either &#39;scan&#39; or &#39;nodes&#39;.&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
             <span class="n">gridmap</span><span class="p">[</span><span class="n">iyc</span><span class="p">][</span><span class="n">ixc</span><span class="p">]</span> <span class="o">=</span> <span class="n">character</span>  <span class="c1"># correct indexing; it&#39;s a list of lines</span>
 
@@ -948,8 +993,7 @@
             <span class="c1"># stylize path to target</span>
 
             <span class="k">def</span> <span class="nf">_default_callable</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">target_path_style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">display_symbol</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">get_display_symbol</span><span class="p">())</span>
+                <span class="k">return</span> <span class="n">target_path_style</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">display_symbol</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">get_display_symbol</span><span class="p">())</span>
 
             <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">target_path_style</span><span class="p">):</span>
                 <span class="n">_target_path_style</span> <span class="o">=</span> <span class="n">target_path_style</span>
@@ -958,7 +1002,7 @@
 
             <span class="n">_</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortest_path</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 
-            <span class="n">maxstep</span> <span class="o">=</span> <span class="n">dist</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;nodes&#39;</span> <span class="k">else</span> <span class="n">dist</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">maxstep</span> <span class="o">=</span> <span class="n">dist</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;nodes&quot;</span> <span class="k">else</span> <span class="n">dist</span> <span class="o">/</span> <span class="mi">2</span>
             <span class="n">nsteps</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">node_or_link</span> <span class="ow">in</span> <span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node_or_link</span><span class="p">,</span> <span class="s2">&quot;node_index&quot;</span><span class="p">):</span>

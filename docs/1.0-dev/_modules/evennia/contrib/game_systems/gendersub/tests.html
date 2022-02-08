@@ -64,7 +64,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">gendersub</span><span class="o">.</span><span class="n">_RE_GENDER_PRONOUN</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">_get_pronoun</span><span class="p">,</span> <span class="n">txt</span><span class="p">),</span> <span class="s2">&quot;Test their gender&quot;</span>
         <span class="p">)</span>
-        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.game_systems.gendersub.gendersub.DefaultCharacter.msg&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_msg</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span>
+            <span class="s2">&quot;evennia.contrib.game_systems.gendersub.gendersub.DefaultCharacter.msg&quot;</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mock_msg</span><span class="p">:</span>
             <span class="n">char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="s2">&quot;female&quot;</span>
             <span class="n">char</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Test |p gender&quot;</span><span class="p">)</span>
             <span class="n">mock_msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;Test her gender&quot;</span><span class="p">,</span> <span class="n">from_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>

@@ -326,9 +326,12 @@
                 <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tup</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">settings_compare</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mismatches</span>
             <span class="p">):</span>
                 <span class="c1"># update the database</span>
-                <span class="n">INFO_DICT</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="s2"> &#39;</span><span class="si">%s</span><span class="s2">&#39; changed to &#39;</span><span class="si">%s</span><span class="s2">&#39;. Updating unchanged entries in database ...&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">settings_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">prev</span><span class="p">,</span> <span class="n">curr</span><span class="p">)</span>
+                <span class="n">INFO_DICT</span><span class="p">[</span>
+                    <span class="s2">&quot;info&quot;</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="s2"> &#39;</span><span class="si">%s</span><span class="s2">&#39; changed to &#39;</span><span class="si">%s</span><span class="s2">&#39;. Updating unchanged entries in database ...&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">settings_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">prev</span><span class="p">,</span>
+                    <span class="n">curr</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_cmdset_storage__exact</span><span class="o">=</span><span class="n">prev</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
@@ -386,7 +389,7 @@
                 <span class="c1"># i.e. this is an empty DB that needs populating.</span>
                 <span class="n">INFO_DICT</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; Server started for the first time. Setting defaults.&quot;</span>
                 <span class="n">initial_setup</span><span class="o">.</span><span class="n">handle_setup</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">last_initial_setup_step</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="n">last_initial_setup_step</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
                 <span class="c1"># last step crashed, so we weill resume from this step.</span>
                 <span class="c1"># modules and setup will resume from this step, retrying</span>
                 <span class="c1"># the last failed module. When all are finished, the step</span>
@@ -437,7 +440,7 @@
 <span class="sd">            mode (str): One of shutdown, reload or reset</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypedObject</span>
 
         <span class="c1"># start server time and maintenance task</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maintenance_task</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="n">_server_maintenance</span><span class="p">)</span>
@@ -446,8 +449,11 @@
         <span class="c1"># update eventual changed defaults</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_defaults</span><span class="p">()</span>
 
-        <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span>
-        <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">AccountDB</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span>
+        <span class="c1"># run at_init() on all cached entities on reconnect</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="n">entity</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">typeclass_db</span><span class="o">.</span><span class="n">get_all_cached_instances</span><span class="p">()]</span>
+            <span class="k">for</span> <span class="n">typeclass_db</span> <span class="ow">in</span> <span class="n">TypedObject</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
+        <span class="p">]</span>
 
         <span class="c1"># call correct server hook based on start file value</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">:</span>
@@ -458,6 +464,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_cold_start</span><span class="p">()</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;Evennia Server successfully restarted in &#39;reset&#39; mode.&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_server_cold_start</span><span class="p">()</span>
             <span class="c1"># clear eventual lingering session storages</span>
             <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">clear_all_sessids</span><span class="p">()</span>

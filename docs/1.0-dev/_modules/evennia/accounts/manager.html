@@ -318,8 +318,11 @@
             <span class="n">new_account</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
 
         <span class="n">new_account</span><span class="o">.</span><span class="n">_createdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span> <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span>
-            <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span>
+            <span class="n">locks</span><span class="o">=</span><span class="n">locks</span><span class="p">,</span>
+            <span class="n">permissions</span><span class="o">=</span><span class="n">permissions</span><span class="p">,</span>
+            <span class="n">report_to</span><span class="o">=</span><span class="n">report_to</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># saving will trigger the signal that calls the</span>
         <span class="c1"># at_first_save hook on the typeclass, where the _createdict</span>

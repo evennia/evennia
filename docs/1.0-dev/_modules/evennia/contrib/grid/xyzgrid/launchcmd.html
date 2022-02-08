@@ -202,10 +202,11 @@
     <span class="s2">&quot;add&quot;</span><span class="p">:</span> <span class="n">_HELP_ADD</span><span class="p">,</span>
     <span class="s2">&quot;spawn&quot;</span><span class="p">:</span> <span class="n">_HELP_SPAWN</span><span class="p">,</span>
     <span class="s2">&quot;initpath&quot;</span><span class="p">:</span> <span class="n">_HELP_INITPATH</span><span class="p">,</span>
-    <span class="s2">&quot;delete&quot;</span><span class="p">:</span> <span class="n">_HELP_DELETE</span>
+    <span class="s2">&quot;delete&quot;</span><span class="p">:</span> <span class="n">_HELP_DELETE</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">evennia</span><span class="o">.</span><span class="n">_init</span><span class="p">()</span>
+
 
 <span class="k">def</span> <span class="nf">_option_help</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -230,6 +231,7 @@
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
     <span class="n">xyzgrid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
 
     <span class="n">xymap_data</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">grid</span>
@@ -252,7 +254,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">xymap</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No XYMap with Z=&#39;</span><span class="si">{</span><span class="n">zcoord</span><span class="si">}</span><span class="s2">&#39; was found on grid.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">nrooms</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">get_room</span><span class="p">((</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">zcoord</span><span class="p">))</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">nrooms</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">get_room</span><span class="p">((</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">zcoord</span><span class="p">))</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
         <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">node_index_map</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">xymap</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">checkwarning</span> <span class="o">=</span> <span class="kc">True</span>
@@ -260,22 +262,29 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nrooms</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> rooms are spawned.&quot;</span><span class="p">)</span>
             <span class="n">checkwarning</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">elif</span> <span class="n">nrooms</span> <span class="o">&lt;</span> <span class="n">nnodes</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nrooms</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> rooms are spawned</span><span class="se">\n</span><span class="s2">&quot;</span>
-                  <span class="s2">&quot;Note: Transitional nodes are *not* spawned (they just point </span><span class="se">\n</span><span class="s2">&quot;</span>
-                  <span class="s2">&quot;to another map), so the &#39;missing room(s)&#39; may just be from such nodes.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nrooms</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> rooms are spawned</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Note: Transitional nodes are *not* spawned (they just point </span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;to another map), so the &#39;missing room(s)&#39; may just be from such nodes.&quot;</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">nrooms</span> <span class="o">&gt;</span> <span class="n">nnodes</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nrooms</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> rooms are spawned</span><span class="se">\n</span><span class="s2">&quot;</span>
-                  <span class="s2">&quot;Note: Maybe some rooms were removed from map. Run &#39;spawn&#39; to re-sync.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nrooms</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> rooms are spawned</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Note: Maybe some rooms were removed from map. Run &#39;spawn&#39; to re-sync.&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nrooms</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">nnodes</span><span class="si">}</span><span class="s2"> rooms are spawned</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">checkwarning</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: This check is not complete; it does not consider changed map &quot;</span>
-                  <span class="s2">&quot;topology</span><span class="se">\n</span><span class="s2">like relocated nodes/rooms and new/removed links/exits - this &quot;</span>
-                  <span class="s2">&quot;is calculated only during a spawn.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Note: This check is not complete; it does not consider changed map &quot;</span>
+                <span class="s2">&quot;topology</span><span class="se">\n</span><span class="s2">like relocated nodes/rooms and new/removed links/exits - this &quot;</span>
+                <span class="s2">&quot;is calculated only during a spawn.&quot;</span>
+            <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Displayed map (as appearing in-game):</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">ansi</span><span class="o">.</span><span class="n">parse_ansi</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xymap</span><span class="p">)))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Raw map string (including axes and invisible nodes/links):</span><span class="se">\n</span><span class="s2">&quot;</span>
-              <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">mapstring</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Raw map string (including axes and invisible nodes/links):</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">mapstring</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Custom map options: </span><span class="si">{</span><span class="n">xymap</span><span class="o">.</span><span class="n">options</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">legend</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">node_or_link</span> <span class="ow">in</span> <span class="n">xymap</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -302,6 +311,7 @@
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
     <span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
 
     <span class="n">xymap_data_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -332,35 +342,44 @@
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
     <span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
 
     <span class="k">if</span> <span class="n">suboptions</span><span class="p">:</span>
-        <span class="n">opts</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboptions</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;()&#39;</span><span class="p">)</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suboptions</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;()&quot;</span><span class="p">)</span>
         <span class="c1"># coordinate tuple</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;spawn coordinate must be given as (X, Y, Z) tuple, where &#39;*&#39; act &quot;</span>
-                  <span class="s2">&quot;wild cards and Z is the mapname/z-coord of the map to load.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;spawn coordinate must be given as (X, Y, Z) tuple, where &#39;*&#39; act &quot;</span>
+                <span class="s2">&quot;wild cards and Z is the mapname/z-coord of the map to load.&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span>
 
-    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">y</span> <span class="o">==</span> <span class="n">z</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
-        <span class="n">inp</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;This will (re)spawn the entire grid. If it was built before, it may spawn </span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;new rooms or delete rooms that no longer matches the grid.</span><span class="se">\n</span><span class="s2">Do you want to &quot;</span>
-                    <span class="s2">&quot;continue? [Y]/N? &quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">y</span> <span class="o">==</span> <span class="n">z</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+        <span class="n">inp</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+            <span class="s2">&quot;This will (re)spawn the entire grid. If it was built before, it may spawn </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;new rooms or delete rooms that no longer matches the grid.</span><span class="se">\n</span><span class="s2">Do you want to &quot;</span>
+            <span class="s2">&quot;continue? [Y]/N? &quot;</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">inp</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;This will spawn/delete objects in the database matching grid coordinates </span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">) (where &#39;*&#39; is a wildcard).</span><span class="se">\n</span><span class="s2">Do you want to continue? [Y]/N? &quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">inp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">):</span>
+        <span class="n">inp</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+            <span class="s2">&quot;This will spawn/delete objects in the database matching grid coordinates </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">) (where &#39;*&#39; is a wildcard).</span><span class="se">\n</span><span class="s2">Do you want to continue? [Y]/N? &quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">inp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Beginner-Tutorial spawn ...&quot;</span><span class="p">)</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... spawn complete!</span><span class="se">\n</span><span class="s2">It&#39;s recommended to reload the server to refresh caches if this &quot;</span>
-          <span class="s2">&quot;modified an existing grid.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;... spawn complete!</span><span class="se">\n</span><span class="s2">It&#39;s recommended to reload the server to refresh caches if this &quot;</span>
+        <span class="s2">&quot;modified an existing grid.&quot;</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_option_initpath</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">):</span>
@@ -373,6 +392,7 @@
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
     <span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
 
     <span class="n">xymaps</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">all_maps</span><span class="p">()</span>
@@ -396,19 +416,24 @@
     <span class="c1"># override grid&#39;s logger to echo directly to console</span>
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
     <span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">suboptions</span><span class="p">:</span>
-        <span class="n">repl</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;WARNING: This will delete the ENTIRE Grid and wipe all rooms/exits!&quot;</span>
-                     <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Objects/Chars inside deleted rooms will be moved to their home locations.&quot;</span>
-                     <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">This can&#39;t be undone. Are you sure you want to continue? Y/[N]? &quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">repl</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">):</span>
+        <span class="n">repl</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+            <span class="s2">&quot;WARNING: This will delete the ENTIRE Grid and wipe all rooms/exits!&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Objects/Chars inside deleted rooms will be moved to their home locations.&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">This can&#39;t be undone. Are you sure you want to continue? Y/[N]? &quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">repl</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Deleting grid ...&quot;</span><span class="p">)</span>
         <span class="n">grid</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... done.</span><span class="se">\n</span><span class="s2">Please reload the server now; otherwise &quot;</span>
-              <span class="s2">&quot;removed rooms may linger in cache.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;... done.</span><span class="se">\n</span><span class="s2">Please reload the server now; otherwise &quot;</span>
+            <span class="s2">&quot;removed rooms may linger in cache.&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span>
 
     <span class="n">zcoords</span> <span class="o">=</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">suboptions</span><span class="p">)</span>
@@ -418,21 +443,24 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mapname/zcoord </span><span class="si">{</span><span class="n">zcoord</span><span class="si">}</span><span class="s2"> is not a part of the grid.&quot;</span><span class="p">)</span>
             <span class="n">err</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid mapnames/zcoords are</span><span class="se">\n</span><span class="s2">:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">xymap</span><span class="o">.</span><span class="n">Z</span> <span class="k">for</span> <span class="n">xymap</span> <span class="ow">in</span> <span class="n">grid</span><span class="o">.</span><span class="n">all_rooms</span><span class="p">()))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Valid mapnames/zcoords are</span><span class="se">\n</span><span class="s2">:&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xymap</span><span class="o">.</span><span class="n">Z</span> <span class="k">for</span> <span class="n">xymap</span> <span class="ow">in</span> <span class="n">grid</span><span class="o">.</span><span class="n">all_rooms</span><span class="p">()))</span>
         <span class="k">return</span>
-    <span class="n">repl</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;This will delete map(s) {&#39;, &#39;.join(zcoords)} and wipe all corresponding</span><span class="se">\n</span><span class="s2">&quot;</span>
-                 <span class="s2">&quot;rooms/exits!&quot;</span>
-                 <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Objects/Chars inside deleted rooms will be moved to their home locations.&quot;</span>
-                 <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">This can&#39;t be undone. Are you sure you want to continue? Y/[N]? &quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">repl</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">):</span>
+    <span class="n">repl</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+        <span class="s2">&quot;This will delete map(s) {&#39;, &#39;.join(zcoords)} and wipe all corresponding</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;rooms/exits!&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Objects/Chars inside deleted rooms will be moved to their home locations.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">This can&#39;t be undone. Are you sure you want to continue? Y/[N]? &quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">repl</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Deleting selected xymaps ...&quot;</span><span class="p">)</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">remove_map</span><span class="p">(</span><span class="o">*</span><span class="n">zcoords</span><span class="p">,</span> <span class="n">remove_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... done.</span><span class="se">\n</span><span class="s2">Please reload the server to refresh room caches.&quot;</span>
-          <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Also remember to remove any links from remaining maps pointing to deleted maps.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;... done.</span><span class="se">\n</span><span class="s2">Please reload the server to refresh room caches.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Also remember to remove any links from remaining maps pointing to deleted maps.&quot;</span>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="xyzcommand"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.launchcmd.html#evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand">[docs]</a><span class="k">def</span> <span class="nf">xyzcommand</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -447,23 +475,22 @@
 
     <span class="n">option</span><span class="p">,</span> <span class="o">*</span><span class="n">suboptions</span> <span class="o">=</span> <span class="n">args</span>
 
-    <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;help&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span>
         <span class="n">_option_help</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="s1">&#39;show&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">):</span>
         <span class="n">_option_list</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;init&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;init&quot;</span><span class="p">:</span>
         <span class="n">_option_init</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;add&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;add&quot;</span><span class="p">:</span>
         <span class="n">_option_add</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;spawn&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;spawn&quot;</span><span class="p">:</span>
         <span class="n">_option_spawn</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;initpath&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;initpath&quot;</span><span class="p">:</span>
         <span class="n">_option_initpath</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;delete&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;delete&quot;</span><span class="p">:</span>
         <span class="n">_option_delete</span><span class="p">(</span><span class="o">*</span><span class="n">suboptions</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown option &#39;</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s2">&#39;. Use &#39;evennia xyzgrid help&#39; for valid arguments.&quot;</span><span class="p">)</span></div>
-
 </pre></div>
 
             <div class="clearer"></div>

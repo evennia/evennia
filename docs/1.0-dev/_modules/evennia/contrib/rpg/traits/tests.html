@@ -101,16 +101,28 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test1&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="s2">&quot;test2&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test2&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]},</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s2">&quot;test2&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test2&quot;</span><span class="p">,</span>
+            <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]},</span> <span class="mi">4</span><span class="p">],</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TraitHandlerTest.test_add_trait"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_add_trait">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_trait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_dbstore</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test1&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_dbstore</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">),</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test1&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_dbstore</span><span class="p">(</span><span class="s2">&quot;test2&quot;</span><span class="p">),</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test2&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]},</span> <span class="mi">4</span><span class="p">],},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test2&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]},</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span></div>
 
@@ -370,7 +382,12 @@
             <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
             <span class="n">extra_val1</span><span class="o">=</span><span class="s2">&quot;xvalue1&quot;</span><span class="p">,</span>
             <span class="n">extra_val2</span><span class="o">=</span><span class="s2">&quot;xvalue2&quot;</span><span class="p">,</span>
-            <span class="n">descs</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,},</span>
+            <span class="n">descs</span><span class="o">=</span><span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span></div>
 
@@ -390,7 +407,12 @@
                 <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
                 <span class="s2">&quot;extra_val1&quot;</span><span class="p">:</span> <span class="s2">&quot;xvalue1&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;extra_val2&quot;</span><span class="p">:</span> <span class="s2">&quot;xvalue2&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;descs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,},</span>
+                <span class="s2">&quot;descs&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span>
+                    <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span>
+                    <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span>
+                    <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
                 <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="s2">&quot;ratetarget&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;last_update&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -549,7 +571,12 @@
             <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
             <span class="n">extra_val1</span><span class="o">=</span><span class="s2">&quot;xvalue1&quot;</span><span class="p">,</span>
             <span class="n">extra_val2</span><span class="o">=</span><span class="s2">&quot;xvalue2&quot;</span><span class="p">,</span>
-            <span class="n">descs</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,},</span>
+            <span class="n">descs</span><span class="o">=</span><span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">ratetarget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
@@ -621,7 +648,12 @@
             <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">extra_val1</span><span class="o">=</span><span class="s2">&quot;xvalue1&quot;</span><span class="p">,</span>
             <span class="n">extra_val2</span><span class="o">=</span><span class="s2">&quot;xvalue2&quot;</span><span class="p">,</span>
-            <span class="n">descs</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,},</span>
+            <span class="n">descs</span><span class="o">=</span><span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trait</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traithandler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span></div>
 
@@ -640,7 +672,12 @@
                 <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="s2">&quot;extra_val1&quot;</span><span class="p">:</span> <span class="s2">&quot;xvalue1&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;extra_val2&quot;</span><span class="p">:</span> <span class="s2">&quot;xvalue2&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;descs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,},</span>
+                <span class="s2">&quot;descs&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span>
+                    <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span>
+                    <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span>
+                    <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
                 <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="s2">&quot;ratetarget&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;last_update&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -805,7 +842,12 @@
             <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">extra_val1</span><span class="o">=</span><span class="s2">&quot;xvalue1&quot;</span><span class="p">,</span>
             <span class="n">extra_val2</span><span class="o">=</span><span class="s2">&quot;xvalue2&quot;</span><span class="p">,</span>
-            <span class="n">descs</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,},</span>
+            <span class="n">descs</span><span class="o">=</span><span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;range0&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;range1&quot;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;range2&quot;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;range3&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">ratetarget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
@@ -873,8 +915,20 @@
 
 <div class="viewcode-block" id="TestNumericTraitOperators.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># direct instantiation for testing only; use TraitHandler in production</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">at</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Attack&quot;</span><span class="p">,</span> <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,})</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">at</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">Trait</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Attack&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;trait_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trait&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestNumericTraitOperators.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">at</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>

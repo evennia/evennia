@@ -63,7 +63,11 @@
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultRoom</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span> <span class="n">EvenniaCommandTest</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseEvenniaTest</span><span class="p">,</span>
+    <span class="n">BaseEvenniaCommandTest</span><span class="p">,</span>
+    <span class="n">EvenniaCommandTest</span><span class="p">,</span>
+<span class="p">)</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">help</span> <span class="k">as</span> <span class="n">help_module</span><span class="p">,</span>
     <span class="n">general</span><span class="p">,</span>
@@ -212,83 +216,90 @@
             <span class="n">help_module</span><span class="o">.</span><span class="n">CmdSetHelp</span><span class="p">(),</span>
             <span class="s2">&quot;testhelp, General = This is a test&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Topic &#39;testhelp&#39; was successfully created.&quot;</span><span class="p">,</span>
-            <span class="n">cmdset</span><span class="o">=</span><span class="n">CharacterCmdSet</span><span class="p">()</span>
+            <span class="n">cmdset</span><span class="o">=</span><span class="n">CharacterCmdSet</span><span class="p">(),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">help_module</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">(),</span> <span class="s2">&quot;testhelp&quot;</span><span class="p">,</span> <span class="s2">&quot;Help for testhelp&quot;</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="n">CharacterCmdSet</span><span class="p">())</span></div>
 
-    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
-        <span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>  <span class="c1"># main help entry</span>
-         <span class="s2">&quot;Help for test</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Main help text</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;  test/creating extra stuff&quot;</span>
-         <span class="s2">&quot;  test/something else&quot;</span>
-         <span class="s2">&quot;  test/more&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/creating extra stuff&quot;</span><span class="p">,</span>  <span class="c1"># subtopic, full match</span>
-         <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/creating&quot;</span><span class="p">,</span>  <span class="c1"># startswith-match</span>
-         <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/extra&quot;</span><span class="p">,</span>  <span class="c1"># partial match</span>
-         <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/extra/subsubtopic&quot;</span><span class="p">,</span>  <span class="c1"># partial subsub-match</span>
-         <span class="s2">&quot;Help for test/creating extra stuff/subsubtopic</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;A subsubtopic text&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/creating extra/subsub&quot;</span><span class="p">,</span>  <span class="c1"># partial subsub-match</span>
-         <span class="s2">&quot;Help for test/creating extra stuff/subsubtopic</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;A subsubtopic text&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/Something else&quot;</span><span class="p">,</span>  <span class="c1"># case</span>
-         <span class="s2">&quot;Help for test/something else</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Something else&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/More&quot;</span><span class="p">,</span>  <span class="c1"># case</span>
-         <span class="s2">&quot;Help for test/more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Another text</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;  test/more/second-more&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/More/Second-more&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;Help for test/more/second-more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;The Second More text.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;  test/more/second-more/more again&quot;</span>
-         <span class="s2">&quot;  test/more/second-more/third more&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/More/-more&quot;</span><span class="p">,</span>  <span class="c1"># partial match</span>
-         <span class="s2">&quot;Help for test/more/second-more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;The Second More text.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;  test/more/second-more/more again&quot;</span>
-         <span class="s2">&quot;  test/more/second-more/third more&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/more/second/more again&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;Help for test/more/second-more/more again</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Even more text.</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;test/more/second/third&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;Help for test/more/second-more/third more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-         <span class="s2">&quot;Third more text</span><span class="se">\n</span><span class="s2">&quot;</span>
-         <span class="p">),</span>
-    <span class="p">])</span>
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test&quot;</span><span class="p">,</span>  <span class="c1"># main help entry</span>
+                <span class="s2">&quot;Help for test</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Main help text</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;  test/creating extra stuff&quot;</span>
+                <span class="s2">&quot;  test/something else&quot;</span>
+                <span class="s2">&quot;  test/more&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/creating extra stuff&quot;</span><span class="p">,</span>  <span class="c1"># subtopic, full match</span>
+                <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/creating&quot;</span><span class="p">,</span>  <span class="c1"># startswith-match</span>
+                <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/extra&quot;</span><span class="p">,</span>  <span class="c1"># partial match</span>
+                <span class="s2">&quot;Help for test/creating extra stuff</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Help on creating extra stuff.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;  test/creating extra stuff/subsubtopic</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/extra/subsubtopic&quot;</span><span class="p">,</span>  <span class="c1"># partial subsub-match</span>
+                <span class="s2">&quot;Help for test/creating extra stuff/subsubtopic</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="s2">&quot;A subsubtopic text&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/creating extra/subsub&quot;</span><span class="p">,</span>  <span class="c1"># partial subsub-match</span>
+                <span class="s2">&quot;Help for test/creating extra stuff/subsubtopic</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="s2">&quot;A subsubtopic text&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;test/Something else&quot;</span><span class="p">,</span> <span class="s2">&quot;Help for test/something else</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="s2">&quot;Something else&quot;</span><span class="p">),</span>  <span class="c1"># case</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/More&quot;</span><span class="p">,</span>  <span class="c1"># case</span>
+                <span class="s2">&quot;Help for test/more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Another text</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;  test/more/second-more&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/More/Second-more&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Help for test/more/second-more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;The Second More text.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;  test/more/second-more/more again&quot;</span>
+                <span class="s2">&quot;  test/more/second-more/third more&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/More/-more&quot;</span><span class="p">,</span>  <span class="c1"># partial match</span>
+                <span class="s2">&quot;Help for test/more/second-more</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;The Second More text.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Subtopics:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;  test/more/second-more/more again&quot;</span>
+                <span class="s2">&quot;  test/more/second-more/third more&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/more/second/more again&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Help for test/more/second-more/more again</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="s2">&quot;Even more text.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;test/more/second/third&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Help for test/more/second-more/third more</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="s2">&quot;Third more text</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_subtopic_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">helparg</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check retrieval of subtopics.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">class</span> <span class="nc">TestCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Main help text</span>
@@ -324,6 +335,7 @@
 <span class="sd">                            Third more text</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
+
             <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
 
         <span class="k">class</span> <span class="nc">TestCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
@@ -331,10 +343,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">TestCmd</span><span class="p">())</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">help_module</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">())</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">help_module</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">(),</span>
-                  <span class="n">helparg</span><span class="p">,</span>
-                  <span class="n">expected</span><span class="p">,</span>
-                  <span class="n">cmdset</span><span class="o">=</span><span class="n">TestCmdSet</span><span class="p">())</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">help_module</span><span class="o">.</span><span class="n">CmdHelp</span><span class="p">(),</span> <span class="n">helparg</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">cmdset</span><span class="o">=</span><span class="n">TestCmdSet</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="TestSystem"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem">[docs]</a><span class="k">class</span> <span class="nc">TestSystem</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
@@ -356,13 +365,15 @@
 <div class="viewcode-block" id="TestSystem.test_server_load"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestSystem.test_server_load">[docs]</a>    <span class="k">def</span> <span class="nf">test_server_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdServerLoad</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Server CPU and Memory load:&quot;</span><span class="p">)</span></div></div>
 
+
 <span class="n">_TASK_HANDLER</span> <span class="o">=</span> <span class="kc">None</span>
 
+
 <div class="viewcode-block" id="func_test_cmd_tasks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.func_test_cmd_tasks">[docs]</a><span class="k">def</span> <span class="nf">func_test_cmd_tasks</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s1">&#39;success&#39;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;success&quot;</span></div>
+
 
 <div class="viewcode-block" id="TestCmdTasks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks">[docs]</a><span class="k">class</span> <span class="nc">TestCmdTasks</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-
 <div class="viewcode-block" id="TestCmdTasks.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="c1"># get a reference of TASK_HANDLER</span>
@@ -376,70 +387,82 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">func_test_cmd_tasks</span><span class="p">)</span>
         <span class="n">task_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span></div>
 
-
 <div class="viewcode-block" id="TestCmdTasks.tearDown"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_no_tasks"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_no_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">test_no_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;There are no active tasks.&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;There are no active tasks.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_active_task"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_active_task">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">ptrn</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;Task ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Completion&#39;</span><span class="p">,</span> <span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="s1">&#39;Function&#39;</span><span class="p">,</span> <span class="s1">&#39;KWARGS&#39;</span><span class="p">,</span> <span class="s1">&#39;persisten&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\d+/\d+/\d+&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\d+\:&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\d+\:\d+&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\:\d+&#39;</span><span class="p">,</span> <span class="s1">&#39;func_test&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;False&#39;</span><span class="p">):</span>
+        <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ptrn</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">&quot;Task ID&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Completion&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Date&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Function&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;KWARGS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;persisten&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;\d+/\d+/\d+&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;\d+\:&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;\d+\:\d+&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;\:\d+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;func_test&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;False&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="n">ptrn</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_persistent_task"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_persistent_task">[docs]</a>    <span class="k">def</span> <span class="nf">test_persistent_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">func_test_cmd_tasks</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">)</span></div>
+        <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_pause_unpause"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_pause_unpause">[docs]</a>    <span class="k">def</span> <span class="nf">test_pause_unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># test pause</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/pause </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;Pause task 1 with completion date&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/pause </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Pause task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s1">&#39; \(func_test_cmd_tasks\) &#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">paused</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># test unpause</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/unpause </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/unpause </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;Unpause task 1 with completion date&#39;</span>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Unpause task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s1">&#39; \(func_test_cmd_tasks\) &#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="c1"># verify task continues after unpause</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_do_task"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_do_task">[docs]</a>    <span class="k">def</span> <span class="nf">test_do_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/do_task </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;Do_task task 1 with completion date&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/do_task </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Do_task task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s1">&#39; \(func_test_cmd_tasks\) &#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_remove"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_remove">[docs]</a>    <span class="k">def</span> <span class="nf">test_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/remove </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;Remove task 1 with completion date&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/remove </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Remove task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s1">&#39; \(func_test_cmd_tasks\) &#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_call"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_call">[docs]</a>    <span class="k">def</span> <span class="nf">test_call</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/call </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;Call task 1 with completion date&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/call </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Call task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s1">&#39; \(func_test_cmd_tasks\) &#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="c1"># make certain the task is still active</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">active</span><span class="p">())</span>
         <span class="c1"># go past delay time, the task should call do_task and remove itself after calling.</span>
@@ -447,55 +470,57 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_cancel"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_cancel">[docs]</a>    <span class="k">def</span> <span class="nf">test_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;Cancel task 1 with completion date&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;Cancel task 1 with completion date&quot;</span>
         <span class="n">cmd_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s1">&#39; \(func_test_cmd_tasks\) &#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">cmd_result</span><span class="p">,</span> <span class="s2">&quot; \(func_test_cmd_tasks\) &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">active</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_func_name_manipulation"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_func_name_manipulation">[docs]</a>    <span class="k">def</span> <span class="nf">test_func_name_manipulation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">func_test_cmd_tasks</span><span class="p">)</span>  <span class="c1"># add an extra task</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/remove func_test_cmd_tasks&#39;</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;Task action remove completed on task ID 1.|The task function remove returned: True|&#39;</span> \
-                     <span class="s1">&#39;Task action remove completed on task ID 2.|The task function remove returned: True&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/remove func_test_cmd_tasks&quot;</span>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Task action remove completed on task ID 1.|The task function remove returned: True|&quot;</span>
+            <span class="s2">&quot;Task action remove completed on task ID 2.|The task function remove returned: True&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">tasks</span><span class="p">)</span>  <span class="c1"># no tasks should exist.</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_wrong_func_name"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_wrong_func_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_wrong_func_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/remove intentional_fail&#39;</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;No tasks deferring function name intentional_fail found.&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/remove intentional_fail&quot;</span>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s2">&quot;No tasks deferring function name intentional_fail found.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">active</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_no_input"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_no_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_no_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="n">args</span><span class="p">)</span>
         <span class="c1"># task should complete since no input was received</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_responce_of_yes"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_responce_of_yes">[docs]</a>    <span class="k">def</span> <span class="nf">test_responce_of_yes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">&#39;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">+=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;cancel request completed.The task function cancel returned: True&#39;</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;cancel request completed.The task function cancel returned: True&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_task_complete_waiting_input"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_task_complete_waiting_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_task_complete_waiting_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test for task completing while waiting for input.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">&#39;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">+=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;Task completed while waiting for input.&#39;</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;Task completed while waiting for input.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_new_task_waiting_input"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_new_task_waiting_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_new_task_waiting_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -503,22 +528,23 @@
 <span class="sd">        Test task completing than a new task with the same ID being made while waitinf for input.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">&#39;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;/cancel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedelay</span><span class="p">,</span> <span class="n">func_test_cmd_tasks</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">+=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;Task completed while waiting for input.&#39;</span><span class="p">)</span></div>
+            <span class="n">text</span> <span class="o">+=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;Task completed while waiting for input.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCmdTasks.test_misformed_command"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCmdTasks.test_misformed_command">[docs]</a>    <span class="k">def</span> <span class="nf">test_misformed_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="s1">&#39;Task command misformed.|Proper format tasks[/switch] &#39;</span> \
-                     <span class="s1">&#39;[function name or task id]&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">&#39;/cancel&#39;</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span></div></div>
+        <span class="n">wanted_msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Task command misformed.|Proper format tasks[/switch] &quot;</span> <span class="s2">&quot;[function name or task id]&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">CmdTasks</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;/cancel&quot;</span><span class="p">,</span> <span class="n">wanted_msg</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TestAdmin"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestAdmin">[docs]</a><span class="k">class</span> <span class="nc">TestAdmin</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
@@ -698,7 +724,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;*TestAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;Name/key: TestAccount&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="s2">&quot;testval&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;self/test&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Char/test [category=None]:</span><span class="se">\n\n</span><span class="s2">testval&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;self/test&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Char/test [category=None]:</span><span class="se">\n\n</span><span class="s2">testval&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="s2">&quot;Name/key: out&quot;</span><span class="p">)</span>
 
@@ -707,7 +735,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdExamine</span><span class="p">(),</span>
             <span class="s2">&quot;self/test2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Char/test2 [category=None]:</span><span class="se">\n\n</span><span class="s2">this is a \$random() value.&quot;</span>
+            <span class="s2">&quot;Attribute Char/test2 [category=None]:</span><span class="se">\n\n</span><span class="s2">this is a \$random() value.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
@@ -752,10 +780,16 @@
             <span class="s1">&#39;Obj2/test2=&quot;value2&quot;&#39;</span><span class="p">,</span>
             <span class="s2">&quot;Created attribute Obj2/test2 [category:None] = value2&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-                  <span class="s2">&quot;Obj2/test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj2/test2 [category:None] = value2&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-                  <span class="s2">&quot;Obj2/NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj2/notfound [category:None] does not exist.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj2/test2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj2/test2 [category:None] = value2&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj2/NotFound&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj2/notfound [category:None] does not exist.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.building.EvEditor&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_ed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;/edit Obj2/test3&quot;</span><span class="p">)</span>
@@ -795,17 +829,18 @@
         <span class="c1"># list - adding white space proves real parsing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-            <span class="s2">&quot;Obj/test1=[1,2]&quot;</span><span class="p">,</span> <span class="s2">&quot;Created attribute Obj/test1 [category:None] = [1, 2]&quot;</span>
+            <span class="s2">&quot;Obj/test1=[1,2]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj/test1 [category:None] = [1, 2]&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-                  <span class="s2">&quot;Obj/test1&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;Attribute Obj/test1 [category:None] = [1, 2]&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-                  <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 1&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-                  <span class="s2">&quot;Obj/test1[1]&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;Attribute Obj/test1[1] [category:None] = 2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1 [category:None] = [1, 2]&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 1&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1[1]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1[1] [category:None] = 2&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[0] = 99&quot;</span><span class="p">,</span>
@@ -814,7 +849,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 99&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 99&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># list delete</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -823,9 +858,7 @@
             <span class="s2">&quot;Deleted attribute Obj/test1[0] [category:None].&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-            <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 2&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test1[0]&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test1[0] [category:None] = 2&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -837,7 +870,7 @@
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test1[5] =&quot;</span><span class="p">,</span>
             <span class="s2">&quot;No attribute Obj/test1[5] [category: None] was found to &quot;</span>
-            <span class="s2">&quot;delete. (Nested lookups attempted)&quot;</span>
+            <span class="s2">&quot;delete. (Nested lookups attempted)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Append</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -859,17 +892,18 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-            <span class="s2">&quot;Obj/test2&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test2 [category:None] = {&#39;one&#39;: 1, &#39;two&#39;: 2}&quot;</span>
+            <span class="s2">&quot;Obj/test2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test2 [category:None] = {&#39;one&#39;: 1, &#39;two&#39;: 2}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;one&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2[&#39;one&#39;] [category:None] = 1&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;one&#39;] [category:None] = 1&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;one]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2[&#39;one] [category:None] = 1&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;one] [category:None] = 1&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -879,17 +913,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;one&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2[&#39;one&#39;] [category:None] = 99&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;one&#39;] [category:None] = 99&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;two&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2[&#39;two&#39;] [category:None] = 2&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;two&#39;] [category:None] = 2&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+&#39;three&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2[+&#39;three&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test2[+&#39;three&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -899,7 +933,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[+&#39;three&#39;] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Deleted attribute Obj/test2[+&#39;three&#39;] [category:None].&quot;</span>
+            <span class="s2">&quot;Deleted attribute Obj/test2[+&#39;three&#39;] [category:None].&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -915,23 +949,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;two&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2[&#39;two&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test2[&#39;two&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2 [category:None] = {&#39;one&#39;: 99, &#39;three&#39;: 3}&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test2 [category:None] = {&#39;one&#39;: 99, &#39;three&#39;: 3}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test2[0] [category:None] does not exist. (Nested lookups attempted)&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test2[0] [category:None] does not exist. (Nested lookups attempted)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test2[&#39;five&#39;] =&quot;</span><span class="p">,</span>
             <span class="s2">&quot;No attribute Obj/test2[&#39;five&#39;] [category: None] &quot;</span>
-            <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span>
+            <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -949,7 +983,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/tup = (1,2)&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Created attribute Obj/tup [category:None] = (1, 2)&quot;</span>
+            <span class="s2">&quot;Created attribute Obj/tup [category:None] = (1, 2)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
@@ -971,7 +1005,7 @@
             <span class="c1"># Special case for tuple, could have a better message</span>
             <span class="s2">&quot;Obj/tup[1] = &quot;</span><span class="p">,</span>
             <span class="s2">&quot;No attribute Obj/tup[1] [category: None] &quot;</span>
-            <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span>
+            <span class="s2">&quot;was found to delete. (Nested lookups attempted)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Deaper nesting</span>
@@ -983,26 +1017,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test3[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test3[0][&#39;one&#39;] [category:None] = 1&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test3[0][&#39;one&#39;] [category:None] = 1&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test3[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test3[0] [category:None] = {&#39;one&#39;: 1}&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test3[0] [category:None] = {&#39;one&#39;: 1}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test3[0][&#39;one&#39;] =&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Deleted attribute Obj/test3[0][&#39;one&#39;] [category:None].&quot;</span>
+            <span class="s2">&quot;Deleted attribute Obj/test3[0][&#39;one&#39;] [category:None].&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test3[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test3[0] [category:None] = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;Attribute Obj/test3[0] [category:None] = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
-            <span class="s2">&quot;Obj/test3&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test3 [category:None] = [</span><span class="si">{}</span><span class="s2">]&quot;</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span> <span class="s2">&quot;Obj/test3&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute Obj/test3 [category:None] = [</span><span class="si">{}</span><span class="s2">]&quot;</span>
         <span class="p">)</span>
 
         <span class="c1"># Naughty keys</span>
@@ -1014,7 +1047,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = foo&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = foo&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4=[{&#39;one&#39;: 1}]&quot;</span><span class="p">,</span>
@@ -1023,32 +1057,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] = 1&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] = 1&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Prefer nested items</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = {&#39;one&#39;: 1}&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = {&#39;one&#39;: 1}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] = 1&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] = 1&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Restored access</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdWipe</span><span class="p">(),</span>
-            <span class="s2">&quot;Obj/test4&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Wiped attributes test4 on Obj.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdWipe</span><span class="p">(),</span> <span class="s2">&quot;Obj/test4&quot;</span><span class="p">,</span> <span class="s2">&quot;Wiped attributes test4 on Obj.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = foo&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;Attribute Obj/test4[0] [category:None] = foo&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
             <span class="s2">&quot;Obj/test4[0][&#39;one&#39;]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span>
+            <span class="s2">&quot;Attribute Obj/test4[0][&#39;one&#39;] [category:None] does not exist. (Nested lookups attempted)&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_split_nested_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_split_nested_attr">[docs]</a>    <span class="k">def</span> <span class="nf">test_split_nested_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1264,8 +1296,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdSetHome</span><span class="p">(),</span> <span class="s2">&quot;Obj = Room2&quot;</span><span class="p">,</span> <span class="s2">&quot;Home location of Obj was set to Room&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_list_cmdsets"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_list_cmdsets">[docs]</a>    <span class="k">def</span> <span class="nf">test_list_cmdsets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                  <span class="s2">&quot;&lt;CmdSetHandler&gt; stack:</span><span class="se">\n</span><span class="s2"> &lt;CmdSet DefaultCharacter, Union, perm, prio 0&gt;:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&lt;CmdSetHandler&gt; stack:</span><span class="se">\n</span><span class="s2"> &lt;CmdSet DefaultCharacter, Union, perm, prio 0&gt;:&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdListCmdSets</span><span class="p">(),</span> <span class="s2">&quot;NotFound&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_typeclass"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_typeclass">[docs]</a>    <span class="k">def</span> <span class="nf">test_typeclass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1434,17 +1469,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Script scripts.scripts.DefaultScript successfully added&quot;</span>
+            <span class="s2">&quot;Script scripts.scripts.DefaultScript successfully added&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
-            <span class="s2">&quot;evennia.Dummy&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Global Script NOT Created &quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;evennia.Dummy&quot;</span><span class="p">,</span> <span class="s2">&quot;Global Script NOT Created &quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;evennia.scripts.scripts.DoNothing&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Global Script Created - sys_do_nothing &quot;</span>
+            <span class="s2">&quot;Global Script Created - sys_do_nothing &quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj &quot;</span><span class="p">,</span> <span class="s2">&quot;dbref &quot;</span><span class="p">)</span>
 
@@ -1454,32 +1485,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;/stop Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Script on Obj Stopped - &quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span> <span class="s2">&quot;Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Script scripts.scripts.DefaultScript successfully added&quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/start Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Script on Obj Started &quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/stop Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Script on Obj Stopped &quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/delete Obj = scripts.scripts.DefaultScript&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Script on Obj Deleted &quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdScripts</span><span class="p">(),</span>
             <span class="s2">&quot;/delete evennia.scripts.scripts.DoNothing&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Global Script Deleted -&quot;</span>
+            <span class="s2">&quot;Global Script Deleted -&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestBuilding.test_script_multi_delete"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestBuilding.test_script_multi_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_script_multi_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1494,7 +1526,7 @@
             <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)|&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;Global Script Deleted - #</span><span class="si">{</span><span class="n">script3</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (evennia.scripts.scripts.DefaultScript)&quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">script1</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">script2</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
@@ -1749,11 +1781,10 @@
 <span class="sd">    Test the central `channel` command.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="TestCommsChannel.setUp"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span>
-            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;A test channel&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;testchannel&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;A test channel&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span> <span class="o">=</span> <span class="n">cmd_comms</span><span class="o">.</span><span class="n">CmdChannel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="o">.</span><span class="n">account_caller</span> <span class="o">=</span> <span class="kc">False</span></div>
@@ -1764,61 +1795,35 @@
 
     <span class="c1"># test channel command</span>
 <div class="viewcode-block" id="TestCommsChannel.test_channel__noarg"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__noarg">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__noarg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Channel subscriptions&quot;</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Channel subscriptions&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__msg"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__msg">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;testchannel = Test message&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;testchannel = Test message&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;Test message&quot;</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__list"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__list">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/list&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Channel subscriptions&quot;</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/list&quot;</span><span class="p">,</span> <span class="s2">&quot;Channel subscriptions&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__all"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__all">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/all&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Available channels&quot;</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/all&quot;</span><span class="p">,</span> <span class="s2">&quot;Available channels&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__history"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__history">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.commands.default.comms.tail_log_file&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_tail</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-                <span class="s2">&quot;/history testchannel&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/history testchannel&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
             <span class="n">mock_tail</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__sub"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__sub">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__sub</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/sub testchannel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;You are now subscribed&quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/sub testchannel&quot;</span><span class="p">,</span> <span class="s2">&quot;You are now subscribed&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="s2">&quot;testchannel Hello&quot;</span><span class="p">),</span> <span class="s2">&quot;channel testchannel = Hello&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="s2">&quot;testchannel Hello&quot;</span><span class="p">),</span> <span class="s2">&quot;channel testchannel = Hello&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__unsub"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__unsub">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__unsub</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/unsub testchannel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;You un-subscribed&quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/unsub testchannel&quot;</span><span class="p">,</span> <span class="s2">&quot;You un-subscribed&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__alias__unalias"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__alias__unalias">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__alias__unalias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1828,51 +1833,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
             <span class="s2">&quot;/alias testchannel = foo&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Added/updated your alias &#39;foo&#39; for channel testchannel.&quot;</span>
+            <span class="s2">&quot;Added/updated your alias &#39;foo&#39; for channel testchannel.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="s1">&#39;foo Hello&#39;</span><span class="p">),</span> <span class="s2">&quot;channel testchannel = Hello&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">nickreplace</span><span class="p">(</span><span class="s2">&quot;foo Hello&quot;</span><span class="p">),</span> <span class="s2">&quot;channel testchannel = Hello&quot;</span><span class="p">)</span>
 
         <span class="c1"># use alias</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;foo = test message&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;foo = test message&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;test message&quot;</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
 
         <span class="c1"># remove alias</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/unalias foo&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Removed your channel alias &#39;foo&#39;&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;foo $1&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/unalias foo&quot;</span><span class="p">,</span> <span class="s2">&quot;Removed your channel alias &#39;foo&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">nicks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;foo $1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__mute"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__mute">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__mute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/mute testchannel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Muted channel testchannel&quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/mute testchannel&quot;</span><span class="p">,</span> <span class="s2">&quot;Muted channel testchannel&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">mutelist</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__unmute"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__unmute">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__unmute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">mute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/unmute testchannel = Char1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Un-muted channel testchannel&quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/unmute testchannel = Char1&quot;</span><span class="p">,</span> <span class="s2">&quot;Un-muted channel testchannel&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">mutelist</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__create"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__create">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/create testchannel2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Created (and joined) new channel&quot;</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/create testchannel2&quot;</span><span class="p">,</span> <span class="s2">&quot;Created (and joined) new channel&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__destroy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__destroy">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
@@ -1880,34 +1865,27 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
             <span class="s2">&quot;/destroy testchannel = delete reason&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Are you sure you want to delete channel &quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Yes&#39;</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">],</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="s2">&quot;delete reason&quot;</span><span class="p">,</span> <span class="n">bypass_mute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;delete reason&quot;</span><span class="p">,</span> <span class="n">bypass_mute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">senders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__desc"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__desc">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__desc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
             <span class="s2">&quot;/desc testchannel = Another description&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Updated channel description.&quot;</span>
+            <span class="s2">&quot;Updated channel description.&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__lock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__lock">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/lock testchannel = foo:false()&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Added/updated lock on channel&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/lock testchannel = foo:false()&quot;</span><span class="p">,</span> <span class="s2">&quot;Added/updated lock on channel&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">),</span> <span class="s1">&#39;foo:false()&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">),</span> <span class="s2">&quot;foo:false()&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__unlock"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__unlock">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;foo:true()&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/unlock testchannel = foo&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Removed lock from channel&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/unlock testchannel = foo&quot;</span><span class="p">,</span> <span class="s2">&quot;Removed lock from channel&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__boot"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__boot">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__boot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">)</span>
@@ -1919,12 +1897,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
             <span class="s2">&quot;/boot testchannel = Char2 : Booting from channel!&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Are you sure &quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="s2">&quot;Char2 was booted from channel by Char. Reason: Booting from channel!&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;Char2 was booted from channel by Char. Reason: Booting from channel!&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="s2">&quot;You were booted from channel testchannel by Char. Reason: Booting from channel!&quot;</span><span class="p">)</span></div>
+            <span class="s2">&quot;You were booted from channel testchannel by Char. Reason: Booting from channel!&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__ban__unban"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__ban__unban">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__ban__unban</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test first ban and then unban&quot;&quot;&quot;</span>
@@ -1939,12 +1919,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
             <span class="s2">&quot;/ban testchannel = Char2 : Banning from channel!&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Are you sure &quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Yes&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="s2">&quot;Char2 was booted from channel by Char. Reason: Banning from channel!&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;Char2 was booted from channel by Char. Reason: Banning from channel!&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
-            <span class="s2">&quot;You were booted from channel testchannel by Char. Reason: Banning from channel!&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;You were booted from channel testchannel by Char. Reason: Banning from channel!&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">banlist</span><span class="p">)</span>
 
         <span class="c1"># unban</span>
@@ -1952,23 +1934,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
             <span class="s2">&quot;/unban testchannel = Char2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Un-banned Char2 from channel testchannel&quot;</span>
+            <span class="s2">&quot;Un-banned Char2 from channel testchannel&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">banlist</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCommsChannel.test_channel__who"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestCommsChannel.test_channel__who">[docs]</a>    <span class="k">def</span> <span class="nf">test_channel__who</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span>
-            <span class="s2">&quot;/who testchannel&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Subscribed to testchannel:</span><span class="se">\n</span><span class="s2">Char&quot;</span>
-        <span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdchannel</span><span class="p">(),</span> <span class="s2">&quot;/who testchannel&quot;</span><span class="p">,</span> <span class="s2">&quot;Subscribed to testchannel:</span><span class="se">\n</span><span class="s2">Char&quot;</span><span class="p">)</span></div></div>
 
 
 <span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">comms</span>  <span class="c1"># noqa</span>
 
 
 <div class="viewcode-block" id="TestComms"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms">[docs]</a><span class="k">class</span> <span class="nc">TestComms</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-
 <div class="viewcode-block" id="TestComms.test_page"><a class="viewcode-back" href="../../../../api/evennia.commands.default.tests.html#evennia.commands.default.tests.TestComms.test_page">[docs]</a>    <span class="k">def</span> <span class="nf">test_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">comms</span><span class="o">.</span><span class="n">CmdPage</span><span class="p">(),</span>
@@ -1984,6 +1961,7 @@
 <span class="sd">    Test the batch processor.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># there is some sort of issue with the mock; it needs to loaded once to work</span>
     <span class="kn">from</span> <span class="nn">evennia.contrib.tutorials.red_button</span> <span class="kn">import</span> <span class="n">red_button</span>  <span class="c1"># noqa</span>
 

@@ -120,6 +120,7 @@
 <span class="c1"># Sword recipe</span>
 <span class="c1"># ------------------------------------------------------------</span>
 
+
 <div class="viewcode-block" id="PigIronRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe">[docs]</a><span class="k">class</span> <span class="nc">PigIronRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pig iron is a high-carbon result of melting iron in a blast furnace.</span>
@@ -373,9 +374,9 @@
     <span class="n">exact_consumable_order</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
-<span class="c1">#------------------------------------------------------------</span>
+<span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Recipes for spell casting</span>
-<span class="c1">#------------------------------------------------------------</span>
+<span class="c1"># ------------------------------------------------------------</span>
 
 
 <span class="k">class</span> <span class="nc">_MagicRecipe</span><span class="p">(</span><span class="n">CraftingRecipe</span><span class="p">):</span>
@@ -390,6 +391,7 @@
 <span class="sd">    We also assume that the crafter has skills set on itself as plain Attributes.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="c1"># all spells require a spellbook and a wand (so there!)</span>
     <span class="n">tool_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;spellbook&quot;</span><span class="p">,</span> <span class="s2">&quot;wand&quot;</span><span class="p">]</span>
@@ -432,15 +434,15 @@
             <span class="n">skill_value</span> <span class="o">=</span> <span class="n">crafter</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">skill_name</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">skill_value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">skill_value</span> <span class="o">&lt;</span> <span class="n">min_value</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_too_low_skill_level</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">skill_name</span><span class="o">=</span><span class="n">skill_name</span><span class="p">,</span>
-                                                               <span class="n">spell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">error_too_low_skill_level</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">skill_name</span><span class="o">=</span><span class="n">skill_name</span><span class="p">,</span> <span class="n">spell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">CraftingValidationError</span>
 
         <span class="c1"># get the value of the skill to roll</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">skill_roll_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crafter</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">skill_roll</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skill_roll_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_no_skill_roll</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">skill_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skill_roll</span><span class="p">,</span>
-                                                     <span class="n">spell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_no_skill_roll</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">skill_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">skill_roll</span><span class="p">,</span> <span class="n">spell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
             <span class="k">raise</span> <span class="n">CraftingValidationError</span>
 
     <span class="k">def</span> <span class="nf">do_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -488,12 +490,13 @@
 <span class="sd">    need to be created to understand what they mean when used.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;fireball&quot;</span>
-    <span class="n">skill_requirements</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;firemagic&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>  <span class="c1"># skill &#39;firemagic&#39; lvl 10 or higher</span>
+    <span class="n">skill_requirements</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;firemagic&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>  <span class="c1"># skill &#39;firemagic&#39; lvl 10 or higher</span>
     <span class="n">skill_roll</span> <span class="o">=</span> <span class="s2">&quot;firemagic&quot;</span>
     <span class="n">success_message</span> <span class="o">=</span> <span class="s2">&quot;A ball of flame appears!&quot;</span>
-    <span class="n">desired_effects</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;target_fire_damage&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;ranged_attack&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mana_cost&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)]</span>
-    <span class="n">failure_effects</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;self_fire_damage&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mana_cost&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span></div>
+    <span class="n">desired_effects</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;target_fire_damage&quot;</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;ranged_attack&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mana_cost&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)]</span>
+    <span class="n">failure_effects</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;self_fire_damage&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mana_cost&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span></div>
 
 
 <div class="viewcode-block" id="HealingRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe">[docs]</a><span class="k">class</span> <span class="nc">HealingRecipe</span><span class="p">(</span><span class="n">_MagicRecipe</span><span class="p">):</span>
@@ -504,11 +507,12 @@
 <span class="sd">    need to be created to understand what they mean.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;heal&quot;</span>
-    <span class="n">skill_requirements</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;bodymagic&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;empathy&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>
+    <span class="n">skill_requirements</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;bodymagic&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;empathy&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>
     <span class="n">skill_roll</span> <span class="o">=</span> <span class="s2">&quot;bodymagic&quot;</span>
     <span class="n">success_message</span> <span class="o">=</span> <span class="s2">&quot;You successfully extend your healing aura.&quot;</span>
-    <span class="n">desired_effects</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;healing&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mana_cost&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span>
+    <span class="n">desired_effects</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;healing&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mana_cost&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span>
     <span class="n">failure_effects</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
@@ -520,7 +524,8 @@
 <span class="sd">        cast &lt;spell&gt; &lt;target&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;cast&#39;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cast&quot;</span>
 
 <div class="viewcode-block" id="CmdCast.parse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -530,8 +535,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">spellname</span><span class="p">,</span> <span class="o">*</span><span class="n">target</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spellname</span><span class="p">,</span> <span class="o">*</span><span class="n">target</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spellname</span> <span class="o">=</span> <span class="n">args</span>
 
@@ -554,8 +559,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># if this completes without an exception, the caster will have</span>
             <span class="c1"># a new magic_effect set on themselves, ready to use or apply in some way.</span>
-            <span class="n">success</span><span class="p">,</span> <span class="n">effects</span> <span class="o">=</span> <span class="n">craft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spellname</span><span class="p">,</span> <span class="o">*</span><span class="n">possible_tools</span><span class="p">,</span>
-                                     <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">success</span><span class="p">,</span> <span class="n">effects</span> <span class="o">=</span> <span class="n">craft</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spellname</span><span class="p">,</span> <span class="o">*</span><span class="n">possible_tools</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="n">CraftingValidationError</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -569,8 +575,10 @@
         <span class="c1"># (which could be yourself) by a number of health points given by the recipe.</span>
         <span class="n">effect_txt</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">eff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">eff</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">eff</span> <span class="ow">in</span> <span class="n">effects</span><span class="p">)</span>
         <span class="n">success_txt</span> <span class="o">=</span> <span class="s2">&quot;|gsucceeded|n&quot;</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="s2">&quot;|rfailed|n&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Casting the spell </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spellname</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">success_txt</span><span class="si">}</span><span class="s2">, &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;causing the following effects: </span><span class="si">{</span><span class="n">effect_txt</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Casting the spell </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spellname</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">success_txt</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;causing the following effects: </span><span class="si">{</span><span class="n">effect_txt</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

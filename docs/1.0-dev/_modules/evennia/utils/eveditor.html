@@ -106,90 +106,104 @@
 <span class="c1">#</span>
 <span class="c1"># -------------------------------------------------------------</span>
 
-<span class="n">_HELP_TEXT</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2"> &lt;txt&gt;  - any non-command is appended to the end of the buffer.</span>
-<span class="s2"> :  &lt;l&gt; - view buffer or only line(s) &lt;l&gt;</span>
-<span class="s2"> :: &lt;l&gt; - raw-view buffer or only line(s) &lt;l&gt;</span>
-<span class="s2"> :::    - escape - enter &#39;:&#39; as the only character on the line.</span>
-<span class="s2"> :h     - this help.</span>
+<span class="n">_HELP_TEXT</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd"> &lt;txt&gt;  - any non-command is appended to the end of the buffer.</span>
+<span class="sd"> :  &lt;l&gt; - view buffer or only line(s) &lt;l&gt;</span>
+<span class="sd"> :: &lt;l&gt; - raw-view buffer or only line(s) &lt;l&gt;</span>
+<span class="sd"> :::    - escape - enter &#39;:&#39; as the only character on the line.</span>
+<span class="sd"> :h     - this help.</span>
 
-<span class="s2"> :w     - save the buffer (don&#39;t quit)</span>
-<span class="s2"> :wq    - save buffer and quit</span>
-<span class="s2"> :q     - quit (will be asked to save if buffer was changed)</span>
-<span class="s2"> :q!    - quit without saving, no questions asked</span>
+<span class="sd"> :w     - save the buffer (don&#39;t quit)</span>
+<span class="sd"> :wq    - save buffer and quit</span>
+<span class="sd"> :q     - quit (will be asked to save if buffer was changed)</span>
+<span class="sd"> :q!    - quit without saving, no questions asked</span>
 
-<span class="s2"> :u     - (undo) step backwards in undo history</span>
-<span class="s2"> :uu    - (redo) step forward in undo history</span>
-<span class="s2"> :UU    - reset all changes back to initial state</span>
+<span class="sd"> :u     - (undo) step backwards in undo history</span>
+<span class="sd"> :uu    - (redo) step forward in undo history</span>
+<span class="sd"> :UU    - reset all changes back to initial state</span>
 
-<span class="s2"> :dd &lt;l&gt;     - delete last line or line(s) &lt;l&gt;</span>
-<span class="s2"> :dw &lt;l&gt; &lt;w&gt; - delete word or regex &lt;w&gt; in entire buffer or on line &lt;l&gt;</span>
-<span class="s2"> :DD         - clear entire buffer</span>
+<span class="sd"> :dd &lt;l&gt;     - delete last line or line(s) &lt;l&gt;</span>
+<span class="sd"> :dw &lt;l&gt; &lt;w&gt; - delete word or regex &lt;w&gt; in entire buffer or on line &lt;l&gt;</span>
+<span class="sd"> :DD         - clear entire buffer</span>
 
-<span class="s2"> :y  &lt;l&gt;        - yank (copy) line(s) &lt;l&gt; to the copy buffer</span>
-<span class="s2"> :x  &lt;l&gt;        - cut line(s) &lt;l&gt; and store it in the copy buffer</span>
-<span class="s2"> :p  &lt;l&gt;        - put (paste) previously copied line(s) directly after &lt;l&gt;</span>
-<span class="s2"> :i  &lt;l&gt; &lt;txt&gt;  - insert new text &lt;txt&gt; at line &lt;l&gt;. Old line will move down</span>
-<span class="s2"> :r  &lt;l&gt; &lt;txt&gt;  - replace line &lt;l&gt; with text &lt;txt&gt;</span>
-<span class="s2"> :I  &lt;l&gt; &lt;txt&gt;  - insert text at the beginning of line &lt;l&gt;</span>
-<span class="s2"> :A  &lt;l&gt; &lt;txt&gt;  - append text after the end of line &lt;l&gt;</span>
+<span class="sd"> :y  &lt;l&gt;        - yank (copy) line(s) &lt;l&gt; to the copy buffer</span>
+<span class="sd"> :x  &lt;l&gt;        - cut line(s) &lt;l&gt; and store it in the copy buffer</span>
+<span class="sd"> :p  &lt;l&gt;        - put (paste) previously copied line(s) directly after &lt;l&gt;</span>
+<span class="sd"> :i  &lt;l&gt; &lt;txt&gt;  - insert new text &lt;txt&gt; at line &lt;l&gt;. Old line will move down</span>
+<span class="sd"> :r  &lt;l&gt; &lt;txt&gt;  - replace line &lt;l&gt; with text &lt;txt&gt;</span>
+<span class="sd"> :I  &lt;l&gt; &lt;txt&gt;  - insert text at the beginning of line &lt;l&gt;</span>
+<span class="sd"> :A  &lt;l&gt; &lt;txt&gt;  - append text after the end of line &lt;l&gt;</span>
 
-<span class="s2"> :s &lt;l&gt; &lt;w&gt; &lt;txt&gt; - search/replace word or regex &lt;w&gt; in buffer or on line &lt;l&gt;</span>
+<span class="sd"> :s &lt;l&gt; &lt;w&gt; &lt;txt&gt; - search/replace word or regex &lt;w&gt; in buffer or on line &lt;l&gt;</span>
 
-<span class="s2"> :j &lt;l&gt; &lt;w&gt; - justify buffer or line &lt;l&gt;. &lt;w&gt; is f, c, l or r. Default f (full)</span>
-<span class="s2"> :f &lt;l&gt;     - flood-fill entire buffer or line &lt;l&gt;: Equivalent to :j left</span>
-<span class="s2"> :fi &lt;l&gt;    - indent entire buffer or line &lt;l&gt;</span>
-<span class="s2"> :fd &lt;l&gt;    - de-indent entire buffer or line &lt;l&gt;</span>
+<span class="sd"> :j &lt;l&gt; &lt;w&gt; - justify buffer or line &lt;l&gt;. &lt;w&gt; is f, c, l or r. Default f (full)</span>
+<span class="sd"> :f &lt;l&gt;     - flood-fill entire buffer or line &lt;l&gt;: Equivalent to :j left</span>
+<span class="sd"> :fi &lt;l&gt;    - indent entire buffer or line &lt;l&gt;</span>
+<span class="sd"> :fd &lt;l&gt;    - de-indent entire buffer or line &lt;l&gt;</span>
 
-<span class="s2"> :echo - turn echoing of the input on/off (helpful for some clients)</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="sd"> :echo - turn echoing of the input on/off (helpful for some clients)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
 
-<span class="n">_HELP_LEGEND</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    Legend:</span>
-<span class="s2">    &lt;l&gt;   - line number, like &#39;5&#39; or range, like &#39;3:7&#39;.</span>
-<span class="s2">    &lt;w&gt;   - a single word, or multiple words with quotes around them.</span>
-<span class="s2">    &lt;txt&gt; - longer string, usually not needing quotes.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="n">_HELP_LEGEND</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Legend:</span>
+<span class="sd">    &lt;l&gt;   - line number, like &#39;5&#39; or range, like &#39;3:7&#39;.</span>
+<span class="sd">    &lt;w&gt;   - a single word, or multiple words with quotes around them.</span>
+<span class="sd">    &lt;txt&gt; - longer string, usually not needing quotes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
 
-<span class="n">_HELP_CODE</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2"> :!    - Execute code buffer without saving</span>
-<span class="s2"> :&lt;    - Decrease the level of automatic indentation for the next lines</span>
-<span class="s2"> :&gt;    - Increase the level of automatic indentation for the next lines</span>
-<span class="s2"> :=    - Switch automatic indentation on/off</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span>
-    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="p">))</span>
+<span class="n">_HELP_CODE</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd"> :!    - Execute code buffer without saving</span>
+<span class="sd"> :&lt;    - Decrease the level of automatic indentation for the next lines</span>
+<span class="sd"> :&gt;    - Increase the level of automatic indentation for the next lines</span>
+<span class="sd"> :=    - Switch automatic indentation on/off</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 
-<span class="n">_ERROR_LOADFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="si">{error}</span><span class="s2"></span>
+<span class="n">_ERROR_LOADFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{error}</span>
 
-<span class="s2">|rBuffer load function error. Could not load initial data.|n</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="sd">|rBuffer load function error. Could not load initial data.|n</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
 
-<span class="n">_ERROR_SAVEFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="si">{error}</span><span class="s2"></span>
+<span class="n">_ERROR_SAVEFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{error}</span>
 
-<span class="s2">|rSave function returned an error. Buffer not saved.|n</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="sd">|rSave function returned an error. Buffer not saved.|n</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
 
 <span class="n">_ERROR_NO_SAVEFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;|rNo save function defined. Buffer cannot be saved.|n&quot;</span><span class="p">)</span>
 
 <span class="n">_MSG_SAVE_NO_CHANGE</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;No changes need saving&quot;</span><span class="p">)</span>
 <span class="n">_DEFAULT_NO_QUITFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Exited editor.&quot;</span><span class="p">)</span>
 
-<span class="n">_ERROR_QUITFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="si">{error}</span><span class="s2"></span>
+<span class="n">_ERROR_QUITFUNC</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{error}</span>
 
-<span class="s2">|rQuit function gave an error. Skipping.|n</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="sd">|rQuit function gave an error. Skipping.|n</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
 
-<span class="n">_ERROR_PERSISTENT_SAVING</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="si">{error}</span><span class="s2"></span>
+<span class="n">_ERROR_PERSISTENT_SAVING</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{error}</span>
 
-<span class="s2">|rThe editor state could not be saved for persistent mode. Switching</span>
-<span class="s2">to non-persistent mode (which means the editor session won&#39;t survive</span>
-<span class="s2">an eventual server reload - so save often!)|n</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="sd">|rThe editor state could not be saved for persistent mode. Switching</span>
+<span class="sd">to non-persistent mode (which means the editor session won&#39;t survive</span>
+<span class="sd">an eventual server reload - so save often!)|n</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
 
 <span class="n">_TRACE_PERSISTENT_SAVING</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
     <span class="s2">&quot;EvEditor persistent-mode error. Commonly, this is because one or &quot;</span>
@@ -564,11 +578,15 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                     <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed </span><span class="si">{arg1}</span><span class="s2"> for lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed </span><span class="si">{arg1}</span><span class="s2"> for lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed </span><span class="si">{arg1}</span><span class="s2"> for </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed </span><span class="si">{arg1}</span><span class="s2"> for </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="n">sarea</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
                 <span class="n">sarea</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sarea</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">sarea</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
@@ -603,8 +621,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:]</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Pasted buffer </span><span class="si">{cbuf}</span><span class="s2"> to </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">cbuf</span><span class="o">=</span><span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Pasted buffer </span><span class="si">{cbuf}</span><span class="s2"> to </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">cbuf</span><span class="o">=</span><span class="n">editor</span><span class="o">.</span><span class="n">_copy_buffer</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:i&quot;</span><span class="p">:</span>
             <span class="c1"># :i &lt;l&gt; &lt;txt&gt; - insert new line</span>
             <span class="n">new_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -613,8 +634,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">new_lines</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:]</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Inserted </span><span class="si">{num}</span><span class="s2"> new line(s) at </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">new_lines</span><span class="p">),</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Inserted </span><span class="si">{num}</span><span class="s2"> new line(s) at </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">new_lines</span><span class="p">),</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:r&quot;</span><span class="p">:</span>
             <span class="c1"># :r &lt;l&gt; &lt;txt&gt; - replace lines</span>
             <span class="n">new_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -623,8 +647,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">new_lines</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
                 <span class="n">editor</span><span class="o">.</span><span class="n">update_buffer</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Replaced </span><span class="si">{num}</span><span class="s2"> line(s) at </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">new_lines</span><span class="p">),</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Replaced </span><span class="si">{num}</span><span class="s2"> line(s) at </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">new_lines</span><span class="p">),</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s2">&quot;:I&quot;</span><span class="p">:</span>
             <span class="c1"># :I &lt;l&gt; &lt;txt&gt; - insert text at beginning of line(s) &lt;l&gt;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_string</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">editor</span><span class="o">.</span><span class="n">_codefunc</span><span class="p">:</span>
@@ -660,12 +687,14 @@
                     <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                         <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Search-replaced </span><span class="si">{arg1}</span><span class="s2"> -&gt; </span><span class="si">{arg2}</span><span class="s2"> for lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">,</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">)</span>
+                            <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">,</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                         <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Search-replaced </span><span class="si">{arg1}</span><span class="s2"> -&gt; </span><span class="si">{arg2}</span><span class="s2"> for </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                            <span class="n">arg1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arg2</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="n">sarea</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
 
@@ -687,8 +716,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                 <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Flood filled lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Flood filled lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Flood filled </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
             <span class="n">fbuf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
@@ -720,11 +748,15 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                 <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{align}</span><span class="s2">-justified lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">align</span><span class="o">=</span><span class="n">align_name</span><span class="p">[</span><span class="n">align</span><span class="p">],</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{align}</span><span class="s2">-justified lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">align</span><span class="o">=</span><span class="n">align_name</span><span class="p">[</span><span class="n">align</span><span class="p">],</span> <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{align}</span><span class="s2">-justified </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">align</span><span class="o">=</span><span class="n">align_name</span><span class="p">[</span><span class="n">align</span><span class="p">],</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{align}</span><span class="s2">-justified </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">align</span><span class="o">=</span><span class="n">align_name</span><span class="p">[</span><span class="n">align</span><span class="p">],</span> <span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="n">jbuf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
             <span class="n">jbuf</span> <span class="o">=</span> <span class="n">justify</span><span class="p">(</span><span class="n">jbuf</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">)</span>
             <span class="n">buf</span> <span class="o">=</span> <span class="n">linebuffer</span><span class="p">[:</span><span class="n">lstart</span><span class="p">]</span> <span class="o">+</span> <span class="n">jbuf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">linebuffer</span><span class="p">[</span><span class="n">lend</span><span class="p">:]</span>
@@ -746,8 +778,11 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">linerange</span><span class="p">:</span>
                 <span class="n">lstart</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">lend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cline</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed left margin (dedented) lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed left margin (dedented) lines </span><span class="si">{l1}</span><span class="s2">-</span><span class="si">{l2}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">l1</span><span class="o">=</span><span class="n">lstart</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l2</span><span class="o">=</span><span class="n">lend</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Removed left margin (dedented) </span><span class="si">{line}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lstr</span><span class="p">))</span>
             <span class="n">fbuf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linebuffer</span><span class="p">[</span><span class="n">lstart</span><span class="p">:</span><span class="n">lend</span><span class="p">])</span>
@@ -769,9 +804,11 @@
                 <span class="n">editor</span><span class="o">.</span><span class="n">decrease_indent</span><span class="p">()</span>
                 <span class="n">indent</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span>
                 <span class="k">if</span> <span class="n">indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span>
-                        <span class="s2">&quot;Decreased indentation: new indentation is </span><span class="si">{indent}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Decreased indentation: new indentation is </span><span class="si">{indent}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">indent</span><span class="o">=</span><span class="n">indent</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|rManual indentation is OFF.|n Use := to turn it on.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
@@ -782,9 +819,11 @@
                 <span class="n">editor</span><span class="o">.</span><span class="n">increase_indent</span><span class="p">()</span>
                 <span class="n">indent</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">_indent</span>
                 <span class="k">if</span> <span class="n">indent</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span>
-                        <span class="s2">&quot;Increased indentation: new indentation is </span><span class="si">{indent}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Increased indentation: new indentation is </span><span class="si">{indent}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">indent</span><span class="o">=</span><span class="n">indent</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|rManual indentation is OFF.|n Use := to turn it on.&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
@@ -951,9 +990,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loadfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|rBuffer is of type |w</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">)</span><span class="si">}</span><span class="s2">)|r. &quot;</span>
-                                 <span class="s2">&quot;Continuing, it is converted to a string &quot;</span>
-                                 <span class="s2">&quot;(and will be saved as such)!|n&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;|rBuffer is of type |w</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">)</span><span class="si">}</span><span class="s2">)|r. &quot;</span>
+                    <span class="s2">&quot;Continuing, it is converted to a string &quot;</span>
+                    <span class="s2">&quot;(and will be saved as such)!|n&quot;</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>

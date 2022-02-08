@@ -68,12 +68,13 @@
 <span class="sd">    Mixin for both typeclass- and non-typeclass entities.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="GeneralViewSetMixin.get_serializer_class"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.GeneralViewSetMixin.get_serializer_class">[docs]</a>    <span class="k">def</span> <span class="nf">get_serializer_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allow different serializers for certain actions.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;list&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;list_serializer_class&quot;</span><span class="p">):</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_serializer_class</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer_class</span></div></div>
@@ -135,6 +136,7 @@
 <span class="sd">    (rooms, exits, characters etc).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># An example of a basic viewset for all ObjectDB instances. It declares the</span>
     <span class="c1"># serializer to use for both retrieving and changing/creating/deleting</span>
     <span class="c1"># instances. Serializers are similar to django forms, used for the</span>
@@ -151,6 +153,7 @@
 <span class="sd">    Characters are a type of Object commonly used as player avatars in-game.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span>
         <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
@@ -209,6 +212,7 @@
 <span class="sd">    Note that command auto-help and file-based help entries are not accessible this way.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">HelpSerializer</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">HelpEntry</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="n">filterset_class</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">HelpFilterSet</span>
