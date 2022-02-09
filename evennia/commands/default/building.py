@@ -2716,13 +2716,13 @@ class CmdExamine(ObjManipCommand):
 
     def format_nattributes(self, obj):
         try:
-            ndb_attr = obj.nattributes.all(return_tuples=True)
+            ndb_attr = obj.nattributes.all()
         except Exception:
             return
 
         if ndb_attr and ndb_attr[0]:
             return "\n  " + "  \n".join(
-                sorted(self.format_single_attribute(attr) for attr, value in ndb_attr)
+                sorted(self.format_single_attribute(attr) for attr in ndb_attr)
             )
 
     def format_exits(self, obj):
