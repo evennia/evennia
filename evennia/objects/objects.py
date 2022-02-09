@@ -928,7 +928,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             try:
                 self.announce_move_from(destination, **kwargs)
             except Exception as err:
-                logerr(errtxt.format(err="at_announce_move()"), err)
+                logerr(errtxt.format(err="announce_move_from()"), err)
                 return False
 
         # Perform move
