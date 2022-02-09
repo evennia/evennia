@@ -5,13 +5,17 @@ sub-categories.
 This is used primarily by the default `help` command.
 
 """
+from django.conf import settings
 import re
 
 # these are words that Lunr normally ignores but which we want to find
 # since we use them (e.g. as command names).
 # Lunr's default ignore-word list is found here:
 # https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py
-_LUNR_STOP_WORD_FILTER_EXCEPTIONS = ("about", "might", "get")
+_LUNR_STOP_WORD_FILTER_EXCEPTIONS = (
+    ["about", "might", "get", "who", "say"] + settings.LUNR_STOP_WORD_FILTER_EXCEPTIONS
+)
+
 
 _LUNR = None
 _LUNR_EXCEPTION = None

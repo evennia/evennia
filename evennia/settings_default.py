@@ -650,6 +650,11 @@ FILE_HELP_ENTRY_MODULES = ["world.help_entries"]
 # if topics listed in help should be clickable
 # clickable links only work on clients that support MXP.
 HELP_CLICKABLE_TOPICS = True
+# The Lunr search engine (used by help) excludes 'common' words from its search.
+# This is not so good when those words are names of commands, like who or say;
+# so we need to make sure to tell Lunr to not filter them out by adding them here
+# (many are auto-added out of the box, this extends the list).
+LUNR_STOP_WORD_FILTER_EXCEPTIONS = []
 
 ######################################################################
 # FuncParser
