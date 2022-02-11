@@ -2,9 +2,11 @@
 Tests for dbserialize module
 """
 
+from collections import deque
 from django.test import TestCase
 from evennia.utils import dbserialize
 from evennia.objects.objects import DefaultObject
+from parameterized import parameterized
 
 
 class TestDbSerialize(TestCase):
@@ -64,3 +66,25 @@ class TestDbSerialize(TestCase):
         self.obj.db.test = {"a": True}
         self.obj.db.test.update({"b": False})
         self.assertEqual(self.obj.db.test, {"a": True, "b": False})
+
+    @parameterized.expand(
+        [
+            ("list", list, dbserialize._SaverList, [1, 2, 3]),
+            ("dict", dict, dbserialize._SaverDict, {"key": "value"}),
+            ("set", set, dbserialize._SaverSet, {1, 2, 3}),
+            ("deque", deque, dbserialize._SaverDeque, deque(("a", "b", "c"))),
+            (
+                "OrderedDict",
+                dbserialize.OrderedDict,
+                dbserialize._SaverOrderedDict,
+                dbserialize.OrderedDict([("a", 1), ("b", 2), ("c", 3)]),
+            ),
+        ]
+    )
+    def test_deserialize(self, _, base_type, saver_type, default_value):
+        self.assertIsInstance(default_value, base_type)
+        self.obj.db.test = default_value
+        for value in (dbserialize.deserialize(self.obj.db.test), self.obj.db.test.deserialize()):
+            self.assertIsInstance(value, base_type)
+            self.assertNotIsInstance(value, saver_type)
+            self.assertEqual(value, default_value)

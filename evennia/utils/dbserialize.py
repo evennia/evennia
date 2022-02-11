@@ -243,6 +243,10 @@ class _SaverMutable(object):
     def __delitem__(self, key):
         self._data.__delitem__(key)
 
+    def deserialize(self):
+        """Deserializes this mutable into its corresponding non-Saver type."""
+        return deserialize(self)
+
 
 class _SaverList(_SaverMutable, MutableSequence):
     """
@@ -418,6 +422,8 @@ def deserialize(obj):
         tname = typ.__name__
         if tname in ("_SaverDict", "dict"):
             return {_iter(key): _iter(val) for key, val in obj.items()}
+        elif tname in ("_SaverOrderedDict", "OrderedDict"):
+            return OrderedDict([(_iter(key), _iter(val)) for key, val in obj.items()])
         elif tname in _DESERIALIZE_MAPPING:
             return _DESERIALIZE_MAPPING[tname](_iter(val) for val in obj)
         elif is_iter(obj):
