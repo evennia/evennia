@@ -190,36 +190,69 @@ class TestServer(TestCase):
             evennia.run_initial_setup()
         acct.delete()
 
-    @override_settings(_TEST_ENVIRONMENT=True)
-    def test_run_init_hooks(self):
-        from evennia.utils import create
-
-        obj1 = create.object(key="HookTestObj1")
-        obj2 = create.object(key="HookTestObj2")
-        acct1 = create.account("HookAcct1", "hooktest1@test.com", "testpasswd")
-        acct2 = create.account("HookAcct2", "hooktest2@test.com", "testpasswd")
-
-        with patch("evennia.objects.models.ObjectDB") as mockobj:
-            with patch("evennia.server.server.AccountDB") as mockacct:
-
-                mockacct.get_all_cached_instances = MagicMock(return_value=[acct1, acct2])
-                mockobj.get_all_cached_instances = MagicMock(return_value=[obj1, obj2])
-                mockobj.objects.clear_all_sessids = MagicMock()
-
-                evennia = self.server.Evennia(MagicMock())
-                evennia.run_init_hooks("reload")
-                evennia.run_init_hooks("reset")
-                evennia.run_init_hooks("shutdown")
-
-                mockacct.get_all_cached_instances.assert_called()
-                mockobj.get_all_cached_instances.assert_called()
-                mockobj.objects.clear_all_sessids.assert_called_with()
-        obj1.delete()
-        obj2.delete()
-        acct1.delete()
-        acct2.delete()
-
     @patch("evennia.server.server.INFO_DICT", {"test": "foo"})
     def test_get_info_dict(self):
         evennia = self.server.Evennia(MagicMock())
         self.assertEqual(evennia.get_info_dict(), {"test": "foo"})
+
+
+class TestInitHooks(TestCase):
+
+    def setUp(self):
+
+        from evennia.utils import create
+        from evennia.server import server
+
+        self.server = server
+
+        self.obj1 = create.object(key="HookTestObj1")
+        self.obj2 = create.object(key="HookTestObj2")
+        self.acct1 = create.account("HookAcct1", "hooktest1@test.com", "testpasswd")
+        self.acct2 = create.account("HookAcct2", "hooktest2@test.com", "testpasswd")
+        self.chan1 = create.channel("Channel1")
+        self.chan2 = create.channel("Channel2")
+        self.script1 = create.script(key="script1")
+        self.script2 = create.script(key="script2")
+
+        self.obj1.at_init = MagicMock()
+        self.obj2.at_init = MagicMock()
+        self.acct1.at_init = MagicMock()
+        self.acct2.at_init = MagicMock()
+        self.chan1.at_init = MagicMock()
+        self.chan2.at_init = MagicMock()
+        self.script1.at_init = MagicMock()
+        self.script2.at_init = MagicMock()
+
+    def tearDown(self):
+        self.obj1.delete()
+        self.obj2.delete()
+        self.acct1.delete()
+        self.acct2.delete()
+        self.chan1.delete()
+        self.chan2.delete()
+        self.script1.delete()
+        self.script2.delete()
+
+    @override_settings(_TEST_ENVIRONMENT=True)
+    def test_run_init_hooks(self):
+
+        evennia = self.server.Evennia(MagicMock())
+
+        evennia.at_server_reload_start = MagicMock()
+        evennia.at_server_cold_start = MagicMock()
+
+        evennia.run_init_hooks("reload")
+        evennia.run_init_hooks("reset")
+        evennia.run_init_hooks("shutdown")
+
+        self.acct1.at_init.assert_called()
+        self.acct2.at_init.assert_called()
+        self.obj1.at_init.assert_called()
+        self.obj2.at_init.assert_called()
+        self.chan1.at_init.assert_called()
+        self.chan2.at_init.assert_called()
+        self.script1.at_init.assert_called()
+        self.script2.at_init.assert_called()
+
+        evennia.at_server_reload_start.assert_called()
+        evennia.at_server_cold_start.assert_called()
