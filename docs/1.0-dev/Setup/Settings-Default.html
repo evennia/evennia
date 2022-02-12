@@ -712,6 +712,11 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># if topics listed in help should be clickable</span>
 <span class="c1"># clickable links only work on clients that support MXP.</span>
 <span class="n">HELP_CLICKABLE_TOPICS</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># The Lunr search engine (used by help) excludes &#39;common&#39; words from its search.</span>
+<span class="c1"># This is not so good when those words are names of commands, like who or say;</span>
+<span class="c1"># so we need to make sure to tell Lunr to not filter them out by adding them here</span>
+<span class="c1"># (many are auto-added out of the box, this extends the list).</span>
+<span class="n">LUNR_STOP_WORD_FILTER_EXCEPTIONS</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># FuncParser</span>

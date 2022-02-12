@@ -493,10 +493,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;permanent&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_dep</span><span class="p">(</span>
-                <span class="s2">&quot;obj.cmdset.add() kwarg &#39;permanent&#39; has changed name to &quot;</span>
-                <span class="s2">&quot;&#39;persistent&#39; and now defaults to True.&quot;</span>
+                <span class="s2">&quot;obj.cmdset.add() kwarg &#39;permanent&#39; has changed name to &#39;persistent&#39;.&quot;</span>
             <span class="p">)</span>
-            <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;permanent&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">persistent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">persistent</span>
+            <span class="n">persistent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;permanent&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">persistent</span> <span class="ow">is</span> <span class="kc">False</span> <span class="k">else</span> <span class="n">persistent</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">utils</span><span class="o">.</span><span class="n">inherits_from</span><span class="p">(</span><span class="n">cmdset</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">)):</span>
             <span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Only CmdSets can be added to the cmdsethandler!&quot;</span><span class="p">)</span>

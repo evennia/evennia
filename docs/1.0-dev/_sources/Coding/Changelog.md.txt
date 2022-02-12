@@ -145,6 +145,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Homogenize manager search methods to return querysets and not lists.
 - Restructure unit tests to always honor default settings; make new parents in
   on location for easy use in game dir.
+- The `Lunr` search engine used by help excludes common words; the settings-list
+  `LUNR_STOP_WORD_FILTER_EXCEPTIONS` can be extended to make sure common names are included.
 
 
 ## Evennia 0.9.5

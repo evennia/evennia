@@ -195,6 +195,8 @@ with the <code class="docutils literal notranslate"><span class="pre">set</span>
 <li><p>Homogenize manager search methods to return querysets and not lists.</p></li>
 <li><p>Restructure unit tests to always honor default settings; make new parents in
 on location for easy use in game dir.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Lunr</span></code> search engine used by help excludes common words; the settings-list
+<code class="docutils literal notranslate"><span class="pre">LUNR_STOP_WORD_FILTER_EXCEPTIONS</span></code> can be extended to make sure common names are included.</p></li>
 </ul>
 </section>
 <section id="evennia-0-9-5">
