@@ -1696,6 +1696,23 @@ permissions are required to bypass this strip.</p>
 is longer than <strong>base_word</strong>, the excess will retain its original case.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt id="evennia.utils.utils.run_in_main_thread">
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">run_in_main_thread</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">function_or_method</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#run_in_main_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.run_in_main_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force a callable to execute in the main Evennia thread. This is only relevant when
+calling code from e.g. web views, which run in a separate threadpool. Use this
+to avoid race conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function_or_method</strong> (<em>callable</em>) – A function or method to fire.</p></li>
+<li><p><strong>*args</strong> – Will be passed into the callable.</p></li>
+<li><p><strong>**kwargs</strong> – Will be passed into the callable.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

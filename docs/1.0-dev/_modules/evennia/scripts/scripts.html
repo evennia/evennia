@@ -358,9 +358,12 @@
 <span class="sd">        Stop task runner and delete the task.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task_stopped</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span>
         <span class="k">if</span> <span class="n">task</span> <span class="ow">and</span> <span class="n">task</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">task_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_is_active</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -370,7 +373,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_manually_paused</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db_is_active&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">at_stop</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">task_stopped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">at_stop</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_step_errback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -491,16 +495,10 @@
                 <span class="c1"># autostart the script</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_start_task</span><span class="p">(</span><span class="n">force_restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stop_task</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete the Script. Normally stops any timer task. This fires at_script_delete before</span>
 <span class="sd">        deletion.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stop_task (bool, optional): If unset, the task will not be stopped</span>
-<span class="sd">                when this method is called. The main reason for setting this to False</span>
-<span class="sd">                is if wanting to delete the script from the at_stop method - setting</span>
-<span class="sd">                this will then avoid an infinite recursion.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: If deletion was successful or not. Only time this can fail would be if</span>
@@ -510,8 +508,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pk</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_script_delete</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">stop_task</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
 
