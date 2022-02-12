@@ -11,6 +11,7 @@ import gc
 import sys
 import types
 import math
+import threading
 import re
 import textwrap
 import random
@@ -41,6 +42,8 @@ from evennia.utils import logger
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
+_IS_MAIN_THREAD = threading.current_thread().name == "MainThread"
+
 ENCODINGS = settings.ENCODINGS
 
 _TASK_HANDLER = None
@@ -2691,3 +2694,20 @@ def copy_word_case(base_word, new_word):
             )
             + excess
         )
+
+def run_in_main_thread(function_or_method, *args, **kwargs):
+    """
+    Force a callable to execute in the main Evennia thread. This is only relevant when
+    calling code from e.g. web views, which run in a separate threadpool. Use this
+    to avoid race conditions.
+
+    Args:
+        function_or_method (callable): A function or method to fire.
+        *args: Will be passed into the callable.
+        **kwargs: Will be passed into the callable.
+
+    """
+    if _IS_MAIN_THREAD:
+        return function_or_method(*args, **kwargs)
+    else:
+        return threads.blockingCallFromThread(reactor, function_or_method, *args, **kwargs)
