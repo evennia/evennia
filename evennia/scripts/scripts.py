@@ -316,9 +316,12 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         Stop task runner and delete the task.
 
         """
+        task_stopped = False
         task = self.ndb._task
         if task and task.running:
             task.stop()
+            task_stopped = True
+
         self.ndb._task = None
         self.db_is_active = False
 
@@ -328,7 +331,8 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         self.db._manually_paused = None
 
         self.save(update_fields=["db_is_active"])
-        self.at_stop(**kwargs)
+        if task_stopped:
+            self.at_stop(**kwargs)
 
     def _step_errback(self, e):
         """
@@ -449,16 +453,10 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
                 # autostart the script
                 self._start_task(force_restart=True)
 
-    def delete(self, stop_task=True):
+    def delete(self):
         """
         Delete the Script. Normally stops any timer task. This fires at_script_delete before
         deletion.
-
-        Args:
-            stop_task (bool, optional): If unset, the task will not be stopped
-                when this method is called. The main reason for setting this to False
-                is if wanting to delete the script from the at_stop method - setting
-                this will then avoid an infinite recursion.
 
         Returns:
             bool: If deletion was successful or not. Only time this can fail would be if
@@ -468,8 +466,8 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         """
         if not self.pk or not self.at_script_delete():
             return False
-        if stop_task:
-            self._stop_task()
+
+        self._stop_task()
         super().delete()
         return True
 

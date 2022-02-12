@@ -3373,7 +3373,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
             obj_query = script_query = self.args
 
         scripts = self._search_script(script_query)
-        objects = ObjectDB.objects.object_search(obj_query)
+        objects = caller.search(obj_query, quiet=True)
         obj = objects[0] if objects else None
 
         if not self.switches:
@@ -3461,7 +3461,10 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                         )
                 caller.msg("\n".join(msgs))
                 if "delete" not in self.switches:
-                    ScriptEvMore(caller, [script], session=self.session)
+                    if script and script.pk:
+                            ScriptEvMore(caller, [script], session=self.session)
+                    else:
+                        caller.msg("Script was deleted automatically.")
         else:
             caller.msg("No scripts found.")
 
