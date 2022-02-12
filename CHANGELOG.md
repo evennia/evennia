@@ -47,6 +47,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   user davewiththenicehat. Also add new doc string.
 - Add central `FuncParser` as a much more powerful replacement for the old `parse_inlinefunc`
   function.
+- Attribute/NAttribute got a homogenous representation, using intefaces, both
+  `AttributeHandler` and `NAttributeHandler` has same api now.
 - Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This
   is useful for implementing actor-stance emoting for sending a string to different targets.
 - New version of Italian translation (rpolve)
