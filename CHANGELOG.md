@@ -149,6 +149,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   on location for easy use in game dir.
 - The `Lunr` search engine used by help excludes common words; the settings-list
   `LUNR_STOP_WORD_FILTER_EXCEPTIONS` can be extended to make sure common names are included.
+- Add `.deserialize()` method to `_Saver*` structures to help completely
+  decouple structures from database without needing separate import.
 
 
 ## Evennia 0.9.5
