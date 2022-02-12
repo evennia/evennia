@@ -47,6 +47,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   user davewiththenicehat. Also add new doc string.
 - Add central `FuncParser` as a much more powerful replacement for the old `parse_inlinefunc`
   function.
+- Attribute/NAttribute got a homogenous representation, using intefaces, both
+  `AttributeHandler` and `NAttributeHandler` has same api now.
 - Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This
   is useful for implementing actor-stance emoting for sending a string to different targets.
 - New version of Italian translation (rpolve)
@@ -145,6 +147,12 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Homogenize manager search methods to return querysets and not lists.
 - Restructure unit tests to always honor default settings; make new parents in
   on location for easy use in game dir.
+- The `Lunr` search engine used by help excludes common words; the settings-list
+  `LUNR_STOP_WORD_FILTER_EXCEPTIONS` can be extended to make sure common names are included.
+- Add `.deserialize()` method to `_Saver*` structures to help completely
+  decouple structures from database without needing separate import.
+- Add `run_in_main_thread` as a helper for those wanting to code server code
+  from a web view.
 
 
 ## Evennia 0.9.5
