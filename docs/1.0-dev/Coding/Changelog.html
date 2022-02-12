@@ -97,6 +97,8 @@ code style and paradigms instead of relying on <code class="docutils literal not
 user davewiththenicehat. Also add new doc string.</p></li>
 <li><p>Add central <code class="docutils literal notranslate"><span class="pre">FuncParser</span></code> as a much more powerful replacement for the old <code class="docutils literal notranslate"><span class="pre">parse_inlinefunc</span></code>
 function.</p></li>
+<li><p>Attribute/NAttribute got a homogenous representation, using intefaces, both
+<code class="docutils literal notranslate"><span class="pre">AttributeHandler</span></code> and <code class="docutils literal notranslate"><span class="pre">NAttributeHandler</span></code> has same api now.</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">evennia/utils/verb_conjugation</span></code> for automatic verb conjugation (English only). This
 is useful for implementing actor-stance emoting for sending a string to different targets.</p></li>
 <li><p>New version of Italian translation (rpolve)</p></li>
@@ -197,6 +199,8 @@ with the <code class="docutils literal notranslate"><span class="pre">set</span>
 on location for easy use in game dir.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Lunr</span></code> search engine used by help excludes common words; the settings-list
 <code class="docutils literal notranslate"><span class="pre">LUNR_STOP_WORD_FILTER_EXCEPTIONS</span></code> can be extended to make sure common names are included.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">.deserialize()</span></code> method to <code class="docutils literal notranslate"><span class="pre">_Saver*</span></code> structures to help completely
+decouple structures from database without needing separate import.</p></li>
 </ul>
 </section>
 <section id="evennia-0-9-5">

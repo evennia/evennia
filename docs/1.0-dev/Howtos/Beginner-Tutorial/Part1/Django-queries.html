@@ -54,12 +54,11 @@
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>More advanced lesson!</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Learning about Django&#39;s queryset language is very useful once you start doing more advanced things
-in Evennia. But it&#39;s not strictly needed out the box and can be a little overwhelming for a first
-reading. So if you are new to Python and Evennia, feel free to just skim this lesson and refer
-back to it later when you&#39;ve gained more experience.
-</pre></div>
-</div>
+<p>Learning about Django’s query language is very useful once you start doing more
+advanced things in Evennia. But it’s not strictly needed out the box and can be
+a little overwhelming for a first reading. So if you are new to Python and
+Evennia, feel free to just skim this lesson and refer back to it later when
+you’ve gained more experience.</p>
 </div>
 <p>The search functions and methods we used in the previous lesson are enough for most cases.
 But sometimes you need to be more specific:</p>
@@ -67,7 +66,7 @@ But sometimes you need to be more specific:</p>
 <li><p>You want to find all <code class="docutils literal notranslate"><span class="pre">Characters</span></code> …</p></li>
 <li><p>… who are in Rooms tagged as <code class="docutils literal notranslate"><span class="pre">moonlit</span></code> …</p></li>
 <li><p>… <em>and</em> who has the Attribute <code class="docutils literal notranslate"><span class="pre">lycantrophy</span></code> with a level higher than 2 …</p></li>
-<li><p>… because they’ll should immediately transform to werewolves!</p></li>
+<li><p>… because they should immediately transform to werewolves!</p></li>
 </ul>
 <p>In principle you could achieve this with the existing search functions combined with a lot of loops
 and if statements. But for something non-standard like this, querying the database directly will be
@@ -86,26 +85,30 @@ only wanted the cannons, we would do</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>all_cannons = Cannon.objects.all()
 </pre></div>
 </div>
-<p>Note that <code class="docutils literal notranslate"><span class="pre">Weapon</span></code> and <code class="docutils literal notranslate"><span class="pre">Cannon</span></code> are different typeclasses. You won’t find any <code class="docutils literal notranslate"><span class="pre">Cannon</span></code> instances in
-the <code class="docutils literal notranslate"><span class="pre">all_weapon</span></code> result above, confusing as that may sound. To get instances of a Typeclass <em>and</em> the
-instances of all its children classes you need to use <code class="docutils literal notranslate"><span class="pre">_family</span></code>:</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">Weapon</span></code> and <code class="docutils literal notranslate"><span class="pre">Cannon</span></code> are <em>different</em> typeclasses. This means that you
+won’t find any <code class="docutils literal notranslate"><span class="pre">Weapon</span></code>-typeclassed results in <code class="docutils literal notranslate"><span class="pre">all_cannons</span></code>. Vice-versa, you
+won’t find any <code class="docutils literal notranslate"><span class="pre">Cannon</span></code>-typeclassed results in <code class="docutils literal notranslate"><span class="pre">all_weapons</span></code>. This may not be
+what you expect.</p>
+<p>If you want to get all entities with typeclass <code class="docutils literal notranslate"><span class="pre">Weapon</span></code> <em>as well</em> as all the
+subclasses of <code class="docutils literal notranslate"><span class="pre">Weapon</span></code>, such as <code class="docutils literal notranslate"><span class="pre">Cannon</span></code>, you need to use the <code class="docutils literal notranslate"><span class="pre">_family</span></code> type of
+query:</p>
 <aside class="sidebar">
 <p class="sidebar-title">_family</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The all_family, filter_family etc is an Evennia-specific
-thing. It&#39;s not part of regular Django.
-</pre></div>
-</div>
+<p>The all_family, filter_family etc is an Evennia-specific
+thing. It’s not part of regular Django.</p>
 </aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>really_all_weapons = Weapon.objects.all_family()
 </pre></div>
 </div>
-<p>This result now contains both <code class="docutils literal notranslate"><span class="pre">Weapon</span></code> and <code class="docutils literal notranslate"><span class="pre">Cannon</span></code> instances.</p>
-<p>To  limit your search by other criteria than the Typeclass you need to use <code class="docutils literal notranslate"><span class="pre">.filter</span></code>
+<p>This result now contains both <code class="docutils literal notranslate"><span class="pre">Weapon</span></code> and <code class="docutils literal notranslate"><span class="pre">Cannon</span></code> instances (and any other
+entities whose typeclasses inherit at any distance from <code class="docutils literal notranslate"><span class="pre">Weapon</span></code>, like <code class="docutils literal notranslate"><span class="pre">Musket</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Sword</span></code>).</p>
+<p>To limit your search by other criteria than the Typeclass you need to use <code class="docutils literal notranslate"><span class="pre">.filter</span></code>
 (or <code class="docutils literal notranslate"><span class="pre">.filter_family</span></code>) instead:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>roses = Flower.objects.filter(db_key=&quot;rose&quot;)
 </pre></div>
 </div>
-<p>This is a queryset representing all objects having a <code class="docutils literal notranslate"><span class="pre">db_key</span></code> equal to <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>.
+<p>This is a queryset representing all flowers having a <code class="docutils literal notranslate"><span class="pre">db_key</span></code> equal to <code class="docutils literal notranslate"><span class="pre">&quot;rose&quot;</span></code>.
 Since this is a queryset you can keep adding to it; this will act as an <code class="docutils literal notranslate"><span class="pre">AND</span></code> condition.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>local_roses = roses.filter(db_location=myroom)
 </pre></div>
@@ -118,8 +121,10 @@ Since this is a queryset you can keep adding to it; this will act as an <code cl
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>local_non_red_roses = local_roses.exclude(db_key=&quot;red_rose&quot;)
 </pre></div>
 </div>
-<p>Only until we actually try to examine the result will the database be called. Here it’s called when we
-try to loop over the queryset:</p>
+<p>It’s important to note that we haven’t called the database yet! Not until we
+actually try to examine the result will the database be called. Here the
+database is called when we try to loop over it (because now we need to actually
+get results out of it to be able to loop):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>for rose in local_non_red_roses:
     print(rose)
 </pre></div>
@@ -127,9 +132,20 @@ try to loop over the queryset:</p>
 <p>From now on, the queryset is <em>evaluated</em> and we can’t keep adding more queries to it - we’d need to
 create a new queryset if we wanted to find some other result. Other ways to evaluate the queryset is to
 print it, convert it to a list with <code class="docutils literal notranslate"><span class="pre">list()</span></code> and otherwise try to access its results.</p>
-<p>Note how we use <code class="docutils literal notranslate"><span class="pre">db_key</span></code> and <code class="docutils literal notranslate"><span class="pre">db_location</span></code>. This is the actual names of these database fields. By convention
-Evennia uses <code class="docutils literal notranslate"><span class="pre">db_</span></code> in front of every database field. When you use the normal Evennia search helpers and objects
-you can skip the <code class="docutils literal notranslate"><span class="pre">db_</span></code> but here we are calling the database directly and need to use the ‘real’ names.</p>
+<p>Note how we use <code class="docutils literal notranslate"><span class="pre">db_key</span></code> and <code class="docutils literal notranslate"><span class="pre">db_location</span></code>. This is the actual names of these
+database fields. By convention Evennia uses <code class="docutils literal notranslate"><span class="pre">db_</span></code> in front of every database
+field. When you use the normal Evennia search helpers and objects you can skip
+the <code class="docutils literal notranslate"><span class="pre">db_</span></code> but here we are calling the database directly and need to use the
+‘real’ names.</p>
+<aside class="sidebar">
+<p class="sidebar-title">database fields</p>
+<p>Each database table have only a few fields. For <code class="docutils literal notranslate"><span class="pre">Objects</span></code>, the most common ones
+are <code class="docutils literal notranslate"><span class="pre">db_key</span></code>, <code class="docutils literal notranslate"><span class="pre">db_location</span></code> and <code class="docutils literal notranslate"><span class="pre">db_destination</span></code>. When accessing them they are
+normally accessed just as <code class="docutils literal notranslate"><span class="pre">obj.key</span></code>, <code class="docutils literal notranslate"><span class="pre">obj.location</span></code> and <code class="docutils literal notranslate"><span class="pre">obj.destination</span></code>.  You
+only need to remember the <code class="docutils literal notranslate"><span class="pre">db_</span></code> when using them in database queries. The object
+description, <code class="docutils literal notranslate"><span class="pre">obj.db.desc</span></code> is not such a hard-coded field, but one of many
+arbitrary Attributes attached to the Object.</p>
+</aside>
 <p>Here are the most commonly used methods to use with the <code class="docutils literal notranslate"><span class="pre">objects</span></code> managers:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> - query for a listing of objects based on search criteria. Gives empty queryset if none
@@ -156,7 +172,7 @@ roses = Flower.objects.filter(db_key__exact=&quot;rose&quot;
 roses = Flower.objects.filter(db_key__iexact=&quot;rose&quot;)
 </pre></div>
 </div>
-<p>The Django field query language uses <code class="docutils literal notranslate"><span class="pre">__</span></code> in the same way as Python uses <code class="docutils literal notranslate"><span class="pre">.</span></code> to access resources. This
+<p>The Django field query language uses <code class="docutils literal notranslate"><span class="pre">__</span></code> similarly to how Python uses <code class="docutils literal notranslate"><span class="pre">.</span></code> to access resources. This
 is because <code class="docutils literal notranslate"><span class="pre">.</span></code> is not allowed in a function keyword.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>roses = Flower.objects.filter(db_key__icontains=&quot;rose&quot;)
 </pre></div>
@@ -168,7 +184,8 @@ comparisons (same for <code class="docutils literal notranslate"><span class="pr
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>swords = Weapons.objects.filter(db_key__in=(&quot;rapier&quot;, &quot;two-hander&quot;, &quot;shortsword&quot;))
 </pre></div>
 </div>
-<p>One also uses <code class="docutils literal notranslate"><span class="pre">__</span></code> to access foreign objects like Tags. Let’s for example assume this is how we identify mages:</p>
+<p>One also uses <code class="docutils literal notranslate"><span class="pre">__</span></code> to access foreign objects like Tags. Let’s for example assume
+this is how we have identified mages:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>char.tags.add(&quot;mage&quot;, category=&quot;profession&quot;)
 </pre></div>
 </div>
@@ -188,7 +205,7 @@ comparisons (same for <code class="docutils literal notranslate"><span class="pr
 <section id="get-that-werewolf">
 <h2><span class="section-number">12.2. </span>Get that werewolf …<a class="headerlink" href="#get-that-werewolf" title="Permalink to this headline">¶</a></h2>
 <p>Let’s see if we can make a query for the werewolves in the moonlight we mentioned at the beginning
-of this section.</p>
+of this lesson.</p>
 <p>Firstly, we make ourselves and our current location match the criteria, so we can test:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py here.tags.add(&quot;moonlit&quot;)
 &gt; py me.db.lycantrophy = 3
@@ -198,11 +215,9 @@ of this section.</p>
 possible.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Line breaks</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Note the way of writing this code. It would have been very hard to read if we just wrote it in
-one long line. But since we wrapped it in `(...)` we can spread it out over multiple lines
-without worrying about line breaks!
-</pre></div>
-</div>
+<p>Note the way of writing this code. It would have been very hard to read if we
+just wrote it in one long line. But since we wrapped it in <code class="docutils literal notranslate"><span class="pre">(...)</span></code> we can spread
+it out over multiple lines without worrying about line breaks!</p>
 </aside>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.characters</span> <span class="kn">import</span> <span class="n">Character</span>
 
@@ -211,25 +226,26 @@ without worrying about line breaks!
     <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
         <span class="n">db_location__db_tags__db_key__iexact</span><span class="o">=</span><span class="s2">&quot;moonlit&quot;</span><span class="p">,</span>
         <span class="n">db_attributes__db_key</span><span class="o">=</span><span class="s2">&quot;lycantrophy&quot;</span><span class="p">,</span>
-        <span class="n">db_attributes__db_value__gt</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">db_attributes__db_value__gt</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>Line 3</strong> - We want to find <code class="docutils literal notranslate"><span class="pre">Character</span></code>s, so we access <code class="docutils literal notranslate"><span class="pre">.objects</span></code> on the <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass.</p></li>
-<li><p><strong>Line 4</strong> - We start to filter …</p></li>
-<li><p><strong>Line 5</strong></p>
-<ul>
+<li><p>We want to find <code class="docutils literal notranslate"><span class="pre">Character</span></code>s, so we access <code class="docutils literal notranslate"><span class="pre">.objects</span></code> on the <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass.</p></li>
+<li><p>We start to filter …</p></li>
+<li><ul>
 <li><p>… by accessing the <code class="docutils literal notranslate"><span class="pre">db_location</span></code> field (usually this is a Room)</p></li>
 <li><p>… and on that location, we get the value of <code class="docutils literal notranslate"><span class="pre">db_tags</span></code> (this is a <em>many-to-many</em> database field
 that we can treat like an object for this purpose; it references all Tags on the location)</p></li>
 <li><p>… and from those <code class="docutils literal notranslate"><span class="pre">Tags</span></code>, we looking for <code class="docutils literal notranslate"><span class="pre">Tags</span></code> whose <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is “monlit” (non-case sensitive).</p></li>
 </ul>
 </li>
-<li><p><strong>Line 6</strong> - … We also want only Characters with <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> whose <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is exactly <code class="docutils literal notranslate"><span class="pre">&quot;lycantrophy&quot;</span></code></p></li>
-<li><p><strong>Line 7</strong> - … at the same time as the <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>’s <code class="docutils literal notranslate"><span class="pre">db_value</span></code> is greater-than 2.</p></li>
+<li><p>… We also want only Characters with <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> whose <code class="docutils literal notranslate"><span class="pre">db_key</span></code> is exactly <code class="docutils literal notranslate"><span class="pre">&quot;lycantrophy&quot;</span></code></p></li>
+<li><p>… at the same time as the <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>’s <code class="docutils literal notranslate"><span class="pre">db_value</span></code> is greater-than 2.</p></li>
 </ul>
-<p>Running this query makes our newly lycantrrophic Character appear in <code class="docutils literal notranslate"><span class="pre">will_transform</span></code>. Success!</p>
+<p>Running this query makes our newly lycantrophic Character appear in <code class="docutils literal notranslate"><span class="pre">will_transform</span></code> so we
+know to transform it. Success!</p>
 <blockquote>
 <div><p>Don’t confuse database fields with <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a> you set via <code class="docutils literal notranslate"><span class="pre">obj.db.attr</span> <span class="pre">=</span> <span class="pre">'foo'</span></code> or
 <code class="docutils literal notranslate"><span class="pre">obj.attributes.add()</span></code>. Attributes are custom database entities <em>linked</em> to an object. They are not
@@ -265,10 +281,12 @@ Character.objects.filter(q1 | ~q2)
 </div>
 <p>Would get all Characters that are either named “Dalton” <em>or</em> which is <em>not</em> in prison. The result is a mix
 of Daltons and non-prisoners.</p>
-<p>Let us expand our original werewolf query. Not only do we want to find all Characters in a moonlit room
-with a certain level of <code class="docutils literal notranslate"><span class="pre">lycanthrophy</span></code>. Now we also want the full moon to immediately transform people who were
-recently bitten, even if their <code class="docutils literal notranslate"><span class="pre">lycantrophy</span></code> level is not yet high enough (more dramatic this way!). Let’s say there is
-a Tag “recently_bitten” that controls this.</p>
+<p>Let us expand our original werewolf query. Not only do we want to find all
+Characters in a moonlit room with a certain level of <code class="docutils literal notranslate"><span class="pre">lycanthrophy</span></code>. Now we also
+want the full moon to immediately transform people who were recently bitten,
+even if their <code class="docutils literal notranslate"><span class="pre">lycantrophy</span></code> level is not yet high enough (more dramatic this
+way!). When you get bitten, you’ll get a Tag <code class="docutils literal notranslate"><span class="pre">recently_bitten</span></code> put on you to
+indicate this.</p>
 <p>This is how we’d change our query:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 
@@ -301,21 +319,22 @@ a Tag “recently_bitten” that controls this.</p>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">SQL</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>These Python structures are internally converted to SQL, the native language of the database.
-If you are familiar with SQL, these are many-to-many tables joined with `LEFT OUTER JOIN`,
-which may lead to multiple merged rows combining the same object with different relations.
-</pre></div>
-</div>
+<p>These Python structures are internally converted to SQL, the native language of
+the database.  If you are familiar with SQL, these are many-to-many tables
+joined with <code class="docutils literal notranslate"><span class="pre">LEFT</span> <span class="pre">OUTER</span> <span class="pre">JOIN</span></code>, which may lead to multiple merged rows combining
+the same object with different relations.</p>
 </aside>
-<p>This reads as “Find all Characters in a moonlit room that either has the Attribute <code class="docutils literal notranslate"><span class="pre">lycantrophy</span></code> higher
-than two <em>or</em> which has the Tag <code class="docutils literal notranslate"><span class="pre">recently_bitten</span></code>”. With an OR-query like this it’s possible to find the
-same Character via different paths, so we add <code class="docutils literal notranslate"><span class="pre">.distinct()</span></code> at the end. This makes sure that there is only
-one instance of each Character in the result.</p>
+<p>This reads as “Find all Characters in a moonlit room that either has the
+Attribute <code class="docutils literal notranslate"><span class="pre">lycantrophy</span></code> higher than two, <em>or</em> which has the Tag
+<code class="docutils literal notranslate"><span class="pre">recently_bitten</span></code>”. With an OR-query like this it’s possible to find the same
+Character via different paths, so we add <code class="docutils literal notranslate"><span class="pre">.distinct()</span></code> at the end. This makes
+sure that there is only one instance of each Character in the result.</p>
 </section>
 <section id="annotations">
 <h2><span class="section-number">12.4. </span>Annotations<a class="headerlink" href="#annotations" title="Permalink to this headline">¶</a></h2>
-<p>What if we wanted to filter on some condition that isn’t represented easily by a field on the
-object? Maybe we want to find rooms only containing five or more objects?</p>
+<p>What if we wanted to filter on some condition that isn’t represented easily by a
+field on the object? Maybe we want to find rooms only containing five or more
+objects?</p>
 <p>We <em>could</em> do it like this (don’t actually do it this way!):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
 
@@ -327,11 +346,13 @@ object? Maybe we want to find rooms only containing five or more objects?</p>
               <span class="n">rooms_with_five_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Above we get all rooms and then use <code class="docutils literal notranslate"><span class="pre">list.append()</span></code> to keep adding the right rooms
-to an ever-growing list. This is <em>not</em> a good idea, once your database grows this will
-be unnecessarily computing-intensive. The database is much more suitable for this.</p>
-<p><em>Annotations</em> allow you to set a ‘variable’ inside the query that you can
-then access from other parts of the query. Let’s do the same example as before directly in the database:</p>
+<p>Above we get all rooms and then use <code class="docutils literal notranslate"><span class="pre">list.append()</span></code> to keep adding the right
+rooms to an ever-growing list. This is <em>not</em> a good idea, once your database
+grows this will be unnecessarily computing-intensive. The database is much more
+suitable for this.</p>
+<p><em>Annotations</em> allow you to set a ‘variable’ inside the query that you can then
+access from other parts of the query. Let’s do the same example as before
+directly in the database:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
 <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span>
 
@@ -350,17 +371,19 @@ that will count the number of results inside the database.</p>
 <div><p>Note the use of <code class="docutils literal notranslate"><span class="pre">location_set</span></code> in that <code class="docutils literal notranslate"><span class="pre">Count</span></code>. The <code class="docutils literal notranslate"><span class="pre">*_set</span></code> is a back-reference automatically created by
 Django. In this case it allows you to find all objects that <em>has the current object as location</em>.</p>
 </div></blockquote>
-<p>Next we filter on this annotation, using the name <code class="docutils literal notranslate"><span class="pre">num_objects</span></code> as something we can filter for. We
-use <code class="docutils literal notranslate"><span class="pre">num_objects__gte=5</span></code> which means that <code class="docutils literal notranslate"><span class="pre">num_objects</span></code> should be greater than 5. This is a little
-harder to get one’s head around but much more efficient than lopping over all objects in Python.</p>
+<p>Next we filter on this annotation, using the name <code class="docutils literal notranslate"><span class="pre">num_objects</span></code> as something we
+can filter for. We use <code class="docutils literal notranslate"><span class="pre">num_objects__gte=5</span></code> which means that <code class="docutils literal notranslate"><span class="pre">num_objects</span></code>
+should be greater than or equal to 5. This is a little harder to get one’s head
+around but much more efficient than lopping over all objects in Python.</p>
 </section>
 <section id="f-objects">
 <h2><span class="section-number">12.5. </span>F-objects<a class="headerlink" href="#f-objects" title="Permalink to this headline">¶</a></h2>
-<p>What if we wanted to compare two dynamic parameters against one another in a query? For example, what if
-instead of having 5 or more objects, we only wanted objects that had a bigger inventory than they had
-tags (silly example, but …)? This can be with Django’s
-<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/expressions/#f-expressions">F objects</a>.
-So-called F expressions allow you to do a query that looks at a value of each object in the database.</p>
+<p>What if we wanted to compare two dynamic parameters against one another in a
+query? For example, what if instead of having 5 or more objects, we only wanted
+objects that had a bigger inventory than they had tags (silly example, but …)?
+This can be with Django’s <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/expressions/#f-expressions">F objects</a>.
+So-called F expressions allow you to do a query that looks at a value of each
+object in the database.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span><span class="p">,</span> <span class="n">F</span>
 <span class="kn">from</span> <span class="nn">typeclasses.rooms</span> <span class="kn">import</span> <span class="n">Room</span>
 
@@ -420,10 +443,11 @@ in a format like the following:</p>
 </section>
 <section id="conclusions">
 <h2><span class="section-number">12.7. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
-<p>We have covered a lot of ground in this lesson and covered several more complex topics. Knowing how to
-query using Django is a powerful skill to have.</p>
-<p>This concludes the first part of the Evennia starting tutorial - “What we have”. Now we have a good foundation
-to understand how to plan what our tutorial game will be about.</p>
+<p>We have covered a lot of ground in this lesson and covered several more complex
+topics. Knowing how to query using Django is a powerful skill to have.</p>
+<p>This concludes the first part of the Evennia starting tutorial - “What we have”.
+Now we have a good foundation to understand how to plan what our tutorial game
+will be about.</p>
 </section>
 </section>
 

@@ -2758,13 +2758,13 @@
 
 <div class="viewcode-block" id="CmdExamine.format_nattributes"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_nattributes">[docs]</a>    <span class="k">def</span> <span class="nf">format_nattributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">ndb_attr</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_tuples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">ndb_attr</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">nattributes</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">ndb_attr</span> <span class="ow">and</span> <span class="n">ndb_attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;  </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_single_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ndb_attr</span><span class="p">)</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_single_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ndb_attr</span><span class="p">)</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="CmdExamine.format_exits"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdExamine.format_exits">[docs]</a>    <span class="k">def</span> <span class="nf">format_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>

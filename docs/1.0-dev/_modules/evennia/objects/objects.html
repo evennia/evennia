@@ -970,7 +970,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">announce_move_from</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;at_announce_move()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
+                <span class="n">logerr</span><span class="p">(</span><span class="n">errtxt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s2">&quot;announce_move_from()&quot;</span><span class="p">),</span> <span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Perform move</span>

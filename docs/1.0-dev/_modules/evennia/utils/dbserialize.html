@@ -285,6 +285,10 @@
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deserializes this mutable into its corresponding non-Saver type.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">_SaverList</span><span class="p">(</span><span class="n">_SaverMutable</span><span class="p">,</span> <span class="n">MutableSequence</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -460,6 +464,8 @@
         <span class="n">tname</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="k">if</span> <span class="n">tname</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_SaverDict&quot;</span><span class="p">,</span> <span class="s2">&quot;dict&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span><span class="n">_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">_iter</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">elif</span> <span class="n">tname</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_SaverOrderedDict&quot;</span><span class="p">,</span> <span class="s2">&quot;OrderedDict&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">_iter</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">_iter</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
         <span class="k">elif</span> <span class="n">tname</span> <span class="ow">in</span> <span class="n">_DESERIALIZE_MAPPING</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_DESERIALIZE_MAPPING</span><span class="p">[</span><span class="n">tname</span><span class="p">](</span><span class="n">_iter</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
