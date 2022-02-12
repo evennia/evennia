@@ -1580,10 +1580,10 @@ class GaugeTrait(CounterTrait):
 
     @base.setter
     def base(self, value):
-        """Limit so (base+mod)*mult can never go below min."""
+        """Limit so base+mod can never go below min."""
         if type(value) in (int, float):
-            if (value + self.mod) * self.mult < self.min:
-                value = (self.min - self.mod) / self.mult
+            if value + self.mod < self.min:
+                value = self.min - self.mod
             self._data["base"] = value
 
     @property
@@ -1592,10 +1592,10 @@ class GaugeTrait(CounterTrait):
 
     @mod.setter
     def mod(self, value):
-        """Limit so (base+mod)*mult can never go below min."""
+        """Limit so base+mod can never go below min."""
         if type(value) in (int, float):
-            if (value + self.base) * self.mult < self.min:
-                value = (self.min - self.base) / self.mult
+            if value + self.base < self.min:
+                value = self.min - self.base
             self._data["mod"] = value
     
     @property
