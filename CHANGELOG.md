@@ -151,6 +151,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   `LUNR_STOP_WORD_FILTER_EXCEPTIONS` can be extended to make sure common names are included.
 - Add `.deserialize()` method to `_Saver*` structures to help completely
   decouple structures from database without needing separate import.
+- Add `run_in_main_thread` as a helper for those wanting to code server code
+  from a web view.
 
 
 ## Evennia 0.9.5
