@@ -1319,16 +1319,16 @@ class CounterTrait(Trait):
             now = time()
             tdiff = now - self._data["last_update"]
             current += rate * tdiff
-            value = (current + self.mod) * self.mult
+            value = (current + self.mod)
 
             # we must make sure so we don't overstep our bounds
             # even if .mod is included
 
             if self._passed_ratetarget(value):
-                current = (self._data["ratetarget"] - self.mod) / self.mult
+                current = (self._data["ratetarget"] - self.mod)
                 self._stop_timer()
             elif not self._within_boundaries(value):
-                current = (self._enforce_boundaries(value) - self.mod) / self.mult
+                current = (self._enforce_boundaries(value) - self.mod)
                 self._stop_timer()
             else:
                 self._data["last_update"] = now
@@ -1350,10 +1350,10 @@ class CounterTrait(Trait):
         if value is None:
             self._data["base"] = self.default_keys["base"]
         if type(value) in (int, float):
-            if self.min is not None and (value + self.mod) * self.mult < self.min:
-                value = (self.min - self.mod) / self.mult
-            if self.max is not None and (value + self.mod) * self.mult > self.max:
-                value = (self.max - self.mod) / self.mult
+            if self.min is not None and value + self.mod < self.min:
+                value = self.min - self.mod
+            if self.max is not None and value + self.mod > self.max:
+                value = self.max - self.mod
             self._data["base"] = value
 
     @property
@@ -1366,10 +1366,10 @@ class CounterTrait(Trait):
             # unsetting the boundary to default
             self._data["mod"] = self.default_keys["mod"]
         elif type(value) in (int, float):
-            if self.min is not None and (value + self.base) * self.mult < self.min:
-                value = (self.min - self.base) / self.mult
-            if self.max is not None and (value + self.base) * self.mult > self.max:
-                value = (self.max - self.base) / self.mult
+            if self.min is not None and value + self.base < self.min:
+                value = self.min - self.base
+            if self.max is not None and value + self.base > self.max:
+                value = self.max - self.base
             self._data["mod"] = value
 
     @property
@@ -1393,7 +1393,7 @@ class CounterTrait(Trait):
         elif type(value) in (int, float):
             if self.max is not None:
                 value = min(self.max, value)
-            self._data["min"] = min(value, (self.base + self.mod) * self.mult)
+            self._data["min"] = min(value, self.base + self.mod)
 
     @property
     def max(self):
@@ -1427,7 +1427,7 @@ class CounterTrait(Trait):
     @property
     def value(self):
         "The value of the Trait. (current + mod) * mult"
-        return self._enforce_boundaries( (self.current + self.mod) * self.mult)
+        return self._enforce_boundaries((self.current + self.mod) * self.mult)
 
     @property
     def ratetarget(self):
