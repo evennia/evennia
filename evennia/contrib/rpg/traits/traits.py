@@ -1196,6 +1196,10 @@ class StaticTrait(Trait):
         if type(amount) in (int, float):
             self._data["mult"] = amount
 
+    @mult.deleter
+    def mult(self):
+        self._data["mult"] = 1.0
+
     @property
     def value(self):
         "The value of the Trait."
@@ -1209,14 +1213,14 @@ class CounterTrait(Trait):
     This includes modifications and min/max limits as well as the notion of a
     current value. The value can also be reset to the base value.
 
-    min/unset     base    base+mod                       max/unset
+    min/unset     base  (base+mod)*mult                  max/unset
      |--------------|--------|---------X--------X------------|
                                     current   value
                                               = (current
                                               + mod)
                                               * mult
 
-    - value = (current + mod) * mult, starts at base + mod
+    - value = (current + mod) * mult, starts at (base + mod) * mult
     - if min or max is None, there is no upper/lower bound (default)
     - if max is set to "base", max will be equal ot base+mod
     - descs are used to optionally describe each value interval.
@@ -1381,6 +1385,10 @@ class CounterTrait(Trait):
         if type(amount) in (int, float):
             self._data["mult"] = amount
 
+    @mult.deleter
+    def mult(self):
+        self._data["mult"] = 1.0
+
     @property
     def min(self):
         return self._data["min"]
@@ -1407,11 +1415,11 @@ class CounterTrait(Trait):
         elif type(value) in (int, float):
             if self.min is not None:
                 value = max(self.min, value)
-            self._data["max"] = max(value, (self.base + self.mod) * self.mult)
+            self._data["max"] = max(value, self.base + self.mod)
 
     @property
     def current(self):
-        """The `current` value of the `Trait`. This does not have .mod added."""
+        """The `current` value of the `Trait`. This does not have .mod added and is not .mult-iplied."""
         return self._update_current(self._data.get("current", self.base))
 
     @current.setter
@@ -1598,6 +1606,10 @@ class GaugeTrait(CounterTrait):
     def mult(self, amount):
         if type(amount) in (int, float):
             self._data["mult"] = amount
+
+    @mult.deleter
+    def mult(self):
+        self._data["mult"] = 1.0
 
     @property
     def min(self):
