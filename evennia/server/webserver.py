@@ -276,16 +276,25 @@ class WSGIWebServer(internet.TCPServer):
         Start the pool after the service starts.
 
         """
-        super().startService()
-        self.pool.start()
+        try:
+            super().startService()
+            self.pool.start()
+        except Exception:
+            logger.log_trace("Webserver did not start correctly. Disabling.")
+            self.stopService()
 
     def stopService(self):
         """
         Safely stop the pool after the service stops.
 
         """
-        super().stopService()
-        self.pool.stop()
+        try:
+            super().stopService()
+        except Exception:
+            logger.log_trace("Webserver stopService error.")
+        finally:
+            if self.pool.started:
+                self.pool.stop()
 
 
 class PrivateStaticRoot(static.File):
