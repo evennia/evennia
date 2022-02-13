@@ -206,11 +206,11 @@ class GetLogObserver:
             event["log_system"] = self.event_levels.get(lvl, "-")
         event["log_format"] = str(event.get("log_format", ""))
         component_prefix = self.component_prefix or ""
-
-        return component_prefix + twisted_logger.formatEventAsClassicLogText(
+        log_msg = twisted_logger.formatEventAsClassicLogText(
             event,
             formatTime=lambda e: twisted_logger.formatTime(e, _TIME_FORMAT)
         )
+        return f"{component_prefix}{log_msg}"
 
     def __call__(self, outfile):
         return twisted_logger.FileLogObserver(outfile, self.format_log_event)
