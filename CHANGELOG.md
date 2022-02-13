@@ -155,6 +155,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   from a web view.
 - Update `evennia.utils.logger` to use Twisted's new logging API. No change in Evennia API
   except more standard aliases logger.error/info/exception/debug etc can now be used.
+- Have `type/force` default to `update`-mode rather than `reset`mode and add more verbose
+  warning when using reset mode.
 
 
 ## Evennia 0.9.5

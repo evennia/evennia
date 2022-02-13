@@ -25,6 +25,7 @@ from evennia.utils.utils import (
     format_grid,
 )
 from evennia.utils.eveditor import EvEditor
+from evennia.utils.evmenu import ask_yes_no
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
@@ -2212,10 +2213,21 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 "Use /force to override."
             )
         else:
-            update = "update" in self.switches
             reset = "reset" in self.switches
+            update = "update" in self.switches or not reset  # default to update
+
             hooks = "at_object_creation" if update and not reset else "all"
             old_typeclass_path = obj.typeclass_path
+
+            if reset:
+                answer = yield("|yNote that this will reset the object back to its typeclass' default state, "
+                               "removing any custom locks/perms/attributes etc that may have been added "
+                               "by an explicit create_object call. Use `update` or type/force instead in order "
+                               "to keep such data. "
+                               "Continue [Y]/N?|n")
+                if answer.upper() == "N":
+                    caller.msg("Aborted.")
+                    return
 
             # special prompt for the user in cases where we want
             # to confirm changes.
@@ -2262,7 +2274,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             if reset:
                 string += " All old attributes where deleted before the swap."
             else:
-                string += " Attributes set before swap were not removed."
+                string += " Attributes set before swap were not removed\n(use `swap` or `type/reset` to clear all)."
             if "prototype" in self.switches and prototype_success:
                 string += (
                     " Prototype '%s' was successfully applied over the object type."
