@@ -274,7 +274,7 @@ class TestTraitStatic(_TraitHandlerBase):
             trait_type="static",
             base=1,
             mod=2,
-            mult=2.0,
+            mult=1.0,
             extra_val1="xvalue1",
             extra_val2="xvalue2",
         )
@@ -291,7 +291,7 @@ class TestTraitStatic(_TraitHandlerBase):
                 "trait_type": "static",
                 "base": 1,
                 "mod": 2,
-                "mult": 2.0,
+                "mult": 1.0,
                 "extra_val1": "xvalue1",
                 "extra_val2": "xvalue2",
             },
@@ -299,19 +299,20 @@ class TestTraitStatic(_TraitHandlerBase):
 
     def test_value(self):
         """value is (base + mod) * mult"""
-        self.assertEqual(self._get_values(), (1, 2, 2.0, 6))
+        self.assertEqual(self._get_values(), (1, 2, 1.0, 3))
         self.trait.base += 4
-        self.assertEqual(self._get_values(), (5, 2, 2.0, 14))
+        self.assertEqual(self._get_values(), (5, 2, 1.0, 7))
         self.trait.mod -= 1
-        self.assertEqual(self._get_values(), (5, 1, 2.0, 12))
+        self.assertEqual(self._get_values(), (5, 1, 1.0, 6))
         self.trait.mult += 1.0
-        self.assertEqual(self._get_values(), (5, 1, 3.0, 18))
+        self.assertEqual(self._get_values(), (5, 1, 2.0, 12))
         self.trait.mult = 0.75
         self.assertEqual(self._get_values(), (5, 1, 0.75, 4.5))
 
 
     def test_delete(self):
         """Deleting resets to default."""
+        self.trait.mult = 2.0
         del self.trait.base
         self.assertEqual(self._get_values(), (0, 2, 2.0, 4))
         del self.trait.mult
