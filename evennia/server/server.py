@@ -16,7 +16,7 @@ from twisted.web import static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
-from twisted.python.log import ILogObserver
+from twisted.logger import globalLogPublisher
 
 import django
 
@@ -647,7 +647,8 @@ except OperationalError:
 # what to execute from.
 application = service.Application("Evennia")
 
-if "--nodaemon" not in sys.argv:
+if ("--nodaemon" not in sys.argv
+        and not hasattr(settings, "_TEST_ENVIRONMENT") and settings._TEST_ENVIRONMENT):
     # custom logging, but only if we are not running in interactive mode
     logfile = logger.WeeklyLogFile(
         os.path.basename(settings.SERVER_LOG_FILE),
@@ -655,7 +656,8 @@ if "--nodaemon" not in sys.argv:
         day_rotation=settings.SERVER_LOG_DAY_ROTATION,
         max_size=settings.SERVER_LOG_MAX_SIZE,
     )
-    application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
+    globalLogPublisher.addObserver(logger.GetServerLogObserver()(logfile))
+
 
 # The main evennia server program. This sets up the database
 # and is where we store all the other services.
