@@ -96,8 +96,9 @@ DEFAULT_SETTING_RESETS = dict(
         "evennia.game_template.server.conf.prototypefuncs",
     ],
     BASE_GUEST_TYPECLASS="evennia.accounts.accounts.DefaultGuest",
-    # a special flag; test with settings._TEST_ENVIRONMENT to see if code runs in a test
-    _TEST_ENVIRONMENT=True,
+
+    # a special setting boolean _TEST_ENVIRONMENT is set by the test runner
+    # while the test suite is running.
 )
 
 DEFAULT_SETTINGS = {**all_from_module(settings_default), **DEFAULT_SETTING_RESETS}

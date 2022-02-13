@@ -15,7 +15,7 @@ from os.path import dirname, abspath
 from twisted.application import internet, service
 from twisted.internet.task import LoopingCall
 from twisted.internet import protocol, reactor
-from twisted.python.log import ILogObserver
+from twisted.logger import globalLogPublisher
 
 import django
 
@@ -245,16 +245,17 @@ class Portal(object):
 # what to execute from.
 application = service.Application("Portal")
 
-# custom logging
 
-if "--nodaemon" not in sys.argv:
+if ("--nodaemon" not in sys.argv
+        and not hasattr(settings, "_TEST_ENVIRONMENT") and settings._TEST_ENVIRONMENT):
+    # custom logging
     logfile = logger.WeeklyLogFile(
         os.path.basename(settings.PORTAL_LOG_FILE),
         os.path.dirname(settings.PORTAL_LOG_FILE),
         day_rotation=settings.PORTAL_LOG_DAY_ROTATION,
         max_size=settings.PORTAL_LOG_MAX_SIZE,
     )
-    application.setComponent(ILogObserver, logger.PortalLogObserver(logfile).emit)
+    globalLogPublisher.addObserver(logger.GetPortalLogObserver()(logfile))
 
 # The main Portal server program. This sets up the database
 # and is where we store all the other services.

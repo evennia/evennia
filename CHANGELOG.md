@@ -153,6 +153,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   decouple structures from database without needing separate import.
 - Add `run_in_main_thread` as a helper for those wanting to code server code
   from a web view.
+- Update `evennia.utils.logger` to use Twisted's new logging API. No change in Evennia API
+  except more standard aliases logger.error/info/exception/debug etc can now be used.
 
 
 ## Evennia 0.9.5
