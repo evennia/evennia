@@ -647,9 +647,9 @@ except OperationalError:
 # what to execute from.
 application = service.Application("Evennia")
 
-if ("--nodaemon" not in sys.argv
-        and not (hasattr(settings, "_TEST_ENVIRONMENT") and settings._TEST_ENVIRONMENT)):
-    # custom logging, but only if we are not running in interactive mode
+
+if "--nodaemon" not in sys.argv and "test" not in sys.argv:
+    # activate logging for interactive/testing mode
     logfile = logger.WeeklyLogFile(
         os.path.basename(settings.SERVER_LOG_FILE),
         os.path.dirname(settings.SERVER_LOG_FILE),

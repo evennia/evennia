@@ -25,7 +25,6 @@ from evennia.utils.utils import (
     format_grid,
 )
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.evmenu import ask_yes_no
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
@@ -2225,7 +2224,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                                "by an explicit create_object call. Use `update` or type/force instead in order "
                                "to keep such data. "
                                "Continue [Y]/N?|n")
-                if answer.upper() == "N":
+                if answer.upper() in ("N", "NO"):
                     caller.msg("Aborted.")
                     return
 

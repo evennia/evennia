@@ -246,9 +246,8 @@ class Portal(object):
 application = service.Application("Portal")
 
 
-if ("--nodaemon" not in sys.argv
-        and not (hasattr(settings, "_TEST_ENVIRONMENT") and settings._TEST_ENVIRONMENT)):
-    # custom logging
+if "--nodaemon" not in sys.argv and "test" not in sys.argv:
+    # activate logging for interactive/testing mode
     logfile = logger.WeeklyLogFile(
         os.path.basename(settings.PORTAL_LOG_FILE),
         os.path.dirname(settings.PORTAL_LOG_FILE),

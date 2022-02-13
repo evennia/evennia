@@ -1274,7 +1274,7 @@ class TestBuilding(BaseEvenniaCommandTest):
             "Obj2 = evennia.objects.objects.DefaultExit",
             "Obj2 changed typeclass from evennia.objects.objects.DefaultObject "
             "to evennia.objects.objects.DefaultExit.",
-            cmdstring="swap",
+            cmdstring="swap", inputs=["yes"],
         )
         self.call(building.CmdTypeclass(), "/list Obj", "Core typeclasses")
         self.call(
@@ -1302,7 +1302,8 @@ class TestBuilding(BaseEvenniaCommandTest):
             building.CmdTypeclass(),
             "Obj",
             "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
-            "Only the at_object_creation hook was run (update mode). Attributes set before swap were not removed.",
+            "Only the at_object_creation hook was run (update mode). Attributes set before swap were not removed\n"
+            "(use `swap` or `type/reset` to clear all).",
             cmdstring="update",
         )
         self.call(
@@ -1310,6 +1311,7 @@ class TestBuilding(BaseEvenniaCommandTest):
             "/reset/force Obj=evennia.objects.objects.DefaultObject",
             "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
             "All object creation hooks were run. All old attributes where deleted before the swap.",
+            inputs=["yes"]
         )
 
         from evennia.prototypes.prototypes import homogenize_prototype
@@ -1332,11 +1334,11 @@ class TestBuilding(BaseEvenniaCommandTest):
             self.call(
                 building.CmdTypeclass(),
                 "/prototype Obj=testkey",
-                "replaced_obj changed typeclass from "
-                "evennia.objects.objects.DefaultObject to "
-                "typeclasses.objects.Object.\nAll object creation hooks were "
-                "run. Attributes set before swap were not removed. Prototype "
-                "'replaced_obj' was successfully applied over the object type.",
+                "replaced_obj changed typeclass from evennia.objects.objects.DefaultObject to "
+                "typeclasses.objects.Object.\nOnly the at_object_creation hook was run "
+                "(update mode). Attributes set before swap were not removed\n"
+                "(use `swap` or `type/reset` to clear all). Prototype 'replaced_obj' was "
+                "successfully applied over the object type."
             )
             assert self.obj1.db.desc == "protdesc"
 
