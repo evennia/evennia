@@ -247,7 +247,7 @@ application = service.Application("Portal")
 
 
 if ("--nodaemon" not in sys.argv
-        and not hasattr(settings, "_TEST_ENVIRONMENT") and settings._TEST_ENVIRONMENT):
+        and not (hasattr(settings, "_TEST_ENVIRONMENT") and settings._TEST_ENVIRONMENT)):
     # custom logging
     logfile = logger.WeeklyLogFile(
         os.path.basename(settings.PORTAL_LOG_FILE),
