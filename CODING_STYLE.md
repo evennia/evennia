@@ -68,7 +68,7 @@ other text, only code).
 
 ### Class docstrings
 
-The root class docstring should describe the over-arcing use of the
+The root class docstring should describe the over-arching use of the
 class. It should usually not describe the exact call sequence nor list
 important methods, this tends to be hard to keep updated as the API
 develops. Don't use section markers (`#`, `##` etc).
@@ -178,9 +178,9 @@ it easier to read.
 
 ### Default Commands
 
-These represent a special case since Commands in Evennia are using their
+These represent a special case since Commands in Evennia use their
 class docstrings to represent the in-game help entry for that command. 
-So for the default look of Command class docstrings see instead 
+For the default look of Command class docstrings see instead 
 [the default command documentation policy][command-docstrings].
 
 ### Automatic docstring templating 
