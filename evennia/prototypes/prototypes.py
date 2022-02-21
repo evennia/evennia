@@ -32,7 +32,6 @@ from evennia.utils import dbserialize
 from evennia.utils.evtable import EvTable
 
 _MODULE_PROTOTYPE_MODULES = {}
-_LOADED_STUFF = []
 _MODULE_PROTOTYPES = {}
 _PROTOTYPE_META_NAMES = (
     "prototype_key",
@@ -529,9 +528,8 @@ def search_prototype(
 
     """
     # This will load the prototypes the first time they are searched
-    if not _LOADED_STUFF:
+    if not _MODULE_PROTOTYPE_MODULES:
         load_module_prototypes()
-        _LOADED_STUFF.append(True)
 
     # prototype keys are always in lowecase
     if key:
