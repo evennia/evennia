@@ -199,13 +199,12 @@ class ComponentHolderMixin(object):
         setattr(self, "_component_handler", ComponentHandler(self))
         self.components.initialize()
 
-    def at_object_creation(self):
+    def basetype_setup(self):
         """
         Method that initializes the ComponentHandler, creates and registers all
         components that were set on the typeclass using ComponentProperty.
         """
-
-        super().at_object_creation()
+        super().basetype_setup()
         component_names = []
         setattr(self, "_component_handler", ComponentHandler(self))
         class_components = getattr(self, "_class_components", ())
