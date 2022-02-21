@@ -1,7 +1,7 @@
 """
 Components - ChrisLR 2021
 
-This file defines classes allowing a typeclass to use components.
+This file contains the classes that allow a typeclass to use components.
 """
 
 from evennia.contrib.base_systems import components
@@ -53,11 +53,30 @@ class ComponentHandler:
         self._loaded_components = {}
 
     def add(self, component):
+        """
+        Method to add a Component to a host.
+        It caches the loaded component and appends its name to the host's component name list.
+        It will also call the component's 'at_added' method, passing its host.
+
+        Args:
+            component (object): The 'loaded' component instance to add.
+
+        """
         self._set_component(component)
         self.db_names.append(component.name)
         component.at_added(self.host)
 
     def add_default(self, name):
+        """
+        Method to add a Component initialized to default values on a host.
+        It will retrieve the proper component and instanciate it with 'default_create'.
+        It will cache this new component and add it to its list.
+        It will also call the component's 'at_added' method, passing its host.
+
+        Args:
+            name (str): The name of the component class to add.
+
+        """
         component = components.get_component_class(name)
         if not component:
             raise ComponentDoesNotExist(f"Component {name} does not exist.")
@@ -68,6 +87,15 @@ class ComponentHandler:
         new_component.at_added(self.host)
 
     def remove(self, component):
+        """
+        Method to remove a component instance from a host.
+        It removes the component from the cache and listing.
+        It will call the component's 'at_removed' method.
+
+        Args:
+            component (object): The component instance to remove.
+
+        """
         component_name = component.name
         if component_name in self._loaded_components:
             component.at_removed(self.host)
@@ -78,6 +106,15 @@ class ComponentHandler:
             raise ComponentIsNotRegistered(message)
 
     def remove_by_name(self, name):
+        """
+        Method to remove a component instance from a host.
+        It removes the component from the cache and listing.
+        It will call the component's 'at_removed' method.
+
+        Args:
+            name (str): The name of the component to remove.
+
+        """
         instance = self.get(name)
         if not instance:
             message = f"Cannot remove {name} from {self.host.name} as it is not registered."
@@ -88,12 +125,32 @@ class ComponentHandler:
         del self._loaded_components[name]
 
     def get(self, name):
+        """
+        Method to retrieve a cached Component instance by its name.
+
+        Args:
+            name (str): The name of the component to retrieve.
+
+        """
         return self._loaded_components.get(name)
 
     def has(self, name):
+        """
+        Method to check if a component is registered and ready.
+
+        Args:
+            name (str): The name of the component.
+
+        """
         return name in self._loaded_components
 
     def initialize(self):
+        """
+        Method that loads and caches each component currently registered on the host.
+        It retrieves the names from the registered listing and calls 'load' on each
+        prototype class that can be found from this listing.
+
+        """
         component_names = self.db_names
         if not component_names:
             return
@@ -112,6 +169,13 @@ class ComponentHandler:
 
     @property
     def db_names(self):
+        """
+        Property shortcut to retrieve the registered component names
+
+        Returns:
+            component_names (iterable): The name of each component that is registered
+
+        """
         return self.host.attributes.get("component_names")
 
     def __getattr__(self, name):
@@ -128,11 +192,19 @@ class ComponentHolderMixin(object):
     """
 
     def at_init(self):
+        """
+        Method that initializes the ComponentHandler.
+        """
         super(ComponentHolderMixin, self).at_init()
         setattr(self, "_component_handler", ComponentHandler(self))
         self.components.initialize()
 
     def at_object_creation(self):
+        """
+        Method that initializes the ComponentHandler, creates and registers all
+        components that were set on the typeclass using ComponentProperty.
+        """
+
         super().at_object_creation()
         component_names = []
         setattr(self, "_component_handler", ComponentHandler(self))
@@ -147,10 +219,20 @@ class ComponentHolderMixin(object):
 
     @property
     def components(self) -> ComponentHandler:
+        """
+        Property getter to retrieve the component_handler.
+        Returns:
+            ComponentHandler: This Host's ComponentHandler
+        """
         return getattr(self, "_component_handler", None)
 
     @property
     def cmp(self) -> ComponentHandler:
+        """
+        Shortcut Property getter to retrieve the component_handler.
+        Returns:
+            ComponentHandler: This Host's ComponentHandler
+        """
         return self.components
 
 

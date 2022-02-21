@@ -1,12 +1,26 @@
+"""
+Components - ChrisLR 2021
+
+This file contains the Descriptors used to set Fields in Components
+"""
 from evennia.typeclasses.attributes import AttributeProperty, NAttributeProperty
 
 
 class DBField(AttributeProperty):
     """
-    Similar to AttributeProperty but prefixes the key with the component name
+    Component Attribute Descriptor.
+    Allows you to set attributes related to a component on the class.
+    It uses AttributeProperty under the hood but prefixes the key with the component name.
     """
 
     def __set_name__(self, owner, name):
+        """
+        Called when descriptor is first assigned to the class.
+
+        Args:
+            owner (object): The component classF on which this is set
+            name (str): The name that was used to set the DBField.
+        """
         key = f"{owner.name}__{name}"
         self._key = key
         db_fields = getattr(owner, "_db_fields", None)
@@ -18,10 +32,19 @@ class DBField(AttributeProperty):
 
 class NDBField(NAttributeProperty):
     """
-    Similar to NAttributeProperty but prefixes the key with the component name
+    Component In-Memory Attribute Descriptor.
+    Allows you to set in-memory attributes related to a component on the class.
+    It uses NAttributeProperty under the hood but prefixes the key with the component name.
     """
 
     def __set_name__(self, owner, name):
+        """
+        Called when descriptor is first assigned to the class.
+
+        Args:
+            owner (object): The component class on which this is set
+            name (str): The name that was used to set the DBField.
+        """
         key = f"{owner.name}__{name}"
         self._key = key
         ndb_fields = getattr(owner, "_ndb_fields", None)
