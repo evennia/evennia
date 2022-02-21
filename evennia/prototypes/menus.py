@@ -262,7 +262,8 @@ def _validate_prototype(prototype):
 def _format_protfuncs():
     out = []
     sorted_funcs = [
-        (key, func) for key, func in sorted(protlib.FUNC_PARSER.callables.items(), key=lambda tup: tup[0])
+        (key, func)
+        for key, func in sorted(protlib.FUNC_PARSER.callables.items(), key=lambda tup: tup[0])
     ]
     for protfunc_name, protfunc in sorted_funcs:
         out.append(
@@ -2113,8 +2114,9 @@ def _apply_diff(caller, **kwargs):
     objects = kwargs["objects"]
     back_node = kwargs["back_node"]
     diff = kwargs.get("diff", None)
-    num_changed = spawner.batch_update_objects_with_prototype(prototype, diff=diff, objects=objects,
-                                                              caller=caller)
+    num_changed = spawner.batch_update_objects_with_prototype(
+        prototype, diff=diff, objects=objects, caller=caller
+    )
     caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
     return back_node
 
@@ -2354,7 +2356,7 @@ def node_apply_diff(caller, **kwargs):
 
 
 def node_prototype_save(caller, **kwargs):
-    """Save prototype to disk """
+    """Save prototype to disk"""
     # these are only set if we selected 'yes' to save on a previous pass
     prototype = kwargs.get("prototype", None)
     # set to True/False if answered, None if first pass

@@ -237,8 +237,9 @@ class ObjectDBManager(TypedObjectManager):
         )
         type_restriction = typeclasses and Q(db_typeclass_path__in=make_iter(typeclasses)) or Q()
         try:
-            return self.filter(
-                cand_restriction & type_restriction & Q(**querykwargs)).order_by("id")
+            return self.filter(cand_restriction & type_restriction & Q(**querykwargs)).order_by(
+                "id"
+            )
         except exceptions.FieldError:
             return self.none()
         except ValueError:
@@ -335,8 +336,9 @@ class ObjectDBManager(TypedObjectManager):
         index_matches = string_partial_matching(key_strings, ostring, ret_index=True)
         if index_matches:
             # a match by key
-            match_ids = [obj.id for ind, obj in enumerate(search_candidates)
-                         if ind in index_matches]
+            match_ids = [
+                obj.id for ind, obj in enumerate(search_candidates) if ind in index_matches
+            ]
         else:
             # match by alias rather than by key
             search_candidates = search_candidates.filter(

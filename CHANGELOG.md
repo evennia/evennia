@@ -1,8 +1,11 @@
 # Changelog
 
-## Evennia 1.0 (2019-) (develop branch, WIP)
+### Evennia 1.0
 
-Up requirements to Django 3.2+, Twisted 21+
+> Not released yet
+> 2019-2022 develop branch (WIP)
+
+Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
@@ -44,6 +47,8 @@ Up requirements to Django 3.2+, Twisted 21+
   user davewiththenicehat. Also add new doc string.
 - Add central `FuncParser` as a much more powerful replacement for the old `parse_inlinefunc`
   function.
+- Attribute/NAttribute got a homogenous representation, using intefaces, both
+  `AttributeHandler` and `NAttributeHandler` has same api now.
 - Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This
   is useful for implementing actor-stance emoting for sending a string to different targets.
 - New version of Italian translation (rpolve)
@@ -142,12 +147,24 @@ Up requirements to Django 3.2+, Twisted 21+
 - Homogenize manager search methods to return querysets and not lists.
 - Restructure unit tests to always honor default settings; make new parents in
   on location for easy use in game dir.
+- The `Lunr` search engine used by help excludes common words; the settings-list
+  `LUNR_STOP_WORD_FILTER_EXCEPTIONS` can be extended to make sure common names are included.
+- Add `.deserialize()` method to `_Saver*` structures to help completely
+  decouple structures from database without needing separate import.
+- Add `run_in_main_thread` as a helper for those wanting to code server code
+  from a web view.
+- Update `evennia.utils.logger` to use Twisted's new logging API. No change in Evennia API
+  except more standard aliases logger.error/info/exception/debug etc can now be used.
+- Have `type/force` default to `update`-mode rather than `reset`mode and add more verbose
+  warning when using reset mode.
+- Attribute storage support defaultdics (Hendher)
 
 
-### Evennia 0.9.5 (2019-2020)
+## Evennia 0.9.5
 
-Released 2020-11-14.
-A transitional release, including new doc system.
+> 2019-2020
+> Released 2020-11-14.
+> Transitional release, including new doc system.
 
 Backported from develop: Python 3.8, 3.9 support. Django 3.2+ support, Twisted 21+ support.
 
@@ -234,8 +251,10 @@ without arguments starts a full interactive Python console.
   `INPUT_CLEANUP_BYPASS_PERMISSIONS` is a list of perms that bypass this safety stripping.
 - Make default `set` and `examine` commands aware of Attribute categories.
 
+## Evennia 0.9
 
-## Evennia 0.9 (2018-2019)
+> 2018-2019
+> Released Oct 2019
 
 ### Distribution
 
@@ -433,7 +452,10 @@ without arguments starts a full interactive Python console.
 - Simplified chinese, courtesy of user MaxAlex.
 
 
-## Evennia 0.8 (2018)
+## Evennia 0.8
+
+> 2017-2018
+> Released Nov 2018
 
 ### Requirements
 
@@ -560,7 +582,9 @@ without arguments starts a full interactive Python console.
 
 - Polish translation by user ogotai
 
-# Overviews
+# Overview-Changelogs
+
+> These are changelogs from a time before we used formal version numbers.
 
 ## Sept 2017:
 Release of Evennia 0.7; upgrade to Django 1.11, change 'Player' to
@@ -682,24 +706,9 @@ to Events, Commands and Permissions.
 Griatch takes over Maintainership of the Evennia project from
 the original creator Greg Taylor.
 
-(Earlier revisions, with previous maintainer, go back to 2005)
+# Older
 
+Earlier revisions, with previous maintainer, used SVN on Google Code
+and have no changelogs.
 
-# Contact, Support and Development
-
-Make a post to the mailing list or chat us up on IRC. We also have a
-bug tracker if you want to report bugs. Finally, if you are willing to
-help with the code work, we much appreciate all help!  Visit either of
-the following resources:
-
-* Evennia Webpage
-  http://evennia.com
-* Evennia manual (wiki)
-  https://github.com/evennia/evennia/wiki
-* Evennia Code Page (See INSTALL text for installation)
-  https://github.com/evennia/evennia
-* Bug tracker
-  https://github.com/evennia/evennia/issues
-* IRC channel
-  visit channel #evennia on irc.freenode.com
-  or the webclient: http://tinyurl.com/evchat
+First commit (Evennia's birthday) was November 20, 2006.

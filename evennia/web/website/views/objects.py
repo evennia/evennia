@@ -11,8 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from evennia.utils import class_from_module
 from django.utils.text import slugify
-from .mixins import (
-    EvenniaCreateView, EvenniaDeleteView, EvenniaUpdateView, EvenniaDetailView)
+from .mixins import EvenniaCreateView, EvenniaDeleteView, EvenniaUpdateView, EvenniaDetailView
 
 
 class ObjectDetailView(EvenniaDetailView):
@@ -35,8 +34,9 @@ class ObjectDetailView(EvenniaDetailView):
     #
     # So when you extend it, this line should look simple, like:
     # model = Object
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+    )
 
     # What HTML template you wish to use to display this page.
     template_name = "website/object_detail.html"
@@ -139,8 +139,9 @@ class ObjectCreateView(LoginRequiredMixin, EvenniaCreateView):
 
     """
 
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+    )
 
 
 class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
@@ -155,33 +156,13 @@ class ObjectDeleteView(LoginRequiredMixin, ObjectDetailView, EvenniaDeleteView):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+    )
     template_name = "website/object_confirm_delete.html"
 
     # -- Evennia constructs --
     access_type = "delete"
-
-    def delete(self, request, *args, **kwargs):
-        """
-        Calls the delete() method on the fetched object and then
-        redirects to the success URL.
-
-        We extend this so we can capture the name for the sake of confirmation.
-
-        """
-        # Get the object in question. ObjectDetailView.get_object() will also
-        # check to make sure the current user (authenticated or not) has
-        # permission to delete it!
-        obj = str(self.get_object())
-
-        # Perform the actual deletion (the parent class handles this, which will
-        # in turn call the delete() method on the object)
-        response = super().delete(request, *args, **kwargs)
-
-        # Notify the user of the deletion
-        messages.success(request, "Successfully deleted '%s'." % obj)
-        return response
 
 
 class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
@@ -199,8 +180,9 @@ class ObjectUpdateView(LoginRequiredMixin, ObjectDetailView, EvenniaUpdateView):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                              fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+    )
 
     # -- Evennia constructs --
     access_type = "edit"

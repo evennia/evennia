@@ -29,7 +29,7 @@ great help!
   we don't know about them, we can't fix them!
 - If you want to help edit the docs directly, [check here](./Contributing-Docs.md)
   on how to do it.
-- If you have knowledge to share, how about writing a new [Tutorial](Howto/Howto-Overview.md)?
+- If you have knowledge to share, how about writing a new [Tutorial](Howtos/Howtos-Overview.md)?
 
 ## Helping with code
 
@@ -80,7 +80,7 @@ like [Pastebin](https://pastebin.com/) and just supply the link.
 
 ### Making an Evennia contrib
 
-Evennia has a [contrib](Contribs/Contrib-Overview.md) directory which contains
+Evennia has a [contrib](Contribs/Contribs-Overview.md) directory which contains
 user-shared code organized by category. You can contribute anything that you
 think may be useful to another dev, also highly game-specific code. A contrib
 must always be added via a forked respository.
@@ -118,7 +118,7 @@ must always be added via a forked respository.
     it easier to access them (this may vary though).
 
     The `README.md` will be parsed and converted into a document linked from
-    [the contrib overview page](Contribs/Contrib-Overview.md). It should follow
+    [the contrib overview page](Contribs/Contribs-Overview.md). It should follow
     the following structure:
 
     ```markdown

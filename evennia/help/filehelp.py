@@ -69,8 +69,7 @@ from dataclasses import dataclass
 from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
-from evennia.utils.utils import (
-    variable_from_module, make_iter, all_from_module)
+from evennia.utils.utils import variable_from_module, make_iter, all_from_module
 from evennia.utils import logger
 from evennia.utils.utils import lazy_property
 from evennia.locks.lockhandler import LockHandler
@@ -86,6 +85,7 @@ class FileHelpEntry:
     help command.
 
     """
+
     key: str
     aliases: list
     help_category: str
@@ -147,7 +147,7 @@ class FileHelpEntry:
         """
         try:
             return reverse(
-                'help-entry-detail',
+                "help-entry-detail",
                 kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
             )
         except Exception:
@@ -192,8 +192,7 @@ class FileHelpStorageHandler:
         """
         Initialize the storage.
         """
-        self.help_file_modules = [str(part).strip()
-                                  for part in make_iter(help_file_modules)]
+        self.help_file_modules = [str(part).strip() for part in make_iter(help_file_modules)]
         self.help_entries = []
         self.help_entries_dict = {}
         self.load()
@@ -206,13 +205,11 @@ class FileHelpStorageHandler:
         loaded_help_dicts = []
 
         for module_or_path in self.help_file_modules:
-            help_dict_list = variable_from_module(
-                module_or_path, variable="HELP_ENTRY_DICTS"
-            )
+            help_dict_list = variable_from_module(module_or_path, variable="HELP_ENTRY_DICTS")
             if not help_dict_list:
                 help_dict_list = [
-                    dct for dct in all_from_module(module_or_path).values()
-                    if isinstance(dct, dict)]
+                    dct for dct in all_from_module(module_or_path).values() if isinstance(dct, dict)
+                ]
             if help_dict_list:
                 loaded_help_dicts.extend(help_dict_list)
             else:
@@ -223,19 +220,23 @@ class FileHelpStorageHandler:
         unique_help_entries = {}
 
         for dct in loaded_help_dicts:
-            key = dct.get('key').lower().strip()
-            category = dct.get('category', _DEFAULT_HELP_CATEGORY).strip()
-            aliases = list(dct.get('aliases', []))
-            entrytext = dct.get('text', '')
-            locks = dct.get('locks', '')
+            key = dct.get("key").lower().strip()
+            category = dct.get("category", _DEFAULT_HELP_CATEGORY).strip()
+            aliases = list(dct.get("aliases", []))
+            entrytext = dct.get("text", "")
+            locks = dct.get("locks", "")
 
             if not key and entrytext:
                 logger.error(f"Cannot load file-help-entry (missing key or text): {dct}")
                 continue
 
             unique_help_entries[key] = FileHelpEntry(
-                key=key, help_category=category, aliases=aliases, lock_storage=locks,
-                entrytext=entrytext)
+                key=key,
+                help_category=category,
+                aliases=aliases,
+                lock_storage=locks,
+                entrytext=entrytext,
+            )
 
         self.help_entries_dict = unique_help_entries
         self.help_entries = list(unique_help_entries.values())

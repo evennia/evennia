@@ -572,7 +572,7 @@ There are also two special properties:
 Non-database attributes are not stored in the database and have no equivalence
 to `category` nor `strvalue`, `attrtype` or `model`.
 
-# In-memory Attributes (NAttributes)
+## In-memory Attributes (NAttributes)
 
 _NAttributes_ (short of Non-database Attributes) mimic Attributes in most things except they
 are **non-persistent** - they will _not_ survive a server reload.

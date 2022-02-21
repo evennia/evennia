@@ -17,8 +17,10 @@ class MsgTagInline(TagInline):
     Inline display for Msg-tags.
 
     """
+
     model = Msg.db_tags.through
     related_field = "msg"
+
 
 class MsgForm(forms.ModelForm):
     """
@@ -35,7 +37,7 @@ class MsgForm(forms.ModelForm):
         required=False,
         widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
         help_text="Optional header for the message; it could be a title or "
-                  "metadata depending on msg-use."
+        "metadata depending on msg-use.",
     )
 
     db_lock_storage = forms.CharField(
@@ -46,7 +48,6 @@ class MsgForm(forms.ModelForm):
         "This string should be on the form "
         "<i>type:lockfunction(args);type2:lockfunction2(args);...",
     )
-
 
 
 @admin.register(Msg)
@@ -67,11 +68,19 @@ class MsgAdmin(admin.ModelAdmin):
     )
     list_display_links = ("id", "db_date_created", "start_of_message")
     ordering = ["-db_date_created", "-id"]
-    search_fields = ["=id", "^db_date_created", "^db_message",
-                     "^db_sender_accounts__db_key", "^db_sender_objects__db_key",
-                     "^db_sender_scripts__db_key", "^db_sender_external",
-                     "^db_receivers_accounts__db_key", "^db_receivers_objects__db_key",
-                     "^db_receivers_scripts__db_key", "^db_receiver_external"]
+    search_fields = [
+        "=id",
+        "^db_date_created",
+        "^db_message",
+        "^db_sender_accounts__db_key",
+        "^db_sender_objects__db_key",
+        "^db_sender_scripts__db_key",
+        "^db_sender_external",
+        "^db_receivers_accounts__db_key",
+        "^db_receivers_objects__db_key",
+        "^db_receivers_scripts__db_key",
+        "^db_receiver_external",
+    ]
     readonly_fields = ["db_date_created", "serialized_string"]
     save_as = True
     save_on_top = True
@@ -80,21 +89,36 @@ class MsgAdmin(admin.ModelAdmin):
 
     raw_id_fields = (
         "db_sender_accounts",
-         "db_sender_objects", "db_sender_scripts",
-         "db_receivers_accounts", "db_receivers_objects",
-         "db_receivers_scripts", "db_hide_from_accounts",
-         "db_hide_from_objects")
+        "db_sender_objects",
+        "db_sender_scripts",
+        "db_receivers_accounts",
+        "db_receivers_objects",
+        "db_receivers_scripts",
+        "db_hide_from_accounts",
+        "db_hide_from_objects",
+    )
 
     fieldsets = (
         (
             None,
             {
                 "fields": (
-                    ("db_sender_accounts", "db_sender_objects", "db_sender_scripts", "db_sender_external"),
-                    ("db_receivers_accounts", "db_receivers_objects", "db_receivers_scripts", "db_receiver_external"),
+                    (
+                        "db_sender_accounts",
+                        "db_sender_objects",
+                        "db_sender_scripts",
+                        "db_sender_external",
+                    ),
+                    (
+                        "db_receivers_accounts",
+                        "db_receivers_objects",
+                        "db_receivers_scripts",
+                        "db_receiver_external",
+                    ),
                     ("db_hide_from_accounts", "db_hide_from_objects"),
                     "db_header",
-                    "db_message", "serialized_string"
+                    "db_message",
+                    "serialized_string",
                 )
             },
         ),
@@ -104,12 +128,14 @@ class MsgAdmin(admin.ModelAdmin):
         senders = [o for o in obj.senders if o]
         if senders:
             return senders[0]
+
     sender.help_text = "If multiple, only the first is shown."
 
     def receiver(self, obj):
         receivers = [o for o in obj.receivers if o]
         if receivers:
             return receivers[0]
+
     receiver.help_text = "If multiple, only the first is shown."
 
     def start_of_message(self, obj):
@@ -126,10 +152,12 @@ class MsgAdmin(admin.ModelAdmin):
 
         """
         from evennia.utils import dbserialize
+
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store "
+        "this message-object there."
     )
 
     def get_form(self, request, obj=None, **kwargs):
@@ -141,7 +169,6 @@ class MsgAdmin(admin.ModelAdmin):
         help_texts["serialized_string"] = self.serialized_string.help_text
         kwargs["help_texts"] = help_texts
         return super().get_form(request, obj, **kwargs)
-
 
 
 class ChannelAttributeInline(AttributeInline):
@@ -169,6 +196,7 @@ class ChannelForm(forms.ModelForm):
     Form for accessing channels.
 
     """
+
     class Meta:
         model = ChannelDB
         fields = "__all__"
@@ -192,8 +220,14 @@ class ChannelAdmin(admin.ModelAdmin):
 
     inlines = [ChannelTagInline, ChannelAttributeInline]
     form = ChannelForm
-    list_display = ("id", "db_key", "no_of_subscribers", "db_lock_storage", "db_typeclass_path",
-                    "db_date_created")
+    list_display = (
+        "id",
+        "db_key",
+        "no_of_subscribers",
+        "db_lock_storage",
+        "db_typeclass_path",
+        "db_date_created",
+    )
     list_display_links = ("id", "db_key")
     ordering = ["-db_date_created", "-id", "-db_key"]
     search_fields = ["id", "db_key", "db_tags__db_key"]
@@ -211,7 +245,7 @@ class ChannelAdmin(admin.ModelAdmin):
                     "db_lock_storage",
                     "db_account_subscriptions",
                     "db_object_subscriptions",
-                    "serialized_string"
+                    "serialized_string",
                 )
             },
         ),
@@ -243,10 +277,11 @@ class ChannelAdmin(admin.ModelAdmin):
 
         """
         from evennia.utils import dbserialize
+
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store this channel there."
     )
 
     def get_form(self, request, obj=None, **kwargs):

@@ -31,8 +31,7 @@ _GUEST_ENABLED = settings.GUEST_ENABLED
 _ACCOUNT = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 _GUEST = class_from_module(settings.BASE_GUEST_TYPECLASS)
 
-_ACCOUNT_HELP = (
-    "Enter a new or existing login name.")
+_ACCOUNT_HELP = "Enter a new or existing login name."
 _PASSWORD_HELP = (
     "Password should be a minimum of 8 characters (preferably longer) and "
     "can contain a mix of letters, spaces, digits and @/./+/-/_/'/, only."

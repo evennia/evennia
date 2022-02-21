@@ -220,7 +220,7 @@ callable must be a module-global function on the form
 
     ## options
 
-        # Starting the option-line with >
+        # Beginner-Tutorial the option-line with >
         # allows to perform different actions depending on
         # what is inserted.
 
@@ -1264,7 +1264,7 @@ class EvMenu:
             table.extend([" " for i in range(nrows - nlastcol)])
 
         # build the actual table grid
-        table = [table[icol * nrows: (icol * nrows) + nrows] for icol in range(0, ncols)]
+        table = [table[icol * nrows : (icol * nrows) + nrows] for icol in range(0, ncols)]
 
         # adjust the width of each column
         for icol in range(len(table)):
@@ -1390,14 +1390,17 @@ def list_node(option_generator, select=None, pagesize=10):
                     try:
                         if bool(getargspec(select).keywords):
                             return select(
-                                caller, selection, available_choices=available_choices, **kwargs)
+                                caller, selection, available_choices=available_choices, **kwargs
+                            )
                         else:
                             return select(caller, selection, **kwargs)
                     except Exception:
-                        logger.log_trace("Error in EvMenu.list_node decorator:\n  "
-                                         f"select-callable: {select}\n  with args: ({caller}"
-                                         f"{selection}, {available_choices}, {kwargs}) raised "
-                                         "exception.")
+                        logger.log_trace(
+                            "Error in EvMenu.list_node decorator:\n  "
+                            f"select-callable: {select}\n  with args: ({caller}"
+                            f"{selection}, {available_choices}, {kwargs}) raised "
+                            "exception."
+                        )
                 elif select:
                     # we assume a string was given, we inject the result into the kwargs
                     # to pass on to the next node
@@ -1420,7 +1423,7 @@ def list_node(option_generator, select=None, pagesize=10):
             if option_list:
                 nall_options = len(option_list)
                 pages = [
-                    option_list[ind: ind + pagesize] for ind in range(0, nall_options, pagesize)
+                    option_list[ind : ind + pagesize] for ind in range(0, nall_options, pagesize)
                 ]
                 npages = len(pages)
 
@@ -1661,7 +1664,7 @@ class CmdYesNoQuestion(Command):
     """
 
     key = _CMD_NOINPUT
-    aliases = [_CMD_NOMATCH, "yes", "no", 'y', 'n', 'a', 'abort']
+    aliases = [_CMD_NOMATCH, "yes", "no", "y", "n", "a", "abort"]
     arg_regex = r"^$"
 
     def _clean(self, caller):
@@ -1694,7 +1697,7 @@ class CmdYesNoQuestion(Command):
                 else:
                     inp = raw
 
-            if inp in ('a', 'abort') and yes_no_question.allow_abort:
+            if inp in ("a", "abort") and yes_no_question.allow_abort:
                 caller.msg(_("Aborted."))
                 self._clean(caller)
                 return
@@ -1703,11 +1706,11 @@ class CmdYesNoQuestion(Command):
 
             args = yes_no_question.args
             kwargs = yes_no_question.kwargs
-            kwargs['caller_session'] = self.session
+            kwargs["caller_session"] = self.session
 
-            if inp in ('yes', 'y'):
+            if inp in ("yes", "y"):
                 yes_no_question.yes_callable(caller, *args, **kwargs)
-            elif inp in ('no', 'n'):
+            elif inp in ("no", "n"):
                 yes_no_question.no_callable(caller, *args, **kwargs)
             else:
                 # invalid input. Resend prompt without cleaning
@@ -1741,8 +1744,17 @@ class YesNoQuestionCmdSet(CmdSet):
         self.add(CmdYesNoQuestion())
 
 
-def ask_yes_no(caller, prompt="Yes or No {options}?", yes_action="Yes", no_action="No",
-               default=None, allow_abort=False, session=None, *args, **kwargs):
+def ask_yes_no(
+    caller,
+    prompt="Yes or No {options}?",
+    yes_action="Yes",
+    no_action="No",
+    default=None,
+    allow_abort=False,
+    session=None,
+    *args,
+    **kwargs,
+):
     """
     A helper question for asking a simple yes/no question. This will cause
     the system to pause and wait for input from the player.
@@ -1786,22 +1798,23 @@ def ask_yes_no(caller, prompt="Yes or No {options}?", yes_action="Yes", no_actio
                        _callable_yes, _callable_no, allow_abort=True)
 
     """
+
     def _callable_yes_txt(caller, *args, **kwargs):
-        yes_txt = kwargs['yes_txt']
-        session = kwargs['caller_session']
+        yes_txt = kwargs["yes_txt"]
+        session = kwargs["caller_session"]
         caller.msg(yes_txt, session=session)
 
     def _callable_no_txt(caller, *args, **kwargs):
-        no_txt = kwargs['no_txt']
-        session = kwargs['caller_session']
+        no_txt = kwargs["no_txt"]
+        session = kwargs["caller_session"]
         caller.msg(no_txt, session=session)
 
     if not callable(yes_action):
-        kwargs['yes_txt'] = str(yes_action)
+        kwargs["yes_txt"] = str(yes_action)
         yes_action = _callable_yes_txt
 
     if not callable(no_action):
-        kwargs['no_txt'] = str(no_action)
+        kwargs["no_txt"] = str(no_action)
         no_action = _callable_no_txt
 
     # prepare the prompt with options
@@ -1843,9 +1856,7 @@ def ask_yes_no(caller, prompt="Yes or No {options}?", yes_action="Yes", no_actio
 _RE_NODE = re.compile(r"##\s*?NODE\s+?(?P<nodename>\S[\S\s]*?)$", re.I + re.M)
 _RE_OPTIONS_SEP = re.compile(r"##\s*?OPTIONS\s*?$", re.I + re.M)
 _RE_CALLABLE = re.compile(r"\S+?\(\)", re.I + re.M)
-_RE_CALLABLE = re.compile(
-    r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?)\)|\(\))", re.I + re.M
-)
+_RE_CALLABLE = re.compile(r"(?P<funcname>\S+?)(?:\((?P<kwargs>[\S\s]+?)\)|\(\))", re.I + re.M)
 
 _HELP_NO_OPTION_MATCH = _("Choose an option or try 'help'.")
 
@@ -1859,8 +1870,8 @@ _OPTION_COMMENT_START = "#"
 # Input/option/goto handler functions that allows for dynamically generated
 # nodes read from the menu template.
 
-def _process_callable(caller, goto, goto_callables, raw_string,
-                      current_nodename, kwargs):
+
+def _process_callable(caller, goto, goto_callables, raw_string, current_nodename, kwargs):
     """
     Central helper for parsing a goto-callable (`funcname(**kwargs)`) out of
     the right-hand-side of the template options and map this to an actual
@@ -1876,12 +1887,18 @@ def _process_callable(caller, goto, goto_callables, raw_string,
             for kwarg in gotokwargs.split(","):
                 if kwarg and "=" in kwarg:
                     key, value = [part.strip() for part in kwarg.split("=", 1)]
-                    if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
-                               "evmenu_current_nodename", "evmenu_goto_callables"):
+                    if key in (
+                        "evmenu_goto",
+                        "evmenu_gotomap",
+                        "_current_nodename",
+                        "evmenu_current_nodename",
+                        "evmenu_goto_callables",
+                    ):
                         raise RuntimeError(
                             f"EvMenu template error: goto-callable '{goto}' uses a "
                             f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
-                            "system. Rename the kwarg.")
+                            "system. Rename the kwarg."
+                        )
                     try:
                         key = literal_eval(key)
                     except ValueError:
@@ -1908,8 +1925,7 @@ def _generated_goto_func(caller, raw_string, **kwargs):
     goto = kwargs["evmenu_goto"]
     goto_callables = kwargs["evmenu_goto_callables"]
     current_nodename = kwargs["evmenu_current_nodename"]
-    return _process_callable(caller, goto, goto_callables, raw_string,
-                             current_nodename, kwargs)
+    return _process_callable(caller, goto, goto_callables, raw_string, current_nodename, kwargs)
 
 
 def _generated_input_goto_func(caller, raw_string, **kwargs):
@@ -1929,13 +1945,15 @@ def _generated_input_goto_func(caller, raw_string, **kwargs):
     # start with glob patterns
     for pattern, goto in gotomap.items():
         if fnmatch(raw_string.lower(), pattern):
-            return _process_callable(caller, goto, goto_callables, raw_string,
-                                     current_nodename, kwargs)
+            return _process_callable(
+                caller, goto, goto_callables, raw_string, current_nodename, kwargs
+            )
     # no glob pattern match; try regex
     for pattern, goto in gotomap.items():
         if pattern and re.match(pattern, raw_string.lower(), flags=re.I + re.M):
-            return _process_callable(caller, goto, goto_callables, raw_string,
-                                     current_nodename, kwargs)
+            return _process_callable(
+                caller, goto, goto_callables, raw_string, current_nodename, kwargs
+            )
     # no match, show error
     raise EvMenuGotoAbortMessage(_HELP_NO_OPTION_MATCH)
 
@@ -1966,6 +1984,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
         dict: A `{"node": nodefunc}` menutree suitable to pass into EvMenu.
 
     """
+
     def _validate_kwarg(goto, kwarg):
         """
         Validate goto-callable kwarg is on correct form.
@@ -1975,14 +1994,21 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
                 f"EvMenu template error: goto-callable '{goto}' has a "
                 f"non-kwarg argument ({kwarg}). All callables in the "
                 "template must have only keyword-arguments, or no "
-                "args at all.")
+                "args at all."
+            )
         key, _ = [part.strip() for part in kwarg.split("=", 1)]
-        if key in ("evmenu_goto", "evmenu_gotomap", "_current_nodename",
-                   "evmenu_current_nodename", "evmenu_goto_callables"):
+        if key in (
+            "evmenu_goto",
+            "evmenu_gotomap",
+            "_current_nodename",
+            "evmenu_current_nodename",
+            "evmenu_goto_callables",
+        ):
             raise RuntimeError(
                 f"EvMenu template error: goto-callable '{goto}' uses a "
                 f"kwarg ({kwarg}) that is reserved for the EvMenu templating "
-                "system. Rename the kwarg.")
+                "system. Rename the kwarg."
+            )
 
     def _parse_options(nodename, optiontxt, goto_callables):
         """
@@ -2013,7 +2039,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
             if match:
                 kwargs = match.group("kwargs")
                 if kwargs:
-                    for kwarg in kwargs.split(','):
+                    for kwarg in kwargs.split(","):
                         _validate_kwarg(goto, kwarg)
 
             # parse key [;aliases|pattern]
@@ -2025,7 +2051,7 @@ def parse_menu_template(caller, menu_template, goto_callables=None):
 
             if main_key.startswith(_OPTION_INPUT_MARKER):
                 # if we have a pattern, build the arguments for _default later
-                pattern = main_key[len(_OPTION_INPUT_MARKER):].strip()
+                pattern = main_key[len(_OPTION_INPUT_MARKER) :].strip()
                 inputparsemap[pattern] = goto
             else:
                 # a regular goto string/callable target

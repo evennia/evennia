@@ -28,8 +28,9 @@ class CharacterMixin(TypeclassMixin):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_CHARACTER_TYPECLASS,
-                              fallback=settings.FALLBACK_CHARACTER_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_CHARACTER_TYPECLASS, fallback=settings.FALLBACK_CHARACTER_TYPECLASS
+    )
     form_class = forms.CharacterForm
     success_url = reverse_lazy("character-manage")
 
@@ -200,7 +201,8 @@ class CharacterDeleteView(CharacterMixin, ObjectDeleteView):
 
     """
 
-    pass
+    # using the character form fails there
+    form_class = forms.EvenniaForm
 
 
 class CharacterCreateView(CharacterMixin, ObjectCreateView):
@@ -251,4 +253,3 @@ class CharacterCreateView(CharacterMixin, ObjectCreateView):
             # Call the Django "form failed" hook
             messages.error(self.request, "Your character could not be created.")
             return self.form_invalid(form)
-

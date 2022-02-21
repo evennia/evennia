@@ -30,7 +30,8 @@ class HelpEntryForm(forms.ModelForm):
         widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
         help_text="Set lock to view:all() unless you want it to only show to certain users."
         "<BR>Use the `edit:` limit if wanting to limit who can edit from in-game. By default it's "
-        "only limited to who can use the `sethelp` command (Builders).")
+        "only limited to who can use the `sethelp` command (Builders).",
+    )
 
 
 @admin.register(HelpEntry)

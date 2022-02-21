@@ -88,7 +88,7 @@ translation bad ... You are welcome to help improve the situation!
 
 To start a new translation you need to first have cloned the Evennia repositry
 with GIT and activated a python virtualenv as described on the
-[Setup Quickstart](../Setup/Setup-Quickstart.md) page.
+[Setup Quickstart](../Setup/Installation.md) page.
 
 Go to `evennia/evennia/` - that is, not your game dir, but inside the `evennia/`
 repo itself. If you see the `locale/` folder you are in the right place.  Make

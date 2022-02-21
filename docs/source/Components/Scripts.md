@@ -111,13 +111,13 @@ new_script.delete()
 timed_script.delete()
 ```
 
-# Defining new Scripts
+## Defining new Scripts
 
 A Script is defined as a class and is created in the same way as other
 [typeclassed](./Typeclasses.md) entities. The parent class is `evennia.DefaultScript`.
 
 
-## Simple storage script
+### Simple storage script
 
 In `mygame/typeclasses/scripts.py` is an empty `Script` class already set up. You
 can use this as a base for your own scripts.
@@ -131,7 +131,7 @@ class Script(DefaultScript):
     # stuff common for all your scripts goes here
 
 class MyScript(Script):
-    def at_script_creation(selfself):
+    def at_script_creation(self):
         """Called once, when script is first created"""
         self.key = "myscript"
         self.db.foo = "bar"
@@ -145,7 +145,7 @@ evennia.create_script('typeclasses.scripts.MyScript')
 
 # from somewhere else
 
-myscript = evennia.search_script("myscript")
+myscript = evennia.search_script("myscript").first()
 bar = myscript.db.foo
 myscript.db.something_else = 1000
 
@@ -303,7 +303,7 @@ You can also attach the script as part of creating it:
     create_script('typeclasses.weather.Weather', obj=myroom)
 ```
 
-# Other Script methods
+## Other Script methods
 
 A Script has all the properties of a typeclassed object, such as `db` and `ndb`(see
 [Typeclasses](./Typeclasses.md)). Setting `key` is useful in order to manage scripts (delete them by name
@@ -330,7 +330,7 @@ Typeclassed entities.
 
 See also the methods involved in controlling a [Timed Script](#timed-scripts) above.
 
-# The GLOBAL_SCRIPTS container
+## The GLOBAL_SCRIPTS container
 
 A Script not attached to another entity is commonly referred to as a _Global_ script since it't available
 to access from anywhere. This means they need to be searched for in order to be used.
@@ -413,7 +413,7 @@ That is, if the script is deleted, next time you get it from `GLOBAL_SCRIPTS`, E
 information in settings to recreate it for you on the fly.
 
 
-# Hints: Dealing with Script Errors
+## Hints: Dealing with Script Errors
 
 Errors inside a timed, executing script can sometimes be rather terse or point to
 parts of the execution mechanism that is hard to interpret. One way to make it

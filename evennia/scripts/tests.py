@@ -11,9 +11,11 @@ from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 class TestScript(BaseEvenniaTest):
     def test_create(self):
         "Check the script can be created via the convenience method."
-        obj, errors = DefaultScript.create("useless-machine")
-        self.assertTrue(obj, errors)
-        self.assertFalse(errors, errors)
+        with mock.patch("evennia.scripts.scripts.DefaultScript.at_init") as mockinit:
+            obj, errors = DefaultScript.create("useless-machine")
+            self.assertTrue(obj, errors)
+            self.assertFalse(errors, errors)
+            mockinit.assert_called()
 
 
 class TestScriptDB(TestCase):
@@ -83,5 +85,5 @@ class TestExtendedLoopingCall(TestCase):
         loopcall.start(20, now=False, start_delay=10, count_start=1)
 
         loopcall.__call__.assert_not_called()
-        self.assertEqual(loopcall.interval , 20)
+        self.assertEqual(loopcall.interval, 20)
         loopcall._scheduleFrom.assert_called_with(121)

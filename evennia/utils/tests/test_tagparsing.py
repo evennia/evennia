@@ -224,10 +224,15 @@ class ANSIStringTestCase(TestCase):
         # from evennia import set_trace;set_trace()
         split_string = string[:9] + "Test" + string[13:]
         self.assertEqual(
-            repr((ANSIString("A bigger ")
-            + ANSIString("|rTest")  # note that the |r|n is replayed together on next line
-            + ANSIString("|r|n of things |bwith more color|n")).raw()),
-            repr(split_string.raw()))
+            repr(
+                (
+                    ANSIString("A bigger ")
+                    + ANSIString("|rTest")  # note that the |r|n is replayed together on next line
+                    + ANSIString("|r|n of things |bwith more color|n")
+                ).raw()
+            ),
+            repr(split_string.raw()),
+        )
 
     def test_slice_full(self):
         string = ANSIString("A bigger |rTest|n of things |bwith more color|n")

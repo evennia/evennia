@@ -12,7 +12,7 @@ in a separate module (e.g. if they could have been re-used elsewhere.)
 
 import random
 from evennia import TICKER_HANDLER
-from evennia import CmdSet, Command, DefaultRoom
+from evennia import CmdSet, Command, DefaultRoom, DefaultExit
 from evennia import utils, create_object, search_object
 from evennia import syscmdkeys, default_cmds
 from .objects import LightSource
@@ -77,6 +77,7 @@ class CmdTutorial(Command):
             helptext = " |RSorry, there is no tutorial help available here.|n"
         helptext += "\n\n (Write 'give up' if you want to abandon your quest.)"
         caller.msg(helptext)
+
 
 # for the @detail command we inherit from MuxCommand, since
 # we want to make use of MuxCommand's pre-parsing of '=' in the
@@ -202,22 +203,26 @@ class CmdTutorialLook(default_cmds.CmdLook):
         looking_at_obj.at_desc(looker=caller)
         return
 
+
 class CmdTutorialGiveUp(default_cmds.MuxCommand):
     """
     Give up the tutorial-world quest and return to Limbo, the start room of the
     server.
 
     """
+
     key = "give up"
-    aliases = ['abort']
+    aliases = ["abort"]
 
     def func(self):
         outro_room = OutroRoom.objects.all()
         if outro_room:
             outro_room = outro_room[0]
         else:
-            self.caller.msg("That didn't work (seems like a bug). "
-                            "Try to use the |wteleport|n command instead.")
+            self.caller.msg(
+                "That didn't work (seems like a bug). "
+                "Try to use the |wteleport|n command instead."
+            )
             return
 
         self.caller.move_to(outro_room)
@@ -304,6 +309,19 @@ class TutorialRoom(DefaultRoom):
             self.db.details = {detailkey.lower(): description}
 
 
+class TutorialStartExit(DefaultExit):
+    """
+    This is like a normal exit except it makes the `intro` command available
+    on itself. We put it on the exit in order to provide this command to the
+    Limbo room without modifying Limbo itself - deleting the tutorial exit
+    will also  clean up the intro command.
+
+    """
+
+    def at_object_creation(self):
+        self.cmdset.add(CmdSetEvenniaIntro, persistent=True)
+
+
 # -------------------------------------------------------------
 #
 # Weather room - room with a ticker
@@ -385,6 +403,7 @@ SUPERUSER_WARNING = (
 #
 # -------------------------------------------------------------
 
+
 class CmdEvenniaIntro(Command):
     """
     Start the Evennia intro wizard.
@@ -393,14 +412,16 @@ class CmdEvenniaIntro(Command):
         intro
 
     """
+
     key = "intro"
 
     def func(self):
         from .intro_menu import init_menu
+
         # quell also superusers
         if self.caller.account:
+            self.caller.msg("Auto-quelling permissions while in intro ...")
             self.caller.account.execute_cmd("quell")
-            self.caller.msg("(Auto-quelling)")
         init_menu(self.caller)
 
 
@@ -429,7 +450,6 @@ class IntroRoom(TutorialRoom):
             "This assigns the health Attribute to "
             "the account."
         )
-        self.cmdset.add(CmdSetEvenniaIntro, persistent=True)
 
     def at_object_receive(self, character, source_location):
         """
@@ -451,6 +471,7 @@ class IntroRoom(TutorialRoom):
             if character.account:
                 character.account.execute_cmd("quell")
                 character.msg("(Auto-quelling while in tutorial-world)")
+
 
 # -------------------------------------------------------------
 #
@@ -1165,4 +1186,3 @@ class OutroRoom(TutorialRoom):
     def at_object_leave(self, character, destination):
         if character.account:
             character.account.execute_cmd("unquell")
-

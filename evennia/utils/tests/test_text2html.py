@@ -165,8 +165,7 @@ class TestText2Html(TestCase):
             "space": " ",
             "spacestart": " ",
         }
-        self.assertEqual(" &nbsp; &nbsp;",
-                         parser.sub_text(mocked_match))
+        self.assertEqual(" &nbsp; &nbsp;", parser.sub_text(mocked_match))
 
         mocked_match.groupdict.return_value = {
             "htmlchars": "",
@@ -182,30 +181,24 @@ class TestText2Html(TestCase):
         parser = text2html.HTML_PARSER
         parser.tabstop = 4
         # single tab
-        self.assertEqual(parser.parse("foo|>foo"),
-                         "foo &nbsp;&nbsp;&nbsp;foo")
+        self.assertEqual(parser.parse("foo|>foo"), "foo &nbsp;&nbsp;&nbsp;foo")
 
         # space and tab
-        self.assertEqual(parser.parse("foo |>foo"),
-                         "foo &nbsp;&nbsp;&nbsp;&nbsp;foo")
+        self.assertEqual(parser.parse("foo |>foo"), "foo &nbsp;&nbsp;&nbsp;&nbsp;foo")
 
         # space, tab, space
-        self.assertEqual(parser.parse("foo |> foo"),
-                         "foo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foo")
+        self.assertEqual(parser.parse("foo |> foo"), "foo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foo")
 
     def test_parse_space_to_html(self):
         """test space parsing - a single space should be kept, two or more
         should get &nbsp;"""
         parser = text2html.HTML_PARSER
         # single space
-        self.assertEqual(parser.parse("foo foo"),
-                         "foo foo")
+        self.assertEqual(parser.parse("foo foo"), "foo foo")
         # double space
-        self.assertEqual(parser.parse("foo  foo"),
-                         "foo &nbsp;foo")
+        self.assertEqual(parser.parse("foo  foo"), "foo &nbsp;foo")
         # triple space
-        self.assertEqual(parser.parse("foo   foo"),
-                         "foo &nbsp;&nbsp;foo")
+        self.assertEqual(parser.parse("foo   foo"), "foo &nbsp;&nbsp;foo")
 
     def test_parse_html(self):
         self.assertEqual("foo", text2html.parse_html("foo"))
@@ -217,16 +210,16 @@ class TestText2Html(TestCase):
             # blink back-cyan normal underline red green yellow blue magenta cyan back-green
             text2html.parse_html("|^|[CHello|n|u|rW|go|yr|bl|md|c!|[G!"),
             '<span class="blink">'
-                '<span class="bgcolor-006">Hello</span>'   # noqa
-                '<span class="underline">'
-                    '<span class="color-009">W</span>'     # noqa
-                    '<span class="color-010">o</span>'
-                    '<span class="color-011">r</span>'
-                    '<span class="color-012">l</span>'
-                    '<span class="color-013">d</span>'
-                    '<span class="color-014">!'
-                        '<span class="bgcolor-002">!</span>'  # noqa
-                    '</span>'
-                '</span>'
-            '</span>'
+            '<span class="bgcolor-006">Hello</span>'  # noqa
+            '<span class="underline">'
+            '<span class="color-009">W</span>'  # noqa
+            '<span class="color-010">o</span>'
+            '<span class="color-011">r</span>'
+            '<span class="color-012">l</span>'
+            '<span class="color-013">d</span>'
+            '<span class="color-014">!'
+            '<span class="bgcolor-002">!</span>'  # noqa
+            "</span>"
+            "</span>"
+            "</span>",
         )

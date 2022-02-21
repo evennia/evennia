@@ -28,6 +28,7 @@ class XYZGrid(DefaultScript):
     Main grid class. This organizes the Maps based on their name/Z-coordinate.
 
     """
+
     def at_script_creation(self):
         """
         What we store persistently is data used to create each map (the legends, names etc)
@@ -88,7 +89,7 @@ class XYZGrid(DefaultScript):
         """
         return XYZRoom.objects.filter_xyz(xyz=xyz, **kwargs)
 
-    def get_exit(self, xyz, name='north', **kwargs):
+    def get_exit(self, xyz, name="north", **kwargs):
         """
         Get one or more exit object at coordinate.
 
@@ -102,7 +103,7 @@ class XYZGrid(DefaultScript):
             Queryset: A queryset of XYZExit(s) found.
 
         """
-        kwargs['db_key'] = name
+        kwargs["db_key"] = name
         return XYZExit.objects.filter_xyz_exit(xyz=xyz, **kwargs)
 
     def maps_from_module(self, module_path):
@@ -127,7 +128,7 @@ class XYZGrid(DefaultScript):
             if not mapdata:
                 self.log(f"Could not find or load map from {module_path}.")
                 return
-            mapdata['module_path'] = module_path
+            mapdata["module_path"] = module_path
         return map_data_list
 
     def reload(self):
@@ -154,9 +155,9 @@ class XYZGrid(DefaultScript):
             # we reload the map from module
             new_mapdata = loaded_mapdata.get(zcoord)
             if not new_mapdata:
-                if 'module_path' in old_mapdata:
-                    for mapdata in self.maps_from_module(old_mapdata['module_path']):
-                        loaded_mapdata[mapdata['zcoord']] = mapdata
+                if "module_path" in old_mapdata:
+                    for mapdata in self.maps_from_module(old_mapdata["module_path"]):
+                        loaded_mapdata[mapdata["zcoord"]] = mapdata
                 else:
                     # nowhere to reload from - use what we have
                     loaded_mapdata[zcoord] = old_mapdata
@@ -198,7 +199,7 @@ class XYZGrid(DefaultScript):
 
         """
         for mapdata in mapdatas:
-            zcoord = mapdata.get('zcoord')
+            zcoord = mapdata.get("zcoord")
             if not zcoord:
                 raise RuntimeError("XYZGrid.add_map data must contain 'zcoord'.")
 
@@ -220,7 +221,7 @@ class XYZGrid(DefaultScript):
             if remove_objects:
                 # we can't batch-delete because we want to run the .delete
                 # method that also wipes exits and moves content to save locations
-                for xyzroom in XYZRoom.objects.filter_xyz(xyz=('*', '*', zcoord)):
+                for xyzroom in XYZRoom.objects.filter_xyz(xyz=("*", "*", zcoord)):
                     xyzroom.delete()
         self.reload()
 
@@ -234,7 +235,7 @@ class XYZGrid(DefaultScript):
             self.remove_map(*(zcoord for zcoord in self.db.map_data), remove_objects=True)
         super().delete()
 
-    def spawn(self, xyz=('*', '*', '*'), directions=None):
+    def spawn(self, xyz=("*", "*", "*"), directions=None):
         """
         Create/recreate/update the in-game grid based on the stored Maps or for a specific Map
         or coordinate.
@@ -255,7 +256,7 @@ class XYZGrid(DefaultScript):
 
         """
         x, y, z = xyz
-        wildcard = '*'
+        wildcard = "*"
 
         if z == wildcard:
             xymaps = self.grid
@@ -293,8 +294,10 @@ def get_xyzgrid(print_errors=True):
         xyzgrid.reload()
         return xyzgrid
     elif len(xyzgrid) > 1:
-        ("Warning: More than one XYZGrid instances were found. This is an error and "
-         "only the first one will be used. Delete the other one(s) manually.")
+        (
+            "Warning: More than one XYZGrid instances were found. This is an error and "
+            "only the first one will be used. Delete the other one(s) manually."
+        )
     xyzgrid = xyzgrid[0]
     try:
         if not xyzgrid.ndb.loaded:

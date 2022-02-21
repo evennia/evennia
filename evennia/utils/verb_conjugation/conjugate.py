@@ -89,7 +89,7 @@ def verb_infinitive(verb):
 
     """
 
-    return verb_lemmas.get(verb, '')
+    return verb_lemmas.get(verb, "")
 
 
 def verb_conjugate(verb, tense="infinitive", negate=False):

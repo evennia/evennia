@@ -140,7 +140,7 @@ class CmdDelCom(CmdChannel):
     account_caller = True
 
     def func(self):
-        """Implementing the command. """
+        """Implementing the command."""
 
         caller = self.caller
 
@@ -207,8 +207,7 @@ class CmdAllCom(CmdChannel):
         args = self.args
         if not args:
             subscribed, available = self.list_channels()
-            self.msg(
-                "\n|wAvailable channels:\n{table}")
+            self.msg("\n|wAvailable channels:\n{table}")
             return
             return
 
@@ -353,7 +352,7 @@ class CmdCBoot(CmdChannel):
             self.msg(string)
             return
 
-        success, err = self.boot_user(target, quiet='quiet' in self.switches)
+        success, err = self.boot_user(target, quiet="quiet" in self.switches)
         if success:
             self.msg(f"Booted {target.key} from {channel.key}")
             logger.log_sec(

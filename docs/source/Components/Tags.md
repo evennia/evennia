@@ -53,7 +53,7 @@ free up the *category* property for any use you desire.
 ## Adding/Removing Tags
 
 You can tag any *typeclassed* object, namely [Objects](./Objects.md), [Accounts](./Accounts.md),
-[Scripts](./Scripts.md) and [Channels](./Communications.md). General tags are added by the *Taghandler*.  The
+[Scripts](./Scripts.md) and [Channels](./Channels.md). General tags are added by the *Taghandler*.  The
 tag handler is accessed as a property `tags` on the relevant entity:
 
 ```python

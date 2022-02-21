@@ -124,14 +124,14 @@ class ThrottleTest(BaseEvenniaTest):
 
         # There should only be (cache_size * num_ips) total in the Throttle cache
         self.assertEqual(sum([len(cache[x]) for x in cache.keys()]), throttle.cache_size * len(ips))
-        
+
         # Make sure the cache is populated
         self.assertTrue(throttle.get())
-        
-        # Remove the test IPs from the throttle cache 
+
+        # Remove the test IPs from the throttle cache
         # (in case persistent storage was configured by the user)
         for ip in ips:
             self.assertTrue(throttle.remove(ip))
-            
+
         # Make sure the cache is empty
         self.assertFalse(throttle.get())

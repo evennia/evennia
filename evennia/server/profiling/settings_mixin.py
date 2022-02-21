@@ -27,7 +27,8 @@ MAX_COMMAND_RATE = 100000
 MAX_CONNECTION_RATE = 100000
 MAX_CHAR_LIMIT = 100000
 
-print("""
+print(
+    """
     Dummyrunner settings_mixin added (ONLY FOR PROFILING, NOT FOR PRODUCTION!)
 
     PASSWORD_HASHERS = ("django.contrib.auth.hashers.MD5PasswordHasher",)
@@ -39,4 +40,5 @@ print("""
     MAX_COMMAND_RATE = 100000
     MAX_CONNECTION_RATE = 100000
     MAX_CHAR_LIMIT = 100000
-""")
+"""
+)

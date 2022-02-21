@@ -339,7 +339,7 @@ class TestOptionTransferTrue(TestCase):
         b.no_objs = False
         d.duplicates = False
         # higher-prio sets will change the option up the chain
-        cmdset_f = d + c + b + a # reverse, high prio
+        cmdset_f = d + c + b + a  # reverse, high prio
         self.assertTrue(cmdset_f.no_exits)
         self.assertTrue(cmdset_f.no_objs)
         self.assertTrue(cmdset_f.no_channels)
@@ -407,7 +407,7 @@ class TestOptionTransferTrue(TestCase):
         c.priority = 1
         d.priority = 2
         c.no_exits = False
-        c.no_channels = None   # passthrough
+        c.no_channels = None  # passthrough
         b.no_objs = False
         d.duplicates = False
         # higher-prio sets will change the option up the chain
@@ -639,7 +639,7 @@ class TestOptionTransferFalse(TestCase):
         b.no_objs = True
         d.duplicates = True
         # higher-prio sets will change the option up the chain
-        cmdset_f = d + c + b + a # reverse, high prio
+        cmdset_f = d + c + b + a  # reverse, high prio
         self.assertFalse(cmdset_f.no_exits)
         self.assertFalse(cmdset_f.no_objs)
         self.assertFalse(cmdset_f.no_channels)
@@ -663,7 +663,7 @@ class TestOptionTransferFalse(TestCase):
         b.no_objs = True
         d.duplicates = True
         # higher-prio sets will change the option up the chain
-        cmdset_f = a + b + c + d # forward, high prio, never happens
+        cmdset_f = a + b + c + d  # forward, high prio, never happens
         self.assertFalse(cmdset_f.no_exits)
         self.assertFalse(cmdset_f.no_objs)
         self.assertFalse(cmdset_f.no_channels)
@@ -707,7 +707,7 @@ class TestOptionTransferFalse(TestCase):
         c.priority = 1
         d.priority = 2
         c.no_exits = True
-        c.no_channels = None   # passthrough
+        c.no_channels = None  # passthrough
         b.no_objs = True
         d.duplicates = True
         # higher-prio sets will change the option up the chain
@@ -908,6 +908,7 @@ class TestOptionTransferReplace(TestCase):
     """
     Test option transfer through more complex merge types.
     """
+
     def setUp(self):
         super().setUp()
         self.cmdset_a = _CmdSetA()
@@ -1182,7 +1183,6 @@ class TestCmdSetNesting(BaseEvenniaTest):
     """
 
     def test_nest(self):
-
         class CmdA(Command):
             key = "a"
 

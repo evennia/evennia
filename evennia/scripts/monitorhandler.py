@@ -108,8 +108,8 @@ class MonitorHandler(object):
         """
         # if this an Attribute with a category we should differentiate
         fieldname = self._attr_category_fieldname(
-            fieldname, obj.db_category
-            if fieldname == "db_value" and hasattr(obj, "db_category") else None
+            fieldname,
+            obj.db_category if fieldname == "db_value" and hasattr(obj, "db_category") else None,
         )
 
         to_delete = []
@@ -124,8 +124,7 @@ class MonitorHandler(object):
         for (obj, fieldname, idstring) in to_delete:
             del self.monitors[obj][fieldname][idstring]
 
-    def add(self, obj, fieldname, callback, idstring="", persistent=False,
-            category=None, **kwargs):
+    def add(self, obj, fieldname, callback, idstring="", persistent=False, category=None, **kwargs):
         """
         Add monitoring to a given field or Attribute. A field must
         be specified with the full db_* name or it will be assumed

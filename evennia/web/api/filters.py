@@ -112,9 +112,11 @@ class AccountDBFilterSet(BaseTypeclassFilterSet):
 
     class Meta:
         model = AccountDB
-        fields = [fi for fi in (SHARED_FIELDS + ["username", "db_is_connected", "db_is_bot"])
-                  if fi != 'db_key']
-
+        fields = [
+            fi
+            for fi in (SHARED_FIELDS + ["username", "db_is_connected", "db_is_bot"])
+            if fi != "db_key"
+        ]
 
 
 class ScriptDBFilterSet(BaseTypeclassFilterSet):
@@ -140,8 +142,7 @@ class HelpFilterSet(FilterSet):
     Filter for help entries
 
     """
+
     name = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_key")
     category = CharFilter(lookup_expr="iexact", method="filter_name", field_name="db_category")
     alias = AliasFilter(lookup_expr="iexact")
-
-

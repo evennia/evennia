@@ -91,10 +91,10 @@ PSTATUS = chr(18)  # ping server or portal status
 SRESET = chr(19)  # shutdown server in reset mode
 
 # requirements
-PYTHON_MIN = "3.7"
+PYTHON_MIN = "3.9"
 TWISTED_MIN = "20.3.0"
-DJANGO_MIN = "3.2.0"
-DJANGO_LT = "4.0"
+DJANGO_MIN = "4.0.2"
+DJANGO_LT = "4.1"
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -375,7 +375,7 @@ ERROR_NOTWISTED = """
 
 ERROR_DJANGO_MIN = """
     ERROR: Django {dversion} found. Evennia requires at least version {django_min} (but
-    no higher than {django_lt}).
+    below version {django_lt}).
 
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not
@@ -889,7 +889,7 @@ def reload_evennia(sprofiler=False, reset=False):
             send_instruction(SSTART, server_cmd)
 
     def _portal_not_running(fail):
-        print("Evennia not running. Starting up ...")
+        print("Evennia not running. Beginner-Tutorial up ...")
         start_evennia()
 
     collectstatic()
@@ -962,7 +962,7 @@ def reboot_evennia(pprofiler=False, sprofiler=False):
             wait_for_status(False, None, _portal_stopped)
 
     def _portal_not_running(fail):
-        print("Evennia not running. Starting up ...")
+        print("Evennia not running. Beginner-Tutorial up ...")
         start_evennia()
 
     collectstatic()
@@ -988,7 +988,7 @@ def start_server_interactive():
     def _iserver():
         _, server_twistd_cmd = _get_twistd_cmdline(False, False)
         server_twistd_cmd.append("--nodaemon")
-        print("Starting Server in interactive mode (stop with Ctrl-C)...")
+        print("Beginner-Tutorial Server in interactive mode (stop with Ctrl-C)...")
         try:
             Popen(server_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
         except KeyboardInterrupt:
@@ -1026,7 +1026,7 @@ def start_portal_interactive():
         else:
             Popen(server_twistd_cmd, env=getenv(), bufsize=-1)
 
-        print("Starting Portal in interactive mode (stop with Ctrl-C)...")
+        print("Beginner-Tutorial Portal in interactive mode (stop with Ctrl-C)...")
         try:
             Popen(portal_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
         except KeyboardInterrupt:
@@ -1431,6 +1431,7 @@ def create_superuser():
 
     if (username is not None) and (password is not None) and len(password) > 0:
         from evennia.accounts.models import AccountDB
+
         superuser = AccountDB.objects.create_superuser(username, email, password)
         superuser.save()
     else:
@@ -1947,7 +1948,7 @@ def run_custom_commands(option, *args):
         return False
     cmdpath = custom_commands.get(option)
     if cmdpath:
-        modpath, *cmdname = cmdpath.rsplit('.', 1)
+        modpath, *cmdname = cmdpath.rsplit(".", 1)
         if cmdname:
             cmdname = cmdname[0]
             mod = importlib.import_module(modpath)
@@ -2315,6 +2316,11 @@ def main():
         if option in ("makemessages", "compilemessages"):
             # some commands don't require the presence of a game directory to work
             need_gamedir = False
+            if CURRENT_DIR !=  EVENNIA_LIB:
+                print("You must stand in the evennia/evennia/ folder (where the 'locale/' "
+                      "folder is located) to run this command.")
+                sys.exit()
+
         if option in ("shell", "check", "makemigrations", "createsuperuser", "shell_plus"):
             # some django commands requires the database to exist,
             # or evennia._init to have run before they work right.

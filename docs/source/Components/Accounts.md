@@ -10,7 +10,7 @@ Exactly how many Sessions can interact with an Account and its Puppets at once i
 Evennia's [MULTISESSION_MODE](./Sessions.md#multisession-mode) setting.
 
 Apart from storing login information and other account-specific data, the Account object is what is
-chatting on [Channels](./Communications.md).  It is also a good place to store [Permissions](./Locks.md) to be
+chatting on [Channels](./Channels.md).  It is also a good place to store [Permissions](./Locks.md) to be
 consistent between different in-game characters as well as configuration options.  The Account
 object also has its own [CmdSet](./Command-Sets.md), the `AccountCmdSet`.
 

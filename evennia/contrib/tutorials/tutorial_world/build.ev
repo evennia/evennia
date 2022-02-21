@@ -89,13 +89,14 @@
 # Open an exit to tutorial. We don't do this in the @dig
 # command since we want to describe the exit.
 #
-@open tutorial;tut;intro = tut#01
+@open tutorial;tut : tutorial_world.rooms.TutorialStartExit = tut#01
 #
 # describe the tutorial exit
 #
 @desc tutorial =
- This starts the |gEvennia tutorial|n, using a small solo game to show off
- some of the server's possibilities.
+ This exit leads to the |gEvennia tutorial|n, a small solo game to examine.
+ Before going there, you may want to enter |wintro|n to get some general help
+ on using the default commands.
 #
 # now we actually go to the tutorial
 #
@@ -108,9 +109,6 @@ tutorial
 
  This small quest shows some examples of Evennia usage.
 
- |gDo you want help with how to play? Write |yintro|g to get an introduction to
- Evennia and the basics of playing!|n
-
  To get into the mood of this miniature quest, imagine you are an adventurer
  out to find fame and fortune. You have heard rumours of an old castle ruin by
  the coast. In its depth a warrior princess was buried together with her
@@ -121,11 +119,7 @@ tutorial
  screaming in your face you stand where the moor meet the sea along a high,
  rocky coast ...
 
-Try '|yintro|n' for usage help. During the quest, write '|ytutorial|n' to get
-behind-the-scenes help anywhere, and '|ygive up|n' to abandon the quest.
-
 |gwrite 'begin' to start your quest!|n
-
 
 #
 # Show that the tutorial command works ...

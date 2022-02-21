@@ -274,7 +274,7 @@ class TestRPSystem(BaseEvenniaTest):
         result = rpsystem.regex_tuple_from_key_alias(self.speaker)
         t2 = time.time()
         # print(f"t1: {t1 - t0}, t2: {t2 - t1}")
-        self.assertLess(t2 - t1, 10 ** -4)
+        self.assertLess(t2 - t1, 10**-4)
         self.assertEqual(result, (Anything, self.speaker, self.speaker.key))
 
 

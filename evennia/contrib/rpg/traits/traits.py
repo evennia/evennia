@@ -526,6 +526,7 @@ class MandatoryTraitKey:
 
     """
 
+
 class TraitHandler:
     """
     Factory class that instantiates Trait objects. Must be assigned as a property
@@ -794,10 +795,7 @@ class TraitProperty:
             trait = traithandler.get(self._trait_key)
             if trait is None:
                 # initialize the trait
-                traithandler.add(
-                    self._trait_key,
-                    **self._trait_properties
-                )
+                traithandler.add(self._trait_key, **self._trait_properties)
                 trait = traithandler.get(self._trait_key)  # caches it in the traithandler
             self._cache[instance] = trait
         return self._cache[instance]
@@ -808,6 +806,7 @@ class TraitProperty:
 
         """
         pass
+
 
 # Parent Trait class
 

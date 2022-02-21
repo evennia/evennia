@@ -276,8 +276,11 @@ class AccountDBManager(TypedObjectManager, UserManager):
             new_account.set_password(password)
 
         new_account._createdict = dict(
-            locks=locks, permissions=permissions,
-            report_to=report_to, tags=tags, attributes=attributes
+            locks=locks,
+            permissions=permissions,
+            report_to=report_to,
+            tags=tags,
+            attributes=attributes,
         )
         # saving will trigger the signal that calls the
         # at_first_save hook on the typeclass, where the _createdict

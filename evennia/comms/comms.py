@@ -107,7 +107,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         if not self._log_file:
             self._log_file = self.attributes.get(
-                "log_file", self.log_file.format(channelname=self.key.lower()))
+                "log_file", self.log_file.format(channelname=self.key.lower())
+            )
         return self._log_file
 
     def set_log_filename(self, filename):
@@ -455,8 +456,13 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         # needing to use the `channel` command explicitly.
         msg_nick_pattern = self.channel_msg_nick_pattern.format(alias=alias)
         msg_nick_replacement = self.channel_msg_nick_replacement.format(channelname=chan_key)
-        user.nicks.add(msg_nick_pattern, msg_nick_replacement, category="inputline",
-                             pattern_is_regex=True, **kwargs)
+        user.nicks.add(
+            msg_nick_pattern,
+            msg_nick_replacement,
+            category="inputline",
+            pattern_is_regex=True,
+            **kwargs,
+        )
 
         if chan_key != alias:
             # this allows for using the alias for general channel lookups
@@ -546,7 +552,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         if not bypass_mute:
             receivers = [receiver for receiver in receivers if receiver not in self.mutelist]
 
-        send_kwargs = {'senders': senders, 'bypass_mute': bypass_mute, **kwargs}
+        send_kwargs = {"senders": senders, "bypass_mute": bypass_mute, **kwargs}
 
         # pre-send hook
         message = self.at_pre_msg(message, **send_kwargs)
@@ -826,27 +832,37 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
     # TODO Evennia 1.0+ removed hooks. Remove in 1.1.
     def message_transform(self, *args, **kwargs):
-        raise RuntimeError("Channel.message_transform is no longer used in 1.0+. "
-                           "Use Account/Object.at_pre_channel_msg instead.")
+        raise RuntimeError(
+            "Channel.message_transform is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
 
     def distribute_message(self, msgobj, online=False, **kwargs):
         raise RuntimeError("Channel.distribute_message is no longer used in 1.0+.")
 
     def format_senders(self, senders=None, **kwargs):
-        raise RuntimeError("Channel.format_senders is no longer used in 1.0+. "
-                           "Use Account/Object.at_pre_channel_msg instead.")
+        raise RuntimeError(
+            "Channel.format_senders is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
 
     def pose_transform(self, msgobj, sender_string, **kwargs):
-        raise RuntimeError("Channel.pose_transform is no longer used in 1.0+. "
-                           "Use Account/Object.at_pre_channel_msg instead.")
+        raise RuntimeError(
+            "Channel.pose_transform is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
 
     def format_external(self, msgobj, senders, emit=False, **kwargs):
-        raise RuntimeError("Channel.format_external is no longer used in 1.0+. "
-                           "Use Account/Object.at_pre_channel_msg instead.")
+        raise RuntimeError(
+            "Channel.format_external is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
 
     def format_message(self, msgobj, emit=False, **kwargs):
-        raise RuntimeError("Channel.format_message is no longer used in 1.0+. "
-                           "Use Account/Object.at_pre_channel_msg instead.")
+        raise RuntimeError(
+            "Channel.format_message is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
 
     def pre_send_message(self, msg, **kwargs):
         raise RuntimeError("Channel.pre_send_message was renamed to Channel.at_pre_msg.")

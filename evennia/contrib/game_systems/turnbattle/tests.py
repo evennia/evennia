@@ -116,45 +116,47 @@ class TestTurnBattleBasicFunc(BaseEvenniaTest):
     # Test combat functions
     def test_tbbasicfunc(self):
         # Initiative roll
-        initiative = tb_basic.roll_init(self.attacker)
+        initiative = tb_basic.COMBAT_RULES.roll_init(self.attacker)
         self.assertTrue(initiative >= 0 and initiative <= 1000)
         # Attack roll
-        attack_roll = tb_basic.get_attack(self.attacker, self.defender)
+        attack_roll = tb_basic.COMBAT_RULES.get_attack(self.attacker, self.defender)
         self.assertTrue(attack_roll >= 0 and attack_roll <= 100)
         # Defense roll
-        defense_roll = tb_basic.get_defense(self.attacker, self.defender)
+        defense_roll = tb_basic.COMBAT_RULES.get_defense(self.attacker, self.defender)
         self.assertTrue(defense_roll == 50)
         # Damage roll
-        damage_roll = tb_basic.get_damage(self.attacker, self.defender)
+        damage_roll = tb_basic.COMBAT_RULES.get_damage(self.attacker, self.defender)
         self.assertTrue(damage_roll >= 15 and damage_roll <= 25)
         # Apply damage
         self.defender.db.hp = 10
-        tb_basic.apply_damage(self.defender, 3)
+        tb_basic.COMBAT_RULES.apply_damage(self.defender, 3)
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_basic.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
+        tb_basic.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_value=20, defense_value=10
+        )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
-        tb_basic.combat_cleanup(self.attacker)
+        tb_basic.COMBAT_RULES.combat_cleanup(self.attacker)
         self.assertFalse(self.attacker.db.combat_attribute)
         # Is in combat
-        self.assertFalse(tb_basic.is_in_combat(self.attacker))
+        self.assertFalse(tb_basic.COMBAT_RULES.is_in_combat(self.attacker))
         # Set up turn handler script for further tests
         self.attacker.location.scripts.add(tb_basic.TBBasicTurnHandler)
-        self.turnhandler = self.attacker.db.combat_TurnHandler
-        self.assertTrue(self.attacker.db.combat_TurnHandler)
+        self.turnhandler = self.attacker.db.combat_turnHandler
+        self.assertTrue(self.attacker.db.combat_turnHandler)
         # Set the turn handler's interval very high to keep it from repeating during tests.
         self.turnhandler.interval = 10000
         # Force turn order
         self.turnhandler.db.fighters = [self.attacker, self.defender]
         self.turnhandler.db.turn = 0
         # Test is turn
-        self.assertTrue(tb_basic.is_turn(self.attacker))
+        self.assertTrue(tb_basic.COMBAT_RULES.is_turn(self.attacker))
         # Spend actions
         self.attacker.db.Combat_ActionsLeft = 1
-        tb_basic.spend_action(self.attacker, 1, action_name="Test")
+        tb_basic.COMBAT_RULES.spend_action(self.attacker, 1, action_name="Test")
         self.assertTrue(self.attacker.db.Combat_ActionsLeft == 0)
         self.assertTrue(self.attacker.db.Combat_LastAction == "Test")
         # Initialize for combat
@@ -209,45 +211,47 @@ class TestTurnBattleEquipFunc(BaseEvenniaTest):
     # Test the combat functions in tb_equip too. They work mostly the same.
     def test_tbequipfunc(self):
         # Initiative roll
-        initiative = tb_equip.roll_init(self.attacker)
+        initiative = tb_equip.COMBAT_RULES.roll_init(self.attacker)
         self.assertTrue(initiative >= 0 and initiative <= 1000)
         # Attack roll
-        attack_roll = tb_equip.get_attack(self.attacker, self.defender)
+        attack_roll = tb_equip.COMBAT_RULES.get_attack(self.attacker, self.defender)
         self.assertTrue(attack_roll >= -50 and attack_roll <= 150)
         # Defense roll
-        defense_roll = tb_equip.get_defense(self.attacker, self.defender)
+        defense_roll = tb_equip.COMBAT_RULES.get_defense(self.attacker, self.defender)
         self.assertTrue(defense_roll == 50)
         # Damage roll
-        damage_roll = tb_equip.get_damage(self.attacker, self.defender)
+        damage_roll = tb_equip.COMBAT_RULES.get_damage(self.attacker, self.defender)
         self.assertTrue(damage_roll >= 0 and damage_roll <= 50)
         # Apply damage
         self.defender.db.hp = 10
-        tb_equip.apply_damage(self.defender, 3)
+        tb_equip.COMBAT_RULES.apply_damage(self.defender, 3)
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_equip.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
+        tb_equip.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_value=20, defense_value=10
+        )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
-        tb_equip.combat_cleanup(self.attacker)
+        tb_equip.COMBAT_RULES.combat_cleanup(self.attacker)
         self.assertFalse(self.attacker.db.combat_attribute)
         # Is in combat
-        self.assertFalse(tb_equip.is_in_combat(self.attacker))
+        self.assertFalse(tb_equip.COMBAT_RULES.is_in_combat(self.attacker))
         # Set up turn handler script for further tests
         self.attacker.location.scripts.add(tb_equip.TBEquipTurnHandler)
-        self.turnhandler = self.attacker.db.combat_TurnHandler
-        self.assertTrue(self.attacker.db.combat_TurnHandler)
+        self.turnhandler = self.attacker.db.combat_turnHandler
+        self.assertTrue(self.attacker.db.combat_turnHandler)
         # Set the turn handler's interval very high to keep it from repeating during tests.
         self.turnhandler.interval = 10000
         # Force turn order
         self.turnhandler.db.fighters = [self.attacker, self.defender]
         self.turnhandler.db.turn = 0
         # Test is turn
-        self.assertTrue(tb_equip.is_turn(self.attacker))
+        self.assertTrue(tb_equip.COMBAT_RULES.is_turn(self.attacker))
         # Spend actions
         self.attacker.db.Combat_ActionsLeft = 1
-        tb_equip.spend_action(self.attacker, 1, action_name="Test")
+        tb_equip.COMBAT_RULES.spend_action(self.attacker, 1, action_name="Test")
         self.assertTrue(self.attacker.db.Combat_ActionsLeft == 0)
         self.assertTrue(self.attacker.db.Combat_LastAction == "Test")
         # Initialize for combat
@@ -301,47 +305,51 @@ class TestTurnBattleRangeFunc(BaseEvenniaTest):
     # Test combat functions in tb_range too.
     def test_tbrangefunc(self):
         # Initiative roll
-        initiative = tb_range.roll_init(self.attacker)
+        initiative = tb_range.COMBAT_RULES.roll_init(self.attacker)
         self.assertTrue(initiative >= 0 and initiative <= 1000)
         # Attack roll
-        attack_roll = tb_range.get_attack(self.attacker, self.defender, "test")
+        attack_roll = tb_range.COMBAT_RULES.get_attack(
+            self.attacker, self.defender, attack_type="test"
+        )
         self.assertTrue(attack_roll >= 0 and attack_roll <= 100)
         # Defense roll
-        defense_roll = tb_range.get_defense(self.attacker, self.defender, "test")
+        defense_roll = tb_range.COMBAT_RULES.get_defense(
+            self.attacker, self.defender, attack_type="test"
+        )
         self.assertTrue(defense_roll == 50)
         # Damage roll
-        damage_roll = tb_range.get_damage(self.attacker, self.defender)
+        damage_roll = tb_range.COMBAT_RULES.get_damage(self.attacker, self.defender)
         self.assertTrue(damage_roll >= 15 and damage_roll <= 25)
         # Apply damage
         self.defender.db.hp = 10
-        tb_range.apply_damage(self.defender, 3)
+        tb_range.COMBAT_RULES.apply_damage(self.defender, 3)
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_range.resolve_attack(
-            self.attacker, self.defender, "test", attack_value=20, defense_value=10
+        tb_range.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_type="test", attack_value=20, defense_value=10
         )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
-        tb_range.combat_cleanup(self.attacker)
+        tb_range.COMBAT_RULES.combat_cleanup(self.attacker)
         self.assertFalse(self.attacker.db.combat_attribute)
         # Is in combat
-        self.assertFalse(tb_range.is_in_combat(self.attacker))
+        self.assertFalse(tb_range.COMBAT_RULES.is_in_combat(self.attacker))
         # Set up turn handler script for further tests
         self.attacker.location.scripts.add(tb_range.TBRangeTurnHandler)
-        self.turnhandler = self.attacker.db.combat_TurnHandler
-        self.assertTrue(self.attacker.db.combat_TurnHandler)
+        self.turnhandler = self.attacker.db.combat_turnHandler
+        self.assertTrue(self.attacker.db.combat_turnHandler)
         # Set the turn handler's interval very high to keep it from repeating during tests.
         self.turnhandler.interval = 10000
         # Force turn order
         self.turnhandler.db.fighters = [self.attacker, self.defender]
         self.turnhandler.db.turn = 0
         # Test is turn
-        self.assertTrue(tb_range.is_turn(self.attacker))
+        self.assertTrue(tb_range.COMBAT_RULES.is_turn(self.attacker))
         # Spend actions
         self.attacker.db.Combat_ActionsLeft = 1
-        tb_range.spend_action(self.attacker, 1, action_name="Test")
+        tb_range.COMBAT_RULES.spend_action(self.attacker, 1, action_name="Test")
         self.assertTrue(self.attacker.db.Combat_ActionsLeft == 0)
         self.assertTrue(self.attacker.db.Combat_LastAction == "Test")
         # Initialize for combat
@@ -359,7 +367,7 @@ class TestTurnBattleRangeFunc(BaseEvenniaTest):
         # Start turn
         self.defender.db.Combat_ActionsLeft = 0
         self.turnhandler.start_turn(self.defender)
-        self.assertTrue(self.defender.db.Combat_ActionsLeft == 2)
+        self.assertEqual(self.defender.db.Combat_ActionsLeft, 2)
         # Next turn
         self.turnhandler.db.fighters = [self.attacker, self.defender]
         self.turnhandler.db.turn = 0
@@ -378,13 +386,13 @@ class TestTurnBattleRangeFunc(BaseEvenniaTest):
         self.assertTrue(self.turnhandler.db.turn == 1)
         self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
         # Now, test for approach/withdraw functions
-        self.assertTrue(tb_range.get_range(self.attacker, self.defender) == 1)
+        self.assertTrue(tb_range.COMBAT_RULES.get_range(self.attacker, self.defender) == 1)
         # Approach
-        tb_range.approach(self.attacker, self.defender)
-        self.assertTrue(tb_range.get_range(self.attacker, self.defender) == 0)
+        tb_range.COMBAT_RULES.approach(self.attacker, self.defender)
+        self.assertTrue(tb_range.COMBAT_RULES.get_range(self.attacker, self.defender) == 0)
         # Withdraw
-        tb_range.withdraw(self.attacker, self.defender)
-        self.assertTrue(tb_range.get_range(self.attacker, self.defender) == 1)
+        tb_range.COMBAT_RULES.withdraw(self.attacker, self.defender)
+        self.assertTrue(tb_range.COMBAT_RULES.get_range(self.attacker, self.defender) == 1)
 
 
 class TestTurnBattleItemsFunc(BaseEvenniaTest):
@@ -416,45 +424,47 @@ class TestTurnBattleItemsFunc(BaseEvenniaTest):
     # Test functions in tb_items.
     def test_tbitemsfunc(self):
         # Initiative roll
-        initiative = tb_items.roll_init(self.attacker)
+        initiative = tb_items.COMBAT_RULES.roll_init(self.attacker)
         self.assertTrue(initiative >= 0 and initiative <= 1000)
         # Attack roll
-        attack_roll = tb_items.get_attack(self.attacker, self.defender)
+        attack_roll = tb_items.COMBAT_RULES.get_attack(self.attacker, self.defender)
         self.assertTrue(attack_roll >= 0 and attack_roll <= 100)
         # Defense roll
-        defense_roll = tb_items.get_defense(self.attacker, self.defender)
+        defense_roll = tb_items.COMBAT_RULES.get_defense(self.attacker, self.defender)
         self.assertTrue(defense_roll == 50)
         # Damage roll
-        damage_roll = tb_items.get_damage(self.attacker, self.defender)
+        damage_roll = tb_items.COMBAT_RULES.get_damage(self.attacker, self.defender)
         self.assertTrue(damage_roll >= 15 and damage_roll <= 25)
         # Apply damage
         self.defender.db.hp = 10
-        tb_items.apply_damage(self.defender, 3)
+        tb_items.COMBAT_RULES.apply_damage(self.defender, 3)
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_items.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
+        tb_items.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_value=20, defense_value=10
+        )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
-        tb_items.combat_cleanup(self.attacker)
+        tb_items.COMBAT_RULES.combat_cleanup(self.attacker)
         self.assertFalse(self.attacker.db.combat_attribute)
         # Is in combat
-        self.assertFalse(tb_items.is_in_combat(self.attacker))
+        self.assertFalse(tb_items.COMBAT_RULES.is_in_combat(self.attacker))
         # Set up turn handler script for further tests
         self.attacker.location.scripts.add(tb_items.TBItemsTurnHandler)
-        self.turnhandler = self.attacker.db.combat_TurnHandler
-        self.assertTrue(self.attacker.db.combat_TurnHandler)
+        self.turnhandler = self.attacker.db.combat_turnHandler
+        self.assertTrue(self.attacker.db.combat_turnHandler)
         # Set the turn handler's interval very high to keep it from repeating during tests.
         self.turnhandler.interval = 10000
         # Force turn order
         self.turnhandler.db.fighters = [self.attacker, self.defender]
         self.turnhandler.db.turn = 0
         # Test is turn
-        self.assertTrue(tb_items.is_turn(self.attacker))
+        self.assertTrue(tb_items.COMBAT_RULES.is_turn(self.attacker))
         # Spend actions
         self.attacker.db.Combat_ActionsLeft = 1
-        tb_items.spend_action(self.attacker, 1, action_name="Test")
+        tb_items.COMBAT_RULES.spend_action(self.attacker, 1, action_name="Test")
         self.assertTrue(self.attacker.db.Combat_ActionsLeft == 0)
         self.assertTrue(self.attacker.db.Combat_LastAction == "Test")
         # Initialize for combat
@@ -485,29 +495,29 @@ class TestTurnBattleItemsFunc(BaseEvenniaTest):
         self.assertTrue(self.turnhandler.db.fighters == [self.joiner, self.attacker, self.defender])
         # Now time to test item stuff.
         # Spend item use
-        tb_items.spend_item_use(self.test_healpotion, self.user)
+        tb_items.COMBAT_RULES.spend_item_use(self.test_healpotion, self.user)
         self.assertTrue(self.test_healpotion.db.item_uses == 2)
         # Use item
         self.user.db.hp = 2
-        tb_items.use_item(self.user, self.test_healpotion, self.user)
+        tb_items.COMBAT_RULES.use_item(self.user, self.test_healpotion, self.user)
         self.assertTrue(self.user.db.hp > 2)
         # Add contition
-        tb_items.add_condition(self.user, self.user, "Test", 5)
+        tb_items.COMBAT_RULES.add_condition(self.user, self.user, "Test", 5)
         self.assertTrue(self.user.db.conditions == {"Test": [5, self.user]})
         # Condition tickdown
-        tb_items.condition_tickdown(self.user, self.user)
-        self.assertTrue(self.user.db.conditions == {"Test": [4, self.user]})
+        tb_items.COMBAT_RULES.condition_tickdown(self.user, self.user)
+        self.assertEqual(self.user.db.conditions, {"Test": [4, self.user]})
         # Test item functions now!
         # Item heal
         self.user.db.hp = 2
-        tb_items.itemfunc_heal(self.test_healpotion, self.user, self.user)
+        tb_items.COMBAT_RULES.itemfunc_heal(self.test_healpotion, self.user, self.user)
         # Item add condition
         self.user.db.conditions = {}
-        tb_items.itemfunc_add_condition(self.test_healpotion, self.user, self.user)
+        tb_items.COMBAT_RULES.itemfunc_add_condition(self.test_healpotion, self.user, self.user)
         self.assertTrue(self.user.db.conditions == {"Regeneration": [5, self.user]})
         # Item cure condition
         self.user.db.conditions = {"Poisoned": [5, self.user]}
-        tb_items.itemfunc_cure_condition(self.test_healpotion, self.user, self.user)
+        tb_items.COMBAT_RULES.itemfunc_cure_condition(self.test_healpotion, self.user, self.user)
         self.assertTrue(self.user.db.conditions == {})
 
 
@@ -534,45 +544,47 @@ class TestTurnBattleMagicFunc(BaseEvenniaTest):
     # Test combat functions in tb_magic.
     def test_tbbasicfunc(self):
         # Initiative roll
-        initiative = tb_magic.roll_init(self.attacker)
+        initiative = tb_magic.COMBAT_RULES.roll_init(self.attacker)
         self.assertTrue(initiative >= 0 and initiative <= 1000)
         # Attack roll
-        attack_roll = tb_magic.get_attack(self.attacker, self.defender)
+        attack_roll = tb_magic.COMBAT_RULES.get_attack(self.attacker, self.defender)
         self.assertTrue(attack_roll >= 0 and attack_roll <= 100)
         # Defense roll
-        defense_roll = tb_magic.get_defense(self.attacker, self.defender)
+        defense_roll = tb_magic.COMBAT_RULES.get_defense(self.attacker, self.defender)
         self.assertTrue(defense_roll == 50)
         # Damage roll
-        damage_roll = tb_magic.get_damage(self.attacker, self.defender)
+        damage_roll = tb_magic.COMBAT_RULES.get_damage(self.attacker, self.defender)
         self.assertTrue(damage_roll >= 15 and damage_roll <= 25)
         # Apply damage
         self.defender.db.hp = 10
-        tb_magic.apply_damage(self.defender, 3)
+        tb_magic.COMBAT_RULES.apply_damage(self.defender, 3)
         self.assertTrue(self.defender.db.hp == 7)
         # Resolve attack
         self.defender.db.hp = 40
-        tb_magic.resolve_attack(self.attacker, self.defender, attack_value=20, defense_value=10)
+        tb_magic.COMBAT_RULES.resolve_attack(
+            self.attacker, self.defender, attack_value=20, defense_value=10
+        )
         self.assertTrue(self.defender.db.hp < 40)
         # Combat cleanup
         self.attacker.db.Combat_attribute = True
-        tb_magic.combat_cleanup(self.attacker)
+        tb_magic.COMBAT_RULES.combat_cleanup(self.attacker)
         self.assertFalse(self.attacker.db.combat_attribute)
         # Is in combat
-        self.assertFalse(tb_magic.is_in_combat(self.attacker))
+        self.assertFalse(tb_magic.COMBAT_RULES.is_in_combat(self.attacker))
         # Set up turn handler script for further tests
         self.attacker.location.scripts.add(tb_magic.TBMagicTurnHandler)
-        self.turnhandler = self.attacker.db.combat_TurnHandler
-        self.assertTrue(self.attacker.db.combat_TurnHandler)
+        self.turnhandler = self.attacker.db.combat_turnHandler
+        self.assertTrue(self.attacker.db.combat_turnHandler)
         # Set the turn handler's interval very high to keep it from repeating during tests.
         self.turnhandler.interval = 10000
         # Force turn order
         self.turnhandler.db.fighters = [self.attacker, self.defender]
         self.turnhandler.db.turn = 0
         # Test is turn
-        self.assertTrue(tb_magic.is_turn(self.attacker))
+        self.assertTrue(tb_magic.COMBAT_RULES.is_turn(self.attacker))
         # Spend actions
         self.attacker.db.Combat_ActionsLeft = 1
-        tb_magic.spend_action(self.attacker, 1, action_name="Test")
+        tb_magic.COMBAT_RULES.spend_action(self.attacker, 1, action_name="Test")
         self.assertTrue(self.attacker.db.Combat_ActionsLeft == 0)
         self.assertTrue(self.attacker.db.Combat_LastAction == "Test")
         # Initialize for combat

@@ -43,6 +43,7 @@ def true(*args, **kwargs):
     """
     return True
 
+
 def all(*args, **kwargs):
     return True
 

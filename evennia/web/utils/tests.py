@@ -9,8 +9,10 @@ class TestGeneralContext(TestCase):
 
     @patch("evennia.web.utils.general_context.GAME_NAME", "test_name")
     @patch("evennia.web.utils.general_context.GAME_SLOGAN", "test_game_slogan")
-    @patch("evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED",
-           "websocket_client_enabled_testvalue")
+    @patch(
+        "evennia.web.utils.general_context.WEBSOCKET_CLIENT_ENABLED",
+        "websocket_client_enabled_testvalue",
+    )
     @patch("evennia.web.utils.general_context.WEBCLIENT_ENABLED", "webclient_enabled_testvalue")
     @patch("evennia.web.utils.general_context.WEBSOCKET_PORT", "websocket_client_port_testvalue")
     @patch("evennia.web.utils.general_context.WEBSOCKET_URL", "websocket_client_url_testvalue")
@@ -39,7 +41,7 @@ class TestGeneralContext(TestCase):
                 "websocket_port": "websocket_client_port_testvalue",
                 "websocket_url": "websocket_client_url_testvalue",
                 "rest_api_enabled": True,
-                "server_hostname": 'localhost',
+                "server_hostname": "localhost",
                 "ssh_enabled": False,
                 "ssh_ports": False,
                 "telnet_enabled": True,

@@ -31,17 +31,27 @@ class TestEventHandler(BaseEvenniaTest):
     def setUp(self):
         """Create the event handler."""
         super().setUp()
-        self.handler = create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")
+        self.handler = create_script(
+            "evennia.contrib.base_systems.ingame_python.scripts.EventHandler"
+        )
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter")
-        self.char2.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter")
-        self.room1.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom")
-        self.room2.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom")
+        self.char1.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter"
+        )
+        self.char2.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter"
+        )
+        self.room1.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom"
+        )
+        self.room2.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom"
+        )
         self.exit.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventExit")
 
     def tearDown(self):
@@ -253,17 +263,27 @@ class TestCmdCallback(BaseEvenniaCommandTest):
     def setUp(self):
         """Create the callback handler."""
         super().setUp()
-        self.handler = create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")
+        self.handler = create_script(
+            "evennia.contrib.base_systems.ingame_python.scripts.EventHandler"
+        )
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter")
-        self.char2.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter")
-        self.room1.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom")
-        self.room2.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom")
+        self.char1.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter"
+        )
+        self.char2.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter"
+        )
+        self.room1.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom"
+        )
+        self.room2.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom"
+        )
         self.exit.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventExit")
 
     def tearDown(self):
@@ -432,17 +452,27 @@ class TestDefaultCallbacks(BaseEvenniaCommandTest):
     def setUp(self):
         """Create the callback handler."""
         super().setUp()
-        self.handler = create_script("evennia.contrib.base_systems.ingame_python.scripts.EventHandler")
+        self.handler = create_script(
+            "evennia.contrib.base_systems.ingame_python.scripts.EventHandler"
+        )
 
         # Copy old events if necessary
         if OLD_EVENTS:
             self.handler.ndb.events = dict(OLD_EVENTS)
 
         # Alter typeclasses
-        self.char1.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter")
-        self.char2.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter")
-        self.room1.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom")
-        self.room2.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom")
+        self.char1.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter"
+        )
+        self.char2.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventCharacter"
+        )
+        self.room1.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom"
+        )
+        self.room2.swap_typeclass(
+            "evennia.contrib.base_systems.ingame_python.typeclasses.EventRoom"
+        )
         self.exit.swap_typeclass("evennia.contrib.base_systems.ingame_python.typeclasses.EventExit")
 
     def tearDown(self):

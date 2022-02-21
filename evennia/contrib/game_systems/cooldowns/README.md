@@ -3,8 +3,8 @@
 Contribution by owllex, 2021
 
 Cooldowns are used to model rate-limited actions, like how often a
-character can perform a given action; until a certain time has passed their 
-command can not be used again. This contrib provides a simple cooldown 
+character can perform a given action; until a certain time has passed their
+command can not be used again. This contrib provides a simple cooldown
 handler that can be attached to any typeclass. A cooldown is a lightweight persistent
 asynchronous timer that you can query to see if a certain time has yet passed.
 
@@ -38,7 +38,7 @@ def cooldowns(self):
     return CooldownHandler(self, db_attribute="cooldowns")
 ```
 
-# Example
+## Example
 
 Assuming you've installed cooldowns on your Character typeclasses, you can use a
 cooldown to limit how often you can perform a command. The following code

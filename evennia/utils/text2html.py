@@ -102,6 +102,7 @@ class TextToHTMLparser(object):
         re.S | re.M | re.I,
     )
     re_dblspace = re.compile(r" {2,}", re.M)
+    re_invisiblespace = re.compile(r"( <.*?>)( )")
     re_url = re.compile(
         r'(?<!=")((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
     )
@@ -271,6 +272,13 @@ class TextToHTMLparser(object):
         """
         return self.re_dblspace.sub(self.sub_dblspace, text)
 
+    def re_invisible_space(self, text):
+        """
+        If two spaces are separated by an invisble html element, they act as a
+        hidden double-space and the last of them should be replaced by &nbsp;
+        """
+        return self.re_invisiblespace.sub(self.sub_invisiblespace, text)
+
     def sub_mxp_links(self, match):
         """
         Helper method to be passed to re.sub,
@@ -301,8 +309,8 @@ class TextToHTMLparser(object):
             text (str): Processed text.
         """
         url, text = [grp.replace('"', "\\&quot;") for grp in match.groups()]
-        val = (
-            r"""<a id="mxplink" href="{url}" target="_blank">{text}</a>""".format(url=url, text=text)
+        val = r"""<a id="mxplink" href="{url}" target="_blank">{text}</a>""".format(
+            url=url, text=text
         )
         return val
 
@@ -336,6 +344,10 @@ class TextToHTMLparser(object):
         "clean up double-spaces"
         return " " + "&nbsp;" * (len(match.group()) - 1)
 
+    def sub_invisiblespace(self, match):
+        "clean up invisible spaces"
+        return match.group(1) + "&nbsp;"
+
     def parse(self, text, strip_ansi=False):
         """
         Main access function, converts a text containing ANSI codes
@@ -347,7 +359,10 @@ class TextToHTMLparser(object):
 
         Returns:
             text (str): Parsed text.
+
         """
+        # print(f"incoming ansi:\n{text}")
+
         # parse everything to ansi first
         text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=True, mxp=True)
         # convert all ansi to html
@@ -364,8 +379,9 @@ class TextToHTMLparser(object):
         result = self.remove_backspaces(result)
         result = self.convert_urls(result)
         result = self.re_double_space(result)
+        result = self.re_invisible_space(result)
         # clean out eventual ansi that was missed
-        # result = parse_ansi(result, strip_ansi=True)
+        ## result = parse_ansi(result, strip_ansi=True)
 
         return result
 

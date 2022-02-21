@@ -514,7 +514,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 typeclass=F("db_typeclass_path"),
                 # Calculate this class' percentage of total composition
                 percent=ExpressionWrapper(
-                    ((F("count") / float(self.count())) * 100.0), output_field=FloatField(),
+                    ((F("count") / float(self.count())) * 100.0),
+                    output_field=FloatField(),
                 ),
             )
             .values("typeclass", "count", "percent")
@@ -750,11 +751,7 @@ class TypeclassManager(TypedObjectManager):
         Returns:
             Annotated queryset.
         """
-        return (
-            super()
-            .filter(db_typeclass_path=self.model.path)
-            .annotate(*args, **kwargs)
-        )
+        return super().filter(db_typeclass_path=self.model.path).annotate(*args, **kwargs)
 
     def values(self, *args, **kwargs):
         """
@@ -766,11 +763,7 @@ class TypeclassManager(TypedObjectManager):
         Returns:
             Queryset of values dictionaries, just filtered by typeclass first.
         """
-        return (
-            super()
-            .filter(db_typeclass_path=self.model.path)
-            .values(*args, **kwargs)
-        )
+        return super().filter(db_typeclass_path=self.model.path).values(*args, **kwargs)
 
     def values_list(self, *args, **kwargs):
         """
@@ -782,11 +775,7 @@ class TypeclassManager(TypedObjectManager):
         Returns:
             Queryset of value_list tuples, just filtered by typeclass first.
         """
-        return (
-            super()
-            .filter(db_typeclass_path=self.model.path)
-            .values_list(*args, **kwargs)
-        )
+        return super().filter(db_typeclass_path=self.model.path).values_list(*args, **kwargs)
 
     def _get_subclasses(self, cls):
         """

@@ -5,8 +5,8 @@ This module acts as a central place for AMP-servers and -clients to get commands
 
 """
 
-from functools import wraps
 import time
+from functools import wraps
 from twisted.protocols import amp
 from collections import defaultdict, namedtuple
 from io import BytesIO
@@ -47,12 +47,12 @@ NULNUL = b"\x00\x00"
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH  # max allowed data length in AMP protocol (cannot be changed)
 
 # amp internal
-ASK = b'_ask'
-ANSWER = b'_answer'
-ERROR = b'_error'
-ERROR_CODE = b'_error_code'
-ERROR_DESCRIPTION = b'_error_description'
-UNKNOWN_ERROR_CODE = b'UNKNOWN'
+ASK = b"_ask"
+ANSWER = b"_answer"
+ERROR = b"_error"
+ERROR_CODE = b"_error_code"
+ERROR_DESCRIPTION = b"_error_description"
+UNKNOWN_ERROR_CODE = b"UNKNOWN"
 
 # buffers
 _SENDBATCH = defaultdict(list)
@@ -322,6 +322,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         add a specific log of the problem on the erroring side.
 
         """
+
         def formatAnswer(answerBox):
             answerBox[ANSWER] = box[ASK]
             return answerBox
@@ -350,11 +351,54 @@ class AMPMultiConnectionProtocol(amp.AMP):
             errorBox[ERROR_DESCRIPTION] = desc
             errorBox[ERROR_CODE] = code
             return errorBox
+
         deferred = self.dispatchCommand(box)
         if ASK in box:
             deferred.addCallbacks(formatAnswer, formatError)
             deferred.addCallback(self._safeEmit)
         deferred.addErrback(self.unhandledError)
+
+    def stringReceived(self, string):
+        """
+        Overrides the base stringReceived of twisted in order to handle
+        the strange error reported in https://github.com/evennia/evennia/issues/2053,
+        which can lead to the amp connection locking up.
+
+        Args:
+            string (str): the data coming in.
+
+        Notes:
+
+            To test, add the following code to the beginning of
+            `evennia.server.amp_client.AMPServerClientProtocol.data_to_portal`, then
+            run multiple commands until the error trigger:
+            ::
+
+                import random
+                from twisted.protocols.amp import AmpBox
+                always_fail = False
+                if always_fail or random.random() < 0.05:
+                    breaker = AmpBox()
+                    breaker['_answer'.encode()]='13541'.encode()
+                    self.transport.write(breaker.serialize())
+
+        """
+        try:
+            pto = "proto_" + self.state
+            statehandler = getattr(self, pto)
+        except AttributeError:
+            log.msg("callback", self.state, "not found")
+        else:
+            try:
+                # make sure to catch a KeyError cleanly here
+                self.state = statehandler(string)
+                if self.state == "done":
+                    self.transport.loseConnection()
+            except KeyError as err:
+                _get_logger().log_err(
+                    f"AMP error (KeyError: {err}). Discarded data (see "
+                    "https://github.com/evennia/evennia/issues/2053)"
+                )
 
     def dataReceived(self, data):
         """

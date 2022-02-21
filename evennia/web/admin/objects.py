@@ -4,10 +4,9 @@
 #
 from django.conf import settings
 from django import forms
-from django.urls import reverse
+from django.urls import reverse, path
 from django.http import HttpResponseRedirect
 from django.conf import settings
-from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
@@ -64,9 +63,11 @@ class ObjectCreateForm(forms.ModelForm):
         f"<BR>If you are creating a Character you usually need <B>{settings.BASE_CHARACTER_TYPECLASS}</B> "
         "or a subclass of that. <BR>If your custom class is not found in the list, it may not be imported "
         "into Evennia yet.",
-        choices=lambda: adminutils.get_and_load_typeclasses(parent=ObjectDB))
+        choices=lambda: adminutils.get_and_load_typeclasses(parent=ObjectDB),
+    )
 
-    db_lock_storage = forms.CharField( label="Locks",
+    db_lock_storage = forms.CharField(
+        label="Locks",
         required=False,
         widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
         help_text="In-game lock definition string. If not given, defaults will be used. "
@@ -93,29 +94,32 @@ class ObjectCreateForm(forms.ModelForm):
         label="Location",
         required=False,
         widget=ForeignKeyRawIdWidget(
-            ObjectDB._meta.get_field('db_location').remote_field, admin.site),
+            ObjectDB._meta.get_field("db_location").remote_field, admin.site
+        ),
         help_text="The (current) in-game location.<BR>"
-                  "Usually a Room but can be<BR>"
-                  "empty for un-puppeted Characters."
+        "Usually a Room but can be<BR>"
+        "empty for un-puppeted Characters.",
     )
     db_home = forms.ModelChoiceField(
         ObjectDB.objects.all(),
         label="Home",
         required=False,
         widget=ForeignKeyRawIdWidget(
-            ObjectDB._meta.get_field('db_location').remote_field, admin.site),
+            ObjectDB._meta.get_field("db_location").remote_field, admin.site
+        ),
         help_text="Fallback in-game location.<BR>"
-                  "All objects should usually have<BR>"
-                  "a home location."
-        )
+        "All objects should usually have<BR>"
+        "a home location.",
+    )
     db_destination = forms.ModelChoiceField(
         ObjectDB.objects.all(),
         label="Destination",
         required=False,
         widget=ForeignKeyRawIdWidget(
-            ObjectDB._meta.get_field('db_destination').remote_field, admin.site),
-        help_text="Only used by Exits."
-        )
+            ObjectDB._meta.get_field("db_destination").remote_field, admin.site
+        ),
+        help_text="Only used by Exits.",
+    )
 
     def __init__(self, *args, **kwargs):
         """
@@ -158,9 +162,10 @@ class ObjectEditForm(ObjectCreateForm):
         label="Puppeting Account",
         required=False,
         widget=ForeignKeyRawIdWidget(
-            ObjectDB._meta.get_field('db_account').remote_field, admin.site),
+            ObjectDB._meta.get_field("db_account").remote_field, admin.site
+        ),
         help_text="An Account puppeting this Object (if any).<BR>Note that when a user logs "
-                  "off/unpuppets, this<BR>field will be empty again. This is normal."
+        "off/unpuppets, this<BR>field will be empty again. This is normal.",
     )
 
 
@@ -172,10 +177,24 @@ class ObjectAdmin(admin.ModelAdmin):
     """
 
     inlines = [ObjectTagInline, ObjectAttributeInline]
-    list_display = ("id", "db_key", "db_typeclass_path", "db_location", "db_destination", "db_account", "db_date_created")
+    list_display = (
+        "id",
+        "db_key",
+        "db_typeclass_path",
+        "db_location",
+        "db_destination",
+        "db_account",
+        "db_date_created",
+    )
     list_display_links = ("id", "db_key")
     ordering = ["-db_date_created", "-id"]
-    search_fields = ["=id", "^db_key", "db_typeclass_path", "^db_account__db_key", "^db_location__db_key"]
+    search_fields = [
+        "=id",
+        "^db_key",
+        "db_typeclass_path",
+        "^db_account__db_key",
+        "^db_location__db_key",
+    ]
     raw_id_fields = ("db_destination", "db_location", "db_home", "db_account")
     readonly_fields = ("serialized_string", "link_button")
 
@@ -198,7 +217,7 @@ class ObjectAdmin(admin.ModelAdmin):
                     ("db_account", "link_button"),
                     "db_cmdset_storage",
                     "db_lock_storage",
-                    "serialized_string"
+                    "serialized_string",
                 )
             },
         ),
@@ -224,10 +243,11 @@ class ObjectAdmin(admin.ModelAdmin):
 
         """
         from evennia.utils import dbserialize
+
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store this object there."
     )
 
     def get_fieldsets(self, request, obj=None):
@@ -266,10 +286,10 @@ class ObjectAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            url(
-                r"^account-object-link/(?P<object_id>.+)/$",
+            path(
+                "account-object-link/<int:pk>",
                 self.admin_site.admin_view(self.link_object_to_account),
-                name="object-account-link"
+                name="object-account-link",
             )
         ]
         return custom_urls + urls
@@ -277,8 +297,9 @@ class ObjectAdmin(admin.ModelAdmin):
     def link_button(self, obj):
         return format_html(
             '<a class="button" href="{}">Link to Account</a>&nbsp;',
-            reverse("admin:object-account-link", args=[obj.pk])
+            reverse("admin:object-account-link", args=[obj.pk]),
         )
+
     link_button.short_description = "Create attrs/locks for puppeting"
     link_button.allow_tags = True
 
@@ -306,20 +327,23 @@ class ObjectAdmin(admin.ModelAdmin):
                 lock = obj.locks.get("puppet")
                 lock += f" or pid({account.id})"
                 obj.locks.add(lock)
-            self.message_user(request,
-                              "Did the following (where possible): "
-                              f"Set Account.db._last_puppet = {obj}, "
-                              f"Added {obj} to Account.db._playable_characters list, "
-                              f"Added 'puppet:pid({account.id})' lock to {obj}.")
+            self.message_user(
+                request,
+                "Did the following (where possible): "
+                f"Set Account.db._last_puppet = {obj}, "
+                f"Added {obj} to Account.db._playable_characters list, "
+                f"Added 'puppet:pid({account.id})' lock to {obj}.",
+            )
         else:
-            self.message_user(request, "Account must be connected for this action "
-                              "(set Puppeting Account and save this page first).",
-                              level=messages.ERROR)
+            self.message_user(
+                request,
+                "Account must be connected for this action "
+                "(set Puppeting Account and save this page first).",
+                level=messages.ERROR,
+            )
 
         # stay on the same page
         return HttpResponseRedirect(reverse("admin:objects_objectdb_change", args=[obj.pk]))
-
-
 
     def save_model(self, request, obj, form, change):
         """

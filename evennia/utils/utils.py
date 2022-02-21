@@ -11,6 +11,7 @@ import gc
 import sys
 import types
 import math
+import threading
 import re
 import textwrap
 import random
@@ -41,6 +42,8 @@ from evennia.utils import logger
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
+_IS_MAIN_THREAD = threading.current_thread().name == "MainThread"
+
 ENCODINGS = settings.ENCODINGS
 
 _TASK_HANDLER = None
@@ -206,7 +209,7 @@ def dedent(text, baseline_index=None, indent=None):
         baseline = lines[baseline_index]
         spaceremove = len(baseline) - len(baseline.lstrip(" "))
         return "\n".join(
-            line[min(spaceremove, len(line) - len(line.lstrip(" "))):] for line in lines
+            line[min(spaceremove, len(line) - len(line.lstrip(" "))) :] for line in lines
         )
 
 
@@ -345,7 +348,7 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     cols = []
     istart = 0
     for irows in nrows:
-        cols.append(onecol[istart: istart + irows])
+        cols.append(onecol[istart : istart + irows])
         istart = istart + irows
     for col in cols:
         if len(col) < height:
@@ -411,7 +414,7 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
         endsep = " " + str(endsep).strip()
     else:
         # no separator given - use comma
-        endsep = ','
+        endsep = ","
 
     if len_iter == 1:
         return str(iterable[0])
@@ -1087,8 +1090,9 @@ def delay(timedelay, callback, *args, **kwargs):
     return _TASK_HANDLER.add(timedelay, callback, *args, **kwargs)
 
 
-def repeat(interval, callback, persistent=True, idstring="", stop=False,
-           store_key=None, *args, **kwargs):
+def repeat(
+    interval, callback, persistent=True, idstring="", stop=False, store_key=None, *args, **kwargs
+):
     """
     Start a repeating task using the TickerHandler.
 
@@ -1124,16 +1128,18 @@ def repeat(interval, callback, persistent=True, idstring="", stop=False,
 
     if stop:
         # we pass all args, but only store_key matters if given
-        _TICKER_HANDLER.remove(interval=interval,
-                               callback=callback,
-                               idstring=idstring,
-                               persistent=persistent,
-                               store_key=store_key)
+        _TICKER_HANDLER.remove(
+            interval=interval,
+            callback=callback,
+            idstring=idstring,
+            persistent=persistent,
+            store_key=store_key,
+        )
     else:
-        return _TICKER_HANDLER.add(interval=interval,
-                                   callback=callback,
-                                   idstring=idstring,
-                                   persistent=persistent)
+        return _TICKER_HANDLER.add(
+            interval=interval, callback=callback, idstring=idstring, persistent=persistent
+        )
+
 
 def unrepeat(store_key):
     """
@@ -1626,7 +1632,7 @@ def string_similarity(string1, string2):
     vec2 = [string2.count(v) for v in vocabulary]
     try:
         return float(sum(vec1[i] * vec2[i] for i in range(len(vocabulary)))) / (
-            math.sqrt(sum(v1 ** 2 for v1 in vec1)) * math.sqrt(sum(v2 ** 2 for v2 in vec2))
+            math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2))
         )
     except ZeroDivisionError:
         # can happen if empty-string cmdnames appear for some reason.
@@ -1914,8 +1920,8 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
             # one line per row, output directly since this is trivial
             # we use rstrip here to remove extra spaces added by sep
             return [
-                crop(element.rstrip(), width) + " " \
-                     * max(0, width - display_len((element.rstrip())))
+                crop(element.rstrip(), width)
+                + " " * max(0, width - display_len((element.rstrip())))
                 for iel, element in enumerate(elements)
             ]
 
@@ -2105,18 +2111,20 @@ class lazy_property:
         """Protect against setting"""
         handlername = self.__name__
         raise AttributeError(
-            _("{obj}.{handlername} is a handler and can't be set directly. "
-              "To add values, use `{obj}.{handlername}.add()` instead.").format(
-                  obj=obj, handlername=handlername)
+            _(
+                "{obj}.{handlername} is a handler and can't be set directly. "
+                "To add values, use `{obj}.{handlername}.add()` instead."
+            ).format(obj=obj, handlername=handlername)
         )
 
     def __delete__(self, obj):
         """Protect against deleting"""
         handlername = self.__name__
         raise AttributeError(
-            _("{obj}.{handlername} is a handler and can't be deleted directly. "
-              "To remove values, use `{obj}.{handlername}.remove()` instead.").format(
-                  obj=obj, handlername=handlername)
+            _(
+                "{obj}.{handlername} is a handler and can't be deleted directly. "
+                "To remove values, use `{obj}.{handlername}.remove()` instead."
+            ).format(obj=obj, handlername=handlername)
         )
 
 
@@ -2549,9 +2557,10 @@ def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
             # ...
 
     """
+
     def _safe_eval(inp):
         if not inp:
-            return ''
+            return ""
         if not isinstance(inp, str):
             # already converted
             return inp
@@ -2568,9 +2577,12 @@ def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
 
         if raise_errors:
             from evennia.utils.funcparser import ParsingError
-            err = (f"Errors converting '{inp}' to python:\n"
-                   f"literal_eval raised {literal_err}\n"
-                   f"simple_eval raised {simple_err}")
+
+            err = (
+                f"Errors converting '{inp}' to python:\n"
+                f"literal_eval raised {literal_err}\n"
+                f"simple_eval raised {simple_err}"
+            )
             raise ParsingError(err)
 
     # handle an incomplete/mixed set of input converters
@@ -2584,9 +2596,9 @@ def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
     if args and arg_converters:
         args = list(args)
         arg_converters = make_iter(arg_converters)
-        for iarg, arg in enumerate(args[:len(arg_converters)]):
+        for iarg, arg in enumerate(args[: len(arg_converters)]):
             converter = arg_converters[iarg]
-            converter = _safe_eval if converter in ('py', 'python') else converter
+            converter = _safe_eval if converter in ("py", "python") else converter
             try:
                 args[iarg] = converter(arg)
             except Exception:
@@ -2595,7 +2607,7 @@ def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
         args = tuple(args)
     if kwarg_converters and isinstance(kwarg_converters, dict):
         for key, converter in kwarg_converters.items():
-            converter = _safe_eval if converter in ('py', 'python') else converter
+            converter = _safe_eval if converter in ("py", "python") else converter
             if key in {**kwargs}:
                 try:
                     kwargs[key] = converter(kwargs[key])
@@ -2674,7 +2686,28 @@ def copy_word_case(base_word, new_word):
     else:
         # WorD - a mix. Handle each character
         maxlen = len(base_word)
-        shared, excess = new_word[:maxlen], new_word[maxlen - 1:]
-        return "".join(char.upper() if base_word[ic].isupper() else char.lower()
-                       for ic, char in enumerate(new_word)) + excess
+        shared, excess = new_word[:maxlen], new_word[maxlen - 1 :]
+        return (
+            "".join(
+                char.upper() if base_word[ic].isupper() else char.lower()
+                for ic, char in enumerate(new_word)
+            )
+            + excess
+        )
 
+def run_in_main_thread(function_or_method, *args, **kwargs):
+    """
+    Force a callable to execute in the main Evennia thread. This is only relevant when
+    calling code from e.g. web views, which run in a separate threadpool. Use this
+    to avoid race conditions.
+
+    Args:
+        function_or_method (callable): A function or method to fire.
+        *args: Will be passed into the callable.
+        **kwargs: Will be passed into the callable.
+
+    """
+    if _IS_MAIN_THREAD:
+        return function_or_method(*args, **kwargs)
+    else:
+        return threads.blockingCallFromThread(reactor, function_or_method, *args, **kwargs)

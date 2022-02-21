@@ -27,7 +27,7 @@ Each dict is on the form
 HELP_ENTRY_DICTS = [
     {
         "key": "evennia",
-        "aliases": ['ev'],
+        "aliases": ["ev"],
         "category": "General",
         "locks": "read:perm(Developer)",
         "text": """
@@ -51,7 +51,7 @@ HELP_ENTRY_DICTS = [
 
             There is also a discord channel you can find from the sidebard on evennia.com.
 
-        """
+        """,
     },
     {
         "key": "building",
@@ -60,6 +60,6 @@ HELP_ENTRY_DICTS = [
             Evennia comes with a bunch of default building commands. You can
             find a building tutorial in the evennia documentation.
 
-        """
-    }
+        """,
+    },
 ]

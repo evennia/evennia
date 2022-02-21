@@ -15,8 +15,7 @@ from . import utils as adminutils
 class ScriptForm(forms.ModelForm):
 
     db_key = forms.CharField(
-        label = "Name/Key",
-        help_text="Script identifier, shown in listings etc."
+        label="Name/Key", help_text="Script identifier, shown in listings etc."
     )
 
     db_typeclass_path = forms.ChoiceField(
@@ -24,10 +23,12 @@ class ScriptForm(forms.ModelForm):
         help_text="This is the Python-path to the class implementing the actual script functionality. "
         "<BR>If your custom class is not found here, it may not be imported into Evennia yet.",
         choices=lambda: adminutils.get_and_load_typeclasses(
-            parent=ScriptDB, excluded_parents=["evennia.prototypes.prototypes.DbPrototype"])
+            parent=ScriptDB, excluded_parents=["evennia.prototypes.prototypes.DbPrototype"]
+        ),
     )
 
-    db_lock_storage = forms.CharField( label="Locks",
+    db_lock_storage = forms.CharField(
+        label="Locks",
         required=False,
         widget=forms.Textarea(attrs={"cols": "100", "rows": "2"}),
         help_text="In-game lock definition string. If not given, defaults will be used. "
@@ -38,18 +39,14 @@ class ScriptForm(forms.ModelForm):
     db_interval = forms.IntegerField(
         label="Repeat Interval",
         help_text="Optional timer component.<BR>How often to call the Script's<BR>`at_repeat` hook, in seconds."
-        "<BR>Set to 0 to disable."
+        "<BR>Set to 0 to disable.",
     )
     db_repeats = forms.IntegerField(
-        help_text="Only repeat this many times."
-        "<BR>Set to 0 to run indefinitely."
+        help_text="Only repeat this many times." "<BR>Set to 0 to run indefinitely."
     )
-    db_start_delay = forms.BooleanField(
-        help_text="Wait <B>Interval</B> seconds before first call."
-    )
+    db_start_delay = forms.BooleanField(help_text="Wait <B>Interval</B> seconds before first call.")
     db_persistent = forms.BooleanField(
-        label = "Survives reboot",
-        help_text="If unset, a server reboot will remove the timer."
+        label="Survives reboot", help_text="If unset, a server reboot will remove the timer."
     )
 
 
@@ -68,6 +65,7 @@ class ScriptAttributeInline(AttributeInline):
     Inline attribute tags.
 
     """
+
     model = ScriptDB.db_attributes.through
     related_field = "scriptdb"
 
@@ -108,8 +106,8 @@ class ScriptAdmin(admin.ModelAdmin):
                     ("db_key", "db_typeclass_path"),
                     ("db_interval", "db_repeats", "db_start_delay", "db_persistent"),
                     "db_obj",
-                     "db_lock_storage",
-                     "serialized_string"
+                    "db_lock_storage",
+                    "serialized_string",
                 )
             },
         ),
@@ -122,12 +120,12 @@ class ScriptAdmin(admin.ModelAdmin):
 
         """
         from evennia.utils import dbserialize
+
         return str(dbserialize.pack_dbobj(obj))
 
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store this script there."
     )
-
 
     def get_form(self, request, obj=None, **kwargs):
         """

@@ -78,13 +78,13 @@ class AccountChangeForm(UserChangeForm):
     )
 
     is_superuser = forms.BooleanField(
-        label = "Superuser status",
+        label="Superuser status",
         required=False,
         help_text="Superusers bypass all in-game locks and has all "
-                  "permissions without explicitly assigning them. Usually "
-                  "only one superuser (user #1) is needed and only a superuser "
-                  "can create another superuser.<BR>"
-                  "Only Superusers can change the user/group permissions below."
+        "permissions without explicitly assigning them. Usually "
+        "only one superuser (user #1) is needed and only a superuser "
+        "can create another superuser.<BR>"
+        "Only Superusers can change the user/group permissions below.",
     )
 
     def clean_username(self):
@@ -165,11 +165,13 @@ class AccountAttributeInline(AttributeInline):
     model = AccountDB.db_attributes.through
     related_field = "accountdb"
 
+
 class ObjectPuppetInline(admin.StackedInline):
     """
     Inline creation of puppet-Object in Account.
 
     """
+
     from .objects import ObjectCreateForm
 
     verbose_name = "Puppeted Object"
@@ -185,19 +187,26 @@ class ObjectPuppetInline(admin.StackedInline):
                 "fields": (
                     ("db_key", "db_typeclass_path"),
                     ("db_location", "db_home", "db_destination"),
-                     "db_cmdset_storage",
-                     "db_lock_storage",
+                    "db_cmdset_storage",
+                    "db_lock_storage",
                 ),
                 "description": "Object currently puppeted by the account (note that this "
-                               "will go away if account logs out or unpuppets)",
+                "will go away if account logs out or unpuppets)",
             },
         ),
     )
 
     extra = 0
-    readonly_fields = ("db_key", "db_typeclass_path", "db_destination",
-                       "db_location", "db_home", "db_account",
-                       "db_cmdset_storage", "db_lock_storage")
+    readonly_fields = (
+        "db_key",
+        "db_typeclass_path",
+        "db_destination",
+        "db_location",
+        "db_home",
+        "db_account",
+        "db_cmdset_storage",
+        "db_lock_storage",
+    )
 
     # disable adding/deleting this inline - read-only!
     def has_add_permission(self, request, obj=None):
@@ -213,7 +222,15 @@ class AccountAdmin(BaseUserAdmin):
     This is the main creation screen for Users/accounts
 
     """
-    list_display = ("id", "username", "is_staff", "is_superuser", "db_typeclass_path", "db_date_created")
+
+    list_display = (
+        "id",
+        "username",
+        "is_staff",
+        "is_superuser",
+        "db_typeclass_path",
+        "db_date_created",
+    )
     list_display_links = ("id", "username")
     form = AccountChangeForm
     add_form = AccountCreationForm
@@ -277,8 +294,9 @@ class AccountAdmin(BaseUserAdmin):
         from evennia.utils import dbserialize
 
         return str(dbserialize.pack_dbobj(obj))
+
     serialized_string.help_text = (
-        "Copy & paste this string into an Attribute's `value` field to store it there."
+        "Copy & paste this string into an Attribute's `value` field to store this account there."
     )
 
     def puppeted_objects(self, obj):
@@ -289,8 +307,8 @@ class AccountAdmin(BaseUserAdmin):
         return mark_safe(
             ", ".join(
                 '<a href="{url}">{name}</a>'.format(
-                    url=reverse("admin:objects_objectdb_change", args=[obj.id]),
-                    name=obj.db_key)
+                    url=reverse("admin:objects_objectdb_change", args=[obj.id]), name=obj.db_key
+                )
                 for obj in ObjectDB.objects.filter(db_account=obj)
             )
         )
@@ -316,9 +334,7 @@ class AccountAdmin(BaseUserAdmin):
         form = super().get_form(request, obj, **kwargs)
         disabled_fields = set()
         if not request.user.is_superuser:
-            disabled_fields |= {
-                'is_superuser', 'user_permissions', 'user_groups'
-            }
+            disabled_fields |= {"is_superuser", "user_permissions", "user_groups"}
         for field_name in disabled_fields:
             if field_name in form.base_fields:
                 form.base_fields[field_name].disabled = True

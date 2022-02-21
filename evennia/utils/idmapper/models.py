@@ -41,7 +41,7 @@ PROC_MODIFIED_OBJS = WeakValueDictionary()
 _SELF_PID = os.getpid()
 _SERVER_PID, _PORTAL_PID = get_evennia_pids()
 _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and _SELF_PID not in (_SERVER_PID, _PORTAL_PID)
-_IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
+_IS_MAIN_THREAD = threading.current_thread().name == "MainThread"
 
 
 class SharedMemoryModelBase(ModelBase):
@@ -313,6 +313,7 @@ class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
         """
         pk = instance._get_pk_val()
         if pk is not None:
+            new = new or pk not in cls.__dbclass__.__instance_cache__
             cls.__dbclass__.__instance_cache__[pk] = instance
             if new:
                 try:

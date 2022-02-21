@@ -80,6 +80,7 @@ class SSHServerFactory(protocol.ServerFactory):
     This is only to name this better in logs
 
     """
+
     noisy = False
 
     def logPrefix(self):

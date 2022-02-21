@@ -219,8 +219,16 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None, month=None, year
 
 
 def schedule(
-    callback, repeat=False, sec=None, min=None, hour=None, day=None, month=None, year=None,
-    *args, **kwargs
+    callback,
+    repeat=False,
+    sec=None,
+    min=None,
+    hour=None,
+    day=None,
+    month=None,
+    year=None,
+    *args,
+    **kwargs,
 ):
     """
     Call a callback at a given in-game time.

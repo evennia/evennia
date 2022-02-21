@@ -199,3 +199,31 @@ class TestContentHandler(BaseEvenniaTest):
             set(self.room1.contents_get(content_type="character")), set([self.char1, self.char2])
         )
         self.assertEqual(set(self.room1.contents_get(content_type="exit")), set([self.exit]))
+
+    def test_contents_order(self):
+        """Move object from room to room in various ways"""
+        self.assertEqual(
+            self.room1.contents, [self.exit, self.obj1, self.obj2, self.char1, self.char2]
+        )
+        self.assertEqual(self.room2.contents, [])
+
+        # use move_to hook to move obj1
+        self.obj1.move_to(self.room2)
+        self.assertEqual(self.room1.contents, [self.exit, self.obj2, self.char1, self.char2])
+        self.assertEqual(self.room2.contents, [self.obj1])
+
+        # move obj2
+        self.obj2.move_to(self.room2)
+        self.assertEqual(self.room1.contents, [self.exit, self.char1, self.char2])
+        self.assertEqual(self.room2.contents, [self.obj1, self.obj2])
+
+        # move back and forth - it should
+        self.obj1.move_to(self.room1)
+        self.assertEqual(self.room1.contents, [self.exit, self.char1, self.char2, self.obj1])
+        self.obj1.move_to(self.room2)
+        self.assertEqual(self.room2.contents, [self.obj2, self.obj1])
+
+        # use move_to hook
+        self.obj2.move_to(self.room1)
+        self.obj2.move_to(self.room2)
+        self.assertEqual(self.room2.contents, [self.obj1, self.obj2])

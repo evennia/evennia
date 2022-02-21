@@ -16,7 +16,7 @@ from twisted.web import static
 from twisted.application import internet, service
 from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
-from twisted.python.log import ILogObserver
+from twisted.logger import globalLogPublisher
 
 import django
 
@@ -284,9 +284,12 @@ class Evennia:
                 (i, tup[0], tup[1]) for i, tup in enumerate(settings_compare) if i in mismatches
             ):
                 # update the database
-                INFO_DICT["info"] = (
-                    " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..."
-                    % (settings_names[i], prev, curr)
+                INFO_DICT[
+                    "info"
+                ] = " %s:\n '%s' changed to '%s'. Updating unchanged entries in database ..." % (
+                    settings_names[i],
+                    prev,
+                    curr,
                 )
                 if i == 0:
                     ObjectDB.objects.filter(db_cmdset_storage__exact=prev).update(
@@ -344,7 +347,7 @@ class Evennia:
                 # i.e. this is an empty DB that needs populating.
                 INFO_DICT["info"] = " Server started for the first time. Setting defaults."
                 initial_setup.handle_setup()
-            elif last_initial_setup_step not in ('done', -1):
+            elif last_initial_setup_step not in ("done", -1):
                 # last step crashed, so we weill resume from this step.
                 # modules and setup will resume from this step, retrying
                 # the last failed module. When all are finished, the step
@@ -395,7 +398,7 @@ class Evennia:
             mode (str): One of shutdown, reload or reset
 
         """
-        from evennia.objects.models import ObjectDB
+        from evennia.typeclasses.models import TypedObject
 
         # start server time and maintenance task
         self.maintenance_task = LoopingCall(_server_maintenance)
@@ -404,8 +407,11 @@ class Evennia:
         # update eventual changed defaults
         self.update_defaults()
 
-        [o.at_init() for o in ObjectDB.get_all_cached_instances()]
-        [p.at_init() for p in AccountDB.get_all_cached_instances()]
+        # run at_init() on all cached entities on reconnect
+        [
+            [entity.at_init() for entity in typeclass_db.get_all_cached_instances()]
+            for typeclass_db in TypedObject.__subclasses__()
+        ]
 
         # call correct server hook based on start file value
         if mode == "reload":
@@ -416,6 +422,7 @@ class Evennia:
             self.at_server_cold_start()
             logger.log_msg("Evennia Server successfully restarted in 'reset' mode.")
         elif mode == "shutdown":
+            from evennia.objects.models import ObjectDB
             self.at_server_cold_start()
             # clear eventual lingering session storages
             ObjectDB.objects.clear_all_sessids()
@@ -640,15 +647,17 @@ except OperationalError:
 # what to execute from.
 application = service.Application("Evennia")
 
-if "--nodaemon" not in sys.argv:
-    # custom logging, but only if we are not running in interactive mode
+
+if "--nodaemon" not in sys.argv and "test" not in sys.argv:
+    # activate logging for interactive/testing mode
     logfile = logger.WeeklyLogFile(
         os.path.basename(settings.SERVER_LOG_FILE),
         os.path.dirname(settings.SERVER_LOG_FILE),
         day_rotation=settings.SERVER_LOG_DAY_ROTATION,
         max_size=settings.SERVER_LOG_MAX_SIZE,
     )
-    application.setComponent(ILogObserver, logger.ServerLogObserver(logfile).emit)
+    globalLogPublisher.addObserver(logger.GetServerLogObserver()(logfile))
+
 
 # The main evennia server program. This sets up the database
 # and is where we store all the other services.

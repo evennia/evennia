@@ -29,7 +29,7 @@ object in various ways. Consider a "Tree" object with a cmdset defining the comm
 
 This page goes into full detail about how to use Commands. To fully use them you must also read the
 page detailing [Command Sets](./Command-Sets.md).  There is also a step-by-step
-[Adding Command Tutorial](../Howto/Starting/Part1/Adding-Commands.md) that will get you started quickly without the
+[Adding Command Tutorial](../Howtos/Beginner-Tutorial/Part1/Adding-Commands.md) that will get you started quickly without the
 extra explanations.
 
 ## Defining Commands
@@ -392,7 +392,7 @@ class CmdWait(Command):
 
     def func(self):
         """Command execution."""
-        self.msg("Starting to wait ...")
+        self.msg("Beginner-Tutorial to wait ...")
         yield 5
         self.msg("... This shows after 5 seconds. Waiting ...")
         yield 2
@@ -484,7 +484,7 @@ display the "Huh?" error message.
 matches.
 - User is not allowed to execute the command (`syscmdkeys.CMD_NOPERM`) - Default is to display the
 "Huh?" error message.
-- Channel (`syscmdkeys.CMD_CHANNEL`) - This is a [Channel](./Communications.md) name of a channel you are
+- Channel (`syscmdkeys.CMD_CHANNEL`) - This is a [Channel](./Channels.md) name of a channel you are
 subscribing to - Default is to relay the command's argument to that channel. Such commands are
 created by the Comm system on the fly depending on your subscriptions.
 - New session connection (`syscmdkeys.CMD_LOGINSTART`). This command name should be put in the

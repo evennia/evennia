@@ -37,8 +37,9 @@ DUMMYSESSION = namedtuple("DummySession", ["sessid"])(0)
 # Portal-SessionHandler class
 # -------------------------------------------------------------
 
-DOS_PROTECTION_MSG = _("{servername} DoS protection is active."
-                       "You are queued to connect in {num} seconds ...")
+DOS_PROTECTION_MSG = _(
+    "{servername} DoS protection is active." "You are queued to connect in {num} seconds ..."
+)
 
 
 class PortalSessionHandler(SessionHandler):
@@ -117,9 +118,12 @@ class PortalSessionHandler(SessionHandler):
             if len(_CONNECTION_QUEUE) > 1:
                 session.data_out(
                     text=(
-                        (DOS_PROTECTION_MSG.format(
-                         servername=settings.SERVERNAME,
-                         num=len(_CONNECTION_QUEUE) * _MIN_TIME_BETWEEN_CONNECTS),),
+                        (
+                            DOS_PROTECTION_MSG.format(
+                                servername=settings.SERVERNAME,
+                                num=len(_CONNECTION_QUEUE) * _MIN_TIME_BETWEEN_CONNECTS,
+                            ),
+                        ),
                         {},
                     )
                 )
@@ -442,8 +446,8 @@ class PortalSessionHandler(SessionHandler):
             self.portal.amp_protocol.send_MsgPortal2Server(session, **kwargs)
 
             # eventual local echo (text input only)
-            if 'text' in kwargs and session.protocol_flags.get('LOCALECHO', False):
-                self.data_out(session, text=kwargs['text'])
+            if "text" in kwargs and session.protocol_flags.get("LOCALECHO", False):
+                self.data_out(session, text=kwargs["text"])
 
     def data_out(self, session, **kwargs):
         """

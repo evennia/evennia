@@ -27,28 +27,30 @@ class AttributeForm(forms.ModelForm):
     """
 
     attr_key = forms.CharField(
-        label="Attribute Name", required=False,
-        help_text="The main identifier of the Attribute. For Nicks, this is the pattern-matching string."
+        label="Attribute Name",
+        required=False,
+        help_text="The main identifier of the Attribute. For Nicks, this is the pattern-matching string.",
     )
     attr_category = forms.CharField(
         label="Category",
         help_text="Categorization. Unset (default) gives a category of `None`, which is "
-                  "is what is searched with e.g. `obj.db.attrname`. For 'nick'-type attributes, this is usually "
-                  "'inputline' or 'channel'.",
-        required=False, max_length=128
+        "is what is searched with e.g. `obj.db.attrname`. For 'nick'-type attributes, this is usually "
+        "'inputline' or 'channel'.",
+        required=False,
+        max_length=128,
     )
     attr_value = PickledFormField(
         label="Value",
         help_text="Value to pickle/save. Db-objects are serialized as a list "
         "containing `__packed_dbobj__` (they can't easily be added from here). Nicks "
         "store their pattern-replacement here.",
-        required=False
+        required=False,
     )
     attr_type = forms.ChoiceField(
         label="Type",
         choices=[(None, "-"), ("nick", "nick")],
         help_text="Unset for regular Attributes, 'nick' for Nick-replacement usage.",
-        required=False
+        required=False,
     )
     attr_lockstring = forms.CharField(
         label="Locks",
@@ -62,10 +64,10 @@ class AttributeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """
-         If we have an Attribute, then we'll prepopulate our instance with the fields we'd expect it
-         to have based on the Attribute. attr_key, attr_category, attr_value, attr_type,
-         and attr_lockstring all refer to the corresponding Attribute fields. The initial data of the form fields will
-         similarly be populated.
+        If we have an Attribute, then we'll prepopulate our instance with the fields we'd expect it
+        to have based on the Attribute. attr_key, attr_category, attr_value, attr_type,
+        and attr_lockstring all refer to the corresponding Attribute fields. The initial data of the form fields will
+        similarly be populated.
 
         """
         super().__init__(*args, **kwargs)

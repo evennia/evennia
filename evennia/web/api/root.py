@@ -11,7 +11,9 @@ class EvenniaAPIRoot(routers.APIRootView):
     Root of the Evennia API tree.
 
     """
+
     pass
+
 
 class APIRootRouter(routers.DefaultRouter):
     APIRootView = EvenniaAPIRoot

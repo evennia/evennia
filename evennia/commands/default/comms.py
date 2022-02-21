@@ -20,16 +20,15 @@ from evennia.utils.evmenu import ask_yes_no
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 CHANNEL_DEFAULT_TYPECLASS = class_from_module(
-    settings.BASE_CHANNEL_TYPECLASS, fallback=settings.FALLBACK_CHANNEL_TYPECLASS)
+    settings.BASE_CHANNEL_TYPECLASS, fallback=settings.FALLBACK_CHANNEL_TYPECLASS
+)
 
 
 # limit symbol import for API
 __all__ = (
     "CmdChannel",
     "CmdObjectChannel",
-
     "CmdPage",
-
     "CmdIRC2Chan",
     "CmdIRCStatus",
     "CmdRSS2Chan",
@@ -207,6 +206,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         ban mychannel1,mychannel2= EvilUser : Was banned for spamming.
 
     """
+
     key = "@channel"
     aliases = ["@chan", "@channels"]
     help_category = "Comms"
@@ -215,8 +215,25 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
     # the manage: lock  controls access to /create/destroy/desc/lock/unlock switches
     locks = "cmd:not pperm(channel_banned);admin:all();manage:all();changelocks:perm(Admin)"
     switch_options = (
-        "list", "all", "history", "sub", "unsub", "mute", "unmute", "alias", "unalias",
-        "create", "destroy", "desc", "lock", "unlock", "boot", "ban", "unban", "who",)
+        "list",
+        "all",
+        "history",
+        "sub",
+        "unsub",
+        "mute",
+        "unmute",
+        "alias",
+        "unalias",
+        "create",
+        "destroy",
+        "desc",
+        "lock",
+        "unlock",
+        "boot",
+        "ban",
+        "unban",
+        "who",
+    )
     # disable this in child command classes if wanting on-character channels
     account_caller = True
 
@@ -253,17 +270,24 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             channels = CHANNEL_DEFAULT_TYPECLASS.objects.channel_search(channelname, exact=exact)
 
         # check permissions
-        channels = [channel for channel in channels
-                    if channel.access(caller, 'listen') or channel.access(caller, 'control')]
+        channels = [
+            channel
+            for channel in channels
+            if channel.access(caller, "listen") or channel.access(caller, "control")
+        ]
 
         if handle_errors:
             if not channels:
-                self.msg(f"No channel found matching '{channelname}' "
-                         "(could also be due to missing access).")
+                self.msg(
+                    f"No channel found matching '{channelname}' "
+                    "(could also be due to missing access)."
+                )
                 return None
             elif len(channels) > 1:
-                self.msg("Multiple possible channel matches/alias for "
-                         "'{channelname}':\n" + ", ".join(chan.key for chan in channels))
+                self.msg(
+                    "Multiple possible channel matches/alias for "
+                    "'{channelname}':\n" + ", ".join(chan.key for chan in channels)
+                )
                 return None
             return channels[0]
         else:
@@ -312,6 +336,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             return self.msg(
                 "".join(line.split("[-]", 1)[1] if "[-]" in line else line for line in lines)
             )
+
         # asynchronously tail the log file
         tail_log_file(log_file, start_index, 20, callback=send_msg)
 
@@ -491,7 +516,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         lockstring = "send:all();listen:all();control:id(%s)" % caller.id
 
         new_chan = create.create_channel(
-            name, aliases=aliases, desc=description, locks=lockstring, typeclass=typeclass)
+            name, aliases=aliases, desc=description, locks=lockstring, typeclass=typeclass
+        )
         self.sub_to_channel(new_chan)
         return new_chan, ""
 
@@ -514,14 +540,14 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
         channel_key = channel.key
         if message is None:
-            message = (f"|rChannel {channel_key} is being destroyed. "
-                       "Make sure to clean any channel aliases.|n")
+            message = (
+                f"|rChannel {channel_key} is being destroyed. "
+                "Make sure to clean any channel aliases.|n"
+            )
         if message:
             channel.msg(message, senders=caller, bypass_mute=True)
         channel.delete()
-        logger.log_sec(
-            "Channel {} was deleted by {}".format(channel_key, caller)
-        )
+        logger.log_sec("Channel {} was deleted by {}".format(channel_key, caller))
 
     def set_lock(self, channel, lockstring):
         """
@@ -610,8 +636,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if not quiet:
             channel.msg(f"{target.key} was booted from channel by {self.caller.key}.{reason}")
 
-        logger.log_sec(f"Channel Boot: {target} (Channel: {channel}, "
-                       f"Reason: {reason.strip()}, Caller: {self.caller}")
+        logger.log_sec(
+            f"Channel Boot: {target} (Channel: {channel}, "
+            f"Reason: {reason.strip()}, Caller: {self.caller}"
+        )
         return True, ""
 
     def ban_user(self, channel, target, quiet=False, reason=""):
@@ -684,7 +712,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         caller = self.caller
         mute_list = list(channel.mutelist)
         online_list = channel.subscriptions.online()
-        if channel.access(caller, 'control'):
+        if channel.access(caller, "control"):
             # for those with channel control, show also offline users
             all_subs = list(channel.subscriptions.all())
         else:
@@ -694,8 +722,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         who_list = []
         for subscriber in all_subs:
             name = subscriber.get_display_name(caller)
-            conditions = ("muting" if subscriber in mute_list else "",
-                          "offline" if subscriber not in online_list else "")
+            conditions = (
+                "muting" if subscriber in mute_list else "",
+                "offline" if subscriber not in online_list else "",
+            )
             conditions = [cond for cond in conditions if cond]
             cond_text = "(" + ", ".join(conditions) + ")" if conditions else ""
             who_list.append(f"{name}{cond_text}")
@@ -743,7 +773,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             "locks",
             "description",
             align="l",
-            maxwidth=_DEFAULT_WIDTH
+            maxwidth=_DEFAULT_WIDTH,
         )
         for chan in subscribed:
 
@@ -756,14 +786,14 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             my_aliases = ", ".join(self.get_channel_aliases(chan))
             comtable.add_row(
                 *(
-                  chanid,
-                  "{key}{aliases}".format(
-                      key=chan.key,
-                      aliases=";"+ ";".join(chan.aliases.all()) if chan.aliases.all() else ""
-                  ),
-                  my_aliases,
-                  locks,
-                  chan.db.desc
+                    chanid,
+                    "{key}{aliases}".format(
+                        key=chan.key,
+                        aliases=";" + ";".join(chan.aliases.all()) if chan.aliases.all() else "",
+                    ),
+                    my_aliases,
+                    locks,
+                    chan.db.desc,
                 )
             )
         return comtable
@@ -799,11 +829,14 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 substatus = "|gYes|n"
             my_aliases = ", ".join(self.get_channel_aliases(chan))
             comtable.add_row(
-                *(substatus,
-                  chan.key,
-                  ",".join(chan.aliases.all()) if chan.aliases.all() else "",
-                  my_aliases,
-                  chan.db.desc))
+                *(
+                    substatus,
+                    chan.key,
+                    ",".join(chan.aliases.all()) if chan.aliases.all() else "",
+                    my_aliases,
+                    chan.db.desc,
+                )
+            )
         comtable.reformat_column(0, width=8)
 
         return comtable
@@ -818,16 +851,17 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         switches = self.switches
         channel_names = [name for name in self.lhslist if name]
 
-        #from evennia import set_trace;set_trace()
+        # from evennia import set_trace;set_trace()
 
-        if 'all' in switches:
+        if "all" in switches:
             # show all available channels
             subscribed, available = self.list_channels()
             table = self.display_all_channels(subscribed, available)
 
             self.msg(
                 "\n|wAvailable channels|n (use no argument to "
-                f"only show your subscriptions)\n{table}")
+                f"only show your subscriptions)\n{table}"
+            )
             return
 
         if not channel_names:
@@ -835,15 +869,16 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             subscribed, _ = self.list_channels()
             table = self.display_subbed_channels(subscribed)
 
-            self.msg("\n|wChannel subscriptions|n "
-                     f"(use |w/all|n to see all available):\n{table}")
+            self.msg(
+                "\n|wChannel subscriptions|n " f"(use |w/all|n to see all available):\n{table}"
+            )
             return
 
         if not self.switches and not self.args:
             self.msg("Usage[/switches]: channel [= message]")
             return
 
-        if 'create' in switches:
+        if "create" in switches:
             # create a new channel
 
             if not self.access(caller, "manage"):
@@ -865,7 +900,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg(err)
             return
 
-        if 'unalias' in switches:
+        if "unalias" in switches:
             # remove a personal alias (no channel needed)
             alias = self.args.strip()
             if not alias:
@@ -884,11 +919,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # channels without a space in their name), we need to check if the
             # first 'channel name' is in fact 'channelname text'
             no_rhs_channel_name = self.args.split(" ", 1)[0]
-            possible_lhs_message = self.args[len(no_rhs_channel_name):]
-            if possible_lhs_message.strip() == '=':
+            possible_lhs_message = self.args[len(no_rhs_channel_name) :]
+            if possible_lhs_message.strip() == "=":
                 possible_lhs_message = ""
             channel_names.append(no_rhs_channel_name)
-
 
         channels = []
         errors = []
@@ -897,16 +931,20 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # 'listen/control' perms.
             found_channels = self.search_channel(channel_name, exact=False, handle_errors=False)
             if not found_channels:
-                errors.append(f"No channel found matching '{channel_name}' "
-                              "(could also be due to missing access).")
+                errors.append(
+                    f"No channel found matching '{channel_name}' "
+                    "(could also be due to missing access)."
+                )
             elif len(found_channels) > 1:
-                errors.append("Multiple possible channel matches/alias for "
-                              "'{channel_name}':\n" + ", ".join(chan.key for chan in found_channels))
+                errors.append(
+                    "Multiple possible channel matches/alias for "
+                    "'{channel_name}':\n" + ", ".join(chan.key for chan in found_channels)
+                )
             else:
                 channels.append(found_channels[0])
 
         if not channels:
-            self.msg('\n'.join(errors))
+            self.msg("\n".join(errors))
             return
 
         # we have at least one channel at this point
@@ -925,30 +963,35 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 if channel in subscribed:
                     table = self.display_subbed_channels([channel])
                     header = f"Channel |w{channel.key}|n"
-                    self.msg(f"{header}\n(use |w{channel.key} <msg>|n (or a channel-alias) "
-                             f"to chat and the 'channel' command "
-                             f"to customize)\n{table}")
+                    self.msg(
+                        f"{header}\n(use |w{channel.key} <msg>|n (or a channel-alias) "
+                        f"to chat and the 'channel' command "
+                        f"to customize)\n{table}"
+                    )
                 elif channel in available:
                     table = self.display_all_channels([], [channel])
                     self.msg(
                         "\n|wNot subscribed to this channel|n (use /list to "
-                        f"show all subscriptions)\n{table}")
+                        f"show all subscriptions)\n{table}"
+                    )
             return
 
-        if 'history' in switches or 'hist' in switches:
+        if "history" in switches or "hist" in switches:
             # view channel history
 
             index = self.rhs or 0
             try:
                 index = max(0, int(index))
             except ValueError:
-                self.msg("The history index (describing how many lines to go back) "
-                         "must be an integer >= 0.")
+                self.msg(
+                    "The history index (describing how many lines to go back) "
+                    "must be an integer >= 0."
+                )
                 return
             self.get_channel_history(channel, start_index=index)
             return
 
-        if 'sub' in switches:
+        if "sub" in switches:
             # subscribe to a channel
             aliases = []
             if self.rhs:
@@ -957,26 +1000,29 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             if success:
                 for alias in aliases:
                     self.add_alias(channel, alias)
-                alias_txt = ', '.join(aliases)
-                alias_txt = f" using alias(es) {alias_txt}" if aliases else ''
-                self.msg("You are now subscribed "
-                         f"to the channel {channel.key}{alias_txt}. Use /alias to "
-                         "add additional aliases for referring to the channel.")
+                alias_txt = ", ".join(aliases)
+                alias_txt = f" using alias(es) {alias_txt}" if aliases else ""
+                self.msg(
+                    "You are now subscribed "
+                    f"to the channel {channel.key}{alias_txt}. Use /alias to "
+                    "add additional aliases for referring to the channel."
+                )
             else:
                 self.msg(err)
             return
 
-        if 'unsub' in switches:
+        if "unsub" in switches:
             # un-subscribe from a channel
             success, err = self.unsub_from_channel(channel)
             if success:
-                self.msg(f"You un-subscribed from channel {channel.key}. "
-                         "All aliases were cleared.")
+                self.msg(
+                    f"You un-subscribed from channel {channel.key}. " "All aliases were cleared."
+                )
             else:
                 self.msg(err)
             return
 
-        if 'alias' in switches:
+        if "alias" in switches:
             # create a new personal alias for a channel
             alias = self.rhs
             if not alias:
@@ -986,7 +1032,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             self.msg(f"Added/updated your alias '{alias}' for channel {channel.key}.")
             return
 
-        if 'mute' in switches:
+        if "mute" in switches:
             # mute a given channel
             success, err = self.mute_channel(channel)
             if success:
@@ -995,7 +1041,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg(err)
             return
 
-        if 'unmute' in switches:
+        if "unmute" in switches:
             # unmute a given channel
             success, err = self.unmute_channel(channel)
             if success:
@@ -1004,7 +1050,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg(err)
             return
 
-        if 'destroy' in switches or 'delete' in switches:
+        if "destroy" in switches or "delete" in switches:
             # destroy a channel we control
 
             if not self.access(caller, "manage"):
@@ -1028,10 +1074,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 "remove all users' aliases. {options}?",
                 yes_action=_perform_delete,
                 no_action="Aborted.",
-                default="N"
+                default="N",
             )
 
-        if 'desc' in switches:
+        if "desc" in switches:
             # set channel description
 
             if not self.access(caller, "manage"):
@@ -1051,7 +1097,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             self.set_desc(channel, desc)
             self.msg("Updated channel description.")
 
-        if 'lock' in switches:
+        if "lock" in switches:
             # add a lockstring to channel
 
             if not self.access(caller, "changelocks"):
@@ -1075,7 +1121,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg(f"Could not add/update lock: {err}")
             return
 
-        if 'unlock' in switches:
+        if "unlock" in switches:
             # remove/update lockstring from channel
 
             if not self.access(caller, "changelocks"):
@@ -1099,7 +1145,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 self.msg(f"Could not remove lock: {err}")
             return
 
-        if 'boot' in switches:
+        if "boot" in switches:
             # boot a user from channel(s)
 
             if not self.access(caller, "admin"):
@@ -1134,8 +1180,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                         self.msg(f"Cannot boot {target.key} from channel {chan.key}: {err}")
 
             channames = ", ".join(chan.key for chan in channels)
-            reasonwarn = (". Also note that your reason will be echoed to the channel"
-                          if reason else '')
+            reasonwarn = (
+                ". Also note that your reason will be echoed to the channel" if reason else ""
+            )
             ask_yes_no(
                 caller,
                 prompt=f"Are you sure you want to boot user {target.key} from "
@@ -1143,11 +1190,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 "{options}?",
                 yes_action=_boot_user,
                 no_action="Aborted.",
-                default="Y"
+                default="Y",
             )
             return
 
-        if 'ban' in switches:
+        if "ban" in switches:
             # ban a user from channel(s)
 
             if not self.access(caller, "admin"):
@@ -1161,8 +1208,10 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                     self.msg(f"You need 'control'-access to view bans on channel {channel.key}")
                     return
 
-                bans = ["Channel bans "
-                        "(to ban, use channel/ban channel[,channel,...] = username [:reason]"]
+                bans = [
+                    "Channel bans "
+                    "(to ban, use channel/ban channel[,channel,...] = username [:reason]"
+                ]
                 bans.extend(self.channel_list_bans(channel))
                 self.msg("\n".join(bans))
                 return
@@ -1191,8 +1240,9 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                         self.msg(f"Cannot boot {target.key} from channel {chan.key}: {err}")
 
             channames = ", ".join(chan.key for chan in channels)
-            reasonwarn = (". Also note that your reason will be echoed to the channel"
-                          if reason else '')
+            reasonwarn = (
+                ". Also note that your reason will be echoed to the channel" if reason else ""
+            )
             ask_yes_no(
                 caller,
                 f"Are you sure you want to ban user {target.key} from "
@@ -1203,7 +1253,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             )
             return
 
-        if 'unban' in switches:
+        if "unban" in switches:
             # unban a previously banned user from channel
 
             if not self.access(caller, "admin"):
@@ -1414,7 +1464,6 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                         receiver=receiver,
                         message=page.message,
                     )
-
                 )
             lastpages = "\n ".join(listing)
 
@@ -1464,6 +1513,7 @@ def _list_bots(cmd):
         return table
     else:
         return "No irc bots found."
+
 
 class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
     """
@@ -1578,7 +1628,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             irc_port=irc_port,
             irc_ssl=irc_ssl,
         )
-        self.msg("Connection created. Starting IRC bot.")
+        self.msg("Connection created. Beginner-Tutorial IRC bot.")
 
 
 class CmdIRCStatus(COMMAND_DEFAULT_CLASS):

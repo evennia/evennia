@@ -156,8 +156,10 @@ class RandomStringGenerator:
             self._find_elements(regex)
 
     def __repr__(self):
-        return "<evennia.contrib.utils.random_string_generator.RandomStringGenerator for {}>".format(
-            self.name
+        return (
+            "<evennia.contrib.utils.random_string_generator.RandomStringGenerator for {}>".format(
+                self.name
+            )
         )
 
     def _get_script(self):
@@ -169,7 +171,8 @@ class RandomStringGenerator:
             script = ScriptDB.objects.get(db_key="generator_script")
         except ScriptDB.DoesNotExist:
             script = create_script(
-                "evennia.contrib.utils.random_string_generator.RandomStringGeneratorScript")
+                "evennia.contrib.utils.random_string_generator.RandomStringGeneratorScript"
+            )
 
         type(self).script = script
         return script

@@ -667,8 +667,8 @@ class CraftingRecipe(CraftingRecipeBase):
             consumable_kwargs = {}
 
         if location:
-            tool_kwargs['location'] = location
-            consumable_kwargs['location'] = location
+            tool_kwargs["location"] = location
+            consumable_kwargs["location"] = location
 
         tool_key = tool_kwargs.pop("key", None)
         cons_key = consumable_kwargs.pop("key", None)
@@ -966,6 +966,7 @@ class CmdCraft(Command):
         things in the current location, like a furnace, windmill or anvil.
 
     """
+
     key = "craft"
     locks = "cmd:all()"
     help_category = "General"

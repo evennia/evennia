@@ -27,19 +27,19 @@ except AttributeError:
     exit_override = {}
 
 room_prototype = {
-    'prototype_key': 'xyz_room',
-    'typeclass': 'evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom',
-    'prototype_tags': ("xyzroom", ),
-    'key': "A room",
-    'desc': "An empty room."
+    "prototype_key": "xyz_room",
+    "typeclass": "evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom",
+    "prototype_tags": ("xyzroom",),
+    "key": "A room",
+    "desc": "An empty room.",
 }
 room_prototype.update(room_override)
 
 exit_prototype = {
-    'prototype_key': 'xyz_exit',
-    'typeclass': 'evennia.contrib.grid.xyzgrid.xyzroom.XYZExit',
-    'prototype_tags': ("xyzexit", ),
-    'desc': "An exit."
+    "prototype_key": "xyz_exit",
+    "typeclass": "evennia.contrib.grid.xyzgrid.xyzroom.XYZExit",
+    "prototype_tags": ("xyzexit",),
+    "desc": "An exit.",
 }
 exit_prototype.update(exit_override)
 

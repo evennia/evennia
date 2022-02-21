@@ -593,13 +593,15 @@ class CmdService(COMMAND_DEFAULT_CLASS):
                 if delmode:
                     caller.msg("You cannot remove a core Evennia service (named 'Evennia*').")
                     return
-                string = ("|RYou seem to be shutting down a core Evennia "
-                          "service (named 'Evennia*').\nNote that stopping "
-                          "some TCP port services will *not* disconnect users "
-                          "*already* connected on those ports, but *may* "
-                          "instead cause spurious errors for them.\nTo safely "
-                          "and permanently remove ports, change settings file "
-                          "and restart the server.|n\n")
+                string = (
+                    "|RYou seem to be shutting down a core Evennia "
+                    "service (named 'Evennia*').\nNote that stopping "
+                    "some TCP port services will *not* disconnect users "
+                    "*already* connected on those ports, but *may* "
+                    "instead cause spurious errors for them.\nTo safely "
+                    "and permanently remove ports, change settings file "
+                    "and restart the server.|n\n"
+                )
                 caller.msg(string)
 
             if delmode:
@@ -611,9 +613,11 @@ class CmdService(COMMAND_DEFAULT_CLASS):
                 try:
                     service.stopService()
                 except Exception as err:
-                    caller.msg(f"|rErrors were reported when stopping this service{err}.\n"
-                               "If there are remaining problems, try reloading "
-                               "or rebooting the server.")
+                    caller.msg(
+                        f"|rErrors were reported when stopping this service{err}.\n"
+                        "If there are remaining problems, try reloading "
+                        "or rebooting the server."
+                    )
                 caller.msg("|g... Stopped service '%s'.|n" % self.args)
             return
 
@@ -622,13 +626,15 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             if service.running:
                 caller.msg("That service is already running.")
                 return
-            caller.msg(f"Starting service '{self.args}' ...")
+            caller.msg(f"Beginner-Tutorial service '{self.args}' ...")
             try:
                 service.startService()
             except Exception as err:
-                caller.msg(f"|rErrors were reported when starting this service{err}.\n"
-                           "If there are remaining problems, try reloading the server, changing the "
-                           "settings if it's a non-standard service.|n")
+                caller.msg(
+                    f"|rErrors were reported when starting this service{err}.\n"
+                    "If there are remaining problems, try reloading the server, changing the "
+                    "settings if it's a non-standard service.|n"
+                )
             caller.msg("|gService started.|n")
 
 
@@ -973,8 +979,8 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
     @staticmethod
     def coll_date_func(task):
         """Replace regex characters in date string and collect deferred function name."""
-        t_comp_date = str(task[0]).replace('-', '/')
-        t_func_name = str(task[1]).split(' ')
+        t_comp_date = str(task[0]).replace("-", "/")
+        t_func_name = str(task[1]).split(" ")
         t_func_mem_ref = t_func_name[3] if len(t_func_name) >= 4 else None
         return t_comp_date, t_func_mem_ref
 
@@ -994,19 +1000,19 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
         # verify manipulating the correct task
         task_args = _TASK_HANDLER.tasks.get(task_id, False)
         if not task_args:  # check if the task is still active
-            self.msg('Task completed while waiting for input.')
+            self.msg("Task completed while waiting for input.")
             return
         else:
             # make certain a task with matching IDs has not been created
             t_comp_date, t_func_mem_ref = self.coll_date_func(task_args)
             if self.t_comp_date != t_comp_date or self.t_func_mem_ref != t_func_mem_ref:
-                self.msg('Task completed while waiting for input.')
+                self.msg("Task completed while waiting for input.")
                 return
 
         # Do the action requested by command caller
         action_return = self.task_action()
-        self.msg(f'{self.action_request} request completed.')
-        self.msg(f'The task function {self.action_request} returned: {action_return}')
+        self.msg(f"{self.action_request} request completed.")
+        self.msg(f"The task function {self.action_request} returned: {action_return}")
 
     def func(self):
         # get a reference of the global task handler
@@ -1015,9 +1021,9 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
             from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
         # handle no tasks active.
         if not _TASK_HANDLER.tasks:
-            self.msg('There are no active tasks.')
+            self.msg("There are no active tasks.")
             if self.switches or self.args:
-                self.msg('Likely the task has completed and been removed.')
+                self.msg("Likely the task has completed and been removed.")
             return
 
         # handle caller's request to manipulate a task(s)
@@ -1033,8 +1039,8 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
             # if the argument is a task id, proccess the action on a single task
             if arg_is_id:
 
-                err_arg_msg = 'Switch and task ID are required when manipulating a task.'
-                task_comp_msg = 'Task completed while processing request.'
+                err_arg_msg = "Switch and task ID are required when manipulating a task."
+                task_comp_msg = "Task completed while processing request."
 
                 # handle missing arguments or switches
                 if not self.switches and self.lhs:
@@ -1047,14 +1053,16 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
 
                 # handle task no longer existing
                 if not task.exists():
-                    self.msg(f'Task {task_id} does not exist.')
+                    self.msg(f"Task {task_id} does not exist.")
                     return
 
                 # get a reference of the function caller requested
                 switch_action = getattr(task, action_request, False)
                 if not switch_action:
-                    self.msg(f'{self.switches[0]}, is not an acceptable task action or ' \
-                             f'{task_comp_msg.lower()}')
+                    self.msg(
+                        f"{self.switches[0]}, is not an acceptable task action or "
+                        f"{task_comp_msg.lower()}"
+                    )
 
                 # verify manipulating the correct task
                 if task_id in _TASK_HANDLER.tasks:
@@ -1064,25 +1072,29 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
                         return
                     else:
                         t_comp_date, t_func_mem_ref = self.coll_date_func(task_args)
-                        t_func_name = str(task_args[1]).split(' ')
+                        t_func_name = str(task_args[1]).split(" ")
                         t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
 
                 if task.exists():  # make certain the task has not been called yet.
-                    prompt = (f'{action_request.capitalize()} task {task_id} with completion date '
-                              f'{t_comp_date} ({t_func_name}) {{options}}?')
-                    no_msg = f'No {action_request} processed.'
+                    prompt = (
+                        f"{action_request.capitalize()} task {task_id} with completion date "
+                        f"{t_comp_date} ({t_func_name}) {{options}}?"
+                    )
+                    no_msg = f"No {action_request} processed."
                     # record variables for use in do_task_action method
                     self.task_id = task_id
                     self.t_comp_date = t_comp_date
                     self.t_func_mem_ref = t_func_mem_ref
                     self.task_action = switch_action
                     self.action_request = action_request
-                    ask_yes_no(self.caller,
-                               prompt=prompt,
-                               yes_action=self.do_task_action,
-                               no_action=no_msg,
-                               default="Y",
-                               allow_abort=True)
+                    ask_yes_no(
+                        self.caller,
+                        prompt=prompt,
+                        yes_action=self.do_task_action,
+                        no_action=no_msg,
+                        default="Y",
+                        allow_abort=True,
+                    )
                     return True
                 else:
                     self.msg(task_comp_msg)
@@ -1102,7 +1114,7 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
 
                 # call requested action on all tasks with the function name
                 for task_id, task_args in current_tasks.items():
-                    t_func_name = str(task_args[1]).split(' ')
+                    t_func_name = str(task_args[1]).split(" ")
                     t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
                     # skip this task if it is not for the function desired
                     if arg_func_name != t_func_name:
@@ -1112,33 +1124,39 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
                     switch_action = getattr(task, action_request, False)
                     if switch_action:
                         action_return = switch_action()
-                        self.msg(f'Task action {action_request} completed on task ID {task_id}.')
-                        self.msg(f'The task function {action_request} returned: {action_return}')
+                        self.msg(f"Task action {action_request} completed on task ID {task_id}.")
+                        self.msg(f"The task function {action_request} returned: {action_return}")
 
                 # provide a message if not tasks of the function name was found
                 if not name_match_found:
-                    self.msg(f'No tasks deferring function name {arg_func_name} found.')
+                    self.msg(f"No tasks deferring function name {arg_func_name} found.")
                     return
                 return True
 
         # check if an maleformed request was created
         elif self.switches or self.lhs:
-            self.msg('Task command misformed.')
-            self.msg('Proper format tasks[/switch] [function name or task id]')
+            self.msg("Task command misformed.")
+            self.msg("Proper format tasks[/switch] [function name or task id]")
             return
 
         # No task manupilation requested, build a table of tasks and display it
         # get the width of screen in characters
         width = self.client_width()
         # create table header and list to hold tasks data and actions
-        tasks_header = ('Task ID', 'Completion Date', 'Function', 'Arguments', 'KWARGS',
-                        'persistent')
+        tasks_header = (
+            "Task ID",
+            "Completion Date",
+            "Function",
+            "Arguments",
+            "KWARGS",
+            "persistent",
+        )
         # empty list of lists, the size of the header
         tasks_list = [list() for i in range(len(tasks_header))]
         for task_id, task in _TASK_HANDLER.tasks.items():
             # collect data from the task
             t_comp_date, t_func_mem_ref = self.coll_date_func(task)
-            t_func_name = str(task[1]).split(' ')
+            t_func_name = str(task[1]).split(" ")
             t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
             t_args = str(task[2])
             t_kwargs = str(task[3])
@@ -1148,8 +1166,9 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
             for i in range(len(tasks_header)):
                 tasks_list[i].append(task_data[i])
         # create and display the table
-        tasks_table = EvTable(*tasks_header, table=tasks_list, maxwidth=width, border='cells',
-                              align='center')
-        actions = (f'/{switch}' for switch in self.switch_options)
+        tasks_table = EvTable(
+            *tasks_header, table=tasks_list, maxwidth=width, border="cells", align="center"
+        )
+        actions = (f"/{switch}" for switch in self.switch_options)
         helptxt = f"\nActions: {iter_to_str(actions)}"
         self.msg(str(tasks_table) + helptxt)

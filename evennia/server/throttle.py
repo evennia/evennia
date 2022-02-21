@@ -35,14 +35,14 @@ class Throttle:
                 the throttle is imposed!
         """
         try:
-            self.storage = caches['throttle']
+            self.storage = caches["throttle"]
         except Exception:
             logger.log_trace("Throttle: Errors encountered; using default cache.")
-            self.storage = caches['default']
+            self.storage = caches["default"]
 
-        self.name = kwargs.get('name', 'undefined-throttle')
+        self.name = kwargs.get("name", "undefined-throttle")
         self.limit = kwargs.get("limit", 5)
-        self.cache_size = kwargs.get('cache_size', self.limit)
+        self.cache_size = kwargs.get("cache_size", self.limit)
         self.timeout = kwargs.get("timeout", 5 * 60)
 
     def get_cache_key(self, *args, **kwargs):
@@ -51,7 +51,7 @@ class Throttle:
         collisions in the same namespace.
 
         """
-        return '-'.join((self.name, *args))
+        return "-".join((self.name, *args))
 
     def touch(self, key, *args, **kwargs):
         """
@@ -85,7 +85,7 @@ class Throttle:
             cache_key = self.get_cache_key(str(ip))
             return self.storage.get(cache_key, deque(maxlen=self.cache_size))
         else:
-            keys_key = self.get_cache_key('keys')
+            keys_key = self.get_cache_key("keys")
             keys = self.storage.get_or_set(keys_key, set(), self.timeout)
             data = self.storage.get_many((self.get_cache_key(x) for x in keys))
 
@@ -161,7 +161,7 @@ class Throttle:
                 IP, not the cache-prefixed key.
 
         """
-        keys_key = self.get_cache_key('keys')
+        keys_key = self.get_cache_key("keys")
         keys = self.storage.get(keys_key, set())
         keys.add(ip)
         self.storage.set(keys_key, keys, self.timeout)
@@ -175,7 +175,7 @@ class Throttle:
             ip(str): IP to remove from list of keys.
 
         """
-        keys_key = self.get_cache_key('keys')
+        keys_key = self.get_cache_key("keys")
         keys = self.storage.get(keys_key, set())
         try:
             keys.remove(ip)

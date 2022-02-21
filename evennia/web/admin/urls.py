@@ -28,6 +28,4 @@ if settings.EVENNIA_ADMIN:
     ]
 else:
     # Just include the normal Django admin.
-    urlpatterns += [
-        path("", admin.site.urls)
-    ]
+    urlpatterns += [path("", admin.site.urls)]

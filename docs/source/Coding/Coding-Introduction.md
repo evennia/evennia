@@ -7,14 +7,14 @@ Here are some pointers to get you going.
 
 ## Start with the tutorial
 
-It's highly recommended that you jump in on the [Starting Tutorial](../Howto/Starting/Part1/Starting-Part1.md). Even if
+It's highly recommended that you jump in on the [Starting Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.md). Even if
 you only the beginning or some part of it, it covers much of the things needed to get started.
 
 ## Python
 
 Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
 learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
-take a look at our [Python introduction](../Howto/Starting/Part1/Python-basic-introduction.md).
+take a look at our [Python introduction](../Howtos/Beginner-Tutorial/Part1/Python-basic-introduction.md).
 
 ## Explore Evennia interactively
 
@@ -74,7 +74,7 @@ After this you can import and access all of the Evennia system, same as with `ev
 ### More exploration
 
 You can complement your exploration by peeking at the sections of the much more detailed
-[Evennia Component overview](../Components/Components-Overview.md). The [Tutorials](../Howto/Howto-Overview.md) section also contains a growing collection
+[Evennia Component overview](../Components/Components-Overview.md). The [Tutorials](../Howtos/Howtos-Overview.md) section also contains a growing collection
 of system- or implementation-specific help.
 
 ## Use a python syntax checker
@@ -91,7 +91,7 @@ using such a checker can be a good start to weed out the simple problems.
 
 ## Plan before you code
 
-Before you start coding away at your dream game, take a look at our [Game Planning](../Howto/Starting/Part2/Game-Planning.md)
+Before you start coding away at your dream game, take a look at our [Game Planning](../Howtos/Beginner-Tutorial/Part2/Game-Planning.md)
 page. It might hopefully help you avoid some common pitfalls and time sinks.
 
 ## Code in your game folder, not in the evennia/ repository

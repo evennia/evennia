@@ -87,5 +87,3 @@ class EvenniaDeleteView(DeleteView, TypeclassMixin):
     def page_title(self):
         # Makes sure the page has a sensible title.
         return "Delete %s" % self.typeclass._meta.verbose_name.title()
-
-

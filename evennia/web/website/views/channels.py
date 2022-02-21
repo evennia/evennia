@@ -25,8 +25,9 @@ class ChannelMixin(TypeclassMixin):
     """
 
     # -- Django constructs --
-    model = class_from_module(settings.BASE_CHANNEL_TYPECLASS,
-                              fallback=settings.FALLBACK_CHANNEL_TYPECLASS)
+    model = class_from_module(
+        settings.BASE_CHANNEL_TYPECLASS, fallback=settings.FALLBACK_CHANNEL_TYPECLASS
+    )
 
     # -- Evennia constructs --
     page_title = "Channels"
@@ -175,5 +176,3 @@ class ChannelDetailView(ChannelMixin, ObjectDetailView):
             )
 
         return obj
-
-

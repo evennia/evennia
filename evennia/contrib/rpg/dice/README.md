@@ -1,14 +1,14 @@
-# Dice
+# Dice roller
 
 Contribution by Griatch, 2012
 
-A dice roller for any number and side of dice. Adds in-game dice rolling 
-(`roll 2d10 + 1`) as well as conditionals (roll under/over/equal to a target) 
-and functions for rolling dice in code. Command also supports hidden or secret 
+A dice roller for any number and side of dice. Adds in-game dice rolling
+(`roll 2d10 + 1`) as well as conditionals (roll under/over/equal to a target)
+and functions for rolling dice in code. Command also supports hidden or secret
 rolls for use by a human game master.
 
 
-# Installation:
+## Installation:
 
 
 Add the `CmdDice` command from this module to your character's cmdset
@@ -28,7 +28,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 ```
 
-# Usage:
+## Usage:
 
     > roll 1d100 + 2
     > roll 1d20
@@ -53,7 +53,7 @@ was.
 
 Is a hidden roll that does not inform the room it happened.
 
-## Rolling dice from code
+### Rolling dice from code
 
 To roll dice in code, use the `roll` function from this module:
 
