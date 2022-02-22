@@ -473,6 +473,24 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
     category = args[1] if len(args) > 1 else None
     return bool(accessing_obj.tags.get(tagkey, category=category))
 
+def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+        is_ooc()
+
+    This is normally used to lock a Command, so it can be used
+    only when out of character.
+    """
+    obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
+    session = obj.session if hasattr(obj, "session") else obj
+    try:
+        return not obj.get_puppet(session)
+    except AttributeError:
+        try:
+            return not obj.account.get_puppet(session)
+        except AttributeError:
+            pass
+    return False
 
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     """

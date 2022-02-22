@@ -158,6 +158,7 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Have `type/force` default to `update`-mode rather than `reset`mode and add more verbose
   warning when using reset mode.
 - Attribute storage support defaultdics (Hendher)
+- Add `is_ooc` lockfunc (meant for limiting commands at the OOC level)
 
 
 ## Evennia 0.9.5
