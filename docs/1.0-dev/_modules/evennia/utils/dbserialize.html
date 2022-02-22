@@ -245,6 +245,10 @@
                 <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDict</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
                 <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
                 <span class="k">return</span> <span class="n">dat</span>
+            <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">defaultdict</span><span class="p">:</span>
+                <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDefaultDict</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">default_factory</span><span class="p">,</span> <span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+                <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                <span class="k">return</span> <span class="n">dat</span>
             <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">set</span><span class="p">:</span>
                 <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverSet</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
                 <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
@@ -351,6 +355,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
+<span class="k">class</span> <span class="nc">_SaverDefaultDict</span><span class="p">(</span><span class="n">_SaverDict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A defaultdict that stores changes to an attribute when updated</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span> <span class="o">=</span> <span class="n">factory</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># detect the case of db.foo[&#39;a&#39;] with no immediate assignment</span>
+            <span class="c1"># (important: using `key in self._data` would be always True!)</span>
+            <span class="n">default_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+
 <span class="k">class</span> <span class="nc">_SaverSet</span><span class="p">(</span><span class="n">_SaverMutable</span><span class="p">,</span> <span class="n">MutableSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A set that saves to an Attribute when updated</span>
@@ -449,6 +472,7 @@
     <span class="n">_SaverSet</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span>
     <span class="n">_SaverOrderedDict</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">,</span>
     <span class="n">_SaverDeque</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">deque</span><span class="p">,</span>
+    <span class="n">_SaverDefaultDict</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -460,12 +484,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="c1"># breakpoint()</span>
         <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">tname</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="k">if</span> <span class="n">tname</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_SaverDict&quot;</span><span class="p">,</span> <span class="s2">&quot;dict&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span><span class="n">_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">_iter</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">elif</span> <span class="n">tname</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_SaverOrderedDict&quot;</span><span class="p">,</span> <span class="s2">&quot;OrderedDict&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">_iter</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">_iter</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="k">elif</span> <span class="n">tname</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_SaverDefaultDict&quot;</span><span class="p">,</span> <span class="s2">&quot;defaultdict&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">default_factory</span><span class="p">,</span> <span class="p">{</span><span class="n">_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">_iter</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
         <span class="k">elif</span> <span class="n">tname</span> <span class="ow">in</span> <span class="n">_DESERIALIZE_MAPPING</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_DESERIALIZE_MAPPING</span><span class="p">[</span><span class="n">tname</span><span class="p">](</span><span class="n">_iter</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
@@ -626,6 +653,8 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">_SaverDict</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">defaultdict</span><span class="p">,</span> <span class="n">_SaverDefaultDict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">default_factory</span><span class="p">,</span> <span class="p">((</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">_SaverSet</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">OrderedDict</span><span class="p">,</span> <span class="n">_SaverOrderedDict</span><span class="p">):</span>
@@ -677,6 +706,7 @@
 
     <span class="k">def</span> <span class="nf">process_item</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Recursive processor and identification of data&quot;&quot;&quot;</span>
+        <span class="c1"># breakpoint()</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">SafeString</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">item</span>
@@ -689,6 +719,8 @@
             <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">defaultdict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">default_factory</span><span class="p">,</span> <span class="p">((</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">set</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">OrderedDict</span><span class="p">:</span>
@@ -706,6 +738,7 @@
 
     <span class="k">def</span> <span class="nf">process_tree</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Recursive processor, building a parent-tree from iterable data&quot;&quot;&quot;</span>
+        <span class="c1"># breakpoint()</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">SafeString</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">item</span>
@@ -720,6 +753,12 @@
             <span class="k">return</span> <span class="n">dat</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
             <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDict</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+            <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">dat</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">defaultdict</span><span class="p">:</span>
+            <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDefaultDict</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">default_factory</span><span class="p">,</span> <span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
             <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">)</span>
@@ -759,6 +798,12 @@
             <span class="k">return</span> <span class="n">dat</span>
         <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
             <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDict</span><span class="p">(</span><span class="n">_db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">)</span>
+            <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">dat</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">defaultdict</span><span class="p">:</span>
+            <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDefaultDict</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">default_factory</span><span class="p">,</span> <span class="n">_db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">)</span>
             <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">)</span>

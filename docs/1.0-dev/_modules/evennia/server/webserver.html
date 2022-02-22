@@ -318,16 +318,25 @@
 <span class="sd">        Start the pool after the service starts.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">startService</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Webserver did not start correctly. Disabling.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WSGIWebServer.stopService"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.WSGIWebServer.stopService">[docs]</a>    <span class="k">def</span> <span class="nf">stopService</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Safely stop the pool after the service stops.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Webserver stopService error.&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">started</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="PrivateStaticRoot"><a class="viewcode-back" href="../../../api/evennia.server.webserver.html#evennia.server.webserver.PrivateStaticRoot">[docs]</a><span class="k">class</span> <span class="nc">PrivateStaticRoot</span><span class="p">(</span><span class="n">static</span><span class="o">.</span><span class="n">File</span><span class="p">):</span>

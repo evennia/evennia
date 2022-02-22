@@ -58,7 +58,7 @@
 <span class="kn">from</span> <span class="nn">twisted.application</span> <span class="kn">import</span> <span class="n">internet</span><span class="p">,</span> <span class="n">service</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">defer</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
-<span class="kn">from</span> <span class="nn">twisted.python.log</span> <span class="kn">import</span> <span class="n">ILogObserver</span>
+<span class="kn">from</span> <span class="nn">twisted.logger</span> <span class="kn">import</span> <span class="n">globalLogPublisher</span>
 
 <span class="kn">import</span> <span class="nn">django</span>
 
@@ -689,15 +689,17 @@
 <span class="c1"># what to execute from.</span>
 <span class="n">application</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="s2">&quot;Evennia&quot;</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="s2">&quot;--nodaemon&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span>
-    <span class="c1"># custom logging, but only if we are not running in interactive mode</span>
+
+<span class="k">if</span> <span class="s2">&quot;--nodaemon&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span> <span class="ow">and</span> <span class="s2">&quot;test&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span>
+    <span class="c1"># activate logging for interactive/testing mode</span>
     <span class="n">logfile</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">WeeklyLogFile</span><span class="p">(</span>
         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_LOG_FILE</span><span class="p">),</span>
         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_LOG_FILE</span><span class="p">),</span>
         <span class="n">day_rotation</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_LOG_DAY_ROTATION</span><span class="p">,</span>
         <span class="n">max_size</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_LOG_MAX_SIZE</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">application</span><span class="o">.</span><span class="n">setComponent</span><span class="p">(</span><span class="n">ILogObserver</span><span class="p">,</span> <span class="n">logger</span><span class="o">.</span><span class="n">ServerLogObserver</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span><span class="o">.</span><span class="n">emit</span><span class="p">)</span>
+    <span class="n">globalLogPublisher</span><span class="o">.</span><span class="n">addObserver</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">GetServerLogObserver</span><span class="p">()(</span><span class="n">logfile</span><span class="p">))</span>
+
 
 <span class="c1"># The main evennia server program. This sets up the database</span>
 <span class="c1"># and is where we store all the other services.</span>

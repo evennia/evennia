@@ -1316,7 +1316,7 @@
             <span class="s2">&quot;Obj2 = evennia.objects.objects.DefaultExit&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Obj2 changed typeclass from evennia.objects.objects.DefaultObject &quot;</span>
             <span class="s2">&quot;to evennia.objects.objects.DefaultExit.&quot;</span><span class="p">,</span>
-            <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;swap&quot;</span><span class="p">,</span>
+            <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;swap&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;yes&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span> <span class="s2">&quot;/list Obj&quot;</span><span class="p">,</span> <span class="s2">&quot;Core typeclasses&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1344,7 +1344,8 @@
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
             <span class="s2">&quot;Obj&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;Only the at_object_creation hook was run (update mode). Attributes set before swap were not removed.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Only the at_object_creation hook was run (update mode). Attributes set before swap were not removed</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;(use `swap` or `type/reset` to clear all).&quot;</span><span class="p">,</span>
             <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1352,6 +1353,7 @@
             <span class="s2">&quot;/reset/force Obj=evennia.objects.objects.DefaultObject&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;All object creation hooks were run. All old attributes where deleted before the swap.&quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;yes&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="kn">import</span> <span class="n">homogenize_prototype</span>
@@ -1374,11 +1376,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
                 <span class="n">building</span><span class="o">.</span><span class="n">CmdTypeclass</span><span class="p">(),</span>
                 <span class="s2">&quot;/prototype Obj=testkey&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;replaced_obj changed typeclass from &quot;</span>
-                <span class="s2">&quot;evennia.objects.objects.DefaultObject to &quot;</span>
-                <span class="s2">&quot;typeclasses.objects.Object.</span><span class="se">\n</span><span class="s2">All object creation hooks were &quot;</span>
-                <span class="s2">&quot;run. Attributes set before swap were not removed. Prototype &quot;</span>
-                <span class="s2">&quot;&#39;replaced_obj&#39; was successfully applied over the object type.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;replaced_obj changed typeclass from evennia.objects.objects.DefaultObject to &quot;</span>
+                <span class="s2">&quot;typeclasses.objects.Object.</span><span class="se">\n</span><span class="s2">Only the at_object_creation hook was run &quot;</span>
+                <span class="s2">&quot;(update mode). Attributes set before swap were not removed</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;(use `swap` or `type/reset` to clear all). Prototype &#39;replaced_obj&#39; was &quot;</span>
+                <span class="s2">&quot;successfully applied over the object type.&quot;</span>
             <span class="p">)</span>
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">==</span> <span class="s2">&quot;protdesc&quot;</span></div>
 

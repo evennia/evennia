@@ -60,15 +60,212 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
-<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">logfile</span>
+<span class="kn">from</span> <span class="nn">twisted</span> <span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">twisted_logger</span>
+<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">logfile</span>
 <span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">util</span> <span class="k">as</span> <span class="n">twisted_util</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.threads</span> <span class="kn">import</span> <span class="n">deferToThread</span>
 
+<span class="n">log</span> <span class="o">=</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">Logger</span><span class="p">()</span>
 
 <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_LOG_ROTATE_SIZE</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_TIMEZONE</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">_TIME_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logfunc</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">logfunc</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+                <span class="n">logfunc</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{line}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Log failure: </span><span class="si">{err}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">)</span>
+
+
+<span class="c1"># log call functions (each has legacy aliases)</span>
+
+<div class="viewcode-block" id="log_info"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_info">[docs]</a><span class="k">def</span> <span class="nf">log_info</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs any generic debugging/informative info that should appear in the log.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg: (string) The message to be logged.</span>
+<span class="sd">        **kwargs: If given, The `msg` is parsed as a format string with `{..}`</span>
+<span class="sd">            formatting markers that should match the keywords.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="n">info</span> <span class="o">=</span> <span class="n">log_info</span>
+<span class="n">log_infomsg</span> <span class="o">=</span> <span class="n">log_info</span>
+<span class="n">log_msg</span> <span class="o">=</span> <span class="n">log_info</span>
+
+
+<div class="viewcode-block" id="log_warn"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_warn">[docs]</a><span class="k">def</span> <span class="nf">log_warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs warnings that aren&#39;t critical but should be noted.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (str): The message to be logged.</span>
+<span class="sd">        **kwargs: If given, The `msg` is parsed as a format string with `{..}`</span>
+<span class="sd">            formatting markers that should match the keywords.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="n">warn</span> <span class="o">=</span> <span class="n">log_warn</span>
+<span class="n">warning</span> <span class="o">=</span> <span class="n">log_warn</span>
+<span class="n">log_warnmsg</span> <span class="o">=</span> <span class="n">log_warn</span>
+
+
+<div class="viewcode-block" id="log_err"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_err">[docs]</a><span class="k">def</span> <span class="nf">log_err</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs an error message to the server log.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (str): The message to be logged.</span>
+<span class="sd">        **kwargs: If given, The `msg` is parsed as a format string with `{..}`</span>
+<span class="sd">            formatting markers that should match the keywords.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="n">error</span> <span class="o">=</span> <span class="n">log_err</span>
+<span class="n">err</span> <span class="o">=</span> <span class="n">log_err</span>
+<span class="n">log_errmsg</span> <span class="o">=</span> <span class="n">log_err</span>
+
+
+<div class="viewcode-block" id="log_trace"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_trace">[docs]</a><span class="k">def</span> <span class="nf">log_trace</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log a traceback to the log. This should be called from within an</span>
+<span class="sd">    exception.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (str, optional): Adds an extra line with added info</span>
+<span class="sd">            at the end of the traceback in the log.</span>
+<span class="sd">        **kwargs: If given, The `msg` is parsed as a format string with `{..}`</span>
+<span class="sd">            formatting markers that should match the keywords.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tracestring</span> <span class="o">=</span> <span class="n">format_exc</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">tracestring</span><span class="p">:</span>
+        <span class="n">_log</span><span class="p">(</span><span class="n">tracestring</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;!!&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;!!&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="n">log_tracemsg</span> <span class="o">=</span> <span class="n">log_trace</span>
+<span class="n">exception</span> <span class="o">=</span> <span class="n">log_trace</span>
+<span class="n">critical</span> <span class="o">=</span> <span class="n">log_trace</span>
+<span class="n">trace</span> <span class="o">=</span> <span class="n">log_trace</span>
+
+
+<div class="viewcode-block" id="log_dep"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_dep">[docs]</a><span class="k">def</span> <span class="nf">log_dep</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints a deprecation message.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (str): The deprecation message to log.</span>
+<span class="sd">        **kwargs: If given, The `msg` is parsed as a format string with `{..}`</span>
+<span class="sd">            formatting markers that should match the keywords.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;DP&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="n">dep</span> <span class="o">=</span> <span class="n">log_dep</span>
+<span class="n">deprecated</span> <span class="o">=</span> <span class="n">log_dep</span>
+<span class="n">log_depmsg</span> <span class="o">=</span> <span class="n">log_dep</span>
+
+
+<div class="viewcode-block" id="log_sec"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_sec">[docs]</a><span class="k">def</span> <span class="nf">log_sec</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints a security-related message.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (str): The security message to log.</span>
+<span class="sd">        **kwargs: If given, The `msg` is parsed as a format string with `{..}`</span>
+<span class="sd">            formatting markers that should match the keywords.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="n">sec</span> <span class="o">=</span> <span class="n">log_sec</span>
+<span class="n">security</span> <span class="o">=</span> <span class="n">log_sec</span>
+<span class="n">log_secmsg</span> <span class="o">=</span> <span class="n">log_sec</span>
+
+
+<div class="viewcode-block" id="log_server"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_server">[docs]</a><span class="k">def</span> <span class="nf">log_server</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is for the Portal to log captured Server stdout messages (it&#39;s</span>
+<span class="sd">    usually only used during startup, before Server log is open)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (str): The message to be logged.</span>
+<span class="sd">        **kwargs: If given, The `msg` is parsed as a format string with `{..}`</span>
+<span class="sd">            formatting markers that should match the keywords.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;Server&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="GetLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetLogObserver</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets up how the system logs are formatted.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">component_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">event_levels</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">twisted_logger</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span> <span class="s2">&quot;??&quot;</span><span class="p">,</span>
+        <span class="n">twisted_logger</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">info</span><span class="p">:</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span>
+        <span class="n">twisted_logger</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">warn</span><span class="p">:</span> <span class="s2">&quot;WW&quot;</span><span class="p">,</span>
+        <span class="n">twisted_logger</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="s2">&quot;EE&quot;</span><span class="p">,</span>
+        <span class="n">twisted_logger</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">critical</span><span class="p">:</span> <span class="s2">&quot;!!&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="GetLogObserver.format_log_event"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetLogObserver.format_log_event">[docs]</a>    <span class="k">def</span> <span class="nf">format_log_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        By assigning log_system here, we skip the spammy display of namespace/level</span>
+<span class="sd">        in the default log output.</span>
+
+<span class="sd">        [component_prefix] [date] [system/lvl] [msg]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># setting log_system fills the [..] block after the time stamp</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prefix&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">&quot;log_system&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lvl</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_level&quot;</span><span class="p">,</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">&quot;log_system&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_levels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lvl</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">event</span><span class="p">[</span><span class="s2">&quot;log_format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_format&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">component_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_prefix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">log_msg</span> <span class="o">=</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">formatEventAsClassicLogText</span><span class="p">(</span>
+            <span class="n">event</span><span class="p">,</span>
+            <span class="n">formatTime</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">formatTime</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">_TIME_FORMAT</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">component_prefix</span><span class="si">}{</span><span class="n">log_msg</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">FileLogObserver</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_log_event</span><span class="p">)</span></div>
+
+
+<span class="c1"># Called by server/portal on startup</span>
+
+<div class="viewcode-block" id="GetPortalLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetPortalLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetPortalLogObserver</span><span class="p">(</span><span class="n">GetLogObserver</span><span class="p">):</span>
+    <span class="n">component_prefix</span> <span class="o">=</span> <span class="s2">&quot;|Portal| &quot;</span></div>
+
+<div class="viewcode-block" id="GetServerLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetServerLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetServerLogObserver</span><span class="p">(</span><span class="n">GetLogObserver</span><span class="p">):</span>
+    <span class="n">component_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
 
 
 <span class="c1"># logging overrides</span>
@@ -79,7 +276,7 @@
 <span class="sd">    This helper function will format the current time in the same</span>
 <span class="sd">    way as the twisted logger does, including time zone info. Only</span>
 <span class="sd">    difference from official logger is that we only use two digits</span>
-<span class="sd">    for the year and don&#39;t show timezone for CET times.</span>
+<span class="sd">    for the year and don&#39;t show timezone for GMT times.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        when (int, optional): This is a time in POSIX seconds on the form</span>
@@ -196,196 +393,6 @@
         <span class="n">logfile</span><span class="o">.</span><span class="n">BaseLogFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lastDate</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastDate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toDate</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="PortalLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.PortalLogObserver">[docs]</a><span class="k">class</span> <span class="nc">PortalLogObserver</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">FileLogObserver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Reformat logging</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">timeFormat</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;  |Portal| &quot;</span>
-
-<div class="viewcode-block" id="PortalLogObserver.emit"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.PortalLogObserver.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eventDict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Copied from Twisted parent, to change logging output</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">textFromEventDict</span><span class="p">(</span><span class="n">eventDict</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="c1"># timeStr = self.formatTime(eventDict[&quot;time&quot;])</span>
-        <span class="n">timeStr</span> <span class="o">=</span> <span class="n">timeformat</span><span class="p">(</span><span class="n">eventDict</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span>
-        <span class="n">fmtDict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="p">)}</span>
-
-        <span class="n">msgStr</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">_safeFormat</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(text)s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fmtDict</span><span class="p">)</span>
-
-        <span class="n">twisted_util</span><span class="o">.</span><span class="n">untilConcludes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">,</span> <span class="n">timeStr</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">msgStr</span><span class="p">)</span>
-        <span class="n">twisted_util</span><span class="o">.</span><span class="n">untilConcludes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="ServerLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.ServerLogObserver">[docs]</a><span class="k">class</span> <span class="nc">ServerLogObserver</span><span class="p">(</span><span class="n">PortalLogObserver</span><span class="p">):</span>
-    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span></div>
-
-
-<div class="viewcode-block" id="log_msg"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_msg">[docs]</a><span class="k">def</span> <span class="nf">log_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrapper around log.msg call to catch any exceptions that might</span>
-<span class="sd">    occur in logging. If an exception is raised, we&#39;ll print to</span>
-<span class="sd">    stdout instead.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        msg: The message that was passed to log.msg</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exception raised while writing message to log. Original message: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">msg</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="log_trace"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_trace">[docs]</a><span class="k">def</span> <span class="nf">log_trace</span><span class="p">(</span><span class="n">errmsg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Log a traceback to the log. This should be called from within an</span>
-<span class="sd">    exception.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        errmsg (str, optional): Adds an extra line with added info</span>
-<span class="sd">            at the end of the traceback in the log.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">tracestring</span> <span class="o">=</span> <span class="n">format_exc</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">tracestring</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tracestring</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;[::] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">errmsg</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">errmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">errmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">errmsg</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-                <span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;[EE] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;[EE] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">errmsg</span><span class="p">)</span></div>
-
-
-<span class="n">log_tracemsg</span> <span class="o">=</span> <span class="n">log_trace</span>
-
-
-<div class="viewcode-block" id="log_err"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_err">[docs]</a><span class="k">def</span> <span class="nf">log_err</span><span class="p">(</span><span class="n">errmsg</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prints/logs an error message to the server log.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        errmsg (str): The message to be logged.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">errmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">errmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">errmsg</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-        <span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;[EE] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span></div>
-
-    <span class="c1"># log.err(&#39;ERROR: %s&#39; % (errmsg,))</span>
-
-
-<span class="n">log_errmsg</span> <span class="o">=</span> <span class="n">log_err</span>
-
-
-<div class="viewcode-block" id="log_server"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_server">[docs]</a><span class="k">def</span> <span class="nf">log_server</span><span class="p">(</span><span class="n">servermsg</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is for the Portal to log captured Server stdout messages (it&#39;s</span>
-<span class="sd">    usually only used during startup, before Server log is open)</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">servermsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">servermsg</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">servermsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">servermsg</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-        <span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;[Server] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="log_warn"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_warn">[docs]</a><span class="k">def</span> <span class="nf">log_warn</span><span class="p">(</span><span class="n">warnmsg</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prints/logs any warnings that aren&#39;t critical but should be noted.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        warnmsg (str): The message to be logged.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">warnmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">warnmsg</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">warnmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">warnmsg</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-        <span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;[WW] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span></div>
-
-    <span class="c1"># log.msg(&#39;WARNING: %s&#39; % (warnmsg,))</span>
-
-
-<span class="n">log_warnmsg</span> <span class="o">=</span> <span class="n">log_warn</span>
-
-
-<div class="viewcode-block" id="log_info"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_info">[docs]</a><span class="k">def</span> <span class="nf">log_info</span><span class="p">(</span><span class="n">infomsg</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prints any generic debugging/informative info that should appear in the log.</span>
-
-<span class="sd">    infomsg: (string) The message to be logged.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">infomsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">infomsg</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">infomsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infomsg</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-        <span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;[..] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span></div>
-
-
-<span class="n">log_infomsg</span> <span class="o">=</span> <span class="n">log_info</span>
-
-
-<div class="viewcode-block" id="log_dep"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_dep">[docs]</a><span class="k">def</span> <span class="nf">log_dep</span><span class="p">(</span><span class="n">depmsg</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prints a deprecation message.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        depmsg (str): The deprecation message to log.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">depmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">depmsg</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">depmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">depmsg</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-        <span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;[DP] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span></div>
-
-
-<span class="n">log_depmsg</span> <span class="o">=</span> <span class="n">log_dep</span>
-
-
-<div class="viewcode-block" id="log_sec"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_sec">[docs]</a><span class="k">def</span> <span class="nf">log_sec</span><span class="p">(</span><span class="n">secmsg</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prints a security-related message.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        secmsg (str): The security message to log.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">secmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">secmsg</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">secmsg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">secmsg</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-        <span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;[SS] </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span></div>
-
-
-<span class="n">log_secmsg</span> <span class="o">=</span> <span class="n">log_sec</span>
-
 
 <span class="c1"># Arbitrary file logger</span>
 

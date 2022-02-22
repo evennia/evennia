@@ -61,12 +61,460 @@ arbitrary files in $GAME_DIR/server/logs.</p>
 <p>Note: All logging functions have two aliases, log_type() and
 log_typemsg(). This is for historical, back-compatible reasons.</p>
 <dl class="py function">
+<dt id="evennia.utils.logger.log_info">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs any generic debugging/informative info that should appear in the log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – (string) The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.info">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs any generic debugging/informative info that should appear in the log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – (string) The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_infomsg">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_infomsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_infomsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs any generic debugging/informative info that should appear in the log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – (string) The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_msg">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs any generic debugging/informative info that should appear in the log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – (string) The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_warn">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_warn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_warn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_warn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs warnings that aren’t critical but should be noted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.warn">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">warn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.warn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs warnings that aren’t critical but should be noted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.warning">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">warning</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.warning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs warnings that aren’t critical but should be noted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_warnmsg">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_warnmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_warnmsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs warnings that aren’t critical but should be noted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_err">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_err</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_err" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs an error message to the server log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.error">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs an error message to the server log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.err">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">err</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.err" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs an error message to the server log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_errmsg">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_errmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_errmsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs an error message to the server log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_trace">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a traceback to the log. This should be called from within an
+exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em><em>, </em><em>optional</em>) – Adds an extra line with added info
+at the end of the traceback in the log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_tracemsg">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_tracemsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_tracemsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a traceback to the log. This should be called from within an
+exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em><em>, </em><em>optional</em>) – Adds an extra line with added info
+at the end of the traceback in the log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.exception">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">exception</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.exception" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a traceback to the log. This should be called from within an
+exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em><em>, </em><em>optional</em>) – Adds an extra line with added info
+at the end of the traceback in the log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.critical">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">critical</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.critical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a traceback to the log. This should be called from within an
+exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em><em>, </em><em>optional</em>) – Adds an extra line with added info
+at the end of the traceback in the log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.trace">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log a traceback to the log. This should be called from within an
+exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em><em>, </em><em>optional</em>) – Adds an extra line with added info
+at the end of the traceback in the log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_dep">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_dep</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_dep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_dep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a deprecation message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The deprecation message to log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.dep">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">dep</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.dep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a deprecation message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The deprecation message to log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.deprecated">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">deprecated</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.deprecated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a deprecation message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The deprecation message to log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_depmsg">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_depmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_depmsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a deprecation message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The deprecation message to log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_sec">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_sec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_sec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_sec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a security-related message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The security message to log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.sec">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">sec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.sec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a security-related message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The security message to log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.security">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">security</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.security" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a security-related message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The security message to log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_secmsg">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_secmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_secmsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a security-related message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The security message to log.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.logger.log_server">
+<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is for the Portal to log captured Server stdout messages (it’s
+usually only used during startup, before Server log is open)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> (<em>str</em>) – The message to be logged.</p></li>
+<li><p><strong>**kwargs</strong> – If given, The <strong>msg</strong> is parsed as a format string with <strong>{..}</strong>
+formatting markers that should match the keywords.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.logger.GetLogObserver">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">GetLogObserver</code><a class="reference internal" href="../_modules/evennia/utils/logger.html#GetLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.GetLogObserver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Sets up how the system logs are formatted.</p>
+<dl class="py attribute">
+<dt id="evennia.utils.logger.GetLogObserver.component_prefix">
+<code class="sig-name descname">component_prefix</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.utils.logger.GetLogObserver.component_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.logger.GetLogObserver.event_levels">
+<code class="sig-name descname">event_levels</code><em class="property"> = {&lt;LogLevel=debug&gt;: '??', &lt;LogLevel=info&gt;: '..', &lt;LogLevel=warn&gt;: 'WW', &lt;LogLevel=error&gt;: 'EE', &lt;LogLevel=critical&gt;: '!!'}</em><a class="headerlink" href="#evennia.utils.logger.GetLogObserver.event_levels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.logger.GetLogObserver.format_log_event">
+<code class="sig-name descname">format_log_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#GetLogObserver.format_log_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.GetLogObserver.format_log_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>By assigning log_system here, we skip the spammy display of namespace/level
+in the default log output.</p>
+<p>[component_prefix] [date] [system/lvl] [msg]</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.logger.GetPortalLogObserver">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">GetPortalLogObserver</code><a class="reference internal" href="../_modules/evennia/utils/logger.html#GetPortalLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.GetPortalLogObserver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.logger.GetLogObserver" title="evennia.utils.logger.GetLogObserver"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.logger.GetLogObserver</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.utils.logger.GetPortalLogObserver.component_prefix">
+<code class="sig-name descname">component_prefix</code><em class="property"> = '|Portal| '</em><a class="headerlink" href="#evennia.utils.logger.GetPortalLogObserver.component_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.logger.GetServerLogObserver">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">GetServerLogObserver</code><a class="reference internal" href="../_modules/evennia/utils/logger.html#GetServerLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.GetServerLogObserver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.logger.GetLogObserver" title="evennia.utils.logger.GetLogObserver"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.logger.GetLogObserver</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.utils.logger.GetServerLogObserver.component_prefix">
+<code class="sig-name descname">component_prefix</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.utils.logger.GetServerLogObserver.component_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
 <dt id="evennia.utils.logger.timeformat">
 <code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">timeformat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">when</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#timeformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.timeformat" title="Permalink to this definition">¶</a></dt>
 <dd><p>This helper function will format the current time in the same
 way as the twisted logger does, including time zone info. Only
 difference from official logger is that we only use two digits
-for the year and don’t show timezone for CET times.</p>
+for the year and don’t show timezone for GMT times.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>when</strong> (<em>int</em><em>, </em><em>optional</em>) – This is a time in POSIX seconds on the form
@@ -128,188 +576,6 @@ server.log.2020_01_29__2</p>
 <dd><p>Write data to log file</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.utils.logger.PortalLogObserver">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">PortalLogObserver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#PortalLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.python.log.FileLogObserver</span></code></p>
-<p>Reformat logging</p>
-<dl class="py attribute">
-<dt id="evennia.utils.logger.PortalLogObserver.timeFormat">
-<code class="sig-name descname">timeFormat</code><em class="property">: Optional<span class="p">[</span>str<span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver.timeFormat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.utils.logger.PortalLogObserver.prefix">
-<code class="sig-name descname">prefix</code><em class="property"> = '  |Portal| '</em><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver.prefix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.utils.logger.PortalLogObserver.emit">
-<code class="sig-name descname">emit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eventDict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#PortalLogObserver.emit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.PortalLogObserver.emit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copied from Twisted parent, to change logging output</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.utils.logger.ServerLogObserver">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">ServerLogObserver</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#ServerLogObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.ServerLogObserver" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#evennia.utils.logger.PortalLogObserver" title="evennia.utils.logger.PortalLogObserver"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.logger.PortalLogObserver</span></code></a></p>
-<dl class="py attribute">
-<dt id="evennia.utils.logger.ServerLogObserver.prefix">
-<code class="sig-name descname">prefix</code><em class="property"> = ' '</em><a class="headerlink" href="#evennia.utils.logger.ServerLogObserver.prefix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_msg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_msg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper around log.msg call to catch any exceptions that might
-occur in logging. If an exception is raised, we’ll print to
-stdout instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>msg</strong> – The message that was passed to log.msg</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_trace">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errmsg</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_trace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log a traceback to the log. This should be called from within an
-exception.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>errmsg</strong> (<em>str</em><em>, </em><em>optional</em>) – Adds an extra line with added info
-at the end of the traceback in the log.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_tracemsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_tracemsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errmsg</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_tracemsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log a traceback to the log. This should be called from within an
-exception.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>errmsg</strong> (<em>str</em><em>, </em><em>optional</em>) – Adds an extra line with added info
-at the end of the traceback in the log.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_err">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_err</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_err"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_err" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints/logs an error message to the server log.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>errmsg</strong> (<em>str</em>) – The message to be logged.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_errmsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_errmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">errmsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_errmsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints/logs an error message to the server log.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>errmsg</strong> (<em>str</em>) – The message to be logged.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_server">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">servermsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is for the Portal to log captured Server stdout messages (it’s
-usually only used during startup, before Server log is open)</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_warn">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_warn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">warnmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_warn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_warn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints/logs any warnings that aren’t critical but should be noted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>warnmsg</strong> (<em>str</em>) – The message to be logged.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_warnmsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_warnmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">warnmsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_warnmsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints/logs any warnings that aren’t critical but should be noted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>warnmsg</strong> (<em>str</em>) – The message to be logged.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_info">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infomsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints any generic debugging/informative info that should appear in the log.</p>
-<p>infomsg: (string) The message to be logged.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_infomsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_infomsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infomsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_infomsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints any generic debugging/informative info that should appear in the log.</p>
-<p>infomsg: (string) The message to be logged.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_dep">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_dep</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">depmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_dep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_dep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a deprecation message.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>depmsg</strong> (<em>str</em>) – The deprecation message to log.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_depmsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_depmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">depmsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_depmsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a deprecation message.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>depmsg</strong> (<em>str</em>) – The deprecation message to log.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_sec">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_sec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">secmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#log_sec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.log_sec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a security-related message.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>secmsg</strong> (<em>str</em>) – The security message to log.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.utils.logger.log_secmsg">
-<code class="sig-prename descclassname">evennia.utils.logger.</code><code class="sig-name descname">log_secmsg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">secmsg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.logger.log_secmsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a security-related message.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>secmsg</strong> (<em>str</em>) – The security message to log.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py class">

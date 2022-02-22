@@ -47,8 +47,8 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">twisted.protocols</span> <span class="kn">import</span> <span class="n">amp</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
@@ -399,6 +399,48 @@
             <span class="n">deferred</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="n">formatAnswer</span><span class="p">,</span> <span class="n">formatError</span><span class="p">)</span>
             <span class="n">deferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_safeEmit</span><span class="p">)</span>
         <span class="n">deferred</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unhandledError</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AMPMultiConnectionProtocol.stringReceived"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.stringReceived">[docs]</a>    <span class="k">def</span> <span class="nf">stringReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overrides the base stringReceived of twisted in order to handle</span>
+<span class="sd">        the strange error reported in https://github.com/evennia/evennia/issues/2053,</span>
+<span class="sd">        which can lead to the amp connection locking up.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): the data coming in.</span>
+
+<span class="sd">        Notes:</span>
+
+<span class="sd">            To test, add the following code to the beginning of</span>
+<span class="sd">            `evennia.server.amp_client.AMPServerClientProtocol.data_to_portal`, then</span>
+<span class="sd">            run multiple commands until the error trigger:</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                import random</span>
+<span class="sd">                from twisted.protocols.amp import AmpBox</span>
+<span class="sd">                always_fail = False</span>
+<span class="sd">                if always_fail or random.random() &lt; 0.05:</span>
+<span class="sd">                    breaker = AmpBox()</span>
+<span class="sd">                    breaker[&#39;_answer&#39;.encode()]=&#39;13541&#39;.encode()</span>
+<span class="sd">                    self.transport.write(breaker.serialize())</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pto</span> <span class="o">=</span> <span class="s2">&quot;proto_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span>
+            <span class="n">statehandler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pto</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;callback&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;not found&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># make sure to catch a KeyError cleanly here</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">statehandler</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">_get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;AMP error (KeyError: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">). Discarded data (see &quot;</span>
+                    <span class="s2">&quot;https://github.com/evennia/evennia/issues/2053)&quot;</span>
+                <span class="p">)</span></div>
 
 <div class="viewcode-block" id="AMPMultiConnectionProtocol.dataReceived"><a class="viewcode-back" href="../../../../api/evennia.server.portal.amp.html#evennia.server.amp_client.AMPMultiConnectionProtocol.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

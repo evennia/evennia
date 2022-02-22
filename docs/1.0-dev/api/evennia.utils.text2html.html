@@ -203,6 +203,11 @@ snippet #577349 on <a class="reference external" href="http://code.activestate.c
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.utils.text2html.TextToHTMLparser.re_invisiblespace">
+<code class="sig-name descname">re_invisiblespace</code><em class="property"> = re.compile('( &lt;.*?&gt;)( )')</em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_invisiblespace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.utils.text2html.TextToHTMLparser.re_url">
 <code class="sig-name descname">re_url</code><em class="property"> = re.compile('(?&lt;!=&quot;)((?:ftp|www|https?)\\W+(?:(?!\\.(?:\\s|$)|&amp;\\w+;)[^&quot;\\\',;$*^\\\\(){}&lt;&gt;\\[\\]\\s])+)(\\.(?:\\s|$)|&amp;\\w+;|)')</em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_url" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -353,6 +358,13 @@ through we must make sure to replace them with ” &amp;nbsp;”</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.utils.text2html.TextToHTMLparser.re_invisible_space">
+<code class="sig-name descname">re_invisible_space</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.re_invisible_space"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_invisible_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>If two spaces are separated by an invisble html element, they act as a
+hidden double-space and the last of them should be replaced by &amp;nbsp;</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.utils.text2html.TextToHTMLparser.sub_mxp_links">
 <code class="sig-name descname">sub_mxp_links</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.sub_mxp_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.sub_mxp_links" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper method to be passed to re.sub,
@@ -400,6 +412,12 @@ for handling all substitutions.</p>
 <dt id="evennia.utils.text2html.TextToHTMLparser.sub_dblspace">
 <code class="sig-name descname">sub_dblspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.sub_dblspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.sub_dblspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>clean up double-spaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.text2html.TextToHTMLparser.sub_invisiblespace">
+<code class="sig-name descname">sub_invisiblespace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.sub_invisiblespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.sub_invisiblespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>clean up invisible spaces</p>
 </dd></dl>
 
 <dl class="py method">

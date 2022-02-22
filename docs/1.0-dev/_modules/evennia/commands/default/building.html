@@ -2254,10 +2254,21 @@
                 <span class="s2">&quot;Use /force to override.&quot;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">update</span> <span class="o">=</span> <span class="s2">&quot;update&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
             <span class="n">reset</span> <span class="o">=</span> <span class="s2">&quot;reset&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
+            <span class="n">update</span> <span class="o">=</span> <span class="s2">&quot;update&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">reset</span>  <span class="c1"># default to update</span>
+
             <span class="n">hooks</span> <span class="o">=</span> <span class="s2">&quot;at_object_creation&quot;</span> <span class="k">if</span> <span class="n">update</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">reset</span> <span class="k">else</span> <span class="s2">&quot;all&quot;</span>
             <span class="n">old_typeclass_path</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span>
+
+            <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;|yNote that this will reset the object back to its typeclass&#39; default state, &quot;</span>
+                               <span class="s2">&quot;removing any custom locks/perms/attributes etc that may have been added &quot;</span>
+                               <span class="s2">&quot;by an explicit create_object call. Use `update` or type/force instead in order &quot;</span>
+                               <span class="s2">&quot;to keep such data. &quot;</span>
+                               <span class="s2">&quot;Continue [Y]/N?|n&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;NO&quot;</span><span class="p">):</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span>
 
             <span class="c1"># special prompt for the user in cases where we want</span>
             <span class="c1"># to confirm changes.</span>
@@ -2304,7 +2315,7 @@
             <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; All old attributes where deleted before the swap.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Attributes set before swap were not removed.&quot;</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Attributes set before swap were not removed</span><span class="se">\n</span><span class="s2">(use `swap` or `type/reset` to clear all).&quot;</span>
             <span class="k">if</span> <span class="s2">&quot;prototype&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="n">prototype_success</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
                     <span class="s2">&quot; Prototype &#39;</span><span class="si">%s</span><span class="s2">&#39; was successfully applied over the object type.&quot;</span>

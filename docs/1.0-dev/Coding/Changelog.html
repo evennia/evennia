@@ -203,6 +203,12 @@ on location for easy use in game dir.</p></li>
 decouple structures from database without needing separate import.</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">run_in_main_thread</span></code> as a helper for those wanting to code server code
 from a web view.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">evennia.utils.logger</span></code> to use Twisted’s new logging API. No change in Evennia API
+except more standard aliases logger.error/info/exception/debug etc can now be used.</p></li>
+<li><p>Have <code class="docutils literal notranslate"><span class="pre">type/force</span></code> default to <code class="docutils literal notranslate"><span class="pre">update</span></code>-mode rather than <code class="docutils literal notranslate"><span class="pre">reset</span></code>mode and add more verbose
+warning when using reset mode.</p></li>
+<li><p>Attribute storage support defaultdics (Hendher)</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">is_ooc</span></code> lockfunc (meant for limiting commands at the OOC level)</p></li>
 </ul>
 </section>
 <section id="evennia-0-9-5">

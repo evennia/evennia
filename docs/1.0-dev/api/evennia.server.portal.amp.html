@@ -418,6 +418,32 @@ already before connecting both on portal and server.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.server.portal.amp.AMPMultiConnectionProtocol.stringReceived">
+<code class="sig-name descname">stringReceived</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.stringReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.stringReceived" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides the base stringReceived of twisted in order to handle
+the strange error reported in <a class="reference external" href="https://github.com/evennia/evennia/issues/2053">https://github.com/evennia/evennia/issues/2053</a>,
+which can lead to the amp connection locking up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – the data coming in.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>To test, add the following code to the beginning of
+<strong>evennia.server.amp_client.AMPServerClientProtocol.data_to_portal</strong>, then
+run multiple commands until the error trigger:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">twisted.protocols.amp</span> <span class="kn">import</span> <span class="n">AmpBox</span>
+<span class="n">always_fail</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">if</span> <span class="n">always_fail</span> <span class="ow">or</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
+    <span class="n">breaker</span> <span class="o">=</span> <span class="n">AmpBox</span><span class="p">()</span>
+    <span class="n">breaker</span><span class="p">[</span><span class="s1">&#39;_answer&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()]</span><span class="o">=</span><span class="s1">&#39;13541&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">breaker</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.server.portal.amp.AMPMultiConnectionProtocol.dataReceived">
 <code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.dataReceived" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handle non-AMP messages, such as HTTP communication.</p>
