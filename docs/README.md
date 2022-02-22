@@ -30,7 +30,7 @@ use a system with `make` (Linux/Unix/Mac or [Windows-WSL][Windows-WSL]). Lacking
 in principle also run the sphinx build-commands manually - read the `evennia/docs/Makefile` to see
 which commands are run by `make`.
 
-You don't necessarily _have_ to build the docs locally to contribute.  But
+You don't necessarily _have_ to build the docs locally to contribute, but
 building them allows you to check for yourself that syntax is correct and that
 your change comes out looking as you expected.
 
@@ -38,7 +38,7 @@ your change comes out looking as you expected.
 
 If you only want to build the main documentation pages (not the API autodocs),
 you don't need to install Evennia itself, only the documentation resources.
-All is done in your terminal/console.
+This action is done in your terminal/console.
 
 - (Optional, but recommended): Activate a virtualenv with Python 3.7.
 - `cd` to into the `evennia/docs` folder (where this README is).
@@ -64,7 +64,7 @@ All is done in your terminal/console.
 ## Building the main documentation and API docs
 
 The full documentation includes both the doc pages and the API documentation
-generated from the Evennia source. For this you must install Evennia and
+generated from the Evennia source. To build the full documentation you must install Evennia and
 initialize a new game with a default database (you don't need to have it
 running).
 
@@ -116,8 +116,8 @@ repo with
 
 ### Building with another gamedir
 
-If you for some reason want to use another location of your `gamedir/`, or want it
-named something else (maybe you already use the name 'gamedir' for your development ...),
+If for some reason you want to use another location of your `gamedir/` or want it
+named something else (maybe you already use the name 'gamedir' for your development ...)
 you can do so by setting the `EVGAMEDIR` environment variable to the absolute path
 of your alternative game dir. For example:
 
@@ -130,7 +130,7 @@ of your alternative game dir. For example:
 The full Evennia documentation also tracks documentation from older Evennia
 versions. This is done by pulling documentation from Evennia's old release
 branches and building them all so readers can choose which one to view. Only
-specific official Evennia branches will be built, so you can't use this to
+specific official Evennia branches will be built so you can't use this to
 build your own testing branch.
 
 - All local changes must have been committed to git first, since the versioned
@@ -173,8 +173,8 @@ We generally use underscores for italics and double-asterisks for bold:
 
 ## Headings
 
-We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get smaller
-and smaller font).
+We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (the font will be smaller
+and smaller).
 
 - `# Heading`
 - `## SubHeading`
@@ -305,7 +305,7 @@ Everything within these backticks will be verbatim.
 ## Code blocks
 
 Code examples are a special case - we want them to get code-highlighting for readability. This is done by using
-the triple-backticks and specify which language we use:
+the triple-backticks and specifying the language we use:
 
 ````
 ```python
@@ -346,7 +346,7 @@ This is important because it is!
 
 #### Warning
 
-A warning block is used to draw attention to particularly dangerous things, or features easy to
+A warning block is used to draw attention to particularly dangerous things or features that are easy to
 mess up.
 
 ````
@@ -357,7 +357,7 @@ Be careful about this ...
 #### Version changes and deprecations
 
 These will show up as one-line warnings that suggest an added, changed or deprecated
-feature beginning with particular version.
+feature beginning with the particular version.
 
 ````
 ```{versionadded} 1.0
@@ -378,7 +378,7 @@ feature beginning with particular version.
 #### Sidebar
 
 This will display an informative sidebar that floats to the side of regular content. This is useful
-for example to remind the reader of some concept relevant to the text.
+to remind the reader of some concept relevant to the text.
 
 ````
 ```{sidebar} Things to remember
