@@ -52,7 +52,7 @@ are useful in the game ...
 Sectioning (`# title`,  `## subtile` etc) should not be used in
 freeform docstrings - this will confuse the sectioning of the auto
 documentation page and the auto-api will create this automatically.
-Write just the section name bolded on its own line to mark a section. 
+Write just the section name bolded on its own line to mark a section.
 Beyond sections markdown should be used as needed to format
 the text.
 
@@ -101,11 +101,11 @@ def funcname(a, b, c, d=False, **kwargs):
         c (list): A list argument.
         d (bool, optional): An optional keyword argument.
 
-    Kwargs:
+    Keyword Args:
         test (list): A test keyword.
 
     Returns:
-        e (str): The result of the function.
+        str: The result of the function.
 
     Raises:
         RuntimeException: If there is a critical error,
@@ -129,18 +129,12 @@ indents to be 4 spaces wide (no tabs!).
 Here are all the supported block headers:
 
 ```
-    Args/Arg/Kwargs/Kwarg:
+    Args/Keyword Args:
         argname (freeform type): text
-        or
-        freeform text
     Returns/Yields:
-        kwargname (freeform type): text
-        or
-        freeform text
+        type: text
     Raises:
         Exceptiontype: text
-        or
-        freeform text
     Notes/Note/Examples/Example:
         freeform text
 ```
@@ -153,7 +147,7 @@ freeform counterpart (this will produce nicer output) but in some
 cases the freeform may produce a more compact and readable result
 (such as when describing an `*args` or `**kwargs` statement in general
 terms). The first `self` argument of class methods should never be
-documented. 
+documented.
 
 Note that
 
@@ -179,15 +173,15 @@ it easier to read.
 ### Default Commands
 
 These represent a special case since Commands in Evennia use their
-class docstrings to represent the in-game help entry for that command. 
-For the default look of Command class docstrings see instead 
+class docstrings to represent the in-game help entry for that command.
+For the default look of Command class docstrings see instead
 [the default command documentation policy][command-docstrings].
 
-### Automatic docstring templating 
+### Automatic docstring templating
 
 The Python IDE [Pycharm][pycharm] will generate Evennia-friendly
 docstring stubs automatically for you, but the default format is
-reStructuredText. To change it to Evennia's Google-style, follow 
+reStructuredText. To change it to Evennia's Google-style, follow
 [this guide][pycharm-guide].
 
 ## Ask Questions!
