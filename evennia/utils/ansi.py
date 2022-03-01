@@ -541,6 +541,7 @@ def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp
         string (str): The parsed string.
 
     """
+    string = string or ""
     return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp)
 
 
@@ -557,6 +558,7 @@ def strip_ansi(string, parser=ANSI_PARSER):
         string (str): The stripped string.
 
     """
+    string = string or ""
     return parser.parse_ansi(string, strip_ansi=True)
 
 
@@ -573,6 +575,7 @@ def strip_raw_ansi(string, parser=ANSI_PARSER):
         string (str): the stripped string.
 
     """
+    string = string or ""
     return parser.strip_raw_codes(string)
 
 
@@ -590,6 +593,7 @@ def strip_mxp(string, parser=ANSI_PARSER):
     Strip MXP markup.
 
     """
+    string = string or ""
     return parser.strip_mxp(string)
 
 
@@ -602,6 +606,7 @@ def raw(string):
         string (str): The raw, escaped string.
 
     """
+    string = string or ""
     return string.replace("{", "{{").replace("|", "||")
 
 
