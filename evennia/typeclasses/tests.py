@@ -57,6 +57,15 @@ class TestAttributes(BaseEvenniaTest):
         self.assertEqual(attrobj.category, "category4")
         self.assertEqual(attrobj.locks.all(), ["attrread:id(1)"])
 
+    def test_value_vs_strvalue(self):
+        self.obj1.attributes.add("test", "one")
+        self.assertEqual(self.obj1.attributes.get("test"), "one")
+        self.assertEqual(self.obj1.attributes.get("test", strattr=True), None)
+        # switch to strattr
+        self.obj1.attributes.add("test", "two", strattr=True)
+        self.assertEqual(self.obj1.attributes.get("test"), None)
+        self.assertEqual(self.obj1.attributes.get("test", strattr=True), "two")
+
 
 class TestTypedObjectManager(BaseEvenniaTest):
     def _manager(self, methodname, *args, **kwargs):
