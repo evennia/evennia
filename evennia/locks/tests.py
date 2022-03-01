@@ -209,6 +209,17 @@ class TestLockfuncs(BaseEvenniaTest):
         self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 4]"))
         self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "123"))
 
+    def test_is_ooc__char(self):
+        self.assertEqual(False, lockfuncs.is_ooc(self.char1, self.char1))
+
+    def test_is_ooc__session(self):
+        self.assertEqual(False, lockfuncs.is_ooc(self.session, self.char1))
+
+    def test_is_ooc__account(self):
+        self.assertEqual(False, lockfuncs.is_ooc(self.account, self.char1))
+        self.account.unpuppet_all()
+        self.assertEqual(True, lockfuncs.is_ooc(self.account, self.char1))
+
 
 class TestPermissionCheck(BaseEvenniaTest):
     """
