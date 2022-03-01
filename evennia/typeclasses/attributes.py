@@ -665,13 +665,14 @@ class IAttributeBackend:
             self._set_cache(key, category, attr)
         return attr
 
-    def do_update_attribute(self, attr, value):
+    def do_update_attribute(self, attr, value, strvalue):
         """
         Simply sets a new Value to an Attribute.
 
         Args:
             attr (IAttribute): The Attribute being changed.
             value (obj): The Value for the Attribute.
+            strvalue (bool): If True, `value` is expected to be a string.
 
         """
         raise NotImplementedError()
@@ -773,15 +774,16 @@ class IAttributeBackend:
         self._delete_cache(attr.key, attr.category)
         self.do_delete_attribute(attr)
 
-    def update_attribute(self, attr, value):
+    def update_attribute(self, attr, value, strattr=False):
         """
         Simply updates an Attribute.
 
         Args:
             attr (IAttribute): The attribute to delete.
             value (obj): The new value.
+            strattr (bool): If set, the `value` is a raw string.
         """
-        self.do_update_attribute(attr, value)
+        self.do_update_attribute(attr, value, strattr)
 
     def do_batch_delete(self, attribute_list):
         """
@@ -903,7 +905,7 @@ class InMemoryAttributeBackend(IAttributeBackend):
         self._category_storage[category].append(new_attr)
         return new_attr
 
-    def do_update_attribute(self, attr, value):
+    def do_update_attribute(self, attr, value, strvalue):
         attr.value = value
 
     def do_batch_update_attribute(self, attr_obj, category, lock_storage, new_value, strvalue):
@@ -1002,8 +1004,14 @@ class ModelAttributeBackend(IAttributeBackend):
         self._set_cache(key, category, new_attr)
         return new_attr
 
-    def do_update_attribute(self, attr, value):
-        attr.value = value
+    def do_update_attribute(self, attr, value, strvalue):
+        if strvalue:
+            attr.value = None
+            attr.db_strvalue = value
+        else:
+            attr.value = value
+            attr.db_strvalue = None
+        attr.save(update_fields=["db_strvalue", "db_value"])
 
     def do_batch_update_attribute(self, attr_obj, category, lock_storage, new_value, strvalue):
         attr_obj.db_category = category
@@ -1203,7 +1211,7 @@ class AttributeHandler:
         if attr_obj:
             # update an existing attribute object
             attr_obj = attr_obj[0]
-            self.backend.update_attribute(attr_obj, value)
+            self.backend.update_attribute(attr_obj, value, strattr)
         else:
             # create a new Attribute (no OOB handlers can be notified)
             self.backend.create_attribute(keystr, category, lockstring, value, strattr)
