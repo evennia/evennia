@@ -476,13 +476,19 @@ class ObjectDBManager(TypedObjectManager):
             # query - if so, strip it.
             match = _MULTIMATCH_REGEX.match(str(searchdata))
             match_number = None
+            stripped_searchdata = searchdata
             if match:
                 # strips the number
-                match_number, searchdata = match.group("number"), match.group("name")
+                match_number, stripped_searchdata = match.group("number"), match.group("name")
                 match_number = int(match_number) - 1
-            if match_number is not None or not exact:
-                # run search again, with the exactness set by call
-                matches = _searcher(searchdata, candidates, typeclass, exact=exact)
+            if match_number is not None:
+                # run search against the stripped data
+                matches = _searcher(stripped_searchdata, candidates, typeclass, exact=True)
+                if not matches:
+                    # final chance to get a looser match against the number-strippped query
+                    matches = _searcher(stripped_searchdata, candidates, typeclass, exact=False)
+            elif not exact:
+                matches = _searcher(searchdata, candidates, typeclass, exact=False)
 
         # deal with result
         if len(matches) == 1 and match_number is not None and match_number != 0:

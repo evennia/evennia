@@ -383,7 +383,7 @@ class TestPuzzles(BaseEvenniaCommandTest):
         self._use(
             "steel-1, flint", "You try to utilize these but nothing happens ... something amiss?"
         )
-        self._use("steel-1, flint, red steel, steel-3", "You are a Genius")
+        self._use("steel-1, flint, red steel, steel-2", "You are a Genius")
         self._check_room_contents({"smoke": 1, "fire": 1})
         _box_all()
 

@@ -1035,7 +1035,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
             pcmdset = AccountCmdSet()
             pcmdset.at_cmdset_creation()
             pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"]
-            self.assertTrue(all(cmd.key in pcmds for cmd in cmdset.commands))
+            self.assertEqual(set(cmd.key for cmd in cmdset.commands), set(pcmds))
 
         # _callback = lambda cmdset: self.assertEqual(sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4)
         deferred.addCallback(_callback)
