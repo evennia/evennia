@@ -348,6 +348,12 @@ class TextToHTMLparser(object):
         "clean up invisible spaces"
         return match.group(1) + "&nbsp;"
 
+    def handle_single_first_space(self, text):
+        "Don't swallow an initial lone space"
+        if text.startswith(" "):
+            return "&nbsp;" + text[1:]
+        return text
+
     def parse(self, text, strip_ansi=False):
         """
         Main access function, converts a text containing ANSI codes
@@ -361,8 +367,7 @@ class TextToHTMLparser(object):
             text (str): Parsed text.
 
         """
-        # print(f"incoming ansi:\n{text}")
-
+        # print(f"incoming text:\n{text}")
         # parse everything to ansi first
         text = parse_ansi(text, strip_ansi=strip_ansi, xterm256=True, mxp=True)
         # convert all ansi to html
@@ -380,6 +385,7 @@ class TextToHTMLparser(object):
         result = self.convert_urls(result)
         result = self.re_double_space(result)
         result = self.re_invisible_space(result)
+        result = self.handle_single_first_space(result)
         # clean out eventual ansi that was missed
         ## result = parse_ansi(result, strip_ansi=True)
 
