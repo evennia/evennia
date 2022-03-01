@@ -482,15 +482,19 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     only when out of character.
     """
     obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
-    session = obj.session if hasattr(obj, "session") else obj
+    account = obj.account if hasattr(obj, "account") else obj
+    if not account:
+        return True
     try:
-        return not obj.get_puppet(session)
+        session = accessed_obj.session
     except AttributeError:
-        try:
-            return not obj.account.get_puppet(session)
-        except AttributeError:
-            pass
-    return False
+        session = account.sessions.get()[0]  # note-this doesn't work well
+                                             # for high multisession mode. We may need
+                                             # to change to sessiondb to resolve this
+    try:
+        return not account.get_puppet(session)
+    except TypeError:
+        return not session.get_puppet()
 
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     """
