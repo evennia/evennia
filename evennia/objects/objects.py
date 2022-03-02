@@ -2237,7 +2237,7 @@ class DefaultCharacter(DefaultObject):
     lockstring = (
         "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);"
         "delete:id({account_id}) or perm(Admin);"
-        "edit:pid({account_id}) or perm(Admin);"
+        "edit:pid({account_id}) or perm(Admin)"
     )
 
     @classmethod
