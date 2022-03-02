@@ -68,6 +68,14 @@ class TestGeneral(BaseEvenniaCommandTest):
     def test_home(self):
         self.call(general.CmdHome(), "", "You are already home")
 
+    def test_go_home(self):
+        self.call(building.CmdTeleport(), "/quiet Room2")
+        self.call(general.CmdHome(), "", "There's no place like home")
+
+    def test_no_home(self):
+        self.char1.home = None
+        self.call(general.CmdHome(), "", "You have no home")
+
     def test_inventory(self):
         self.call(general.CmdInventory(), "", "You are not carrying anything.")
 
