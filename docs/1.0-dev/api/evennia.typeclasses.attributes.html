@@ -599,13 +599,14 @@ this will lead to Trouble. Ignored for InMemory attributes.</p></li>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.IAttributeBackend.do_update_attribute">
-<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simply sets a new Value to an Attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The Attribute being changed.</p></li>
 <li><p><strong>value</strong> (<em>obj</em>) – The Value for the Attribute.</p></li>
+<li><p><strong>strvalue</strong> (<em>bool</em>) – If True, <strong>value</strong> is expected to be a string.</p></li>
 </ul>
 </dd>
 </dl>
@@ -695,13 +696,14 @@ directly to the database.</p>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.IAttributeBackend.update_attribute">
-<code class="sig-name descname">update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.update_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#IAttributeBackend.update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.IAttributeBackend.update_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simply updates an Attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The attribute to delete.</p></li>
 <li><p><strong>value</strong> (<em>obj</em>) – The new value.</p></li>
+<li><p><strong>strattr</strong> (<em>bool</em>) – If set, the <strong>value</strong> is a raw string.</p></li>
 </ul>
 </dd>
 </dl>
@@ -817,13 +819,14 @@ to know an Attribute hasn’t been deleted out from under the cache’s nose.</p
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.InMemoryAttributeBackend.do_update_attribute">
-<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#InMemoryAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.InMemoryAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simply sets a new Value to an Attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The Attribute being changed.</p></li>
 <li><p><strong>value</strong> (<em>obj</em>) – The Value for the Attribute.</p></li>
+<li><p><strong>strvalue</strong> (<em>bool</em>) – If True, <strong>value</strong> is expected to be a string.</p></li>
 </ul>
 </dd>
 </dl>
@@ -936,13 +939,14 @@ this will lead to Trouble. Ignored for InMemory attributes.</p></li>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.ModelAttributeBackend.do_update_attribute">
-<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">do_update_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">strvalue</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#ModelAttributeBackend.do_update_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.ModelAttributeBackend.do_update_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simply sets a new Value to an Attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attr</strong> (<a class="reference internal" href="#evennia.typeclasses.attributes.IAttribute" title="evennia.typeclasses.attributes.IAttribute"><em>IAttribute</em></a>) – The Attribute being changed.</p></li>
 <li><p><strong>value</strong> (<em>obj</em>) – The Value for the Attribute.</p></li>
+<li><p><strong>strvalue</strong> (<em>bool</em>) – If True, <strong>value</strong> is expected to be a string.</p></li>
 </ul>
 </dd>
 </dl>

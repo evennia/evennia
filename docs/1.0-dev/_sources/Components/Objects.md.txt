@@ -5,12 +5,32 @@ All in-game objects in Evennia, be it characters, chairs, monsters, rooms or han
 represented by an Evennia *Object*. Objects form the core of Evennia and is probably what you'll
 spend most time working with. Objects are [Typeclassed](./Typeclasses.md) entities.
 
+An Evennia Object is, by definition, a Python class that includes 
+[evennia.objects.objects.DefaultObject](evennia.objects.objects.DefaultObject) among its
+parents. Evennia defines several subclasses of `DefaultObject`:
+
+- [evennia.objects.objects.DefaultCharacter](evennia.objects.objects.DefaultCharacter) - 
+the normal in-game Character, controlled by a player.
+- [evennia.objects.objects.DefaultRoom](evennia.objects.objects.DefaultRoom) - a location in the game world.
+- [evennia.objects.objects.DefaultExit](evennia.objects.objects.DefaultExit) - an entity that (usually) sits 
+in a room and represents a one-way connection to another location.
+
+You will usually not use the `Default*` parents themselves. In `mygame/typeclasses/` there are 
+convenient subclasses to use. They are empty, and thus identical to 
+the defaults. Tweaking them is one of the main ways to customize you game!
+
+- `mygame.typeclasses.objects.Object` (inherits from `DefaultObject`)
+- `mygame.typeclasses.characters.Character` (inherits from `DefaultCharacter`)
+- `mygame.typeclasses.rooms.Room` (inherits from `DefaultRoom`)
+- `mygame.typeclasses.exits.Exit` (inherits from `DefaultExit`)
+
 ## How to create your own object types
 
-An Evennia Object is, per definition, a Python class that includes `evennia.DefaultObject` among its
-parents. In `mygame/typeclasses/objects.py` there is already a class `Object` that inherits from
-`DefaultObject` and that you can inherit from. You can put your new typeclass directly in that
-module or you could organize your code in some other way. Here we assume we make a new module
+You can easily add your own in-game behavior by either modifying one of the typeclasses in 
+your game dir or by inheriting from them. 
+
+You can put your new typeclass directly in the relevant parent 
+module, or you could organize your code in some other way. Here we assume we make a new module
 `mygame/typeclasses/flowers.py`:
 
 ```python
@@ -29,32 +49,66 @@ module or you could organize your code in some other way. Here we assume we make
             self.db.desc = "This is a pretty rose with thorns."     
 ```
    
-You could save this in the `mygame/typeclasses/objects.py` (then you'd not need to import `Object`)
-or you can put it in a new module. Let's say we do the latter, making a module
-`typeclasses/flowers.py`.  Now you just need to point to the class *Rose* with the `@create` command
+Now you just need to point to the class *Rose* with the `create` command
 to make a new rose:
 
      @create/drop MyRose:flowers.Rose
 
-What the `@create` command actually *does* is to use `evennia.create_object`. You can do the same
-thing yourself in code:
+What the `create` command actually *does* is to use the [evennia.create_object](evennia.utils.create.create_object) 
+function. You can do the same thing yourself in code:
 
 ```python
     from evennia import create_object
     new_rose = create_object("typeclasses.flowers.Rose", key="MyRose")
 ```
 
-(The `@create` command will auto-append the most likely path to your typeclass, if you enter the
+(The `create` command will auto-append the most likely path to your typeclass, if you enter the
 call manually you have to give the full path to the class. The `create.create_object` function is
 powerful and should be used for all coded object creating (so this is what you use when defining
-your own building commands). Check out the `ev.create_*` functions for how to build other entities
-like [Scripts](./Scripts.md)).
+your own building commands). 
 
 This particular Rose class doesn't really do much, all it does it make sure the attribute
 `desc`(which is what the `look` command looks for) is pre-set, which is pretty pointless since you
-will usually want to change this at build time (using the `@desc` command or using the
-[Spawner](./Prototypes.md)). The `Object` typeclass offers many more hooks that is available
-to use though - see next section.
+will usually want to change this at build time (using the `desc` command or using the
+[Spawner](./Prototypes.md)). 
+
+## Adding common functionality 
+
+`Object`, `Character`, `Room` and `Exit` also inherit from `mygame.typeclasses.objects.ObjectParent`.
+This is an empty 'mixin' class. Optionally, you can modify this class if you want to easily add some _common_ functionality to all
+your Objects, Characters, Rooms and Exits at once. You can still customize each subclass separately (see the Python
+docs on [multiple inheritance](https://docs.python.org/3/tutorial/classes.html#multiple-inheritance) for details).
+
+For example:
+
+```python
+# in mygame/typeclasses/objects.py
+# ... 
+
+from evennia.objects.objects import DefaultObject 
+
+class ObjectParent:
+    def at_pre_get(self, getter, **kwargs):
+       # make all entities by default un-pickable
+      return False
+       
+class Object(ObjectParent, DefaultObject): 
+    # replaces at_pre_get with its own
+    def at_pre_get(self, getter, **kwargs):
+       return True
+    
+# each in their respective modules ...
+
+class Character(ObjectParent, DefaultCharacter):
+    # will inherit at_pre_get from ObjectParent
+    pass  
+
+class Exit(ObjectParent, DefaultExit):
+    # Overrides and uses the DefaultExit version of at_pre_get instead
+    def at_pre_get(self, getter, **kwargs):     
+       return DefaultExit.at_pre_get(self, getter, **kwargs)
+
+```
 
 ## Properties and functions on Objects
 

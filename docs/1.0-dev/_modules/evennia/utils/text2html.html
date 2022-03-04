@@ -390,6 +390,12 @@
         <span class="s2">&quot;clean up invisible spaces&quot;</span>
         <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&amp;nbsp;&quot;</span></div>
 
+<div class="viewcode-block" id="TextToHTMLparser.handle_single_first_space"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.handle_single_first_space">[docs]</a>    <span class="k">def</span> <span class="nf">handle_single_first_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="s2">&quot;Don&#39;t swallow an initial lone space&quot;</span>
+        <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&amp;nbsp;&quot;</span> <span class="o">+</span> <span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">text</span></div>
+
 <div class="viewcode-block" id="TextToHTMLparser.parse"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main access function, converts a text containing ANSI codes</span>
@@ -403,8 +409,7 @@
 <span class="sd">            text (str): Parsed text.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># print(f&quot;incoming ansi:\n{text}&quot;)</span>
-
+        <span class="c1"># print(f&quot;incoming text:\n{text}&quot;)</span>
         <span class="c1"># parse everything to ansi first</span>
         <span class="n">text</span> <span class="o">=</span> <span class="n">parse_ansi</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">strip_ansi</span><span class="o">=</span><span class="n">strip_ansi</span><span class="p">,</span> <span class="n">xterm256</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mxp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># convert all ansi to html</span>
@@ -422,6 +427,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_urls</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_double_space</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_invisible_space</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_single_first_space</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="c1"># clean out eventual ansi that was missed</span>
         <span class="c1">## result = parse_ansi(result, strip_ansi=True)</span>
 

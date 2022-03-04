@@ -91,7 +91,7 @@ define it explicitly. You can combine both styles if you like.</p>
 
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># (or wherever you want)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
                         <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -117,9 +117,9 @@ other properties/methods on your class.</p>
 
 <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
     <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>&gt; Note that the property-name will become the name of the trait and you don’t supply <strong>trait_key</strong>
@@ -141,14 +141,14 @@ manipulate it directly (if you try, it will just remain unchanged). The <strong>
 on combining fields, like <strong>.base</strong> and <strong>.mod</strong> - which fields are available and how they relate to
 each other depends on the trait type.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">12</span>                                  <span class="c1"># base + mod</span>
+<span class="mi">18</span>                                  <span class="c1"># (base + mod) * mult</span>
 
-<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">5</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">6</span>
 <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">17</span>
+<span class="mi">27</span>
 
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">102</span>                                 <span class="c1"># base + mod</span>
+<span class="mi">102</span>                                 <span class="c1"># (base + mod) * mult</span>
 
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">base</span> <span class="o">-=</span> <span class="mi">200</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hp</span><span class="o">.</span><span class="n">value</span>
@@ -170,11 +170,11 @@ each other depends on the trait type.</p>
 <span class="c1"># with TraitProperties:</span>
 
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">12</span>
+<span class="mi">22</span>
 
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">5</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">17</span>
+<span class="mi">32</span>
 </pre></div>
 </div>
 </section>
@@ -204,22 +204,24 @@ all sorts of rule-resolution.</p>
 </section>
 <section id="static-trait">
 <h2>Static trait<a class="headerlink" href="#static-trait" title="Permalink to this headline">¶</a></h2>
-<p><strong>value = base + mod</strong></p>
-<p>The static trait has a <strong>base</strong> value and an optional <strong>mod</strong>-ifier. A typical use
-of a static trait would be a Strength stat or Skill value. That is, something
-that varies slowly or not at all, and which may be modified in-place.</p>
+<p><strong>value = (base + mod) * mult</strong></p>
+<p>The static trait has a <strong>base</strong> value and an optional <strong>mod</strong>-ifier and ‘mult’-iplier.
+The modifier defaults to 0, and the multiplier to 1.0, for no change in value.
+A typical use of a static trait would be a Strength stat or Skill value. That is,
+somethingthat varies slowly or not at all, and which may be modified in-place.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;Strength&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-
 <span class="mi">12</span>   <span class="c1"># base + mod</span>
+
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">base</span> <span class="o">+=</span> <span class="mi">2</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">mod</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">15</span>
 
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">mult</span> <span class="o">=</span> <span class="mf">2.0</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">mytrait</span><span class="o">.</span><span class="n">value</span>
-<span class="mi">12</span>
+<span class="mi">20</span>
 </pre></div>
 </div>
 <section id="counter">
@@ -227,17 +229,19 @@ that varies slowly or not at all, and which may be modified in-place.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">min</span><span class="o">/</span><span class="n">unset</span>     <span class="n">base</span>    <span class="n">base</span><span class="o">+</span><span class="n">mod</span>                       <span class="nb">max</span><span class="o">/</span><span class="n">unset</span>
 <span class="o">|--------------|--------|---------</span><span class="n">X</span><span class="o">--------</span><span class="n">X</span><span class="o">------------|</span>
                               <span class="n">current</span>    <span class="n">value</span>
-                                         <span class="o">=</span> <span class="n">current</span>
-                                         <span class="o">+</span> <span class="n">mod</span>
+                                         <span class="o">=</span> <span class="p">(</span><span class="n">current</span>
+                                         <span class="o">+</span> <span class="n">mod</span><span class="p">)</span>
+                                         <span class="o">*</span> <span class="n">mult</span>
 </pre></div>
 </div>
 <p>A counter describes a value that can move from a base. The <strong>.current</strong> property
 is the thing usually modified. It starts at the <strong>.base</strong>. One can also add a
-modifier, which will both be added to the base and to current (forming
-<strong>.value</strong>).  The min/max of the range are optional, a boundary set to None will
-remove it. A suggested use for a Counter Trait would be to track skill values.</p>
+modifier, which is added to both the base and to current. ‘.value’ is then formed
+by multiplying by the multiplier, which defaults to 1.0 for no change. The min/max
+of the range are optional, a boundary set to None will remove it. A suggested use
+for a Counter Trait would be to track skill values.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;hunting&quot;</span><span class="p">,</span> <span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
-                   <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+                   <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">11</span>  <span class="c1"># current starts at base + mod</span>
 
@@ -249,7 +253,10 @@ remove it. A suggested use for a Counter Trait would be to track skill values.</
 <span class="o">&gt;</span> <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">current</span>
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">11</span>
+
 <span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># removing upper bound</span>
+<span class="o">&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">traits</span><span class="o">.</span><span class="n">hunting</span><span class="o">.</span><span class="n">mult</span> <span class="o">=</span> <span class="mf">100.0</span>
+<span class="mi">1100</span>
 
 <span class="c1"># for TraitProperties, pass the args/kwargs of traits.add() to the</span>
 <span class="c1"># TraitProperty constructor instead.</span>
@@ -711,8 +718,8 @@ initialization of this trait.</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.traits.</code><code class="sig-name descname">StaticTrait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/traits.html#StaticTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.StaticTrait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpg.traits.traits.Trait" title="evennia.contrib.rpg.traits.traits.Trait"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.traits.Trait</span></code></a></p>
 <p>Static Trait. This is a single value with a modifier,
-with no concept of a ‘current’ value or min/max etc.</p>
-<p>value = base + mod</p>
+multiplier, and no concept of a ‘current’ value or min/max etc.</p>
+<p>value = (base + mod) * mult</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.traits.traits.StaticTrait.trait_type">
 <code class="sig-name descname">trait_type</code><em class="property"> = 'static'</em><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.StaticTrait.trait_type" title="Permalink to this definition">¶</a></dt>
@@ -720,7 +727,7 @@ with no concept of a ‘current’ value or min/max etc.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.traits.traits.StaticTrait.default_keys">
-<code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'mod': 0}</em><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.StaticTrait.default_keys" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'mod': 0, 'mult': 1.0}</em><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.StaticTrait.default_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -735,9 +742,15 @@ with no concept of a ‘current’ value or min/max etc.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.contrib.rpg.traits.traits.StaticTrait.mult">
+<em class="property">property </em><code class="sig-name descname">mult</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.StaticTrait.mult" title="Permalink to this definition">¶</a></dt>
+<dd><p>The trait’s multiplier.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.contrib.rpg.traits.traits.StaticTrait.value">
 <em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.StaticTrait.value" title="Permalink to this definition">¶</a></dt>
-<dd><p>The value of the Trait</p>
+<dd><p>The value of the Trait.</p>
 </dd></dl>
 
 </dd></dl>
@@ -750,10 +763,11 @@ with no concept of a ‘current’ value or min/max etc.</p>
 <p>This includes modifications and min/max limits as well as the notion of a
 current value. The value can also be reset to the base value.</p>
 <dl class="simple">
-<dt>min/unset     base    base+mod                       max/unset</dt><dd><dl class="simple">
+<dt>min/unset     base  (base+mod)*mult                  max/unset</dt><dd><dl class="simple">
 <dt><a href="#id1"><span class="problematic" id="id2">|--------------|</span></a>——–<a href="#id3"><span class="problematic" id="id4">|---------X--------X------------|</span></a></dt><dd><dl class="simple">
-<dt>current   value</dt><dd><p>= current
-+ mod</p>
+<dt>current   value</dt><dd><p>= (current
++ mod)
+* mult</p>
 </dd>
 </dl>
 </dd>
@@ -761,7 +775,7 @@ current value. The value can also be reset to the base value.</p>
 </dd>
 </dl>
 <ul>
-<li><p>value = current + mod, starts at base + mod</p></li>
+<li><p>value = (current + mod) * mult, starts at (base + mod) * mult</p></li>
 <li><p>if min or max is None, there is no upper/lower bound (default)</p></li>
 <li><p>if max is set to “base”, max will be equal ot base+mod</p></li>
 <li><p>descs are used to optionally describe each value interval.
@@ -792,7 +806,7 @@ ratetarget. Setting the rate to 0 (default) stops any change.</p></li>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.traits.traits.CounterTrait.default_keys">
-<code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'descs': None, 'max': None, 'min': None, 'mod': 0, 'rate': 0, 'ratetarget': None}</em><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.CounterTrait.default_keys" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'descs': None, 'max': None, 'min': None, 'mod': 0, 'mult': 1.0, 'rate': 0, 'ratetarget': None}</em><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.CounterTrait.default_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -812,6 +826,11 @@ ratetarget. Setting the rate to 0 (default) stops any change.</p></li>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.contrib.rpg.traits.traits.CounterTrait.mult">
+<em class="property">property </em><code class="sig-name descname">mult</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.CounterTrait.mult" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="evennia.contrib.rpg.traits.traits.CounterTrait.min">
 <em class="property">property </em><code class="sig-name descname">min</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.CounterTrait.min" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -824,13 +843,13 @@ ratetarget. Setting the rate to 0 (default) stops any change.</p></li>
 <dl class="py method">
 <dt id="evennia.contrib.rpg.traits.traits.CounterTrait.current">
 <em class="property">property </em><code class="sig-name descname">current</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.CounterTrait.current" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <strong>current</strong> value of the <strong>Trait</strong>. This does not have .mod added.</p>
+<dd><p>The <strong>current</strong> value of the <strong>Trait</strong>. This does not have .mod added and is not .mult-iplied.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.rpg.traits.traits.CounterTrait.value">
 <em class="property">property </em><code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.CounterTrait.value" title="Permalink to this definition">¶</a></dt>
-<dd><p>The value of the Trait (current + mod)</p>
+<dd><p>The value of the Trait. (current + mod) * mult</p>
 </dd></dl>
 
 <dl class="py method">
@@ -894,9 +913,9 @@ describe the interval.</p>
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.traits.</code><code class="sig-name descname">GaugeTrait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trait_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/traits.html#GaugeTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.GaugeTrait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.rpg.traits.traits.CounterTrait" title="evennia.contrib.rpg.traits.traits.CounterTrait"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.traits.CounterTrait</span></code></a></p>
 <p>Gauge Trait.</p>
-<p>This emulates a gauge-meter that empties from a base+mod value.</p>
+<p>This emulates a gauge-meter that empties from a (base+mod) * mult value.</p>
 <dl>
-<dt>min/0                                            max=base+mod</dt><dd><dl>
+<dt>min/0                                       max=(base+mod)*mult</dt><dd><dl>
 <dt><a href="#id5"><span class="problematic" id="id6">|-----------------------X---------------------------|</span></a></dt><dd><blockquote>
 <div><p>value</p>
 </div></blockquote>
@@ -907,7 +926,7 @@ describe the interval.</p>
 </dl>
 <ul>
 <li><p>min defaults to 0</p></li>
-<li><p>max value is always base + mad</p></li>
+<li><p>max value is always (base + mod) * mult</p></li>
 <li><p>.max is an alias of .base</p></li>
 <li><p>value = current and varies from min to max.</p></li>
 <li><dl>
@@ -935,7 +954,7 @@ values between 0 and 100:</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.traits.traits.GaugeTrait.default_keys">
-<code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'descs': None, 'min': 0, 'mod': 0, 'rate': 0, 'ratetarget': None}</em><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.GaugeTrait.default_keys" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">default_keys</code><em class="property"> = {'base': 0, 'descs': None, 'min': 0, 'mod': 0, 'mult': 1.0, 'rate': 0, 'ratetarget': None}</em><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.GaugeTrait.default_keys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -949,6 +968,11 @@ values between 0 and 100:</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.contrib.rpg.traits.traits.GaugeTrait.mult">
+<em class="property">property </em><code class="sig-name descname">mult</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.GaugeTrait.mult" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="evennia.contrib.rpg.traits.traits.GaugeTrait.min">
 <em class="property">property </em><code class="sig-name descname">min</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.GaugeTrait.min" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -956,7 +980,7 @@ values between 0 and 100:</p>
 <dl class="py method">
 <dt id="evennia.contrib.rpg.traits.traits.GaugeTrait.max">
 <em class="property">property </em><code class="sig-name descname">max</code><a class="headerlink" href="#evennia.contrib.rpg.traits.traits.GaugeTrait.max" title="Permalink to this definition">¶</a></dt>
-<dd><p>The max is always base + mod.</p>
+<dd><p>The max is always (base + mod) * mult.</p>
 </dd></dl>
 
 <dl class="py method">

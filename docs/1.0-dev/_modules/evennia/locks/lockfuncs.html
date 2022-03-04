@@ -524,15 +524,19 @@
 <span class="sd">    only when out of character.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">obj</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">obj</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">accessed_obj</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">session</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;session&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span>
+    <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;account&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_puppet</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">session</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">get_puppet</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">pass</span>
-    <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># note-this doesn&#39;t work well</span>
+                                             <span class="c1"># for high multisession mode. We may need</span>
+                                             <span class="c1"># to change to sessiondb to resolve this</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">get_puppet</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">get_puppet</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="objtag"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objtag">[docs]</a><span class="k">def</span> <span class="nf">objtag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

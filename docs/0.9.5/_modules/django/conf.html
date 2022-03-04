@@ -65,15 +65,15 @@
 
 <span class="c1"># RemovedInDjango50Warning</span>
 <span class="n">USE_DEPRECATED_PYTZ_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s1">&#39;The USE_DEPRECATED_PYTZ setting, and support for pytz timezones is &#39;</span>
-    <span class="s1">&#39;deprecated in favor of the stdlib zoneinfo module. Please update your &#39;</span>
-    <span class="s1">&#39;code to use zoneinfo and remove the USE_DEPRECATED_PYTZ setting.&#39;</span>
+    <span class="s2">&quot;The USE_DEPRECATED_PYTZ setting, and support for pytz timezones is &quot;</span>
+    <span class="s2">&quot;deprecated in favor of the stdlib zoneinfo module. Please update your &quot;</span>
+    <span class="s2">&quot;code to use zoneinfo and remove the USE_DEPRECATED_PYTZ setting.&quot;</span>
 <span class="p">)</span>
 
 <span class="n">USE_L10N_DEPRECATED_MSG</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s1">&#39;The USE_L10N setting is deprecated. Starting with Django 5.0, localized &#39;</span>
-    <span class="s1">&#39;formatting of data will always be enabled. For example Django will &#39;</span>
-    <span class="s1">&#39;display numbers and dates using the format of the current locale.&#39;</span>
+    <span class="s2">&quot;The USE_L10N setting is deprecated. Starting with Django 5.0, localized &quot;</span>
+    <span class="s2">&quot;formatting of data will always be enabled. For example Django will &quot;</span>
+    <span class="s2">&quot;display numbers and dates using the format of the current locale.&quot;</span>
 <span class="p">)</span>
 
 
@@ -82,6 +82,7 @@
 <span class="sd">    String subclass which references a current settings value. It&#39;s treated as</span>
 <span class="sd">    the value in memory but serializes to a settings.NAME attribute reference.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
@@ -95,6 +96,7 @@
 <span class="sd">    The user can manually configure settings prior to using them. Otherwise,</span>
 <span class="sd">    Django uses the settings module pointed to by DJANGO_SETTINGS_MODULE.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the settings module pointed to by the environment variable. This</span>
@@ -108,16 +110,17 @@
                 <span class="s2">&quot;Requested </span><span class="si">%s</span><span class="s2">, but settings are not configured. &quot;</span>
                 <span class="s2">&quot;You must either define the environment variable </span><span class="si">%s</span><span class="s2"> &quot;</span>
                 <span class="s2">&quot;or call settings.configure() before accessing settings.&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">ENVIRONMENT_VARIABLE</span><span class="p">))</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">ENVIRONMENT_VARIABLE</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">(</span><span class="n">settings_module</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Hardcode the class name as otherwise it yields &#39;Settings&#39;.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="n">empty</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;&lt;LazySettings [Unevaluated]&gt;&#39;</span>
+            <span class="k">return</span> <span class="s2">&quot;&lt;LazySettings [Unevaluated]&gt;&quot;</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;LazySettings &quot;</span><span class="si">%(settings_module)s</span><span class="s1">&quot;&gt;&#39;</span> <span class="o">%</span> <span class="p">{</span>
-            <span class="s1">&#39;settings_module&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">,</span>
+            <span class="s2">&quot;settings_module&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -128,9 +131,9 @@
 
         <span class="c1"># Special case some settings which require further modification.</span>
         <span class="c1"># This is done here for performance reasons so the modified value is cached.</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;MEDIA_URL&#39;</span><span class="p">,</span> <span class="s1">&#39;STATIC_URL&#39;</span><span class="p">}</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;MEDIA_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;STATIC_URL&quot;</span><span class="p">}</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_script_prefix</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;SECRET_KEY&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;SECRET_KEY&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;The SECRET_KEY setting must not be empty.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
@@ -141,7 +144,7 @@
 <span class="sd">        Set the value of setting. Clear all cached values if _wrapped changes</span>
 <span class="sd">        (@override_settings does this) or clear single values when set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;_wrapped&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;_wrapped&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -159,11 +162,11 @@
 <span class="sd">        argument must support attribute access (__getattr__)).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">empty</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Settings already configured.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Settings already configured.&quot;</span><span class="p">)</span>
         <span class="n">holder</span> <span class="o">=</span> <span class="n">UserSettingsHolder</span><span class="p">(</span><span class="n">default_settings</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Setting </span><span class="si">%r</span><span class="s1"> must be uppercase.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Setting </span><span class="si">%r</span><span class="s2"> must be uppercase.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">holder</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="o">=</span> <span class="n">holder</span>
 
@@ -176,10 +179,11 @@
 <span class="sd">        subpath to STATIC_URL and MEDIA_URL in settings is inconvenient.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Don&#39;t apply prefix to absolute paths and URLs.</span>
-        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">&#39;http://&#39;</span><span class="p">,</span> <span class="s1">&#39;https://&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)):</span>
             <span class="k">return</span> <span class="n">value</span>
         <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">get_script_prefix</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">get_script_prefix</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">get_script_prefix</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">configured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -198,14 +202,14 @@
                 <span class="n">RemovedInDjango50Warning</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;USE_L10N&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s2">&quot;USE_L10N&quot;</span><span class="p">)</span>
 
     <span class="c1"># RemovedInDjango50Warning.</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_USE_L10N_INTERNAL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Special hook to avoid checking a traceback in internal use on hot</span>
         <span class="c1"># paths.</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s1">&#39;USE_L10N&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="s2">&quot;USE_L10N&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>
@@ -221,7 +225,7 @@
         <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">)</span>
 
         <span class="n">tuple_settings</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s1">&#39;ALLOWED_HOSTS&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;ALLOWED_HOSTS&quot;</span><span class="p">,</span>
             <span class="s2">&quot;INSTALLED_APPS&quot;</span><span class="p">,</span>
             <span class="s2">&quot;TEMPLATE_DIRS&quot;</span><span class="p">,</span>
             <span class="s2">&quot;LOCALE_PATHS&quot;</span><span class="p">,</span>
@@ -231,36 +235,39 @@
             <span class="k">if</span> <span class="n">setting</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
                 <span class="n">setting_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">setting</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="p">(</span><span class="n">setting</span> <span class="ow">in</span> <span class="n">tuple_settings</span> <span class="ow">and</span>
-                        <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">setting_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))):</span>
-                    <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;The </span><span class="si">%s</span><span class="s2"> setting must be a list or a tuple.&quot;</span> <span class="o">%</span> <span class="n">setting</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">setting</span> <span class="ow">in</span> <span class="n">tuple_settings</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                    <span class="n">setting_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                        <span class="s2">&quot;The </span><span class="si">%s</span><span class="s2"> setting must be a list or a tuple.&quot;</span> <span class="o">%</span> <span class="n">setting</span>
+                    <span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span> <span class="n">setting_value</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_explicit_settings</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">setting</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">USE_TZ</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;USE_TZ&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">USE_TZ</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;USE_TZ&quot;</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s1">&#39;The default value of USE_TZ will change from False to True &#39;</span>
-                <span class="s1">&#39;in Django 5.0. Set USE_TZ to False in your project settings &#39;</span>
-                <span class="s1">&#39;if you want to keep the current default behavior.&#39;</span><span class="p">,</span>
+                <span class="s2">&quot;The default value of USE_TZ will change from False to True &quot;</span>
+                <span class="s2">&quot;in Django 5.0. Set USE_TZ to False in your project settings &quot;</span>
+                <span class="s2">&quot;if you want to keep the current default behavior.&quot;</span><span class="p">,</span>
                 <span class="n">category</span><span class="o">=</span><span class="n">RemovedInDjango50Warning</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;USE_DEPRECATED_PYTZ&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;USE_DEPRECATED_PYTZ&quot;</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_DEPRECATED_PYTZ_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="s1">&#39;tzset&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="s2">&quot;tzset&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="p">:</span>
             <span class="c1"># When we can, attempt to validate the timezone. If we can&#39;t find</span>
             <span class="c1"># this file, no check happens and it&#39;s harmless.</span>
-            <span class="n">zoneinfo_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;/usr/share/zoneinfo&#39;</span><span class="p">)</span>
-            <span class="n">zone_info_file</span> <span class="o">=</span> <span class="n">zoneinfo_root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+            <span class="n">zoneinfo_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/usr/share/zoneinfo&quot;</span><span class="p">)</span>
+            <span class="n">zone_info_file</span> <span class="o">=</span> <span class="n">zoneinfo_root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">zoneinfo_root</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">zone_info_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incorrect timezone setting: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span><span class="p">)</span>
             <span class="c1"># Move the time zone info into os.environ. See ticket #2315 for why</span>
             <span class="c1"># we don&#39;t do this unconditionally (breaks Windows).</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TZ&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIME_ZONE</span>
             <span class="n">time</span><span class="o">.</span><span class="n">tzset</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s1">&#39;USE_L10N&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_overridden</span><span class="p">(</span><span class="s2">&quot;USE_L10N&quot;</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">is_overridden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
@@ -268,13 +275,14 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%(cls)s</span><span class="s1"> &quot;</span><span class="si">%(settings_module)s</span><span class="s1">&quot;&gt;&#39;</span> <span class="o">%</span> <span class="p">{</span>
-            <span class="s1">&#39;cls&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-            <span class="s1">&#39;settings_module&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="s2">&quot;settings_module&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">SETTINGS_MODULE</span><span class="p">,</span>
         <span class="p">}</span>
 
 
 <span class="k">class</span> <span class="nc">UserSettingsHolder</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Holder for user configured settings.&quot;&quot;&quot;</span>
+
     <span class="c1"># SETTINGS_MODULE doesn&#39;t make much sense in the manually configured</span>
     <span class="c1"># (standalone) case.</span>
     <span class="n">SETTINGS_MODULE</span> <span class="o">=</span> <span class="kc">None</span>
@@ -284,7 +292,7 @@
 <span class="sd">        Requests for configuration variables not in this class are satisfied</span>
 <span class="sd">        from the module specified in default_settings (if possible).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;_deleted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_deleted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span> <span class="o">=</span> <span class="n">default_settings</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -294,10 +302,10 @@
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;USE_L10N&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;USE_L10N&quot;</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_L10N_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;USE_DEPRECATED_PYTZ&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;USE_DEPRECATED_PYTZ&quot;</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">USE_DEPRECATED_PYTZ_DEPRECATED_MSG</span><span class="p">,</span> <span class="n">RemovedInDjango50Warning</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -307,19 +315,22 @@
 
     <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="o">*</span><span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span><span class="p">)]</span>
+            <span class="n">s</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="o">*</span><span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span><span class="p">)]</span>
             <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">is_overridden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setting</span><span class="p">):</span>
-        <span class="n">deleted</span> <span class="o">=</span> <span class="p">(</span><span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span><span class="p">)</span>
-        <span class="n">set_locally</span> <span class="o">=</span> <span class="p">(</span><span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
-        <span class="n">set_on_default</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span><span class="p">,</span> <span class="s1">&#39;is_overridden&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="kc">False</span><span class="p">)(</span><span class="n">setting</span><span class="p">)</span>
+        <span class="n">deleted</span> <span class="o">=</span> <span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span>
+        <span class="n">set_locally</span> <span class="o">=</span> <span class="n">setting</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">set_on_default</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_settings</span><span class="p">,</span> <span class="s2">&quot;is_overridden&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="p">)(</span><span class="n">setting</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">deleted</span> <span class="ow">or</span> <span class="n">set_locally</span> <span class="ow">or</span> <span class="n">set_on_default</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%(cls)s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">{</span>
-            <span class="s1">&#39;cls&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%(cls)s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">{</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
         <span class="p">}</span>
 
 

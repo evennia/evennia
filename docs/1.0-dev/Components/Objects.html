@@ -52,12 +52,31 @@
 <p>All in-game objects in Evennia, be it characters, chairs, monsters, rooms or hand grenades are
 represented by an Evennia <em>Object</em>. Objects form the core of Evennia and is probably what you’ll
 spend most time working with. Objects are <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entities.</p>
+<p>An Evennia Object is, by definition, a Python class that includes
+<a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><span class="xref myst py py-class">evennia.objects.objects.DefaultObject</span></a> among its
+parents. Evennia defines several subclasses of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><span class="xref myst py py-class">evennia.objects.objects.DefaultCharacter</span></a> -
+the normal in-game Character, controlled by a player.</p></li>
+<li><p><a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom"><span class="xref myst py py-class">evennia.objects.objects.DefaultRoom</span></a> - a location in the game world.</p></li>
+<li><p><a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><span class="xref myst py py-class">evennia.objects.objects.DefaultExit</span></a> - an entity that (usually) sits
+in a room and represents a one-way connection to another location.</p></li>
+</ul>
+<p>You will usually not use the <code class="docutils literal notranslate"><span class="pre">Default*</span></code> parents themselves. In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/</span></code> there are
+convenient subclasses to use. They are empty, and thus identical to
+the defaults. Tweaking them is one of the main ways to customize you game!</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mygame.typeclasses.objects.Object</span></code> (inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mygame.typeclasses.characters.Character</span></code> (inherits from <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mygame.typeclasses.rooms.Room</span></code> (inherits from <code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mygame.typeclasses.exits.Exit</span></code> (inherits from <code class="docutils literal notranslate"><span class="pre">DefaultExit</span></code>)</p></li>
+</ul>
 <section id="how-to-create-your-own-object-types">
 <h2>How to create your own object types<a class="headerlink" href="#how-to-create-your-own-object-types" title="Permalink to this headline">¶</a></h2>
-<p>An Evennia Object is, per definition, a Python class that includes <code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code> among its
-parents. In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code> there is already a class <code class="docutils literal notranslate"><span class="pre">Object</span></code> that inherits from
-<code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> and that you can inherit from. You can put your new typeclass directly in that
-module or you could organize your code in some other way. Here we assume we make a new module
+<p>You can easily add your own in-game behavior by either modifying one of the typeclasses in
+your game dir or by inheriting from them.</p>
+<p>You can put your new typeclass directly in the relevant parent
+module, or you could organize your code in some other way. Here we assume we make a new module
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/flowers.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># mygame/typeclasses/flowers.py</span>
 
@@ -74,29 +93,61 @@ module or you could organize your code in some other way. Here we assume we make
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;This is a pretty rose with thorns.&quot;</span>     
 </pre></div>
 </div>
-<p>You could save this in the <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code> (then you’d not need to import <code class="docutils literal notranslate"><span class="pre">Object</span></code>)
-or you can put it in a new module. Let’s say we do the latter, making a module
-<code class="docutils literal notranslate"><span class="pre">typeclasses/flowers.py</span></code>.  Now you just need to point to the class <em>Rose</em> with the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command
+<p>Now you just need to point to the class <em>Rose</em> with the <code class="docutils literal notranslate"><span class="pre">create</span></code> command
 to make a new rose:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> @create/drop MyRose:flowers.Rose
 </pre></div>
 </div>
-<p>What the <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command actually <em>does</em> is to use <code class="docutils literal notranslate"><span class="pre">evennia.create_object</span></code>. You can do the same
-thing yourself in code:</p>
+<p>What the <code class="docutils literal notranslate"><span class="pre">create</span></code> command actually <em>does</em> is to use the <a class="reference internal" href="../api/evennia.utils.create.html#evennia.utils.create.create_object" title="evennia.utils.create.create_object"><span class="xref myst py py-func">evennia.create_object</span></a>
+function. You can do the same thing yourself in code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
     <span class="n">new_rose</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.flowers.Rose&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;MyRose&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>(The <code class="docutils literal notranslate"><span class="pre">&#64;create</span></code> command will auto-append the most likely path to your typeclass, if you enter the
+<p>(The <code class="docutils literal notranslate"><span class="pre">create</span></code> command will auto-append the most likely path to your typeclass, if you enter the
 call manually you have to give the full path to the class. The <code class="docutils literal notranslate"><span class="pre">create.create_object</span></code> function is
 powerful and should be used for all coded object creating (so this is what you use when defining
-your own building commands). Check out the <code class="docutils literal notranslate"><span class="pre">ev.create_*</span></code> functions for how to build other entities
-like <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Scripts</span></a>).</p>
+your own building commands).</p>
 <p>This particular Rose class doesn’t really do much, all it does it make sure the attribute
 <code class="docutils literal notranslate"><span class="pre">desc</span></code>(which is what the <code class="docutils literal notranslate"><span class="pre">look</span></code> command looks for) is pre-set, which is pretty pointless since you
-will usually want to change this at build time (using the <code class="docutils literal notranslate"><span class="pre">&#64;desc</span></code> command or using the
-<a class="reference internal" href="Prototypes.html"><span class="doc std std-doc">Spawner</span></a>). The <code class="docutils literal notranslate"><span class="pre">Object</span></code> typeclass offers many more hooks that is available
-to use though - see next section.</p>
+will usually want to change this at build time (using the <code class="docutils literal notranslate"><span class="pre">desc</span></code> command or using the
+<a class="reference internal" href="Prototypes.html"><span class="doc std std-doc">Spawner</span></a>).</p>
+</section>
+<section id="adding-common-functionality">
+<h2>Adding common functionality<a class="headerlink" href="#adding-common-functionality" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Object</span></code>, <code class="docutils literal notranslate"><span class="pre">Character</span></code>, <code class="docutils literal notranslate"><span class="pre">Room</span></code> and <code class="docutils literal notranslate"><span class="pre">Exit</span></code> also inherit from <code class="docutils literal notranslate"><span class="pre">mygame.typeclasses.objects.ObjectParent</span></code>.
+This is an empty ‘mixin’ class. Optionally, you can modify this class if you want to easily add some <em>common</em> functionality to all
+your Objects, Characters, Rooms and Exits at once. You can still customize each subclass separately (see the Python
+docs on <a class="reference external" href="https://docs.python.org/3/tutorial/classes.html#multiple-inheritance">multiple inheritance</a> for details).</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/objects.py</span>
+<span class="c1"># ... </span>
+
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span> 
+
+<span class="k">class</span> <span class="nc">ObjectParent</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+       <span class="c1"># make all entities by default un-pickable</span>
+      <span class="k">return</span> <span class="kc">False</span>
+       
+<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span> 
+    <span class="c1"># replaces at_pre_get with its own</span>
+    <span class="k">def</span> <span class="nf">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+       <span class="k">return</span> <span class="kc">True</span>
+    
+<span class="c1"># each in their respective modules ...</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="c1"># will inherit at_pre_get from ObjectParent</span>
+    <span class="k">pass</span>  
+
+<span class="k">class</span> <span class="nc">Exit</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">):</span>
+    <span class="c1"># Overrides and uses the DefaultExit version of at_pre_get instead</span>
+    <span class="k">def</span> <span class="nf">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>     
+       <span class="k">return</span> <span class="n">DefaultExit</span><span class="o">.</span><span class="n">at_pre_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</pre></div>
+</div>
 </section>
 <section id="properties-and-functions-on-objects">
 <h2>Properties and functions on Objects<a class="headerlink" href="#properties-and-functions-on-objects" title="Permalink to this headline">¶</a></h2>
@@ -252,6 +303,7 @@ and display this as an error message. If this is not found, the Exit will instea
   <ul>
 <li><a class="reference internal" href="#">Objects</a><ul>
 <li><a class="reference internal" href="#how-to-create-your-own-object-types">How to create your own object types</a></li>
+<li><a class="reference internal" href="#adding-common-functionality">Adding common functionality</a></li>
 <li><a class="reference internal" href="#properties-and-functions-on-objects">Properties and functions on Objects</a></li>
 <li><a class="reference internal" href="#subclasses-of-object">Subclasses of <code class="docutils literal notranslate"><span class="pre">Object</span></code></a><ul>
 <li><a class="reference internal" href="#characters">Characters</a></li>

@@ -30,7 +30,7 @@ customize this if desired by passing a different value for the `db_attribute`
 parameter.
 
 ```python
-from evennia.contrib.game_systems.cooldowns import Cooldownhandler
+from evennia.contrib.game_systems.cooldowns import CooldownHandler
 from evennia.utils.utils import lazy_property
 
 @lazy_property
