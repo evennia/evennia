@@ -153,6 +153,13 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   decouple structures from database without needing separate import.
 - Add `run_in_main_thread` as a helper for those wanting to code server code
   from a web view.
+- Update `evennia.utils.logger` to use Twisted's new logging API. No change in Evennia API
+  except more standard aliases logger.error/info/exception/debug etc can now be used.
+- Have `type/force` default to `update`-mode rather than `reset`mode and add more verbose
+  warning when using reset mode.
+- Attribute storage support defaultdics (Hendher)
+- Add ObjectParent mixin to default game folder template as an easy, ready-made
+  way to override features on all ObjectDB-inheriting objects easily.
 
 
 ## Evennia 0.9.5

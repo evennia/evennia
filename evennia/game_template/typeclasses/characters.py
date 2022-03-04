@@ -11,7 +11,7 @@ from evennia.objects.objects import DefaultCharacter
 from .objects import ObjectParent
 
 
-class Character(DefaultCharacter, ObjectParent):
+class Character(ObjectParent, DefaultCharacter):
     """
     The Character defaults to reimplementing some of base Object's hook methods with the
     following functionality:

@@ -25,7 +25,7 @@ class ObjectParent:
     """
 
 
-class Object(DefaultObject, ObjectParent):
+class Object(ObjectParent, DefaultObject):
     """
     This is the root typeclass object, implementing an in-game Evennia
     game object, such as having a location, being able to be

@@ -9,7 +9,7 @@ from evennia.objects.objects import DefaultRoom
 from .objects import ObjectParent
 
 
-class Room(DefaultRoom, ObjectParent):
+class Room(ObjectParent, DefaultRoom):
     """
     Rooms are like any Object, except their location is None
     (which is default). They also use basetype_setup() to
