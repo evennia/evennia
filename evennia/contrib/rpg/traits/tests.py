@@ -633,7 +633,7 @@ class TestTraitGauge(_TraitHandlerBase):
         self.trait = self.traithandler.get("test1")
 
     def _get_values(self):
-        """Get (base, mod, value, min, max)."""
+        """Get (base, mod, mult, value, min, max)."""
         return (self.trait.base, self.trait.mod, self.trait.mult, self.trait.value, self.trait.min, self.trait.max)
 
     def test_init(self):
@@ -778,7 +778,7 @@ class TestTraitGauge(_TraitHandlerBase):
         self.trait.min = -10
         self.assertEqual(self._get_values(), (0, 2, 1.0, 2, -10, 2))
         del self.trait.min
-        self.assertEqual(self._get_values(), (0, 2, 2, 0, 2))
+        self.assertEqual(self._get_values(), (0, 2, 1.0, 2, 0, 2))
 
     def test_percentage(self):
         """Test percentage calculation"""
@@ -793,7 +793,7 @@ class TestTraitGauge(_TraitHandlerBase):
     def test_descs(self):
         """Test descriptions"""
         self.trait.min = -5
-        self.assertEqual(self._get_values(), (8, 2, 10, -5, 10))
+        self.assertEqual(self._get_values(), (8, 2, 1.0, 10, -5, 10))
         self.trait.current = -2
         self.assertEqual(self.trait.desc(), "range0")
         self.trait.current = 0

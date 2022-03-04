@@ -6,10 +6,11 @@ set and has a single command defined on itself with the same name as its key,
 for allowing Characters to traverse the exit to its destination.
 
 """
-from evennia import DefaultExit
+from evennia.objects.objects import DefaultExit
+from .objects import ObjectParent
 
 
-class Exit(DefaultExit):
+class Exit(DefaultExit, ObjectParent):
     """
     Exits are connectors between rooms. Exits are normal Objects except
     they defines the `destination` property. It also does work in the
