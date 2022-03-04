@@ -2969,7 +2969,7 @@ class CmdExamine(ObjManipCommand):
                 # we are only interested in specific attributes
                 attrs = [attr for attr in obj.db_attributes.all() if attr.db_key in obj_attrs]
                 if not attrs:
-                    self.msg("No attributes found on {obj.name}.")
+                    self.msg(f"No attributes found on {obj.name}.")
                 else:
                     out_strings = []
                     for attr in attrs:

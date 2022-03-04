@@ -10,10 +10,22 @@ the other types, you can do so by adding this as a multiple
 inheritance.
 
 """
-from evennia import DefaultObject
+from evennia.objects.objects import DefaultObject
 
 
-class Object(DefaultObject):
+class ObjectParent:
+    """
+    This is a mixin that can be used to override *all* entities inheriting at
+    some distance from DefaultObject (Objects, Exits, Characters and Rooms).
+
+    Just add any method that exists on `DefaultObject` to this class. If one
+    of the derived classes has itself defined that same hook already, that will
+    take precedence.
+
+    """
+
+
+class Object(DefaultObject, ObjectParent):
     """
     This is the root typeclass object, implementing an in-game Evennia
     game object, such as having a location, being able to be
