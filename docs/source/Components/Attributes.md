@@ -107,7 +107,7 @@ neck_armor = obj.attributes.get("neck", category="armor")
 
 If you don't specify a category, the Attribute's `category` will be `None`. Note that 
 `None` is also considered a category of its own, so you won't find `None`-category Attributes mixed 
-with `Attributes` having categories. 
+with Attributes having categories. 
 
 > When using `.db`, you will always use the `None` category.
 
@@ -462,11 +462,11 @@ obj.db.test4 = {'str':34, 'dex':56, 'agi':22, 'int':77}
 # a mixed dictionary/list
 obj.db.test5 = {'members': [obj1,obj2,obj3], 'enemies':[obj4,obj5]}
 # a tuple with a list in it
-obj.db.test6 = (1,3,4,8, ["test", "test2"], 9)
+obj.db.test6 = (1, 3, 4, 8, ["test", "test2"], 9)
 # a set
-obj.db.test7 = set([1,2,3,4,5])
+obj.db.test7 = set([1, 2, 3, 4, 5])
 # in-situ manipulation
-obj.db.test8 = [1,2,{"test":1}]
+obj.db.test8 = [1, 2, {"test":1}]
 obj.db.test8[0] = 4
 obj.db.test8[2]["test"] = 5
 # test8 is now [4,2,{"test":5}]
@@ -486,59 +486,53 @@ There is however an important thing to remember. If you retrieve your mutable it
 variable, e.g. `mylist2 = obj.db.mylist`, your new variable (`mylist2`) will *still* be a
 `_SaverList`. This means it will continue to save itself to the database whenever it is updated!
 
+```python
+obj.db.mylist = [1, 2, 3, 4]
+mylist = obj.db.mylist
+
+mylist[3] = 5  # this will also update database
+
+print(mylist)  # this is now [1, 2, 3, 5]
+print(obj.db.mylist)  # now also [1, 2, 3, 5]
+```
+
+When you extract your mutable Attribute data into a variable like `mylist`, think of it as getting a _snapshot_
+of the variable. If you update the snapshot, it will save to the database, but this change _will not propagate to 
+any other snapshots you may have done previously_.
+
+```python 
+obj.db.mylist = [1, 2, 3, 4]
+mylist1 = obj.db.mylist 
+mylist2 = obj.db.mylist 
+mylist1[3] = 5 
+
+print(mylist1)  # this is now [1, 2, 3, 5]
+print(obj.db.mylist)  # also updated to [1, 2, 3, 5] 
+
+print(mylist2)  # still [1, 2, 3, 4]  ! 
+
+```
+
+```{sidebar}
+Remember, the complexities of this section only relate to *mutable* iterables - things you can update
+in-place, like lists and dicts. [Immutable](https://en.wikipedia.org/wiki/Immutable) objects (strings, 
+numbers, tuples etc) are already disconnected from the database from the onset.
+```
+
+To avoid confusion with mutable Attributes, only work with one variable (snapshot) at a time and save 
+back the results as needed. 
+
+You can also choose to "disconnect" the Attribute entirely from the
+database with the help of the `.deserialize()` method:
 
 ```python
-     obj.db.mylist = [1,2,3,4]
-     mylist = obj.db.mylist
-     mylist[3] = 5 # this will also update database
-     print(mylist) # this is now [1,2,3,5]
-     print(obj.db.mylist) # this is also [1,2,3,5]
-```
-
-To "disconnect" your extracted mutable variable from the database you simply need to convert the
-`_Saver...` iterable to a normal Python structure. So to convert a `_SaverList`, you use the
-`list()` function, for a `_SaverDict` you use `dict()` and so on.
-
-```python
-     obj.db.mylist = [1,2,3,4]
-     mylist = list(obj.db.mylist) # convert to normal list
-     mylist[3] = 5
-     print(mylist) # this is now [1,2,3,5]
-     print(obj.db.mylist) # this is still [1,2,3,4]
-```
-
-A further problem comes with *nested mutables*, like a dict containing lists of dicts or something
-like that. Each of these nested mutables would be `_Saver*` structures connected to the database and
-disconnecting the outermost one of them would not disconnect those nested within. To make really
-sure you disonnect a nested structure entirely from the database, Evennia provides a special
-function `evennia.utils.dbserialize.deserialize`:
-
-```
-from evennia.utils.dbserialize import deserialize
-
-decoupled_mutables = deserialize(nested_mutables)
+obj.db.mylist = [1, 2, 3, 4, {1: 2}]
+mylist = obj.db.mylist.deserialize() 
 ```
 
 The result of this operation will be a structure only consisting of normal Python mutables (`list`
-instead of `_SaverList` and so on).
-
-
-Remember, this is only valid for *mutable* iterables.
-[Immutable](https://en.wikipedia.org/wiki/Immutable) objects (strings, numbers, tuples etc) are
-already disconnected from the database from the onset.
-
-```python
-     obj.db.mytup = (1,2,[3,4])
-     obj.db.mytup[0] = 5 # this fails since tuples are immutable
-
-     # this works but will NOT update database since outermost is a tuple
-     obj.db.mytup[2][1] = 5
-     print(obj.db.mytup[2][1]) # this still returns 4, not 5
-
-     mytup1 = obj.db.mytup # mytup1 is already disconnected from database since outermost
-                           # iterable is a tuple, so we can edit the internal list as we want
-                           # without affecting the database.
-```
+instead of `_SaverList`, `dict` instead of `_SaverDict` and so on). If you update it, you need to 
+explicitly save it back to the Attribute for it to save.
 
 ## Properties of Attributes
 
