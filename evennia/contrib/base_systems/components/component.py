@@ -1,5 +1,5 @@
 """
-Components - ChrisLR 2021
+Components - ChrisLR 2022
 
 This file contains the base class to inherit for creating new components.
 """

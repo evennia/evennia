@@ -82,13 +82,27 @@ character.components.add(vampirism)
 vampirism_from_elsewhere = character.components.get("vampirism")
 ```
 
-Keep in mind that all components must be imported to be visible in the listing
-As such, I recommend regrouping them in a package
+Keep in mind that all components must be imported to be visible in the listing.
+As such, I recommend regrouping them in a package.
 You can then import all your components in that package's __init__
 
 Because of how Evennia import typeclasses and the behavior of python imports
 I recommend placing the components package inside the typeclass package.
-
+In other words, create a folder named components inside your typeclass folder.
+Then, inside the 'typeclasses/__init__.py' file add the import to the folder, like
+```python
+from typeclasses import components
+```
+This ensures that the components package will be imported when the typeclasses are imported.
+You will also need to import each components inside the package's own 'typeclasses/components/__init__.py' file.
+You only need to import each module/file from there but importing the right class is a good practice.
+```python
+from typeclasses.components.health import Health
+```
+```python
+from typeclasses.components import health
+```
+Both of the above examples will work.
 
 # Full Example
 ```python
