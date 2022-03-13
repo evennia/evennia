@@ -109,9 +109,9 @@ class TestComponents(EvenniaTest):
         assert self.char1.cmp.does_not_exist is None
 
     def test_host_has_class_component_tags(self):
-        assert self.char1.tags.has(key="test_a", category="component")
-        assert self.char1.tags.has(key="test_b", category="component")
-        assert not self.char1.tags.has(key="test_c", category="component")
+        assert self.char1.tags.has(key="test_a", category="components")
+        assert self.char1.tags.has(key="test_b", category="components")
+        assert not self.char1.tags.has(key="test_c", category="components")
 
     def test_host_has_added_component_tags(self):
         rct = RuntimeComponentTestC.create(self.char1)
