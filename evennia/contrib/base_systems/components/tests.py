@@ -118,26 +118,28 @@ class TestComponents(EvenniaTest):
         self.char1.components.add(rct)
         test_c = self.char1.components.get('test_c')
 
-        assert self.char1.tags.has(key="test_c", category="component")
+        assert self.char1.tags.has(key="test_c", category="components")
 
     def test_host_has_added_default_component_tags(self):
         self.char1.components.add_default("test_c")
         test_c = self.char1.components.get("test_c")
 
-        assert self.char1.tags.has(key="test_c", category="component")
+        assert self.char1.tags.has(key="test_c", category="components")
 
     def test_host_remove_component_tags(self):
         rct = RuntimeComponentTestC.create(self.char1)
         handler = self.char1.components
         handler.add(rct)
-        assert self.char1.tags.has(key="test_c", category="component")
+        assert self.char1.tags.has(key="test_c", category="components")
         handler.remove(rct)
-        assert not self.char1.tags.has(key="test_c", category="component")
+
+        assert not self.char1.tags.has(key="test_c", category="components")
 
     def test_host_remove_by_name_component_tags(self):
         rct = RuntimeComponentTestC.create(self.char1)
         handler = self.char1.components
         handler.add(rct)
-        assert self.char1.tags.has(key="test_c", category="component")
+        assert self.char1.tags.has(key="test_c", category="components")
         handler.remove_by_name("test_c")
-        assert not self.char1.tags.has(key="test_c", category="component")
+
+        assert not self.char1.tags.has(key="test_c", category="components")
