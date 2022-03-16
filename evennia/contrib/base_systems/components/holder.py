@@ -64,6 +64,7 @@ class ComponentHandler:
         """
         self._set_component(component)
         self.db_names.append(component.name)
+        self.host.tags.add(component.name, category="components")
         component.at_added(self.host)
 
     def add_default(self, name):
@@ -84,6 +85,7 @@ class ComponentHandler:
         new_component = component.default_create(self.host)
         self._set_component(new_component)
         self.db_names.append(name)
+        self.host.tags.add(name, category="components")
         new_component.at_added(self.host)
 
     def remove(self, component):
@@ -100,6 +102,7 @@ class ComponentHandler:
         if component_name in self._loaded_components:
             component.at_removed(self.host)
             self.db_names.remove(component_name)
+            self.host.tags.remove(component_name, category="components")
             del self._loaded_components[component_name]
         else:
             message = f"Cannot remove {component_name} from {self.host.name} as it is not registered."
@@ -122,6 +125,7 @@ class ComponentHandler:
 
         instance.at_removed(self.host)
         self.db_names.remove(name)
+        self.host.tags.remove(name, category="components")
         del self._loaded_components[name]
 
     def get(self, name):
@@ -215,6 +219,14 @@ class ComponentHolderMixin(object):
             self.components._loaded_components[component_name] = component
 
         self.db.component_names = component_names
+
+    def basetype_posthook_setup(self):
+        """
+        Method that add component related tags that were set using ComponentProperty.
+        """
+        super().basetype_posthook_setup()
+        for component_name in self.db.component_names:
+            self.tags.add(component_name, category="components")
 
     @property
     def components(self) -> ComponentHandler:
