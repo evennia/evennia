@@ -9,7 +9,7 @@ See the docs for more information.
 """
 
 from evennia.contrib.base_systems.components.component import Component
-from evennia.contrib.base_systems.components.dbfield import DBField, NDBField
+from evennia.contrib.base_systems.components.dbfield import DBField, NDBField, TagField
 from evennia.contrib.base_systems.components.holder import ComponentHolderMixin, ComponentProperty
 
 
