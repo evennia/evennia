@@ -528,8 +528,10 @@ def search_prototype(
 
     """
     # This will load the prototypes the first time they are searched
-    if not _MODULE_PROTOTYPE_MODULES:
+    loaded = getattr(load_module_prototypes, '_LOADED', False)
+    if not loaded:
         load_module_prototypes()
+        setattr(load_module_prototypes, '_LOADED', True)
 
     # prototype keys are always in lowecase
     if key:
