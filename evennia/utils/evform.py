@@ -61,7 +61,7 @@ Use as follows:
     # create a new form from the template
     form = EvForm("path/to/testform.py")
 
-    (MudForm can also take a dictionary holding
+    (EvForm can also take a dictionary holding
      the required keys FORMCHAR, TABLECHAR and FORM)
 
     # add data to each tagged form cell

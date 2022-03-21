@@ -160,6 +160,10 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Attribute storage support defaultdics (Hendher)
 - Add ObjectParent mixin to default game folder template as an easy, ready-made
   way to override features on all ObjectDB-inheriting objects easily.
+- New `at_pre_object_receive(obj, source_location)` method on Objects. Called on
+  destination, mimicking behavior of `at_pre_move` hook - returning False will abort move.
+- New `at_pre_object_leave(obj, destination)` method on Objects. Called on
+  source location, mimicking behavior of `at_pre_move` hook - returning False will abort move.
 
 
 ## Evennia 0.9.5
