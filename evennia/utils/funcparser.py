@@ -56,6 +56,7 @@ from evennia.utils.utils import (
     crop,
     justify,
     safe_convert_to_types,
+    int2str
 )
 from evennia.utils import search
 from evennia.utils.verb_conjugation.conjugate import verb_actor_stance_components
@@ -642,12 +643,44 @@ def funcparser_callable_eval(*args, **kwargs):
 
 
 def funcparser_callable_toint(*args, **kwargs):
-    """Usage: toint(43.0) -> 43"""
+    """Usage: $toint(43.0) -> 43"""
     inp = funcparser_callable_eval(*args, **kwargs)
     try:
         return int(inp)
     except TypeError:
         return inp
+
+def funcparser_callable_int2str(*args, **kwargs):
+    """
+    Usage: $int2str(1) -> 'one' etc, up to 12->twelve.
+
+    Args:
+        number (int): The number. If not an int, will be converted.
+
+    Uses the int2str utility function.
+    """
+    if not args:
+        return ""
+    try:
+        number = int(args[0])
+    except ValueError:
+        return args[0]
+    return int2str(number)
+
+
+def funcparser_callable_an(*args, **kwargs):
+    """
+    Usage: $an(thing) -> a thing
+
+    Adds a/an depending on if the first letter of the given word is a consonant or not.
+
+    """
+    if not args:
+        return ""
+    item = str(args[0])
+    if item and item[0] in "aeiouy":
+        return f"an {item}"
+    return f"a {item}"
 
 
 def _apply_operation_two_elements(*args, operator="+", **kwargs):
@@ -986,6 +1019,35 @@ def funcparser_callable_clr(*args, **kwargs):
     startclr = "|" + startclr if startclr else ""
     endclr = "|" + endclr if endclr else ("|n" if startclr else "")
     return f"{startclr}{text}{endclr}"
+
+def funcparser_callable_pluralize(*args, **kwargs):
+    """
+    FuncParser callable. Handles pluralization of a word.
+
+    Args:
+        singular_word (str): The base (singular) word to optionally pluralize
+        number (int): The number of elements; if 1 (or 0), use `singular_word` as-is,
+            otherwise use plural form.
+        plural_word (str, optional): If given, this will be used if `number`
+            is greater than one. If not given, we simply add 's' to the end of
+            `singular_word'.
+
+    Example:
+        - `$pluralize(thing, 2)` -> "things"
+        - `$pluralize(goose, 18, geese)` -> "geese"
+
+    """
+    if not args:
+        return ""
+    nargs = len(args)
+    if nargs > 2:
+        singular_word, number, plural_word = args[:3]
+    elif nargs > 1:
+        singular_word, number = args[:2]
+        plural_word = f"{singular_word}s"
+    else:
+        singular_word, number = args[0], 1
+    return singular_word if abs(int(number)) in (0, 1) else plural_word
 
 
 def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
@@ -1353,6 +1415,9 @@ FUNCPARSER_CALLABLES = {
     "justify_center": funcparser_callable_center_justify,
     "space": funcparser_callable_space,
     "clr": funcparser_callable_clr,
+    "pluralize": funcparser_callable_pluralize,
+    "int2str": funcparser_callable_int2str,
+    "an": funcparser_callable_an,
 }
 
 SEARCHING_CALLABLES = {

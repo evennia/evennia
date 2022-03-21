@@ -391,6 +391,13 @@ class TestDefaultCallables(TestCase):
             ("Some $rjust(Hello, width=30)", "Some                          Hello"),
             ("Some $cjust(Hello, 30)", "Some             Hello             "),
             ("Some $eval('-'*20)Hello", "Some --------------------Hello"),
+            ("There $pluralize(is, 1, are) one $pluralize(goose, 1, geese) here.",
+                "There is one goose here."),
+            ("There $pluralize(is, 2, are) two $pluralize(goose, 2, geese) here.",
+                "There are two geese here."),
+            ("There is $int2str(1) murderer, but $int2str(12) suspects.",
+                "There is one murderer, but twelve suspects."),
+            ("There is $an(thing) here", "There is a thing here"),
         ]
     )
     def test_other_callables(self, string, expected):

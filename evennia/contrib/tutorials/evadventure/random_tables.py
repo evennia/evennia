@@ -352,3 +352,17 @@ character_generation = {
     ],
 }
 
+
+reactions = [
+    ('2', "Hostile"),
+    ('3-5', "Unfriendly"),
+    ('6-8', "Unsure"),
+    ('9-11', "Talkative"),
+    ('12', "Helpful"),
+]
+
+initiative = [
+    ('1-3', "Enemy acts first"),
+    ('4-6', "PC acts first"),
+]
+

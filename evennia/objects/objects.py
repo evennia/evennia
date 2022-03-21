@@ -872,13 +872,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             The `DefaultObject` hooks called (if `move_hooks=True`) are, in order:
 
-             1. `self.at_pre_move(destination)` (if this returns False, move is aborted)
-             2. `source_location.at_object_leave(self, destination)`
-             3. `self.announce_move_from(destination)`
-             4. (move happens here)
-             5. `self.announce_move_to(source_location)`
-             6. `destination.at_object_receive(self, source_location)`
-             7. `self.at_post_move(source_location)`
+             1. `self.at_pre_move(destination)` (abort if return False)
+             2. `source_location.at_pre_object_leave(self, destination)` (abort if return False)
+             3. `destination.at_pre_object_receive(self, source_location)` (abort if return False)
+             4. `source_location.at_object_leave(self, destination)`
+             5. `self.announce_move_from(destination)`
+             6. (move happens here)
+             7. `self.announce_move_to(source_location)`
+             8. `destination.at_object_receive(self, source_location)`
+             9. `self.at_post_move(source_location)`
 
         """
 
@@ -903,17 +905,33 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if destination.destination and use_destination:
             # traverse exits
             destination = destination.destination
-        # Before the move, call eventual pre-commands.
+
+        # Save the old location
+        source_location = self.location
+
+        # Before the move, call pre-hooks
         if move_hooks:
+            # check if we are okay to move
             try:
                 if not self.at_pre_move(destination, **kwargs):
                     return False
             except Exception as err:
                 logerr(errtxt.format(err="at_pre_move()"), err)
                 return False
-
-        # Save the old location
-        source_location = self.location
+            # check if source location lets us go
+            try:
+                if not source_location.at_pre_object_leave(self, destination, **kwargs):
+                    return False
+            except Exception as err:
+                logerr(errtxt.format(err="at_pre_object_leave()"), err)
+                return False
+            # check if destination accepts us
+            try:
+                if not self.at_pre_object_receive(self, source_location, **kwargs):
+                    return False
+            except Exception as err:
+                logerr(errtxt.format(err="at_pre_object_receive()"), err)
+                return False
 
         # Call hook on source location
         if move_hooks and source_location:
@@ -1473,7 +1491,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     def at_pre_move(self, destination, **kwargs):
         """
         Called just before starting to move this object to
-        destination.
+        destination. Return False to abort move.
 
         Args:
             destination (Object): The object we are moving to
@@ -1481,14 +1499,54 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 overriding the call (unused by default).
 
         Returns:
-            shouldmove (bool): If we should move or not.
+            bool: If we should move or not.
 
         Notes:
             If this method returns False/None, the move is cancelled
             before it is even started.
 
         """
-        # return has_perm(self, destination, "can_move")
+        return True
+
+    def at_pre_object_leave(self, leaving_object, destination, **kwargs):
+        """
+        Called just before this object is about lose an object that was
+        previously 'inside' it. Return False to abort move.
+
+        Args:
+            leaving_object (Object): The object that is about to leave.
+            destination (Object): Where object is going to.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+        Returns:
+            bool: If `leaving_object` should be allowed to leave or not.
+
+        Notes: If this method returns False, None, the move is canceled before
+            it even started.
+
+        """
+        return True
+
+    def at_pre_object_receive(self, arriving_object, source_location, **kwargs):
+        """
+        Called just before this object received another object. If this
+        method returns `False`, the move is aborted and the moved entity
+        remains where it was.
+
+        Args:
+            arriving_object (Object): The object moved into this one
+            source_location (Object): Where `moved_object` came from.
+                Note that this could be `None`.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            bool: If False, abort move and `moved_obj` remains where it was.
+
+        Notes: If this method returns False, None, the move is canceled before
+            it even started.
+
+        """
         return True
 
     # deprecated alias
