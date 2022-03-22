@@ -56,7 +56,13 @@ class NDBField(NAttributeProperty):
 
 class TagField:
     """
-    Component Descriptor to add a tag to the host.
+    Component Tags Descriptor.
+    Allows you to set Tags related to a component on the class.
+    The tags are set with a prefixed category, so it can support
+    multiple tags or enforce a single one.
+
+    Default value of a tag is added when the component is registered.
+    Tags are removed if the component itself is removed.
     """
     def __init__(self, default=None, enforce_single=False):
         self._category_key = None
@@ -65,9 +71,8 @@ class TagField:
 
     def __set_name__(self, owner, name):
         """
-        Called when descriptor is first assigned to the class. It is called with
-        the name of the field.
-
+        Called when descriptor is first assigned to the class.
+        It is called with the name of the field.
         """
         self._category_key = f"{owner.name}__{name}"
         tag_fields = getattr(owner, "_tag_fields", None)
@@ -89,7 +94,7 @@ class TagField:
             tag_handler.clear(category=self._category_key)
 
         tag_handler.add(
-            key=self._key,
+            key=value,
             category=self._category_key,
         )
 
