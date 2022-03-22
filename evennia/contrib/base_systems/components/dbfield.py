@@ -71,8 +71,8 @@ class TagField:
 
     def __set_name__(self, owner, name):
         """
-        Called when descriptor is first assigned to the class.
-        It is called with the name of the field.
+        Called when TagField is first assigned to the class.
+        It is called with the component class and the name of the field.
         """
         self._category_key = f"{owner.name}__{name}"
         tag_fields = getattr(owner, "_tag_fields", None)
@@ -82,6 +82,10 @@ class TagField:
         tag_fields[name] = self
 
     def __get__(self, instance, owner):
+        """
+        Called when retrieving the value of the TagField.
+        It is called with the component instance and the class.
+        """
         tag_value = instance.host.tags.get(
             default=self._default,
             category=self._category_key,
@@ -89,6 +93,11 @@ class TagField:
         return tag_value
 
     def __set__(self, instance, value):
+        """
+        Called when setting a value on the TagField.
+        It is called with the component instance and the value.
+        """
+
         tag_handler = instance.host.tags
         if self._enforce_single:
             tag_handler.clear(category=self._category_key)
@@ -99,4 +108,8 @@ class TagField:
         )
 
     def __delete__(self, instance):
+        """
+        Used when 'del' is called on the TagField.
+        It is called with the component instance.
+        """
         instance.host.tags.clear(category=self._category_key)
