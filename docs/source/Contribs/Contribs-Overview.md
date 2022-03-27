@@ -31,6 +31,7 @@ login systems, new command syntaxes, and build helpers._
 Contrib-AWSStorage.md
 Contrib-Building-Menu.md
 Contrib-Color-Markups.md
+Contrib-Components.md
 Contrib-Custom-Gametime.md
 Contrib-Email-Login.md
 Contrib-Ingame-Python.md
@@ -76,6 +77,16 @@ Additional color markup styles for Evennia (extending or replacing the default
 (`{r`, `{123`).
 
 [Read the documentation](./Contrib-Color-Markups.md) - [Browse the Code](evennia.contrib.base_systems.color_markups)
+
+
+
+### Contrib: `components`
+
+__Contrib by ChrisLR 2021__
+
+# The Components Contrib
+
+[Read the documentation](./Contrib-Components.md) - [Browse the Code](evennia.contrib.base_systems.components)
 
 
 
