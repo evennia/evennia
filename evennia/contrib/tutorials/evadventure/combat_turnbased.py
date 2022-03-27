@@ -21,12 +21,15 @@ from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from . import rules
 
+MIN_RANGE = 0
+MAX_RANGE = 4
 
 @dataclass
 class CombatantStats:
     """
     Represents temporary combat-only data we need to track
     during combat for a single Character.
+
     """
     weapon = None
     armor = None
@@ -40,8 +43,17 @@ class CombatantStats:
         return self.distance_matrix.get(target)
 
     def change_distance(self, target, change):
+        """
+        Change the distance to an opponent. This is symmetric.
+
+        Args:
+            target (Object): The target to change the distance to.
+            change (int): How to change the distance. Negative values to
+                approach, positive to move away from target.
+        """
         current_dist = self.distance_matrix.get(target)  # will raise error if None, as it should
-        self.distance_matrix[target] = max(0, min(4, current_dist + target))
+        new_dist = max(MIN_RANGE, min(MAX_RANGE, current_dist + change))
+        self.distance_matrix[target] = target.distance_matrix[self] = new_dist
 
 
 class EvAdventureCombat(DefaultScript):
@@ -72,9 +84,8 @@ class EvAdventureCombat(DefaultScript):
         3. Far (ranged, thrown with disadvantage)
         4. Disengaging/fleeing (no weapons can be used)
 
-        Distance is tracked to each opponent individually. One can move 1 step and atack
-        or 3 steps without attacking. Ranged weapons can't be used in range 0, 1 and
-        melee weapons can't be used at ranges 2, 3.
+        Distance is tracked to each opponent individually. One can move 1 step and attack
+        or up to 3 steps without attacking.
 
         New combatants will start at a distance averaged between the optimal ranges
         of them and their opponents.
@@ -92,6 +103,7 @@ class EvAdventureCombat(DefaultScript):
                 dist1 = combatant_stats1.get_distance(combatant2)
                 dist2 = combatant_stats2.get_distance(combatant1)
                 if None in (dist1, dist2) or dist1 != dist2:
+                    # a new distance-relation - start out at average distance
                     avg_range = round(0.5 * (combatant1.weapon.range_optimal
                                              + combatant2.weapon.range_optimal))
                     combatant_stats1.distance_matrix[combatant2] = avg_range
