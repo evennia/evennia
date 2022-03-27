@@ -74,7 +74,7 @@ class TagField:
         Called when TagField is first assigned to the class.
         It is called with the component class and the name of the field.
         """
-        self._category_key = f"{owner.name}__{name}"
+        self._category_key = f"{owner.name}::{name}"
         tag_fields = getattr(owner, "_tag_fields", None)
         if tag_fields is None:
             tag_fields = {}
