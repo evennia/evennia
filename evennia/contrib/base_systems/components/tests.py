@@ -116,11 +116,11 @@ class TestComponents(EvenniaTest):
     def test_host_has_class_component_tags(self):
         assert self.char1.tags.has(key="test_a", category="components")
         assert self.char1.tags.has(key="test_b", category="components")
-        assert self.char1.tags.has(key="initial_value", category="test_b__default_tag")
+        assert self.char1.tags.has(key="initial_value", category="test_b::default_tag")
         assert self.char1.test_b.default_tag == "initial_value"
         assert not self.char1.tags.has(key="test_c", category="components")
-        assert not self.char1.tags.has(category="test_b__single_tag")
-        assert not self.char1.tags.has(category="test_b__multiple_tags")
+        assert not self.char1.tags.has(category="test_b::single_tag")
+        assert not self.char1.tags.has(category="test_b::multiple_tags")
 
     def test_host_has_added_component_tags(self):
         rct = RuntimeComponentTestC.create(self.char1)
@@ -128,7 +128,7 @@ class TestComponents(EvenniaTest):
         test_c = self.char1.components.get('test_c')
 
         assert self.char1.tags.has(key="test_c", category="components")
-        assert self.char1.tags.has(key="added_value", category="test_c__added_tag")
+        assert self.char1.tags.has(key="added_value", category="test_c::added_tag")
         assert test_c.added_tag == "added_value"
 
     def test_host_has_added_default_component_tags(self):
@@ -136,7 +136,7 @@ class TestComponents(EvenniaTest):
         test_c = self.char1.components.get("test_c")
 
         assert self.char1.tags.has(key="test_c", category="components")
-        assert self.char1.tags.has(key="added_value", category="test_c__added_tag")
+        assert self.char1.tags.has(key="added_value", category="test_c::added_tag")
         assert test_c.added_tag == "added_value"
 
     def test_host_remove_component_tags(self):
@@ -147,7 +147,7 @@ class TestComponents(EvenniaTest):
         handler.remove(rct)
 
         assert not self.char1.tags.has(key="test_c", category="components")
-        assert not self.char1.tags.has(key="added_value", category="test_c__added_tag")
+        assert not self.char1.tags.has(key="added_value", category="test_c::added_tag")
 
     def test_host_remove_by_name_component_tags(self):
         rct = RuntimeComponentTestC.create(self.char1)
@@ -157,24 +157,24 @@ class TestComponents(EvenniaTest):
         handler.remove_by_name("test_c")
 
         assert not self.char1.tags.has(key="test_c", category="components")
-        assert not self.char1.tags.has(key="added_value", category="test_c__added_tag")
+        assert not self.char1.tags.has(key="added_value", category="test_c::added_tag")
 
     def test_component_tags_only_hold_one_value_when_enforce_single(self):
         test_b = self.char1.components.get('test_b')
         test_b.single_tag = "first_value"
         test_b.single_tag = "second value"
 
-        assert self.char1.tags.has(key="second value", category="test_b__single_tag")
+        assert self.char1.tags.has(key="second value", category="test_b::single_tag")
         assert test_b.single_tag == "second value"
-        assert not self.char1.tags.has(key="first_value", category="test_b__single_tag")
+        assert not self.char1.tags.has(key="first_value", category="test_b::single_tag")
 
     def test_component_tags_default_value_is_overridden_when_enforce_single(self):
         test_b = self.char1.components.get('test_b')
         test_b.default_single_tag = "second value"
 
-        assert self.char1.tags.has(key="second value", category="test_b__default_single_tag")
+        assert self.char1.tags.has(key="second value", category="test_b::default_single_tag")
         assert test_b.default_single_tag == "second value"
-        assert not self.char1.tags.has(key="first_value", category="test_b__default_single_tag")
+        assert not self.char1.tags.has(key="first_value", category="test_b::default_single_tag")
 
     def test_component_tags_support_multiple_values_by_default(self):
         test_b = self.char1.components.get('test_b')
@@ -183,6 +183,6 @@ class TestComponents(EvenniaTest):
         test_b.multiple_tags = "third value"
 
         assert all(val in test_b.multiple_tags for val in ("first value", "second value", "third value"))
-        assert self.char1.tags.has(key="first value", category="test_b__multiple_tags")
-        assert self.char1.tags.has(key="second value", category="test_b__multiple_tags")
-        assert self.char1.tags.has(key="third value", category="test_b__multiple_tags")
+        assert self.char1.tags.has(key="first value", category="test_b::multiple_tags")
+        assert self.char1.tags.has(key="second value", category="test_b::multiple_tags")
+        assert self.char1.tags.has(key="third value", category="test_b::multiple_tags")
