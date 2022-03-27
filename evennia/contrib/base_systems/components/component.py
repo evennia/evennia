@@ -144,6 +144,11 @@ class Component:
         ndb_fields = getattr(self, "_ndb_fields", {})
         return ndb_fields.keys()
 
+    @property
+    def tag_field_names(self):
+        tag_fields = getattr(self, "_tag_fields", {})
+        return tag_fields.keys()
+
 
 class ComponentRegisterError(Exception):
     pass
