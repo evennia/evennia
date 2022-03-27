@@ -175,61 +175,6 @@ class EvAdventureRollEngine:
             quality = None
         return (dice_roll + attack_bonus + modifier) > defender_defense, quality
 
-    # specific rolls / actions
-
-    @staticmethod
-    def melee_attack(attacker, defender, advantage=False, disadvantage=False):
-        """Close attack (strength vs armor)"""
-        return opposed_saving_throw(
-            attacker, defender, attack_type="strength", defense_type="armor",
-            advantage=advantage, disadvantage=disadvantage)
-
-    @staticmethod
-    def ranged_attack(attacker, defender, advantage=False, disadvantage=False):
-        """Ranged attack (wisdom vs armor)"""
-        return opposed_saving_throw(
-            attacker, defender, attack_type="wisdom", defense_type="armor",
-            advantage=advantage, disadvantage=disadvantage)
-
-    @staticmethod
-    def magic_attack(attacker, defender, advantage=False, disadvantage=False):
-        """Magic attack (int vs dexterity)"""
-        return opposed_saving_throw(
-            attacker, defender, attack_type="intelligence", defense_type="dexterity",
-            advantage=advantage, disadvantage=disadvantage)
-
-    @staticmethod
-    def morale_check(defender):
-        """
-        A morale check is done for NPCs/monsters. It's done with a 2d6 against
-        their morale.
-
-        Args:
-            defender (NPC): The entity trying to defend its morale.
-
-        Returns:
-            bool: False if morale roll failed, True otherwise.
-
-        """
-        return roll('2d6') <= defender.morale
-
-    @staticmethod
-    def healing_from_rest(character):
-        """
-        A meal and a full night's rest allow for regaining 1d8 + Const bonus HP.
-
-        Args:
-            character (Character): The one resting.
-
-        Returns:
-            int: How much HP was healed. This is never more than how damaged we are.
-
-        """
-        # we can't heal more than our damage
-        damage = character.hp_max - character.hp
-        healed = roll('1d8') + character.constitution
-        return min(damage, healed)
-
     @staticmethod
     def roll_random_table(dieroll, table, table_choices):
         """
@@ -282,6 +227,83 @@ class EvAdventureRollEngine:
             # regular list - one line per value.
             roll_result = max(1, min(len(table_choices), roll_result))
             return table_choices[roll_result - 1]
+
+    # specific rolls / actions
+
+    @staticmethod
+    def morale_check(defender):
+        """
+        A morale check is done for NPCs/monsters. It's done with a 2d6 against
+        their morale.
+
+        Args:
+            defender (NPC): The entity trying to defend its morale.
+
+        Returns:
+            bool: False if morale roll failed, True otherwise.
+
+        """
+        return roll('2d6') <= defender.morale
+
+    @staticmethod
+    def healing_from_rest(character):
+        """
+        A meal and a full night's rest allow for regaining 1d8 + Const bonus HP.
+
+        Args:
+            character (Character): The one resting.
+
+        Returns:
+            int: How much HP was healed. This is never more than how damaged we are.
+
+        """
+        # we can't heal more than our damage
+        damage = character.hp_max - character.hp
+        healed = roll('1d8') + character.constitution
+        return min(damage, healed)
+
+    death_map = {
+        "weakened": "strength",
+        "unsteady": "dexterity",
+        "sickly": "constitution",
+        "addled": "intelligence",
+        "rattled": "wisdom",
+        "disfigured": "charisma",
+    }
+
+    def roll_death(character):
+        """
+        Happens when hitting <= 0 hp. unless dead,
+
+        """
+
+        result = self.roll_random_table('1d8', 'death_and_dismemberment')
+        if result == "dead":
+            character.handle_death()
+        else:
+            # survives with degraded abilities (1d4 roll)
+            abi = death_map[result]
+
+            current_abi = getattr(character, abi)
+            loss = self.roll("1d4")
+
+            current_abi =- loss
+
+            if current_abi < -10:
+                # can't lose more - die
+                character.handle_death()
+            else:
+                new_hp = max(character.hp_max, self.roll("1d4"))
+                setattr(character, abi, current_abi)
+                character.hp = new_hp
+
+                character.msg(
+                    "~" * 78 +
+                    "\n|yYou survive your brush with death, "
+                    f"but are |r{result.upper()}|y and permenently |rlose {loss} {abi}|y.|n\n"
+                    f"|GYou recover |g{new_hp}|G health|.\n"
+                    + "~" * 78
+                )
 
 
 # character generation

@@ -8,6 +8,7 @@ from evennia.objects.objects import DefaultCharacter, DefaultObject
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.utils import lazy_property, int2str
 from .objects import EvAdventureObject
+from . import rules
 
 
 class EquipmentError(TypeError):
@@ -284,6 +285,7 @@ class EvAdventureCharacter(DefaultCharacter):
 
     """
 
+    # these are the ability bonuses. Defense is always 10 higher
     strength = AttributeProperty(default=1)
     dexterity = AttributeProperty(default=1)
     constitution = AttributeProperty(default=1)
@@ -307,6 +309,24 @@ class EvAdventureCharacter(DefaultCharacter):
     def equipment(self):
         """Allows to access equipment like char.equipment.worn"""
         return EquipmentHandler(self)
+
+    @property
+    def weapon(self):
+        """
+        Quick access to the character's currently wielded weapon.
+        Will return the "Unarmed" weapon if none other are found.
+
+        """
+        # TODO
+
+    @property
+    def armor(self):
+        """
+        Quick access to the character's current armor.
+        Will return the "Unarmored" armor if none other are found.
+
+        """
+        # TODO
 
     def at_pre_object_receive(self, moved_object, source_location, **kwargs):
         """
@@ -356,6 +376,37 @@ class EvAdventureCharacter(DefaultCharacter):
 
         """
         self.equipment.remove(moved_object)
+
+
+    def at_pre_damage(self, dmg, attacker=None):
+        """
+        Called when receiving damage for whatever reason. This
+        is called *before* hp is evaluated for defeat/death.
+
+        """
+    def at_post_damage(self, dmg, attacker=None):
+        """
+        Called when receiving damage for whatever reason. This
+        is called *before* hp is evaluated for defeat/death.
+
+        """
+
+    def defeat_message(self, attacker, dmg):
+        return f"After {attacker.key}'s attack, {self.key} collapses in a heap."
+
+    def at_defeat(self, attacker, dmg):
+        """
+        At this point, character has been defeated but is not killed (their
+        hp >= 0 but they lost ability bonuses). Called after being defeated in combat or
+        other situation where health is lost below or equal to 0.
+
+        """
+
+    def handle_death(self):
+        """
+        Called when character dies.
+
+        """
 
 
 class EvAdventureNPC(DefaultCharacter):

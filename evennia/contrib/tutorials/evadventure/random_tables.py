@@ -366,3 +366,15 @@ initiative = [
     ('4-6', "PC acts first"),
 ]
 
+
+death_and_dismemberment = [
+    "dead",
+    "dead",  # original says 'dismemberment' here, we don't simulate this
+    "weakened",  # -1d4 STR
+    "unsteady",  # -1d4 DEX
+    "sickly",  # -1d4 CON
+    "addled",  # -1d4 INT
+    "rattled",  # -1d4 WIS
+    "disfigured",  # -1d4 CHA
+]
+
