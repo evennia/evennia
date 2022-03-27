@@ -22,7 +22,7 @@ def _helper(x):
     # use underscore to NOT make the function available as a callable
 
 def funcname(*args, **kwargs):
-    # this can be accecssed as $funcname(*args, **kwargs)
+    # this can be accessed as $funcname(*args, **kwargs)
     # it must always accept *args and **kwargs.
     ...
     return something
@@ -31,7 +31,7 @@ def funcname(*args, **kwargs):
 Usage:
 
 ```python
-from evennia.utils.funcparser
+from evennia.utils.funcparser import FuncParser
 
 parser = FuncParser("path.to.module_with_callables")
 result = parser.parse("String with $funcname() in it")
@@ -1159,7 +1159,7 @@ def funcparser_callable_you(
 
     Examples:
         This can be used by the say or emote hooks to pass actor stance
-        strings. This should usually be combined with the $inflect() callable.
+        strings. This should usually be combined with the $conj() callable.
 
         - `With a grin, $you() $conj(jump) at $you(tommy).`
 
@@ -1243,7 +1243,7 @@ def funcparser_callable_conjugate(*args, caller=None, receiver=None, **kwargs):
 def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=False, **kwargs):
     """
 
-    Usage: $prop(word, [options])
+    Usage: $pron(word, [options])
 
     Adjust pronouns to the expected form. Pronouns are words you use instead of a
     proper name, such as 'him', 'herself', 'theirs' etc. These look different
@@ -1279,7 +1279,7 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
     `male`/`female`/`neutral`/`plural` (plural is considered a gender for this purpose).
     If no `gender` property/callable is found, `neutral` is used as a fallback.
 
-    The pronoun-type default (if not spefified in call) is `subject pronoun`.
+    The pronoun-type default (if not specified in call) is `subject pronoun`.
 
     Args:
         pronoun (str): Input argument to parsed call. This can be any of the pronouns
@@ -1349,7 +1349,7 @@ def funcparser_callable_pronoun(*args, caller=None, receiver=None, capitalize=Fa
     default_viewpoint = "2nd person"
 
     if hasattr(caller, "gender"):
-        if callable(caller, gender):
+        if callable(caller.gender):
             default_gender = caller.gender()
         else:
             default_gender = caller.gender
@@ -1377,7 +1377,7 @@ def funcparser_callable_pronoun_capitalize(
     *args, caller=None, receiver=None, capitalize=True, **kwargs
 ):
     """
-    Usage: $Pron(word) - always maps to a capitalized word.
+    Usage: $Pron(word, [options]) - always maps to a capitalized word.
 
     """
     return funcparser_callable_pronoun(
