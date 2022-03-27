@@ -44,10 +44,14 @@ class EvAdventureWeapon(EvAdventureObject):
 
     """
     wield_slot = AttributeProperty(default="weapon")
+
+    attack_type = AttributeProperty(default="strength")
+    defense_type = AttributeProperty(default="armor")
     damage_roll = AttributeProperty(default="1d6")
+
     # at which ranges this weapon can be used. If not listed, unable to use
-    range_optimal = AttributeProperty(default=0)  # normal usage
-    range_suboptimal = AttributeProperty(default=1)  # usage with disadvantage
+    distance_optimal = AttributeProperty(default=0)  # normal usage (fists)
+    distance_suboptimal = AttributeProperty(default=None)  # disadvantage (fists)
 
 
 class EvAdventureRunestone(EvAdventureWeapon):
