@@ -328,6 +328,20 @@ class EvAdventureCharacter(DefaultCharacter):
         """
         # TODO
 
+    def heal(self, hp, healer=None):
+        """
+        Heal the character by a certain amount of HP.
+
+        """
+        damage = self.hp_max - self.hp
+        healed = min(damage, hp)
+        self.hp += healed
+
+        if healer is self:
+            self.msg(f"|gYou heal yourself for {healed} health.|n")
+        else:
+            self.msg(f"|g{healer.key} heals you for {healed} health.|n")
+
     def at_pre_object_receive(self, moved_object, source_location, **kwargs):
         """
         Hook called by Evennia before moving an object here. Return False to abort move.
@@ -378,13 +392,7 @@ class EvAdventureCharacter(DefaultCharacter):
         self.equipment.remove(moved_object)
 
 
-    def at_pre_damage(self, dmg, attacker=None):
-        """
-        Called when receiving damage for whatever reason. This
-        is called *before* hp is evaluated for defeat/death.
-
-        """
-    def at_post_damage(self, dmg, attacker=None):
+    def at_damage(self, dmg, attacker=None):
         """
         Called when receiving damage for whatever reason. This
         is called *before* hp is evaluated for defeat/death.
