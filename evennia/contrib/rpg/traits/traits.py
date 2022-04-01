@@ -175,7 +175,7 @@ if trait1 > trait2:
 
 The static trait has a `base` value and an optional `mod`-ifier and 'mult'-iplier.
 The modifier defaults to 0, and the multiplier to 1.0, for no change in value.
-A typical use of a static trait would be a Strength stat or Skill value. That is, 
+A typical use of a static trait would be a Strength stat or Skill value. That is,
 somethingthat varies slowly or not at all, and which may be modified in-place.
 
 ```python
@@ -207,9 +207,9 @@ somethingthat varies slowly or not at all, and which may be modified in-place.
 
 A counter describes a value that can move from a base. The `.current` property
 is the thing usually modified. It starts at the `.base`. One can also add a
-modifier, which is added to both the base and to current. '.value' is then formed 
-by multiplying by the multiplier, which defaults to 1.0 for no change. The min/max 
-of the range are optional, a boundary set to None will remove it. A suggested use 
+modifier, which is added to both the base and to current. '.value' is then formed
+by multiplying by the multiplier, which defaults to 1.0 for no change. The min/max
+of the range are optional, a boundary set to None will remove it. A suggested use
 for a Counter Trait would be to track skill values.
 
 ```python
@@ -1148,7 +1148,7 @@ class Trait:
 
 class StaticTrait(Trait):
     """
-    Static Trait. This is a single value with a modifier, 
+    Static Trait. This is a single value with a modifier,
     multiplier, and no concept of a 'current' value or min/max etc.
 
     value = (base + mod) * mult
@@ -1189,7 +1189,7 @@ class StaticTrait(Trait):
     def mult(self):
         """The trait's multiplier."""
         return self._data["mult"]
-    
+
     @mult.setter
     def mult(self, amount):
         if type(amount) in (int, float):
@@ -1378,7 +1378,7 @@ class CounterTrait(Trait):
     @property
     def mult(self):
         return self._data["mult"]
-    
+
     @mult.setter
     def mult(self, amount):
         if type(amount) in (int, float):
@@ -1596,11 +1596,11 @@ class GaugeTrait(CounterTrait):
             if value + self.base < self.min:
                 value = self.min - self.base
             self._data["mod"] = value
-    
+
     @property
     def mult(self):
         return self._data["mult"]
-    
+
     @mult.setter
     def mult(self, amount):
         if type(amount) in (int, float):

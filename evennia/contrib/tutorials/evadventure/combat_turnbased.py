@@ -20,7 +20,7 @@ from collections import defaultdict
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.utils import make_iter
-from evennia.utils import evmenu
+from evennia.utils import evmenu, evtable
 from . import rules
 
 MIN_RANGE = 0
@@ -48,26 +48,37 @@ class CombatAction:
 
     """
     key = 'action'
-    status_text = "{combatant} performs an action."
+    post_action_text = "{combatant} performed an action."
+
     # move actions can be combined with other actions
     is_move_action = False
 
-    def __init__(self, combathandler):
+    def __init__(self, combathandler, combatant):
         self.combathandler = combathandler
+        self.combatant = combatant
 
     def can_use(self, combatant, *args, **kwargs):
         """
         Determine if combatant can use this action.
 
-        """
-        return  True
+        Args:
+            combatant (Object): The one performing the action.
+            *args: Any optional arguments.
+            **kwargs: Any optional keyword arguments.
 
-    def use(self, combatant, *args, **kwargs):
+        Returns:
+            tuple: (bool, motivation) - if not available, will describe why,
+                if available, should describe what the action does.
+
+        """
+        return True
+
+    def use(self, *args, **kwargs):
         """
         Use action
 
         """
-        self.combathandler.msg(self.status_text.format(combatant=combatant))
+        self.combathandler.msg(self.post_action_text.format(combatant=combatant))
 
 
 class CombatActionDoNothing(CombatAction):
@@ -75,7 +86,7 @@ class CombatActionDoNothing(CombatAction):
     Do nothing this turn.
 
     """
-    status_text = "{combatant} does nothing this turn."
+    post_action_text = "{combatant} does nothing this turn."
 
 
 class CombatActionStunt(CombatAction):
@@ -83,6 +94,28 @@ class CombatActionStunt(CombatAction):
     Perform a stunt.
 
     """
+    optimal_distance = 0
+    suboptimal_distance = 1
+    advantage = True
+    attack_type = "dexterity"
+    defense_type = "dexterity"
+
+    def can_use(self, combatant, defender, *args, **kwargs):
+        distance =  self.combathandler.distance_matrix[attacker][defender]
+
+        disadvantage = False
+        if self.suboptimal_distance == distance:
+            # stunts need to be within range
+            disadvantage = True
+        elif self.optimal_distance != distance:
+            # if we are neither at optimal nor suboptimal distance, we can't do the stunt
+            # from here.
+            return False, (f"you can't perform this stunt "
+                           f"from {range_names[distance]} distance (must be "
+                           f"{range_names[suboptimal_distance]} or, even better, "
+                           f"{range_names[optimal_distance]}).")
+
+
 
 
 
@@ -110,6 +143,12 @@ class EvAdventureCombatHandler(DefaultScript):
 
     # actions that will be performed before a normal action
     move_actions = ("approach", "withdraw")
+
+    def at_init(self):
+        self.ndb.actions = {
+            "do_nothing": CombatActionDoNothing,
+        }
+
 
     def _refresh_distance_matrix(self):
         """
@@ -247,6 +286,37 @@ class EvAdventureCombatHandler(DefaultScript):
         if combatant in self.combatants:
             self.combatants.remove(combatant)
             self._refresh_distance_matrix()
+
+    def get_combat_summary(self, combatant):
+        """
+        Get a summary of the current combat state.
+
+        You (5/10 health)
+        Foo (Hurt) distance:   You__0__1___X____3_____4 (medium)
+        Bar (Perfect health):  You__X__1___2____3_____4 (close)
+
+        """
+        table = evtable.EvTable(border_width=0)
+
+        table.add_row(f"You ({combatant.hp} / {combatant.hp_max} health)")
+
+        dist_template = "|x(You)__{0}|x__{1}|x___{2}|x____{3}|x_____{4} |x({distname})"
+
+        for comb in self.combatants:
+
+            if comb is combatant:
+                continue
+
+            name = combatant.key
+            distance = self.distance_matrix[combatant][comb]
+            dist_map = {i: '|wX' if i == distance else i for i in range(MAX_RANGE)}
+            dist_map["distname"] = RANGE_NAMES[distance]
+            health = f"{comb.hurt_level}"
+            distance_string = dist_template.format(**dist_map)
+
+            table.add_row(f"{name} ({health})", distance_string)
+
+        return str(table)
 
     def msg(self, message, targets=None):
         """
@@ -399,10 +469,10 @@ class EvAdventureCombatHandler(DefaultScript):
         elif self._get_optimal_distance(attacker) != distance:
             # if we are neither at optimal nor suboptimal distance, we can't do the stunt
             # from here.
-            raise CombatFailure(f"You can't perform this stunt "
-                                f"from {RANGE_NAMES[distance]} distance (must be "
-                                f"{RANGE_NAMES[suboptimal_distance]} or, even better, "
-                                f"{RANGE_NAMES[optimal_distance]}).")
+            raise combatfailure(f"you can't perform this stunt "
+                                f"from {range_names[distance]} distance (must be "
+                                f"{range_names[suboptimal_distance]} or, even better, "
+                                f"{range_names[optimal_distance]}).")
         # quality doesn't matter for stunts, they are either successful or not
         is_success, _  = rules.EvAdventureRollEngine.opposed_saving_throw(
             attacker, defender,
@@ -582,7 +652,6 @@ def node_select_action(caller, raw_string, **kwargs):
     text = combat.get_previous_turn_status(caller)
     options = combat.get_available_options(caller)
 
-    # TODO - reshuffle options
 
     options = {
         "desc": action,
