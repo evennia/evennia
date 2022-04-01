@@ -328,6 +328,29 @@ class EvAdventureCharacter(DefaultCharacter):
         """
         # TODO
 
+    @property
+    def hurt_level(self):
+        """
+        String describing how hurt this character is.
+        """
+        percent = max(0, min(100, 100 * (self.hp / self.hp_max)))
+        if 95 < percent <= 100:
+            return "|gPerfect|n"
+        elif 80 < percent <= 95:
+            return "|gScraped|n"
+        elif 60 < percent <= 80:
+            return "|GBruised|n"
+        elif 45 < percent <= 60:
+            return "|yHurt|n"
+        elif 30 < percent <= 45:
+            return "|yWounded|n"
+        elif 15 < percent <= 30:
+            return "|rBadly wounded|n"
+        elif 1 < percent <= 15:
+            return "|rBarely hanging on|n"
+        elif percent == 0:
+            return "|RCollapsed!|n"
+
     def heal(self, hp, healer=None):
         """
         Heal the character by a certain amount of HP.
