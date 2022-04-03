@@ -101,8 +101,6 @@ class TextToHTMLparser(object):
         r"(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)",
         re.S | re.M | re.I,
     )
-    re_dblspace = re.compile(r" {2,}", re.M)
-    re_invisiblespace = re.compile(r"( <.*?>)( )")
     re_url = re.compile(
         r'(?<!=")((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
     )
@@ -265,20 +263,6 @@ class TextToHTMLparser(object):
         # change pages (and losing our webclient session).
         return self.re_url.sub(r'<a href="\1" target="_blank">\1</a>\2', text)
 
-    def re_double_space(self, text):
-        """
-        HTML will swallow any normal space after the first, so if any slipped
-        through we must make sure to replace them with " &nbsp;"
-        """
-        return self.re_dblspace.sub(self.sub_dblspace, text)
-
-    def re_invisible_space(self, text):
-        """
-        If two spaces are separated by an invisble html element, they act as a
-        hidden double-space and the last of them should be replaced by &nbsp;
-        """
-        return self.re_invisiblespace.sub(self.sub_invisiblespace, text)
-
     def sub_mxp_links(self, match):
         """
         Helper method to be passed to re.sub,
@@ -340,20 +324,6 @@ class TextToHTMLparser(object):
             return text
         return None
 
-    def sub_dblspace(self, match):
-        "clean up double-spaces"
-        return " " + "&nbsp;" * (len(match.group()) - 1)
-
-    def sub_invisiblespace(self, match):
-        "clean up invisible spaces"
-        return match.group(1) + "&nbsp;"
-
-    def handle_single_first_space(self, text):
-        "Don't swallow an initial lone space"
-        if text.startswith(" "):
-            return "&nbsp;" + text[1:]
-        return text
-
     def parse(self, text, strip_ansi=False):
         """
         Main access function, converts a text containing ANSI codes
@@ -383,9 +353,6 @@ class TextToHTMLparser(object):
         result = self.convert_linebreaks(result)
         result = self.remove_backspaces(result)
         result = self.convert_urls(result)
-        result = self.re_double_space(result)
-        result = self.re_invisible_space(result)
-        result = self.handle_single_first_space(result)
         # clean out eventual ansi that was missed
         ## result = parse_ansi(result, strip_ansi=True)
 
