@@ -120,13 +120,6 @@ class TestText2Html(TestCase):
         )
         # TODO: doesn't URL encode correctly
 
-    def test_re_double_space(self):
-        parser = text2html.HTML_PARSER
-        self.assertEqual("foo", parser.re_double_space("foo"))
-        self.assertEqual(
-            "a &nbsp;red &nbsp;&nbsp;&nbsp;foo", parser.re_double_space("a  red    foo")
-        )
-
     def test_sub_mxp_links(self):
         parser = text2html.HTML_PARSER
         mocked_match = mock.Mock()
@@ -156,7 +149,7 @@ class TestText2Html(TestCase):
             "tab": "\t",
             "space": "",
         }
-        self.assertEqual(" &nbsp;", parser.sub_text(mocked_match))
+        self.assertEqual("  ", parser.sub_text(mocked_match))
 
         mocked_match.groupdict.return_value = {
             "htmlchars": "",
@@ -165,7 +158,7 @@ class TestText2Html(TestCase):
             "space": " ",
             "spacestart": " ",
         }
-        self.assertEqual(" &nbsp; &nbsp;", parser.sub_text(mocked_match))
+        self.assertEqual("    ", parser.sub_text(mocked_match))
 
         mocked_match.groupdict.return_value = {
             "htmlchars": "",
@@ -181,24 +174,13 @@ class TestText2Html(TestCase):
         parser = text2html.HTML_PARSER
         parser.tabstop = 4
         # single tab
-        self.assertEqual(parser.parse("foo|>foo"), "foo &nbsp;&nbsp;&nbsp;foo")
+        self.assertEqual(parser.parse("foo|>foo"), "foo    foo")
 
         # space and tab
-        self.assertEqual(parser.parse("foo |>foo"), "foo &nbsp;&nbsp;&nbsp;&nbsp;foo")
+        self.assertEqual(parser.parse("foo |>foo"), "foo     foo")
 
         # space, tab, space
-        self.assertEqual(parser.parse("foo |> foo"), "foo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foo")
-
-    def test_parse_space_to_html(self):
-        """test space parsing - a single space should be kept, two or more
-        should get &nbsp;"""
-        parser = text2html.HTML_PARSER
-        # single space
-        self.assertEqual(parser.parse("foo foo"), "foo foo")
-        # double space
-        self.assertEqual(parser.parse("foo  foo"), "foo &nbsp;foo")
-        # triple space
-        self.assertEqual(parser.parse("foo   foo"), "foo &nbsp;&nbsp;foo")
+        self.assertEqual(parser.parse("foo |> foo"), "foo      foo")
 
     def test_parse_html(self):
         self.assertEqual("foo", text2html.parse_html("foo"))
