@@ -79,11 +79,11 @@ class TextToHTMLparser(object):
     # create stop markers
     fgstop = "(?:\033\[1m|\033\[22m){0,1}\033\[3[0-8].*?m|\033\[0m|$"
     bgstop = "(?:\033\[1m|\033\[22m){0,1}\033\[4[0-8].*?m|\033\[0m|$"
-    bgfgstop = bgstop[:-2] + r"(\s*)" + fgstop
+    bgfgstop = bgstop[:-2] + fgstop
 
     fgstart = "((?:\033\[1m|\033\[22m){0,1}\033\[3[0-8].*?m)"
     bgstart = "((?:\033\[1m|\033\[22m){0,1}\033\[4[0-8].*?m)"
-    bgfgstart = bgstart + r"(\s*)" + "((?:\033\[1m|\033\[22m){0,1}\033\[[3-4][0-8].*?m){0,1}"
+    bgfgstart = bgstart + r"((?:\033\[1m|\033\[22m){0,1}\033\[[3-4][0-8].*?m){0,1}"
 
     # extract color markers, tagging the start marker and the text marked
     re_fgs = re.compile(fgstart + "(.*?)(?=" + fgstop + ")")
@@ -110,12 +110,12 @@ class TextToHTMLparser(object):
         # print("colormatch.groups()", colormatch.groups())
         bgcode, fgcode, text = colormatch.groups()
         if not fgcode:
-            ret = r"""<span class="%s">%s%s%s</span>""" % (
+            ret = r"""<span class="%s">%s</span>""" % (
                 self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
                 text,
             )
         else:
-            ret = r"""<span class="%s"><span class="%s">%s%s%s</span></span>""" % (
+            ret = r"""<span class="%s"><span class="%s">%s</span></span>""" % (
                 self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
                 self.fg_colormap.get(fgcode, self.bg_colormap.get(fgcode, "err")),
                 text,
