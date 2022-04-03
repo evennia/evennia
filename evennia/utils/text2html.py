@@ -97,8 +97,7 @@ class TextToHTMLparser(object):
     re_blink = re.compile("(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop))
     re_inverse = re.compile("(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop))
     re_string = re.compile(
-        r"(?P<htmlchars>[<&>])|(?P<tab>[\t]+)|(?P<space> +)|"
-        r"(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)",
+        r"(?P<htmlchars>[<&>])|(?P<tab>[\t]+)|(?P<lineend>\r\n|\r|\n)",
         re.S | re.M | re.I,
     )
     re_url = re.compile(
@@ -109,20 +108,16 @@ class TextToHTMLparser(object):
 
     def _sub_bgfg(self, colormatch):
         # print("colormatch.groups()", colormatch.groups())
-        bgcode, prespace, fgcode, text, postspace = colormatch.groups()
+        bgcode, fgcode, text = colormatch.groups()
         if not fgcode:
             ret = r"""<span class="%s">%s%s%s</span>""" % (
                 self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
-                prespace and "&nbsp;" * len(prespace) or "",
-                postspace and "&nbsp;" * len(postspace) or "",
                 text,
             )
         else:
             ret = r"""<span class="%s"><span class="%s">%s%s%s</span></span>""" % (
                 self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
                 self.fg_colormap.get(fgcode, self.bg_colormap.get(fgcode, "err")),
-                prespace and "&nbsp;" * len(prespace) or "",
-                postspace and "&nbsp;" * len(postspace) or "",
                 text,
             )
         return ret
@@ -316,11 +311,7 @@ class TextToHTMLparser(object):
         elif cdict["lineend"]:
             return "<br>"
         elif cdict["tab"]:
-            text = cdict["tab"].replace("\t", " " + "&nbsp;" * (self.tabstop - 1))
-            return text
-        elif cdict["space"] or cdict["spacestart"]:
-            text = cdict["space"]
-            text = " " if len(text) == 1 else " " + text[1:].replace(" ", "&nbsp;")
+            text = cdict["tab"].replace("\t", " " * (self.tabstop))
             return text
         return None
 
