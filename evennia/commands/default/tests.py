@@ -58,6 +58,13 @@ class TestGeneral(BaseEvenniaCommandTest):
         rid = self.room1.id
         self.call(general.CmdLook(), "here", "Room(#{})\nroom_desc".format(rid))
 
+    def test_look_no_location(self):
+        self.char1.location = None
+        self.call(general.CmdLook(), "", "You have no location to look at!")
+
+    def test_look_nonexisting(self):
+        self.call(general.CmdLook(), "yellow sign", "Could not find 'yellow sign'.")
+
     def test_home(self):
         self.call(general.CmdHome(), "", "You are already home")
 
@@ -89,6 +96,12 @@ class TestGeneral(BaseEvenniaCommandTest):
         )
         self.assertEqual(None, self.char1.account.nicks.get("testalias", category="account"))
         self.assertEqual("testaliasedstring3", self.char1.nicks.get("testalias", category="object"))
+
+    def test_nick_list(self):
+        self.call(general.CmdNick(), "/list", "No nicks defined.")
+        self.call(general.CmdNick(), "test1 = Hello", 
+            "Inputline-nick 'test1' mapped to 'Hello'.")
+        self.call(general.CmdNick(), "/list", "Defined Nicks:")
 
     def test_get_and_drop(self):
         self.call(general.CmdGet(), "Obj", "You pick up Obj.")
