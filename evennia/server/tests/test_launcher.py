@@ -194,3 +194,14 @@ class TestLauncher(TwistedTestCase):
         mcall.assert_not_called()
         merr.assert_not_called()
         mcalllater.assert_called()
+
+    @patch.dict(os.environ, {
+        "DJANGO_SUPERUSER_EMAIL": "root@localhost",
+        "DJANGO_SUPERUSER_USERNAME": "root",
+        "DJANGO_SUPERUSER_PASSWORD": "correcthorsebatterystapler"
+        }, clear=True)
+    def test_createsuperuser_noinput(self):
+        from io import StringIO
+        with patch('sys.stdout', new = StringIO()) as fake_out:
+            evennia_launcher.create_superuser()
+            self.assertEqual(fake_out.getvalue(), 'Superuser created successfully.\n')
