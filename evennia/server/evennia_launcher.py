@@ -1419,6 +1419,11 @@ def create_superuser():
     Create the superuser account
 
     """
+    required_fields = ["DJANGO_SUPERUSER_EMAIL", "DJANGO_SUPERUSER_PASSWORD", "DJANGO_SUPERUSER_USERNAME"]
+    if all([os.getenv(i) for i in required_fields]):
+        django.core.management.call_command("createsuperuser", interactive=False)
+        return
+
     print(
         "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
         "account of the server. Email is optional and can be empty.\n"
