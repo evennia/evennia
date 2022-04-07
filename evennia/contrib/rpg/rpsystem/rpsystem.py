@@ -321,7 +321,7 @@ def regex_tuple_from_key_alias(obj):
 
     if obj.id not in _REGEX_TUPLE_CACHE:
         permutation_string = " ".join([obj.key] + obj.aliases.all())
-        _REGEX_TUPLE_CACHE[permutation_string] = (
+        _REGEX_TUPLE_CACHE[obj.id] = (
             re.compile(ordered_permutation_regex(permutation_string), _RE_FLAGS),
             obj,
             obj.key,
