@@ -76,6 +76,9 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         self.basetype_setup()
         self.at_channel_creation()
+        # initialize Attribute/TagProperties
+        self.init_evennia_properties()
+
         if hasattr(self, "_createdict"):
             # this is only set if the channel was created
             # with the utils.create.create_channel function.

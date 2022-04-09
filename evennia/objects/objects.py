@@ -1228,6 +1228,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         self.basetype_setup()
         self.at_object_creation()
+        # initialize Attribute/TagProperties
+        self.init_evennia_properties()
 
         if hasattr(self, "_createdict"):
             # this will only be set if the utils.create function

@@ -160,6 +160,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Attribute storage support defaultdics (Hendher)
 - Add ObjectParent mixin to default game folder template as an easy, ready-made
   way to override features on all ObjectDB-inheriting objects easily.
+- Add `TagProperty`, `AliasProperty` and `PermissionProperty` to assign these
+  data in a similar way to django fields.
 
 
 ## Evennia 0.9.5

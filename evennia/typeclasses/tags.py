@@ -96,6 +96,75 @@ class Tag(models.Model):
 # Handlers making use of the Tags model
 #
 
+class TagProperty:
+    """
+    Tag property descriptor. Allows for setting tags on an object as Django-like 'fields'
+    on the class level. Since Tags are almost always used for querying, Tags are always
+    created/assigned along with the object. Make sure the property/tagname does not collide
+    with an existing method/property on the class. If it does, you must use tags.add()
+    instead.
+
+    Example:
+    ::
+
+            class Character(DefaultCharacter):
+                mytag = TagProperty()  # category=None
+                mytag2 = TagProperty(category="tagcategory")
+
+    """
+    taghandler_name = "tags"
+
+    def __init__(self, category=None, data=None):
+        self._category = category
+        self._data = data
+        self._key = ""
+
+    def __set_name__(self, cls, name):
+        """
+        Called when descriptor is first assigned to the class (not the instance!).
+        It is called with the name of the field.
+
+        """
+        self._key = name
+
+    def __get__(self, instance, owner):
+        """
+        Called when accessing the tag as a property on the instance.
+
+        """
+        try:
+            return getattr(instance, self.taghandler_name).get(
+                key=self._key,
+                category=self._category,
+                return_list=False,
+                raise_exception=True
+            )
+        except AttributeError:
+            self.__set__(instance, self._category)
+
+    def __set__(self, instance, category):
+        """
+        Assign a new category to the tag. It's not possible to set 'data' this way.
+
+        """
+        self._category = category
+        (
+            getattr(instance, self.taghandler_name).add(
+                key=self._key,
+                category=self._category,
+                data=self._data
+            )
+        )
+
+    def __delete__(self, instance):
+        """
+        Called when running `del` on the property. Will disconnect the object from
+        the Tag. Note that the tag will be readded on next fetch unless the
+        TagProperty is also removed in code!
+
+        """
+        getattr(instance, self.taghandler_name).remove(key=self._key, category=self._category)
+
 
 class TagHandler(object):
     """
@@ -361,7 +430,8 @@ class TagHandler(object):
 
         return ret[0] if len(ret) == 1 else ret
 
-    def get(self, key=None, default=None, category=None, return_tagobj=False, return_list=False):
+    def get(self, key=None, default=None, category=None, return_tagobj=False, return_list=False,
+            raise_exception=False):
         """
         Get the tag for the given key, category or combination of the two.
 
@@ -376,12 +446,17 @@ class TagHandler(object):
                 instead of a string representation of the Tag.
             return_list (bool, optional): Always return a list, regardless
                 of number of matches.
+            raise_exception (bool, optional): Raise AttributeError if no matches
+                are found.
 
         Returns:
             tags (list): The matches, either string
                 representations of the tags or the Tag objects themselves
                 depending on `return_tagobj`. If 'default' is set, this
                 will be a list with the default value as its only element.
+
+        Raises:
+            AttributeError: If finding no matches and `raise_exception` is True.
 
         """
         ret = []
@@ -393,9 +468,14 @@ class TagHandler(object):
                     for tag in self._getcache(keystr, category)
                 ]
             )
-        if return_list:
-            return ret if ret else [default] if default is not None else []
-        return ret[0] if len(ret) == 1 else (ret if ret else default)
+        if not ret:
+            if raise_exception:
+                raise AttributeError(f"No tags found matching input {key}, {category}.")
+            elif return_list:
+                return [default] if default is not None else []
+            else:
+                return default
+        return ret if return_list else (ret[0] if len(ret) == 1 else ret)
 
     def remove(self, key=None, category=None):
         """
@@ -521,6 +601,21 @@ class TagHandler(object):
         return ",".join(self.all())
 
 
+class AliasProperty(TagProperty):
+    """
+    Allows for setting aliases like Django fields:
+    ::
+
+        class Character(DefaultCharacter):
+            # note that every character will get the alias bob. Make sure
+            # the alias property does not collide with an existing method
+            # or property on the class.
+            bob = AliasProperty()
+
+    """
+    taghandler_name = "aliases"
+
+
 class AliasHandler(TagHandler):
     """
     A handler for the Alias Tag type.
@@ -528,6 +623,20 @@ class AliasHandler(TagHandler):
     """
 
     _tagtype = "alias"
+
+
+class PermissionProperty(TagProperty):
+    """
+    Allows for setting permissions like Django fields:
+    ::
+
+        class Character(DefaultCharacter):
+            # note that every character will get this permission! Make
+            # sure it doesn't collide with an existing method or property.
+            myperm = PermissionProperty()
+
+    """
+    taghandler_name = "permissions"
 
 
 class PermissionHandler(TagHandler):

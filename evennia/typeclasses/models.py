@@ -325,6 +325,18 @@ class TypedObject(SharedMemoryModel):
         super().__init__(*args, **kwargs)
         self.set_class_from_typeclass(typeclass_path=typeclass_path)
 
+    def init_evennia_properties(self):
+        """
+        Called by creation methods; makes sure to initialize Attribute/TagProperties
+        by fetching them once.
+        """
+        for propkey, prop in self.__class__.__dict__.items():
+            if hasattr(prop, "__set_name__"):
+                try:
+                    getattr(self, propkey)
+                except Exception:
+                    log_trace()
+
     # initialize all handlers in a lazy fashion
     @lazy_property
     def attributes(self):
