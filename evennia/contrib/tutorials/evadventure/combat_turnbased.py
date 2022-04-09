@@ -48,14 +48,52 @@ class CombatAction:
 
     """
     key = 'action'
+    help_text = "Combat action to perform."
+    # action to echo to everyone.
     post_action_text = "{combatant} performed an action."
-
+    optimal_range = 0
+    # None for unlimited
+    max_uses = None
+    suboptimal_range = 1
     # move actions can be combined with other actions
     is_move_action = False
 
     def __init__(self, combathandler, combatant):
         self.combathandler = combathandler
         self.combatant = combatant
+        self.uses = 0
+
+    def msg(self, message, broadcast=False):
+        if broadcast:
+            # send to everyone in combat.
+            self.combathandler.msg(message)
+        else:
+            # send only to the combatant.
+            self.combatant.msg(message)
+
+    def get_help(self):
+        return ""
+
+    def check_distance(self, distance, optimal_range=None, suboptimal_range=None):
+        """Call to easily check and warn for out-of-bound distance"""
+
+        if optimal_range is None:
+            optimal_range = self.optimal_range
+        if suboptimal_range is None:
+            suboptimal_range = self.suboptimal_range
+
+        if distance not in (self.suboptimal_distance, self.optimal_distance):
+            # if we are neither at optimal nor suboptimal distance, we can't do the stunt
+            # from here.
+            self.msg(f"|rYou can't perform {self.key} from {range_names[distance]} distance "
+                     "(must be {range_names[suboptimal_distance]} or, even better, "
+                     "{range_names[optimal_distance]}).|n")
+            return False
+        elif self.distance == self.suboptimal_distance:
+            self.msg(f"|yNote: Performing {self.key} from {range_names[distance]} works, but "
+                     f"the optimal range is {range_names[optimal_range]} (you'll "
+                     "act with disadvantage).")
+        return True
 
     def can_use(self, combatant, *args, **kwargs):
         """
@@ -71,13 +109,16 @@ class CombatAction:
                 if available, should describe what the action does.
 
         """
-        return True
+        return True if self.uses is None else self.uses < self.max_uses
 
-    def use(self, *args, **kwargs):
-        """
-        Use action
+    def pre_perform(self, *args, **kwargs):
+        pass
 
-        """
+    def perform(self, *args, **kwargs):
+        pass
+
+    def post_perform(self, *args, **kwargs):
+        self.uses += 1
         self.combathandler.msg(self.post_action_text.format(combatant=combatant))
 
 
@@ -86,7 +127,9 @@ class CombatActionDoNothing(CombatAction):
     Do nothing this turn.
 
     """
+    help_text = "Hold you position, doing nothing."
     post_action_text = "{combatant} does nothing this turn."
+
 
 
 class CombatActionStunt(CombatAction):
@@ -96,28 +139,32 @@ class CombatActionStunt(CombatAction):
     """
     optimal_distance = 0
     suboptimal_distance = 1
-    advantage = True
+    give_advantage = True
+    give_disadvantage = False
+    uses = 1
     attack_type = "dexterity"
     defense_type = "dexterity"
+    help_text = ("Perform a stunt against a target. This will give you or an ally advantage "
+                 "on your next action against the same target [range 0-1, one use per combat. "
+                 "Bonus lasts for two turns].")
 
-    def can_use(self, combatant, defender, *args, **kwargs):
-        distance =  self.combathandler.distance_matrix[attacker][defender]
+    def perform(self, attacker, defender, *args, beneficiary=None, **kwargs):
+        # quality doesn't matter for stunts, they are either successful or not
 
-        disadvantage = False
-        if self.suboptimal_distance == distance:
-            # stunts need to be within range
-            disadvantage = True
-        elif self.optimal_distance != distance:
-            # if we are neither at optimal nor suboptimal distance, we can't do the stunt
-            # from here.
-            return False, (f"you can't perform this stunt "
-                           f"from {range_names[distance]} distance (must be "
-                           f"{range_names[suboptimal_distance]} or, even better, "
-                           f"{range_names[optimal_distance]}).")
+        is_success, _  = rules.EvAdventureRollEngine.opposed_saving_throw(
+            attacker, defender,
+            attack_type=self.attack_type,
+            defense_type=self.defense_type,
+            advantage=False, disadvantage=disadvantage,
+        )
+        if is_success:
+            beneficiary = beneficiary if beneficiary else attacker
+            if advantage:
+                self.gain_advantage(beneficiary, defender)
+            else:
+                self.gain_disadvantage(defender, beneficiary)
 
-
-
-
+            self.msg
 
 
 class EvAdventureCombatHandler(DefaultScript):
@@ -300,7 +347,7 @@ class EvAdventureCombatHandler(DefaultScript):
 
         table.add_row(f"You ({combatant.hp} / {combatant.hp_max} health)")
 
-        dist_template = "|x(You)__{0}|x__{1}|x___{2}|x____{3}|x_____{4} |x({distname})"
+        dist_template = "|x(You)__{0}|x__{1}|x___{2}|x____{3}|x_____|R{4} |x({distname})"
 
         for comb in self.combatants:
 
@@ -594,6 +641,7 @@ class EvAdventureCombatHandler(DefaultScript):
             self.approach(combatant, fleeing_target, change=MAX_MOVE_RATE)
 
         return is_success
+
 
 # combat menu
 
