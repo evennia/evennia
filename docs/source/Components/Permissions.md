@@ -17,7 +17,7 @@ All new accounts are given a default set of permissions defined by
 ## Managing Permissions
 
 In-game, you use the `perm` command to add and remove permissions
-
+j
      perm/account Tommy = Builders
      perm/account/del Tommy = Builders
 

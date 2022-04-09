@@ -3,7 +3,7 @@ Unit tests for typeclass base system
 
 """
 from django.test import override_settings
-from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 from evennia.typeclasses import attributes
 from mock import patch
 from parameterized import parameterized
