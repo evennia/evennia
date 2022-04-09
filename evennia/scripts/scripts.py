@@ -400,7 +400,10 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
                 overriding the call (unused by default).
 
         """
+        self.basetype_setup()
         self.at_script_creation()
+        # initialize Attribute/TagProperties
+        self.init_evennia_properties()
 
         if hasattr(self, "_createdict"):
             # this will only be set if the utils.create_script
@@ -470,6 +473,14 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         self._stop_task()
         super().delete()
         return True
+
+    def basetype_setup(self):
+        """
+        Changes fundamental aspects of the type. Usually changes are made in at_script creation
+        instead.
+
+        """
+        pass
 
     def at_init(self):
         """

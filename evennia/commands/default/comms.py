@@ -286,7 +286,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             elif len(channels) > 1:
                 self.msg(
                     "Multiple possible channel matches/alias for "
-                    "'{channelname}':\n" + ", ".join(chan.key for chan in channels)
+                    f"'{channelname}':\n" + ", ".join(chan.key for chan in channels)
                 )
                 return None
             return channels[0]

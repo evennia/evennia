@@ -176,7 +176,7 @@ class AttributeProperty:
 
     attrhandler_name = "attributes"
 
-    def __init__(self, default=None, category=None, strattr=False, lockstring="", autocreate=False):
+    def __init__(self, default=None, category=None, strattr=False, lockstring="", autocreate=True):
         """
         Initialize an Attribute as a property descriptor.
 
@@ -188,12 +188,12 @@ class AttributeProperty:
             lockstring (str): This is not itself useful with the property, but only if
                 using the full AttributeHandler.get(accessing_obj=...) to access the
                 Attribute.
-            autocreate (bool): If an un-found Attr should lead to auto-creating the
-                Attribute (with the default value). If `False`, the property will
-                return the default value until it has been explicitly set. This means
-                less database accesses, but also means the property will have no
-                corresponding Attribute if wanting to access it directly via the
-                AttributeHandler (it will also not show up in `examine`).
+            autocreate (bool): True by default; this means Evennia makes sure to create a new
+                copy of the Attribute (with the default value) whenever a new object with this
+                property is created. If `False`, no Attribute will be created until the property
+                is explicitly assigned a value. This makes it more efficient while it retains
+                its default (there's no db access), but without an actual Attribute generated,
+                one cannot access it via .db, the AttributeHandler or see it with `examine`.
 
         """
         self._default = default
@@ -218,21 +218,20 @@ class AttributeProperty:
         """
         value = self._default
         try:
-            value = getattr(instance, self.attrhandler_name).get(
+            value = self.at_get(getattr(instance, self.attrhandler_name).get(
                 key=self._key,
                 default=self._default,
                 category=self._category,
                 strattr=self._strattr,
                 raise_exception=self._autocreate,
-            )
+            ))
         except AttributeError:
             if self._autocreate:
                 # attribute didn't exist and autocreate is set
                 self.__set__(instance, self._default)
             else:
                 raise
-        finally:
-            return value
+        return value
 
     def __set__(self, instance, value):
         """
@@ -242,7 +241,7 @@ class AttributeProperty:
         (
             getattr(instance, self.attrhandler_name).add(
                 self._key,
-                value,
+                self.at_set(value),
                 category=self._category,
                 lockstring=self._lockstring,
                 strattr=self._strattr,
@@ -251,10 +250,43 @@ class AttributeProperty:
 
     def __delete__(self, instance):
         """
-        Called when running `del` on the field. Will remove/clear the Attribute.
+        Called when running `del` on the property. Will remove/clear the Attribute. Note that
+        the Attribute will be recreated next retrieval unless the AttributeProperty is also
+        removed in code!
 
         """
-        (getattr(instance, self.attrhandler_name).remove(key=self._key, category=self._category))
+        getattr(instance, self.attrhandler_name).remove(key=self._key, category=self._category)
+
+    def at_set(self, value):
+        """
+        The value to set is passed through the method. It can be used to customize/validate
+        the input in a custom child class.
+
+        Args:
+            value (any): The value about to the stored in this Attribute.
+
+        Returns:
+            any: The value to store.
+
+        Raises:
+            AttributeError: If the value is invalid to store.
+
+        """
+        return value
+
+    def at_get(self, value):
+        """
+        The value returned from the Attribute is passed through this method. It can be used
+        to react to the retrieval or modify the result in some way.
+
+        Args:
+            value (any): Value returned from the Attribute.
+
+        Returns:
+            any: The value to return to the caller.
+
+        """
+        return value
 
 
 class NAttributeProperty(AttributeProperty):
