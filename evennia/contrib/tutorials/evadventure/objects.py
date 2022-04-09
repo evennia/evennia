@@ -3,10 +3,15 @@ All items in the game inherit from a base object. The properties (what you can d
 with an object, such as wear, wield, eat, drink, kill etc) are all controlled by
 Tags.
 
+
+
 """
 
 from evennia.objects.objects import DefaultObject
 from evennia.typeclasses.attributes import AttributeProperty
+
+from .enums import WieldLocation, Ability
+
 
 
 class EvAdventureObject(DefaultObject):
@@ -15,12 +20,13 @@ class EvAdventureObject(DefaultObject):
 
     """
     # inventory management
-    wield_slot = AttributeProperty(default=None)
-    wear_slot = AttributeProperty(default=None)
-    inventory_slot_usage = AttributeProperty(default=1)
+    inventory_use_slot = AttributeProperty(default=WieldLocation.BACKPACK)
+    # how many inventory slots it uses (can be a fraction)
+    size = AttributeProperty(default=1)
     armor = AttributeProperty(default=0)
     # when 0, item is destroyed and is unusable
     quality = AttributeProperty(default=1)
+    value = AttributeProperty(default=0)
 
 
 class EvAdventureObjectFiller(EvAdventureObject):
@@ -43,10 +49,10 @@ class EvAdventureWeapon(EvAdventureObject):
     Base weapon class for all EvAdventure weapons.
 
     """
-    wield_slot = AttributeProperty(default="weapon")
+    inventory_use_slot = AttributeProperty(WieldLocation.WEAPON_HAND)
 
-    attack_type = AttributeProperty(default="strength")
-    defense_type = AttributeProperty(default="armor")
+    attack_type = AttributeProperty(default=Ability.STR)
+    defense_type = AttributeProperty(default=Ability.ARMOR)
     damage_roll = AttributeProperty(default="1d6")
 
     # at which ranges this weapon can be used. If not listed, unable to use
