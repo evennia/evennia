@@ -5,21 +5,31 @@
 > set obj/myattr = "test"
 ``` 
 ```{code-block} python
-:caption: In-code
-obj.db.foo = [1,2,3, "bar"]
+:caption: In-code, using the .db wrapper
+obj.db.foo = [1, 2, 3, "bar"]
 value = obj.db.foo
-
+```
+```{code-block} python
+:caption: In-code, using the .attributes handler
 obj.attributes.add("myattr", 1234, category="bar")
 value = attributes.get("myattr", category="bar")
 ```
+```{code-block} python
+:caption: In-code, using `AttributeProperty` at class level
+from evennia import DefaultObject 
+from evennia import AttributeProperty 
 
-_Attributes_ allow you to to store arbitrary data on objects and make sure the data survives a 
-server reboot. An Attribute can store pretty much any 
+class MyObject(DefaultObject):
+    foo = AttributeProperty(default=[1, 2, 3, "bar"])
+    myattr = AttributeProperty(100, category='bar')
+
+```
+
+_Attributes_ allow you to to store arbitrary data on objects and make sure the data survives a server reboot. An Attribute can store pretty much any 
 Python data structure and data type, like numbers, strings, lists, dicts etc. You can also 
 store (references to) database objects like characters and rooms.
 
-- [What can be stored in an Attribute](#what-types-of-data-can-i-save-in-an-attribute) is a must-read
-  also for experienced developers, to avoid getting surprised. Attributes can store _almost_ everything
+- [What can be stored in an Attribute](#what-types-of-data-can-i-save-in-an-attribute) is a must-read to avoid being surprised, also for experienced developers. Attributes can store _almost_ everything
   but you need to know the quirks.
 - [NAttributes](#in-memory-attributes-nattributes) are the in-memory, non-persistent 
   siblings of Attributes.
@@ -29,7 +39,7 @@ store (references to) database objects like characters and rooms.
 
 Attributes are usually handled in code. All [Typeclassed](./Typeclasses.md) entities 
 ([Accounts](./Accounts.md), [Objects](./Objects.md), [Scripts](./Scripts.md) and 
-[Channels](./Channels.md)) all can (and usually do) have Attributes associated with them. There
+[Channels](./Channels.md)) can (and usually do) have Attributes associated with them. There
 are three ways to manage Attributes, all of which can be mixed.
 
 - [Using the `.db` property shortcut](#using-db)
@@ -38,7 +48,7 @@ are three ways to manage Attributes, all of which can be mixed.
 
 ### Using .db
 
-The simplest way to get/set Attributes is to use the `.db` shortcut: 
+The simplest way to get/set Attributes is to use the `.db` shortcut. This allows for setting and getting Attributes that lack a _category_ (having category `None`)
 
 ```python 
 import evennia 
@@ -78,9 +88,8 @@ default `all` functionality until you delete it again.
 
 ### Using .attributes
 
-If you don't know the name of the Attribute beforehand you can also use 
-the `AttributeHandler`, available as `.attributes`. With no extra keywords this is identical 
-to using the `.db` shortcut (`.db` is actually using the `AttributeHandler` internally): 
+If you want to group your Attribute in a category, or don't know the name of the Attribute beforehand, you can make use of 
+the [AttributeHandler](evennia.typeclasses.attributes.AttributeHandler), available as `.attributes` on all typeclassed entities. With no extra keywords, this is identical to using the `.db` shortcut (`.db` is actually using the `AttributeHandler` internally): 
 
 ```python 
 is_ouch = rose.attributes.get("has_thorns") 
@@ -92,8 +101,7 @@ helmet = obj.attributes.get("helmet")
 obj.attributes.add("my game log", "long text about ...")
 ```
 
-With the `AttributeHandler` you can also give Attributes a `category`. By using a category you can 
-separate same-named Attributes on the same object which can help organization:
+By using a category you can separate same-named Attributes on the same object to help organization.
 
 ```python 
 # store (let's say we have gold_necklace and ringmail_armor from before)
@@ -105,11 +113,7 @@ neck_clothing = obj.attributes.get("neck", category="clothing")
 neck_armor = obj.attributes.get("neck", category="armor")
 ```
 
-If you don't specify a category, the Attribute's `category` will be `None`. Note that 
-`None` is also considered a category of its own, so you won't find `None`-category Attributes mixed 
-with Attributes having categories. 
-
-> When using `.db`, you will always use the `None` category.
+If you don't specify a category, the Attribute's `category` will be `None` and can thus also be found via `.db`. `None` is considered a category of its own, so you won't find `None`-category Attributes mixed with Attributes having categories. 
 
 Here are the methods of the `AttributeHandler`. See 
 the [AttributeHandler API](evennia.typeclasses.attributes.AttributeHandler) for more details.
@@ -151,9 +155,8 @@ all_clothes = obj.attributes.all(category="clothes")
 
 ### Using AttributeProperty 
 
-There is a third way to set up an Attribute, and that is by setting up an `AttributeProperty`. This 
-is done on the _class level_ of your typeclass and allows you to treat Attributes a bit like Django 
-database Fields. 
+The third way to set up an Attribute is to use an `AttributeProperty`. This 
+is done on the _class level_ of your typeclass and allows you to treat Attributes a bit like Django database Fields. Unlike using `.db` and `.attributes`, an `AttributeProperty` can't be created on the fly, you must assign it in the class code.
 
 ```python 
 # mygame/typeclasses/characters.py
@@ -163,133 +166,62 @@ from evennia.typeclasses.attributes import AttributeProperty
 
 class Character(DefaultCharacter):
 
-    strength = AttributeProperty(default=10, category='stat', autocreate=True)
-    constitution = AttributeProperty(default=10, category='stat', autocreate=True)
-    agility = AttributeProperty(default=10, category='stat', autocreate=True)
-    magic = AttributeProperty(default=10, category='stat', autocreate=True)
-    
-    sleepy = AttributeProperty(default=False)
-    poisoned = AttributeProperty(default=False)
+    strength = AttributeProperty(10, category='stat')
+    constitution = AttributeProperty(11, category='stat')
+    agility = AttributeProperty(12, category='stat')
+    magic = AttributeProperty(13, category='stat')
+
+    sleepy = AttributeProperty(False, autocreate=False)
+    poisoned = AttributeProperty(False, autocreate=False)
     
     def at_object_creation(self): 
       # ... 
 ``` 
 
-These "Attribute-properties" will be made available to all instances of the class.
+When a new instance of the class is created, new `Attributes` will be created with the value and category given.
 
-```{important} 
-If you change the `default` of an `AttributeProperty` (and reload), it will 
-change the default for _all_ instances of that class (it will not override 
-explicitly changed values).
-```
-
-```python
-char = evennia.search_object(Character, key="Bob")[0]  # returns list, get 0th element
-
-# get defaults 
-strength = char.strength   # will get the default value 10
-
-# assign new values (this will create/update new Attributes)
-char.strength = 12
-char.constitution = 16
-char.agility = 8
-char.magic = 2
-
-# you can also do arithmetic etc 
-char.magic += 2   # char.magic is now 4
-
-# check Attributes 
-strength = char.strength   # this is now 12
-is_sleepy = char.sleepy 
-is_poisoned = char.poisoned
-
-del char.strength   # wipes the Attribute
-strength  = char.strengh  # back to the default (10) again
-```
-
-See the [AttributeProperty](evennia.typeclasses.attributes.AttributeProperty) docs for more 
-details on arguments.
-
-An `AttributeProperty` will _not_ create an `Attribute` by default. A new `Attribute` will be created
-(or an existing one retrieved/updated) will happen differently depending on how the `autocreate`
-keyword: 
-
-- If `autocreate=False` (default), an `Attribute` will be created only if the field is explicitly 
-  assigned a value (even if the value is the same as the default, such as `char.strength = 10`).
-- If `autocreate=True`, an `Attribute` will be created as soon as the field is _accessed_ in 
-  any way (So both `strength = char.strength` and `char.strength = 10` will both make sure that
-  an `Attribute` exists. 
-
-Example: 
+With `AttributeProperty`'s set up like this, one can access the underlying `Attribute` like a regular property on the created object: 
 
 ```python 
-# in mygame/typeclasses/objects.py 
+char = create_object(Character)
 
-from evennia import create_object 
-from evennia import DefaultObject
-from evennia.typeclasses.attributes import AttributeProperty
+char.strength   # returns 10
+char.agility = 15  # assign a new value (category remains 'stat')
 
-class Object(DefaultObject):
-  
-    value_a = AttributeProperty(default="foo")
-    value_b = AttributeProperty(default="bar", autocreate=True)
-    
-obj = evennia.create_object(key="Dummy")
+char.db.magic  # returns None (wrong category)
+char.attributes.get("agility", category="stat")  # returns 15
 
-# these will find NO Attributes! 
-obj.db.value_a 
-obj.attributes.get("value_a")
-obj.db.value_b 
-obj.attributes.get("value_b")
+char.db.sleepy # returns None because autocreate=False (see below)
 
-# get data from attribute-properties
-vala = obj.value_a  # returns "foo"
-valb = obj.value_b  # return "bar" AND creates the Attribute (autocreate)
-
-# the autocreate property will now be found 
-obj.db.value_a                      # still not found 
-obj.attributes.get("value_a")       #       ''
-obj.db.value_b                      # now returns "bar" 
-obj.attributes.get("value_b")       #       ''
-
-# assign new values 
-obj.value_a = 10   # will now create a new Attribute 
-obj.value_b = 12   # will update the existing Attribute 
-
-# both are now found as Attributes 
-obj.db.value_a                      # now returns 10
-obj.attributes.get("value_a")       #       ''
-obj.db.value_b                      # now returns 12
-obj.attributes.get("value_b")       #       ''
 ```
 
-If you always access your Attributes via the `AttributeProperty` this does not matter that much
-(it's also a bit of an optimization to not create an actual database `Attribute` unless the value changed). 
-But until an `Attribute` has been created, `AttributeProperty` fields will _not_ show up with the 
-`examine` command or by using the `.db` or `.attributes` handlers - so this is a bit inconsistent. 
-If this is important, you need to 'initialize' them by accessing them at least once ... something 
-like this: 
+```{warning} 
+Be careful to not assign AttributeProperty's to names of properties and methods already existing on the class, like 'key' or 'at_object_creation'. That could lead to very confusing errors.
+```
 
+The `autocreate=False` (default is `True`) used for `sleepy` and `poisoned` is worth a closer explanation. When `False`, _no_ Attribute will be auto-created for these AttributProperties unless they are _explicitly_ set. 
+The advantage of not creating an Attribute is that the default value given to `AttributeProperty` is returned with no database access unless you change it. This also means that if you want to change the default later, all entities previously create will inherit the new default. 
+The drawback is that without a database precense you can't find the Attribute via `.db` and `.attributes.get` (or by querying for it in other ways in the database): 
 
 ```python 
-# ... 
-class Character(DefaultCharacter):
+char.sleepy   # returns False, no db access
 
-    strength = AttributeProperty(12, autocreate=True)
-    agility = AttributeProperty(12, autocreate=True)
+char.db.sleepy   # returns None - no Attribute exists
+char.attributes.get("sleepy")  # returns None too
 
+char.sleepy = True  # now an Attribute is created
+char.db.sleepy   # now returns True!
+char.attributes.get("sleepy")  # now returns True
 
-    def at_object_creation(self):
-        # initializing 
-        self.strength   # by accessing it, the Attribute is auto-created
-        self.agility    #             ''
+char.sleepy  # now returns True, involves db access
+
 ```
 
-```{important}
-If you created your `AttributeProperty` with a `category`, you *must* specify the 
-category in `.attributes.get()` if you want to find it this way. Remember that 
-`.db` always uses a `category` of `None`.
-```
+You can e.g. `del char.strength` to set the value back to the default (the value defined 
+in the `AttributeProperty`). 
+
+See the [AttributeProperty API](evennia.typeclasses.attributes.AttributeProperty) for more details on how to create it with special options, like giving access-restrictions.
+
 
 ## Managing Attributes in-game
 

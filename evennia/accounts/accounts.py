@@ -1253,6 +1253,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         self.basetype_setup()
         self.at_account_creation()
+        # initialize Attribute/TagProperties
+        self.init_evennia_properties()
 
         permissions = [settings.PERMISSION_ACCOUNT_DEFAULT]
         if hasattr(self, "_createdict"):

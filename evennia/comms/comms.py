@@ -19,15 +19,33 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     create different types of communication channels.
 
     Class-level variables:
-        - `send_to_online_only` (bool, default True) - if set, will only try to
-          send to subscribers that are actually active. This is a useful optimization.
-        - `log_file` (str, default `"channel_{channelname}.log"`). This is the
-          log file to which the channel history will be saved. The `{channelname}` tag
-          will be replaced by the key of the Channel. If an Attribute 'log_file'
-          is set, this will be used instead. If this is None and no Attribute is found,
-          no history will be saved.
-        - `channel_prefix_string` (str, default `"[{channelname} ]"`) - this is used
-          as a simple template to get the channel prefix with `.channel_prefix()`.
+    - `send_to_online_only` (bool, default True) - if set, will only try to
+      send to subscribers that are actually active. This is a useful optimization.
+    - `log_file` (str, default `"channel_{channelname}.log"`). This is the
+      log file to which the channel history will be saved. The `{channelname}` tag
+      will be replaced by the key of the Channel. If an Attribute 'log_file'
+      is set, this will be used instead. If this is None and no Attribute is found,
+      no history will be saved.
+    - `channel_prefix_string` (str, default `"[{channelname} ]"`) - this is used
+      as a simple template to get the channel prefix with `.channel_prefix()`. It is used
+      in front of every channel message; use `{channelmessage}` token to insert the
+      name of the current channel. Set to `None` if you want no prefix (or want to
+      handle it in a hook during message generation instead.
+    - `channel_msg_nick_pattern`(str, default `"{alias}\\s*?|{alias}\\s+?(?P<arg1>.+?)") -
+      this is what used when a channel subscriber gets a channel nick assigned to this
+      channel. The nickhandler uses the pattern to pick out this channel's name from user
+      input. The `{alias}` token will get both the channel's key and any set/custom aliases
+      per subscriber. You need to allow for an `<arg1>` regex group to catch any message
+      that should be send to the  channel. You usually don't need to change this pattern
+      unless you are changing channel command-style entirely.
+    - `channel_msg_nick_replacement` (str, default `"channel {channelname} = $1"` - this
+      is used by the nickhandler to generate a replacement string once the nickhandler (using
+      the `channel_msg_nick_pattern`) identifies that the channel should be addressed
+      to send a message to it. The `<arg1>` regex pattern match from `channel_msg_nick_pattern`
+      will end up at the `$1` position in the replacement. Together, this allows you do e.g.
+      'public Hello' and have that become a mapping to `channel public = Hello`. By default,
+      the account-level `channel` command is used. If you were to rename that command you must
+      tweak the output to something like `yourchannelcommandname {channelname} = $1`.
 
     """
 
@@ -58,6 +76,9 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         self.basetype_setup()
         self.at_channel_creation()
+        # initialize Attribute/TagProperties
+        self.init_evennia_properties()
+
         if hasattr(self, "_createdict"):
             # this is only set if the channel was created
             # with the utils.create.create_channel function.

@@ -64,7 +64,7 @@ class ComponentHandler:
         """
         self._set_component(component)
         self.db_names.append(component.name)
-        self.host.tags.add(component.name, category="components")
+        self._add_component_tags(component)
         component.at_added(self.host)
 
     def add_default(self, name):
@@ -85,8 +85,23 @@ class ComponentHandler:
         new_component = component.default_create(self.host)
         self._set_component(new_component)
         self.db_names.append(name)
-        self.host.tags.add(name, category="components")
+        self._add_component_tags(new_component)
         new_component.at_added(self.host)
+
+    def _add_component_tags(self, component):
+        """
+        Private method that adds the Tags set on a Component via TagFields
+        It will also add the name of the component so objects can be filtered
+        by the components the implement.
+
+        Args:
+            component (object): The component instance that is added.
+        """
+        self.host.tags.add(component.name, category="components")
+        for tag_field_name in component.tag_field_names:
+            default_tag = type(component).__dict__[tag_field_name]._default
+            if default_tag:
+                setattr(component, tag_field_name, default_tag)
 
     def remove(self, component):
         """
@@ -100,9 +115,9 @@ class ComponentHandler:
         """
         component_name = component.name
         if component_name in self._loaded_components:
+            self._remove_component_tags(component)
             component.at_removed(self.host)
             self.db_names.remove(component_name)
-            self.host.tags.remove(component_name, category="components")
             del self._loaded_components[component_name]
         else:
             message = f"Cannot remove {component_name} from {self.host.name} as it is not registered."
@@ -123,10 +138,23 @@ class ComponentHandler:
             message = f"Cannot remove {name} from {self.host.name} as it is not registered."
             raise ComponentIsNotRegistered(message)
 
+        self._remove_component_tags(instance)
         instance.at_removed(self.host)
         self.db_names.remove(name)
-        self.host.tags.remove(name, category="components")
+
         del self._loaded_components[name]
+
+    def _remove_component_tags(self, component):
+        """
+        Private method that will remove the Tags set on a Component via TagFields
+        It will also remove the component name tag.
+
+        Args:
+            component (object): The component instance that is removed.
+        """
+        self.host.tags.remove(component.name, category="components")
+        for tag_field_name in component.tag_field_names:
+            delattr(component, tag_field_name)
 
     def get(self, name):
         """
@@ -225,8 +253,8 @@ class ComponentHolderMixin(object):
         Method that add component related tags that were set using ComponentProperty.
         """
         super().basetype_posthook_setup()
-        for component_name in self.db.component_names:
-            self.tags.add(component_name, category="components")
+        for component in self.components._loaded_components.values():
+            self.components._add_component_tags(component)
 
     @property
     def components(self) -> ComponentHandler:

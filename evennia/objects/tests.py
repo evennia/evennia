@@ -1,6 +1,9 @@
-from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 from evennia import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
+from evennia.typeclasses.attributes import AttributeProperty
+from evennia.typeclasses.tags import TagProperty, AliasProperty, PermissionProperty
 from evennia.objects.models import ObjectDB
+from evennia.objects.objects import DefaultObject
 from evennia.utils import create
 
 
@@ -227,3 +230,53 @@ class TestContentHandler(BaseEvenniaTest):
         self.obj2.move_to(self.room1)
         self.obj2.move_to(self.room2)
         self.assertEqual(self.room2.contents, [self.obj1, self.obj2])
+
+
+class TestObjectPropertiesClass(DefaultObject):
+    attr1 = AttributeProperty(default="attr1")
+    attr2 = AttributeProperty(default="attr2", category="attrcategory")
+    attr3 = AttributeProperty(default="attr3", autocreate=False)
+    tag1 = TagProperty()
+    tag2 = TagProperty(category="tagcategory")
+    testalias = AliasProperty()
+    testperm = PermissionProperty()
+
+class TestProperties(EvenniaTestCase):
+    """
+    Test Properties.
+
+    """
+    def setUp(self):
+        self.obj = create.create_object(TestObjectPropertiesClass, key="testobj")
+
+    def tearDown(self):
+        self.obj.delete()
+
+    def test_properties(self):
+        """
+        Test all properties assigned at class level.
+        """
+        obj = self.obj
+
+        self.assertEqual(obj.db.attr1, "attr1")
+        self.assertEqual(obj.attributes.get("attr1"), "attr1")
+        self.assertEqual(obj.attr1, "attr1")
+
+        self.assertEqual(obj.attributes.get("attr2", category="attrcategory"), "attr2")
+        self.assertEqual(obj.db.attr2, None)  # category mismatch
+        self.assertEqual(obj.attr2, "attr2")
+
+        self.assertEqual(obj.db.attr3, None)  # non-autocreate, so not in db yet
+        self.assertFalse(obj.attributes.has("attr3"))
+        self.assertEqual(obj.attr3, "attr3")
+
+        obj.attr3 = "attr3b"   # stores it in db!
+
+        self.assertEqual(obj.db.attr3, "attr3b")
+        self.assertTrue(obj.attributes.has("attr3"))
+
+        self.assertTrue(obj.tags.has("tag1"))
+        self.assertTrue(obj.tags.has("tag2", category="tagcategory"))
+
+        self.assertTrue(obj.aliases.has("testalias"))
+        self.assertTrue(obj.permissions.has("testperm"))
