@@ -23,9 +23,9 @@ This module presents several singletons to import
 
 """
 from random import randint
-from dataclasses import dataclass
 from evennia.utils.evform import EvForm
 from evennia.utils.evtable import EvTable
+from .enums import Ability
 from .utils import roll
 from .random_tables import character_generation as chargen_table
 
@@ -39,8 +39,7 @@ class EvAdventureRollEngine:
 
     """
 
-    @staticmethod
-    def roll(roll_string, max_number=10):
+    def roll(self, roll_string, max_number=10):
         """
         NOTE: In evennia/contribs/rpg/dice/ is a more powerful dice roller with
         more features, such as modifiers, secret rolls etc. This is much simpler and only
@@ -82,8 +81,7 @@ class EvAdventureRollEngine:
         # At this point we know we have valid input - roll and all dice together
         return sum(randint(1, diesize) for _ in range(number))
 
-    @staticmethod
-    def roll_with_advantage_or_disadvantage(advantage=False, disadvantage=False):
+    def roll_with_advantage_or_disadvantage(self, advantage=False, disadvantage=False):
         """
         Base roll of d20, or 2d20, based on dis/advantage given.
 
@@ -104,8 +102,7 @@ class EvAdventureRollEngine:
         else:
             return min(roll("1d20"), roll("1d20"))
 
-    @staticmethod
-    def saving_throw(character, bonus_type='strength',
+    def saving_throw(self, character, bonus_type=Ability.STR,
                      advantage=False, disadvantage=False, modifier=0):
         """
         A saving throw without a clear enemy to beat. In _Knave_ all unopposed saving
@@ -113,7 +110,8 @@ class EvAdventureRollEngine:
 
         Args:
             character (Object): The one attempting to save themselves.
-            bonus (str): The ability bonus to apply, like strength or charisma. Minimum is 1.
+            bonus_type (enum.Ability): The ability bonus to apply, like strength or
+                charisma.
             advantage (bool): Roll 2d20 and use the bigger number.
             disadvantage (bool): Roll 2d20 and use the smaller number.
             modifier (int): An additional +/- modifier to the roll.
@@ -130,7 +128,7 @@ class EvAdventureRollEngine:
 
         """
         bonus = getattr(character, bonus_type, 1)
-        dice_roll = roll_with_advantage_or_disadvantage(advantage, disadvantage)
+        dice_roll = self.roll_with_advantage_or_disadvantage(advantage, disadvantage)
         if dice_roll == 1:
             quality = "critical failure"
         elif dice_roll == 20:
@@ -139,9 +137,10 @@ class EvAdventureRollEngine:
             quality = None
         return (dice_roll + bonus + modifier) > 15, quality
 
-    @staticmethod
-    def opposed_saving_throw(attacker, defender, attack_type='strength', defense_type='armor',
-            advantage=False, disadvantage=False):
+    def opposed_saving_throw(
+            self, attacker, defender,
+            attack_type=Ability.STR, defense_type=Ability.ARMOR,
+            advantage=False, disadvantage=False, modifier=0):
         """
         An saving throw that tries to beat an active opposing side.
 
@@ -163,10 +162,10 @@ class EvAdventureRollEngine:
             Advantage and disadvantage cancel each other out.
 
         """
-        attack_bonus = getattr(attacker, attack_type, 1)
+        attack_bonus = getattr(attacker, attack_type.value, 1)
         # defense is always bonus + 10 in Knave
-        defender_defense = getattr(defender, defense_type_type, 1) + 10
-        dice_roll = roll_with_advantage_or_disadvantage(advantage, disadvantage)
+        defender_defense = getattr(defender, defense_type.value, 1) + 10
+        dice_roll = self.roll_with_advantage_or_disadvantage(advantage, disadvantage)
         if dice_roll == 1:
             quality = "critical failure"
         elif dice_roll == 20:
@@ -175,8 +174,7 @@ class EvAdventureRollEngine:
             quality = None
         return (dice_roll + attack_bonus + modifier) > defender_defense, quality
 
-    @staticmethod
-    def roll_random_table(dieroll, table, table_choices):
+    def roll_random_table(self, dieroll, table, table_choices):
         """
         Make a roll on a random table.
 
@@ -230,8 +228,7 @@ class EvAdventureRollEngine:
 
     # specific rolls / actions
 
-    @staticmethod
-    def morale_check(defender):
+    def morale_check(self, defender):
         """
         A morale check is done for NPCs/monsters. It's done with a 2d6 against
         their morale.
@@ -245,8 +242,19 @@ class EvAdventureRollEngine:
         """
         return roll('2d6') <= defender.morale
 
-    @staticmethod
-    def healing_from_rest(character):
+    def heal(self, character, amount):
+        """
+        Heal specific amount, but not more than our max.
+
+        Args:
+            character (EvAdventureCharacter): The character to heal
+            amount (int): How many HP to heal.
+
+        """
+        damage = character.hp_max - character.hp
+        character.hp += min(damage, amount)
+
+    def healing_from_rest(self, character):
         """
         A meal and a full night's rest allow for regaining 1d8 + Const bonus HP.
 
@@ -257,10 +265,7 @@ class EvAdventureRollEngine:
             int: How much HP was healed. This is never more than how damaged we are.
 
         """
-        # we can't heal more than our damage
-        damage = character.hp_max - character.hp
-        healed = roll('1d8') + character.constitution
-        return min(damage, healed)
+        self.heal(character, roll('1d8') + character.constitution)
 
     death_map = {
         "weakened": "strength",
@@ -271,7 +276,7 @@ class EvAdventureRollEngine:
         "disfigured": "charisma",
     }
 
-    def roll_death(character):
+    def roll_death(self, character):
         """
         Happens when hitting <= 0 hp. unless dead,
 
@@ -282,12 +287,12 @@ class EvAdventureRollEngine:
             character.handle_death()
         else:
             # survives with degraded abilities (1d4 roll)
-            abi = death_map[result]
+            abi = self.death_map[result]
 
             current_abi = getattr(character, abi)
             loss = self.roll("1d4")
 
-            current_abi =- loss
+            current_abi -= loss
 
             if current_abi < -10:
                 # can't lose more - die
@@ -312,7 +317,7 @@ class EvAdventureCharacterGeneration:
     """
     This collects all the rules for generating a new character. An instance of this class can be
     used to track all the stats during generation and will be used to apply all the data to the
-    character at the end. This class instance can also be saved temporarily to make sure a user
+    character at the end. This class instance can also be saved on the menu to make sure a user
     is not losing their half-created character.
 
     Note:
@@ -357,8 +362,6 @@ class EvAdventureCharacterGeneration:
         self.wisdom = 2
         self.charisma = 2
 
-        self.armor_bonus = 1  # un-armored default
-
         # physical attributes (only for rp purposes)
         self.physique = dice.roll_random_table('1d20', chargen_table['physique'])
         self.face = dice.roll_random_table('1d20', chargen_table['face'])
@@ -389,7 +392,7 @@ class EvAdventureCharacterGeneration:
 
         self.weapon = dice.roll_random_table(chargen_table['1d20', "starting_weapon"])
 
-        self.equipment = [
+        self.backpack = [
             "ration",
             "ration",
             dice.roll_random_table(chargen_table['1d20', "dungeoning gear"]),
@@ -416,7 +419,8 @@ class EvAdventureCharacterGeneration:
         must not be lower than +1 and not above +6.
 
         Args:
-            source_attribute (str): The name of the attribute to deduct bonus from, like 'strength'
+            source_attribute (enum.Ability): The name of the attribute to deduct bonus from,
+                like 'strength'
             target_attribute (str): The attribute to give the bonus to, like 'dexterity'.
             value (int): How much to change. This is always 1 for the current chargen.
 
@@ -428,18 +432,18 @@ class EvAdventureCharacterGeneration:
             much input validation here, we do make sure we don't overcharge ourselves though.
 
         """
-        # we use getattr() to fetch the CharaAttribute of e.g. the .strength property etc
-        source_current_bonus = getattr(self, source_attribute).bonus
-        target_current_bonus = getattr(self, target_attribute).bonus
+        # we use getattr() to fetch the Ability of e.g. the .strength property etc
+        source_current_bonus = getattr(self, source_attribute.value, 1)
+        target_current_bonus = getattr(self, target_attribute.value, 1)
 
-        if source_current_val - value < 1:
+        if source_current_bonus - value < 1:
             raise ValueError(f"You can't reduce the {source_attribute} bonus below +1.")
-        if target_current_val + value > 6:
+        if target_current_bonus + value > 6:
             raise ValueError(f"You can't increase the {target_attribute} bonus above +6.")
 
         # all is good, apply the change.
-        setattr(self, source_attribute, CharAttribute(bonus=source_current_val - value))
-        setattr(self, target_attribute, CharAttribute(bonus=source_current_val + value))
+        setattr(self, source_attribute, source_current_bonus - value)
+        setattr(self, target_attribute, source_current_bonus + value)
 
     def apply(self, character):
         """
@@ -465,18 +469,20 @@ class EvAdventureCharacterGeneration:
 
         character.db.desc = self.build_desc()
 
+        # TODO - spawn the actual equipment objects before adding them to equipment!
+
         if self.weapon:
-            character.equipment.add(self.weapon)
-            character.equipment.wield(self.weapon)
+            character.equipment.use(self.weapon)
         if self.shield:
-            character.equipment.add(self.shield)
-            character.equipment.wield(self.shield)
+            character.equipment.use(self.shield)
         if self.armor:
-            character.equipment.add(self.armor)
-            character.equipment.wear(self.armor)
+            character.equipment.use(self.armor)
         if self.helmet:
-            character.equipment.add(self.helmet)
-            character.equipment.wear(self.helmet)
+            character.equipment.use(self.helmet)
+
+        for item in self.backpack:
+            # TODO create here
+            character.equipment.store(item)
 
 
 # character improvement
@@ -538,7 +544,8 @@ class EvAdventureImprovement:
             except AttributeError:
                 pass
 
-        new_hp_max = max(character.max_hpdice.roll(f"{character.level}d8"))
+        character.hp_max = max(character.max_hp + 1,
+                               EvAdventureRollEngine.roll(f"{character.level}d8"))
 
 
 # character sheet visualization
