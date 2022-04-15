@@ -49,6 +49,7 @@ div {margin:0px;}
 .out {
   color: #aaa;
   background-color: #000;
+  white-space: pre-wrap;
 }
 
 /* Error messages (red) */
