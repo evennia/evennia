@@ -241,11 +241,17 @@ class TestObjectPropertiesClass(DefaultObject):
     testalias = AliasProperty()
     testperm = PermissionProperty()
 
+    @property
+    def base_property(self):
+        self.property_initialized = True
+
+
 class TestProperties(EvenniaTestCase):
     """
     Test Properties.
 
     """
+
     def setUp(self):
         self.obj = create.create_object(TestObjectPropertiesClass, key="testobj")
 
@@ -270,7 +276,7 @@ class TestProperties(EvenniaTestCase):
         self.assertFalse(obj.attributes.has("attr3"))
         self.assertEqual(obj.attr3, "attr3")
 
-        obj.attr3 = "attr3b"   # stores it in db!
+        obj.attr3 = "attr3b"  # stores it in db!
 
         self.assertEqual(obj.db.attr3, "attr3b")
         self.assertTrue(obj.attributes.has("attr3"))
@@ -280,3 +286,7 @@ class TestProperties(EvenniaTestCase):
 
         self.assertTrue(obj.aliases.has("testalias"))
         self.assertTrue(obj.permissions.has("testperm"))
+
+        # Verify that regular properties do not get fetched in init_evennia_properties,
+        # only Attribute or TagProperties.
+        self.assertFalse(hasattr(obj, "property_initialized"))
