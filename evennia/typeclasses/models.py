@@ -332,7 +332,7 @@ class TypedObject(SharedMemoryModel):
         by fetching them once.
         """
         for propkey, prop in self.__class__.__dict__.items():
-            if inherits_from(prop, AttributeProperty) or inherits_from(prop, TagProperty):
+            if isinstance(prop, (AttributeProperty, TagProperty)):
                 try:
                     getattr(self, propkey)
                 except Exception:
