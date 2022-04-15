@@ -167,7 +167,7 @@ class GlobalScriptContainer(Container):
 
             # store a hash representation of the setup
             script.attributes.add("_global_script_settings", compare_hash, category="settings_hash")
-            script.start()
+        script.start()
 
         return script
 
