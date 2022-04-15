@@ -442,7 +442,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         + [
             regex_tuple_from_key_alias(obj)  # handle objects without sdescs
             for obj in candidates
-            if not (hasattr(obj, "recog") and hasattr(obj, "sdesc"))
+            if not hasattr(obj, "recog") and not hasattr(obj, "sdesc")
         ]
     )
 
@@ -643,42 +643,13 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         # the form {{#num}} to {#num} markers ready to sdesc-map in the next step.
         sendemote = emote.format(**receiver_lang_mapping)
 
-        # handle sdesc mappings. we make a temporary copy that we can modify
-        try:
-            process_sdesc = receiver.process_sdesc
-        except AttributeError:
-            process_sdesc = _dummy_process
-
-        try:
-            process_recog = receiver.process_recog
-        except AttributeError:
-            process_recog = _dummy_process
-
-        try:
-            recog_get = receiver.recog.get
-            receiver_sdesc_mapping = dict(
-                (ref, process_recog(recog_get(obj), obj, ref=ref, **kwargs))
-                for ref, obj in obj_mapping.items()
+        receiver_sdesc_mapping = dict(
+           (
+               ref,
+                obj.get_display_name(receiver, ref=ref),
             )
-        except AttributeError:
-            receiver_sdesc_mapping = dict(
-                (
-                    ref,
-                    process_sdesc(obj.sdesc.get(), obj, ref=ref)
-                    if hasattr(obj, "sdesc")
-                    else process_sdesc(obj.key, obj, ref=ref),
-                )
-                for ref, obj in obj_mapping.items()
-            )
-        # make sure receiver always sees their real name
-        rkey_start = "#%i" % receiver.id
-        rkey_keep_case = rkey_start + "~"  # signifies keeping the case
-        for rkey in (key for key in receiver_sdesc_mapping if key.startswith(rkey_start)):
-            # we could have #%i^, #%it etc depending on input case - we want the
-            # self-reference to retain case.
-            receiver_sdesc_mapping[rkey] = process_sdesc(
-                receiver.key, receiver, ref=rkey_keep_case, **kwargs
-            )
+            for ref, obj in obj_mapping.items()
+        )
 
         # do the template replacement of the sdesc/recog {#num} markers
         receiver.msg(sendemote.format(**receiver_sdesc_mapping), from_obj=sender, **kwargs)
@@ -719,11 +690,15 @@ class SdescHandler:
     def _cache(self):
         """
         Cache data from storage
-
         """
         self.sdesc = self.obj.attributes.get("_sdesc", default="")
         sdesc_regex = self.obj.attributes.get("_sdesc_regex", default="")
-        self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
+        if self.sdesc:
+            self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
+        else:
+            permutation_string = " ".join([self.key] + self.aliases.all())
+            self.sdesc_regex = re.compile(ordered_permutation_regex(permutation_string), _RE_FLAGS)
+
 
     def add(self, sdesc, max_length=60):
         """
@@ -1346,6 +1321,9 @@ class ContribRPObject(DefaultObject):
     This class is meant as a mix-in or parent for objects in an
     rp-heavy game. It implements the base functionality for poses.
     """
+    @lazy_property
+    def sdesc(self):
+      return SdescHandler(self)
 
     def at_object_creation(self):
         """
@@ -1539,6 +1517,7 @@ class ContribRPObject(DefaultObject):
 
         Keyword Args:
             pose (bool): Include the pose (if available) in the return.
+            ref (str):   Specifies the capitalization for the displayed name.
 
         Returns:
             name (str): A string of the sdesc containing the name of the object,
@@ -1546,20 +1525,18 @@ class ContribRPObject(DefaultObject):
                 including the DBREF if this user is privileged to control
                 said object.
 
-        Notes:
-            The RPObject version doesn't add color to its display.
-
         """
         idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        ref = kwargs.get("ref","~")
+    
         if looker == self:
             sdesc = self.key
         else:
             try:
-                recog = looker.recog.get(self)
+                sdesc = looker.get_sdesc(self, process=True, ref=ref)
             except AttributeError:
-                recog = None
-            sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
-        pose = " %s" % (self.db.pose or "") if kwargs.get("pose", False) else ""
+                sdesc = self.sdesc.get()
+        pose = " %s" % (self.db.pose or "is here.") if kwargs.get("pose", False) else ""
         return "%s%s%s" % (sdesc, idstr, pose)
 
     def return_appearance(self, looker):
@@ -1635,21 +1612,23 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
                 said object.
 
         Notes:
-            The RPCharacter version of this method colors its display to make
+            The RPCharacter version adds additional processing to sdescs to make
             characters stand out from other objects.
 
         """
         idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        ref = kwargs.get("ref","~")
+    
         if looker == self:
-            sdesc = self.key
+            sdesc = self.process_recog(self.key,self)
         else:
             try:
-                recog = looker.recog.get(self)
+                sdesc = looker.get_sdesc(self, process=True, ref=ref)
             except AttributeError:
-                recog = None
-            sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
+                sdesc = self.sdesc.get()
         pose = " %s" % (self.db.pose or "is here.") if kwargs.get("pose", False) else ""
-        return "|c%s|n%s%s" % (sdesc, idstr, pose)
+        return "%s%s%s" % (sdesc, idstr, pose)
+
 
     def at_object_creation(self):
         """
@@ -1681,6 +1660,34 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         if kwargs.get("whisper"):
             return f'/me whispers "{message}"'
         return f'/me says, "{message}"'
+
+    def get_sdesc(self, obj, process=False, **kwargs):
+        """
+        Single hook method to handle getting recogs with sdesc fallback in an
+        aware manner, to allow separate processing of recogs from sdescs.
+        Gets the sdesc or recog for obj from the view of self.
+
+        Args:
+            obj (Object): the object whose sdesc or recog is being gotten
+        Keyword Args:
+            process (bool): If True, the sdesc/recog is run through the
+                appropriate process_X method.
+        """
+        if obj == self:
+            recog = self.key
+            sdesc = self.key
+        else:
+            try:
+                recog = self.recog.get(obj)
+            except AttributeError:
+                recog = None
+            sdesc = recog or (hasattr(obj, "sdesc") and obj.sdesc.get()) or obj.key
+
+        if process:
+            sdesc = (self.process_recog if recog else self.process_sdesc)(sdesc, obj, **kwargs)
+
+        return sdesc
+
 
     def process_sdesc(self, sdesc, obj, **kwargs):
         """
