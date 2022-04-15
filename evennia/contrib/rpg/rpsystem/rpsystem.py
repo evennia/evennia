@@ -1585,11 +1585,6 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
     This is a character class that has poses, sdesc and recog.
     """
 
-    # Handlers
-    @lazy_property
-    def sdesc(self):
-        return SdescHandler(self)
-
     @lazy_property
     def recog(self):
         return RecogHandler(self)
@@ -1739,14 +1734,15 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
                 translated from the original sdesc at this point.
             obj (Object): The object the recog:ed string belongs to.
                 This is not used by default.
-        Kwargs:
-            ref (str): See process_sdesc.
 
         Returns:
             recog (str): The modified recog string.
 
         """
-        return self.process_sdesc(recog, obj, **kwargs)
+        if not sdesc:
+            return ""
+
+        return "|m%s|n" % sdesc
 
     def process_language(self, text, speaker, language, **kwargs):
         """
