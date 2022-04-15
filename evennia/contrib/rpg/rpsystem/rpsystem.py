@@ -319,14 +319,15 @@ def regex_tuple_from_key_alias(obj):
     """
     global _REGEX_TUPLE_CACHE
     permutation_string = " ".join([obj.key] + obj.aliases.all())
+    cache_key = f"{obj.id} {permutation_string}"
 
-    if permutation_string not in _REGEX_TUPLE_CACHE:
-        _REGEX_TUPLE_CACHE[permutation_string] = (
+    if cache_key not in _REGEX_TUPLE_CACHE:
+        _REGEX_TUPLE_CACHE[cache_key] = (
             re.compile(ordered_permutation_regex(permutation_string), _RE_FLAGS),
             obj,
             obj.key,
         )
-    return _REGEX_TUPLE_CACHE[permutation_string]
+    return _REGEX_TUPLE_CACHE[cache_key]
 
 
 def parse_language(speaker, emote):
