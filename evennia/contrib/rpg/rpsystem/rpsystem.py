@@ -691,7 +691,7 @@ class SdescHandler:
         """
         Cache data from storage
         """
-        self.sdesc = self.obj.attributes.get("_sdesc", default=obj.key)
+        self.sdesc = self.obj.attributes.get("_sdesc", default=self.obj.key)
         sdesc_regex = self.obj.attributes.get("_sdesc_regex", default="")
         if not sdesc_regex:
             permutation_string = " ".join([self.key] + self.aliases.all())
