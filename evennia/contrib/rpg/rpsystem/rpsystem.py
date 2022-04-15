@@ -644,8 +644,8 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         sendemote = emote.format(**receiver_lang_mapping)
 
         receiver_sdesc_mapping = dict(
-           (
-               ref,
+            (
+                ref,
                 obj.get_display_name(receiver, ref=ref),
             )
             for ref, obj in obj_mapping.items()
@@ -693,12 +693,10 @@ class SdescHandler:
         """
         self.sdesc = self.obj.attributes.get("_sdesc", default="")
         sdesc_regex = self.obj.attributes.get("_sdesc_regex", default="")
-        if self.sdesc:
-            self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
-        else:
+        if not sdesc_regex:
             permutation_string = " ".join([self.key] + self.aliases.all())
-            self.sdesc_regex = re.compile(ordered_permutation_regex(permutation_string), _RE_FLAGS)
-
+            sdesc_regex = ordered_permutation_regex(permutation_string)
+        self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
 
     def add(self, sdesc, max_length=60):
         """
@@ -1739,10 +1737,10 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             recog (str): The modified recog string.
 
         """
-        if not sdesc:
+        if not recog:
             return ""
 
-        return "|m%s|n" % sdesc
+        return "|m%s|n" % recog
 
     def process_language(self, text, speaker, language, **kwargs):
         """
