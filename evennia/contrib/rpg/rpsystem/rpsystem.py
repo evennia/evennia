@@ -1531,7 +1531,7 @@ class ContribRPObject(DefaultObject):
             sdesc = self.key
         else:
             try:
-                sdesc = looker.get_sdesc(self, process=True, ref=ref)
+                sdesc = looker.get_sdesc(self, ref=ref)
             except AttributeError:
                 sdesc = self.sdesc.get()
         pose = " %s" % (self.db.pose or "is here.") if kwargs.get("pose", False) else ""
