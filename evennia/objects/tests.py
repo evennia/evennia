@@ -232,12 +232,22 @@ class TestContentHandler(BaseEvenniaTest):
         self.assertEqual(self.room2.contents, [self.obj1, self.obj2])
 
 
+class SubAttributeProperty(AttributeProperty):
+    pass
+
+
+class SubTagProperty(TagProperty):
+    pass
+
+
 class TestObjectPropertiesClass(DefaultObject):
     attr1 = AttributeProperty(default="attr1")
     attr2 = AttributeProperty(default="attr2", category="attrcategory")
     attr3 = AttributeProperty(default="attr3", autocreate=False)
+    attr4 = SubAttributeProperty(default="attr4")
     tag1 = TagProperty()
     tag2 = TagProperty(category="tagcategory")
+    tag3 = SubTagProperty()
     testalias = AliasProperty()
     testperm = PermissionProperty()
 
@@ -276,6 +286,10 @@ class TestProperties(EvenniaTestCase):
         self.assertFalse(obj.attributes.has("attr3"))
         self.assertEqual(obj.attr3, "attr3")
 
+        self.assertEqual(obj.db.attr4, "attr4")
+        self.assertEqual(obj.attributes.get("attr4"), "attr4")
+        self.assertEqual(obj.attr4, "attr4")
+
         obj.attr3 = "attr3b"  # stores it in db!
 
         self.assertEqual(obj.db.attr3, "attr3b")
@@ -283,6 +297,7 @@ class TestProperties(EvenniaTestCase):
 
         self.assertTrue(obj.tags.has("tag1"))
         self.assertTrue(obj.tags.has("tag2", category="tagcategory"))
+        self.assertTrue(obj.tags.has("tag3"))
 
         self.assertTrue(obj.aliases.has("testalias"))
         self.assertTrue(obj.permissions.has("testperm"))
