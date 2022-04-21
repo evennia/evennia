@@ -694,7 +694,7 @@ class SdescHandler:
         self.sdesc = self.obj.attributes.get("_sdesc", default=self.obj.key)
         sdesc_regex = self.obj.attributes.get("_sdesc_regex", default="")
         if not sdesc_regex:
-            permutation_string = " ".join([self.key] + self.aliases.all())
+            permutation_string = " ".join([self.obj.key] + self.obj.aliases.all())
             sdesc_regex = ordered_permutation_regex(permutation_string)
         self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
 
