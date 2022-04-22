@@ -96,7 +96,7 @@ recog01 = "Mr Receiver"
 recog02 = "Mr Receiver2"
 recog10 = "Mr Sender"
 emote = 'With a flair, /me looks at /first and /colliding sdesc-guy. She says "This is a test."'
-case_emote = "/me looks at /first, then /FIRST, /First and /Colliding twice."
+case_emote = "/Me looks at /first, then /FIRST, /First and /Colliding twice."
 
 
 class TestRPSystem(BaseEvenniaTest):
@@ -178,18 +178,18 @@ class TestRPSystem(BaseEvenniaTest):
         rpsystem.send_emote(speaker, receivers, emote, case_sensitive=False)
         self.assertEqual(
             self.out0,
-            "With a flair, |bSender|n looks at |bThe first receiver of emotes.|n "
+            "With a flair, |mSender|n looks at |bThe first receiver of emotes.|n "
             'and |bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n',
         )
         self.assertEqual(
             self.out1,
-            "With a flair, |bA nice sender of emotes|n looks at |bReceiver1|n and "
+            "With a flair, |bA nice sender of emotes|n looks at |mReceiver1|n and "
             '|bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n',
         )
         self.assertEqual(
             self.out2,
             "With a flair, |bA nice sender of emotes|n looks at |bThe first "
-            'receiver of emotes.|n and |bReceiver2|n. She says |w"This is a test."|n',
+            'receiver of emotes.|n and |mReceiver2|n. She says |w"This is a test."|n',
         )
 
     def test_send_case_sensitive_emote(self):
@@ -207,20 +207,20 @@ class TestRPSystem(BaseEvenniaTest):
         rpsystem.send_emote(speaker, receivers, case_emote)
         self.assertEqual(
             self.out0,
-            "|bSender|n looks at |bthe first receiver of emotes.|n, then "
+            "|mSender|n looks at |bthe first receiver of emotes.|n, then "
             "|bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n and "
             "|bAnother nice colliding sdesc-guy for tests|n twice.",
         )
         self.assertEqual(
             self.out1,
-            "|bA nice sender of emotes|n looks at |bReceiver1|n, then |bReceiver1|n, "
-            "|bReceiver1|n and |bAnother nice colliding sdesc-guy for tests|n twice.",
+            "|bA nice sender of emotes|n looks at |mReceiver1|n, then |mReceiver1|n, "
+            "|mReceiver1|n and |bAnother nice colliding sdesc-guy for tests|n twice.",
         )
         self.assertEqual(
             self.out2,
             "|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n, "
             "then |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of "
-            "emotes.|n and |bReceiver2|n twice.",
+            "emotes.|n and |mReceiver2|n twice.",
         )
 
     def test_rpsearch(self):
