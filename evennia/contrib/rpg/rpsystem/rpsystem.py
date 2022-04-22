@@ -526,7 +526,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     # if anonymous_add is passed as a kwarg, collect and remove it from kwargs
     if "anonymous_add" in kwargs:
         anonymous_add = kwargs.pop("anonymous_add")
-    self_refs = (f"{skey}{ref}" for ref in ('t','^','v','~',''))
+    self_refs = [f"{skey}{ref}" for ref in ('t','^','v','~','')]
     if anonymous_add and not any(1 for tag in obj_mapping if tag in self_refs):
         # no self-reference in the emote - add to the end
         if anonymous_add == "first":
