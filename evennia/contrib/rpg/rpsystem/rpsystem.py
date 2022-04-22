@@ -790,7 +790,7 @@ class RecogHandler:
         """
         if obj in self.obj2recog:
             del self.obj.db._recog_obj2recog[obj]
-            del self.obj.db._recog_obj2regex[obj]
+            del self.obj.db._recog_ref2recog["#%i" % obj.id]
         self._cache()
 
 
