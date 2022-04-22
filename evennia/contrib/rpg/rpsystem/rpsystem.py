@@ -150,7 +150,6 @@ Extra Installation Instructions:
 """
 import re
 from re import escape as re_escape
-import itertools
 from string import punctuation
 from django.conf import settings
 from evennia.objects.objects import DefaultObject, DefaultCharacter
@@ -159,8 +158,6 @@ from evennia.commands.command import Command
 from evennia.commands.cmdset import CmdSet
 from evennia.utils import ansi, logger
 from evennia.utils.utils import lazy_property, make_iter, variable_from_module
-
-_REGEX_TUPLE_CACHE = {}
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 # ------------------------------------------------------------
@@ -240,97 +237,7 @@ class LanguageError(Exception):
     pass
 
 
-def _dummy_process(text, *args, **kwargs):
-    "Pass-through processor"
-    return text
-
-
 # emoting mechanisms
-
-
-def ordered_permutation_regex(sentence):
-    """
-    Builds a regex that matches 'ordered permutations' of a sentence's
-    words.
-
-    Args:
-        sentence (str): The sentence to build a match pattern to
-
-    Returns:
-        regex (re object): Compiled regex object represented the
-            possible ordered permutations of the sentence, from longest to
-            shortest.
-    Example:
-         The sdesc_regex for an sdesc of " very tall man" will
-         result in the following allowed permutations,
-         regex-matched in inverse order of length (case-insensitive):
-         "the very tall man", "the very tall", "very tall man",
-         "very tall", "the very", "tall man", "the", "very", "tall",
-         and "man".
-         We also add regex to make sure it also accepts num-specifiers,
-         like /2-tall.
-
-    """
-    # escape {#nnn} markers from sentence, replace with nnn
-    sentence = _RE_REF.sub(r"\1", sentence)
-    # escape {##nnn} markers, replace with nnn
-    sentence = _RE_REF_LANG.sub(r"\1", sentence)
-    # escape self-ref marker from sentence
-    sentence = _RE_SELF_REF.sub(r"", sentence)
-
-    # ordered permutation algorithm
-    words = sentence.split()
-    combinations = itertools.product((True, False), repeat=len(words))
-    solution = []
-    for combination in combinations:
-        comb = []
-        for iword, word in enumerate(words):
-            if combination[iword]:
-                comb.append(word)
-            elif comb:
-                break
-        if comb:
-            solution.append(
-                _PREFIX
-                + r"[0-9]*%s*%s(?=\W|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\"))
-            )
-
-    # combine into a match regex, first matching the longest down to the shortest components
-    regex = r"|".join(sorted(set(solution), key=lambda item: (-len(item), item)))
-    return regex
-
-
-def regex_tuple_from_key_alias(obj):
-    """
-    This will build a regex tuple for any object, not just from those
-    with sdesc/recog handlers. It's used as a legacy mechanism for
-    being able to mix this contrib with objects not using sdescs, but
-    note that creating the ordered permutation regex dynamically for
-    every object will add computational overhead.
-
-    Args:
-        obj (Object): This object's key and eventual aliases will
-            be used to build the tuple.
-
-    Returns:
-        regex_tuple (tuple): A tuple
-            (ordered_permutation_regex, obj, key/alias)
-
-
-    """
-    global _REGEX_TUPLE_CACHE
-    permutation_string = " ".join([obj.key] + obj.aliases.all())
-    cache_key = f"{obj.id} {permutation_string}"
-
-    if cache_key not in _REGEX_TUPLE_CACHE:
-        _REGEX_TUPLE_CACHE[cache_key] = (
-            re.compile(ordered_permutation_regex(permutation_string), _RE_FLAGS),
-            obj,
-            obj.key,
-        )
-    return _REGEX_TUPLE_CACHE[cache_key]
-
-
 def parse_language(speaker, emote):
     """
     Parse the emote for language. This is
@@ -432,10 +339,14 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
 
     """
     candidate_map = [(sender, 'me')]
-    candidate_map += [ (obj, sender.recog.get(obj)) for obj in candidates if sender.recog.get(obj)] if hasattr(sender, "recog") else []
-    candidate_map += [ (obj, obj.sdesc.get()) for obj in candidates if hasattr(obj, "sdesc") ]
     for obj in candidates:
-        candidate_map += [(obj, obj.key)] + [(obj, alias) for alias in obj.aliases.all()]
+        if hasattr(sender, "recog"):
+            if recog := sender.recog.get(obj):
+              candidate_map.append((obj, recog))
+        if hasattr(obj, "sdesc"):
+            candidate_map.append((obj, obj.sdesc.get()))
+        else:
+            candidate_map += [(obj, obj.key)] + [(obj, alias) for alias in obj.aliases.all()]
 
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
@@ -630,13 +541,15 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     for receiver in receivers:
         # first handle the language mapping, which always produce different keys ##nn
         receiver_lang_mapping = {}
-        try:
-            process_language = receiver.process_language
-        except AttributeError:
-            process_language = _dummy_process
-        for key, (langname, saytext) in language_mapping.items():
-            # color says
-            receiver_lang_mapping[key] = process_language(saytext, sender, langname)
+        if hasattr(receiver, "process_language") and callable(receiver.process_language):
+            receiver_lang_mapping = {
+                key: receiver.process_language(saytext, sender, langname)
+                for key, (langname, saytext) in language_mapping.items()
+            }
+        else:
+            receiver_lang_mapping = {
+                key: saytext for key, (langname, saytext) in language_mapping.items()
+            }
         # map the language {##num} markers. This will convert the escaped sdesc markers on
         # the form {{#num}} to {#num} markers ready to sdesc-map in the next step.
         sendemote = emote.format(**receiver_lang_mapping)
@@ -644,7 +557,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         receiver_sdesc_mapping = dict(
             (
                 ref,
-                obj.get_display_name(receiver, ref=ref),
+                obj.get_display_name(receiver, ref=ref, no_id=True),
             )
             for ref, obj in obj_mapping.items()
         )
@@ -743,15 +656,6 @@ class SdescHandler:
         """
         return self.sdesc or self.obj.key
 
-    def get_regex_tuple(self):
-        """
-        Return data for sdesc/recog handling
-
-        Returns:
-            tup (tuple): tuple (sdesc_regex, obj, sdesc)
-
-        """
-        return self.sdesc_regex, self.obj, self.sdesc
 
 
 class RecogHandler:
@@ -779,7 +683,6 @@ class RecogHandler:
         self.obj = obj
         # mappings
         self.ref2recog = {}
-        self.obj2regex = {}
         self.obj2recog = {}
         self._cache()
 
@@ -788,11 +691,7 @@ class RecogHandler:
         Load data to handler cache
         """
         self.ref2recog = self.obj.attributes.get("_recog_ref2recog", default={})
-        obj2regex = self.obj.attributes.get("_recog_obj2regex", default={})
         obj2recog = self.obj.attributes.get("_recog_obj2recog", default={})
-        self.obj2regex = dict(
-            (obj, re.compile(regex, _RE_FLAGS)) for obj, regex in obj2regex.items() if obj
-        )
         self.obj2recog = dict((obj, recog) for obj, recog in obj2recog.items() if obj)
 
     def add(self, obj, recog, max_length=60):
@@ -843,12 +742,9 @@ class RecogHandler:
         key = "#%i" % obj.id
         self.obj.attributes.get("_recog_ref2recog", default={})[key] = recog
         self.obj.attributes.get("_recog_obj2recog", default={})[obj] = recog
-        regex = ordered_permutation_regex(cleaned_recog)
-        self.obj.attributes.get("_recog_obj2regex", default={})[obj] = regex
         # local caching
         self.ref2recog[key] = recog
         self.obj2recog[obj] = recog
-        self.obj2regex[obj] = re.compile(regex, _RE_FLAGS)
         return recog
 
     def get(self, obj):
@@ -895,17 +791,7 @@ class RecogHandler:
         if obj in self.obj2recog:
             del self.obj.db._recog_obj2recog[obj]
             del self.obj.db._recog_obj2regex[obj]
-            del self.obj.db._recog_ref2recog["#%i" % obj.id]
         self._cache()
-
-    def get_regex_tuple(self, obj):
-        """
-        Returns:
-            rec (tuple): Tuple (recog_regex, obj, recog)
-        """
-        if obj in self.obj2recog and obj.access(self.obj, "enable_recog", default=True):
-            return self.obj2regex[obj], obj, self.obj2regex[obj]
-        return None
 
 
 # ------------------------------------------------------------
@@ -1512,7 +1398,7 @@ class ContribRPObject(DefaultObject):
                 said object.
 
         """
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") and not kwargs.get("no_id", False) else ""
         ref = kwargs.get("ref","~")
     
         if looker == self:
@@ -1597,7 +1483,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             characters stand out from other objects.
 
         """
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") and not kwargs.get("no_id",False) else ""
         ref = kwargs.get("ref","~")
     
         if looker == self:
