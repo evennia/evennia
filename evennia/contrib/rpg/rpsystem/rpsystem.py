@@ -151,12 +151,13 @@ Extra Installation Instructions:
 import re
 from re import escape as re_escape
 import itertools
+from string import punctuation
 from django.conf import settings
 from evennia.objects.objects import DefaultObject, DefaultCharacter
 from evennia.objects.models import ObjectDB
 from evennia.commands.command import Command
 from evennia.commands.cmdset import CmdSet
-from evennia.utils import ansi
+from evennia.utils import ansi, logger
 from evennia.utils.utils import lazy_property, make_iter, variable_from_module
 
 _REGEX_TUPLE_CACHE = {}
@@ -430,24 +431,11 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         - says, "..." are
 
     """
-    # Load all candidate regex tuples [(regex, obj, sdesc/recog),...]
-    candidate_regexes = (
-        ([(_RE_SELF_REF, sender, sender.sdesc.get())] if hasattr(sender, "sdesc") else [])
-        + (
-            [sender.recog.get_regex_tuple(obj) for obj in candidates]
-            if hasattr(sender, "recog")
-            else []
-        )
-        + [obj.sdesc.get_regex_tuple() for obj in candidates if hasattr(obj, "sdesc")]
-        + [
-            regex_tuple_from_key_alias(obj)  # handle objects without sdescs
-            for obj in candidates
-            if not hasattr(obj, "recog") and not hasattr(obj, "sdesc")
-        ]
-    )
-
-    # filter out non-found data
-    candidate_regexes = [tup for tup in candidate_regexes if tup]
+    candidate_map = [(sender, 'me')]
+    candidate_map += [ (obj, sender.recog.get(obj)) for obj in candidates if sender.recog.get(obj)] if hasattr(sender, "recog") else []
+    candidate_map += [ (obj, obj.sdesc.get()) for obj in candidates if hasattr(obj, "sdesc") ]
+    for obj in candidates:
+        candidate_map += [(obj, obj.key)] + [(obj, alias) for alias in obj.aliases.all()]
 
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
@@ -469,17 +457,29 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("")  # return "" if no match, rather than None
         istart0 = marker_match.start()
-        istart = istart0
+        istart = istart0 + 1
 
-        # loop over all candidate regexes and match against the string following the match
-        matches = ((reg.match(string[istart:]), obj, text) for reg, obj, text in candidate_regexes)
+        if search_mode:
+            rquery = "".join([r"\b(" + re.escape(word.strip(punctuation)) + r").*" for word in iter(string[istart:].split())])
+            rquery = re.compile(rquery, _RE_FLAGS)
+            matches = ((rquery.search(text), obj, text) for obj, text in candidate_map)
+            bestmatches = [(obj, match.group()) for match, obj, text in matches if match]
 
-        # score matches by how long part of the string was matched
-        matches = [(match.end() if match else -1, obj, text) for match, obj, text in matches]
-        maxscore = max(score for score, obj, text in matches)
-
+        else:
+            word_list = []
+            bestmatches = []
+            for next_word in iter(string[istart:].split()):
+                word_list.append(next_word.strip(punctuation))
+                rquery = "".join([r"\b(" + re.escape(word) + r").*" for word in word_list])
+                rquery = re.compile(rquery, _RE_FLAGS)
+                matches = ((rquery.search(text), obj, text) for obj, text in candidate_map)
+                matches = [(obj, match.group()) for match, obj, text in matches if match]
+                if len(matches) == 0:
+                    # no matches at this length, keep previous iteration
+                    break
+                # set latest match set as best matches
+                bestmatches = matches
         # we have a valid maxscore, extract all matches with this value
-        bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score != -1]
         nmatches = len(bestmatches)
 
         if not nmatches:
@@ -488,12 +488,11 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             nmatches = 0
         elif nmatches == 1:
             # an exact match.
-            obj = bestmatches[0][0]
-            nmatches = 1
+            obj, match_str = bestmatches[0]
         elif all(bestmatches[0][0].id == obj.id for obj, text in bestmatches):
             # multi-match but all matches actually reference the same
             # obj (could happen with clashing recogs + sdescs)
-            obj = bestmatches[0][0]
+            obj, match_str = bestmatches[0]
             nmatches = 1
         else:
             # multi-match.
@@ -501,7 +500,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             inum = min(max(0, int(num_identifier) - 1), nmatches - 1) if num_identifier else None
             if inum is not None:
                 # A valid inum is given. Use this to separate data.
-                obj = bestmatches[inum][0]
+                obj, match_str = bestmatches[inum]
                 nmatches = 1
             else:
                 # no identifier given - a real multimatch.
@@ -522,19 +521,16 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                 # - ^ for all upercase input (likle /NAME)
                 # - v for lower-case input (like /name)
                 # - ~ for mixed case input (like /nAmE)
-                matchtext = marker_match.group()
-                if not _RE_SELF_REF.match(matchtext):
-                    # self-refs are kept as-is, others are parsed by case
-                    matchtext = marker_match.group().lstrip(_PREFIX)
-                    if matchtext.istitle():
-                        case = "t"
-                    elif matchtext.isupper():
-                        case = "^"
-                    elif matchtext.islower():
-                        case = "v"
+                matchtext = marker_match.group().lstrip(_PREFIX)
+                if matchtext.istitle():
+                    case = "t"
+                elif matchtext.isupper():
+                    case = "^"
+                elif matchtext.islower():
+                    case = "v"
 
             key = "#%i%s" % (obj.id, case)
-            string = string[:istart0] + "{%s}" % key + string[istart + maxscore :]
+            string = string[:istart0] + "{%s}" % key + string[istart + len(match_str) :]
             mapping[key] = obj
 
         else:
@@ -619,14 +615,16 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     # if anonymous_add is passed as a kwarg, collect and remove it from kwargs
     if "anonymous_add" in kwargs:
         anonymous_add = kwargs.pop("anonymous_add")
-    if anonymous_add and not any(1 for tag in obj_mapping if tag.startswith(skey)):
+    self_refs = (f"{skey}{ref}" for ref in ('t','^','v','~',''))
+    if anonymous_add and not any(1 for tag in obj_mapping if tag in self_refs):
         # no self-reference in the emote - add to the end
-        obj_mapping[skey] = sender
         if anonymous_add == "first":
+            skey = skey + 't'
             possessive = "" if emote.startswith("'") else " "
             emote = "%s%s%s" % ("{{%s}}" % skey, possessive, emote)
         else:
             emote = "%s [%s]" % (emote, "{{%s}}" % skey)
+        obj_mapping[skey] = sender
 
     # broadcast emote to everyone
     for receiver in receivers:
@@ -684,7 +682,6 @@ class SdescHandler:
         """
         self.obj = obj
         self.sdesc = ""
-        self.sdesc_regex = ""
         self._cache()
 
     def _cache(self):
@@ -692,11 +689,6 @@ class SdescHandler:
         Cache data from storage
         """
         self.sdesc = self.obj.attributes.get("_sdesc", default=self.obj.key)
-        sdesc_regex = self.obj.attributes.get("_sdesc_regex", default="")
-        if not sdesc_regex:
-            permutation_string = " ".join([self.obj.key] + self.obj.aliases.all())
-            sdesc_regex = ordered_permutation_regex(permutation_string)
-        self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
 
     def add(self, sdesc, max_length=60):
         """
@@ -737,12 +729,9 @@ class SdescHandler:
             )
 
         # store to attributes
-        sdesc_regex = ordered_permutation_regex(cleaned_sdesc)
         self.obj.attributes.add("_sdesc", sdesc)
-        self.obj.attributes.add("_sdesc_regex", sdesc_regex)
         # local caching
         self.sdesc = sdesc
-        self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
 
         return sdesc
 
@@ -881,10 +870,10 @@ class RecogHandler:
             # check an eventual recog_masked lock on the object
             # to avoid revealing masked characters. If lock
             # does not exist, pass automatically.
-            return self.obj2recog.get(obj, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+            return self.obj2recog.get(obj, None)
         else:
-            # recog_mask log not passed, disable recog
-            return obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
+            # recog_mask lock not passed, disable recog
+            return None
 
     def all(self):
         """
@@ -998,7 +987,6 @@ class CmdSay(RPCommand):  # replaces standard say
 
         # calling the speech modifying hook
         speech = caller.at_pre_say(self.args)
-        # preparing the speech with sdesc/speech parsing.
         targets = self.caller.location.contents
         send_emote(self.caller, targets, speech, anonymous_add=None)
 
@@ -1651,8 +1639,8 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         """
         if kwargs.get("whisper"):
-            return f'/me whispers "{message}"'
-        return f'/me says, "{message}"'
+            return f'/Me whispers "{message}"'
+        return f'/Me says, "{message}"'
 
     def get_sdesc(self, obj, process=False, **kwargs):
         """
