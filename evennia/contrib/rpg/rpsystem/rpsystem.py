@@ -367,11 +367,12 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
 
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("")  # return "" if no match, rather than None
-        istart0 = marker_match.start()
-        istart = istart0 + 1
+        match_index = marker_match.start()
+        head = string[:match_index]
+        tail = string[match_index+1:]
 
         if search_mode:
-            rquery = "".join([r"\b(" + re.escape(word.strip(punctuation)) + r").*" for word in iter(string[istart:].split())])
+            rquery = "".join([r"\b(" + re.escape(word.strip(punctuation)) + r").*" for word in iter(tail.split())])
             rquery = re.compile(rquery, _RE_FLAGS)
             matches = ((rquery.search(text), obj, text) for obj, text in candidate_map)
             bestmatches = [(obj, match.group()) for match, obj, text in matches if match]
@@ -379,8 +380,12 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         else:
             word_list = []
             bestmatches = []
-            for next_word in iter(string[istart:].split()):
-                word_list.append(next_word.strip(punctuation))
+            tail = re.split('(\W)', tail)
+            istart = 0
+            for i, item in enumerate(tail):
+                if not item.isalpha():
+                  continue
+                word_list.append(item)
                 rquery = "".join([r"\b(" + re.escape(word) + r").*" for word in word_list])
                 rquery = re.compile(rquery, _RE_FLAGS)
                 matches = ((rquery.search(text), obj, text) for obj, text in candidate_map)
@@ -390,7 +395,10 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                     break
                 # set latest match set as best matches
                 bestmatches = matches
-        # we have a valid maxscore, extract all matches with this value
+                istart = i
+
+            tail = "".join(tail[istart+1:])
+
         nmatches = len(bestmatches)
 
         if not nmatches:
@@ -441,7 +449,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                     case = "v"
 
             key = "#%i%s" % (obj.id, case)
-            string = string[:istart0] + "{%s}" % key + string[istart + len(match_str) :]
+            string = f"{head}{{{key}}}{tail}"
             mapping[key] = obj
 
         else:
@@ -1109,7 +1117,7 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             if forget_mode:
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("%s will now know them only as '%s'." % (caller.key, obj.recog.get(obj)))
+                caller.msg("%s will now know them only as '%s'." % (caller.key, obj.get_display_name(caller, no_id=True)))
             else:
                 # set recog
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
