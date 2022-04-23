@@ -5,6 +5,7 @@ This file contains the classes that allow a typeclass to use components.
 """
 
 from evennia.contrib.base_systems import components
+from evennia.contrib.base_systems.components import signals
 
 
 class ComponentProperty:
@@ -66,6 +67,7 @@ class ComponentHandler:
         self.db_names.append(component.name)
         self._add_component_tags(component)
         component.at_added(self.host)
+        self.host.signals.add_object_listeners_and_responders(component)
 
     def add_default(self, name):
         """
@@ -87,6 +89,7 @@ class ComponentHandler:
         self.db_names.append(name)
         self._add_component_tags(new_component)
         new_component.at_added(self.host)
+        self.host.signals.add_object_listeners_and_responders(new_component)
 
     def _add_component_tags(self, component):
         """
@@ -118,6 +121,7 @@ class ComponentHandler:
             self._remove_component_tags(component)
             component.at_removed(self.host)
             self.db_names.remove(component_name)
+            self.host.signals.remove_object_listeners_and_responders(component)
             del self._loaded_components[component_name]
         else:
             message = f"Cannot remove {component_name} from {self.host.name} as it is not registered."
@@ -140,6 +144,7 @@ class ComponentHandler:
 
         self._remove_component_tags(instance)
         instance.at_removed(self.host)
+        self.host.signals.remove_object_listeners_and_responders(instance)
         self.db_names.remove(name)
 
         del self._loaded_components[name]
@@ -192,6 +197,7 @@ class ComponentHandler:
             if component:
                 component_instance = component.load(self.host)
                 self._set_component(component_instance)
+                self.host.signals.add_object_listeners_and_responders(component_instance)
             else:
                 message = f"Could not initialize runtime component {component_name} of {self.host.name}"
                 raise ComponentDoesNotExist(message)
@@ -214,7 +220,7 @@ class ComponentHandler:
         return self.get(name)
 
 
-class ComponentHolderMixin(object):
+class ComponentHolderMixin:
     """
     Mixin to add component support to a typeclass
 
@@ -229,7 +235,17 @@ class ComponentHolderMixin(object):
         """
         super(ComponentHolderMixin, self).at_init()
         setattr(self, "_component_handler", ComponentHandler(self))
+        setattr(self, "_signal_handler", signals.SignalsHandler(self))
         self.components.initialize()
+        self.signals.trigger("at_after_init")
+
+    def at_post_puppet(self, *args, **kwargs):
+        super().at_post_puppet(*args, **kwargs)
+        self.signals.trigger("at_post_puppet", *args, **kwargs)
+
+    def at_post_unpuppet(self, *args, **kwargs):
+        super().at_post_unpuppet(*args, **kwargs)
+        self.signals.trigger("at_post_unpuppet", *args, **kwargs)
 
     def basetype_setup(self):
         """
@@ -239,14 +255,17 @@ class ComponentHolderMixin(object):
         super().basetype_setup()
         component_names = []
         setattr(self, "_component_handler", ComponentHandler(self))
+        setattr(self, "_signal_handler", signals.SignalsHandler(self))
         class_components = getattr(self, "_class_components", ())
         for component_name, values in class_components:
             component_class = components.get_component_class(component_name)
             component = component_class.create(self, **values)
             component_names.append(component_name)
             self.components._loaded_components[component_name] = component
+            self.signals.add_object_listeners_and_responders(component)
 
         self.db.component_names = component_names
+        self.signals.trigger("at_basetype_setup")
 
     def basetype_posthook_setup(self):
         """
@@ -273,6 +292,10 @@ class ComponentHolderMixin(object):
             ComponentHandler: This Host's ComponentHandler
         """
         return self.components
+
+    @property
+    def signals(self) -> signals.SignalsHandler:
+        return getattr(self, "_signal_handler", None)
 
 
 class ComponentDoesNotExist(Exception):

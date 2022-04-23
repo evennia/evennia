@@ -79,11 +79,11 @@ class TextToHTMLparser(object):
     # create stop markers
     fgstop = "(?:\033\[1m|\033\[22m){0,1}\033\[3[0-8].*?m|\033\[0m|$"
     bgstop = "(?:\033\[1m|\033\[22m){0,1}\033\[4[0-8].*?m|\033\[0m|$"
-    bgfgstop = bgstop[:-2] + r"(\s*)" + fgstop
+    bgfgstop = bgstop[:-2] + fgstop
 
     fgstart = "((?:\033\[1m|\033\[22m){0,1}\033\[3[0-8].*?m)"
     bgstart = "((?:\033\[1m|\033\[22m){0,1}\033\[4[0-8].*?m)"
-    bgfgstart = bgstart + r"(\s*)" + "((?:\033\[1m|\033\[22m){0,1}\033\[[3-4][0-8].*?m){0,1}"
+    bgfgstart = bgstart + r"((?:\033\[1m|\033\[22m){0,1}\033\[[3-4][0-8].*?m){0,1}"
 
     # extract color markers, tagging the start marker and the text marked
     re_fgs = re.compile(fgstart + "(.*?)(?=" + fgstop + ")")
@@ -97,12 +97,9 @@ class TextToHTMLparser(object):
     re_blink = re.compile("(?:%s)(.*?)(?=%s|%s)" % (blink.replace("[", r"\["), fgstop, bgstop))
     re_inverse = re.compile("(?:%s)(.*?)(?=%s|%s)" % (inverse.replace("[", r"\["), fgstop, bgstop))
     re_string = re.compile(
-        r"(?P<htmlchars>[<&>])|(?P<tab>[\t]+)|(?P<space> +)|"
-        r"(?P<spacestart>^ )|(?P<lineend>\r\n|\r|\n)",
+        r"(?P<htmlchars>[<&>])|(?P<tab>[\t]+)|(?P<lineend>\r\n|\r|\n)",
         re.S | re.M | re.I,
     )
-    re_dblspace = re.compile(r" {2,}", re.M)
-    re_invisiblespace = re.compile(r"( <.*?>)( )")
     re_url = re.compile(
         r'(?<!=")((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
     )
@@ -111,20 +108,16 @@ class TextToHTMLparser(object):
 
     def _sub_bgfg(self, colormatch):
         # print("colormatch.groups()", colormatch.groups())
-        bgcode, prespace, fgcode, text, postspace = colormatch.groups()
+        bgcode, fgcode, text = colormatch.groups()
         if not fgcode:
-            ret = r"""<span class="%s">%s%s%s</span>""" % (
+            ret = r"""<span class="%s">%s</span>""" % (
                 self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
-                prespace and "&nbsp;" * len(prespace) or "",
-                postspace and "&nbsp;" * len(postspace) or "",
                 text,
             )
         else:
-            ret = r"""<span class="%s"><span class="%s">%s%s%s</span></span>""" % (
+            ret = r"""<span class="%s"><span class="%s">%s</span></span>""" % (
                 self.bg_colormap.get(bgcode, self.fg_colormap.get(bgcode, "err")),
                 self.fg_colormap.get(fgcode, self.bg_colormap.get(fgcode, "err")),
-                prespace and "&nbsp;" * len(prespace) or "",
-                postspace and "&nbsp;" * len(postspace) or "",
                 text,
             )
         return ret
@@ -265,20 +258,6 @@ class TextToHTMLparser(object):
         # change pages (and losing our webclient session).
         return self.re_url.sub(r'<a href="\1" target="_blank">\1</a>\2', text)
 
-    def re_double_space(self, text):
-        """
-        HTML will swallow any normal space after the first, so if any slipped
-        through we must make sure to replace them with " &nbsp;"
-        """
-        return self.re_dblspace.sub(self.sub_dblspace, text)
-
-    def re_invisible_space(self, text):
-        """
-        If two spaces are separated by an invisble html element, they act as a
-        hidden double-space and the last of them should be replaced by &nbsp;
-        """
-        return self.re_invisiblespace.sub(self.sub_invisiblespace, text)
-
     def sub_mxp_links(self, match):
         """
         Helper method to be passed to re.sub,
@@ -332,27 +311,9 @@ class TextToHTMLparser(object):
         elif cdict["lineend"]:
             return "<br>"
         elif cdict["tab"]:
-            text = cdict["tab"].replace("\t", " " + "&nbsp;" * (self.tabstop - 1))
-            return text
-        elif cdict["space"] or cdict["spacestart"]:
-            text = cdict["space"]
-            text = " " if len(text) == 1 else " " + text[1:].replace(" ", "&nbsp;")
+            text = cdict["tab"].replace("\t", " " * (self.tabstop))
             return text
         return None
-
-    def sub_dblspace(self, match):
-        "clean up double-spaces"
-        return " " + "&nbsp;" * (len(match.group()) - 1)
-
-    def sub_invisiblespace(self, match):
-        "clean up invisible spaces"
-        return match.group(1) + "&nbsp;"
-
-    def handle_single_first_space(self, text):
-        "Don't swallow an initial lone space"
-        if text.startswith(" "):
-            return "&nbsp;" + text[1:]
-        return text
 
     def parse(self, text, strip_ansi=False):
         """
@@ -383,9 +344,6 @@ class TextToHTMLparser(object):
         result = self.convert_linebreaks(result)
         result = self.remove_backspaces(result)
         result = self.convert_urls(result)
-        result = self.re_double_space(result)
-        result = self.re_invisible_space(result)
-        result = self.handle_single_first_space(result)
         # clean out eventual ansi that was missed
         ## result = parse_ansi(result, strip_ansi=True)
 

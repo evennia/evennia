@@ -21,7 +21,7 @@ class DBField(AttributeProperty):
             owner (object): The component classF on which this is set
             name (str): The name that was used to set the DBField.
         """
-        key = f"{owner.name}__{name}"
+        key = f"{owner.name}::{name}"
         self._key = key
         db_fields = getattr(owner, "_db_fields", None)
         if db_fields is None:
@@ -45,7 +45,7 @@ class NDBField(NAttributeProperty):
             owner (object): The component class on which this is set
             name (str): The name that was used to set the DBField.
         """
-        key = f"{owner.name}__{name}"
+        key = f"{owner.name}::{name}"
         self._key = key
         ndb_fields = getattr(owner, "_ndb_fields", None)
         if ndb_fields is None:
