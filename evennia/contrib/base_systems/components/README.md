@@ -39,7 +39,7 @@ class Health(Component):
 Components may define DBFields or NDBFields at the class level.
 DBField will store its values in the host's DB with a prefixed key.
 NDBField will store its values in the host's NDB and will not persist.
-The key used will be 'component_name__field_name'.
+The key used will be 'component_name::field_name'.
 They use AttributeProperty under the hood.
 
 Example:

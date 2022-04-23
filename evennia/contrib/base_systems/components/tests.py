@@ -1,7 +1,9 @@
-from evennia.contrib.base_systems.components import Component, DBField, TagField
+from evennia.contrib.base_systems.components import Component, DBField, TagField, signals
 from evennia.contrib.base_systems.components.holder import ComponentProperty, ComponentHolderMixin
+from evennia.contrib.base_systems.components.signals import as_listener
 from evennia.objects.objects import DefaultCharacter
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils import create
+from evennia.utils.test_resources import EvenniaTest, BaseEvenniaTest
 
 
 class ComponentTestA(Component):
@@ -186,3 +188,211 @@ class TestComponents(EvenniaTest):
         assert self.char1.tags.has(key="first value", category="test_b::multiple_tags")
         assert self.char1.tags.has(key="second value", category="test_b::multiple_tags")
         assert self.char1.tags.has(key="third value", category="test_b::multiple_tags")
+
+
+class CharWithSignal(ComponentHolderMixin, DefaultCharacter):
+    @signals.as_listener
+    def my_signal(self):
+        setattr(self, 'my_signal_is_called', True)
+
+    @signals.as_listener
+    def my_other_signal(self):
+        setattr(self, 'my_other_signal_is_called', True)
+
+    @signals.as_responder
+    def my_response(self):
+        return 1
+
+    @signals.as_responder
+    def my_other_response(self):
+        return 2
+
+
+class ComponentWithSignal(Component):
+    name = "test_signal_a"
+
+    @signals.as_listener
+    def my_signal(self):
+        setattr(self, 'my_signal_is_called', True)
+
+    @signals.as_listener
+    def my_other_signal(self):
+        setattr(self, 'my_other_signal_is_called', True)
+
+    @signals.as_responder
+    def my_response(self):
+        return 1
+
+    @signals.as_responder
+    def my_other_response(self):
+        return 2
+
+    @signals.as_responder
+    def my_component_response(self):
+        return 3
+
+
+class TestComponentSignals(BaseEvenniaTest):
+    def setUp(self):
+        super().setUp()
+        self.char1 = create.create_object(
+            CharWithSignal, key="Char",
+        )
+
+    def test_host_can_register_as_listener(self):
+        self.char1.signals.trigger("my_signal")
+
+        assert self.char1.my_signal_is_called
+        assert not getattr(self.char1, 'my_other_signal_is_called', None)
+
+    def test_host_can_register_as_responder(self):
+        responses = self.char1.signals.query("my_response")
+
+        assert 1 in responses
+        assert 2 not in responses
+
+    def test_component_can_register_as_listener(self):
+        char = self.char1
+        char.components.add(ComponentWithSignal.create(char))
+        char.signals.trigger("my_signal")
+
+        component = char.cmp.test_signal_a
+        assert component.my_signal_is_called
+        assert not getattr(component, 'my_other_signal_is_called', None)
+
+    def test_component_can_register_as_responder(self):
+        char = self.char1
+        char.components.add(ComponentWithSignal.create(char))
+        responses = char.signals.query("my_response")
+
+        assert 1 in responses
+        assert 2 not in responses
+
+    def test_signals_can_add_listener(self):
+        result = []
+
+        def my_fake_listener():
+            result.append(True)
+
+        self.char1.signals.add_listener("my_fake_signal", my_fake_listener)
+        self.char1.signals.trigger("my_fake_signal")
+
+        assert result
+
+    def test_signals_can_add_responder(self):
+        def my_fake_responder():
+            return 1
+
+        self.char1.signals.add_responder("my_fake_response", my_fake_responder)
+        responses = self.char1.signals.query("my_fake_response")
+
+        assert 1 in responses
+
+    def test_signals_can_remove_listener(self):
+        result = []
+
+        def my_fake_listener():
+            result.append(True)
+
+        self.char1.signals.add_listener("my_fake_signal", my_fake_listener)
+        self.char1.signals.remove_listener("my_fake_signal", my_fake_listener)
+        self.char1.signals.trigger("my_fake_signal")
+
+        assert not result
+
+    def test_signals_can_remove_responder(self):
+        def my_fake_responder():
+            return 1
+
+        self.char1.signals.add_responder("my_fake_response", my_fake_responder)
+        self.char1.signals.remove_responder("my_fake_response", my_fake_responder)
+        responses = self.char1.signals.query("my_fake_response")
+
+        assert not responses
+
+    def test_signals_can_trigger_with_args(self):
+        result = []
+
+        def my_fake_listener(arg1, kwarg1):
+            result.append((arg1, kwarg1))
+
+        self.char1.signals.add_listener("my_fake_signal", my_fake_listener)
+        self.char1.signals.trigger("my_fake_signal", 1, kwarg1=2)
+
+        assert (1, 2) in result
+
+    def test_signals_can_query_with_args(self):
+        def my_fake_responder(arg1, kwarg1):
+            return (arg1, kwarg1)
+
+        self.char1.signals.add_responder("my_fake_response", my_fake_responder)
+        responses = self.char1.signals.query("my_fake_response", 1, kwarg1=2)
+
+        assert (1, 2) in responses
+
+    def test_signals_trigger_does_not_fail_without_listener(self):
+        self.char1.signals.trigger("some_unknown_signal")
+
+    def test_signals_query_does_not_fail_wihout_responders(self):
+        self.char1.signals.query("no_responders_allowed")
+
+    def test_signals_query_with_aggregate(self):
+        def my_fake_responder(arg1, kwarg1):
+            return (arg1, kwarg1)
+
+        self.char1.signals.add_responder("my_fake_response", my_fake_responder)
+        responses = self.char1.signals.query("my_fake_response", 1, kwarg1=2)
+
+        assert (1, 2) in responses
+
+    def test_signals_can_add_object_listeners_and_responders(self):
+        result = []
+
+        class FakeObj:
+            @as_listener
+            def my_signal(self):
+                result.append(True)
+
+        self.char1.signals.add_object_listeners_and_responders(FakeObj())
+        self.char1.signals.trigger("my_signal")
+
+        assert result
+
+    def test_signals_can_remove_object_listeners_and_responders(self):
+        result = []
+
+        class FakeObj:
+            @as_listener
+            def my_signal(self):
+                result.append(True)
+
+        obj = FakeObj()
+        self.char1.signals.add_object_listeners_and_responders(obj)
+        self.char1.signals.remove_object_listeners_and_responders(obj)
+        self.char1.signals.trigger("my_signal")
+
+        assert not result
+
+    def test_component_handler_signals_connected_when_adding_default_component(self):
+        char = self.char1
+        char.components.add_default("test_signal_a")
+        responses = char.signals.query("my_component_response")
+
+        assert 3 in responses
+
+    def test_component_handler_signals_disconnected_when_removing_component(self):
+        char = self.char1
+        comp = ComponentWithSignal.create(char)
+        char.components.add(comp)
+        char.components.remove(comp)
+        responses = char.signals.query("my_component_response")
+
+        assert not responses
+
+    def test_component_handler_signals_disconnected_when_removing_component_by_name(self):
+        char = self.char1
+        char.components.add_default("test_signal_a")
+        char.components.remove_by_name("test_signal_a")
+        responses = char.signals.query("my_component_response")
+
+        assert not responses
