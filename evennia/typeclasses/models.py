@@ -39,11 +39,12 @@ from django.utils.text import slugify
 from evennia.typeclasses.attributes import (
     Attribute,
     AttributeHandler,
+    AttributeProperty,
     ModelAttributeBackend,
     InMemoryAttributeBackend,
 )
 from evennia.typeclasses.attributes import DbHolder
-from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
+from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler, TagProperty
 
 from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
 from evennia.server.signals import SIGNAL_TYPED_OBJECT_POST_RENAME
@@ -331,7 +332,7 @@ class TypedObject(SharedMemoryModel):
         by fetching them once.
         """
         for propkey, prop in self.__class__.__dict__.items():
-            if hasattr(prop, "__set_name__"):
+            if isinstance(prop, (AttributeProperty, TagProperty)):
                 try:
                     getattr(self, propkey)
                 except Exception:
