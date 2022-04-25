@@ -372,11 +372,12 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("")  # return "" if no match, rather than None
         match_index = marker_match.start()
+        # split the emote string at the reference marker, to process everything after it
         head = string[:match_index]
         tail = string[match_index+1:]
         
         if search_mode:
-            # match the candidates against the whole search string
+            # match the candidates against the whole search string after the marker
             rquery = "".join([r"\b(" + re.escape(word.strip(punctuation)) + r").*" for word in iter(tail.split())])
             matches = ((re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map)
             # filter out any non-matching candidates
@@ -397,7 +398,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                 word_list.append(item)
                 rquery = "".join([r"\b(" + re.escape(word) + r").*" for word in word_list])
                 # match candidates against the current set of words
-                matches = ((re.search(re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map)
+                matches = ((re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map)
                 matches = [(obj, match.group()) for match, obj, text in matches if match]
                 if len(matches) == 0:
                     # no matches at this length, keep previous iteration as best
