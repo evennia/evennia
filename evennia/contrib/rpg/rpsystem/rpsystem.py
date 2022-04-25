@@ -149,7 +149,6 @@ Extra Installation Instructions:
 
 """
 import re
-from re import escape as re_escape
 from string import punctuation
 from django.conf import settings
 from evennia.objects.objects import DefaultObject, DefaultCharacter
@@ -338,13 +337,18 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         - says, "..." are
 
     """
+    # build a list of candidates with all possible referrable names
+    # include 'me' keyword for self-ref
     candidate_map = [(sender, 'me')]
     for obj in candidates:
+        # check if sender has any recogs for obj and add
         if hasattr(sender, "recog"):
             if recog := sender.recog.get(obj):
               candidate_map.append((obj, recog))
+        # check if obj has an sdesc and add
         if hasattr(obj, "sdesc"):
             candidate_map.append((obj, obj.sdesc.get()))
+        # if no sdesc, include key plus aliases instead
         else:
             candidate_map += [(obj, obj.key)] + [(obj, alias) for alias in obj.aliases.all()]
 
@@ -370,34 +374,41 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         match_index = marker_match.start()
         head = string[:match_index]
         tail = string[match_index+1:]
-
+        
         if search_mode:
+            # match the candidates against the whole search string
             rquery = "".join([r"\b(" + re.escape(word.strip(punctuation)) + r").*" for word in iter(tail.split())])
-            rquery = re.compile(rquery, _RE_FLAGS)
-            matches = ((rquery.search(text), obj, text) for obj, text in candidate_map)
+            matches = ((re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map)
+            # filter out any non-matching candidates
             bestmatches = [(obj, match.group()) for match, obj, text in matches if match]
 
         else:
+            # to find the longest match, we start from the marker and lengthen the 
+            # match query one word at a time.
             word_list = []
             bestmatches = []
+            # preserve punctuation when splitting
             tail = re.split('(\W)', tail)
-            istart = 0
+            iend = 0
             for i, item in enumerate(tail):
+                # don't add non-word characters to the search query
                 if not item.isalpha():
                   continue
                 word_list.append(item)
                 rquery = "".join([r"\b(" + re.escape(word) + r").*" for word in word_list])
-                rquery = re.compile(rquery, _RE_FLAGS)
-                matches = ((rquery.search(text), obj, text) for obj, text in candidate_map)
+                # match candidates against the current set of words
+                matches = ((re.search(re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map)
                 matches = [(obj, match.group()) for match, obj, text in matches if match]
                 if len(matches) == 0:
-                    # no matches at this length, keep previous iteration
+                    # no matches at this length, keep previous iteration as best
                     break
-                # set latest match set as best matches
+                # since this is the longest match so far, set latest match set as best matches
                 bestmatches = matches
-                istart = i
+                # save current index as end point of matched text
+                iend = i
 
-            tail = "".join(tail[istart+1:])
+            # recombine remainder of emote back into a string
+            tail = "".join(tail[iend+1:])
 
         nmatches = len(bestmatches)
 
@@ -448,7 +459,8 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                 elif matchtext.islower():
                     case = "v"
 
-            key = "#%i%s" % (obj.id, case)
+            key = f"#{obj.id}{case}"
+            # recombine emote with matched text replaced by ref
             string = f"{head}{{{key}}}{tail}"
             mapping[key] = obj
 
@@ -534,14 +546,17 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     # if anonymous_add is passed as a kwarg, collect and remove it from kwargs
     if "anonymous_add" in kwargs:
         anonymous_add = kwargs.pop("anonymous_add")
+    # make sure to catch all possible self-refs
     self_refs = [f"{skey}{ref}" for ref in ('t','^','v','~','')]
     if anonymous_add and not any(1 for tag in obj_mapping if tag in self_refs):
-        # no self-reference in the emote - add to the end
+        # no self-reference in the emote - add it
         if anonymous_add == "first":
-            skey = skey + 't'
+            # add case flag for initial caps
+            skey += 't'
             possessive = "" if emote.startswith("'") else " "
             emote = "%s%s%s" % ("{{%s}}" % skey, possessive, emote)
         else:
+            # add it to the end
             emote = "%s [%s]" % (emote, "{{%s}}" % skey)
         obj_mapping[skey] = sender
 
@@ -562,10 +577,11 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         # the form {{#num}} to {#num} markers ready to sdesc-map in the next step.
         sendemote = emote.format(**receiver_lang_mapping)
 
+        # map the ref keys to sdescs
         receiver_sdesc_mapping = dict(
             (
                 ref,
-                obj.get_display_name(receiver, ref=ref, no_id=True),
+                obj.get_display_name(receiver, noid=True),
             )
             for ref, obj in obj_mapping.items()
         )
@@ -1117,7 +1133,7 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             if forget_mode:
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("%s will now know them only as '%s'." % (caller.key, obj.get_display_name(caller, no_id=True)))
+                caller.msg("%s will now know them only as '%s'." % (caller.key, obj.get_display_name(caller, noid=True)))
             else:
                 # set recog
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
@@ -1397,24 +1413,34 @@ class ContribRPObject(DefaultObject):
 
         Keyword Args:
             pose (bool): Include the pose (if available) in the return.
-            ref (str):   Specifies the capitalization for the displayed name.
+            ref (str): The reference marker found in string to replace.
+                This is on the form #{num}{case}, like '#12^', where
+                the number is a processing location in the string and the
+                case symbol indicates the case of the original tag input
+                - `t` - input was Titled, like /Tall
+                - `^` - input was all uppercase, like /TALL
+                - `v` - input was all lowercase, like /tall
+                - `~` - input case should be kept, or was mixed-case
+            noid (bool): Don't show DBREF even if viewer has control access.
 
         Returns:
             name (str): A string of the sdesc containing the name of the object,
-            if this is defined.
-                including the DBREF if this user is privileged to control
-                said object.
+                if this is defined. By default, included the DBREF if this user
+                is privileged to control said object.
 
         """
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") and not kwargs.get("no_id", False) else ""
+        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") and not kwargs.get("noid",False) else ""
         ref = kwargs.get("ref","~")
     
         if looker == self:
+            # always show your own key
             sdesc = self.key
         else:
             try:
+                # get the sdesc looker should see
                 sdesc = looker.get_sdesc(self, ref=ref)
             except AttributeError:
+                # use own sdesc as a fallback
                 sdesc = self.sdesc.get()
         pose = " %s" % (self.db.pose or "is here.") if kwargs.get("pose", False) else ""
         return "%s%s%s" % (sdesc, idstr, pose)
@@ -1426,6 +1452,10 @@ class ContribRPObject(DefaultObject):
 
         Args:
             looker (Object): Object doing the looking.
+        
+        Returns:
+            string (str): A string containing the name, appearance and contents
+                of the object.
         """
         if not looker:
             return ""
@@ -1449,6 +1479,7 @@ class ContribRPObject(DefaultObject):
             string += "\n|wExits:|n " + ", ".join(exits)
         if users or things:
             string += "\n " + "\n ".join(users + things)
+
         return string
 
 
@@ -1479,19 +1510,27 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         Keyword Args:
             pose (bool): Include the pose (if available) in the return.
+            ref (str): The reference marker found in string to replace.
+                This is on the form #{num}{case}, like '#12^', where
+                the number is a processing location in the string and the
+                case symbol indicates the case of the original tag input
+                - `t` - input was Titled, like /Tall
+                - `^` - input was all uppercase, like /TALL
+                - `v` - input was all lowercase, like /tall
+                - `~` - input case should be kept, or was mixed-case
+            noid (bool): Don't show DBREF even if viewer has control access.
 
         Returns:
             name (str): A string of the sdesc containing the name of the object,
-            if this is defined.
-                including the DBREF if this user is privileged to control
-                said object.
+                if this is defined. By default, included the DBREF if this user
+                is privileged to control said object.
 
         Notes:
             The RPCharacter version adds additional processing to sdescs to make
             characters stand out from other objects.
 
         """
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") and not kwargs.get("no_id",False) else ""
+        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") and not kwargs.get("noid",False) else ""
         ref = kwargs.get("ref","~")
     
         if looker == self:
@@ -1512,10 +1551,8 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         super().at_object_creation()
 
         self.db._sdesc = ""
-        self.db._sdesc_regex = ""
 
         self.db._recog_ref2recog = {}
-        self.db._recog_obj2regex = {}
         self.db._recog_obj2recog = {}
 
         self.cmdset.add(RPSystemCmdSet, persistent=True)
@@ -1538,7 +1575,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
     def get_sdesc(self, obj, process=False, **kwargs):
         """
-        Single hook method to handle getting recogs with sdesc fallback in an
+        Single method to handle getting recogs with sdesc fallback in an
         aware manner, to allow separate processing of recogs from sdescs.
         Gets the sdesc or recog for obj from the view of self.
 
@@ -1546,19 +1583,20 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             obj (Object): the object whose sdesc or recog is being gotten
         Keyword Args:
             process (bool): If True, the sdesc/recog is run through the
-                appropriate process_X method.
+                appropriate process method (process_sdesc or process_recog)
         """
+        # always see own key
         if obj == self:
             recog = self.key
             sdesc = self.key
         else:
-            try:
-                recog = self.recog.get(obj)
-            except AttributeError:
-                recog = None
+            # first check if we have a recog for this object
+            recog = self.recog.get(obj)
+            # set sdesc to recog, using sdesc as a fallback, or the object's key if no sdesc
             sdesc = recog or (hasattr(obj, "sdesc") and obj.sdesc.get()) or obj.key
 
         if process:
+            # process the sdesc as a recog if a recog was found, else as an sdesc
             sdesc = (self.process_recog if recog else self.process_sdesc)(sdesc, obj, **kwargs)
 
         return sdesc
