@@ -1583,7 +1583,8 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             obj (Object): the object whose sdesc or recog is being gotten
         Keyword Args:
             process (bool): If True, the sdesc/recog is run through the
-                appropriate process method (process_sdesc or process_recog)
+                appropriate process method for self - .process_sdesc or
+                .process_recog
         """
         # always see own key
         if obj == self:
