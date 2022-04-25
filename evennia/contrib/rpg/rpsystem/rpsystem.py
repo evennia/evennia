@@ -773,13 +773,13 @@ class RecogHandler:
 
     def get(self, obj):
         """
-        Get recog replacement string, if one exists, otherwise
-        get sdesc and as a last resort, the object's key.
+        Get recog replacement string, if one exists.
 
         Args:
             obj (Object): The object, whose sdesc to replace
         Returns:
-            recog (str): The replacement string to use.
+            recog (str or None): The replacement string to use, or
+                None if there is no recog for this object.
 
         Notes:
             This method will respect a "enable_recog" lock set on
