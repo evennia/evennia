@@ -1555,18 +1555,24 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             characters stand out from other objects.
 
         """
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") and not kwargs.get("noid",False) else ""
         ref = kwargs.get("ref","~")
     
         if looker == self:
+            # process your key as recog since you recognize yourself
             sdesc = self.process_recog(self.key,self)
         else:
             try:
+                # get the sdesc looker should see, with formatting
                 sdesc = looker.get_sdesc(self, process=True, ref=ref)
             except AttributeError:
+                # use own sdesc as a fallback
                 sdesc = self.sdesc.get()
-        pose = " %s" % (self.db.pose or "is here.") if kwargs.get("pose", False) else ""
-        return "%s%s%s" % (sdesc, idstr, pose)
+
+        # add dbref is looker has control access and `noid` is not set
+        if self.access(looker, access_type="control") and not kwargs.get("noid",False):
+            sdesc = f"{sdesc}{self.id}"
+
+        return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
 
     def at_object_creation(self):
