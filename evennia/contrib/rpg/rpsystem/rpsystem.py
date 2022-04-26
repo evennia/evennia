@@ -564,7 +564,6 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     # broadcast emote to everyone
     for receiver in receivers:
         # first handle the language mapping, which always produce different keys ##nn
-        receiver_lang_mapping = {}
         if hasattr(receiver, "process_language") and callable(receiver.process_language):
             receiver_lang_mapping = {
                 key: receiver.process_language(saytext, sender, langname)
