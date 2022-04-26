@@ -1232,6 +1232,10 @@ class ContribRPObject(DefaultObject):
         self.db.pose = ""
         self.db.pose_default = "is here."
 
+        # initializing sdesc
+        self.db._sdesc = ""
+        self.sdesc.add("Something")
+
     def search(
         self,
         searchdata,
@@ -1404,6 +1408,22 @@ class ContribRPObject(DefaultObject):
             multimatch_string=multimatch_string,
         )
 
+    def get_posed_sdesc(self, sdesc, **kwargs):
+        """
+        Displays the object with its current pose string.
+        
+        Returns:
+            pose (str): A string containing the object's sdesc and
+                current or default pose.
+        """
+        
+        # get the current pose, or default if no pose is set
+        pose = self.db.pose or self.db.pose_default
+        
+        # return formatted string, or sdesc as fallback
+        return f"{sdesc} {pose}" if pose else sdesc
+
+
     def get_display_name(self, looker, **kwargs):
         """
         Displays the name of the object in a viewer-aware manner.
@@ -1430,7 +1450,6 @@ class ContribRPObject(DefaultObject):
                 is privileged to control said object.
 
         """
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") and not kwargs.get("noid",False) else ""
         ref = kwargs.get("ref","~")
     
         if looker == self:
@@ -1443,8 +1462,13 @@ class ContribRPObject(DefaultObject):
             except AttributeError:
                 # use own sdesc as a fallback
                 sdesc = self.sdesc.get()
-        pose = " %s" % (self.db.pose or "is here.") if kwargs.get("pose", False) else ""
-        return "%s%s%s" % (sdesc, idstr, pose)
+        
+        # add dbref is looker has control access and `noid` is not set
+        if self.access(looker, access_type="control") and not kwargs.get("noid",False):
+            sdesc = f"{sdesc}{self.id}"
+        
+        return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
+
 
     def return_appearance(self, looker):
         """
