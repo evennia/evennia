@@ -282,9 +282,9 @@ def parse_language(speaker, emote):
         langname, saytext = say_match.groups()
         istart, iend = say_match.start(), say_match.end()
         # the key is simply the running match in the emote
-        key = "##%i" % imatch
+        key = f"##{imatch}"
         # replace say with ref markers in emote
-        emote = emote[:istart] + "{%s}" % key + emote[iend:]
+        emote = "{start}{key}{end}".format( start=emote[:istart], key=key, end=emote[iend:] )
         mapping[key] = (langname, saytext)
 
     if errors:
@@ -449,7 +449,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                 # case sensitive mode
                 # internal flags for the case used for the original /query
                 # - t for titled input (like /Name)
-                # - ^ for all upercase input (likle /NAME)
+                # - ^ for all upercase input (like /NAME)
                 # - v for lower-case input (like /name)
                 # - ~ for mixed case input (like /nAmE)
                 matchtext = marker_match.group().lstrip(_PREFIX)
@@ -469,13 +469,12 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             # multimatch error
             refname = marker_match.group()
             reflist = [
-                "%s%s%s (%s%s)"
-                % (
-                    inum + 1,
-                    _NUM_SEP,
-                    _RE_PREFIX.sub("", refname),
-                    text,
-                    " (%s)" % sender.key if sender == ob else "",
+                "{name}{sep}{num} ({text}{key})".format(
+                    num=inum + 1,
+                    sep=_NUM_SEP,
+                    name=_RE_PREFIX.sub("", refname),
+                    text=text,
+                    key=f" ({sender.key})" if sender == ob else "",
                 )
                 for inum, (ob, text) in enumerate(obj)
             ]
@@ -539,7 +538,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         sender.msg(str(err))
         return
 
-    skey = "#%i" % sender.id
+    skey = f"#{sender.id}"
 
     # we escape the object mappings since we'll do the language ones first
     # (the text could have nested object mappings).
@@ -554,11 +553,12 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         if anonymous_add == "first":
             # add case flag for initial caps
             skey += 't'
-            possessive = "" if emote.startswith("'") else " "
-            emote = "%s%s%s" % ("{{%s}}" % skey, possessive, emote)
+            # don't put a space after the self-ref if it's a possessive emote
+            femote = "{key}{emote}" if emote.startswith("'") else "{key} {emote}"
         else:
             # add it to the end
-            emote = "%s [%s]" % (emote, "{{%s}}" % skey)
+            femote = "{emote} [{key}]"
+        emote = femote.format( key="{{"+ skey +"}}", emote=emote )
         obj_mapping[skey] = sender
 
     # broadcast emote to everyone
@@ -661,8 +661,7 @@ class SdescHandler:
 
         if len(cleaned_sdesc) > max_length:
             raise SdescError(
-                "Short desc can max be %i chars long (was %i chars)."
-                % (max_length, len(cleaned_sdesc))
+                "Short desc can max be {} chars long (was {} chars).".format(max_length, len(cleaned_sdesc))
             )
 
         # store to attributes
@@ -692,7 +691,6 @@ class RecogHandler:
 
         _recog_ref2recog
         _recog_obj2recog
-        _recog_obj2regex
 
     """
 
@@ -758,12 +756,11 @@ class RecogHandler:
 
         if len(cleaned_recog) > max_length:
             raise RecogError(
-                "Recog string cannot be longer than %i chars (was %i chars)"
-                % (max_length, len(cleaned_recog))
+                "Recog string cannot be longer than {} chars (was {} chars)".format(max_length, len(cleaned_recog))
             )
 
         # mapping #dbref:obj
-        key = "#%i" % obj.id
+        key = f"#{obj.id}"
         self.obj.attributes.get("_recog_ref2recog", default={})[key] = recog
         self.obj.attributes.get("_recog_obj2recog", default={})[obj] = recog
         # local caching
@@ -814,7 +811,7 @@ class RecogHandler:
         """
         if obj in self.obj2recog:
             del self.obj.db._recog_obj2recog[obj]
-            del self.obj.db._recog_ref2recog["#%i" % obj.id]
+            del self.obj.db._recog_ref2recog[f"#{obj.id}"]
         self._cache()
 
 
@@ -866,8 +863,8 @@ class CmdEmote(RPCommand):  # replaces the main emote
             # we also include ourselves here.
             emote = self.args
             targets = self.caller.location.contents
-            if not emote.endswith((".", "?", "!")):  # If emote is not punctuated,
-                emote = "%s." % emote  # add a full-stop for good measure.
+            if not emote.endswith((".", "?", "!", '"')):  # If emote is not punctuated or speech,
+                emote += "." # add a full-stop for good measure.
             send_emote(self.caller, targets, emote, anonymous_add="first")
 
 
@@ -932,7 +929,7 @@ class CmdSdesc(RPCommand):  # set/look at own sdesc
             except AttributeError:
                 caller.msg(f"Cannot set sdesc on {caller.key}.")
                 return
-            caller.msg("%s's sdesc was set to '%s'." % (caller.key, sdesc))
+            caller.msg(f"{caller.key}'s sdesc was set to '{sdesc}'.")
 
 
 class CmdPose(RPCommand):  # set current pose and default pose
@@ -992,8 +989,8 @@ class CmdPose(RPCommand):  # set current pose and default pose
             caller.msg("Usage: pose <pose-text> OR pose obj = <pose-text>")
             return
 
-        if not pose.endswith("."):
-            pose = "%s." % pose
+        if not pose.endswith((".", "?", "!", '"')):
+            pose += "."
         if target:
             # affect something else
             target = caller.search(target)
@@ -1005,18 +1002,18 @@ class CmdPose(RPCommand):  # set current pose and default pose
         else:
             target = caller
 
+        target_name = target.sdesc.get() if hasattr(target, "sdesc") else target.key
         if not target.attributes.has("pose"):
-            caller.msg("%s cannot be posed." % target.key)
+            caller.msg(f"{target_name} cannot be posed.")
             return
 
-        target_name = target.sdesc.get() if hasattr(target, "sdesc") else target.key
         # set the pose
         if self.reset:
             pose = target.db.pose_default
             target.db.pose = pose
         elif self.default:
             target.db.pose_default = pose
-            caller.msg("Default pose is now '%s %s'." % (target_name, pose))
+            caller.msg(f"Default pose is now '{target_name} {pose}'.")
             return
         else:
             # set the pose. We do one-time ref->sdesc mapping here.
@@ -1028,12 +1025,12 @@ class CmdPose(RPCommand):  # set current pose and default pose
             pose = parsed.format(**mapping)
 
             if len(target_name) + len(pose) > 60:
-                caller.msg("Your pose '%s' is too long." % pose)
+                caller.msg(f"'{pose}' is too long.")
                 return
 
             target.db.pose = pose
 
-        caller.msg("Pose will read '%s %s'." % (target_name, pose))
+        caller.msg(f"Pose will read '{target_name} {pose}'.")
 
 
 class CmdRecog(RPCommand):  # assign personal alias to object in room
@@ -1112,12 +1109,12 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             caller.msg(_EMOTE_NOMATCH_ERROR.format(ref=sdesc))
         elif nmatches > 1:
             reflist = [
-                "{}{}{} ({}{})".format(
-                    inum + 1,
-                    _NUM_SEP,
-                    _RE_PREFIX.sub("", sdesc),
-                    caller.recog.get(obj),
-                    " (%s)" % caller.key if caller == obj else "",
+                "{sdesc}{sep}{num} ({recog}{key})".format(
+                    num=inum + 1,
+                    sep=_NUM_SEP,
+                    sdesc=_RE_PREFIX.sub("", sdesc),
+                    recog=caller.recog.get(obj) or "no recog",
+                    key=f" ({caller.key})" if caller == obj else "",
                 )
                 for inum, obj in enumerate(matches)
             ]
@@ -1133,7 +1130,7 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             if forget_mode:
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("%s will now know them only as '%s'." % (caller.key, obj.get_display_name(caller, noid=True)))
+                caller.msg("You will now know them only as '{}'.".format( obj.get_display_name(caller, noid=True) ))
             else:
                 # set recog
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
@@ -1142,7 +1139,7 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
                 except RecogError as err:
                     caller.msg(err)
                     return
-                caller.msg("%s will now remember |w%s|n as |w%s|n." % (caller.key, sdesc, alias))
+                caller.msg("You will now remember |w{}|n as |w{}|n.".format(sdesc, alias))
 
 
 class CmdMask(RPCommand):
@@ -1173,14 +1170,14 @@ class CmdMask(RPCommand):
                 caller.msg("You are already wearing a mask.")
                 return
             sdesc = _RE_CHAREND.sub("", self.args)
-            sdesc = "%s |H[masked]|n" % sdesc
+            sdesc = f"{sdesc} |H[masked]|n"
             if len(sdesc) > 60:
                 caller.msg("Your masked sdesc is too long.")
                 return
             caller.db.unmasked_sdesc = caller.sdesc.get()
             caller.locks.add("enable_recog:false()")
             caller.sdesc.add(sdesc)
-            caller.msg("You wear a mask as '%s'." % sdesc)
+            caller.msg(f"You wear a mask as '{sdesc}'.")
         else:
             # unmask
             old_sdesc = caller.db.unmasked_sdesc
@@ -1190,7 +1187,7 @@ class CmdMask(RPCommand):
             del caller.db.unmasked_sdesc
             caller.locks.remove("enable_recog")
             caller.sdesc.add(old_sdesc)
-            caller.msg("You remove your mask and are again '%s'." % old_sdesc)
+            caller.msg(f"You remove your mask and are again '{old_sdesc}'.")
 
 
 class RPSystemCmdSet(CmdSet):
@@ -1672,7 +1669,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             sdesc = sdesc.upper()
         elif "v" in ref:
             sdesc = sdesc.lower()
-        return "|b%s|n" % sdesc
+        return f"|b{sdesc}|n"
 
     def process_recog(self, recog, obj, **kwargs):
         """
@@ -1691,7 +1688,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         if not recog:
             return ""
 
-        return "|m%s|n" % recog
+        return f"|m{recog}|n"
 
     def process_language(self, text, speaker, language, **kwargs):
         """
@@ -1714,4 +1711,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             the evennia.contrib.rpg.rplanguage module.
 
         """
-        return "%s|w%s|n" % ("|W(%s)" % language if language else "", text)
+        return "{label}|w{text}|n".format(
+            label=f"|W({language})" if language else "",
+            text=text
+            )
