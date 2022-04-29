@@ -164,6 +164,24 @@ class TestRPSystem(BaseEvenniaTest):
             result,
         )
 
+    def test_get_sdesc(self):
+        looker = self.speaker # Sender
+        target = self.receiver1 # Receiver1
+        looker.sdesc.add(sdesc0) # A nice sender of emotes
+        target.sdesc.add(sdesc1) # The first receiver of emotes.
+
+        # sdesc with no processing
+        self.assertEqual(looker.get_sdesc(target), "The first receiver of emotes.")
+        # sdesc with processing
+        self.assertEqual(looker.get_sdesc(target, process=True), "|bThe first receiver of emotes.|n")
+        
+        looker.recog.add(target, recog01) # Mr Receiver
+
+        # recog with no processing
+        self.assertEqual(looker.get_sdesc(target), "Mr Receiver")
+        # recog with processing
+        self.assertEqual(looker.get_sdesc(target, process=True), "|mMr Receiver|n")
+
     def test_send_emote(self):
         speaker = self.speaker
         receiver1 = self.receiver1
@@ -259,7 +277,7 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         self.call(
             rpsystem.CmdRecog(),
             "barfoo as friend",
-            "Char will now remember BarFoo Character as friend.",
+            "You will now remember BarFoo Character as friend.",
         )
         self.call(
             rpsystem.CmdRecog(),
@@ -270,6 +288,6 @@ class TestRPSystemCommands(BaseEvenniaCommandTest):
         self.call(
             rpsystem.CmdRecog(),
             "friend",
-            "Char will now know them only as 'BarFoo Character'",
+            "You will now know them only as 'BarFoo Character'",
             cmdstring="forget",
         )
