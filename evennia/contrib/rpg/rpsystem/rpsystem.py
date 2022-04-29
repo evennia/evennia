@@ -186,13 +186,13 @@ _EMOTE_MULTIMATCH_ERROR = """|RMultiple possibilities for {ref}:
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 
-_RE_PREFIX = re.compile(r"^%s" % _PREFIX, re.UNICODE)
+_RE_PREFIX = re.compile(rf"^{_PREFIX}", re.UNICODE)
 
 # This regex will return groups (num, word), where num is an optional counter to
 # separate multimatches from one another and word is the first word in the
 # marker. So entering "/tall man" will return groups ("", "tall")
 # and "/2-tall man" will return groups ("2", "tall").
-_RE_OBJ_REF_START = re.compile(r"%s(?:([0-9]+)%s)*(\w+)" % (_PREFIX, _NUM_SEP), _RE_FLAGS)
+_RE_OBJ_REF_START = re.compile(rf"{_PREFIX}(?:([0-9]+){_NUM_SEP})*(\w+)", _RE_FLAGS)
 
 _RE_LEFT_BRACKETS = re.compile(r"\{+", _RE_FLAGS)
 _RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
@@ -350,7 +350,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             candidate_map.append((obj, obj.sdesc.get()))
         # if no sdesc, include key plus aliases instead
         else:
-            candidate_map += [(obj, obj.key)] + [(obj, alias) for alias in obj.aliases.all()]
+            candidate_map.extend( [(obj, obj.key)] + [(obj, alias) for alias in obj.aliases.all()] )
 
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
@@ -1568,7 +1568,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         # add dbref is looker has control access and `noid` is not set
         if self.access(looker, access_type="control") and not kwargs.get("noid",False):
-            sdesc = f"{sdesc}{self.id}"
+            sdesc = f"{sdesc}(#{self.id})"
 
         return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
