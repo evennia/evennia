@@ -53,7 +53,7 @@ Add `RPSystemCmdSet` from this module to your CharacterCmdSet:
 
 # ...
 
-from evennia.contrib.rpg.rpsystem import RPSystemCmdSet  <---
+from evennia.contrib.rpg.rpsystem.rpsystem import RPSystemCmdSet  <---
 
 class CharacterCmdSet(default_cmds.CharacterCmdset):
     # ...
@@ -69,7 +69,7 @@ the typeclasses in this module:
 ```python
 # in mygame/typeclasses/characters.py
 
-from evennia.contrib.rpg import ContribRPCharacter
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter
 
 class Character(ContribRPCharacter):
     # ...
@@ -79,7 +79,7 @@ class Character(ContribRPCharacter):
 ```python
 # in mygame/typeclasses/objects.py
 
-from evennia.contrib.rpg import ContribRPObject
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 
 class Object(ContribRPObject):
     # ...
@@ -89,7 +89,7 @@ class Object(ContribRPObject):
 ```python
 # in mygame/typeclasses/rooms.py
 
-from evennia.contrib.rpg import ContribRPRoom
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom
 
 class Room(ContribRPRoom):
     # ...
@@ -125,7 +125,7 @@ Extra Installation Instructions:
 
 1. In typeclasses/character.py:
    Import the `ContribRPCharacter` class:
-       `from evennia.contrib.rpg.rpsystem import ContribRPCharacter`
+       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter`
    Inherit ContribRPCharacter:
        Change "class Character(DefaultCharacter):" to
        `class Character(ContribRPCharacter):`
@@ -133,13 +133,13 @@ Extra Installation Instructions:
        Add `super().at_object_creation()` as the top line.
 2. In `typeclasses/rooms.py`:
        Import the `ContribRPRoom` class:
-       `from evennia.contrib.rpg.rpsystem import ContribRPRoom`
+       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom`
    Inherit `ContribRPRoom`:
        Change `class Room(DefaultRoom):` to
        `class Room(ContribRPRoom):`
 3. In `typeclasses/objects.py`
        Import the `ContribRPObject` class:
-       `from evennia.contrib.rpg.rpsystem import ContribRPObject`
+       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject`
    Inherit `ContribRPObject`:
        Change `class Object(DefaultObject):` to
        `class Object(ContribRPObject):`
