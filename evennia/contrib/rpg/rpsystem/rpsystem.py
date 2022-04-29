@@ -284,7 +284,7 @@ def parse_language(speaker, emote):
         # the key is simply the running match in the emote
         key = f"##{imatch}"
         # replace say with ref markers in emote
-        emote = "{start}{key}{end}".format( start=emote[:istart], key=key, end=emote[iend:] )
+        emote = "{start}{{{key}}}{end}".format( start=emote[:istart], key=key, end=emote[iend:] )
         mapping[key] = (langname, saytext)
 
     if errors:
@@ -408,6 +408,8 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                 # save current index as end point of matched text
                 iend = i
 
+            # save search string
+            matched_text = "".join(tail[1:iend])
             # recombine remainder of emote back into a string
             tail = "".join(tail[iend+1:])
 
@@ -469,7 +471,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             # multimatch error
             refname = marker_match.group()
             reflist = [
-                "{name}{sep}{num} ({text}{key})".format(
+                "{num}{sep}{name} ({text}{key})".format(
                     num=inum + 1,
                     sep=_NUM_SEP,
                     name=_RE_PREFIX.sub("", refname),
@@ -581,7 +583,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         receiver_sdesc_mapping = dict(
             (
                 ref,
-                obj.get_display_name(receiver, noid=True),
+                obj.get_display_name(receiver, ref=ref, noid=True),
             )
             for ref, obj in obj_mapping.items()
         )
@@ -1109,7 +1111,7 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             caller.msg(_EMOTE_NOMATCH_ERROR.format(ref=sdesc))
         elif nmatches > 1:
             reflist = [
-                "{sdesc}{sep}{num} ({recog}{key})".format(
+                "{num}{sep}{sdesc} ({recog}{key})".format(
                     num=inum + 1,
                     sep=_NUM_SEP,
                     sdesc=_RE_PREFIX.sub("", sdesc),
@@ -1461,7 +1463,7 @@ class ContribRPObject(DefaultObject):
         
         # add dbref is looker has control access and `noid` is not set
         if self.access(looker, access_type="control") and not kwargs.get("noid",False):
-            sdesc = f"{sdesc}{self.id}"
+            sdesc = f"{sdesc}(#{self.id})"
         
         return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
