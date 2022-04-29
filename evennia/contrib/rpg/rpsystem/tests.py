@@ -96,7 +96,7 @@ recog01 = "Mr Receiver"
 recog02 = "Mr Receiver2"
 recog10 = "Mr Sender"
 emote = 'With a flair, /me looks at /first and /colliding sdesc-guy. She says "This is a test."'
-case_emote = "/Me looks at /first, then /FIRST, /First and /Colliding twice."
+case_emote = "/Me looks at /first. Then, /me looks at /FIRST, /First and /Colliding twice."
 
 
 class TestRPSystem(BaseEvenniaTest):
@@ -225,20 +225,21 @@ class TestRPSystem(BaseEvenniaTest):
         rpsystem.send_emote(speaker, receivers, case_emote)
         self.assertEqual(
             self.out0,
-            "|mSender|n looks at |bthe first receiver of emotes.|n, then "
-            "|bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n and "
-            "|bAnother nice colliding sdesc-guy for tests|n twice.",
+            "|mSender|n looks at |bthe first receiver of emotes.|n. Then, |mSender|n "
+            "looks at |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n "
+            "and |bAnother nice colliding sdesc-guy for tests|n twice.",
         )
         self.assertEqual(
             self.out1,
-            "|bA nice sender of emotes|n looks at |mReceiver1|n, then |mReceiver1|n, "
-            "|mReceiver1|n and |bAnother nice colliding sdesc-guy for tests|n twice.",
+            "|bA nice sender of emotes|n looks at |mReceiver1|n. Then, "
+            "|ba nice sender of emotes|n looks at |mReceiver1|n, |mReceiver1|n "
+            "and |bAnother nice colliding sdesc-guy for tests|n twice."
         )
         self.assertEqual(
             self.out2,
-            "|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n, "
-            "then |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of "
-            "emotes.|n and |mReceiver2|n twice.",
+            "|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n. "
+            "Then, |ba nice sender of emotes|n looks at |bTHE FIRST RECEIVER OF EMOTES.|n, "
+            "|bThe first receiver of emotes.|n and |mReceiver2|n twice.",
         )
 
     def test_rpsearch(self):
