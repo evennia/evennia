@@ -12,8 +12,6 @@ import re
 from html import escape as html_escape
 from .ansi import *
 
-from evennia.utils import logger
-
 # All xterm256 RGB equivalents
 
 XTERM256_FG = "\033[38;5;{}m"
