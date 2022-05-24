@@ -10,8 +10,11 @@ The combat is handled with a `Script` shared between all combatants; this tracks
 of combat and handles all timing elements.
 
 Unlike in base _Knave_, the MUD version's combat is simultaneous; everyone plans and executes
-their turns simultaneously with minimum downtime. This version also includes a stricter
-handling of optimal distances than base _Knave_ (this would be handled by the GM normally).
+their turns simultaneously with minimum downtime.
+
+This version is simplified to not worry about things like optimal range etc. So a bow can be used
+the same as a sword in battle. One could add a 1D range mechanism to add more strategy by requiring
+optimizal positioning.
 
 """
 
@@ -21,20 +24,10 @@ from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.utils import make_iter
 from evennia.utils import evmenu, evtable
+from .enums import Ability
 from . import rules
 
-MIN_RANGE = 0
-MAX_RANGE = 4
-MAX_MOVE_RATE = 2
 STUNT_DURATION = 2
-
-RANGE_NAMES = {
-    0: "close",  # melee, short weapons, fists. long weapons with disadvantage
-    1: "near",  # melee, long weapons, short weapons with disadvantage
-    2: "medium",  # thrown, ranged with disadvantage
-    3: "far",  # ranged, thrown with disadvantage
-    4: "disengaging"  # no weapons
-}
 
 
 class CombatFailure(RuntimeError):
@@ -44,19 +37,17 @@ class CombatFailure(RuntimeError):
 
 class CombatAction:
     """
-    This describes a combat-action, like 'attack'.
+    This is the base of a combat-action, like 'attack' or defend.
+    Inherit from this to make new actions.
 
     """
     key = 'action'
     help_text = "Combat action to perform."
     # action to echo to everyone.
     post_action_text = "{combatant} performed an action."
-    optimal_range = 0
-    # None for unlimited
-    max_uses = None
-    suboptimal_range = 1
-    # move actions can be combined with other actions
-    is_move_action = False
+    max_uses = None  # None for unlimited
+    # in which order (highest first) to perform the action. If identical, use random order
+    priority = 0
 
     def __init__(self, combathandler, combatant):
         self.combathandler = combathandler
@@ -71,33 +62,13 @@ class CombatAction:
             # send only to the combatant.
             self.combatant.msg(message)
 
-    def get_help(self):
-        return ""
-
-    def check_distance(self, distance, optimal_range=None, suboptimal_range=None):
-        """Call to easily check and warn for out-of-bound distance"""
-
-        if optimal_range is None:
-            optimal_range = self.optimal_range
-        if suboptimal_range is None:
-            suboptimal_range = self.suboptimal_range
-
-        if distance not in (self.suboptimal_distance, self.optimal_distance):
-            # if we are neither at optimal nor suboptimal distance, we can't do the stunt
-            # from here.
-            self.msg(f"|rYou can't perform {self.key} from {range_names[distance]} distance "
-                     "(must be {range_names[suboptimal_distance]} or, even better, "
-                     "{range_names[optimal_distance]}).|n")
-            return False
-        elif self.distance == self.suboptimal_distance:
-            self.msg(f"|yNote: Performing {self.key} from {range_names[distance]} works, but "
-                     f"the optimal range is {range_names[optimal_range]} (you'll "
-                     "act with disadvantage).")
-        return True
+    def get_help(self, *args, **kwargs):
+        return self.help_text
 
     def can_use(self, combatant, *args, **kwargs):
         """
-        Determine if combatant can use this action.
+        Determine if combatant can use this action. In this implementation,
+        it fails if already use all of a usage-limited action.
 
         Args:
             combatant (Object): The one performing the action.
@@ -111,13 +82,13 @@ class CombatAction:
         """
         return True if self.uses is None else self.uses < self.max_uses
 
-    def pre_perform(self, *args, **kwargs):
+    def pre_use(self, *args, **kwargs):
         pass
 
-    def perform(self, *args, **kwargs):
+    def use(self, *args, **kwargs):
         pass
 
-    def post_perform(self, *args, **kwargs):
+    def post_use(self, *args, **kwargs):
         self.uses += 1
         self.combathandler.msg(self.post_action_text.format(combatant=combatant))
 
@@ -134,21 +105,31 @@ class CombatActionDoNothing(CombatAction):
 
 class CombatActionStunt(CombatAction):
     """
-    Perform a stunt.
+    Perform a stunt. A stunt grants an advantage to yours or another player for their next
+    action, or a disadvantage to yours or an enemy's next action.
+
+    Note that while the check happens between the user and a target, another (the 'beneficiary'
+    could still gain the effect. This allows for boosting allies or making them better
+    defend against an enemy.
+
+    Note: We only count a use if the stunt is successful; they will still spend their turn, but won't
+    spend a use unless they succeed.
 
     """
-    optimal_distance = 0
-    suboptimal_distance = 1
     give_advantage = True
     give_disadvantage = False
-    uses = 1
-    attack_type = "dexterity"
-    defense_type = "dexterity"
+    max_uses = 1
+    priority = -1
+    # how many turns the stunt's effect apply (that is, how quickly it must be used before the
+    # advantage/disadvantage is lost).
+    duration = 5
+    attack_type = Ability.DEX
+    defense_type = Ability.DEX
     help_text = ("Perform a stunt against a target. This will give you or an ally advantage "
                  "on your next action against the same target [range 0-1, one use per combat. "
                  "Bonus lasts for two turns].")
 
-    def perform(self, attacker, defender, *args, beneficiary=None, **kwargs):
+    def use(self, attacker, defender, *args, beneficiary=None, **kwargs):
         # quality doesn't matter for stunts, they are either successful or not
 
         is_success, _  = rules.EvAdventureRollEngine.opposed_saving_throw(
@@ -160,11 +141,125 @@ class CombatActionStunt(CombatAction):
         if is_success:
             beneficiary = beneficiary if beneficiary else attacker
             if advantage:
-                self.gain_advantage(beneficiary, defender)
+                self.combathandler.gain_advantage(beneficiary, defender)
             else:
-                self.gain_disadvantage(defender, beneficiary)
+                self.combathandler.gain_disadvantage(defender, beneficiary)
 
             self.msg
+            # only spend a use after being successful
+            uses += 1
+
+
+class CombatActionAttack(CombatAction):
+    """
+    A regular attack, using a wielded melee weapon.
+
+    """
+    key = "attack"
+    priority = 1
+
+    def use(self, attacker, defender, *args, **kwargs):
+        """
+        Make an attack against a defender.
+
+        """
+        # figure out advantage (gained by previous stunts)
+        advantage = bool(self.combathandler.advantage_matrix[attacker].pop(defender, False))
+
+        # figure out disadvantage (by distance or by previous action)
+        disadvantage = bool(self.combathandler.disadvantage_matrix[attacker].pop(defender, False))
+
+        is_hit, quality = rules.EvAdventureRollEngine.opposed_saving_throw(
+            attacker, defender,
+            attack_type=attacker.weapon.attack_type,
+            defense_type=attacker.weapon.defense_type,
+            advantage=advantage, disadvantage=disadvantage
+        )
+        if is_hit:
+            self.combathandler.resolve_damage(attacker, defender,
+                                              critical=quality == "critical success")
+
+            # TODO messaging here
+
+
+class CombatActionUseItem(CombatAction):
+    """
+    Use an item in combat. This is meant for one-off or limited-use items, like potions, scrolls or
+    wands.  We offload the usage checks and usability to the item's own hooks. It's generated dynamically
+    from the items in the character's inventory (you could also consider using items in the room this way).
+
+    Each usable item results in one possible action.
+
+    It relies on the combat_* hooks on the item:
+        combat_get_help
+        combat_can_use
+        combat_pre_use
+        combat_pre
+        combat_post_use
+
+    """
+    def get_help(self, item, *args):
+        return item.combat_get_help(*args)
+
+    def can_use(self, item, combatant, *args, **kwargs):
+        return item.combat_can_use(combatant, self.combathandler, *args, **kwargs)
+
+    def pre_use(self, item, *args, **kwargs):
+        item.combat_pre_use(*args, **kwargs)
+
+    def use(self, item, combatant, target, *args, **kwargs):
+        item.combat_use(combatant, target, *args, **kwargs)
+
+    def post_use(self, item, *args, **kwargs):
+        item.combat_post_use(*args, **kwargs)
+
+
+class CombatActionFlee(CombatAction):
+    """
+    Fleeing/disengaging from combat means doing nothing but 'running away' for two turn. Unless
+    someone attempts and succeeds in their 'chase' action, you will leave combat by fleeing at the
+    end of the second turn.
+
+    """
+    key = "flee"
+    priority = -1
+
+    def use(self, combatant, target, *args, **kwargs):
+        # it's safe to do this twice
+        self.combathandler.flee(combatant)
+
+class CombatActionChase(CombatAction):
+
+        """
+        Chasing is a way to counter a 'flee' action. It is a maximum movement towards the target
+        and will mean a DEX contest, if the fleeing target loses, they are moved back from
+        'disengaging' range and remain in combat at the new distance (likely 2 if max movement
+        is 2). Advantage/disadvantage are considered.
+
+        """
+        key = "chase"
+        priority = -5  # checked last
+
+        attack_type = Ability.DEX  # or is it CON?
+        defense_type = Ability.DEX
+
+        def use(self, combatant, fleeing_target, *args, **kwargs):
+
+            advantage = bool(self.advantage_matrix[attacker].pop(fleeing_target, False))
+            disadvantage = bool(self.disadvantage_matrix[attacker].pop(fleeing_target, False))
+
+            is_success, _ = rules.EvAdventureRollEngine.opposed_saving_throw(
+                combatant, fleeing_target,
+                attack_type=self.attack_type, defense_type=self.defense_type,
+                advantage=advantage, disadvantage=disadvantage
+            )
+
+            if is_success:
+                # managed to stop the target from fleeing/disengaging
+                self.combatant.unflee(fleeing_target)
+            else:
+                pass  # they are getting away!
+
 
 
 class EvAdventureCombatHandler(DefaultScript):
@@ -180,13 +275,11 @@ class EvAdventureCombatHandler(DefaultScript):
 
     # turn counter - abstract time
     turn = AttributeProperty(default=0)
-    # symmetric distance matrix (handled dynamically). Mapping {combatant1: {combatant2: dist}, ...}
-    distance_matrix = defaultdict(dict)
     # advantages or disadvantages gained against different targets
     advantage_matrix = AttributeProperty(defaultdict(dict))
     disadvantage_matrix = AttributeProperty(defaultdict(dict))
 
-    disengaging_combatants = AttributeProperty(default=list())
+    fleeing_combatants = AttributeProperty(default=list())
 
     # actions that will be performed before a normal action
     move_actions = ("approach", "withdraw")
@@ -196,50 +289,6 @@ class EvAdventureCombatHandler(DefaultScript):
             "do_nothing": CombatActionDoNothing,
         }
 
-
-    def _refresh_distance_matrix(self):
-        """
-        Refresh the distance matrix, either after movement or when a
-        new combatant enters combat - everyone must have a symmetric
-        distance to every other combatant (that is, if you are 'near' an opponent,
-        they are also 'near' to you).
-
-        Distances are abstract and divided into four steps:
-
-        0. Close (melee, short weapons, fists, long weapons with disadvantage)
-        1. Near (melee, long weapons, short weapons with disadvantage)
-        2. Medium (thrown, ranged with disadvantage)
-        3. Far (ranged, thrown with disadvantage)
-        4. Disengaging/fleeing (no weapons can be used)
-
-        Distance is tracked to each opponent individually. One can move 1 step and attack
-        or up to 2 steps (closer or further away) without attacking.
-
-        New combatants will start at a distance averaged between the optimal ranges
-        of them and their opponents.
-
-        """
-        combatants = self.combatants
-        distance_matrix = self.distance_matrix
-
-        for combatant1 in combatants:
-            for combatant2 in combatants:
-
-                if combatant1 == combatant2:
-                    continue
-
-                combatant1_distances = distance_matrix[combatant1]
-                combatant2_distances = distance_matrix[combatant2]
-
-                if combatant2 not in combatant1_distances or combatant1 not in combatant2_distances:
-                    # this happens on initialization or when a new combatant is added.
-                    # we make sure to update both sides to the distance of the longest
-                    # optimal weapon range. So ranged weapons have advantage going in.
-                    start_optimal = max(combatant1.weapon.distance_optimal,
-                                        combatant2.weapon.distance_optimal)
-
-                    combatant1_distances[combatant2] = start_optimal
-                    combatant2_distances[combatant1] = start_optimal
 
     def _update_turn_stats(self, combatant, message):
         """
@@ -261,22 +310,15 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         End of turn operations.
 
-        1. Do all moves
-        2. Do all regular actions
-        3. Remove combatants that disengaged successfully
-        4. Timeout advantages/disadvantages set for longer than STUNT_DURATION
+        1. Do all regular actions
+        2. Remove combatants that disengaged successfully
+        3. Timeout advantages/disadvantages set for longer than STUNT_DURATION
 
         """
-        # first do all moves
+        # do all actions
         for combatant in self.combatants:
-            action, args, kwargs = self.action_queue[combatant].get(
-                "move", ("do_nothing", (), {}))
-            getattr(self, f"action_{action}")(combatant, *args, **kwargs)
-        # next do all regular actions
-        for combatant in self.combatants:
-            action, args, kwargs = self.action_qeueue[combatant].get(
-                "action", ("do_nothing", (), {}))
-            getattr(self, f"action_{action}")(combatant, *args, **kwargs)
+            action, args, kwargs = self.action_queue[combatant]
+            action.use(combatant, *args, **kwargs)
 
         # handle disengaging combatants
 
@@ -285,13 +327,8 @@ class EvAdventureCombatHandler(DefaultScript):
         for combatant in self.combatants:
             # check disengaging combatants (these are combatants that managed
             # to stay at disengaging distance for a turn)
-            if combatant in self.disengaging_combatants:
+            if combatant in self.fleeing_combatants:
                 self.disengaging_combatants.remove(combatant)
-                to_remove.append(combatant)
-            elif all(1 for distance in self.distance_matrix[combatant].values()
-                     if distance == MAX_RANGE):
-                # if at max distance (disengaging) from everyone, they are disengaging
-                self.disengaging_combatants.append(combatant)
 
         for combatant in to_remove:
             # for clarity, we remove here rather than modifying the combatant list
@@ -327,27 +364,29 @@ class EvAdventureCombatHandler(DefaultScript):
     def add_combatant(self, combatant):
         if combatant not in self.combatants:
             self.combatants.append(combatant)
-            self._refresh_distance_matrix()
 
     def remove_combatant(self, combatant):
         if combatant in self.combatants:
             self.combatants.remove(combatant)
-            self._refresh_distance_matrix()
 
     def get_combat_summary(self, combatant):
         """
-        Get a summary of the current combat state.
+        Get a summary of the current combat state from the perspective of a
+        given combatant.
 
         You (5/10 health)
-        Foo (Hurt) distance:   You__0__1___X____3_____4 (medium)
-        Bar (Perfect health):  You__X__1___2____3_____4 (close)
+        Foo (Hurt) [Running away - use 'chase' to stop them!]
+        Bar (Perfect health)
 
         """
         table = evtable.EvTable(border_width=0)
 
-        table.add_row(f"You ({combatant.hp} / {combatant.hp_max} health)")
+        # 'You' display
+        fleeing = ""
+        if combatant in self.fleeing_combatants:
+            fleeing = " You are running away! Use 'flee' again next turn."
 
-        dist_template = "|x(You)__{0}|x__{1}|x___{2}|x____{3}|x_____|R{4} |x({distname})"
+        table.add_row(f"You ({combatant.hp} / {combatant.hp_max} health){fleeing}")
 
         for comb in self.combatants:
 
@@ -355,20 +394,19 @@ class EvAdventureCombatHandler(DefaultScript):
                 continue
 
             name = combatant.key
-            distance = self.distance_matrix[combatant][comb]
-            dist_map = {i: '|wX' if i == distance else i for i in range(MAX_RANGE)}
-            dist_map["distname"] = RANGE_NAMES[distance]
             health = f"{comb.hurt_level}"
-            distance_string = dist_template.format(**dist_map)
+            fleeing = ""
+            if comb in self.fleeing_combatants:
+                fleeing = " [Running away! Use 'chase' to stop them!"
 
-            table.add_row(f"{name} ({health})", distance_string)
+            table.add_row(f"{name} ({health}){fleeing}")
 
         return str(table)
 
     def msg(self, message, targets=None):
         """
         Central place for sending messages to combatants. This allows
-        for decorating the output in one place if needed.
+        for adding any combat-specific text-decoration in one place.
 
         Args:
             message (str): The message to send.
@@ -384,26 +422,6 @@ class EvAdventureCombatHandler(DefaultScript):
             for target in self.combatants:
                 target.msg(message)
 
-    def move_relative_to(self, combatant, target_combatant, change,
-                         min_dist=MIN_RANGE, max_dist=MAX_RANGE):
-        """
-        Change the distance to a target.
-
-        Args:
-            combatant (Character): The one doing the change.
-            target_combatant (Character): The one distance is changed to.
-            change (int): A +/- change value. Result is always in range 0..4.
-
-        """
-        current_dist = self.distance_matrix[combatant][target_combatant]
-
-        change = max(0, min(MAX_MOVE_RATE, change))
-
-        new_dist = max(min_dist, min(max_dist, current_dist + change))
-
-        self.distance_matrix[combatant][target_combatant] = new_dist
-        self.distance_matrix[target_combatant][combatant] = new_dist
-
     def gain_advantage(self, combatant, target):
         """
         Gain advantage against target. Spent by actions.
@@ -417,6 +435,14 @@ class EvAdventureCombatHandler(DefaultScript):
 
         """
         self.disadvantage_matrix[combatant][target] = self.turn
+
+    def flee(self, combatant):
+        if combatant not in self.fleeing_combatants:
+            self.fleeing_combatants.append(combatant)
+
+    def unflee(self, combatant):
+        if combatant in self.fleeing_combatants:
+            self.fleeing_combatants.remove(combatant)
 
     def resolve_damage(self, attacker, defender, critical=False):
         """
@@ -457,7 +483,7 @@ class EvAdventureCombatHandler(DefaultScript):
             # defender still alive
             self.msg(defender)
 
-    def register_action(self, combatant, action="do_nothing", *args, **kwargs):
+    def register_action(self, combatant, action=None, *args, **kwargs):
         """
         Register an action by-name.
 
@@ -465,185 +491,23 @@ class EvAdventureCombatHandler(DefaultScript):
             combatant (Object): The one performing the action.
             action (str): An available action, will be prepended with `action_` and
                 used to call the relevant handler on this script.
-            *args: Will be passed to the action method `action_<action>`.
-            **kwargs: Will be passed into the action method `action_<action>`.
 
         """
-        if action in self.move_actions:
-            self.action_queue[combatant]["move"] = (action, args, kwargs)
-        else:
-            self.action_queue[combatant]["action"] = (action, args, kwargs)
-
-    # action verbs. All of these start with action_* and should also accept
-    # *args, **kwargs so that we can make the call-mechanism generic.
-
-    def action_do_nothing(self, combatant, *args, **kwargs):
-        """Do nothing for a turn."""
-
-    def action_stunt(self, attacker, defender, attack_type="agility",
-              defense_type="agility", optimal_distance=0, suboptimal_distance=1,
-              advantage=True, beneficiary=None, *args, **kwargs):
-        """
-        Stunts does not cause damage but are used to give advantage/disadvantage to combatants
-        for later turns. The 'attacker' here is the one attemting the stunt against the 'defender'.
-        If successful, advantage is given to attacker against defender and disadvantage to
-        defender againt attacker. It's also possible to replace the attacker with another combatant
-        against the defender - allowing to aid/hinder others on the battlefield.
-
-        Stunt-modifers last a maximum of two turns and are not additive. Advantages and
-        disadvantages relative to the same target cancel each other out.
-
-        Args:
-            attacker (Object): The one attempting the stunt.
-            defender (Object): The one affected by the stunt.
-            attack_type (str): The ability tested to do the stunt.
-            defense_type (str): The ability used to defend against the stunt.
-            optimal_distance (int): At which distance the stunt works normally.
-            suboptimal_distance (int): At this distance, the stunt is performed at disadvantage.
-            advantage (bool): If False, try to apply disadvantage to defender
-                rather than advantage to attacker.
-            beneficiary (bool): If stunt succeeds, it may benefit another
-                combatant than the `attacker` doing the stunt. This allows for helping
-                allies.
-
-        """
-        # check if stunt-attacker is at optimal distance
-        distance = self.distance_matrix[attacker][defender]
-        disadvantage = False
-        if suboptimal_distance == distance:
-            # stunts need to be within range
-            disadvantage = True
-        elif self._get_optimal_distance(attacker) != distance:
-            # if we are neither at optimal nor suboptimal distance, we can't do the stunt
-            # from here.
-            raise combatfailure(f"you can't perform this stunt "
-                                f"from {range_names[distance]} distance (must be "
-                                f"{range_names[suboptimal_distance]} or, even better, "
-                                f"{range_names[optimal_distance]}).")
-        # quality doesn't matter for stunts, they are either successful or not
-        is_success, _  = rules.EvAdventureRollEngine.opposed_saving_throw(
-            attacker, defender,
-            attack_type=attack_type,
-            defense_type=defense_type,
-            advantage=False, disadvantage=disadvantage,
-        )
-        if is_success:
-            beneficiary = beneficiary if beneficiary else attacker
-            if advantage:
-                self.gain_advantage(beneficiary, defender)
-            else:
-                self.gain_disadvantage(defender, beneficiary)
-
-        return is_success
-
-    def action_attack(self, attacker, defender, *args, **kwargs):
-        """
-        Make an attack against a defender. This takes into account distance. The
-        attack type/defense depends on the weapon/spell/whatever used.
-
-        """
-        # check if attacker is at optimal distance
-        distance = self.distance_matrix[attacker][defender]
-
-        # figure out advantage (gained by previous stunts)
-        advantage = bool(self.advantage_matrix[attacker].pop(defender, False))
-
-        # figure out disadvantage (by distance or by previous action)
-        disadvantage = bool(self.disadvantage_matrix[attacker].pop(defender, False))
-        if self._get_suboptimal_distance(attacker) == distance:
-            # fighting at the wrong range is not good
-            disadvantage = True
-        elif self._get_optimal_distance(attacker) != distance:
-            # if we are neither at optimal nor suboptimal distance, we can't
-            # attack from this range
-            raise CombatFailure(f"You can't attack with {attacker.weapon.key} "
-                                f"from {RANGE_NAMES[distance]} distance.")
-
-        is_hit, quality = rules.EvAdventureRollEngine.opposed_saving_throw(
-            attacker, defender,
-            attack_type=attacker.weapon.attack_type,
-            defense_type=attacker.weapon.defense_type,
-            advantage=advantage, disadvantage=disadvantage
-        )
-        if is_hit:
-            self.resolve_damage(attacker, defender, critical=quality == "critical success")
-
-        return is_hit
-
-    def action_heal(self, combatant, target, max_distance=1, healing_roll="1d6", *args, **kwargs):
-        """
-        Heal a target. Target can be the combatant itself.
-
-        Args:
-            combatant (Object): The one performing the heal.
-            target (Object): The one to be healed (can be the same as combatant).
-            max_distance (int): Distances *up to* this range allow for healing.
-            healing_roll (str): The die roll for how many HP to heal.
-
-        Raises:
-            CombatFailure: If too far away to heal target.
-
-        """
-        if target is not combatant:
-            distance = self.distance_matrix[attacker][defender]
-            if distance > max_distance:
-                raise CombatFailure(f"Too far away to heal {target.key}.")
-
-        target.heal(rules.EvAdventureRollEngine.roll(healing_roll), healer=combatant)
-
-    def action_approach(self, combatant, other_combatant, change, *args, **kwargs):
-        """
-        Approach target. Closest is 0. This can be combined with another action.
-
-        """
-        self.move_relative_to(combatant, other_combatant, -abs(change), min_dist=MIN_RANGE)
-
-    def action_withdraw(self, combatant, other_combatant, change):
-        """
-        Withdraw from target. Most distant is range 3 - further and you'll be disengaging.
-        This can be combined with another action.
-
-        """
-        self.move_relative_to(combatant, other_combatant, abs(change), max_dist=3)
-
-    def action_flee(self, combatant, *args, **kwargs):
-        """
-        Fleeing/disengaging from combat means moving towards 'disengaging' range from
-        everyone else and staying there for one turn.
-
-        """
-        for other_combatant in self.combatants:
-            self.move_relative_to(combatant, other_combatant, MAX_MOVE_RATE, max_dist=MAX_RANGE)
-
-    def action_chase(self, combatant, fleeing_target, *args, **kwargs):
-        """
-        Chasing is a way to counter a 'flee' action. It is a maximum movement towards the target
-        and will mean a DEX contest, if the fleeing target loses, they are moved back from
-        'disengaging' range and remain in combat at the new distance (likely 2 if max movement
-        is 2). Advantage/disadvantage are considered.
-
-        """
-        ability = "dexterity"
-
-        advantage = bool(self.advantage_matrix[attacker].pop(fleeing_target, False))
-        disadvantage = bool(self.disadvantage_matrix[attacker].pop(fleeing_target, False))
-
-        is_success, _ = rules.EvAdventureRollEngine.opposed_saving_throw(
-            combatant, fleeing_target,
-            attack_type=ability, defense_type=ability,
-            advantage=advantage, disadvantage=disadvantage
-        )
-
-        if is_success:
-            # managed to stop the target from fleeing/disengaging - move closer
-            if fleeing_target in self.disengaging_combatants:
-                self.disengaging_combatants.remove(fleeing_target)
-            self.approach(combatant, fleeing_target, change=MAX_MOVE_RATE)
-
-        return is_success
+        if not action:
+            action = CombatActionDoNothing
+        self.action_queue[combatant] = (action, args, kwargs)
 
 
 # combat menu
+
+combat_script = """
+
+
+
+
+"""
+
+
 
 def _register_action(caller, raw_string, **kwargs):
     """
