@@ -204,7 +204,7 @@ character_generation = {
         "student",
         "tracker",
     ],
-    "mifortuntes": [
+    "misfortune": [
         "abandoned",
         "addicted",
         "blackmailed",
@@ -238,15 +238,15 @@ character_generation = {
         ('20', "chain"),
     ],
     "helmets and shields": [
-        ('1-13', "no helmet"),
+        ('1-13', "no helmet or shield"),
         ('14-16', "helmet"),
         ('17-19', "shield"),
         ('20', "helmet and shield"),
     ],
     "starting weapon": [  # note: these are all d6 dmg weapons
-        ('1-7', "dagger",
-         '8-13', "club",
-         '14-20', "staff"),
+        ('1-7', "dagger"),
+         ('8-13', "club"),
+         ('14-20', "staff"),
     ],
     "dungeoning gear": [
         "rope, 50ft",

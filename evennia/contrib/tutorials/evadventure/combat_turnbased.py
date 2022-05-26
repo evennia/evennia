@@ -27,8 +27,6 @@ from evennia.utils import evmenu, evtable
 from .enums import Ability
 from . import rules
 
-STUNT_DURATION = 2
-
 
 class CombatFailure(RuntimeError):
     """
@@ -152,7 +150,8 @@ class CombatActionStunt(CombatAction):
 
 class CombatActionAttack(CombatAction):
     """
-    A regular attack, using a wielded melee weapon.
+    A regular attack, using a wielded weapon. Depending on weapon type, this will be a ranged or
+    melee attack.
 
     """
     key = "attack"
@@ -261,14 +260,26 @@ class CombatActionChase(CombatAction):
                 pass  # they are getting away!
 
 
-
 class EvAdventureCombatHandler(DefaultScript):
     """
     This script is created when combat is initialized and stores a queue
     of all active participants. It's also possible to join (or leave) the fray later.
 
     """
+    # these will all be checked if they are available at a given time.
+    all_action_classes = [
+        CombatActionDoNothing,
+        CombatActionChase,
+        CombatActionUseItem,
+        CombatActionStunt,
+        CombatActionAttack
+    ]
+
+    # attributes
+
+    # stores all combatants active in the combat
     combatants = AttributeProperty(list())
+    combatant_actions = AttributeProperty(defaultdict(dict))
     action_queue = AttributeProperty(dict())
 
     turn_stats = AttributeProperty(defaultdict(list))
@@ -281,14 +292,9 @@ class EvAdventureCombatHandler(DefaultScript):
 
     fleeing_combatants = AttributeProperty(default=list())
 
+
     # actions that will be performed before a normal action
     move_actions = ("approach", "withdraw")
-
-    def at_init(self):
-        self.ndb.actions = {
-            "do_nothing": CombatActionDoNothing,
-        }
-
 
     def _update_turn_stats(self, combatant, message):
         """
@@ -312,12 +318,16 @@ class EvAdventureCombatHandler(DefaultScript):
 
         1. Do all regular actions
         2. Remove combatants that disengaged successfully
-        3. Timeout advantages/disadvantages set for longer than STUNT_DURATION
+        3. Timeout advantages/disadvantages
 
         """
         # do all actions
         for combatant in self.combatants:
-            action, args, kwargs = self.action_queue[combatant]
+            # read the current action type selected by the player
+            action_class, args, kwargs = self.action_queue[combatant]
+            # get the already initialized CombatAction instance (where state can be tracked)
+            action = self.combatant_actions[combatant][action_class]
+            # perform the action on the CombatAction instance
             action.use(combatant, *args, **kwargs)
 
         # handle disengaging combatants
@@ -364,10 +374,13 @@ class EvAdventureCombatHandler(DefaultScript):
     def add_combatant(self, combatant):
         if combatant not in self.combatants:
             self.combatants.append(combatant)
+            for action_class in self.all_action_classes:
+                self.combatant_actions[combatant][action_class] = action_class(self, combatant)
 
     def remove_combatant(self, combatant):
         if combatant in self.combatants:
             self.combatants.remove(combatant)
+            self.combatant_actions[combatant][action_class].pop(None)
 
     def get_combat_summary(self, combatant):
         """
@@ -489,7 +502,7 @@ class EvAdventureCombatHandler(DefaultScript):
 
         Args:
             combatant (Object): The one performing the action.
-            action (str): An available action, will be prepended with `action_` and
+            action (CombatAction): An available action, will be prepended with `action_` and
                 used to call the relevant handler on this script.
 
         """
