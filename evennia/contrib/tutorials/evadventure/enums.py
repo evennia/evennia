@@ -42,6 +42,9 @@ class Ability(Enum):
     LEVEL = "level"
     XP = "xp"
 
+    CRITICAL_FAILURE = "critical_failure"
+    CRITICAL_SUCCESS = "critical_success"
+
 class WieldLocation(Enum):
     """
     Wield (or wear) locations.
