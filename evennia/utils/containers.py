@@ -167,7 +167,6 @@ class GlobalScriptContainer(Container):
 
             # store a hash representation of the setup
             script.attributes.add("_global_script_settings", compare_hash, category="settings_hash")
-        script.start()
 
         return script
 
@@ -183,9 +182,12 @@ class GlobalScriptContainer(Container):
         # populate self.typeclass_storage
         self.load_data()
 
-        # start registered scripts
+        # make sure settings-defined scripts are loaded
         for key in self.loaded_data:
             self._load_script(key)
+        # start all global scripts
+        for script in self._get_scripts():
+            script.start()
 
     def load_data(self):
         """
