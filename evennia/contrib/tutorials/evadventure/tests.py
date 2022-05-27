@@ -32,6 +32,7 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
     pass
 
 
+
 class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
     """
     Test the turn-based combat-handler implementation.

@@ -25,6 +25,7 @@ class EquipmentHandler:
     The inventory also doubles as a measure of negative effects. Getting soaked in mud
     or slime could gunk up some of your inventory slots and make the items there unusuable
     until you clean them.
+
     """
     save_attribute = "inventory_slots"
 
