@@ -2732,7 +2732,7 @@ class CmdExamine(ObjManipCommand):
             return
 
         if ndb_attr and ndb_attr[0]:
-            return "\n  " + "  \n".join(
+            return "\n  " + "\n  ".join(
                 sorted(self.format_single_attribute(attr) for attr in ndb_attr)
             )
 
