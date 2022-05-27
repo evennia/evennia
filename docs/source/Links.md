@@ -129,10 +129,11 @@ Contains a very useful list of things to think about when starting your new MUD.
   Essential reading for the design of any persistent game
   world, written by the co-creator of the original game *MUD*. Published in 2003 but it's still as
   relevant now as when it came out. Covers everything you need to know and then some.
-- Zed A. Shaw *Learn Python the Hard way* ([homepage](https://learnpythonthehardway.org/)) - Despite
-  the imposing name this book is for the absolute Python/programming beginner. One learns the language
-  by gradually creating a small text game! It has been used by multiple users before moving on to
-  Evennia. *Update: This used to be free to read online, this is no longer the case.*
+
+  When the rights to Designing Virtual Worlds returned to him, Richard Bartle
+  made the PDF of his Designing Virtual Worlds freely available through his own
+  website ([Designing Virtual Worlds](https://mud.co.uk/dvw/)). A direct link to
+  the PDF can be found [here](https://mud.co.uk/richard/DesigningVirtualWorlds.pdf).
 - David M. Beazley *Python Essential Reference (4th ed)*
   ([amazon page](https://www.amazon.com/Python-Essential-Reference-David-Beazley/dp/0672329786/)) -
   Our recommended book on Python; it not only efficiently summarizes the language but is also
