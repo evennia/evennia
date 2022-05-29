@@ -21,13 +21,16 @@ class EvAdventureMixin:
         self.character = create.create_object(EvAdventureCharacter, key="testchar")
         self.helmet = create.create_object(
             EvAdventureObject, key="helmet",
-            attributes=[("inventory_use_slot", enums.WieldLocation.HEAD)])
+            attributes=[("inventory_use_slot", enums.WieldLocation.HEAD),
+                        ("armor", 1)])
         self.shield = create.create_object(
             EvAdventureObject, key="shield",
-            attributes=[("inventory_use_slot", enums.WieldLocation.SHIELD_HAND)])
+            attributes=[("inventory_use_slot", enums.WieldLocation.SHIELD_HAND),
+                        ("armor", 1)])
         self.armor = create.create_object(
             EvAdventureObject, key="armor",
-            attributes=[("inventory_use_slot", enums.WieldLocation.BODY)])
+            attributes=[("inventory_use_slot", enums.WieldLocation.BODY),
+                        ("armor", 11)])
         self.weapon = create.create_object(
             EvAdventureObject, key="weapon",
             attributes=[("inventory_use_slot", enums.WieldLocation.WEAPON_HAND)])
@@ -113,6 +116,7 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
         self.character.equipment.use(self.weapon)
         self.assertEqual(
             self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], self.weapon)
+
         # the two-hander removes the two weapons
         self.character.equipment.use(self.big_weapon)
         self.assertEqual(
@@ -158,6 +162,19 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
             self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
         self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK], [])
 
+    def test_properties(self):
+        self.character.equipment.use(self.armor)
+        self.assertEqual(self.character.equipment.armor, 11)
+        self.character.equipment.use(self.shield)
+        self.assertEqual(self.character.equipment.armor, 12)
+        self.character.equipment.use(self.helmet)
+        self.assertEqual(self.character.equipment.armor, 13)
+
+        self.character.equipment.use(self.weapon)
+        self.assertEqual(self.character.equipment.weapon, self.weapon)
+        self.character.equipment.use(self.big_weapon)
+        self.assertEqual(self.character.equipment.weapon, self.big_weapon)
+
 
 class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
     """
@@ -166,8 +183,10 @@ class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
     """
     def setUp(self):
         super().setUp()
-        self.combathandler = combat_turnbased.EvAdventureCombatHandler()
+        self.combathandler = combat_turnbased.EvAdventureCombatHandler.objects.create()
+        self.target = create.create_object(EvAdventureCharacter, key="testchar2")
         self.combathandler.add_combatant(self.character)
+        self.combathandler.add_combatant(self.target)
 
     def test_remove_combatant(self):
         self.combathandler.remove_combatant(self.character)
