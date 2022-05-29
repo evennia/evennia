@@ -7,7 +7,7 @@ from parameterized import parameterized
 from unittest.mock import patch, MagicMock, call
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest
-from .characters import EvAdventureCharacter
+from .characters import EvAdventureCharacter, EquipmentHandler, EquipmentError
 from .objects import EvAdventureObject
 from . import enums
 from . import combat_turnbased
@@ -19,18 +19,144 @@ class EvAdventureMixin:
     def setUp(self):
         super().setUp()
         self.character = create.create_object(EvAdventureCharacter, key="testchar")
-        self.helmet = create.create_object(EvAdventureObject, key="helmet",
-                                          attributes=[("wear_slot", "helmet")])
-        self.armor = create.create_object(EvAdventureObject, key="armor",
-                                         attributes=[("wear_slot", "armor")])
-        self.weapon = create.create_object(EvAdventureObject, key="weapon",
-                                          attributes=[("wield_slot", "weapon")])
-        self.shield = create.create_object(EvAdventureObject, key="shield",
-                                          attributes=[("wield_slot", "shield")])
+        self.helmet = create.create_object(
+            EvAdventureObject, key="helmet",
+            attributes=[("inventory_use_slot", enums.WieldLocation.HEAD)])
+        self.shield = create.create_object(
+            EvAdventureObject, key="shield",
+            attributes=[("inventory_use_slot", enums.WieldLocation.SHIELD_HAND)])
+        self.armor = create.create_object(
+            EvAdventureObject, key="armor",
+            attributes=[("inventory_use_slot", enums.WieldLocation.BODY)])
+        self.weapon = create.create_object(
+            EvAdventureObject, key="weapon",
+            attributes=[("inventory_use_slot", enums.WieldLocation.WEAPON_HAND)])
+        self.big_weapon = create.create_object(
+            EvAdventureObject, key="big_weapon",
+            attributes=[("inventory_use_slot", enums.WieldLocation.TWO_HANDS)])
+        self.item = create.create_object(EvAdventureObject, key="backpack item")
 
 class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
-    pass
+    """
+    Test the equipment mechanism.
 
+    """
+    def _get_empty_slots(self):
+        return {
+            enums.WieldLocation.BACKPACK: [],
+            enums.WieldLocation.WEAPON_HAND: None,
+            enums.WieldLocation.SHIELD_HAND: None,
+            enums.WieldLocation.TWO_HANDS: None,
+            enums.WieldLocation.BODY: None,
+            enums.WieldLocation.HEAD: None,
+        }
+
+    def test_equipmenthandler_max_slots(self):
+        self.assertEqual(self.character.equipment.max_slots, 11)
+
+    @parameterized.expand([
+        # size, pass_validation?
+        (1, True),
+        (2, True),
+        (11, True),
+        (12, False),
+        (20, False),
+        (25, False)
+    ])
+    def test_validate_slot_usage(self, size, is_ok):
+        obj = MagicMock()
+        obj.size = size
+
+        if is_ok:
+            self.assertTrue(self.character.equipment.validate_slot_usage(obj))
+        else:
+            with self.assertRaises(EquipmentError):
+                self.character.equipment.validate_slot_usage(obj)
+
+    @parameterized.expand([
+        # item, where
+        ("helmet", enums.WieldLocation.HEAD),
+        ("shield", enums.WieldLocation.SHIELD_HAND),
+        ("armor", enums.WieldLocation.BODY),
+        ("weapon", enums.WieldLocation.WEAPON_HAND),
+        ("big_weapon", enums.WieldLocation.TWO_HANDS),
+        ("item", enums.WieldLocation.BACKPACK),
+    ])
+    def test_use(self, itemname, where):
+        self.assertEqual(self.character.equipment.slots, self._get_empty_slots())
+
+        obj = getattr(self, itemname)
+        self.character.equipment.use(obj)
+        # check that item ended up in the right place
+        if where is enums.WieldLocation.BACKPACK:
+            self.assertTrue(obj in self.character.equipment.slots[where])
+        else:
+            self.assertEqual(self.character.equipment.slots[where], obj)
+
+    def test_store(self):
+        self.character.equipment.store(self.weapon)
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], None)
+        self.assertTrue(
+            self.weapon in self.character.equipment.slots[enums.WieldLocation.BACKPACK])
+
+    def test_two_handed_exclusive(self):
+        """Two-handed weapons can't be used together with weapon+shield"""
+        self.character.equipment.use(self.big_weapon)
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], self.big_weapon)
+        # equipping sword or shield removes two-hander
+        self.character.equipment.use(self.shield)
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield)
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], None)
+        self.character.equipment.use(self.weapon)
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], self.weapon)
+        # the two-hander removes the two weapons
+        self.character.equipment.use(self.big_weapon)
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], self.big_weapon)
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], None)
+
+    def test_remove__with_obj(self):
+        self.character.equipment.use(self.shield)
+        self.character.equipment.use(self.item)
+        self.character.equipment.store(self.weapon)
+
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield)
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK],
+                         [self.item, self.weapon])
+
+        self.assertEqual(self.character.equipment.remove(self.shield), [self.shield])
+        self.assertEqual(self.character.equipment.remove(self.item), [self.item])
+
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK],
+                         [self.weapon])
+
+    def test_remove__with_slot(self):
+        self.character.equipment.use(self.shield)
+        self.character.equipment.use(self.item)
+        self.character.equipment.store(self.helmet)
+
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield)
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK],
+                         [self.item, self.helmet])
+
+        self.assertEqual(self.character.equipment.remove(enums.WieldLocation.SHIELD_HAND),
+                         [self.shield])
+        self.assertEqual(self.character.equipment.remove(enums.WieldLocation.BACKPACK),
+                         [self.item, self.helmet])
+
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK], [])
 
 
 class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
