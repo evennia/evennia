@@ -74,7 +74,7 @@ class EquipmentHandler:
         Save slot to storage.
 
         """
-        self.obj.attributes.add(self.save_attribute, category="inventory")
+        self.obj.attributes.add(self.save_attribute, self.slots, category="inventory")
 
     @property
     def max_slots(self):
@@ -83,7 +83,7 @@ class EquipmentHandler:
         the constitution defense.
 
         """
-        return getattr(self.obj, Ability.CON_DEFENSE.value, 11)
+        return getattr(self.obj, Ability.CON.value, 1) + 10
 
     def validate_slot_usage(self, obj):
         """
@@ -101,9 +101,10 @@ class EquipmentHandler:
         current_slot_usage = self._count_slots()
         if current_slot_usage + size > max_slots:
             slots_left = max_slots - current_slot_usage
-            raise EquipmentError(f"Equipment full ({int2str(slots_left)} slots "
-                                 f"remaining, {obj.key} needs {int2str(size)} "
+            raise EquipmentError(f"Equipment full ($int2str({slots_left}) slots "
+                                 f"remaining, {obj.key} needs $int2str({size}) "
                                  f"$pluralize(slot, {size})).")
+        return True
 
     @property
     def armor(self):
@@ -213,21 +214,26 @@ class EquipmentHandler:
         slots = self.slots
         ret = []
         if isinstance(obj_or_slot, WieldLocation):
-            ret = slots[obj_or_slot]
-            slots[obj_or_slot] = [] if obj_or_slot is WieldLocation.BACKPACK else None
-        elif obj_or_slot in self.obj.contents:
-            # object is in inventory, find out which slot and empty it
-            for slot, objslot in slots:
-                if slot is WieldLocation.BACKPACK:
-                    try:
-                        ret = objslot.remove(obj_or_slot)
-                        break
-                    except ValueError:
-                        pass
-                elif objslot is obj_or_slot:
-                    ret = objslot
+            if obj_or_slot is WieldLocation.BACKPACK:
+                # empty entire backpack
+                ret.extend(slots[obj_or_slot])
+                slots[obj_or_slot] = []
+            else:
+                ret.append(slots[obj_or_slot])
+                slots[obj_or_slot] = None
+        elif obj_or_slot in self.slots.values():
+            # obj in use/wear slot
+            for slot, objslot in slots.items():
+                if objslot is obj_or_slot:
                     slots[slot] = None
-                    break
+                    ret.append(objslot)
+        elif obj_or_slot in slots[WieldLocation.BACKPACK]:
+            # obj in backpack slot
+            try:
+                slots[WieldLocation.BACKPACK].remove(obj_or_slot)
+                ret.append(obj_or_slot)
+            except ValueError:
+                pass
         if ret:
             self._save()
         return ret
