@@ -602,7 +602,9 @@ def to_pickle(data):
 
     def process_item(item):
         """Recursive processor and identification of data"""
+
         dtype = type(item)
+
         if dtype in (str, int, float, bool, bytes, SafeString):
             return item
         elif dtype == tuple:
@@ -620,7 +622,20 @@ def to_pickle(data):
         elif dtype in (deque, _SaverDeque):
             return deque(process_item(val) for val in item)
 
-        elif hasattr(item, "__iter__"):
+        # not one of the base types
+        if hasattr(item, "__serialize_dbobjs__"):
+            # Allows custom serialization of any dbobjects embedded in
+            # the item that Evennia will otherwise not found (these would
+            # otherwise lead to an error). Use the dbserialize helper from
+            # this method.
+            try:
+                item.__serialize_dbobjs__()
+            except TypeError:
+                # we catch typerrors so we can handle both classes (requiring
+                # classmethods) and instances
+                pass
+
+        if hasattr(item, "__iter__"):
             # we try to conserve the iterable class, if not convert to list
             try:
                 return item.__class__([process_item(val) for val in item])
@@ -692,6 +707,18 @@ def from_pickle(data, db_obj=None):
                 return item.__class__(process_item(val) for val in item)
             except (AttributeError, TypeError):
                 return [process_item(val) for val in item]
+
+        if hasattr(item, "__deserialize_dbobjs__"):
+            # this allows the object to custom-deserialize any embedded dbobjs
+            # that we previously serialized with __serialize_dbobjs__.
+            # use the dbunserialize helper in this module.
+            try:
+                item.__deserialize_dbobjs__()
+            except TypeError:
+                # handle recoveries both of classes (requiring classmethods
+                # or instances
+                pass
+
         return item
 
     def process_tree(item, parent):
