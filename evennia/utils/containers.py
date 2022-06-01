@@ -12,6 +12,7 @@ evennia.OPTION_CLASSES
 
 
 from pickle import dumps
+from django.db.utils import OperationalError, ProgrammingError
 from django.conf import settings
 from evennia.utils.utils import class_from_module, callables_from_module
 from evennia.utils import logger
@@ -186,8 +187,12 @@ class GlobalScriptContainer(Container):
         for key in self.loaded_data:
             self._load_script(key)
         # start all global scripts
-        for script in self._get_scripts():
-            script.start()
+        try:
+            for script in self._get_scripts():
+                script.start()
+        except (OperationalError, ProgrammingError):
+            # this can happen if db is not loaded yet (such as when building docs)
+            pass
 
     def load_data(self):
         """
