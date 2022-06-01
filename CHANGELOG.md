@@ -162,6 +162,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   way to override features on all ObjectDB-inheriting objects easily.
 - Add `TagProperty`, `AliasProperty` and `PermissionProperty` to assign these
   data in a similar way to django fields.
+- The db pickle-serializer now checks for methods `__serialize_dbobjs__` and `__deserialize_dbobjs__`
+  to allow custom packing/unpacking of nested dbobjs, to allow storing in Attribute.
 
 
 ## Evennia 0.9.5
