@@ -23,7 +23,7 @@ from collections import defaultdict
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.utils import make_iter
-from evennia.utils import evmenu, evtable
+from evennia.utils import evmenu, evtable, dbserialize
 from .enums import Ability
 from . import rules
 
@@ -59,6 +59,14 @@ class CombatAction:
         else:
             # send only to the combatant.
             self.combatant.msg(message)
+
+    def __serialize_dbobjs__(self):
+        self.combathandler = dbserialize.dbserialize(self.combathandler)
+        self.combatant = dbserialize.dbserialize(self.combatant)
+
+    def __deserialize_dbobjs__(self):
+        self.combathandler = dbserialize.dbunserialize(self.combathandler)
+        self.combatant = dbserialize.dbunserialize(self.combatant)
 
     def get_help(self, *args, **kwargs):
         return self.help_text
@@ -380,7 +388,7 @@ class EvAdventureCombatHandler(DefaultScript):
     def remove_combatant(self, combatant):
         if combatant in self.combatants:
             self.combatants.remove(combatant)
-            self.combatant_actions[combatant][action_class].pop(None)
+            self.combatant_actions.pop(combatant, None)
 
     def get_combat_summary(self, combatant):
         """
