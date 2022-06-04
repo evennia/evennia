@@ -164,6 +164,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   data in a similar way to django fields.
 - The db pickle-serializer now checks for methods `__serialize_dbobjs__` and `__deserialize_dbobjs__`
   to allow custom packing/unpacking of nested dbobjs, to allow storing in Attribute.
+- Optimizations to rpsystem contrib performance. Breaking change: `.get_sdesc()` will
+  now return `None` instead of `.db.desc` if no sdesc is set; fallback in hook (inspectorCaracal)
 
 
 ## Evennia 0.9.5
