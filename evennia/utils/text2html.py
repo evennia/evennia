@@ -38,7 +38,7 @@ class TextToHTMLparser(object):
         ANSI_INV_BLINK,
         ANSI_INV_BLINK_HILITE,
     ]
-    
+
     ansi_color_codes = [
         # Foreground colors
         ANSI_BLACK,
@@ -50,8 +50,8 @@ class TextToHTMLparser(object):
         ANSI_CYAN,
         ANSI_WHITE,
     ]
-    
-    xterm_fg_codes = [ XTERM256_FG.format(i + 16) for i in range(240) ]
+
+    xterm_fg_codes = [XTERM256_FG.format(i + 16) for i in range(240)]
 
     ansi_bg_codes = [
         # Background colors
@@ -64,14 +64,24 @@ class TextToHTMLparser(object):
         ANSI_BACK_CYAN,
         ANSI_BACK_WHITE,
     ]
-    
-    xterm_bg_codes = [ XTERM256_BG.format(i + 16) for i in range(240) ]
-    
-    re_style = re.compile(r"({})".format('|'.join(style_codes + ansi_color_codes + xterm_fg_codes + ansi_bg_codes + xterm_bg_codes).replace("[",r"\[")))
 
-    colorlist = [ ANSI_UNHILITE + code for code in ansi_color_codes ] + [ ANSI_HILITE + code for code in ansi_color_codes ] + xterm_fg_codes
+    xterm_bg_codes = [XTERM256_BG.format(i + 16) for i in range(240)]
 
-    bglist = ansi_bg_codes + [ ANSI_HILITE + code for code in ansi_bg_codes ] + xterm_bg_codes
+    re_style = re.compile(
+        r"({})".format(
+            "|".join(
+                style_codes + ansi_color_codes + xterm_fg_codes + ansi_bg_codes + xterm_bg_codes
+            ).replace("[", r"\[")
+        )
+    )
+
+    colorlist = (
+        [ANSI_UNHILITE + code for code in ansi_color_codes]
+        + [ANSI_HILITE + code for code in ansi_color_codes]
+        + xterm_fg_codes
+    )
+
+    bglist = ansi_bg_codes + [ANSI_HILITE + code for code in ansi_bg_codes] + xterm_bg_codes
 
     re_string = re.compile(
         r"(?P<htmlchars>[<&>])|(?P<tab>[\t]+)|(?P<lineend>\r\n|\r|\n)",
@@ -175,7 +185,7 @@ class TextToHTMLparser(object):
             url=url, text=text
         )
         return val
-  
+
     def sub_text(self, match):
         """
         Helper method to be passed to re.sub,
@@ -197,15 +207,15 @@ class TextToHTMLparser(object):
             text = cdict["tab"].replace("\t", " " * (self.tabstop))
             return text
         return None
-    
+
     def format_styles(self, text):
         """
         Takes a string with parsed ANSI codes and replaces them with
         HTML spans and CSS classes.
-        
+
         Args:
             text (str): The string to process.
-          
+
         Returns:
             text (str): Processed text.
         """
@@ -221,7 +231,7 @@ class TextToHTMLparser(object):
         fg = ANSI_WHITE
         # default bg is black
         bg = ANSI_BACK_BLACK
-        
+
         for i, substr in enumerate(str_list):
             # reset all current styling
             if substr == ANSI_NORMAL and not clean:
@@ -258,13 +268,16 @@ class TextToHTMLparser(object):
                 if substr in (ANSI_HILITE, ANSI_UNHILITE, ANSI_INV_HILITE, ANSI_INV_BLINK_HILITE):
                     # set new hilight status
                     hilight = ANSI_UNHILITE if substr == ANSI_UNHILITE else ANSI_HILITE
-                
+
                 # inversion codes
                 if substr in (ANSI_INVERSE, ANSI_INV_HILITE, ANSI_INV_BLINK_HILITE):
                     inverse = True
-                
+
                 # blink codes
-                if substr in (ANSI_BLINK, ANSI_BLINK_HILITE, ANSI_INV_BLINK_HILITE) and "blink" not in classes:
+                if (
+                    substr in (ANSI_BLINK, ANSI_BLINK_HILITE, ANSI_INV_BLINK_HILITE)
+                    and "blink" not in classes
+                ):
                     classes.append("blink")
 
                 # underline
@@ -273,7 +286,7 @@ class TextToHTMLparser(object):
 
             else:
                 # normal text, add text back to list
-                if not str_list[i-1]:
+                if not str_list[i - 1]:
                     # prior entry was cleared, which means style change
                     # get indices for the fg and bg codes
                     bg_index = self.bglist.index(bg)
@@ -285,12 +298,12 @@ class TextToHTMLparser(object):
 
                     if inverse:
                         # inverse means swap fg and bg indices
-                        bg_class = "bgcolor-{}".format(str(color_index).rjust(3,"0"))
-                        color_class = "color-{}".format(str(bg_index).rjust(3,"0"))
+                        bg_class = "bgcolor-{}".format(str(color_index).rjust(3, "0"))
+                        color_class = "color-{}".format(str(bg_index).rjust(3, "0"))
                     else:
                         # use fg and bg indices for classes
-                        bg_class = "bgcolor-{}".format(str(bg_index).rjust(3,"0"))
-                        color_class = "color-{}".format(str(color_index).rjust(3,"0"))
+                        bg_class = "bgcolor-{}".format(str(bg_index).rjust(3, "0"))
+                        color_class = "color-{}".format(str(color_index).rjust(3, "0"))
 
                     # black bg is the default, don't explicitly style
                     if bg_class != "bgcolor-000":
@@ -302,10 +315,10 @@ class TextToHTMLparser(object):
                     prefix = '<span class="{}">'.format(" ".join(classes))
                     # close any prior span
                     if not clean:
-                        prefix = '</span>' + prefix
+                        prefix = "</span>" + prefix
                     # add span to output
-                    str_list[i-1] = prefix
-                
+                    str_list[i - 1] = prefix
+
                     # clean out color classes to easily update next time
                     classes = [cls for cls in classes if "color" not in cls]
                     # flag as currently being styled
@@ -316,7 +329,6 @@ class TextToHTMLparser(object):
             str_list.append("</span>")
         # recombine back into string
         return "".join(str_list)
-        
 
     def parse(self, text, strip_ansi=False):
         """
