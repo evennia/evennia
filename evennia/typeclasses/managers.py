@@ -286,7 +286,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         categories = make_iter(category) if category else []
         n_keys = len(keys)
         n_categories = len(categories)
-        unique_categories = sorted(set(categories))
+        unique_categories = set(categories)
         n_unique_categories = len(unique_categories)
 
         dbmodel = self.model.__dbclass__.__name__.lower()
