@@ -166,6 +166,12 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - New `at_pre_object_receive(obj, source_location)` method on Objects. Called on
   destination, mimicking behavior of `at_pre_move` hook - returning False will abort move.
 - New `at_pre_object_leave(obj, destination)` method on Objects. Called on
+- The db pickle-serializer now checks for methods `__serialize_dbobjs__` and `__deserialize_dbobjs__`
+  to allow custom packing/unpacking of nested dbobjs, to allow storing in Attribute.
+- Optimizations to rpsystem contrib performance. Breaking change: `.get_sdesc()` will
+  now return `None` instead of `.db.desc` if no sdesc is set; fallback in hook (inspectorCaracal)
+- Reworked text2html parser to avoid problems with stateful color tags (inspectorCaracal)
+- Simplified `EvMenu.options_formatter` hook to use `EvColumn` and f-strings (inspectorcaracal)
 
 
 ## Evennia 0.9.5
