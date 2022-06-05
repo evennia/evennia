@@ -27,6 +27,8 @@ from evennia.utils import evmenu, evtable, dbserialize
 from .enums import Ability
 from . import rules
 
+# for simplicity, we have a default duration for advantages/disadvantages
+
 
 class CombatFailure(RuntimeError):
     """
@@ -108,7 +110,6 @@ class CombatActionDoNothing(CombatAction):
     post_action_text = "{combatant} does nothing this turn."
 
 
-
 class CombatActionStunt(CombatAction):
     """
     Perform a stunt. A stunt grants an advantage to yours or another player for their next
@@ -126,9 +127,6 @@ class CombatActionStunt(CombatAction):
     give_disadvantage = False
     max_uses = 1
     priority = -1
-    # how many turns the stunt's effect apply (that is, how quickly it must be used before the
-    # advantage/disadvantage is lost).
-    duration = 5
     attack_type = Ability.DEX
     defense_type = Ability.DEX
     help_text = ("Perform a stunt against a target. This will give you or an ally advantage "
@@ -173,7 +171,7 @@ class CombatActionAttack(CombatAction):
         # figure out advantage (gained by previous stunts)
         advantage = bool(self.combathandler.advantage_matrix[attacker].pop(defender, False))
 
-        # figure out disadvantage (by distance or by previous action)
+        # figure out disadvantage (gained by enemy stunts/actions)
         disadvantage = bool(self.combathandler.disadvantage_matrix[attacker].pop(defender, False))
 
         is_hit, quality = rules.EvAdventureRollEngine.opposed_saving_throw(
@@ -274,6 +272,10 @@ class EvAdventureCombatHandler(DefaultScript):
     of all active participants. It's also possible to join (or leave) the fray later.
 
     """
+
+    # we use the same duration for all stunts
+    stunt_duration = 3
+
     # these will all be checked if they are available at a given time.
     all_action_classes = [
         CombatActionDoNothing,
@@ -287,7 +289,6 @@ class EvAdventureCombatHandler(DefaultScript):
 
     # stores all combatants active in the combat
     combatants = AttributeProperty(list())
-    combatant_actions = AttributeProperty(defaultdict(dict))
     action_queue = AttributeProperty(dict())
 
     turn_stats = AttributeProperty(defaultdict(list))
@@ -300,9 +301,19 @@ class EvAdventureCombatHandler(DefaultScript):
 
     fleeing_combatants = AttributeProperty(default=list())
 
+    # how often this script ticks - the length of each turn (in seconds)
+    interval = 60
 
-    # actions that will be performed before a normal action
-    move_actions = ("approach", "withdraw")
+    def at_repeat(self, **kwargs):
+        """
+        Called every self.interval seconds. The main tick of the script.
+
+        """
+        if self.turn == 0:
+            self._start_turn()
+        else:
+            self._end_turn()
+            self._start_turn()
 
     def _update_turn_stats(self, combatant, message):
         """
@@ -332,9 +343,8 @@ class EvAdventureCombatHandler(DefaultScript):
         # do all actions
         for combatant in self.combatants:
             # read the current action type selected by the player
-            action_class, args, kwargs = self.action_queue[combatant]
-            # get the already initialized CombatAction instance (where state can be tracked)
-            action = self.combatant_actions[combatant][action_class]
+            action, args, kwargs = self.action_queue.get(
+                combatant, (CombatActionDoNothing(self, combatant), (), {}))
             # perform the action on the CombatAction instance
             action.use(combatant, *args, **kwargs)
 
@@ -354,9 +364,10 @@ class EvAdventureCombatHandler(DefaultScript):
             self.msg(f"{combatant.key} disengaged and left combat.")
             self.remove_combatant(combatant)
 
-        # refresh stunt timeouts
-
-        oldest_stunt_age = self.turn - STUNT_DURATION
+        # refresh stunt timeouts (note - self.stunt_duration is the same for
+        # all stunts; # for more complex use we could store the action and let action have a
+        # 'duration' property to use instead.
+        oldest_stunt_age = self.turn - self.stunt_duration
 
         advantage_matrix = self.advantage_matrix
         disadvantage_matrix = self.disadvantage_matrix
@@ -382,13 +393,10 @@ class EvAdventureCombatHandler(DefaultScript):
     def add_combatant(self, combatant):
         if combatant not in self.combatants:
             self.combatants.append(combatant)
-            for action_class in self.all_action_classes:
-                self.combatant_actions[combatant][action_class] = action_class(self, combatant)
 
     def remove_combatant(self, combatant):
         if combatant in self.combatants:
             self.combatants.remove(combatant)
-            self.combatant_actions.pop(combatant, None)
 
     def get_combat_summary(self, combatant):
         """
@@ -504,19 +512,18 @@ class EvAdventureCombatHandler(DefaultScript):
             # defender still alive
             self.msg(defender)
 
-    def register_action(self, combatant, action=None, *args, **kwargs):
+    def register_action(self, action, combatant, *args, **kwargs):
         """
         Register an action by-name.
 
         Args:
             combatant (Object): The one performing the action.
-            action (CombatAction): An available action, will be prepended with `action_` and
-                used to call the relevant handler on this script.
+            action (CombatAction): An available action class to use.
 
         """
         if not action:
             action = CombatActionDoNothing
-        self.action_queue[combatant] = (action, args, kwargs)
+        self.action_queue[combatant] = (action(self, combatant), args, kwargs)
 
 
 # combat menu
