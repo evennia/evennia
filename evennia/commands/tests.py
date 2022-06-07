@@ -1199,3 +1199,21 @@ class TestCmdSetNesting(BaseEvenniaTest):
 
         cmd = self.char1.cmdset.cmdset_stack[-1].commands[0]
         self.assertEqual(cmd.obj, self.char1)
+
+
+class TestCmdSet(BaseEvenniaTest):
+    """
+    General tests for cmdsets
+    """
+
+    def test_cmdset_remove_by_key(self):
+        test_cmd_set = _CmdSetTest()
+        test_cmd_set.remove("another command")
+
+        self.assertNotIn(_CmdTest2, test_cmd_set.commands)
+
+    def test_cmdset_gets_by_key(self):
+        test_cmd_set = _CmdSetTest()
+        result = test_cmd_set.get("another command")
+
+        self.assertIsInstance(result, _CmdTest2)

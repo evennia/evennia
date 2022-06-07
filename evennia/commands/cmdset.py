@@ -211,6 +211,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         if key:
             self.key = key
         self.commands = []
+        self.commands_by_key = {}
         self.system_commands = []
         self.actual_mergetype = self.mergetype
         self.cmdsetobj = cmdsetobj
@@ -243,9 +244,13 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # we make copies, not refs by use of [:]
         cmdset_c.commands = cmdset_a.commands[:]
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
-            cmdset_c.commands.extend(cmdset_b.commands)
+            new_cmds = cmdset_b.commands
         else:
-            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in cmdset_a])
+            new_cmds = [cmd for cmd in cmdset_b if cmd not in cmdset_a]
+
+        cmdset_c.commands.extend(new_cmds)
+        cmdset_c.commands_by_key.update({cmd.key: cmd for cmd in new_cmds})
+
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -272,7 +277,10 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 cmdset_c.add(cmd)
                 cmdset_c.add(cmdset_b.get(cmd))
         else:
-            cmdset_c.commands = [cmd for cmd in cmdset_a if cmd in cmdset_b]
+            new_cmds = [cmd for cmd in cmdset_a if cmd in cmdset_b]
+            cmdset_c.commands = new_cmds
+            cmdset_c.commands_by_key = {cmd.key: cmd for cmd in new_cmds}
+
         return cmdset_c
 
     def _replace(self, cmdset_a, cmdset_b):
@@ -291,7 +299,10 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         cmdset_c = cmdset_a._duplicate()
-        cmdset_c.commands = cmdset_a.commands[:]
+        commands = cmdset_a.commands[:]
+        cmdset_c.commands = commands
+        cmdset_c.commands_by_key = {cmd.key: cmd for cmd in commands}
+
         return cmdset_c
 
     def _remove(self, cmdset_a, cmdset_b):
@@ -311,7 +322,10 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         """
 
         cmdset_c = cmdset_a._duplicate()
-        cmdset_c.commands = [cmd for cmd in cmdset_b if cmd not in cmdset_a]
+        new_cmds = [cmd for cmd in cmdset_b if cmd not in cmdset_a]
+        cmdset_c.commands = new_cmds
+        cmdset_c.commands_by_key = {cmd.key: cmd for cmd in new_cmds}
+
         return cmdset_c
 
     def _instantiate(self, cmd):
@@ -546,10 +560,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 commands[ic] = cmd  # replace
             except ValueError:
                 commands.append(cmd)
-            self.commands = commands
-            if not allow_duplicates:
-                # extra run to make sure to avoid doublets
-                self.commands = list(set(self.commands))
+
             # add system_command to separate list as well,
             # for quick look-up
             if cmd.key.startswith("__"):
@@ -558,6 +569,13 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                     system_commands[ic] = cmd  # replace
                 except ValueError:
                     system_commands.append(cmd)
+
+        self.commands = commands
+        if not allow_duplicates:
+            # extra run to make sure to avoid doublets
+            self.commands = list(set(self.commands))
+
+        self.commands_by_key = {cmd.key: cmd for cmd in self.commands}
 
     def remove(self, cmd):
         """
@@ -568,6 +586,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 or the key of such a command.
 
         """
+        if isinstance(cmd, str):
+            cmd = self.commands_by_key.get(cmd)
+
         cmd = self._instantiate(cmd)
         if cmd.key.startswith("__"):
             try:
@@ -578,6 +599,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 pass
         else:
             self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]
+            self.commands_by_key = {cmd.key: cmd for cmd in self.commands}
 
     def get(self, cmd):
         """
@@ -591,6 +613,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             cmd (Command): The first matching Command in the set.
 
         """
+        if isinstance(cmd, str):
+            cmd = self.commands_by_key.get(cmd)
+
         cmd = self._instantiate(cmd)
         for thiscmd in self.commands:
             if thiscmd == cmd:
@@ -649,7 +674,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                     unique[cmd.key] = cmd
             else:
                 unique[cmd.key] = cmd
+
         self.commands = list(unique.values())
+        self.commands_by_key = {cmd.key: cmd for cmd in self.commands}
 
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """
