@@ -76,6 +76,6 @@ Welcome!
 [coverlink]: https://coveralls.io/github/evennia/evennia?branch=master
 [introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
 [license]: https://github.com/evennia/evennia/wiki/Licensing
-[group]: https://groups.google.com/forum/#!forum/evennia
+[group]:  https://github.com/evennia/evennia/discussions
 [chat]: http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb
 [wikimudpage]: http://en.wikipedia.org/wiki/MUD
