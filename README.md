@@ -60,14 +60,14 @@ introduction][introduction] to read.
 
 To learn how to get your hands on the code base, the [Getting
 started][gettingstarted] page is the way to go. Otherwise you could
-browse the [Documentation][wiki] or why not come join the [Evennia
+browse the [Documentation][docs] or why not come join the [Evennia
 Community forum][group] or join us in our [development chat][chat].
 Welcome!
 
 
-[homepage]: http://www.evennia.com
+[homepage]: https://www.evennia.com
 [gettingstarted]: http://github.com/evennia/evennia/wiki/Getting-Started
-[wiki]: https://github.com/evennia/evennia/wiki
+[docs]: https://www.evennia.com/docs/latest/
 [screenshot]: https://user-images.githubusercontent.com/294267/30773728-ea45afb6-a076-11e7-8820-49be2168a6b8.png
 [logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
 [unittestciimg]: https://github.com/evennia/evennia/workflows/test-suite/badge.svg
@@ -77,5 +77,5 @@ Welcome!
 [introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
 [license]: https://github.com/evennia/evennia/wiki/Licensing
 [group]: https://groups.google.com/forum/#!forum/evennia
-[chat]: http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb
+[chat]: https://discord.gg/AJJpcRUhtF
 [wikimudpage]: http://en.wikipedia.org/wiki/MUD
