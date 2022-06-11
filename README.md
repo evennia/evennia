@@ -66,16 +66,16 @@ Welcome!
 
 
 [homepage]: https://www.evennia.com
-[gettingstarted]: http://github.com/evennia/evennia/wiki/Getting-Started
-[docs]: https://www.evennia.com/docs/latest/
+[gettingstarted]: https://www.evennia.com/docs/latest/Getting-Started.html
+[docs]: https://www.evennia.com/docs/latest
 [screenshot]: https://user-images.githubusercontent.com/294267/30773728-ea45afb6-a076-11e7-8820-49be2168a6b8.png
 [logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
 [unittestciimg]: https://github.com/evennia/evennia/workflows/test-suite/badge.svg
 [unittestcilink]: https://github.com/evennia/evennia/actions?query=workflow%3Atest-suite
 [coverimg]: https://coveralls.io/repos/github/evennia/evennia/badge.svg?branch=master
 [coverlink]: https://coveralls.io/github/evennia/evennia?branch=master
-[introduction]: https://github.com/evennia/evennia/wiki/Evennia-Introduction
-[license]: https://github.com/evennia/evennia/wiki/Licensing
-[group]: https://groups.google.com/forum/#!forum/evennia
+[introduction]: https://www.evennia.com/docs/latest/Evennia-Introduction.html
+[license]: https://www.evennia.com/docs/latest/Licensing.html
+[group]: https://github.com/evennia/evennia/discussions
 [chat]: https://discord.gg/AJJpcRUhtF
 [wikimudpage]: http://en.wikipedia.org/wiki/MUD
