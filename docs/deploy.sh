@@ -17,6 +17,7 @@ git checkout gh-pages
 # with the build/ directory available since this is not in git
 
 # remove all but the build dir
+# TODO don't delete old branches after 1.0 release; they will get harder and harder to rebuild
 ls -Q | grep -v build | xargs rm -Rf
 
 cp -Rf build/html/* .
