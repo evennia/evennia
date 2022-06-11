@@ -23,7 +23,7 @@ from collections import deque, OrderedDict, defaultdict
 from collections.abc import MutableSequence, MutableSet, MutableMapping
 
 try:
-    from pickle import dumps, loads
+    from pickle import dumps, loads, UnpicklingError
 except ImportError:
     from pickle import dumps, loads
 from django.core.exceptions import ObjectDoesNotExist
@@ -633,12 +633,12 @@ def to_pickle(data):
         # not one of the base types
         if hasattr(item, "__serialize_dbobjs__"):
             # Allows custom serialization of any dbobjects embedded in
-            # the item that Evennia will otherwise not found (these would
+            # the item that Evennia will otherwise not find (these would
             # otherwise lead to an error). Use the dbserialize helper from
             # this method.
             try:
                 item.__serialize_dbobjs__()
-            except TypeError:
+            except TypeError as err:
                 # we catch typerrors so we can handle both classes (requiring
                 # classmethods) and instances
                 pass
@@ -725,9 +725,13 @@ def from_pickle(data, db_obj=None):
             # use the dbunserialize helper in this module.
             try:
                 item.__deserialize_dbobjs__()
-            except TypeError:
+            except (TypeError, UnpicklingError):
                 # handle recoveries both of classes (requiring classmethods
-                # or instances
+                # or instances. Unpickling errors can happen when re-loading the
+                # data from cache (because the hidden entity was already
+                # deserialized and stored back on the object, unpickling it
+                # again fails). TODO: Maybe one could avoid this retry in a
+                # more graceful way?
                 pass
 
         return item
