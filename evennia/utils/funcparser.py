@@ -410,7 +410,7 @@ class FuncParser:
                     single_quoted = -1
                 elif single_quoted > 0:
                     prefix = infuncstr[0:single_quoted]
-                    infuncstr = prefix + infuncstr[single_quoted+1:]
+                    infuncstr = prefix + infuncstr[single_quoted + 1 :]
                     single_quoted = -1
                 else:
                     infuncstr += char
@@ -427,7 +427,7 @@ class FuncParser:
                     double_quoted = -1
                 elif double_quoted > 0:
                     prefix = infuncstr[0:double_quoted]
-                    infuncstr = prefix + infuncstr[double_quoted + 1:]
+                    infuncstr = prefix + infuncstr[double_quoted + 1 :]
                     double_quoted = -1
                 else:
                     infuncstr += char

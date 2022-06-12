@@ -56,7 +56,7 @@ class TestComponents(EvenniaTest):
     def test_character_can_register_runtime_component(self):
         rct = RuntimeComponentTestC.create(self.char1)
         self.char1.components.add(rct)
-        test_c = self.char1.components.get('test_c')
+        test_c = self.char1.components.get("test_c")
 
         assert test_c
         assert test_c.my_int == 6
@@ -110,7 +110,7 @@ class TestComponents(EvenniaTest):
         assert handler.get("test_c") is rct
 
     def test_can_access_component_regular_get(self):
-        assert self.char1.cmp.test_a is self.char1.components.get('test_a')
+        assert self.char1.cmp.test_a is self.char1.components.get("test_a")
 
     def test_returns_none_with_regular_get_when_no_attribute(self):
         assert self.char1.cmp.does_not_exist is None
@@ -127,7 +127,7 @@ class TestComponents(EvenniaTest):
     def test_host_has_added_component_tags(self):
         rct = RuntimeComponentTestC.create(self.char1)
         self.char1.components.add(rct)
-        test_c = self.char1.components.get('test_c')
+        test_c = self.char1.components.get("test_c")
 
         assert self.char1.tags.has(key="test_c", category="components")
         assert self.char1.tags.has(key="added_value", category="test_c::added_tag")
@@ -162,7 +162,7 @@ class TestComponents(EvenniaTest):
         assert not self.char1.tags.has(key="added_value", category="test_c::added_tag")
 
     def test_component_tags_only_hold_one_value_when_enforce_single(self):
-        test_b = self.char1.components.get('test_b')
+        test_b = self.char1.components.get("test_b")
         test_b.single_tag = "first_value"
         test_b.single_tag = "second value"
 
@@ -171,7 +171,7 @@ class TestComponents(EvenniaTest):
         assert not self.char1.tags.has(key="first_value", category="test_b::single_tag")
 
     def test_component_tags_default_value_is_overridden_when_enforce_single(self):
-        test_b = self.char1.components.get('test_b')
+        test_b = self.char1.components.get("test_b")
         test_b.default_single_tag = "second value"
 
         assert self.char1.tags.has(key="second value", category="test_b::default_single_tag")
@@ -179,12 +179,14 @@ class TestComponents(EvenniaTest):
         assert not self.char1.tags.has(key="first_value", category="test_b::default_single_tag")
 
     def test_component_tags_support_multiple_values_by_default(self):
-        test_b = self.char1.components.get('test_b')
+        test_b = self.char1.components.get("test_b")
         test_b.multiple_tags = "first value"
         test_b.multiple_tags = "second value"
         test_b.multiple_tags = "third value"
 
-        assert all(val in test_b.multiple_tags for val in ("first value", "second value", "third value"))
+        assert all(
+            val in test_b.multiple_tags for val in ("first value", "second value", "third value")
+        )
         assert self.char1.tags.has(key="first value", category="test_b::multiple_tags")
         assert self.char1.tags.has(key="second value", category="test_b::multiple_tags")
         assert self.char1.tags.has(key="third value", category="test_b::multiple_tags")
@@ -193,11 +195,11 @@ class TestComponents(EvenniaTest):
 class CharWithSignal(ComponentHolderMixin, DefaultCharacter):
     @signals.as_listener
     def my_signal(self):
-        setattr(self, 'my_signal_is_called', True)
+        setattr(self, "my_signal_is_called", True)
 
     @signals.as_listener
     def my_other_signal(self):
-        setattr(self, 'my_other_signal_is_called', True)
+        setattr(self, "my_other_signal_is_called", True)
 
     @signals.as_responder
     def my_response(self):
@@ -213,11 +215,11 @@ class ComponentWithSignal(Component):
 
     @signals.as_listener
     def my_signal(self):
-        setattr(self, 'my_signal_is_called', True)
+        setattr(self, "my_signal_is_called", True)
 
     @signals.as_listener
     def my_other_signal(self):
-        setattr(self, 'my_other_signal_is_called', True)
+        setattr(self, "my_other_signal_is_called", True)
 
     @signals.as_responder
     def my_response(self):
@@ -236,14 +238,15 @@ class TestComponentSignals(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.char1 = create.create_object(
-            CharWithSignal, key="Char",
+            CharWithSignal,
+            key="Char",
         )
 
     def test_host_can_register_as_listener(self):
         self.char1.signals.trigger("my_signal")
 
         assert self.char1.my_signal_is_called
-        assert not getattr(self.char1, 'my_other_signal_is_called', None)
+        assert not getattr(self.char1, "my_other_signal_is_called", None)
 
     def test_host_can_register_as_responder(self):
         responses = self.char1.signals.query("my_response")
@@ -258,7 +261,7 @@ class TestComponentSignals(BaseEvenniaTest):
 
         component = char.cmp.test_signal_a
         assert component.my_signal_is_called
-        assert not getattr(component, 'my_other_signal_is_called', None)
+        assert not getattr(component, "my_other_signal_is_called", None)
 
     def test_component_can_register_as_responder(self):
         char = self.char1

@@ -197,7 +197,6 @@ class TestServer(TestCase):
 
 
 class TestInitHooks(TestCase):
-
     def setUp(self):
 
         from evennia.utils import create

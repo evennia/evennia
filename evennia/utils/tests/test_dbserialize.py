@@ -119,14 +119,17 @@ class TestDbSerialize(TestCase):
 
 class _InvalidContainer:
     """Container not saveable in Attribute (if obj is dbobj, it 'hides' it)"""
+
     def __init__(self, obj):
         self.hidden_obj = obj
 
 
 class _ValidContainer(_InvalidContainer):
     """Container possible to save in Attribute (handles hidden dbobj explicitly)"""
+
     def __serialize_dbobjs__(self):
         self.hidden_obj = dbserialize.dbserialize(self.hidden_obj)
+
     def __deserialize_dbobjs__(self):
         self.hidden_obj = dbserialize.dbunserialize(self.hidden_obj)
 
@@ -136,6 +139,7 @@ class DbObjWrappers(TestCase):
     Test the `__serialize_dbobjs__` and `__deserialize_dbobjs__` methods.
 
     """
+
     def setUp(self):
         super().setUp()
         self.dbobj1 = DefaultObject(db_key="Tester1")
@@ -148,7 +152,7 @@ class DbObjWrappers(TestCase):
             self.dbobj1.db.testarg = _InvalidContainer(self.dbobj1)
 
     def test_consecutive_fetch(self):
-        con =_ValidContainer(self.dbobj2)
+        con = _ValidContainer(self.dbobj2)
         self.dbobj1.db.testarg = con
         attrobj = self.dbobj1.attributes.get("testarg", return_obj=True)
 
@@ -157,7 +161,7 @@ class DbObjWrappers(TestCase):
         self.assertEqual(attrobj.value.hidden_obj, self.dbobj2)
 
     def test_dbobj_hidden_obj__success(self):
-        con =_ValidContainer(self.dbobj2)
+        con = _ValidContainer(self.dbobj2)
         self.dbobj1.db.testarg = con
 
         # accessing the same data twice

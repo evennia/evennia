@@ -284,7 +284,7 @@ def parse_language(speaker, emote):
         # the key is simply the running match in the emote
         key = f"##{imatch}"
         # replace say with ref markers in emote
-        emote = "{start}{{{key}}}{end}".format( start=emote[:istart], key=key, end=emote[iend:] )
+        emote = "{start}{{{key}}}{end}".format(start=emote[:istart], key=key, end=emote[iend:])
         mapping[key] = (langname, saytext)
 
     if errors:
@@ -339,18 +339,18 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     """
     # build a list of candidates with all possible referrable names
     # include 'me' keyword for self-ref
-    candidate_map = [(sender, 'me')]
+    candidate_map = [(sender, "me")]
     for obj in candidates:
         # check if sender has any recogs for obj and add
         if hasattr(sender, "recog"):
             if recog := sender.recog.get(obj):
-              candidate_map.append((obj, recog))
+                candidate_map.append((obj, recog))
         # check if obj has an sdesc and add
         if hasattr(obj, "sdesc"):
             candidate_map.append((obj, obj.sdesc.get()))
         # if no sdesc, include key plus aliases instead
         else:
-            candidate_map.extend( [(obj, obj.key)] + [(obj, alias) for alias in obj.aliases.all()] )
+            candidate_map.extend([(obj, obj.key)] + [(obj, alias) for alias in obj.aliases.all()])
 
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
@@ -374,31 +374,40 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         match_index = marker_match.start()
         # split the emote string at the reference marker, to process everything after it
         head = string[:match_index]
-        tail = string[match_index+1:]
-        
+        tail = string[match_index + 1 :]
+
         if search_mode:
             # match the candidates against the whole search string after the marker
-            rquery = "".join([r"\b(" + re.escape(word.strip(punctuation)) + r").*" for word in iter(tail.split())])
-            matches = ((re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map)
+            rquery = "".join(
+                [
+                    r"\b(" + re.escape(word.strip(punctuation)) + r").*"
+                    for word in iter(tail.split())
+                ]
+            )
+            matches = (
+                (re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map
+            )
             # filter out any non-matching candidates
             bestmatches = [(obj, match.group()) for match, obj, text in matches if match]
 
         else:
-            # to find the longest match, we start from the marker and lengthen the 
+            # to find the longest match, we start from the marker and lengthen the
             # match query one word at a time.
             word_list = []
             bestmatches = []
             # preserve punctuation when splitting
-            tail = re.split('(\W)', tail)
+            tail = re.split("(\W)", tail)
             iend = 0
             for i, item in enumerate(tail):
                 # don't add non-word characters to the search query
                 if not item.isalpha():
-                  continue
+                    continue
                 word_list.append(item)
                 rquery = "".join([r"\b(" + re.escape(word) + r").*" for word in word_list])
                 # match candidates against the current set of words
-                matches = ((re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map)
+                matches = (
+                    (re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map
+                )
                 matches = [(obj, match.group()) for match, obj, text in matches if match]
                 if len(matches) == 0:
                     # no matches at this length, keep previous iteration as best
@@ -411,7 +420,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             # save search string
             matched_text = "".join(tail[1:iend])
             # recombine remainder of emote back into a string
-            tail = "".join(tail[iend+1:])
+            tail = "".join(tail[iend + 1 :])
 
         nmatches = len(bestmatches)
 
@@ -549,18 +558,18 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     if "anonymous_add" in kwargs:
         anonymous_add = kwargs.pop("anonymous_add")
     # make sure to catch all possible self-refs
-    self_refs = [f"{skey}{ref}" for ref in ('t','^','v','~','')]
+    self_refs = [f"{skey}{ref}" for ref in ("t", "^", "v", "~", "")]
     if anonymous_add and not any(1 for tag in obj_mapping if tag in self_refs):
         # no self-reference in the emote - add it
         if anonymous_add == "first":
             # add case flag for initial caps
-            skey += 't'
+            skey += "t"
             # don't put a space after the self-ref if it's a possessive emote
             femote = "{key}{emote}" if emote.startswith("'") else "{key} {emote}"
         else:
             # add it to the end
             femote = "{emote} [{key}]"
-        emote = femote.format( key="{{"+ skey +"}}", emote=emote )
+        emote = femote.format(key="{{" + skey + "}}", emote=emote)
         obj_mapping[skey] = sender
 
     # broadcast emote to everyone
@@ -663,7 +672,9 @@ class SdescHandler:
 
         if len(cleaned_sdesc) > max_length:
             raise SdescError(
-                "Short desc can max be {} chars long (was {} chars).".format(max_length, len(cleaned_sdesc))
+                "Short desc can max be {} chars long (was {} chars).".format(
+                    max_length, len(cleaned_sdesc)
+                )
             )
 
         # store to attributes
@@ -680,7 +691,6 @@ class SdescHandler:
 
         """
         return self.sdesc or self.obj.key
-
 
 
 class RecogHandler:
@@ -758,7 +768,9 @@ class RecogHandler:
 
         if len(cleaned_recog) > max_length:
             raise RecogError(
-                "Recog string cannot be longer than {} chars (was {} chars)".format(max_length, len(cleaned_recog))
+                "Recog string cannot be longer than {} chars (was {} chars)".format(
+                    max_length, len(cleaned_recog)
+                )
             )
 
         # mapping #dbref:obj
@@ -866,7 +878,7 @@ class CmdEmote(RPCommand):  # replaces the main emote
             emote = self.args
             targets = self.caller.location.contents
             if not emote.endswith((".", "?", "!", '"')):  # If emote is not punctuated or speech,
-                emote += "." # add a full-stop for good measure.
+                emote += "."  # add a full-stop for good measure.
             send_emote(self.caller, targets, emote, anonymous_add="first")
 
 
@@ -1132,7 +1144,11 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             if forget_mode:
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("You will now know them only as '{}'.".format( obj.get_display_name(caller, noid=True) ))
+                caller.msg(
+                    "You will now know them only as '{}'.".format(
+                        obj.get_display_name(caller, noid=True)
+                    )
+                )
             else:
                 # set recog
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
@@ -1216,9 +1232,10 @@ class ContribRPObject(DefaultObject):
     This class is meant as a mix-in or parent for objects in an
     rp-heavy game. It implements the base functionality for poses.
     """
+
     @lazy_property
     def sdesc(self):
-      return SdescHandler(self)
+        return SdescHandler(self)
 
     def at_object_creation(self):
         """
@@ -1409,18 +1426,17 @@ class ContribRPObject(DefaultObject):
     def get_posed_sdesc(self, sdesc, **kwargs):
         """
         Displays the object with its current pose string.
-        
+
         Returns:
             pose (str): A string containing the object's sdesc and
                 current or default pose.
         """
-        
+
         # get the current pose, or default if no pose is set
         pose = self.db.pose or self.db.pose_default
-        
+
         # return formatted string, or sdesc as fallback
         return f"{sdesc} {pose}" if pose else sdesc
-
 
     def get_display_name(self, looker, **kwargs):
         """
@@ -1448,8 +1464,8 @@ class ContribRPObject(DefaultObject):
                 is privileged to control said object.
 
         """
-        ref = kwargs.get("ref","~")
-    
+        ref = kwargs.get("ref", "~")
+
         if looker == self:
             # always show your own key
             sdesc = self.key
@@ -1460,13 +1476,12 @@ class ContribRPObject(DefaultObject):
             except AttributeError:
                 # use own sdesc as a fallback
                 sdesc = self.sdesc.get()
-        
-        # add dbref is looker has control access and `noid` is not set
-        if self.access(looker, access_type="control") and not kwargs.get("noid",False):
-            sdesc = f"{sdesc}(#{self.id})"
-        
-        return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
+        # add dbref is looker has control access and `noid` is not set
+        if self.access(looker, access_type="control") and not kwargs.get("noid", False):
+            sdesc = f"{sdesc}(#{self.id})"
+
+        return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
     def return_appearance(self, looker):
         """
@@ -1475,7 +1490,7 @@ class ContribRPObject(DefaultObject):
 
         Args:
             looker (Object): Object doing the looking.
-        
+
         Returns:
             string (str): A string containing the name, appearance and contents
                 of the object.
@@ -1553,11 +1568,11 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             characters stand out from other objects.
 
         """
-        ref = kwargs.get("ref","~")
-    
+        ref = kwargs.get("ref", "~")
+
         if looker == self:
             # process your key as recog since you recognize yourself
-            sdesc = self.process_recog(self.key,self)
+            sdesc = self.process_recog(self.key, self)
         else:
             try:
                 # get the sdesc looker should see, with formatting
@@ -1567,11 +1582,10 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
                 sdesc = self.sdesc.get()
 
         # add dbref is looker has control access and `noid` is not set
-        if self.access(looker, access_type="control") and not kwargs.get("noid",False):
+        if self.access(looker, access_type="control") and not kwargs.get("noid", False):
             sdesc = f"{sdesc}(#{self.id})"
 
         return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
-
 
     def at_object_creation(self):
         """
@@ -1630,7 +1644,6 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             sdesc = (self.process_recog if recog else self.process_sdesc)(sdesc, obj, **kwargs)
 
         return sdesc
-
 
     def process_sdesc(self, sdesc, obj, **kwargs):
         """
@@ -1713,7 +1726,4 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             the evennia.contrib.rpg.rplanguage module.
 
         """
-        return "{label}|w{text}|n".format(
-            label=f"|W({language})" if language else "",
-            text=text
-            )
+        return "{label}|w{text}|n".format(label=f"|W({language})" if language else "", text=text)

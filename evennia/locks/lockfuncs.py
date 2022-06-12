@@ -473,6 +473,7 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
     category = args[1] if len(args) > 1 else None
     return bool(accessing_obj.tags.get(tagkey, category=category))
 
+
 def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -489,12 +490,13 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
         session = accessed_obj.session
     except AttributeError:
         session = account.sessions.get()[0]  # note-this doesn't work well
-                                             # for high multisession mode. We may need
-                                             # to change to sessiondb to resolve this
+        # for high multisession mode. We may need
+        # to change to sessiondb to resolve this
     try:
         return not account.get_puppet(session)
     except TypeError:
         return not session.get_puppet()
+
 
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     """

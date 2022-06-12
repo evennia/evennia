@@ -145,7 +145,9 @@ class TestTypedObjectManager(BaseEvenniaTest):
     def test_get_tag_with_any_including_nones(self):
         self.obj1.tags.add("tagA", "categoryA")
         self.assertEqual(
-            self._manager("get_by_tag", ["tagA", "tagB"], ["categoryA", "categoryB", None], match="any"),
+            self._manager(
+                "get_by_tag", ["tagA", "tagB"], ["categoryA", "categoryB", None], match="any"
+            ),
             [self.obj1],
         )
 
