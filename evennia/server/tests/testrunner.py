@@ -16,15 +16,18 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
      avoid running the large number of tests defined by Django
 
     """
+
     def setup_test_environment(self, **kwargs):
         # the portal looping call starts before the unit-test suite so we
         # can't mock it - instead we stop it before starting the test - otherwise
         # we'd get unclean reactor errors across test boundaries.
         from evennia.server.portal.portal import PORTAL
+
         PORTAL.maintenance_task.stop()
 
         # initialize evennia itself
         import evennia
+
         evennia._init()
 
         from django.conf import settings
@@ -37,6 +40,7 @@ class EvenniaTestSuiteRunner(DiscoverRunner):
 
         # remove testing flag after suite has run
         from django.conf import settings
+
         settings._TEST_ENVIRONMENT = False
 
         super().teardown_test_environment(**kwargs)

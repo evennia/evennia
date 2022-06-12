@@ -2695,6 +2695,7 @@ def copy_word_case(base_word, new_word):
             + excess
         )
 
+
 def run_in_main_thread(function_or_method, *args, **kwargs):
     """
     Force a callable to execute in the main Evennia thread. This is only relevant when

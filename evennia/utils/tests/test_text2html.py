@@ -12,7 +12,9 @@ class TestText2Html(TestCase):
         self.assertEqual("foo", parser.format_styles("foo"))
         self.assertEqual(
             '<span class="color-001">red</span>foo',
-            parser.format_styles(ansi.ANSI_UNHILITE + ansi.ANSI_RED + "red" + ansi.ANSI_NORMAL + "foo"),
+            parser.format_styles(
+                ansi.ANSI_UNHILITE + ansi.ANSI_RED + "red" + ansi.ANSI_NORMAL + "foo"
+            ),
         )
         self.assertEqual(
             '<span class="bgcolor-001">red</span>foo',
@@ -31,33 +33,15 @@ class TestText2Html(TestCase):
         )
         self.assertEqual(
             'a <span class="underline">red</span>foo',
-            parser.format_styles(
-                "a "
-                + ansi.ANSI_UNDERLINE
-                + "red"
-                + ansi.ANSI_NORMAL
-                + "foo"
-            ),
+            parser.format_styles("a " + ansi.ANSI_UNDERLINE + "red" + ansi.ANSI_NORMAL + "foo"),
         )
         self.assertEqual(
             'a <span class="blink">red</span>foo',
-            parser.format_styles(
-                "a "
-                + ansi.ANSI_BLINK
-                + "red"
-                + ansi.ANSI_NORMAL
-                + "foo"
-            ),
+            parser.format_styles("a " + ansi.ANSI_BLINK + "red" + ansi.ANSI_NORMAL + "foo"),
         )
         self.assertEqual(
             'a <span class="bgcolor-007 color-000">red</span>foo',
-            parser.format_styles(
-                "a "
-                + ansi.ANSI_INVERSE
-                + "red"
-                + ansi.ANSI_NORMAL
-                + "foo"
-            ),
+            parser.format_styles("a " + ansi.ANSI_INVERSE + "red" + ansi.ANSI_NORMAL + "foo"),
         )
 
     def test_remove_bells(self):
@@ -65,13 +49,7 @@ class TestText2Html(TestCase):
         self.assertEqual("foo", parser.remove_bells("foo"))
         self.assertEqual(
             "a red" + ansi.ANSI_NORMAL + "foo",
-            parser.remove_bells(
-                "a "
-                + ansi.ANSI_BEEP
-                + "red"
-                + ansi.ANSI_NORMAL
-                + "foo"
-            ),
+            parser.remove_bells("a " + ansi.ANSI_BEEP + "red" + ansi.ANSI_NORMAL + "foo"),
         )
 
     def test_remove_backspaces(self):
@@ -160,20 +138,20 @@ class TestText2Html(TestCase):
         self.assertEqual(
             text2html.parse_html("|^|[CHello|n|u|rW|go|yr|bl|md|c!|[G!"),
             '<span class="blink bgcolor-006">'
-            'Hello'
+            "Hello"
             '</span><span class="underline color-009">'
-            'W'
+            "W"
             '</span><span class="underline color-010">'
-            'o'
+            "o"
             '</span><span class="underline color-011">'
-            'r'
+            "r"
             '</span><span class="underline color-012">'
-            'l'
+            "l"
             '</span><span class="underline color-013">'
-            'd'
+            "d"
             '</span><span class="underline color-014">'
-            '!'
+            "!"
             '</span><span class="underline bgcolor-002 color-014">'
-            '!'
-            '</span>',
+            "!"
+            "</span>",
         )

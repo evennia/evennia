@@ -16,6 +16,7 @@ class ComponentProperty:
 
     Defaults can be overridden for this typeclass by passing kwargs
     """
+
     def __init__(self, component_name, **kwargs):
         """
         Initializes the descriptor
@@ -49,6 +50,7 @@ class ComponentHandler:
     It lets you add or remove components and will load components as needed.
     It stores the list of registered components on the host .db with component_names as key.
     """
+
     def __init__(self, host):
         self.host = host
         self._loaded_components = {}
@@ -124,7 +126,9 @@ class ComponentHandler:
             self.host.signals.remove_object_listeners_and_responders(component)
             del self._loaded_components[component_name]
         else:
-            message = f"Cannot remove {component_name} from {self.host.name} as it is not registered."
+            message = (
+                f"Cannot remove {component_name} from {self.host.name} as it is not registered."
+            )
             raise ComponentIsNotRegistered(message)
 
     def remove_by_name(self, name):
@@ -199,7 +203,9 @@ class ComponentHandler:
                 self._set_component(component_instance)
                 self.host.signals.add_object_listeners_and_responders(component_instance)
             else:
-                message = f"Could not initialize runtime component {component_name} of {self.host.name}"
+                message = (
+                    f"Could not initialize runtime component {component_name} of {self.host.name}"
+                )
                 raise ComponentDoesNotExist(message)
 
     def _set_component(self, component):

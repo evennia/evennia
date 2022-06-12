@@ -2219,11 +2219,13 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             old_typeclass_path = obj.typeclass_path
 
             if reset:
-                answer = yield("|yNote that this will reset the object back to its typeclass' default state, "
-                               "removing any custom locks/perms/attributes etc that may have been added "
-                               "by an explicit create_object call. Use `update` or type/force instead in order "
-                               "to keep such data. "
-                               "Continue [Y]/N?|n")
+                answer = yield (
+                    "|yNote that this will reset the object back to its typeclass' default state, "
+                    "removing any custom locks/perms/attributes etc that may have been added "
+                    "by an explicit create_object call. Use `update` or type/force instead in order "
+                    "to keep such data. "
+                    "Continue [Y]/N?|n"
+                )
                 if answer.upper() in ("N", "NO"):
                     caller.msg("Aborted.")
                     return
@@ -3473,7 +3475,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 caller.msg("\n".join(msgs))
                 if "delete" not in self.switches:
                     if script and script.pk:
-                            ScriptEvMore(caller, [script], session=self.session)
+                        ScriptEvMore(caller, [script], session=self.session)
                     else:
                         caller.msg("Script was deleted automatically.")
         else:

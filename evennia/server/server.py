@@ -423,6 +423,7 @@ class Evennia:
             logger.log_msg("Evennia Server successfully restarted in 'reset' mode.")
         elif mode == "shutdown":
             from evennia.objects.models import ObjectDB
+
             self.at_server_cold_start()
             # clear eventual lingering session storages
             ObjectDB.objects.clear_all_sessids()

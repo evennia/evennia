@@ -116,7 +116,7 @@ class TestFuncParser(TestCase):
             ("Test args2 $bar(foo, bar,    too)", "Test args2 _test(foo, bar, too)"),
             (r"Test args3 $bar(foo, bar, '   too')", "Test args3 _test(foo, bar,    too)"),
             ("Test args4 $foo('')", "Test args4 _test()"),
-            ('Test args4 $foo("")', 'Test args4 _test()'),
+            ('Test args4 $foo("")', "Test args4 _test()"),
             ("Test args5 $foo(\(\))", "Test args5 _test(())"),
             ("Test args6 $foo(\()", "Test args6 _test(()"),
             ("Test args7 $foo(())", "Test args7 _test(())"),
@@ -183,14 +183,20 @@ class TestFuncParser(TestCase):
             ("Test eval2 $eval((21 + 21) / 2)", "Test eval2 21.0"),
             ("Test eval3 $eval(\"'21' + 'foo' + 'bar'\")", "Test eval3 21foobar"),
             (r"Test eval4 $eval(\'21\' + \'$repl()\' + \"''\" + str(10 // 2))", "Test eval4 21rr5"),
-            (r"Test eval5 $eval(\'21\' + \'\$repl()\' + \'\' + str(10 // 2))", "Test eval5 21$repl()5"),
+            (
+                r"Test eval5 $eval(\'21\' + \'\$repl()\' + \'\' + str(10 // 2))",
+                "Test eval5 21$repl()5",
+            ),
             ("Test eval6 $eval(\"'$repl(a)' + '$repl(b)'\")", "Test eval6 rarrbr"),
             ("Test type1 $typ([1,2,3,4])", "Test type1 <class 'list'>"),
             ("Test type2 $typ((1,2,3,4))", "Test type2 <class 'tuple'>"),
             ("Test type3 $typ({1,2,3,4})", "Test type3 <class 'set'>"),
             ("Test type4 $typ({1:2,3:4})", "Test type4 <class 'dict'>"),
             ("Test type5 $typ(1), $typ(1.0)", "Test type5 <class 'int'>, <class 'float'>"),
-            ("Test type6 $typ(\"'1'\"), $typ('\"1.0\"')", "Test type6 <class 'str'>, <class 'str'>"),
+            (
+                "Test type6 $typ(\"'1'\"), $typ('\"1.0\"')",
+                "Test type6 <class 'str'>, <class 'str'>",
+            ),
             ("Test add1 $add(1, 2)", "Test add1 3"),
             ("Test add2 $add([1,2,3,4], [5,6])", "Test add2 [1, 2, 3, 4, 5, 6]"),
             ("Test literal1 $sum($lit([1,2,3,4,5,6]))", "Test literal1 21"),
@@ -198,7 +204,6 @@ class TestFuncParser(TestCase):
             ("Test literal3 $typ($lit(1)aaa)", "Test literal3 <class 'str'>"),
             ("Test literal4 $typ(aaa$lit(1))", "Test literal4 <class 'str'>"),
             ("Test spider's thread", "Test spider's thread"),
-
         ]
     )
     def test_parse(self, string, expected):
@@ -398,7 +403,7 @@ class TestDefaultCallables(TestCase):
             ("Some $rjust(Hello, width=30)", "Some                          Hello"),
             ("Some $cjust(Hello, 30)", "Some             Hello             "),
             ("Some $eval(\"'-'*20\")Hello", "Some --------------------Hello"),
-            ("$crop(\"spider's silk\", 5)", "spide"),
+            ('$crop("spider\'s silk", 5)', "spide"),
         ]
     )
     def test_other_callables(self, string, expected):
@@ -468,12 +473,13 @@ class TestDefaultCallables(TestCase):
 
     def test_escaped2(self):
         raw_str = 'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5) text., 80)'
-        expected = 'this should be                    escaped, and instead, cropped with  text.                    '
+        expected = "this should be                    escaped, and instead, cropped with  text.                    "
         result = self.parser.parse(raw_str)
         self.assertEqual(
             result,
             expected,
         )
+
 
 class TestCallableSearch(test_resources.BaseEvenniaTest):
     """
