@@ -1,3 +1,4 @@
+from evennia.scripts.scripts import DefaultScript
 from evennia.utils.test_resources import EvenniaTest
 from evennia import search_tag
 
@@ -10,4 +11,3 @@ class TestSearch(EvenniaTest):
         found = search_tag("a-tag")
         self.assertEqual(len(found), 1)
         self.assertEqual(script.key, found[0].key)
-        
