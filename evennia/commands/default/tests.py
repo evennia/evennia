@@ -107,7 +107,6 @@ class TestGeneral(BaseEvenniaCommandTest):
 
     def test_nick_list(self):
         self.call(general.CmdNick(), "/list", "No nicks defined.")
- 
         self.call(general.CmdNick(), "test1 = Hello", "Inputline-nick 'test1' mapped to 'Hello'.")
         self.call(general.CmdNick(), "/list", "Defined Nicks:")
 
