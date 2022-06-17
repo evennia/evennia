@@ -24,15 +24,15 @@ channel](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUm
 
 ## Third-party Evennia tools
 
+- [Evcolor](https://github.com/taladan/Pegasus/blob/origin/world/utilities/evcolor) - Optional coloration for Evennia unit-test output.
 - [Evennia-docker](https://github.com/gtaylor/evennia-docker) - Evennia in a [Docker container](https://www.docker.com/) for quick install and deployment in just a few commands.
 - [Evennia-wiki](https://github.com/vincent-lg/evennia-wiki) - An Evennia-specific Wiki for your website.
-- [Evcolor](https://github.com/taladan/Pegasus/blob/origin/world/utilities/evcolor) - Optional coloration for Evennia unit-test output.
 - [Paxboards](https://github.com/aurorachain/paxboards) - Evennia bulletin board system (both for telnet/web).
-- [The world of Cool battles sources](https://github.com/FlutterSprite/coolbattles) - Open source turn-based battle system for an older version of Evennia.
 - [nextRPI](https://github.com/cluebyte/nextrpi) - A github project for making a toolbox for people to make [RPI](https://www.topmudsites.com/forums/showthread.php?t=4804)-style Evennia games.
 - [Unreal Engine Evennia plugin](https://www.unrealengine.com/marketplace/en-US/slug/evennia-plugin) an in-progress Unreal plugin for integrating Evennia with Epic Games' Unreal Engine.
 - [vim-evennia](https://github.com/amfl/vim-evennia) - A mode for editing batch-build files (`.ev`) files in the [vim](https://www.vim.org/) text editor (Emacs users can use [evennia-
 mode.el](https://github.com/evennia/evennia/blob/master/evennia/utils/evennia-mode.el)).
+- [The world of Cool battles sources](https://github.com/FlutterSprite/coolbattles) - Open source turn-based battle system for an older version of Evennia.
 - [Other Evennia-related repos on github](https://github.com/search?p=1&q=evennia)
 
 ----
@@ -41,9 +41,9 @@ mode.el](https://github.com/evennia/evennia/blob/master/evennia/utils/evennia-mo
 
 ### Code bases
 - [Arx sources](https://github.com/Arx-Game/arxcode) - Open-source code release of the very popular [Arx](https://play.arxmush.org/) Evennia game. [Here are instructions for installing](https://www.evennia.com/docs/1.0-dev/Howtos/Arxcode-Installation.html)
+- [Encarnia sources](https://github.com/whitehorse-io/encarnia) - An open-sourced game dir for an older version of Evennia with things like races, combat etc. [Summary here](https://www.reddit.com/r/MUD/comments/6z6s3j/encarnia_an_evennia_python_mud_code_base_with/).
 - [The dark net/March Hare MUD](https://github.com/thedarknet/evennia) from the 2019 [DEF CON 27](https://www.defcon.org/html/defcon-27/dc-27-index.html) hacker conference in Paris. This is an Evennia game dir with batchcode to build the custom _Hackers_ style cyberspace zone with puzzles and challenges [used during the conference](https://dcdark.net/home#).
 - [Muddery](https://github.com/muddery/muddery) - A mud framework under development, based on an older fork of Evennia. It has some specific design goals for building and extending the game based on input files.
-- [Encarnia sources](https://github.com/whitehorse-io/encarnia) - An open-sourced game dir for an older version of Evennia with things like races, combat etc. [Summary here](https://www.reddit.com/r/MUD/comments/6z6s3j/encarnia_an_evennia_python_mud_code_base_with/).
 
 ### Other
 
@@ -62,24 +62,23 @@ mode.el](https://github.com/evennia/evennia/blob/master/evennia/utils/evennia-mo
 
 ### Informational
 
-- [Mud-dev wiki](http://mud-dev.wikidot.com/) - A (very) slowly growing resource on MUD creation.
-- [Mud Client/Server Interaction](http://cryosphere.net/mud-protocol.html) - A page on classic MUD telnet protocols.
-- [Mud Tech's fun/cool but ...](https://gc-taylor.com/blog/2013/01/08/mud-tech-funcool-dont-forget-ship-damned-thing/) - Greg Taylor gives good advice on mud design.
-- [Lost Library of MOO](https://www.hayseed.net/MOO/) - Archive of scientific articles on mudding (in particular moo).
-- [Nick Gammon's hints thread](http://www.gammon.com.au/forum/bbshowpost.php?bbsubject_id=5959) - Contains a very useful list of things to think about when starting your new MUD.
-- Mud Dev mailing list archive ([mirror](http://www.disinterest.org/resource/MUD-Dev/)) - Influential mailing list active 1996-2004. Advanced game design discussions.
-- [Raph Koster's laws of game design](https://www.raphkoster.com/games/laws-of-online-world-design/the-laws-of-online-world-design/) - thought-provoking guidelines and things to think about when designing a virtual multiplayer world (Raph is known for *Ultima Online* among other things).
 - [Imaginary Realities unofficial archive](http://tharsis-gate.org/articles/imaginary.html) - An e-magazine on game and MUD design that has several articles about Evennia.
+- [Lost Library of MOO](https://www.hayseed.net/MOO/) - Archive of scientific articles on mudding (in particular moo).
+- [Mud Client/Server Interaction](http://cryosphere.net/mud-protocol.html) - A page on classic MUD telnet protocols.
+- [Mud-dev wiki](http://mud-dev.wikidot.com/) - A (very) slowly growing resource on MUD creation.
+- [Mud Tech's fun/cool but ...](https://gc-taylor.com/blog/2013/01/08/mud-tech-funcool-dont-forget-ship-damned-thing/) - Greg Taylor gives good advice on mud design.
+- [Nick Gammon's hints thread](http://www.gammon.com.au/forum/bbshowpost.php?bbsubject_id=5959) - Contains a very useful list of things to think about when starting your new MUD.
+- [Raph Koster's laws of game design](https://www.raphkoster.com/games/laws-of-online-world-design/the-laws-of-online-world-design/) - thought-provoking guidelines and things to think about when designing a virtual multiplayer world (Raph is known for *Ultima Online* among other things).
 
 ### Community
 
-- [Grapevine MUD community and chat network](https://grapevine.haus/)
+- [Grapevine](https://grapevine.haus/) - MUD listings and inter-game chat network
 - [MUD Coder's Guild](https://mudcoders.com/) - A blog and [associated Slack channel](https://slack.mudcoders.com/) with discussions on MUD development.
+- [MudBytes](http://www.mudbytes.net/) - MUD listing and forums
+- [MudConnector](http://www.mudconnect.com/) - MUD listing and forums
+- [MudLab](http://mudlab.org/) - MUD design discussion forum
 - [MuSoapbox](https://musoapbox.net/) - MU* forum mainly focused on MUSH-type gaming.
-- [MudLab](http://mudlab.org/) - Mud design discussion forum
-- [MudConnector](http://www.mudconnect.com/) - Mud listing and forums
-- [MudBytes](http://www.mudbytes.net/) - Mud listing and forums
-- [Top Mud Sites](http://www.topmudsites.com/) - Mud listing and forums
+- [Top Mud Sites](http://www.topmudsites.com/) - MUD listing and forums
 
 ----
 
