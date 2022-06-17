@@ -9,11 +9,23 @@ import math
 import inspect
 
 from django.conf import settings
+from django.urls import reverse
+from django.utils.text import slugify
 
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
 from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString
+
+
+CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
+
+
+class InterruptCommand(Exception):
+
+    """Cleanly interrupt a command."""
+
+    pass
 
 
 def _init_command(cls, **kwargs):
@@ -75,6 +87,9 @@ def _init_command(cls, **kwargs):
         cls.is_exit = False
     if not hasattr(cls, "help_category"):
         cls.help_category = "general"
+    if not hasattr(cls, "retain_instance"):
+        cls.retain_instance = False
+
     # make sure to pick up the parent's docstring if the child class is
     # missing one (important for auto-help)
     if cls.__doc__ is None:
@@ -83,6 +98,21 @@ def _init_command(cls, **kwargs):
                 cls.__doc__ = parent_class.__doc__
                 break
     cls.help_category = cls.help_category.lower()
+
+    # pre-prepare a help index entry for quicker lookup
+    # strip the @- etc to allow help to be agnostic
+    stripped_key = cls.key[1:] if cls.key and cls.key[0] in CMD_IGNORE_PREFIXES else ""
+    stripped_aliases = " ".join(
+        al[1:] if al and al[0] in CMD_IGNORE_PREFIXES else al for al in cls.aliases
+    )
+    cls.search_index_entry = {
+        "key": cls.key,
+        "aliases": " ".join(cls.aliases),
+        "no_prefix": f"{stripped_key} {stripped_aliases}",
+        "category": cls.help_category,
+        "text": cls.__doc__,
+        "tags": "",
+    }
 
 
 class CommandMeta(type):
@@ -103,9 +133,11 @@ class CommandMeta(type):
 #    parsing errors.
 
 
-class Command(object, metaclass=CommandMeta):
+class Command(metaclass=CommandMeta):
     """
-    Base command
+    ## Base command
+
+    (you may see this if a child command had no help text defined)
 
     Usage:
       command [args]
@@ -169,6 +201,11 @@ class Command(object, metaclass=CommandMeta):
     # whether self.msg sends to all sessions of a related account/object (default
     # is to only send to the session sending the command).
     msg_all_sessions = settings.COMMAND_DEFAULT_MSG_ALL_SESSIONS
+    # whether the exact command instance should be retained between command calls.
+    # By default it's False; this allows for retaining state and saves some CPU, but
+    # can cause cross-talk between users if multiple users access the same command
+    # (especially if the command is using yield)
+    retain_instance = False
 
     # auto-set (by Evennia on command instantiation) are:
     #   obj - which object this command is defined on
@@ -496,6 +533,53 @@ Command {self} has no defined `func()` - showing on-command variables:
         """
         return self.__doc__
 
+    def web_get_detail_url(self):
+        """
+        Returns the URI path for a View that allows users to view details for
+        this object.
+
+        ex. Oscar (Character) = '/characters/oscar/1/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-detail' would be referenced by this method.
+
+        ex.
+        ::
+            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
+                CharDetailView.as_view(), name='character-detail')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can view this object is the developer's
+        responsibility.
+
+        Returns:
+            path (str): URI path to object detail page, if defined.
+
+        """
+        try:
+            return reverse(
+                "help-entry-detail",
+                kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
+            )
+        except Exception as e:
+            return "#"
+
+    def web_get_admin_url(self):
+        """
+        Returns the URI path for the Django Admin page for this object.
+
+        ex. Account#1 = '/admin/accounts/accountdb/1/change/'
+
+        Returns:
+            path (str): URI path to Django Admin page for object.
+
+        """
+        return False
+
     def client_width(self):
         """
         Get the client screenwidth for the session using this command.
@@ -509,20 +593,6 @@ Command {self} has no defined `func()` - showing on-command variables:
                 "SCREENWIDTH", {0: settings.CLIENT_DEFAULT_WIDTH}
             )[0]
         return settings.CLIENT_DEFAULT_WIDTH
-
-    def client_height(self):
-        """
-        Get the client screenheight for the session using this command.
-
-        Returns:
-            client height (int): The height (in characters) of the client window.
-
-        """
-        if self.session:
-            return self.session.protocol_flags.get(
-                "SCREENHEIGHT", {0: settings.CLIENT_DEFAULT_HEIGHT}
-            )[0]
-        return settings.CLIENT_DEFAULT_HEIGHT
 
     def styled_table(self, *args, **kwargs):
         """
@@ -568,6 +638,7 @@ Command {self} has no defined `func()` - showing on-command variables:
             border_left_char=border_left_char,
             border_right_char=border_right_char,
             border_top_char=border_top_char,
+            border_bottom_char=border_bottom_char,
             **kwargs,
         )
         return table
@@ -671,10 +742,3 @@ Command {self} has no defined `func()` - showing on-command variables:
         if "mode" not in kwargs:
             kwargs["mode"] = "footer"
         return self._render_decoration(*args, **kwargs)
-
-
-class InterruptCommand(Exception):
-
-    """Cleanly interrupt a command."""
-
-    pass

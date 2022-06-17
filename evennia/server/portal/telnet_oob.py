@@ -10,20 +10,15 @@ how and if they are handled.  Examples of OOB instructions could be to
 instruct the client to play sounds or to update a graphical health
 bar.
 
-> Note that in Evennia's Web client, all send commands are "OOB commands",
-(including the "text" one), there is no equivalence to MSDP/GMCP for the
-webclient since it doesn't need it.
+Note that in Evennia's Web client, all send commands are "OOB
+commands", (including the "text" one), there is no equivalence to
+MSDP/GMCP for the webclient since it doesn't need it.
 
 This implements the following telnet OOB communication protocols:
 
-- MSDP (Mud Server Data Protocol), as per
-  http://tintin.sourceforge.net/msdp/
+- MSDP (Mud Server Data Protocol), as per http://tintin.sourceforge.net/msdp/
 - GMCP (Generic Mud Communication Protocol) as per
   http://www.ironrealms.com/rapture/manual/files/FeatGMCP-txt.html#Generic_MUD_Communication_Protocol%28GMCP%29
-
-Following the lead of KaVir's protocol snippet, we first check if client
-supports MSDP and if not, we fallback to GMCP with a MSDP header where
-applicable.
 
 ----
 
@@ -52,14 +47,14 @@ GMCP = bytes([201])
 # pre-compiled regexes
 # returns 2-tuple
 msdp_regex_table = re.compile(
-    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)
+    rb"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_TABLE_OPEN, MSDP_TABLE_CLOSE)
 )
 # returns 2-tuple
 msdp_regex_array = re.compile(
-    br"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)
+    rb"%s\s*(\w*?)\s*%s\s*%s(.*?)%s" % (MSDP_VAR, MSDP_VAL, MSDP_ARRAY_OPEN, MSDP_ARRAY_CLOSE)
 )
-msdp_regex_var = re.compile(br"%s" % MSDP_VAR)
-msdp_regex_val = re.compile(br"%s" % MSDP_VAL)
+msdp_regex_var = re.compile(rb"%s" % MSDP_VAR)
+msdp_regex_val = re.compile(rb"%s" % MSDP_VAL)
 
 EVENNIA_TO_GMCP = {
     "client_options": "Core.Supports.Get",
@@ -73,7 +68,7 @@ EVENNIA_TO_GMCP = {
 # MSDP/GMCP communication handler
 
 
-class TelnetOOB(object):
+class TelnetOOB:
     """
     Implements the MSDP and GMCP protocols.
     """
@@ -160,16 +155,16 @@ class TelnetOOB(object):
             MSDP structures on these forms:
             ::
 
-                [cmdname, [], {}]          -> VAR cmdname VAL ""
-                [cmdname, [arg], {}]       -> VAR cmdname VAL arg
-                [cmdname, [args],{}]       -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
-                [cmdname, [], {kwargs}]    -> VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
+                [cmdname, [], {}]           -> VAR cmdname VAL ""
+                [cmdname, [arg], {}]        -> VAR cmdname VAL arg
+                [cmdname, [args],{}]        -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
+                [cmdname, [], {kwargs}]     -> VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
                 [cmdname, [args], {kwargs}] -> VAR cmdname VAL ARRAYOPEN VAL arg VAL arg ... ARRAYCLOSE
                                                VAR cmdname VAL TABLEOPEN VAR key VAL val ... TABLECLOSE
 
-            Further nesting is not supported, so if an array argument consists
-            of an array (for example), that array will be json-converted to a
-            string.
+            Further nesting is not supported, so if an array argument
+            consists of an array (for example), that array will be
+            json-converted to a string.
 
         """
         msdp_cmdname = "{msdp_var}{msdp_cmdname}{msdp_val}".format(
@@ -235,15 +230,18 @@ class TelnetOOB(object):
             be stripped on the Evennia side.
             ::
 
-                [cmd.name, [], {}]          -> Cmd.Name
-                [cmd.name, [arg], {}]       -> Cmd.Name arg
-                [cmd.name, [args],{}]       -> Cmd.Name [args]
-                [cmd.name, [], {kwargs}]    -> Cmd.Name {kwargs}
-                [cmdname, [args, {kwargs}] -> Core.Cmdname [[args],{kwargs}]
+                [cmd_name, [], {}]          -> Cmd.Name
+                [cmd_name, [arg], {}]       -> Cmd.Name arg
+                [cmd_name, [args],{}]       -> Cmd.Name [args]
+                [cmd_name, [], {kwargs}]    -> Cmd.Name {kwargs}
+                [cmdname, [args, {kwargs}]  -> Core.Cmdname [[args],{kwargs}]
+
+            For more flexibility with certain clients, if `cmd_name` is capitalized,
+            Evennia will leave its current capitalization (So CMD_nAmE would be sent
+            as CMD.nAmE but cMD_Name would be Cmd.Name)
 
         Notes:
-            There are also a few default mappings between evennia outputcmds and
-            GMCP:
+            There are also a few default mappings between evennia outputcmds and GMCP:
             ::
 
                 client_options -> Core.Supports.Get
@@ -257,9 +255,13 @@ class TelnetOOB(object):
         if cmdname in EVENNIA_TO_GMCP:
             gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
         elif "_" in cmdname:
-            gmcp_cmdname = ".".join(word.capitalize() for word in cmdname.split("_"))
+            if cmdname.istitle():
+                # leave without capitalization
+                gmcp_cmdname = ".".join(word for word in cmdname.split("_"))
+            else:
+                gmcp_cmdname = ".".join(word.capitalize() for word in cmdname.split("_"))
         else:
-            gmcp_cmdname = "Core.%s" % cmdname.capitalize()
+            gmcp_cmdname = "Core.%s" % (cmdname if cmdname.istitle() else cmdname.capitalize())
 
         if not (args or kwargs):
             gmcp_string = gmcp_cmdname

@@ -7,7 +7,7 @@ the stability and integrity of the codebase during updates.
 This module tests the lock functionality of Evennia.
 
 """
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
 try:
     # this is a special optimized Django version, only available in current Django devel
@@ -24,7 +24,7 @@ from evennia.utils.create import create_object
 # ------------------------------------------------------------
 
 
-class TestLockCheck(EvenniaTest):
+class TestLockCheck(BaseEvenniaTest):
     def testrun(self):
         dbref = self.obj2.dbref
         self.obj1.locks.add(
@@ -42,9 +42,9 @@ class TestLockCheck(EvenniaTest):
         self.assertEqual(True, self.obj1.locks.check(self.obj2, "not_exist", default=True))
 
 
-class TestLockfuncs(EvenniaTest):
+class TestLockfuncs(BaseEvenniaTest):
     def setUp(self):
-        super(TestLockfuncs, self).setUp()
+        super().setUp()
         self.account2.permissions.add("Admin")
         self.char2.permissions.add("Builder")
 
@@ -208,3 +208,48 @@ class TestLockfuncs(EvenniaTest):
         self.assertEqual(True, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 3]"))
         self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "[1, 2, 4]"))
         self.assertEqual(False, lockfuncs.serversetting(None, None, "TESTVAL", "123"))
+
+    def test_is_ooc__char(self):
+        self.assertEqual(False, lockfuncs.is_ooc(self.char1, self.char1))
+
+    def test_is_ooc__session(self):
+        self.assertEqual(False, lockfuncs.is_ooc(self.session, self.char1))
+
+    def test_is_ooc__account(self):
+        self.assertEqual(False, lockfuncs.is_ooc(self.account, self.char1))
+        self.account.unpuppet_all()
+        self.assertEqual(True, lockfuncs.is_ooc(self.account, self.char1))
+
+
+class TestPermissionCheck(BaseEvenniaTest):
+    """
+    Test the PermissionHandler.check method
+
+    """
+
+    def test_check__success(self):
+        """Test combinations that should pass the check"""
+        self.assertEqual(
+            [perm for perm in self.char1.account.permissions.all()], ["developer", "player"]
+        )
+        self.assertTrue(self.char1.permissions.check("Builder"))
+        self.assertTrue(self.char1.permissions.check("Builder", "Player"))
+        self.assertTrue(self.char1.permissions.check("Builder", "dummy"))
+        self.assertTrue(self.char1.permissions.check("Developer", "dummy", "foobar"))
+        self.assertTrue(self.char1.permissions.check("Builder", "Player", require_all=True))
+
+    def test_check__fail(self):
+        """Test combinations that should fail the check"""
+        self.assertFalse(self.char1.permissions.check("dummy"))
+        self.assertFalse(self.char1.permissions.check("Builder", "dummy", require_all=True))
+        self.assertFalse(self.char1.permissions.check("Developer", "foobar", require_all=True))
+
+        self.char1.account.permissions.remove("developer")
+        self.char1.account.permissions.add("Builder")
+
+        self.assertEqual(
+            [perm for perm in self.char1.account.permissions.all()], ["builder", "player"]
+        )
+        self.assertFalse(self.char1.permissions.check("Developer"))
+        self.assertFalse(self.char1.permissions.check("Developer", "Player", require_all=True))
+        self.assertFalse(self.char1.permissions.check("Player", "dummy", require_all=True))

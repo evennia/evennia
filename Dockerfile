@@ -2,7 +2,7 @@
 # Base docker image for running Evennia-based games in a container.
 #
 # Install:
-#   install `docker` (http://docker.com)
+#   install `docker` (https://docker.com)
 #
 # Usage:
 #    cd to a folder where you want your game data to be (or where it already is).
@@ -26,9 +26,9 @@
 #
 # The evennia/evennia base image is found on DockerHub and can also be used
 # as a base for creating your own custom containerized Evennia game. For more
-# info, see https://github.com/evennia/evennia/wiki/Running%20Evennia%20in%20Docker .
+# info, see https://evennia.com/docs/latest/Setup/Installation-Docker
 #
-FROM python:3.7-alpine
+FROM python:3.10-alpine
 
 LABEL maintainer="www.evennia.com"
 

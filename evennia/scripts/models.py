@@ -101,7 +101,7 @@ class ScriptDB(TypedObject):
 
     # how often to run Script (secs). -1 means there is no timer
     db_interval = models.IntegerField(
-        "interval", default=-1, help_text="how often to repeat script, in seconds. -1 means off."
+        "interval", default=-1, help_text="how often to repeat script, in seconds. <= 0 means off."
     )
     # start script right away or wait interval seconds first
     db_start_delay = models.BooleanField(
@@ -110,7 +110,7 @@ class ScriptDB(TypedObject):
     # how many times this script is to be repeated, if interval!=0.
     db_repeats = models.IntegerField("number of repeats", default=0, help_text="0 means off.")
     # defines if this script should survive a reboot or not
-    db_persistent = models.BooleanField("survive server reboot", default=False)
+    db_persistent = models.BooleanField("survive server reboot", default=True)
     # defines if this script has already been started in this session
     db_is_active = models.BooleanField("script active", default=False)
 
@@ -157,8 +157,6 @@ class ScriptDB(TypedObject):
             # deprecated ...
             pass
         if isinstance(value, (str, int)):
-            from evennia.objects.models import ObjectDB
-
             value = to_str(value)
             if value.isdigit() or value.startswith("#"):
                 dbid = dbref(value, reqhash=False)

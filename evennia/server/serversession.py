@@ -6,142 +6,22 @@ connection actually happens (so it's the same for telnet, web, ssh etc).
 It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
-import weakref
 import time
 from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
 from evennia.utils import logger
-from evennia.utils.utils import make_iter, lazy_property
+from evennia.utils.utils import make_iter, lazy_property, class_from_module
 from evennia.commands.cmdsethandler import CmdSetHandler
-from evennia.server.session import Session
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
+from evennia.typeclasses.attributes import AttributeHandler, InMemoryAttributeBackend, DbHolder
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _ObjectDB = None
 _ANSI = None
 
-# i18n
-from django.utils.translation import gettext as _
-
-# Handlers for Session.db/ndb operation
-
-
-class NDbHolder(object):
-    """Holder for allowing property access of attributes"""
-
-    def __init__(self, obj, name, manager_name="attributes"):
-        _SA(self, name, _GA(obj, manager_name))
-        _SA(self, "name", name)
-
-    def __getattribute__(self, attrname):
-        if attrname == "all":
-            # we allow to overload our default .all
-            attr = _GA(self, _GA(self, "name")).get("all")
-            return attr if attr else _GA(self, "all")
-        return _GA(self, _GA(self, "name")).get(attrname)
-
-    def __setattr__(self, attrname, value):
-        _GA(self, _GA(self, "name")).add(attrname, value)
-
-    def __delattr__(self, attrname):
-        _GA(self, _GA(self, "name")).remove(attrname)
-
-    def get_all(self):
-        return _GA(self, _GA(self, "name")).all()
-
-    all = property(get_all)
-
-
-class NAttributeHandler(object):
-    """
-    NAttributeHandler version without recache protection.
-    This stand-alone handler manages non-database saving.
-    It is similar to `AttributeHandler` and is used
-    by the `.ndb` handler in the same way as `.db` does
-    for the `AttributeHandler`.
-    """
-
-    def __init__(self, obj):
-        """
-        Initialized on the object
-        """
-        self._store = {}
-        self.obj = weakref.proxy(obj)
-
-    def has(self, key):
-        """
-        Check if object has this attribute or not.
-
-        Args:
-            key (str): The Nattribute key to check.
-
-        Returns:
-            has_nattribute (bool): If Nattribute is set or not.
-
-        """
-        return key in self._store
-
-    def get(self, key, default=None):
-        """
-        Get the named key value.
-
-        Args:
-            key (str): The Nattribute key to get.
-
-        Returns:
-            the value of the Nattribute.
-
-        """
-        return self._store.get(key, default)
-
-    def add(self, key, value):
-        """
-        Add new key and value.
-
-        Args:
-            key (str): The name of Nattribute to add.
-            value (any): The value to store.
-
-        """
-        self._store[key] = value
-
-    def remove(self, key):
-        """
-        Remove Nattribute from storage.
-
-        Args:
-            key (str): The name of the Nattribute to remove.
-
-        """
-        if key in self._store:
-            del self._store[key]
-
-    def clear(self):
-        """
-        Remove all NAttributes from handler.
-
-        """
-        self._store = {}
-
-    def all(self, return_tuples=False):
-        """
-        List the contents of the handler.
-
-        Args:
-            return_tuples (bool, optional): Defines if the Nattributes
-                are returns as a list of keys or as a list of `(key, value)`.
-
-        Returns:
-            nattributes (list): A list of keys `[key, key, ...]` or a
-                list of tuples `[(key, value), ...]` depending on the
-                setting of `return_tuples`.
-
-        """
-        if return_tuples:
-            return [(key, value) for (key, value) in self._store.items() if not key.startswith("_")]
-        return [key for key in self._store if not key.startswith("_")]
+_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
 # -------------------------------------------------------------
@@ -149,7 +29,7 @@ class NAttributeHandler(object):
 # -------------------------------------------------------------
 
 
-class ServerSession(Session):
+class ServerSession(_BASE_SESSION_CLASS):
     """
     This class represents an account's session and is a template for
     individual protocols to communicate with Evennia.
@@ -161,7 +41,10 @@ class ServerSession(Session):
     """
 
     def __init__(self):
-        """Initiate to avoid AttributeErrors down the line"""
+        """
+        Initiate to avoid AttributeErrors down the line
+
+        """
         self.puppet = None
         self.account = None
         self.cmdset_storage_string = ""
@@ -174,6 +57,10 @@ class ServerSession(Session):
         self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
 
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
+
+    @property
+    def id(self):
+        return self.sessid
 
     def at_sync(self):
         """
@@ -189,7 +76,7 @@ class ServerSession(Session):
         if not _ObjectDB:
             from evennia.objects.models import ObjectDB as _ObjectDB
 
-        super(ServerSession, self).at_sync()
+        super().at_sync()
         if not self.logged_in:
             # assign the unloggedin-command set.
             self.cmdset_storage = settings.CMDSET_UNLOGGEDIN
@@ -319,6 +206,7 @@ class ServerSession(Session):
 
         """
         flags = self.protocol_flags
+        print("session flags:", flags)
         width = flags.get("SCREENWIDTH", {}).get(0, settings.CLIENT_DEFAULT_WIDTH)
         height = flags.get("SCREENHEIGHT", {}).get(0, settings.CLIENT_DEFAULT_HEIGHT)
         return width, height
@@ -344,7 +232,7 @@ class ServerSession(Session):
         Update the protocol_flags and sync them with Portal.
 
         Keyword Args:
-            any: A key:value pair to set in the
+            protocol_flag (any): A key and value to set in the
                 protocol_flags dictionary.
 
         Notes:
@@ -376,14 +264,13 @@ class ServerSession(Session):
         the respective inputfuncs.
 
         Keyword Args:
-            any: Incoming data from protocol on
+            kwargs (any): Incoming data from protocol on
                 the form `{"commandname": ((args), {kwargs}),...}`
         Notes:
             This method is here in order to give the user
             a single place to catch and possibly process all incoming data from
             the client. It should usually always end by sending
             this data off to `self.sessionhandler.call_inputfuncs(self, **kwargs)`.
-
         """
         self.sessionhandler.call_inputfuncs(self, **kwargs)
 
@@ -393,7 +280,9 @@ class ServerSession(Session):
 
         Args:
             text (str): String input.
-            kwargs (str or tuple): Send-commands identified
+
+        Keyword Args:
+            any (str or tuple): Send-commands identified
                 by their keys. Or "options", carrying options
                 for the protocol(s).
 
@@ -432,7 +321,10 @@ class ServerSession(Session):
         self.sessionhandler.data_in(session or self, **kwargs)
 
     def __eq__(self, other):
-        """Handle session comparisons"""
+        """
+        Handle session comparisons
+
+        """
         try:
             return self.address == other.address
         except AttributeError:
@@ -479,6 +371,7 @@ class ServerSession(Session):
     def at_cmdset_get(self, **kwargs):
         """
         A dummy hook all objects with cmdsets need to have
+
         """
 
         pass
@@ -489,7 +382,7 @@ class ServerSession(Session):
 
     @lazy_property
     def nattributes(self):
-        return NAttributeHandler(self)
+        return AttributeHandler(self, InMemoryAttributeBackend)
 
     @lazy_property
     def attributes(self):
@@ -507,7 +400,7 @@ class ServerSession(Session):
         try:
             return self._ndb_holder
         except AttributeError:
-            self._ndb_holder = NDbHolder(self, "nattrhandler", manager_name="nattributes")
+            self._ndb_holder = DbHolder(self, "nattrhandler", manager_name="nattributes")
             return self._ndb_holder
 
     # @ndb.setter
@@ -525,7 +418,10 @@ class ServerSession(Session):
 
     # @ndb.deleter
     def ndb_del(self):
-        """Stop accidental deletion."""
+        """
+        Stop accidental deletion.
+
+        """
         raise Exception("Cannot delete the ndb object!")
 
     ndb = property(ndb_get, ndb_set, ndb_del)
@@ -534,5 +430,8 @@ class ServerSession(Session):
     # Mock access method for the session (there is no lock info
     # at this stage, so we just present a uniform API)
     def access(self, *args, **kwargs):
-        """Dummy method to mimic the logged-in API."""
+        """
+        Dummy method to mimic the logged-in API.
+
+        """
         return True

@@ -85,6 +85,6 @@ class EvenniaPasswordValidator:
 
         """
         return _(
-            "%s From a terminal client, you can also use a phrase of multiple words if "
-            "you enclose the password in double quotes." % self.policy
+            "{policy} From a terminal client, you can also use a phrase of multiple words if "
+            "you enclose the password in double quotes.".format(policy=self.policy)
         )

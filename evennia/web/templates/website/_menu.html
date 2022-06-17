@@ -1,0 +1,88 @@
+{% comment %}
+Allow to customize the menu that appears at the top of every Evennia
+webpage. Copy this file to your game dir's web/template_overrides/website
+folder and edit it to add/remove links to the menu.
+{% endcomment %}
+{% load static %}
+<nav class="navbar navbar-dark font-weight-bold navbar-expand-md">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#menu-content" aria-controls="menu-content" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <a class="navbar-brand" href="/">
+      <div class="media">
+        <img class="d-flex navbar-brand-logo mx-3" src="{% static "website/images/evennia_logo.png" %}" alt="{{game_name}} logo" />
+        <div class="media-body">
+          {{ game_name }}<br />
+          <small>{{game_slogan}}</small>
+        </div>
+      </div>
+    </a>
+
+    <div class="collapse navbar-collapse" id="menu-content">
+        <ul class="navbar-nav">
+            {% block navbar_left %}
+            <li>
+              <a class="nav-link" href="{% url 'index' %}">Home</a>
+            </li>
+            <!-- game views -->
+            <li><a class="nav-link" href="{% url 'characters' %}">Characters</a></li>
+            <li><a class="nav-link" href="{% url 'channels' %}">Channels</a></li>
+            <li><a class="nav-link" href="{% url 'help' %}">Help</a></li>
+            <!-- end game views -->
+
+            {% if webclient_enabled %}
+            <li><a class="nav-link" href="{% url 'webclient:index' %}">Play Online</a></li>
+            {% endif %}
+
+            {% if user.is_staff %}
+              <li><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
+              {% if rest_api_enabled %}
+                <li><a class="nav-link" href="/api">API</a></li>
+              {% endif %}
+            {% endif %}
+            {% endblock %}
+        </ul>
+        <ul class="nav navbar-nav ml-auto w-120 justify-content-end">
+            {% block navbar_right %}
+            {% endblock %}
+
+            {% block navbar_user %}
+            {% if account %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="user_options" aria-expanded="false">
+                {% if puppet %}
+                  Welcome, {{ puppet }}! <span class="text-muted">({{ account.username }})</span> <span class="caret"></span>
+                {% else %}
+                  Logged in as {{ account.username }} <span class="caret"></span>
+                {% endif %}
+              </a>
+              <div class="dropdown-menu" aria-labelledby="user_options">
+                <a class="dropdown-item" href="{% url 'character-create' %}">Create Character</a>
+                <a class="dropdown-item" href="{% url 'character-manage' %}">Manage Characters</a>
+                <div class="dropdown-divider"></div>
+                {% for character in account.characters|slice:"10" %}
+                  <a class="dropdown-item" href="{{ character.web_get_puppet_url }}?next={{ request.path }}">{{ character }}</a>
+                {% empty %}
+                  <a class="dropdown-item" href="#">No characters found!</a>
+                {% endfor %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
+              </div>
+            </li>
+            <li>
+                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+            </li>
+            {% else %}
+            <li>
+                <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Log In</a>
+            </li>
+            <li>
+                <a class="nav-link" href="{% url 'register' %}">Register</a>
+            </li>
+            {% endif %}
+            {% endblock %}
+        </ul>
+    </div>
+</nav>

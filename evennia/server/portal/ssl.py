@@ -18,7 +18,7 @@ except ImportError as error:
     raise ImportError(errstr.format(err=error))
 
 from django.conf import settings
-from evennia.server.portal.telnet import TelnetProtocol
+from evennia.utils.utils import class_from_module
 
 _GAME_DIR = settings.GAME_DIR
 
@@ -43,11 +43,14 @@ example (linux, using the openssl program):
     {exestring}
 """
 
+_TELNET_PROTOCOL_CLASS = class_from_module(settings.TELNET_PROTOCOL_CLASS)
 
-class SSLProtocol(TelnetProtocol):
+
+class SSLProtocol(_TELNET_PROTOCOL_CLASS):
     """
     Communication is the same as telnet, except data transfer
     is done with encryption.
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -60,6 +63,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
     This function looks for RSA key and certificate in the current
     directory. If files ssl.key and ssl.cert does not exist, they
     are created.
+
     """
 
     if not (os.path.exists(keyfile) and os.path.exists(certfile)):
@@ -72,10 +76,11 @@ def verify_SSL_key_and_cert(keyfile, certfile):
 
         try:
             # create the RSA key and store it.
-            KEY_LENGTH = 1024
-            rsaKey = Key(RSA.generate(KEY_LENGTH))
-            keyString = rsaKey.toString(type="OPENSSH")
-            file(keyfile, "w+b").write(keyString)
+            KEY_LENGTH = 2048
+            rsa_key = Key(RSA.generate(KEY_LENGTH))
+            key_string = rsa_key.toString(type="OPENSSH")
+            with open(keyfile, "w+b") as fil:
+                fil.write(key_string)
         except Exception as err:
             print(NO_AUTOGEN.format(err=err, keyfile=keyfile))
             sys.exit(5)

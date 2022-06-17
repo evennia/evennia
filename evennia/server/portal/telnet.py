@@ -25,16 +25,15 @@ from twisted.conch.telnet import (
     LINEMODE_TRAPSIG,
 )
 from django.conf import settings
-from evennia.server.session import Session
 from evennia.server.portal import ttype, mssp, telnet_oob, naws, suppress_ga
 from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi
-from evennia.utils.utils import to_bytes
+from evennia.utils.utils import to_bytes, class_from_module
 
 _RE_N = re.compile(r"\|n$")
-_RE_LEND = re.compile(br"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
-_RE_LINEBREAK = re.compile(br"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
+_RE_LEND = re.compile(rb"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
+_RE_LINEBREAK = re.compile(rb"\n\r|\r\n|\n|\r", re.DOTALL + re.MULTILINE)
 _RE_SCREENREADER_REGEX = re.compile(
     r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE
 )
@@ -56,19 +55,27 @@ _HTTP_WARNING = bytes(
 )
 
 
+_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
+
+
 class TelnetServerFactory(protocol.ServerFactory):
-    "This is only to name this better in logs"
+    """
+    This exists only to name this better in logs.
+
+    """
+
     noisy = False
 
     def logPrefix(self):
         return "Telnet"
 
 
-class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
+class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
     """
     Each player connecting over telnet (ie using most traditional mud
     clients) gets a telnet protocol instance assigned to them.  All
     communication between game and player goes through here.
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -79,12 +86,14 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         """
         Unused by default, but a good place to put debug printouts
         of incoming data.
+
         """
         # print(f"telnet dataReceived: {data}")
         try:
             super().dataReceived(data)
         except ValueError as err:
             from evennia.utils import logger
+
             logger.log_err(f"Malformed telnet input: {err}")
 
     def connectionMade(self):
@@ -143,11 +152,15 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         Client refuses do(linemode). This is common for MUD-specific
         clients, but we must ask for the sake of raw telnet. We ignore
         this error.
+
         """
         pass
 
     def _send_nop_keepalive(self):
-        """Send NOP keepalive unless flag is set"""
+        """
+        Send NOP keepalive unless flag is set
+
+        """
         if self.protocol_flags.get("NOPKEEPALIVE"):
             self._write(IAC + NOP)
 
@@ -156,7 +169,8 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         Allow to toggle the NOP keepalive for those sad clients that
         can't even handle a NOP instruction. This is turned off by the
         protocol_flag NOPKEEPALIVE (settable e.g. by the default
-        `@option` command).
+        `option` command).
+
         """
         if self.nop_keep_alive and self.nop_keep_alive.running:
             self.nop_keep_alive.stop()
@@ -170,6 +184,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
         When all have reported, a sync with the server is performed.
         The system will force-call this sync after a small time to handle
         clients that don't reply to handshakes at all.
+
         """
         if timeout:
             if self.handshakes > 0:
@@ -184,6 +199,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     def at_login(self):
         """
         Called when this session gets authenticated by the server.
+
         """
         pass
 
@@ -319,7 +335,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             self.data_in(text=dat + b"\n")
 
     def _write(self, data):
-        """hook overloading the one used in plain telnet"""
+        """
+        Hook overloading the one used in plain telnet
+
+        """
         data = data.replace(b"\n", b"\r\n").replace(b"\r\r\n", b"\r\n")
         super()._write(mccp_compress(self, data))
 
@@ -345,7 +364,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
     def disconnect(self, reason=""):
         """
-        generic hook for the engine to call in order to
+        Generic hook for the engine to call in order to
         disconnect this protocol.
 
         Args:
@@ -374,6 +393,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
 
         Keyword Args:
             kwargs (any): Options to the protocol
+
         """
         self.sessionhandler.data_out(self, **kwargs)
 
@@ -387,19 +407,19 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
         Keyword Args:
-            options (dict): Send-option flags:
+            options (dict): Send-option flags
 
-                - mxp: Enforce MXP link support.
-                - ansi: Enforce no ANSI colors.
-                - xterm256: Enforce xterm256 colors, regardless of TTYPE.
-                - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
-                - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
-                - raw: Pass string through without any ansi processing
-                  (i.e. include Evennia ansi markers but do not
-                  convert them into ansi tokens)
-                - echo: Turn on/off line echo on the client. Turn
-                  off line echo for client, for example for password.
-                  Note that it must be actively turned back on again!
+               - mxp: Enforce MXP link support.
+               - ansi: Enforce no ANSI colors.
+               - xterm256: Enforce xterm256 colors, regardless of TTYPE.
+               - noxterm256: Enforce no xterm256 color support, regardless of TTYPE.
+               - nocolor: Strip all Color, regardless of ansi/xterm256 setting.
+               - raw: Pass string through without any ansi processing
+                    (i.e. include Evennia ansi markers but do not
+                    convert them into ansi tokens)
+               - echo: Turn on/off line echo on the client. Turn
+                    off line echo for client, for example for password.
+                    Note that it must be actively turned back on again!
 
         """
         text = args[0] if args else ""
@@ -440,8 +460,9 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
                     prompt = mxp_parse(prompt)
             prompt = to_bytes(prompt, self)
             prompt = prompt.replace(IAC, IAC + IAC).replace(b"\n", b"\r\n")
-            if not self.protocol_flags.get("NOPROMPTGOAHEAD", 
-                                           self.protocol_flags.get("NOGOAHEAD", True)):
+            if not self.protocol_flags.get(
+                "NOPROMPTGOAHEAD", self.protocol_flags.get("NOGOAHEAD", True)
+            ):
                 prompt += IAC + GA
             self.transport.write(mccp_compress(self, prompt))
         else:
@@ -486,6 +507,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, Session):
     def send_default(self, cmdname, *args, **kwargs):
         """
         Send other oob data
+
         """
         if not cmdname == "options":
             self.oob.data_out(cmdname, *args, **kwargs)

@@ -43,10 +43,9 @@ from twisted.conch import interfaces as iconch
 from twisted.python import components
 from django.conf import settings
 
-from evennia.server import session
 from evennia.accounts.models import AccountDB
 from evennia.utils import ansi
-from evennia.utils.utils import to_str
+from evennia.utils.utils import to_str, class_from_module
 
 _RE_N = re.compile(r"\|n$")
 _RE_SCREENREADER_REGEX = re.compile(
@@ -62,29 +61,33 @@ CTRL_D = "\x04"
 CTRL_BACKSLASH = "\x1c"
 CTRL_L = "\x0c"
 
-_NO_AUTOGEN = """
+_NO_AUTOGEN = f"""
 Evennia could not generate SSH private- and public keys ({{err}})
 Using conch default keys instead.
 
 If this error persists, create the keys manually (using the tools for your OS)
 and put them here:
-    {}
-    {}
-""".format(
-    _PRIVATE_KEY_FILE, _PUBLIC_KEY_FILE
-)
+    {_PRIVATE_KEY_FILE}
+    {_PUBLIC_KEY_FILE}
+"""
+
+_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
 # not used atm
 class SSHServerFactory(protocol.ServerFactory):
-    "This is only to name this better in logs"
+    """
+    This is only to name this better in logs
+
+    """
+
     noisy = False
 
     def logPrefix(self):
         return "SSH"
 
 
-class SshProtocol(Manhole, session.Session):
+class SshProtocol(Manhole, _BASE_SESSION_CLASS):
     """
     Each account connecting over ssh gets this protocol assigned to
     them.  All communication between game and account goes through
@@ -277,18 +280,18 @@ class SshProtocol(Manhole, session.Session):
             text (str): The first argument is always the text string to send. No other arguments
                 are considered.
         Keyword Args:
-            options (dict): Send-option flags:
+            options (dict): Send-option flags (booleans)
 
-                - mxp: Enforce MXP link support.
-                - ansi: Enforce no ANSI colors.
-                - xterm256: Enforce xterm256 colors, regardless of TTYPE setting.
-                - nocolor: Strip all colors.
-                - raw: Pass string through without any ansi processing
-                  (i.e. include Evennia ansi markers but do not
+                - mxp: enforce mxp link support.
+                - ansi: enforce no ansi colors.
+                - xterm256: enforce xterm256 colors, regardless of ttype setting.
+                - nocolor: strip all colors.
+                - raw: pass string through without any ansi processing
+                  (i.e. include evennia ansi markers but do not
                   convert them into ansi tokens)
-                - echo: Turn on/off line echo on the client. Turn
+                - echo: turn on/off line echo on the client. turn
                   off line echo for client, for example for password.
-                  Note that it must be actively turned back on again!
+                  note that it must be actively turned back on again!
 
         """
         # print "telnet.send_text", args,kwargs  # DEBUG

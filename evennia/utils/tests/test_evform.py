@@ -30,9 +30,9 @@ class TestEvForm(TestCase):
             }
         )
         # create the EvTables
-        tableA = evtable.EvTable("HP", "MV", "MP",
-                                 table=[["**"], ["*****"], ["***"]],
-                                 border="incols")
+        tableA = evtable.EvTable(
+            "HP", "MV", "MP", table=[["**"], ["*****"], ["***"]], border="incols"
+        )
         tableB = evtable.EvTable(
             "Skill",
             "Value",
@@ -50,7 +50,7 @@ class TestEvForm(TestCase):
 
     def _simple_form(self, form):
         cellsdict = {1: "Apple", 2: "Banana", 3: "Citrus", 4: "Durian"}
-        formdict = {"FORMCHAR": 'x', "TABLECHAR": 'c', "FORM": form}
+        formdict = {"FORMCHAR": "x", "TABLECHAR": "c", "FORM": form}
         form = evform.EvForm(form=formdict)
         form.map(cellsdict)
         form = ansi.strip_ansi(str(form))
@@ -165,3 +165,87 @@ Durian
 """.lstrip()
         result = self._simple_form(form)
         self.assertEqual(expected, result)
+
+
+# test of issue #2308
+
+_SHEET = """
+.----------------------------------------------.
+| Sheet                                        |
+| xxxxxxxxxxxxxxxxxxxxxxxxxx1xxxxxxxxxxxx      |
+>----------------------------------------------<
+| Ability scores  |     Skills                 |
+| ccccccccccccccc |   ccccccccccccccccccc      |
+| cccccc2cccccccc |   ccccccccccccccccccc      |
+| ccccccccccccccc |   ccccccccccccccccccc      |
+| ccccccccccccccc |   ccccccccccccccccccc      |
+| ccccccccccccccc |   ccccccccccccccccccc      |
+| ccccccccccccccc |   ccccccccccccccccccc      |
+| ccccccccccccccc |   ccccccccccccccccccc      |
+| ccccccccccccccc |   ccccccccccccccccccc      |
+| ccccccccccccccc |   ccccccccccccccccccc      |
+|                 |   ccccccccc3ccccccccc      |
+|                 |   ccccccccccccccccccc      |
+|                 |   ccccccccccccccccccc      |
+|                 |   ccccccccccccccccccc      |
+|                 |                            |
++----------------------------------------------+
+"""
+_EXPECTED = """
+.----------------------------------------------.
+| Sheet                                        |
+| Test text                                    |
+>----------------------------------------------<
+| Ability scores  |     Skills                 |
+| +------+------+ |   +--------+--------+      |
+| |Ab    |Sc    | |   |Skill   |Level   |      |
+| +~~~~~~+~~~~~~+ |   +~~~~~~~~+~~~~~~~~+      |
+| |STR   |10    | |   |Acro    |10      |      |
+| |CON   |10    | |   |Anim    |10      |      |
+| |DEX   |10    | |   |Arca    |10      |      |
+| |      |      | |   |Ath     |10      |      |
+| |      |      | |   |Dec     |10      |      |
+| +------+------+ |   |His     |10      |      |
+|                 |   |        |        |      |
+|                 |   |        |        |      |
+|                 |   |        |        |      |
+|                 |   +--------+--------+      |
+|                 |                            |
++----------------------------------------------+
+"""
+
+
+class TestEvFormParallelTables(TestCase):
+    """
+    Test of issue #2308
+    https://github.com/evennia/evennia/issues/2308
+    where parallel tables cause strange overlaps
+    in output
+
+    """
+
+    def setUp(self):
+        self.text1 = "Test text"
+        self.table2 = evtable.EvTable("Ab", "Sc", table=[["|ySTR", "|yCON", "|yDEX"], [10, 10, 10]])
+        self.table3 = evtable.EvTable(
+            "|RSkill",
+            "|RLevel",
+            table=[
+                ["|yAcro", "|yAnim", "|yArca", "|yAth", "|yDec", "|yHis"],
+                [10, 10, 10, 10, 10, 10],
+            ],
+        )
+        self.formdict = {"FORM": _SHEET, "FORMCHAR": "x", "TABLECHAR": "c"}
+
+    def test_parallel_tables(self):
+        """
+        Build form to check for error.
+        """
+        form = evform.EvForm(form=self.formdict)
+        form.map(
+            cells={
+                "1": self.text1,
+            },
+            tables={"2": self.table2, "3": self.table3},
+        )
+        self.assertEqual(ansi.strip_ansi(str(form).strip()), _EXPECTED.strip())

@@ -11,15 +11,15 @@ from os import rename
 
 def _rst2md(filename_rst):
 
-    with open(filename_rst, 'r') as fil:
+    with open(filename_rst, "r") as fil:
         # read rst file, reformat and save
         txt = fil.read()
-    with open(filename_rst, 'w') as fil:
+    with open(filename_rst, "w") as fil:
         txt = "```{eval-rst}\n" + txt + "\n```"
         fil.write(txt)
 
     # rename .rst file to .md file
-    filename, _ = filename_rst.rsplit('.', 1)
+    filename, _ = filename_rst.rsplit(".", 1)
     filename_md = filename + ".md"
     rename(filename_rst, filename_md)
 

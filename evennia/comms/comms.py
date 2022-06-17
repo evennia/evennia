@@ -7,12 +7,10 @@ from django.urls import reverse
 from django.utils.text import slugify
 
 from evennia.typeclasses.models import TypeclassBase
-from evennia.comms.models import TempMsg, ChannelDB
+from evennia.comms.models import ChannelDB
 from evennia.comms.managers import ChannelManager
 from evennia.utils import create, logger
 from evennia.utils.utils import make_iter
-
-_CHANNEL_HANDLER = None
 
 
 class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
@@ -20,9 +18,54 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
     This is the base class for all Channel Comms. Inherit from this to
     create different types of communication channels.
 
+    Class-level variables:
+    - `send_to_online_only` (bool, default True) - if set, will only try to
+      send to subscribers that are actually active. This is a useful optimization.
+    - `log_file` (str, default `"channel_{channelname}.log"`). This is the
+      log file to which the channel history will be saved. The `{channelname}` tag
+      will be replaced by the key of the Channel. If an Attribute 'log_file'
+      is set, this will be used instead. If this is None and no Attribute is found,
+      no history will be saved.
+    - `channel_prefix_string` (str, default `"[{channelname} ]"`) - this is used
+      as a simple template to get the channel prefix with `.channel_prefix()`. It is used
+      in front of every channel message; use `{channelmessage}` token to insert the
+      name of the current channel. Set to `None` if you want no prefix (or want to
+      handle it in a hook during message generation instead.
+    - `channel_msg_nick_pattern`(str, default `"{alias}\\s*?|{alias}\\s+?(?P<arg1>.+?)") -
+      this is what used when a channel subscriber gets a channel nick assigned to this
+      channel. The nickhandler uses the pattern to pick out this channel's name from user
+      input. The `{alias}` token will get both the channel's key and any set/custom aliases
+      per subscriber. You need to allow for an `<arg1>` regex group to catch any message
+      that should be send to the  channel. You usually don't need to change this pattern
+      unless you are changing channel command-style entirely.
+    - `channel_msg_nick_replacement` (str, default `"channel {channelname} = $1"` - this
+      is used by the nickhandler to generate a replacement string once the nickhandler (using
+      the `channel_msg_nick_pattern`) identifies that the channel should be addressed
+      to send a message to it. The `<arg1>` regex pattern match from `channel_msg_nick_pattern`
+      will end up at the `$1` position in the replacement. Together, this allows you do e.g.
+      'public Hello' and have that become a mapping to `channel public = Hello`. By default,
+      the account-level `channel` command is used. If you were to rename that command you must
+      tweak the output to something like `yourchannelcommandname {channelname} = $1`.
+
     """
 
     objects = ChannelManager()
+
+    # channel configuration
+
+    # only send to characters/accounts who has an active session (this is a
+    # good optimization since people can still recover history separately).
+    send_to_online_only = True
+    # store log in log file. `channel_key tag will be replace with key of channel.
+    # Will use log_file Attribute first, if given
+    log_file = "channel_{channelname}.log"
+    # which prefix to use when showing were a message is coming from. Set to
+    # None to disable and set this later.
+    channel_prefix_string = "[{channelname}] "
+
+    # default nick-alias replacements (default using the 'channel' command)
+    channel_msg_nick_pattern = r"{alias}\s*?|{alias}\s+?(?P<arg1>.+?)"
+    channel_msg_nick_replacement = "channel {channelname} = $1"
 
     def at_first_save(self):
         """
@@ -33,7 +76,9 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         self.basetype_setup()
         self.at_channel_creation()
-        self.attributes.add("log_file", "channel_%s.log" % self.key)
+        # initialize Attribute/TagProperties
+        self.init_evennia_properties()
+
         if hasattr(self, "_createdict"):
             # this is only set if the channel was created
             # with the utils.create.create_channel function.
@@ -55,14 +100,11 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 self.tags.batch_add(*cdict["tags"])
 
     def basetype_setup(self):
-        # delayed import of the channelhandler
-        global _CHANNEL_HANDLER
-        if not _CHANNEL_HANDLER:
-            from evennia.comms.channelhandler import CHANNEL_HANDLER as _CHANNEL_HANDLER
-        # register ourselves with the channelhandler.
-        _CHANNEL_HANDLER.add(self)
-
         self.locks.add("send:all();listen:all();control:perm(Admin)")
+
+        # make sure we don't have access to a same-named old channel's history.
+        log_file = self.get_log_filename()
+        logger.rotate_log_file(log_file, num_lines_to_append=0)
 
     def at_channel_creation(self):
         """
@@ -72,6 +114,34 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         pass
 
     # helper methods, for easy overloading
+
+    _log_file = None
+
+    def get_log_filename(self):
+        """
+        File name to use for channel log.
+
+        Returns:
+            str: The filename to use (this is always assumed to be inside
+                settings.LOG_DIR)
+
+        """
+        if not self._log_file:
+            self._log_file = self.attributes.get(
+                "log_file", self.log_file.format(channelname=self.key.lower())
+            )
+        return self._log_file
+
+    def set_log_filename(self, filename):
+        """
+        Set a custom log filename.
+
+        Args:
+            filename (str): The filename to set. This is a path starting from
+                inside the settings.LOG_DIR location.
+
+        """
+        self.attributes.add("log_file", filename)
 
     def has_connection(self, subscriber):
         """
@@ -102,6 +172,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         return self.db.mute_list or []
 
     @property
+    def banlist(self):
+        return self.db.ban_list or []
+
+    @property
     def wholist(self):
         subs = self.subscriptions.all()
         muted = list(self.mutelist)
@@ -129,6 +203,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
+        Returns:
+            bool: True if muting was successful, False if we were already
+                muted.
+
         """
         mutelist = self.mutelist
         if subscriber not in mutelist:
@@ -139,19 +217,67 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
     def unmute(self, subscriber, **kwargs):
         """
-        Removes an entity to the list of muted subscribers.  A muted subscriber will no longer see channel messages,
-        but may use channel commands.
+        Removes an entity from the list of muted subscribers.  A muted subscriber
+        will no longer see channel messages, but may use channel commands.
 
         Args:
             subscriber (Object or Account): The subscriber to unmute.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
+        Returns:
+            bool: True if unmuting was successful, False if we were already
+                unmuted.
+
         """
         mutelist = self.mutelist
         if subscriber in mutelist:
             mutelist.remove(subscriber)
-            self.db.mute_list = mutelist
+            return True
+        return False
+
+    def ban(self, target, **kwargs):
+        """
+        Ban a given user from connecting to the channel. This will not stop
+        users already connected, so the user must be booted for this to take
+        effect.
+
+        Args:
+            target (Object or Account): The entity to unmute. This need not
+                be a subscriber.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            bool: True if banning was successful, False if target was already
+                banned.
+        """
+        banlist = self.banlist
+        if target not in banlist:
+            banlist.append(target)
+            self.db.ban_list = banlist
+            return True
+        return False
+
+    def unban(self, target, **kwargs):
+        """
+        Un-Ban a given user. This will not reconnect them - they will still
+        have to reconnect and set up aliases anew.
+
+        Args:
+            target (Object or Account): The entity to unmute. This need not
+                be a subscriber.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            bool: True if unbanning was successful, False if target was not
+                previously banned.
+        """
+        banlist = list(self.banlist)
+        if target in banlist:
+            banlist = [banned for banned in banlist if banned != target]
+            self.db.ban_list = banlist
             return True
         return False
 
@@ -171,7 +297,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         """
         # check access
-        if not self.access(subscriber, "listen"):
+        if subscriber in self.banlist or not self.access(subscriber, "listen"):
             return False
         # pre-join hook
         connect = self.pre_join_channel(subscriber)
@@ -244,7 +370,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         )
 
     @classmethod
-    def create(cls, key, account=None, *args, **kwargs):
+    def create(cls, key, creator=None, *args, **kwargs):
         """
         Creates a basic Channel with default parameters, unless otherwise
         specified or extended.
@@ -253,7 +379,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
         Args:
             key (str): This must be unique.
-            account (Account): Account to attribute this object to.
+            creator (Account or Object): Entity to associate with this channel
+                (used for tracking)
 
         Keyword Args:
             aliases (list of str): List of alternative (likely shorter) keynames.
@@ -281,8 +408,8 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             # Record creator id and creation IP
             if ip:
                 obj.db.creator_ip = ip
-            if account:
-                obj.db.creator_id = account.id
+            if creator:
+                obj.db.creator_id = creator.id
 
         except Exception as exc:
             errors.append("An error occurred while creating this '%s' object." % key)
@@ -292,284 +419,202 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
 
     def delete(self):
         """
-        Deletes channel while also cleaning up channelhandler.
+        Deletes channel.
+
+        Returns:
+            bool: If deletion was successful. Only time it can fail would be
+                if channel was already deleted. Even if it were to fail, all subscribers
+                will be disconnected.
 
         """
         self.attributes.clear()
         self.aliases.clear()
-        super().delete()
-        from evennia.comms.channelhandler import CHANNELHANDLER
-
-        CHANNELHANDLER.update()
-
-    def message_transform(
-        self, msgobj, emit=False, prefix=True, sender_strings=None, external=False, **kwargs
-    ):
-        """
-        Generates the formatted string sent to listeners on a channel.
-
-        Args:
-            msgobj (Msg): Message object to send.
-            emit (bool, optional): In emit mode the message is not associated
-                with a specific sender name.
-            prefix (bool, optional): Prefix `msg` with a text given by `self.channel_prefix`.
-            sender_strings (list, optional): Used by bots etc, one string per external sender.
-            external (bool, optional): If this is an external sender or not.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
-        """
-        if sender_strings or external:
-            body = self.format_external(msgobj, sender_strings, emit=emit)
-        else:
-            body = self.format_message(msgobj, emit=emit)
-        if prefix:
-            body = "%s%s" % (self.channel_prefix(msgobj, emit=emit), body)
-        msgobj.message = body
-        return msgobj
-
-    def distribute_message(self, msgobj, online=False, **kwargs):
-        """
-        Method for grabbing all listeners that a message should be
-        sent to on this channel, and sending them a message.
-
-        Args:
-            msgobj (Msg or TempMsg): Message to distribute.
-            online (bool): Only send to receivers who are actually online
-                (not currently used):
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
-        Notes:
-            This is also where logging happens, if enabled.
-
-        """
-        # get all accounts or objects connected to this channel and send to them
-        if online:
-            subs = self.subscriptions.online()
-        else:
-            subs = self.subscriptions.all()
-        for entity in subs:
-            # if the entity is muted, we don't send them a message
-            if entity in self.mutelist:
-                continue
-            try:
-                # note our addition of the from_channel keyword here. This could be checked
-                # by a custom account.msg() to treat channel-receives differently.
-                entity.msg(
-                    msgobj.message, from_obj=msgobj.senders, options={"from_channel": self.id}
-                )
-            except AttributeError as e:
-                logger.log_trace("%s\nCannot send msg to '%s'." % (e, entity))
-
-        if msgobj.keep_log:
-            # log to file
-            logger.log_file(
-                msgobj.message, self.attributes.get("log_file") or "channel_%s.log" % self.key
-            )
-
-    def msg(
-        self,
-        msgobj,
-        header=None,
-        senders=None,
-        sender_strings=None,
-        keep_log=None,
-        online=False,
-        emit=False,
-        external=False,
-    ):
-        """
-        Send the given message to all accounts connected to channel. Note that
-        no permission-checking is done here; it is assumed to have been
-        done before calling this method. The optional keywords are not used if
-        persistent is False.
-
-        Args:
-            msgobj (Msg, TempMsg or str): If a Msg/TempMsg, the remaining
-                keywords will be ignored (since the Msg/TempMsg object already
-                has all the data). If a string, this will either be sent as-is
-                (if persistent=False) or it will be used together with `header`
-                and `senders` keywords to create a Msg instance on the fly.
-            header (str, optional): A header for building the message.
-            senders (Object, Account or list, optional): Optional if persistent=False, used
-                to build senders for the message.
-            sender_strings (list, optional): Name strings of senders. Used for external
-                connections where the sender is not an account or object.
-                When this is defined, external will be assumed. The list will be 
-                filtered so each sender-string only occurs once.
-            keep_log (bool or None, optional): This allows to temporarily change the logging status of
-                this channel message. If `None`, the Channel's `keep_log` Attribute will
-                be used. If `True` or `False`, that logging status will be used for this
-                message only (note that for unlogged channels, a `True` value here will
-                create a new log file only for this message).
-            online (bool, optional) - If this is set true, only messages people who are
-                online. Otherwise, messages all accounts connected. This can
-                make things faster, but may not trigger listeners on accounts
-                that are offline.
-            emit (bool, optional) - Signals to the message formatter that this message is
-                not to be directly associated with a name.
-            external (bool, optional): Treat this message as being
-                agnostic of its sender.
-
-        Returns:
-            success (bool): Returns `True` if message sending was
-                successful, `False` otherwise.
-
-        """
-        senders = make_iter(senders) if senders else []
-        if isinstance(msgobj, str):
-            # given msgobj is a string - convert to msgobject (always TempMsg)
-            msgobj = TempMsg(senders=senders, header=header, message=msgobj, channels=[self])
-        # we store the logging setting for use in distribute_message()
-        msgobj.keep_log = keep_log if keep_log is not None else self.db.keep_log
-
-        # start the sending
-        msgobj = self.pre_send_message(msgobj)
-        if not msgobj:
+        for subscriber in self.subscriptions.all():
+            self.disconnect(subscriber)
+        if not self.pk:
             return False
-        if sender_strings:
-            sender_strings = list(set(make_iter(sender_strings)))
-        msgobj = self.message_transform(
-            msgobj, emit=emit, sender_strings=sender_strings, external=external
-        )
-        self.distribute_message(msgobj, online=online)
-        self.post_send_message(msgobj)
+        super().delete()
         return True
 
-    def tempmsg(self, message, header=None, senders=None):
-        """
-        A wrapper for sending non-persistent messages.
-
-        Args:
-            message (str): Message to send.
-            header (str, optional): Header of message to send.
-            senders (Object or list, optional): Senders of message to send.
-
-        """
-        self.msg(message, senders=senders, header=header, keep_log=False)
-
-    # hooks
-
-    def channel_prefix(self, msg=None, emit=False, **kwargs):
+    def channel_prefix(self):
         """
         Hook method. How the channel should prefix itself for users.
 
-        Args:
-            msg (str, optional): Prefix text
-            emit (bool, optional): Switches to emit mode, which usually
-                means to not prefix the channel's info.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
         Returns:
-            prefix (str): The created channel prefix.
+            str: The channel prefix.
 
         """
-        return "" if emit else "[%s] " % self.key
+        return self.channel_prefix_string.format(channelname=self.key)
 
-    def format_senders(self, senders=None, **kwargs):
+    def add_user_channel_alias(self, user, alias, **kwargs):
         """
-        Hook method. Function used to format a list of sender names.
+        Add a personal user-alias for this channel to a given subscriber.
 
         Args:
-            senders (list): Sender object names.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
+            user (Object or Account): The one to alias this channel.
+            alias (str): The desired alias.
 
-        Returns:
-            formatted_list (str): The list of names formatted appropriately.
+        Note:
+            This is tightly coupled to the default `channel` command. If you
+            change that, you need to change this as well.
+
+            We add two nicks - one is a plain `alias -> channel.key` that
+            users need to be able to reference this channel easily. The other
+            is a templated nick to easily be able to send messages to the
+            channel without needing to give the full `channel` command. The
+            structure of this nick is given by `self.channel_msg_nick_pattern`
+            and `self.channel_msg_nick_replacement`. By default it maps
+            `alias <msg> -> channel <channelname> = <msg>`, so that you can
+            for example just write `pub Hello` to send a message.
+
+            The alias created is `alias $1 -> channel channel = $1`, to allow
+            for sending to channel using the main channel command.
+
+        """
+        chan_key = self.key.lower()
+
+        # the message-pattern allows us to type the channel on its own without
+        # needing to use the `channel` command explicitly.
+        msg_nick_pattern = self.channel_msg_nick_pattern.format(alias=alias)
+        msg_nick_replacement = self.channel_msg_nick_replacement.format(channelname=chan_key)
+        user.nicks.add(
+            msg_nick_pattern,
+            msg_nick_replacement,
+            category="inputline",
+            pattern_is_regex=True,
+            **kwargs,
+        )
+
+        if chan_key != alias:
+            # this allows for using the alias for general channel lookups
+            user.nicks.add(alias, chan_key, category="channel", **kwargs)
+
+    @classmethod
+    def remove_user_channel_alias(cls, user, alias, **kwargs):
+        """
+        Remove a personal channel alias from a user.
+
+        Args:
+           user (Object or Account): The user to remove an alias from.
+           alias (str): The alias to remove.
+           **kwargs: Unused by default. Can be used to pass extra variables
+                into a custom implementation.
 
         Notes:
-            This function exists separately so that external sources
-            can use it to format source names in the same manner as
-            normal object/account names.
+            The channel-alias actually consists of two aliases - one
+            channel-based one for searching channels with the alias and one
+            inputline one for doing the 'channelalias msg' - call.
+
+            This is a classmethod because it doesn't actually operate on the
+            channel instance.
+
+            It sits on the channel because the nick structure for this is
+            pretty complex and needs to be located in a central place (rather
+            on, say, the channel command).
 
         """
-        if not senders:
-            return ""
-        return ", ".join(senders)
+        user.nicks.remove(alias, category="channel", **kwargs)
+        msg_nick_pattern = cls.channel_msg_nick_pattern.format(alias=alias)
+        user.nicks.remove(msg_nick_pattern, category="inputline", **kwargs)
 
-    def pose_transform(self, msgobj, sender_string, **kwargs):
+    def at_pre_msg(self, message, **kwargs):
         """
-        Hook method. Detects if the sender is posing, and modifies the
-        message accordingly.
+        Called before the starting of sending the message to a receiver. This
+        is called before any hooks on the receiver itself. If this returns
+        None/False, the sending will be aborted.
 
         Args:
-            msgobj (Msg or TempMsg): The message to analyze for a pose.
-            sender_string (str): The name of the sender/poser.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
+            message (str): The message to send.
+            **kwargs (any): Keywords passed on from `.msg`. This includes
+                `senders`.
 
         Returns:
-            string (str): A message that combines the `sender_string`
-                component with `msg` in different ways depending on if a
-                pose was performed or not (this must be analyzed by the
-                hook).
+            str, False or None: Any custom changes made to the message. If
+                falsy, no message will be sent.
 
         """
-        pose = False
-        message = msgobj.message
-        message_start = message.lstrip()
-        if message_start.startswith((":", ";")):
-            pose = True
-            message = message[1:]
-            if not message.startswith((":", "'", ",")):
-                if not message.startswith(" "):
-                    message = " " + message
-        if pose:
-            return "%s%s" % (sender_string, message)
+        return message
+
+    def msg(self, message, senders=None, bypass_mute=False, **kwargs):
+        """
+        Send message to channel, causing it to be distributed to all non-muted
+        subscribed users of that channel.
+
+        Args:
+            message (str): The message to send.
+            senders (Object, Account or list, optional): If not given, there is
+                no way to associate one or more senders with the message (like
+                a broadcast message or similar).
+            bypass_mute (bool, optional): If set, always send, regardless of
+                individual mute-state of subscriber. This can be used for
+                global announcements or warnings/alerts.
+            **kwargs (any): This will be passed on to all hooks. Use `no_prefix`
+                to exclude the channel prefix.
+
+        Notes:
+            The call hook calling sequence is:
+
+            - `msg = channel.at_pre_msg(message, **kwargs)` (aborts for all if return None)
+            - `msg = receiver.at_pre_channel_msg(msg, channel, **kwargs)` (aborts for receiver if return None)
+            - `receiver.at_channel_msg(msg, channel, **kwargs)`
+            - `receiver.at_post_channel_msg(msg, channel, **kwargs)``
+            Called after all receivers are processed:
+            - `channel.at_post_all_msg(message, **kwargs)`
+
+            (where the senders/bypass_mute are embedded into **kwargs for
+            later access in hooks)
+
+        """
+        senders = make_iter(senders) if senders else []
+        if self.send_to_online_only:
+            receivers = self.subscriptions.online()
         else:
-            return "%s: %s" % (sender_string, message)
+            receivers = self.subscriptions.all()
+        if not bypass_mute:
+            receivers = [receiver for receiver in receivers if receiver not in self.mutelist]
 
-    def format_external(self, msgobj, senders, emit=False, **kwargs):
+        send_kwargs = {"senders": senders, "bypass_mute": bypass_mute, **kwargs}
+
+        # pre-send hook
+        message = self.at_pre_msg(message, **send_kwargs)
+        if message in (None, False):
+            return
+
+        for receiver in receivers:
+            # send to each individual subscriber
+
+            try:
+                recv_message = receiver.at_pre_channel_msg(message, self, **send_kwargs)
+                if recv_message in (None, False):
+                    return
+
+                receiver.channel_msg(recv_message, self, **send_kwargs)
+
+                receiver.at_post_channel_msg(recv_message, self, **send_kwargs)
+
+            except Exception:
+                logger.log_trace(f"Error sending channel message to {receiver}.")
+
+        # post-send hook
+        self.at_post_msg(message, **send_kwargs)
+
+    def at_post_msg(self, message, **kwargs):
         """
-        Hook method. Used for formatting external messages. This is
-        needed as a separate operation because the senders of external
-        messages may not be in-game objects/accounts, and so cannot
-        have things like custom user preferences.
+        This is called after sending to *all* valid recipients. It is normally
+        used for logging/channel history.
 
         Args:
-            msgobj (Msg or TempMsg): The message to send.
-            senders (list): Strings, one per sender.
-            emit (bool, optional): A sender-agnostic message or not.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
-        Returns:
-            transformed (str): A formatted string.
+            message (str): The message sent.
+            **kwargs (any): Keywords passed on from `msg`, including `senders`.
 
         """
-        if emit or not senders:
-            return msgobj.message
-        senders = ", ".join(senders)
-        return self.pose_transform(msgobj, senders)
-
-    def format_message(self, msgobj, emit=False, **kwargs):
-        """
-        Hook method. Formats a message body for display.
-
-        Args:
-            msgobj (Msg or TempMsg): The message object to send.
-            emit (bool, optional): The message is agnostic of senders.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
-        Returns:
-            transformed (str): The formatted message.
-
-        """
-        # We don't want to count things like external sources as senders for
-        # the purpose of constructing the message string.
-        senders = [sender for sender in msgobj.senders if hasattr(sender, "key")]
-        if not senders:
-            emit = True
-        if emit:
-            return msgobj.message
-        else:
-            senders = [sender.key for sender in msgobj.senders]
-            senders = ", ".join(senders)
-            return self.pose_transform(msgobj, senders)
+        # save channel history to log file
+        log_file = self.get_log_filename()
+        if log_file:
+            senders = ",".join(sender.key for sender in kwargs.get("senders", []))
+            senders = f"{senders}: " if senders else ""
+            message = f"{senders}{message}"
+            logger.log_file(message, log_file)
 
     def pre_join_channel(self, joiner, **kwargs):
         """
@@ -596,8 +641,13 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
+        Notes:
+            By default this adds the needed channel nicks to the joiner.
+
         """
-        pass
+        key_and_aliases = [self.key.lower()] + [alias.lower() for alias in self.aliases.all()]
+        for key_or_alias in key_and_aliases:
+            self.add_user_channel_alias(joiner, key_or_alias, **kwargs)
 
     def pre_leave_channel(self, leaver, **kwargs):
         """
@@ -625,36 +675,12 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 overriding the call (unused by default).
 
         """
-        pass
-
-    def pre_send_message(self, msg, **kwargs):
-        """
-        Hook method.  Runs before a message is sent to the channel and
-        should return the message object, after any transformations.
-        If the message is to be discarded, return a false value.
-
-        Args:
-            msg (Msg or TempMsg): Message to send.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
-        Returns:
-            result (Msg, TempMsg or bool): If False, abort send.
-
-        """
-        return msg
-
-    def post_send_message(self, msg, **kwargs):
-        """
-        Hook method. Run after a message is sent to the channel.
-
-        Args:
-            msg (Msg or TempMsg): Message sent.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
-
-        """
-        pass
+        chan_key = self.key.lower()
+        key_or_aliases = [self.key.lower()] + [alias.lower() for alias in self.aliases.all()]
+        nicktuples = leaver.nicks.get(category="channel", return_tuple=True, return_list=True)
+        key_or_aliases += [tup[2] for tup in nicktuples if tup[3].lower() == chan_key]
+        for key_or_alias in key_or_aliases:
+            self.remove_user_channel_alias(leaver, key_or_alias, **kwargs)
 
     def at_init(self):
         """
@@ -714,7 +740,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         """
         try:
             return reverse("%s-create" % slugify(cls._meta.verbose_name))
-        except:
+        except Exception:
             return "#"
 
     def web_get_detail_url(self):
@@ -729,8 +755,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         a named view of 'channel-detail' would be referenced by this method.
 
         ex.
-        url(r'channels/(?P<slug>[\w\d\-]+)/$',
-            ChannelDetailView.as_view(), name='channel-detail')
+        ::
+
+            url(r'channels/(?P<slug>[\w\d\-]+)/$',
+                ChannelDetailView.as_view(), name='channel-detail')
 
         If no View has been created and defined in urls.py, returns an
         HTML anchor.
@@ -748,7 +776,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 "%s-detail" % slugify(self._meta.verbose_name),
                 kwargs={"slug": slugify(self.db_key)},
             )
-        except:
+        except Exception:
             return "#"
 
     def web_get_update_url(self):
@@ -763,8 +791,10 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         a named view of 'channel-update' would be referenced by this method.
 
         ex.
-        url(r'channels/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
-            ChannelUpdateView.as_view(), name='channel-update')
+        ::
+
+            url(r'channels/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
+                ChannelUpdateView.as_view(), name='channel-update')
 
         If no View has been created and defined in urls.py, returns an
         HTML anchor.
@@ -782,7 +812,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 "%s-update" % slugify(self._meta.verbose_name),
                 kwargs={"slug": slugify(self.db_key)},
             )
-        except:
+        except Exception:
             return "#"
 
     def web_get_delete_url(self):
@@ -815,8 +845,48 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
                 "%s-delete" % slugify(self._meta.verbose_name),
                 kwargs={"slug": slugify(self.db_key)},
             )
-        except:
+        except Exception:
             return "#"
 
     # Used by Django Sites/Admin
     get_absolute_url = web_get_detail_url
+
+    # TODO Evennia 1.0+ removed hooks. Remove in 1.1.
+    def message_transform(self, *args, **kwargs):
+        raise RuntimeError(
+            "Channel.message_transform is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
+
+    def distribute_message(self, msgobj, online=False, **kwargs):
+        raise RuntimeError("Channel.distribute_message is no longer used in 1.0+.")
+
+    def format_senders(self, senders=None, **kwargs):
+        raise RuntimeError(
+            "Channel.format_senders is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
+
+    def pose_transform(self, msgobj, sender_string, **kwargs):
+        raise RuntimeError(
+            "Channel.pose_transform is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
+
+    def format_external(self, msgobj, senders, emit=False, **kwargs):
+        raise RuntimeError(
+            "Channel.format_external is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
+
+    def format_message(self, msgobj, emit=False, **kwargs):
+        raise RuntimeError(
+            "Channel.format_message is no longer used in 1.0+. "
+            "Use Account/Object.at_pre_channel_msg instead."
+        )
+
+    def pre_send_message(self, msg, **kwargs):
+        raise RuntimeError("Channel.pre_send_message was renamed to Channel.at_pre_msg.")
+
+    def post_send_message(self, msg, **kwargs):
+        raise RuntimeError("Channel.post_send_message was renamed to Channel.at_post_msg.")

@@ -6,10 +6,6 @@ command line. The processing of a command works as follows:
 
 1. The calling object (caller) is analyzed based on its callertype.
 2. Cmdsets are gathered from different sources:
-   - channels:  all available channel names are auto-created into a cmdset, to allow
-     for giving the channel name and have the following immediately
-     sent to the channel. The sending is performed by the CMD_CHANNEL
-     system command.
    - object cmdsets: all objects at caller's location are scanned for non-empty
      cmdsets. This includes cmdsets on exits.
    - caller: the caller is searched for its own currently active cmdset.
@@ -23,14 +19,12 @@ command line. The processing of a command works as follows:
    cmdset, or fallback to error message. Exit.
 7. If no match was found -> check for CMD_NOMATCH in current cmdset or
    fallback to error message. Exit.
-8. A single match was found. If this is a channel-command (i.e. the
-   ommand name is that of a channel), --> check for CMD_CHANNEL in
-   current cmdset or use channelhandler default. Exit.
-9. At this point we have found a normal command. We assign useful variables to it that
+8. At this point we have found a normal command. We assign useful variables to it that
    will be available to the command coder at run-time.
-12. We have a unique cmdobject, primed for use. Call all hooks:
+9. We have a unique cmdobject, primed for use. Call all hooks:
    `at_pre_cmd()`, `cmdobj.parse()`, `cmdobj.func()` and finally `at_post_cmd()`.
-13. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).
+10. Return deferred that will fire with the return from `cmdobj.func()` (unused by default).
+
 """
 
 from collections import defaultdict
@@ -44,7 +38,6 @@ from twisted.internet.task import deferLater
 from twisted.internet.defer import inlineCallbacks, returnValue
 from django.conf import settings
 from evennia.commands.command import InterruptCommand
-from evennia.comms.channelhandler import CHANNELHANDLER
 from evennia.utils import logger, utils
 from evennia.utils.utils import string_suggestions
 
@@ -75,11 +68,10 @@ CMD_NOINPUT = "__noinput_command"
 CMD_NOMATCH = "__nomatch_command"
 # command to call if multiple command matches were found
 CMD_MULTIMATCH = "__multimatch_command"
-# command to call if found command is the name of a channel
-CMD_CHANNEL = "__send_to_channel_command"
 # command to call as the very first one when the user connects.
 # (is expected to display the login screen)
 CMD_LOGINSTART = "__unloggedin_look_command"
+
 
 # Function for handling multiple command matches.
 _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
@@ -88,50 +80,66 @@ _SEARCH_AT_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 # is the normal "production message to echo to the account.
 
 _ERROR_UNTRAPPED = (
-    """
+    _(
+        """
 An untrapped error occurred.
-""",
-    """
+"""
+    ),
+    _(
+        """
 An untrapped error occurred. Please file a bug report detailing the steps to reproduce.
-""",
+"""
+    ),
 )
 
 _ERROR_CMDSETS = (
-    """
+    _(
+        """
 A cmdset merger-error occurred. This is often due to a syntax
 error in one of the cmdsets to merge.
-""",
-    """
+"""
+    ),
+    _(
+        """
 A cmdset merger-error occurred. Please file a bug report detailing the
 steps to reproduce.
-""",
+"""
+    ),
 )
 
 _ERROR_NOCMDSETS = (
-    """
+    _(
+        """
 No command sets found! This is a critical bug that can have
 multiple causes.
-""",
-    """
+"""
+    ),
+    _(
+        """
 No command sets found! This is a sign of a critical bug.  If
 disconnecting/reconnecting doesn't" solve the problem, try to contact
 the server admin through" some other means for assistance.
-""",
+"""
+    ),
 )
 
 _ERROR_CMDHANDLER = (
-    """
+    _(
+        """
 A command handler bug occurred. If this is not due to a local change,
 please file a bug report with the Evennia project, including the
 traceback and steps to reproduce.
-""",
-    """
+"""
+    ),
+    _(
+        """
 A command handler bug occurred. Please notify staff - they should
 likely file a bug report with the Evennia project.
-""",
+"""
+    ),
 )
 
-_ERROR_RECURSION_LIMIT = (
+_ERROR_RECURSION_LIMIT = _(
     "Command recursion limit ({recursion_limit}) " "reached for '{raw_cmdname}' ({cmdclass})."
 )
 
@@ -154,7 +162,7 @@ def _msg_err(receiver, stringtuple):
             production string (with a timestamp) to be shown to the user.
 
     """
-    string = "{traceback}\n{errmsg}\n(Traceback was logged {timestamp})."
+    string = _("{traceback}\n{errmsg}\n(Traceback was logged {timestamp}).")
     timestamp = logger.timeformat()
     tracestring = format_exc()
     logger.log_trace()
@@ -304,22 +312,10 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
     try:
 
         @inlineCallbacks
-        def _get_channel_cmdset(account_or_obj):
-            """
-            Helper-method; Get channel-cmdsets
-            """
-            # Create cmdset for all account's available channels
-            try:
-                channel_cmdset = yield CHANNELHANDLER.get_cmdset(account_or_obj)
-                returnValue([channel_cmdset])
-            except Exception:
-                _msg_err(caller, _ERROR_CMDSETS)
-                raise ErrorReported(raw_string)
-
-        @inlineCallbacks
         def _get_local_obj_cmdsets(obj):
             """
             Helper-method; Get Object-level cmdsets
+
             """
             # Gather cmdsets from location, objects in location or carried
             try:
@@ -373,6 +369,7 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
             """
             Helper method; Get cmdset while making sure to trigger all
             hooks safely. Returns the stack and the valid options.
+
             """
             try:
                 yield obj.at_cmdset_get()
@@ -405,13 +402,6 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                                 cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                             ]
                         cmdsets += local_obj_cmdsets
-                    if not current.no_channels:
-                        # also objs may have channels
-                        channel_cmdsets = yield _get_channel_cmdset(obj)
-                        cmdsets += channel_cmdsets
-                if not current.no_channels:
-                    channel_cmdsets = yield _get_channel_cmdset(account)
-                    cmdsets += channel_cmdsets
 
         elif callertype == "account":
             # we are calling the command from the account level
@@ -429,11 +419,6 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                             cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                         ]
                     cmdsets += local_obj_cmdsets
-                if not current.no_channels:
-                    # also objs may have channels
-                    cmdsets += yield _get_channel_cmdset(obj)
-            if not current.no_channels:
-                cmdsets += yield _get_channel_cmdset(account)
 
         elif callertype == "object":
             # we are calling the command from the object level
@@ -447,9 +432,6 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
                         cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
                     ]
                 cmdsets += yield local_obj_cmdsets
-            if not current.no_channels:
-                # also objs may have channels
-                cmdsets += yield _get_channel_cmdset(obj)
         else:
             raise Exception("get_and_merge_cmdsets: callertype %s is not valid." % callertype)
 
@@ -607,11 +589,6 @@ def cmdhandler(
             # cmd.obj  # set via on-object cmdset handler for each command,
             # since this may be different for every command when
             # merging multiple cmdsets
-
-            if hasattr(cmd, "obj") and hasattr(cmd.obj, "scripts"):
-                # cmd.obj is automatically made available by the cmdhandler.
-                # we make sure to validate its scripts.
-                yield cmd.obj.scripts.validate()
 
             if _testing:
                 # only return the command instance
@@ -777,17 +754,9 @@ def cmdhandler(
                             sysarg += _(' Type "help" for help.')
                     raise ExecSystemCommand(syscmd, sysarg)
 
-                # Check if this is a Channel-cmd match.
-                if hasattr(cmd, "is_channel") and cmd.is_channel:
-                    # even if a user-defined syscmd is not defined, the
-                    # found cmd is already a system command in its own right.
-                    syscmd = yield cmdset.get(CMD_CHANNEL)
-                    if syscmd:
-                        # replace system command with custom version
-                        cmd = syscmd
-                    cmd.session = session
-                    sysarg = "%s:%s" % (cmdname, args)
-                    raise ExecSystemCommand(cmd, sysarg)
+            if not cmd.retain_instance:
+                # making a copy allows multiple users to share the command also when yield is used
+                cmd = copy(cmd)
 
             # A normal command.
             ret = yield _run_command(cmd, cmdname, args, raw_cmdname, cmdset, session, account)

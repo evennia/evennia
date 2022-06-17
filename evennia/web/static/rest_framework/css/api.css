@@ -1,0 +1,23 @@
+/* CSS overrides for Evennia rest-api page */
+
+.navbar {
+  background-color: #3d5c7a;
+  border-top: 0px;
+  padding-bottom: 7px;
+}
+
+ul.breadcrumb {
+  /* margin: 70px 0 0 0; */
+  margin: 85px 0 0 0;
+}
+
+.str, .atv {
+  color: #114edd;
+}
+
+body a {
+    color: #adb5ce;
+}
+body a:hover {
+    color: #fff
+}

@@ -7,9 +7,9 @@ from random import randint, sample
 import mock
 import uuid
 from time import time
-from anything import Something, Anything
+from anything import Something
 from django.test.utils import override_settings
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils.tests.test_evmenu import TestEvMenu
 from evennia.prototypes import spawner, prototypes as protlib
 from evennia.prototypes import menus as olc_menus
@@ -46,9 +46,9 @@ _PROTPARENTS = {
 }
 
 
-class TestSpawner(EvenniaTest):
+class TestSpawner(BaseEvenniaTest):
     def setUp(self):
-        super(TestSpawner, self).setUp()
+        super().setUp()
         self.prot1 = {
             "prototype_key": "testprototype",
             "typeclass": "evennia.objects.objects.DefaultObject",
@@ -87,7 +87,7 @@ class TestSpawner(EvenniaTest):
         )
 
 
-class TestUtils(EvenniaTest):
+class TestUtils(BaseEvenniaTest):
     def test_prototype_from_object(self):
         self.maxDiff = None
         self.obj1.attributes.add("test", "testval")
@@ -308,9 +308,9 @@ class TestUtils(EvenniaTest):
         )
 
 
-class TestProtLib(EvenniaTest):
+class TestProtLib(BaseEvenniaTest):
     def setUp(self):
-        super(TestProtLib, self).setUp()
+        super().setUp()
         self.obj1.attributes.add("testattr", "testval")
         self.prot = spawner.prototype_from_object(self.obj1)
 
@@ -340,229 +340,23 @@ class TestProtLib(EvenniaTest):
         self.assertEqual(match, [self.prot])
 
 
-@override_settings(PROT_FUNC_MODULES=["evennia.prototypes.protfuncs"], CLIENT_DEFAULT_WIDTH=20)
-class TestProtFuncs(EvenniaTest):
-    def setUp(self):
-        super(TestProtFuncs, self).setUp()
-        self.prot = {
-            "prototype_key": "test_prototype",
-            "prototype_desc": "testing prot",
-            "key": "ExampleObj",
-        }
-
-    @mock.patch("evennia.prototypes.protfuncs.base_random", new=mock.MagicMock(return_value=0.5))
-    @mock.patch("evennia.prototypes.protfuncs.base_randint", new=mock.MagicMock(return_value=5))
-    def test_protfuncs(self):
-        self.assertEqual(protlib.protfunc_parser("$random()"), 0.5)
-        self.assertEqual(protlib.protfunc_parser("$randint(1, 10)"), 5)
-        self.assertEqual(protlib.protfunc_parser("$left_justify(  foo  )"), "foo                 ")
-        self.assertEqual(protlib.protfunc_parser("$right_justify( foo  )"), "                 foo")
-        self.assertEqual(protlib.protfunc_parser("$center_justify(foo  )"), "        foo         ")
-        self.assertEqual(
-            protlib.protfunc_parser("$full_justify(foo bar moo too)"), "foo   bar   moo  too"
-        )
-        self.assertEqual(
-            protlib.protfunc_parser("$right_justify( foo  )", testing=True),
-            (Anything, "                 foo"),
-        )
-
+class TestProtFuncs(BaseEvenniaTest):
+    @override_settings(PROT_FUNC_MODULES=["evennia.prototypes.protfuncs"])
+    def test_protkey_protfunc(self):
         test_prot = {"key1": "value1", "key2": 2}
 
         self.assertEqual(
             protlib.protfunc_parser("$protkey(key1)", testing=True, prototype=test_prot),
-            (None, "value1"),
+            "value1",
         )
         self.assertEqual(
-            protlib.protfunc_parser("$protkey(key2)", testing=True, prototype=test_prot), (None, 2)
-        )
-
-        self.assertEqual(protlib.protfunc_parser("$add(1, 2)"), 3)
-        self.assertEqual(protlib.protfunc_parser("$add(10, 25)"), 35)
-        self.assertEqual(
-            protlib.protfunc_parser("$add('''[1,2,3]''', '''[4,5,6]''')"), [1, 2, 3, 4, 5, 6]
-        )
-        self.assertEqual(protlib.protfunc_parser("$add(foo, bar)"), "foo bar")
-
-        self.assertEqual(protlib.protfunc_parser("$sub(5, 2)"), 3)
-        self.assertRaises(TypeError, protlib.protfunc_parser, "$sub(5, test)")
-
-        self.assertEqual(protlib.protfunc_parser("$mult(5, 2)"), 10)
-        self.assertEqual(protlib.protfunc_parser("$mult(  5 ,   10)"), 50)
-        self.assertEqual(protlib.protfunc_parser("$mult('foo',3)"), "foofoofoo")
-        self.assertEqual(protlib.protfunc_parser("$mult(foo,3)"), "foofoofoo")
-        self.assertRaises(TypeError, protlib.protfunc_parser, "$mult(foo, foo)")
-
-        self.assertEqual(protlib.protfunc_parser("$toint(5.3)"), 5)
-
-        self.assertEqual(protlib.protfunc_parser("$div(5, 2)"), 2.5)
-        self.assertEqual(protlib.protfunc_parser("$toint($div(5, 2))"), 2)
-        self.assertEqual(protlib.protfunc_parser("$sub($add(5, 3), $add(10, 2))"), -4)
-
-        self.assertEqual(protlib.protfunc_parser("$eval('2')"), "2")
-
-        self.assertEqual(
-            protlib.protfunc_parser("$eval(['test', 1, '2', 3.5, \"foo\"])"),
-            ["test", 1, "2", 3.5, "foo"],
-        )
-        self.assertEqual(
-            protlib.protfunc_parser("$eval({'test': '1', 2:3, 3: $toint(3.5)})"),
-            {"test": "1", 2: 3, 3: 3},
-        )
-
-        # no object search
-        odbref = self.obj1.dbref
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("obj({})".format(odbref), session=self.session),
-                "obj({})".format(odbref),
-            )
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("dbref({})".format(odbref), session=self.session),
-                "dbref({})".format(odbref),
-            )
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("stone(#12345)", session=self.session), "stone(#12345)"
-            )
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser(odbref, session=self.session), odbref)
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("#12345", session=self.session), "#12345")
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("nothing({})".format(odbref), session=self.session),
-                "nothing({})".format(odbref),
-            )
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("(#12345)", session=self.session), "(#12345)")
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("obj(Char)", session=self.session), "obj(Char)"
-            )
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("objlist({})".format(odbref), session=self.session),
-                "objlist({})".format(odbref),
-            )
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("dbref(Char)", session=self.session), "dbref(Char)"
-            )
-            mocked__obj_search.assert_not_called()
-
-        # obj search happens
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("$objlist({})".format(odbref), session=self.session),
-                [odbref],
-            )
-            mocked__obj_search.assert_called_once()
-            assert (odbref,) == mocked__obj_search.call_args[0]
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("$obj({})".format(odbref), session=self.session), odbref
-            )
-            mocked__obj_search.assert_called_once()
-            assert (odbref,) == mocked__obj_search.call_args[0]
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("$dbref({})".format(odbref), session=self.session), odbref
-            )
-            mocked__obj_search.assert_called_once()
-            assert (odbref,) == mocked__obj_search.call_args[0]
-
-        cdbref = self.char1.dbref
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(protlib.protfunc_parser("$obj(Char)", session=self.session), cdbref)
-            mocked__obj_search.assert_called_once()
-            assert ("Char",) == mocked__obj_search.call_args[0]
-
-        # bad invocation
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertEqual(
-                protlib.protfunc_parser("$badfunc(#112345)", session=self.session), "<UNKNOWN>"
-            )
-            mocked__obj_search.assert_not_called()
-
-        with mock.patch(
-            "evennia.prototypes.protfuncs._obj_search", wraps=protofuncs._obj_search
-        ) as mocked__obj_search:
-            self.assertRaises(ValueError, protlib.protfunc_parser, "$dbref(Char)")
-            mocked__obj_search.assert_not_called()
-
-        self.assertEqual(
-            protlib.value_to_obj(protlib.protfunc_parser(cdbref, session=self.session)), self.char1
-        )
-        self.assertEqual(
-            protlib.value_to_obj_or_any(protlib.protfunc_parser(cdbref, session=self.session)),
-            self.char1,
-        )
-        self.assertEqual(
-            protlib.value_to_obj_or_any(
-                protlib.protfunc_parser("[1,2,3,'{}',5]".format(cdbref), session=self.session)
-            ),
-            [1, 2, 3, self.char1, 5],
+            protlib.protfunc_parser("$protkey(key2)", testing=True, prototype=test_prot), 2
         )
 
 
-class TestPrototypeStorage(EvenniaTest):
+class TestPrototypeStorage(BaseEvenniaTest):
     def setUp(self):
-        super(TestPrototypeStorage, self).setUp()
+        super().setUp()
         self.maxDiff = None
 
         self.prot1 = spawner.prototype_from_object(self.obj1)
@@ -642,12 +436,12 @@ class _MockMenu(object):
     pass
 
 
-class TestMenuModule(EvenniaTest):
+class TestMenuModule(BaseEvenniaTest):
 
     maxDiff = None
 
     def setUp(self):
-        super(TestMenuModule, self).setUp()
+        super().setUp()
 
         # set up fake store
         self.caller = self.char1
@@ -1079,7 +873,7 @@ class TestOLCMenu(TestEvMenu):
     ]
 
 
-class PrototypeCrashTest(EvenniaTest):
+class PrototypeCrashTest(BaseEvenniaTest):
 
     # increase this to 1000 for optimization testing
     num_prototypes = 10
@@ -1104,3 +898,67 @@ class PrototypeCrashTest(EvenniaTest):
             # start_time = time()
             self.char1.execute_cmd("spawn/list")
             # print(f"Prototypes listed in {time()-start_time} seconds.")
+
+
+class Test2474(BaseEvenniaTest):
+    """
+    Test bug #2474 (https://github.com/evennia/evennia/issues/2474),
+    where the prototype's attribute fails to take precedence over
+    that of its prototype_parent.
+
+    """
+
+    prototypes = {
+        "WEAPON": {
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "key": "Weapon",
+            "desc": "A generic blade.",
+            "magic": False,
+        },
+        "STING": {
+            "prototype_parent": "WEAPON",
+            "key": "Sting",
+            "desc": "A dagger that shines with a cold light if Orcs are near.",
+            "magic": True,
+        },
+    }
+
+    def test_magic_spawn(self):
+        """
+        Test magic is inherited.
+
+        """
+        sting = spawner.spawn(self.prototypes["STING"], prototype_parents=self.prototypes)[0]
+        self.assertEqual(sting.db.magic, True)
+
+    def test_non_magic_spawn(self):
+        """
+        Test inverse - no magic.
+
+        """
+        sting = spawner.spawn(self.prototypes["WEAPON"], prototype_parents=self.prototypes)[0]
+        self.assertEqual(sting.db.magic, False)
+
+
+class TestPartialTagAttributes(BaseEvenniaTest):
+    """
+    Make sure tags and attributes are homogenized if given as incomplete tuples.
+
+    See https://github.com/evennia/evennia/issues/2524.
+
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.prot = {
+            "prototype_key": "rock",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "key": "a rock",
+            "tags": [("quantity", "groupable")],  # missing data field
+            "attrs": [("quantity", 1)],  # missing category and lock fields
+            "desc": "A good way to get stoned.",
+        }
+
+    def test_partial_spawn(self):
+        obj = spawner.spawn(self.prot)
+        self.assertEqual(obj[0].key, self.prot["key"])

@@ -27,11 +27,13 @@ class MonitorHandler(object):
     """
     This is a resource singleton that allows for registering
     callbacks for when a field or Attribute is updated (saved).
+
     """
 
     def __init__(self):
         """
         Initialize the handler.
+
         """
         self.savekey = "_monitorhandler_save"
         self.monitors = defaultdict(lambda: defaultdict(dict))
@@ -91,11 +93,25 @@ class MonitorHandler(object):
         # make sure to clean data from database
         ServerConfig.objects.conf(key=self.savekey, delete=True)
 
+    def _attr_category_fieldname(self, fieldname, category):
+        """
+        Modify the saved fieldname to make sure to differentiate between Attributes
+        with different categories.
+
+        """
+        return f"{fieldname}[{category}]" if category else fieldname
+
     def at_update(self, obj, fieldname):
         """
         Called by the field/attribute as it saves.
 
         """
+        # if this an Attribute with a category we should differentiate
+        fieldname = self._attr_category_fieldname(
+            fieldname,
+            obj.db_category if fieldname == "db_value" and hasattr(obj, "db_category") else None,
+        )
+
         to_delete = []
         if obj in self.monitors and fieldname in self.monitors[obj]:
             for idstring, (callback, persistent, kwargs) in self.monitors[obj][fieldname].items():
@@ -108,7 +124,7 @@ class MonitorHandler(object):
         for (obj, fieldname, idstring) in to_delete:
             del self.monitors[obj][fieldname][idstring]
 
-    def add(self, obj, fieldname, callback, idstring="", persistent=False, **kwargs):
+    def add(self, obj, fieldname, callback, idstring="", persistent=False, category=None, **kwargs):
         """
         Add monitoring to a given field or Attribute. A field must
         be specified with the full db_* name or it will be assumed
@@ -124,6 +140,9 @@ class MonitorHandler(object):
                 of the same field and object.
             persistent (bool, optional): If False, the monitor will survive
                 a server reload but not a cold restart. This is default.
+            category (str, optional): This is only used if `fieldname` refers to
+                an Attribute (i.e. it does not start with `db_`). You must specify this
+                if you want to target an Attribute with a category.
 
         Keyword Args:
             session (Session): If this keyword is given, the monitorhandler will
@@ -138,7 +157,7 @@ class MonitorHandler(object):
             obj = obj.attributes.get(fieldname, return_obj=True)
             if not obj:
                 return
-            fieldname = "db_value"
+            fieldname = self._attr_category_fieldname("db_value", category)
 
         # we try to serialize this data to test it's valid. Otherwise we won't accept it.
         try:
@@ -158,7 +177,7 @@ class MonitorHandler(object):
         else:
             self.monitors[obj][fieldname][idstring] = (callback, persistent, kwargs)
 
-    def remove(self, obj, fieldname, idstring=""):
+    def remove(self, obj, fieldname, idstring="", category=None):
         """
         Remove a monitor.
         """
@@ -166,7 +185,7 @@ class MonitorHandler(object):
             obj = obj.attributes.get(fieldname, return_obj=True)
             if not obj:
                 return
-            fieldname = "db_value"
+            fieldname = self._attr_category_fieldname("db_value", category)
 
         idstring_dict = self.monitors[obj][fieldname]
         if idstring in idstring_dict:

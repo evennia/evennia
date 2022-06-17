@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!--ReDoc is used for generating documentation from OpenAPI schemas -- >
+
+<!DOCTYPE html>
+
+{% extends "rest_framework/api.html" %}
+
+{% block body %}
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+
+    <redoc spec-url='{% url schema_url %}'></redoc>
+
+    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
+
+{% endblock %}

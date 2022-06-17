@@ -41,7 +41,7 @@ PROC_MODIFIED_OBJS = WeakValueDictionary()
 _SELF_PID = os.getpid()
 _SERVER_PID, _PORTAL_PID = get_evennia_pids()
 _IS_SUBPROCESS = (_SERVER_PID and _PORTAL_PID) and _SELF_PID not in (_SERVER_PID, _PORTAL_PID)
-_IS_MAIN_THREAD = threading.currentThread().getName() == "MainThread"
+_IS_MAIN_THREAD = threading.current_thread().name == "MainThread"
 
 
 class SharedMemoryModelBase(ModelBase):
@@ -63,7 +63,8 @@ class SharedMemoryModelBase(ModelBase):
             return super(SharedMemoryModelBase, cls).__call__(*args, **kwargs)
 
         instance_key = cls._get_cache_key(args, kwargs)
-        # depending on the arguments, we might not be able to infer the PK, so in that case we create a new instance
+        # depending on the arguments, we might not be able to infer the PK, so in that case we
+        # create a new instance
         if instance_key is None:
             return new_instance()
         cached_instance = cls.get_cached_instance(instance_key)
@@ -154,9 +155,9 @@ class SharedMemoryModelBase(ModelBase):
                 if isinstance(value, (str, int)):
                     value = to_str(value)
                     if value.isdigit() or value.startswith("#"):
-                        # we also allow setting using dbrefs, if so we try to load the matching object.
-                        # (we assume the object is of the same type as the class holding the field, if
-                        # not a custom handler must be used for that field)
+                        # we also allow setting using dbrefs, if so we try to load the matching
+                        # object. (we assume the object is of the same type as the class holding
+                        # the field, if not a custom handler must be used for that field)
                         dbid = dbref(value, reqhash=False)
                         if dbid:
                             model = _GA(cls, "_meta").get_field(fname).model
@@ -266,21 +267,24 @@ class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
             pk = cls._meta.pks[0]
         else:
             pk = cls._meta.pk
-        # get the index of the pk in the class fields. this should be calculated *once*, but isn't atm
+        # get the index of the pk in the class fields. this should be calculated *once*, but isn't
+        # atm
         pk_position = cls._meta.fields.index(pk)
         if len(args) > pk_position:
             # if it's in the args, we can get it easily by index
             result = args[pk_position]
         elif pk.attname in kwargs:
-            # retrieve the pk value. Note that we use attname instead of name, to handle the case where the pk is a
-            # a ForeignKey.
+            # retrieve the pk value. Note that we use attname instead of name, to handle the case
+            # where the pk is a a ForeignKey.
             result = kwargs[pk.attname]
         elif pk.name != pk.attname and pk.name in kwargs:
-            # ok we couldn't find the value, but maybe it's a FK and we can find the corresponding object instead
+            # ok we couldn't find the value, but maybe it's a FK and we can find the corresponding
+            # object instead
             result = kwargs[pk.name]
 
         if result is not None and isinstance(result, Model):
-            # if the pk value happens to be a model instance (which can happen wich a FK), we'd rather use its own pk as the key
+            # if the pk value happens to be a model instance (which can happen wich a FK), we'd
+            # rather use its own pk as the key
             result = result._get_pk_val()
         return result
 
@@ -309,6 +313,7 @@ class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
         """
         pk = instance._get_pk_val()
         if pk is not None:
+            new = new or pk not in cls.__dbclass__.__instance_cache__
             cls.__dbclass__.__instance_cache__[pk] = instance
             if new:
                 try:

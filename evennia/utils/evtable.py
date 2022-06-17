@@ -1,19 +1,23 @@
 """
-This is an advanced ASCII table creator. It was inspired by
-[prettytable](https://code.google.com/p/prettytable/) but shares no code.
+This is an advanced ASCII table creator. It was inspired by Prettytable
+(https://code.google.com/p/prettytable/) but shares no code and is considerably
+more advanced, supporting auto-balancing of incomplete tables and ANSI colors among
+other things.
 
 Example usage:
-::
 
-    from evennia.utils import evtable
+```python
+  from evennia.utils import evtable
 
-    table = evtable.EvTable("Heading1", "Heading2",
+  table = evtable.EvTable("Heading1", "Heading2",
                   table=[[1,2,3],[4,5,6],[7,8,9]], border="cells")
-    table.add_column("This is long data", "This is even longer data")
-    table.add_row("This is a single row")
-    print table
+  table.add_column("This is long data", "This is even longer data")
+  table.add_row("This is a single row")
+  print table
+```
 
 Result:
+
 ::
 
     +----------------------+----------+---+--------------------------+
@@ -30,13 +34,15 @@ Result:
 
 As seen, the table will automatically expand with empty cells to make
 the table symmetric. Tables can be restricted to a given width:
-::
 
-    table.reformat(width=50, align="l")
+```python
+  table.reformat(width=50, align="l")
+```
 
 (We could just have added these keywords to the table creation call)
 
 This yields the following result:
+
 ::
 
     +-----------+------------+-----------+-----------+
@@ -57,16 +63,21 @@ This yields the following result:
     | row       |            |           |           |
     +-----------+------------+-----------+-----------+
 
+
 Table-columns can be individually formatted. Note that if an
 individual column is set with a specific width, table auto-balancing
 will not affect this column (this may lead to the full table being too
 wide, so be careful mixing fixed-width columns with auto- balancing).
 Here we change the width and alignment of the column at index 3
 (Python starts from 0):
-::
 
-    table.reformat_column(3, width=30, align="r")
-    print table
+```python
+
+table.reformat_column(3, width=30, align="r")
+print table
+```
+
+::
 
     +-----------+-------+-----+-----------------------------+---------+
     | Heading1  | Headi |     |                             |         |
@@ -90,15 +101,14 @@ If the height is restricted, cells will be restricted from expanding
 vertically. This will lead to text contents being cropped. Each cell
 can only shrink to a minimum width and height of 1.
 
-`EvTable` is intended to be used with [ANSIString](evennia.utils.ansi#ansistring)
-for supporting ANSI-coloured string types.
+`EvTable` is intended to be used with `ANSIString` for supporting ANSI-coloured
+string types.
 
-When a cell is auto-wrapped across multiple lines, ANSI-reset
-sequences will be put at the end of each wrapped line. This means that
-the colour of a wrapped cell will not "bleed", but it also means that
-eventual colour outside the table will not transfer "across" a table,
-you need to re-set the color to have it appear on both sides of the
-table string.
+When a cell is auto-wrapped across multiple lines, ANSI-reset sequences will be
+put at the end of each wrapped line. This means that the colour of a wrapped
+cell will not "bleed", but it also means that eventual colour outside the table
+will not transfer "across" a table, you need to re-set the color to have it
+appear on both sides of the table string.
 
 ----
 
@@ -229,12 +239,12 @@ class ANSITextWrapper(TextWrapper):
                 del chunks[-1]
 
             while chunks:
-                l = d_len(chunks[-1])
+                ln = d_len(chunks[-1])
 
                 # Can at least squeeze this chunk onto the current line.
-                if cur_len + l <= width:
+                if cur_len + ln <= width:
                     cur_line.append(chunks.pop())
-                    cur_len += l
+                    cur_len += ln
 
                 # Nope, this line is full.
                 else:
@@ -252,10 +262,10 @@ class ANSITextWrapper(TextWrapper):
             # Convert current line back to a string and store it in list
             # of all lines (return value).
             if cur_line:
-                l = ""
+                ln = ""
                 for w in cur_line:  # ANSI fix
-                    l += w  #
-                lines.append(indent + l)
+                    ln += w  #
+                lines.append(indent + ln)
         return lines
 
 
@@ -1093,8 +1103,9 @@ class EvTable(object):
             height (int, optional): Fixed height of table. Defaults to being unset. Width is
                 still given precedence. If given, table cells will crop text rather
                 than expand vertically.
-            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as even width as
-                     possible. This often looks best also for mixed-length tables. Default is `False`.
+            evenwidth (bool, optional): Used with the `width` keyword. Adjusts columns to have as
+                even width as possible. This often looks best also for mixed-length tables. Default
+                is `False`.
             maxwidth (int, optional):  This will set a maximum width
                 of the table while allowing it to be smaller. Only if it grows wider than this
                 size will it be resized by expanding horizontally (or crop `height` is given).
@@ -1341,7 +1352,8 @@ class EvTable(object):
         self.ncols = ncols
         self.nrows = nrowmax
 
-        # add borders - these add to the width/height, so we must do this before calculating width/height
+        # add borders - these add to the width/height, so we must do this before calculating
+        # width/height
         self._borders()
 
         # equalize widths within each column
@@ -1428,7 +1440,8 @@ class EvTable(object):
             except Exception:
                 raise
 
-        # equalize heights for each row (we must do this here, since it may have changed to fit new widths)
+        # equalize heights for each row (we must do this here, since it may have changed to fit new
+        # widths)
         cheights = [
             max(cell.get_height() for cell in (col[iy] for col in self.worktable))
             for iy in range(nrowmax)
@@ -1465,31 +1478,13 @@ class EvTable(object):
                         % (self.height, chmin + locked_height)
                     )
 
-                # now we add all the extra height up to the desired table-height.
-                # We do this so that the tallest cells gets expanded first (and
-                # thus avoid getting cropped)
-
-                even = self.height % 2 == 0
-                correction = 0
-                while correction < excess:
-                    # expand the cells with the most rows first
-                    if 0 <= correction < nrowmax and nrowmax > 1:
-                        # avoid adding to header first round (looks bad on very small tables)
-                        ci = cheights[1:].index(max(cheights[1:])) + 1
-                    else:
-                        ci = cheights.index(max(cheights))
-                    if ci in locked_cols:
-                        # locked row, make sure it's not picked again
-                        cheights[ci] -= 9999
-                        cheights_min[ci] = locked_cols[ci]
-                    else:
-                        cheights_min[ci] += 1
-                        # change balance
-                        if ci == 0 and self.header:
-                            # it doesn't look very good if header expands too fast
-                            cheights[ci] -= 2 if even else 3
-                        cheights[ci] -= 2 if even else 1
-                        correction += 1
+                # Add all the excess at the end of the table
+                # Note: Older solutions tried to balance individual
+                # rows' vsize. This could lead to empty rows that
+                # looked like a bug. This solution instead
+                # adds empty rows at the end which is less sophisticated
+                # but much more visually consistent.
+                cheights_min[-1] += excess
                 cheights = cheights_min
 
                 # we must tell cells to crop instead of expanding

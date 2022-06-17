@@ -45,6 +45,9 @@
         <li class="nav-item nav-item-this"><a href="{{ link|e }}">{{ title }}</a></li>
         {%- block relbaritems %} {% endblock %}
       </ul>
+      {%- if release == '1.0-dev' %}
+        <div class="develop">develop branch</div>
+      {%- endif %}
     </div>
 {%- endmacro %}
 

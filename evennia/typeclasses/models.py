@@ -24,8 +24,6 @@ layer.
 This module also contains the Managers for the respective models; inherit from
 these to create custom managers.
 
-----
-
 """
 from django.db.models import signals
 
@@ -38,8 +36,15 @@ from django.urls import reverse
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
 
-from evennia.typeclasses.attributes import Attribute, AttributeHandler, NAttributeHandler
-from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler
+from evennia.typeclasses.attributes import (
+    Attribute,
+    AttributeHandler,
+    AttributeProperty,
+    ModelAttributeBackend,
+    InMemoryAttributeBackend,
+)
+from evennia.typeclasses.attributes import DbHolder
+from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler, TagProperty
 
 from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
 from evennia.server.signals import SIGNAL_TYPED_OBJECT_POST_RENAME
@@ -65,6 +70,7 @@ _SA = object.__setattr__
 def call_at_first_save(sender, instance, created, **kwargs):
     """
     Receives a signal just after the object is saved.
+
     """
     if created:
         instance.at_first_save()
@@ -73,6 +79,7 @@ def call_at_first_save(sender, instance, created, **kwargs):
 def remove_attributes_on_delete(sender, instance, **kwargs):
     """
     Wipe object's Attributes when it's deleted
+
     """
     instance.db_attributes.all().delete()
 
@@ -94,6 +101,7 @@ class TypeclassBase(SharedMemoryModelBase):
     Metaclass which should be set for the root of model proxies
     that don't define any new fields, like Object, Script etc. This
     is the basis for the typeclassing system.
+
     """
 
     def __new__(cls, name, bases, attrs):
@@ -162,35 +170,6 @@ class TypeclassBase(SharedMemoryModelBase):
         return new_class
 
 
-class DbHolder(object):
-    """
-    Holder for allowing property access of attributes.
-
-    """
-
-    def __init__(self, obj, name, manager_name="attributes"):
-        _SA(self, name, _GA(obj, manager_name))
-        _SA(self, "name", name)
-
-    def __getattribute__(self, attrname):
-        if attrname == "all":
-            # we allow to overload our default .all
-            attr = _GA(self, _GA(self, "name")).get("all")
-            return attr if attr else _GA(self, "all")
-        return _GA(self, _GA(self, "name")).get(attrname)
-
-    def __setattr__(self, attrname, value):
-        _GA(self, _GA(self, "name")).add(attrname, value)
-
-    def __delattr__(self, attrname):
-        _GA(self, _GA(self, "name")).remove(attrname)
-
-    def get_all(self):
-        return _GA(self, _GA(self, "name")).all()
-
-    all = property(get_all)
-
-
 #
 # Main TypedObject abstraction
 #
@@ -204,15 +183,16 @@ class TypedObject(SharedMemoryModel):
     mechanics for managing connected attributes.
 
     The TypedObject has the following properties:
-      key - main name
-      name - alias for key
-      typeclass_path - the path to the decorating typeclass
-      typeclass - auto-linked typeclass
-      date_created - time stamp of object creation
-      permissions - perm strings
-      dbref - #id of object
-      db - persistent attribute storage
-      ndb - non-persistent attribute storage
+
+    - key - main name
+    - name - alias for key
+    - typeclass_path - the path to the decorating typeclass
+    - typeclass - auto-linked typeclass
+    - date_created - time stamp of object creation
+    - permissions - perm strings
+    - dbref - #id of object
+    - db - persistent attribute storage
+    - ndb - non-persistent attribute storage
 
     """
 
@@ -233,7 +213,8 @@ class TypedObject(SharedMemoryModel):
         "typeclass",
         max_length=255,
         null=True,
-        help_text="this defines what 'type' of entity this is. This variable holds a Python path to a module with a valid Evennia Typeclass.",
+        help_text="this defines what 'type' of entity this is. This variable holds "
+        "a Python path to a module with a valid Evennia Typeclass.",
         db_index=True,
     )
     # Creation date. This is not changed once the object is created.
@@ -242,16 +223,20 @@ class TypedObject(SharedMemoryModel):
     db_lock_storage = models.TextField(
         "locks",
         blank=True,
-        help_text="locks limit access to an entity. A lock is defined as a 'lock string' on the form 'type:lockfunctions', defining what functionality is locked and how to determine access. Not defining a lock means no access is granted.",
+        help_text="locks limit access to an entity. A lock is defined as a 'lock string' "
+        "on the form 'type:lockfunctions', defining what functionality is locked and "
+        "how to determine access. Not defining a lock means no access is granted.",
     )
     # many2many relationships
     db_attributes = models.ManyToManyField(
         Attribute,
-        help_text="attributes on this object. An attribute can hold any pickle-able python object (see docs for special cases).",
+        help_text="attributes on this object. An attribute can hold any pickle-able "
+        "python object (see docs for special cases).",
     )
     db_tags = models.ManyToManyField(
         Tag,
-        help_text="tags on this object. Tags are simple string markers to identify, group and alias objects.",
+        help_text="tags on this object. Tags are simple string markers to identify, "
+        "group and alias objects.",
     )
 
     # Database manager
@@ -314,8 +299,10 @@ class TypedObject(SharedMemoryModel):
         than use the one in the model.
 
         Args:
-            *args: Passed through to parent.
-            **kwargs: Passed through to parent.
+            Passed through to parent.
+
+        Keyword Args:
+            Passed through to parent.
 
         Notes:
             The loading mechanism will attempt the following steps:
@@ -339,10 +326,22 @@ class TypedObject(SharedMemoryModel):
         super().__init__(*args, **kwargs)
         self.set_class_from_typeclass(typeclass_path=typeclass_path)
 
+    def init_evennia_properties(self):
+        """
+        Called by creation methods; makes sure to initialize Attribute/TagProperties
+        by fetching them once.
+        """
+        for propkey, prop in self.__class__.__dict__.items():
+            if isinstance(prop, (AttributeProperty, TagProperty)):
+                try:
+                    getattr(self, propkey)
+                except Exception:
+                    log_trace()
+
     # initialize all handlers in a lazy fashion
     @lazy_property
     def attributes(self):
-        return AttributeHandler(self)
+        return AttributeHandler(self, ModelAttributeBackend)
 
     @lazy_property
     def locks(self):
@@ -362,9 +361,9 @@ class TypedObject(SharedMemoryModel):
 
     @lazy_property
     def nattributes(self):
-        return NAttributeHandler(self)
+        return AttributeHandler(self, InMemoryAttributeBackend)
 
-    class Meta(object):
+    class Meta:
         """
         Django setup info.
         """
@@ -499,6 +498,31 @@ class TypedObject(SharedMemoryModel):
     # Object manipulation methods
     #
 
+    def at_init(self):
+        """
+        Called when this object is loaded into cache. This is  more reliable
+        than to override `__init__`.
+
+        """
+        pass
+
+    @classmethod
+    def search(cls, query, **kwargs):
+        """
+        Overridden by class children. This implements a common API.
+
+        Args:
+            query (str): A search query.
+            **kwargs: Other search parameters.
+
+        Returns:
+            list: A list of 0, 1 or more matches, only of this typeclass.
+
+        """
+        if cls.objects.dbref(query):
+            return [cls.objects.get_id(query)]
+        return list(cls.objects.filter(db_key__lower=query))
+
     def is_typeclass(self, typeclass, exact=False):
         """
         Returns true if this object has this type OR has a typeclass
@@ -569,8 +593,8 @@ class TypedObject(SharedMemoryModel):
                 will be cleared.
             run_start_hooks (str or None, optional): This is either None,
                 to not run any hooks, "all" to run all hooks defined by
-                at_first_start, or a string giving the name of the hook
-                to run (for example 'at_object_creation'). This will
+                at_first_start, or a string with space-separated hook-names to run
+                (for example 'at_object_creation'). This will
                 always be called without arguments.
             no_default (bool, optiona): If set, the swapper will not
                 allow for swapping to a default typeclass in case the
@@ -618,7 +642,8 @@ class TypedObject(SharedMemoryModel):
             self.at_first_save()
         elif run_start_hooks:
             # a custom hook-name to call.
-            getattr(self, run_start_hooks)()
+            for start_hook in str(run_start_hooks).split():
+                getattr(self, run_start_hooks)()
 
     #
     # Lock / permission methods
@@ -639,7 +664,7 @@ class TypedObject(SharedMemoryModel):
                 superuser lock bypass (be careful with this one).
 
         Keyword Args:
-            kwargs (any): Ignored, but is there to make the api
+            kwar (any): Ignored, but is there to make the api
                 consistent with the object-typeclass method access, which
                 use it to feed to its hook methods.
 
@@ -724,22 +749,22 @@ class TypedObject(SharedMemoryModel):
     # Attribute storage
     #
 
-    # @property db
-    def __db_get(self):
+    @property
+    def db(self):
         """
         Attribute handler wrapper. Allows for the syntax
-        ::
 
+        ```python
            obj.db.attrname = value
-             and
+           # and
            value = obj.db.attrname
-             and
+           # and
            del obj.db.attrname
-             and
+           # and
            all_attr = obj.db.all()
-
-        (unless there is an attribute named 'all', in which case that will be
-        returned instead).
+           # (unless there is an attribute
+           #  named 'all', in which case that will be returned instead).
+        ```
 
         """
         try:
@@ -748,44 +773,29 @@ class TypedObject(SharedMemoryModel):
             self._db_holder = DbHolder(self, "attributes")
             return self._db_holder
 
-    # @db.setter
-    def __db_set(self, value):
-        """Stop accidentally replacing the db object"""
+    @db.setter
+    def db(self, value):
+        "Stop accidentally replacing the db object"
         string = "Cannot assign directly to db object! "
         string += "Use db.attr=value instead."
         raise Exception(string)
 
-    # @db.deleter
-    def __db_del(self):
-        """Stop accidental deletion."""
+    @db.deleter
+    def db(self):
+        "Stop accidental deletion."
         raise Exception("Cannot delete the db object!")
-
-    db = property(__db_get, __db_set, __db_del)
 
     #
     # Non-persistent (ndb) storage
     #
 
-    # @property ndb
-    def __ndb_get(self):
+    @property
+    def ndb(self):
         """
-        A non-attr_obj store (NonDataBase). Everything stored to this is
-        guaranteed to be cleared when a server is shutdown. Syntax is same as
-        for the `.db` property, e.g.
-        ::
-
-           obj.ndb.attrname = value
-             and
-           value = obj.ndb.attrname
-             and
-           del obj.ndb.attrname
-             and
-           all_attr = obj.ndb.all()
-
-        What makes this preferable over just assigning properties directly on
-        the object is that Evennia can track caching for these properties and
-        for example avoid wiping objects with set `.ndb` data on cache flushes.
-
+        A non-attr_obj store (ndb: NonDataBase). Everything stored
+        to this is guaranteed to be cleared when a server is shutdown.
+        Syntax is same as for the _get_db_holder() method and
+        property, e.g. obj.ndb.attr = value etc.
         """
         try:
             return self._ndb_holder
@@ -793,19 +803,17 @@ class TypedObject(SharedMemoryModel):
             self._ndb_holder = DbHolder(self, "nattrhandler", manager_name="nattributes")
             return self._ndb_holder
 
-    # @db.setter
-    def __ndb_set(self, value):
+    @ndb.setter
+    def ndb(self, value):
         "Stop accidentally replacing the ndb object"
         string = "Cannot assign directly to ndb object! "
         string += "Use ndb.attr=value instead."
         raise Exception(string)
 
-    # @db.deleter
-    def __ndb_del(self):
+    @ndb.deleter
+    def ndb(self):
         "Stop accidental deletion."
         raise Exception("Cannot delete the ndb object!")
-
-    ndb = property(__ndb_get, __ndb_set, __ndb_del)
 
     def get_display_name(self, looker, **kwargs):
         """
@@ -890,37 +898,32 @@ class TypedObject(SharedMemoryModel):
     @classmethod
     def web_get_create_url(cls):
         """
-
         Returns the URI path for a View that allows users to create new
         instances of this object.
+
+        ex. Chargen = '/characters/create/'
+
+        For this to work, the developer must have defined a named view somewhere
+        in urls.py that follows the format 'modelname-action', so in this case
+        a named view of 'character-create' would be referenced by this method.
+
+        ex.
+        url(r'characters/create/', ChargenView.as_view(), name='character-create')
+
+        If no View has been created and defined in urls.py, returns an
+        HTML anchor.
+
+        This method is naive and simply returns a path. Securing access to
+        the actual view and limiting who can create new objects is the
+        developer's responsibility.
 
         Returns:
             path (str): URI path to object creation page, if defined.
 
-        Examples:
-            ::
-
-                Chargen = '/characters/create/'
-
-            For this to work, the developer must have defined a named view somewhere
-            in urls.py that follows the format 'modelname-action', so in this case
-            a named view of 'character-create' would be referenced by this method.
-            ::
-
-                url(r'characters/create/', ChargenView.as_view(), name='character-create')
-
-            If no View has been created and defined in urls.py, returns an
-            HTML anchor.
-
-        Notes:
-            This method is naive and simply returns a path. Securing access to
-            the actual view and limiting who can create new objects is the
-            developer's responsibility.
-
         """
         try:
             return reverse("%s-create" % slugify(cls._meta.verbose_name))
-        except:
+        except Exception:
             return "#"
 
     def web_get_detail_url(self):
@@ -932,21 +935,24 @@ class TypedObject(SharedMemoryModel):
             path (str): URI path to object detail page, if defined.
 
         Examples:
-            ::
 
-                Oscar (Character) = '/characters/oscar/1/'
+            ```python
+            Oscar (Character) = '/characters/oscar/1/'
+            ```
 
             For this to work, the developer must have defined a named view somewhere
             in urls.py that follows the format 'modelname-action', so in this case
             a named view of 'character-detail' would be referenced by this method.
-            ::
 
+
+            ```python
+            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
                 CharDetailView.as_view(), name='character-detail')
+            ```
 
             If no View has been created and defined in urls.py, returns an
             HTML anchor.
 
-        Notes:
             This method is naive and simply returns a path. Securing access to
             the actual view and limiting who can view this object is the
             developer's responsibility.
@@ -957,7 +963,7 @@ class TypedObject(SharedMemoryModel):
                 "%s-detail" % slugify(self._meta.verbose_name),
                 kwargs={"pk": self.pk, "slug": slugify(self.name)},
             )
-        except:
+        except Exception:
             return "#"
 
     def web_get_puppet_url(self):
@@ -966,7 +972,7 @@ class TypedObject(SharedMemoryModel):
         object.
 
         Returns:
-            path (str): URI path to object puppet page, if defined.
+            str: URI path to object puppet page, if defined.
 
         Examples:
             ::
@@ -984,7 +990,6 @@ class TypedObject(SharedMemoryModel):
             If no View has been created and defined in urls.py, returns an
             HTML anchor.
 
-        Notes:
             This method is naive and simply returns a path. Securing access to
             the actual view and limiting who can view this object is the developer's
             responsibility.
@@ -996,7 +1001,7 @@ class TypedObject(SharedMemoryModel):
                 "%s-puppet" % slugify(self._meta.verbose_name),
                 kwargs={"pk": self.pk, "slug": slugify(self.name)},
             )
-        except:
+        except Exception:
             return "#"
 
     def web_get_update_url(self):
@@ -1005,12 +1010,13 @@ class TypedObject(SharedMemoryModel):
         object.
 
         Returns:
-            path (str): URI path to object update page, if defined.
+            str: URI path to object update page, if defined.
 
         Examples:
-            ::
 
-                Oscar (Character) = '/characters/oscar/1/change/'
+            ```python
+            Oscar (Character) = '/characters/oscar/1/change/'
+            ```
 
             For this to work, the developer must have defined a named view somewhere
             in urls.py that follows the format 'modelname-action', so in this case
@@ -1018,15 +1024,15 @@ class TypedObject(SharedMemoryModel):
             ::
 
                 url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/change/$',
-                    CharUpdateView.as_view(), name='character-update')
+                CharUpdateView.as_view(), name='character-update')
 
             If no View has been created and defined in urls.py, returns an
             HTML anchor.
 
-        Notes:
             This method is naive and simply returns a path. Securing access to
             the actual view and limiting who can modify objects is the developer's
             responsibility.
+
 
         """
         try:
@@ -1034,7 +1040,7 @@ class TypedObject(SharedMemoryModel):
                 "%s-update" % slugify(self._meta.verbose_name),
                 kwargs={"pk": self.pk, "slug": slugify(self.name)},
             )
-        except:
+        except Exception:
             return "#"
 
     def web_get_delete_url(self):
@@ -1045,25 +1051,26 @@ class TypedObject(SharedMemoryModel):
             path (str): URI path to object deletion page, if defined.
 
         Examples:
-            ::
 
-                Oscar (Character) = '/characters/oscar/1/delete/'
+            ```python
+            Oscar (Character) = '/characters/oscar/1/delete/'
+            ```
 
-            For this to work, the developer must have defined a named view somewhere
-            in urls.py that follows the format 'modelname-action', so in this case
-            a named view of 'character-detail' would be referenced by this method.
+            For this to work, the developer must have defined a named view
+            somewhere in urls.py that follows the format 'modelname-action', so
+            in this case a named view of 'character-detail' would be referenced
+            by this method.
             ::
 
                 url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/delete/$',
-                    CharDeleteView.as_view(), name='character-delete')
+                CharDeleteView.as_view(), name='character-delete')
 
-            If no View has been created and defined in urls.py, returns an
-            HTML anchor.
+            If no View has been created and defined in urls.py, returns an HTML
+            anchor.
 
-        Notes:
             This method is naive and simply returns a path. Securing access to
-            the actual view and limiting who can delete this object is the developer's
-            responsibility.
+            the actual view and limiting who can delete this object is the
+            developer's responsibility.
 
 
         """
@@ -1072,7 +1079,7 @@ class TypedObject(SharedMemoryModel):
                 "%s-delete" % slugify(self._meta.verbose_name),
                 kwargs={"pk": self.pk, "slug": slugify(self.name)},
             )
-        except:
+        except Exception:
             return "#"
 
     # Used by Django Sites/Admin

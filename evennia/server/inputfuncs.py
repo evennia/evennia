@@ -38,8 +38,21 @@ _GA = object.__getattribute__
 _SA = object.__setattr__
 
 
+_STRIP_INCOMING_MXP = settings.MXP_ENABLED and settings.MXP_OUTGOING_ONLY
+_STRIP_MXP = None
+
+
 def _NA(o):
     return "N/A"
+
+
+def _maybe_strip_incoming_mxp(txt):
+    global _STRIP_MXP
+    if _STRIP_INCOMING_MXP:
+        if not _STRIP_MXP:
+            from evennia.utils.ansi import strip_mxp as _STRIP_MXP
+        return _STRIP_MXP(txt)
+    return txt
 
 
 _ERROR_INPUT = "Inputfunc {name}({session}): Wrong/unrecognized input: {inp}"
@@ -59,6 +72,7 @@ def text(session, *args, **kwargs):
             arguments are ignored.
 
     """
+
     # from evennia.server.profiling.timetrace import timetrace
     # text = timetrace(text, "ServerSession.data_in")
 
@@ -73,16 +87,17 @@ def text(session, *args, **kwargs):
     if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
+
+    txt = _maybe_strip_incoming_mxp(txt)
+
     if session.account:
         # nick replacement
         puppet = session.puppet
         if puppet:
-            txt = puppet.nicks.nickreplace(
-                txt, categories=("inputline", "channel"), include_account=True
-            )
+            txt = puppet.nicks.nickreplace(txt, categories=("inputline"), include_account=True)
         else:
             txt = session.account.nicks.nickreplace(
-                txt, categories=("inputline", "channel"), include_account=False
+                txt, categories=("inputline"), include_account=False
             )
     kwargs.pop("options", None)
     cmdhandler(session, txt, callertype="session", session=session, **kwargs)
@@ -111,6 +126,9 @@ def bot_data_in(session, *args, **kwargs):
     if txt.strip() in _IDLE_COMMAND:
         session.update_session_counters(idle=True)
         return
+
+    txt = _maybe_strip_incoming_mxp(txt)
+
     kwargs.pop("options", None)
     # Trigger the execute_cmd method of the corresponding bot.
     session.account.execute_cmd(session=session, txt=txt, **kwargs)
@@ -121,6 +139,9 @@ def echo(session, *args, **kwargs):
     """
     Echo test function
     """
+    if _STRIP_INCOMING_MXP:
+        txt = strip_mxp(txt)
+
     session.data_out(text="Echo returns: %s" % args)
 
 
@@ -156,6 +177,7 @@ _CLIENT_OPTIONS = (
     "RAW",
     "NOCOLOR",
     "NOGOAHEAD",
+    "LOCALECHO",
 )
 
 
@@ -180,6 +202,7 @@ def client_options(session, *args, **kwargs):
         inputdebug (bool): Debug input functions
         nocolor (bool): Strip color
         raw (bool): Turn off parsing
+        localecho (bool): Turn on server-side echo (for clients not supporting it)
 
     """
     old_flags = session.protocol_flags
@@ -239,6 +262,8 @@ def client_options(session, *args, **kwargs):
             flags["RAW"] = validate_bool(value)
         elif key == "nogoahead":
             flags["NOGOAHEAD"] = validate_bool(value)
+        elif key == "localecho":
+            flags["LOCALECHO"] = validate_bool(value)
         elif key in (
             "Char 1",
             "Char.Skills 1",
@@ -487,7 +512,6 @@ def webclient_options(session, *args, **kwargs):
 
     Keyword Args:
         <option name>: an option to save
-
     """
     account = session.account
 

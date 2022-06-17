@@ -91,10 +91,10 @@ PSTATUS = chr(18)  # ping server or portal status
 SRESET = chr(19)  # shutdown server in reset mode
 
 # requirements
-PYTHON_MIN = "3.7"
-TWISTED_MIN = "18.0.0"
-DJANGO_MIN = "3.2"
-DJANGO_LT = "3.3"
+PYTHON_MIN = "3.9"
+TWISTED_MIN = "20.3.0"
+DJANGO_MIN = "4.0.2"
+DJANGO_LT = "4.1"
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -204,7 +204,7 @@ ERROR_SETTINGS = """
 )
 
 ERROR_INITSETTINGS = """
-    ERROR: 'evennia --initsettings' must be called from the root of
+u   ERROR: 'evennia --initsettings' must be called from the root of
     your game directory, since it tries to (re)create the new
     settings.py file in a subfolder server/conf/.
     """
@@ -287,7 +287,7 @@ ABOUT_INFO = """
 
     Licence: BSD 3-Clause Licence
     Web: http://www.evennia.com
-    Irc: #evennia on FreeNode
+    Chat: https://discord.gg/AJJpcRUhtF
     Forum: http://www.evennia.com/discussions
     Maintainer (2006-10): Greg Taylor
     Maintainer (2010-):   Griatch (griatch AT gmail DOT com)
@@ -375,7 +375,7 @@ ERROR_NOTWISTED = """
 
 ERROR_DJANGO_MIN = """
     ERROR: Django {dversion} found. Evennia requires at least version {django_min} (but
-    no higher than {django_lt}).
+    below version {django_lt}).
 
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not
@@ -889,7 +889,7 @@ def reload_evennia(sprofiler=False, reset=False):
             send_instruction(SSTART, server_cmd)
 
     def _portal_not_running(fail):
-        print("Evennia not running. Starting up ...")
+        print("Evennia not running. Beginner-Tutorial up ...")
         start_evennia()
 
     collectstatic()
@@ -962,7 +962,7 @@ def reboot_evennia(pprofiler=False, sprofiler=False):
             wait_for_status(False, None, _portal_stopped)
 
     def _portal_not_running(fail):
-        print("Evennia not running. Starting up ...")
+        print("Evennia not running. Beginner-Tutorial up ...")
         start_evennia()
 
     collectstatic()
@@ -988,7 +988,7 @@ def start_server_interactive():
     def _iserver():
         _, server_twistd_cmd = _get_twistd_cmdline(False, False)
         server_twistd_cmd.append("--nodaemon")
-        print("Starting Server in interactive mode (stop with Ctrl-C)...")
+        print("Beginner-Tutorial Server in interactive mode (stop with Ctrl-C)...")
         try:
             Popen(server_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
         except KeyboardInterrupt:
@@ -1026,7 +1026,7 @@ def start_portal_interactive():
         else:
             Popen(server_twistd_cmd, env=getenv(), bufsize=-1)
 
-        print("Starting Portal in interactive mode (stop with Ctrl-C)...")
+        print("Beginner-Tutorial Portal in interactive mode (stop with Ctrl-C)...")
         try:
             Popen(portal_twistd_cmd, env=getenv(), stderr=STDOUT).wait()
         except KeyboardInterrupt:
@@ -1423,7 +1423,19 @@ def create_superuser():
         "\nCreate a superuser below. The superuser is Account #1, the 'owner' "
         "account of the server. Email is optional and can be empty.\n"
     )
-    django.core.management.call_command("createsuperuser", interactive=True)
+    from os import environ
+
+    username = environ.get("EVENNIA_SUPERUSER_USERNAME")
+    email = environ.get("EVENNIA_SUPERUSER_EMAIL")
+    password = environ.get("EVENNIA_SUPERUSER_PASSWORD")
+
+    if (username is not None) and (password is not None) and len(password) > 0:
+        from evennia.accounts.models import AccountDB
+
+        superuser = AccountDB.objects.create_superuser(username, email, password)
+        superuser.save()
+    else:
+        django.core.management.call_command("createsuperuser", interactive=True)
 
 
 def check_database(always_return=False):
@@ -1902,6 +1914,51 @@ def list_settings(keys):
     print(table)
 
 
+def run_custom_commands(option, *args):
+    """
+    Inject a custom option into the evennia launcher command chain.
+
+    Args:
+        option (str): Incoming option - the first argument after `evennia` on
+            the command line.
+        *args: All args will passed to a found callable.__dict__
+
+    Returns:
+        bool: If a custom command was found and handled the option.
+
+    Notes:
+        Provide new commands in settings with
+
+            CUSTOM_EVENNIA_LAUNCHER_COMMANDS = {"mycmd": "path.to.callable", ...}
+
+        The callable will be passed any `*args` given on the command line and is expected to
+        handle/validate the input correctly. Use like any other evennia command option on
+        in the terminal/console, for example:
+
+            evennia mycmd foo bar
+
+    """
+    from django.conf import settings
+    import importlib
+
+    try:
+        # a dict of {option: callable(*args), ...}
+        custom_commands = settings.EXTRA_LAUNCHER_COMMANDS
+    except AttributeError:
+        return False
+    cmdpath = custom_commands.get(option)
+    if cmdpath:
+        modpath, *cmdname = cmdpath.rsplit(".", 1)
+        if cmdname:
+            cmdname = cmdname[0]
+            mod = importlib.import_module(modpath)
+            command = mod.__dict__.get(cmdname)
+            if command:
+                command(*args)
+                return True
+    return False
+
+
 def run_menu():
     """
     This launches an interactive menu.
@@ -2259,7 +2316,14 @@ def main():
         if option in ("makemessages", "compilemessages"):
             # some commands don't require the presence of a game directory to work
             need_gamedir = False
-        if option in ("shell", "check", "makemigrations", "createsuperuser"):
+            if CURRENT_DIR != EVENNIA_LIB:
+                print(
+                    "You must stand in the evennia/evennia/ folder (where the 'locale/' "
+                    "folder is located) to run this command."
+                )
+                sys.exit()
+
+        if option in ("shell", "check", "makemigrations", "createsuperuser", "shell_plus"):
             # some django commands requires the database to exist,
             # or evennia._init to have run before they work right.
             check_db = True
@@ -2267,6 +2331,7 @@ def main():
             global TEST_MODE
             TEST_MODE = True
 
+        # init the db/game dir, if needed
         init_game_directory(CURRENT_DIR, check_db=check_db, need_gamedir=need_gamedir)
 
         if option == "migrate":
@@ -2275,11 +2340,15 @@ def main():
                 django.core.management.call_command(*([option] + unknown_args))
                 sys.exit(0)
 
-        # pass on to the core django manager - re-parse the entire input line
-        # but keep 'evennia' as the name instead of django-admin. This is
-        # an exit condition.
-        sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
-        sys.exit(execute_from_command_line(sys.argv))
+        if run_custom_commands(option, *unknown_args):
+            # run any custom commands
+            sys.exit()
+        else:
+            # pass on to the core django manager - re-parse the entire input line
+            # but keep 'evennia' as the name instead of django-admin. This is
+            # an exit condition.
+            sys.argv[0] = re.sub(r"(-script\.pyw?|\.exe)?$", "", sys.argv[0])
+            sys.exit(execute_from_command_line(sys.argv))
 
     elif not args.tail_log:
         # no input; print evennia info (don't pring if we're tailing log)

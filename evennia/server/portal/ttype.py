@@ -9,7 +9,9 @@ etc. If the client does not support TTYPE, this will be ignored.
 
 All data will be stored on the protocol's protocol_flags dictionary,
 under the 'TTYPE' key.
+
 """
+
 # telnet option codes
 TTYPE = bytes([24])  # b"\x18"
 IS = bytes([0])  # b"\x00"
@@ -28,7 +30,7 @@ MTTS = [
 ]
 
 
-class Ttype(object):
+class Ttype:
     """
     Handles ttype negotiations. Called and initiated by the
     telnet protocol.

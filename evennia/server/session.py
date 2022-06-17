@@ -12,7 +12,7 @@ import time
 # ------------------------------------------------------------
 
 
-class Session(object):
+class Session:
     """
     This class represents a player's session and is a template for
     both portal- and server-side sessions.
@@ -34,26 +34,6 @@ class Session(object):
     e.g. the portal can re-sync with the server when the server reboots.
 
     """
-
-    # names of attributes that should be affected by syncing.
-    _attrs_to_sync = (
-        "protocol_key",
-        "address",
-        "suid",
-        "sessid",
-        "uid",
-        "csessid",
-        "uname",
-        "logged_in",
-        "puid",
-        "conn_time",
-        "cmd_last",
-        "cmd_last_visible",
-        "cmd_total",
-        "protocol_flags",
-        "server_data",
-        "cmdset_storage_string",
-    )
 
     def init_session(self, protocol_key, address, sessionhandler):
         """
@@ -102,6 +82,7 @@ class Session(object):
             "INPUTDEBUG": False,
             "RAW": False,
             "NOCOLOR": False,
+            "LOCALECHO": False,
         }
         self.server_data = {}
 
@@ -121,9 +102,9 @@ class Session(object):
                 the keys given by self._attrs_to_sync.
 
         """
-        return dict(
-            (key, value) for key, value in self.__dict__.items() if key in self._attrs_to_sync
-        )
+        return {
+            attr: getattr(self, attr) for attr in settings.SESSION_SYNC_ATTRS if hasattr(self, attr)
+        }
 
     def load_sync_data(self, sessdata):
         """

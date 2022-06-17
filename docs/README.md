@@ -27,10 +27,10 @@ own work-branch, make your changes to files in `evennia/docs/source/` and make a
 The sources in `evennia/docs/source/` are built into a pretty documentation using
 the [Sphinx][sphinx] static generator system. To do so locally you need to either
 use a system with `make` (Linux/Unix/Mac or [Windows-WSL][Windows-WSL]). Lacking that, you could
-in principle also run the sphinx build-commands manually - read the `evennia/docs/Makefile` to see 
+in principle also run the sphinx build-commands manually - read the `evennia/docs/Makefile` to see
 which commands are run by `make`.
 
-You don't necessarily _have_ to build the docs locally to contribute.  But
+You don't necessarily _have_ to build the docs locally to contribute, but
 building them allows you to check for yourself that syntax is correct and that
 your change comes out looking as you expected.
 
@@ -38,7 +38,7 @@ your change comes out looking as you expected.
 
 If you only want to build the main documentation pages (not the API autodocs),
 you don't need to install Evennia itself, only the documentation resources.
-All is done in your terminal/console.
+This action is done in your terminal/console.
 
 - (Optional, but recommended): Activate a virtualenv with Python 3.7.
 - `cd` to into the `evennia/docs` folder (where this README is).
@@ -64,7 +64,7 @@ All is done in your terminal/console.
 ## Building the main documentation and API docs
 
 The full documentation includes both the doc pages and the API documentation
-generated from the Evennia source. For this you must install Evennia and
+generated from the Evennia source. To build the full documentation you must install Evennia and
 initialize a new game with a default database (you don't need to have it
 running).
 
@@ -116,8 +116,8 @@ repo with
 
 ### Building with another gamedir
 
-If you for some reason want to use another location of your `gamedir/`, or want it
-named something else (maybe you already use the name 'gamedir' for your development ...),
+If for some reason you want to use another location of your `gamedir/` or want it
+named something else (maybe you already use the name 'gamedir' for your development ...)
 you can do so by setting the `EVGAMEDIR` environment variable to the absolute path
 of your alternative game dir. For example:
 
@@ -130,7 +130,7 @@ of your alternative game dir. For example:
 The full Evennia documentation also tracks documentation from older Evennia
 versions. This is done by pulling documentation from Evennia's old release
 branches and building them all so readers can choose which one to view. Only
-specific official Evennia branches will be built, so you can't use this to
+specific official Evennia branches will be built so you can't use this to
 build your own testing branch.
 
 - All local changes must have been committed to git first, since the versioned
@@ -164,26 +164,26 @@ available at `https://evennia.github.io/evennia/`.
 The format is [Markdown][commonmark-help] (Commonmark). While markdown supports a few alternative
 forms for some of these, we try to stick to the below forms for consistency.
 
-## Italic/Bold 
+## Italic/Bold
 
 We generally use underscores for italics and double-asterisks for bold:
 
 - `_Italic text_`
 - `**Bold Text**`
 
-## Headings 
+## Headings
 
-We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get smaller
-and smaller font).
+We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (the font will be smaller
+and smaller).
 
 - `# Heading`
 - `## SubHeading`
-- `## SubSubHeading` 
+- `## SubSubHeading`
 
 > Don't reuse the same heading/subheading name over and over in the same document. While Markdown does not prevent
-it, it makes it impossible to link to those duplicates properly (see next section). 
+it, it makes it impossible to link to those duplicates properly (see next section).
 
-## Lists 
+## Lists
 
 One can create both bullet-point lists and numbered lists:
 
@@ -198,34 +198,34 @@ One can create both bullet-point lists and numbered lists:
 3. Numbered point three
 ```
 
-## Notes 
+## Notes
 
 A note can be used to enphasise important things. It's added by starting one or more lines with `>`.
 
 ```
-> Note: This is an important 
-> thing to remember.  
+> Note: This is an important
+> thing to remember.
 ```
 
-## Links 
+## Links
 
-- `[linktext](url_or_ref)` - gives a clickable link `linktext`. 
+- `[linktext](url_or_ref)` - gives a clickable link `linktext`.
 
 The `url_or_ref` can either be a full `http://...` url or an internal _reference_. For example, use
-`[my document](My-Document)` to link to the document `evennia/docs/source/My-Document.md`. Avoid using 
+`[my document](My-Document)` to link to the document `evennia/docs/source/My-Document.md`. Avoid using
 full `http://` linking unless really referring to an external resource.
 
 - `[linktext](ref#heading-name)`
 
-You can point to sub-sections (headings) in a document by using a single `#` and the name of the 
+You can point to sub-sections (headings) in a document by using a single `#` and the name of the
 heading, replacing spaces with dashes. So to refer to a heading `## Cool Stuff` inside `My-Document`
 would be a link `[cool stuff](My-Document#Cool-Stuff)`.
 
 - `[linktext][linkref]` - refer to a reference defined later in the document.
 
-Urls can get long and if you are using the same url in many places it can get a little cluttered. So you can also put 
+Urls can get long and if you are using the same url in many places it can get a little cluttered. So you can also put
 the url as a 'footnote' at the end of your document
-and refer to it by putting your reference within square brackets `[ ]`. Here's an example: 
+and refer to it by putting your reference within square brackets `[ ]`. Here's an example:
 
 ```
 This is a [clickable link][mylink]. This is [another link][1].
@@ -238,7 +238,7 @@ This is a [clickable link][mylink]. This is [another link][1].
 
 ```
 
-### Special references 
+### Special references
 
 The Evennia documentation supports some special reference shortcuts in links:
 
@@ -246,11 +246,11 @@ The Evennia documentation supports some special reference shortcuts in links:
 
 - `github:` - a shortcut for the full path to the Evennia repository on github. This will refer to
   the `master` branch by default:
-  
+
         [link to objects.py](github:evennia/objects/objects.py)
 
     This will remap to https://github.com/evennia/evennia/blob/master/evennia/objects/objects.py.
-- To refer to the `develop` branch, start the url with `develop/`: 
+- To refer to the `develop` branch, start the url with `develop/`:
 
         [link to objects.py](github:develop/evennia/objects/objects.py)
 
@@ -260,37 +260,38 @@ The Evennia documentation supports some special reference shortcuts in links:
 
         [link to api for objects.py](api:evennia.objects)
 
-    This will create a link to the auto-generated `evennia/source/api/evennia.objects.rst` document. 
+    This will create a link to the auto-generated `evennia/source/api/evennia.objects.rst` document.
 
     Since api-docs are generated alongside the documentation, this will always be the api docs for the
-    current version/branch of the docs. 
+    current version/branch of the docs.
 
 #### Bug reports/feature request
 
 
-- `issue`, `bug-report`, `feature-request` - links to the same github issue select page. 
+- `issue`, `bug-report`, `feature-request` - links to the same github issue select page.
 
         If you find a problem, make a [bug report](issue)!
 
     This will generate a link to https://github.com/evennia/evennia/issues/new/choose.
-    
+ 
+
  > For some reason these particular shortcuts give a warning during documentation compilation. This warning
- > can be ignored. 
+ > can be ignored.
 
 ## Verbatim text
 
-It's common to want to mark something to be displayed verbatim - just as written - without any 
-Markdown parsing. In running text, this is done using backticks (\`), like \`verbatim text\` becomes `verbatim text`. 
+It's common to want to mark something to be displayed verbatim - just as written - without any
+Markdown parsing. In running text, this is done using backticks (\`), like \`verbatim text\` becomes `verbatim text`.
 
 If you want to put the verbatim text on its own line, you can do so easily by simply indenting
-it 4 spaces (add empty lines on each side for readability too): 
+it 4 spaces (add empty lines on each side for readability too):
 
 ```
-This is normal text 
+This is normal text
 
-    This is verbatim text 
+    This is verbatim text
 
-This is normal text 
+This is normal text
 ```
 
 Another way is to use triple-backticks:
@@ -304,40 +305,34 @@ Everything within these backticks will be verbatim.
 
 ## Code blocks
 
-Code examples are a special case - we want them to get code-highlighting for readability. This is done by using 
-the triple-backticks and specify which language we use:
-
+ 
+Code examples are a special case - we want them to get code-highlighting for readability. This is done by using
+the triple-backticks and specifying the language we use:
 ````
 ```python
 
 def a_python_func(x):
-   return x * x 
-    
-``` 
+   return x * x
+
+```
 ````
 
 ## ReST blocks
 
-Markdown is easy to read and use, but it isn't as expressive as it needs to be for some things. For this we 
-need to fall back to the [ReST][ReST] markup language which the documentation system uses under the hood. This is 
-done by specifying `eval_rst` as the name of the `language` of a literal block: 
+ 
+Markdown is easy to read and use, but it isn't as expressive as it needs to be for some things. For this we
+need to fall back to the [ReST][ReST] markup language which the documentation system uses under the hood. This is
+done by specifying `eval_rst` as the name of the `language` of a literal block:
+ 
 
 ````
-```eval_rst
+```{eval_rst}
 
-    This will be evaluated as ReST. 
+    This will be evaluated as ReST.
 
 ```
 ````
-There is also a short-hand form for starting a [ReST directive][ReST-directives] without need for `eval_rst`:
 
-````
-```directive:: possible-option
-  
-  Content that *must* be indented for it to be included in the directive.
-
-  New lines are ignored except if separated by an empty line.
-```
 ````
 
 See below for examples of this.
@@ -347,131 +342,120 @@ See below for examples of this.
 This will display a one-line note that will pop even more than a normal `> note`.
 
 ````
-```{important} 
-  This is important because it is!
+```{important}
+This is important because it is!
 ```
 ````
 
 #### Warning
 
-A warning block is used to draw attention to particularly dangerous things, or features easy to 
+A warning block is used to draw attention to particularly dangerous things or features that are easy to
 mess up.
 
 ````
 ```{warning}
-  Be careful about this ... 
+Be careful about this ...
 ````
 
 #### Version changes and deprecations
 
-These will show up as one-line warnings that suggest an added, changed or deprecated 
-feature beginning with particular version.
+These will show up as one-line warnings that suggest an added, changed or deprecated
+feature beginning with the particular version.
 
 ````
-```versionadded:: 1.0
+```{versionadded} 1.0
 ```
 ````
 
 ````
-```versionchanged:: 1.0
+```{versionchanged} 1.0
   How the feature changed with this version.
 ```
 ````
 ````
-```deprecated:: 1.0
+```{deprecated} 1.0
 ```
 ````
 
 
-#### Sidebar 
+#### Sidebar
 
 This will display an informative sidebar that floats to the side of regular content. This is useful
-for example to remind the reader of some concept relevant to the text.
+to remind the reader of some concept relevant to the text.
 
 ````
-```sidebar:: Things to remember
+```{sidebar} Things to remember
 
-  - There can be bullet lists
-  - in here.
+- There can be bullet lists
+- in here.
 
-  Headers with indented blocks:
-    like this 
-  Will end up as full sub-headings:
-    in the sidebar.
+Headers with indented blocks:
+  like this
+Will end up as full sub-headings:
+  in the sidebar.
 ```
 ````
 
-> Remember that for ReST-directives, the content within the triple-backticks _must_ be indented to 
->some degree or the content will just appear outside of the directive as regular text. 
+> Remember that for ReST-directives, the content within the triple-backticks _must_ be indented to
+>some degree or the content will just appear outside of the directive as regular text.
 
-#### Tables 
+#### Tables
 
-A table is specified using [ReST table syntax][ReST-tables]:
+Tables are done using Markdown syntax
 
-````
-```eval_rst
-
-=====  =====  =======
-A      B      A and B
-=====  =====  =======
-False  False  False
-True   False  False
-False  True   False
-True   True   True
-=====  =====  =======
 ```
-````
-
-or the more flexible but verbose
-
-````
-```eval_rst
-+------------------------+------------+----------+----------+
-| Header row, column 3   | Header 2   | Header 3 | Header 4 |
-| (header rows optional) |            |          |          |
-+========================+============+==========+==========+
-| body row 1, column 1   | column 2   | column 3 | column 4 |
-+------------------------+------------+----------+----------+
-| body row 2             | ...        | ...      |          |
-+------------------------+------------+----------+----------+
+| A | B | A and B |
+| --- | --- | --- |
+| False | False |  False |
+| True |  False | False |
+| False |  True |  False |
+| True  |  True |  True |
 ```
-````
 
-#### A more flexible code block 
+| A | B | A and B |
+| --- | --- | --- |
+| False | False |  False |
+| True |  False | False |
+| False |  True |  False |
+| True  |  True |  True |
 
-The regular Markdown codeblock is usually enough but for more direct control over the style, one 
+
+#### A more flexible code block
+
+The regular Markdown codeblock is usually enough but for more direct control over the style, one
 can also specify the code block explicitly in `ReST`.
 for more flexibility. It also provides a link to the code block, identified by its name.
 
 
 ````
-```code-block:: python
-    :linenos:
-    :emphasize-lines: 6-7,12
-    :caption: An example code block
-    :name: A full code block example
+```{code-block} python
+:linenos:
+:emphasize-lines: 6-7,12
+:caption: An example code block
+:name: A full code block example
 
-    from evennia import Command
-    class CmdEcho(Command):
-        """
-        Usage: echo <arg>
-        """
-        key = "echo"
-        def func(self):
-            self.caller.msg(self.args.strip())
+from evennia import Command
+class CmdEcho(Command):
+    """
+    Usage: echo <arg>
+    """
+    key = "echo"
+    def func(self):
+        self.caller.msg(self.args.strip())
 ```
 ````
+
 Here, `:linenos:` turns on line-numbers and `:emphasize-lines:` allows for emphasizing certain lines
 in a different color. The `:caption:` shows an instructive text and `:name:` is used to reference this
-block through the link that will appear (so it should be unique for a give document). 
+block through the link that will appear (so it should be unique for a give document).
 
-> The default markdown syntax will actually generate a code-block ReST instruction like this 
+> The default markdown syntax will actually generate a code-block ReST instruction like this
 > automatically for us behind the scenes. The automatic generation can't know things like emphasize-lines
 > or caption since that's not a part of the Markdown specification.
 
 # Technical
 
-Evennia leverages [Sphinx][sphinx] with the [recommonmark][recommonmark] extension, which allows us to write our
+Evennia leverages [Sphinx][sphinx] with the [MyST][MyST] extension, which allows us to write our
 docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github) rather than ReST.
 The recommonmark extension however also allows us to use ReST selectively in the places were it is more
 expressive than the simpler (but much easier) Markdown.
@@ -482,11 +466,11 @@ to understand our friendly Google-style docstrings used in classes and functions
 
 
 [sphinx]: https://www.sphinx-doc.org/en/master/
-[recommonmark]: https://recommonmark.readthedocs.io/en/latest/index.html
+[MyST]: https://myst-parser.readthedocs.io/en/latest/syntax/reference.html
 [commonmark]: https://spec.commonmark.org/current/
 [commonmark-help]: https://commonmark.org/help/
-[sphinx-autodoc]: http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
-[sphinx-napoleon]: http://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
+[sphinx-autodoc]: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
+[sphinx-napoleon]: https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
 [getting-started]: https://github.com/evennia/evennia/wiki/Getting-Started
 [contributing]: https://github.com/evennia/evennia/wiki/Contributing
 [ReST]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html

@@ -9,6 +9,7 @@ This explains common recurring terms used in the Evennia docs. It will be expand
 - _[channel](./Glossary.md#channel)_ - game communication channels
 - _[character](./Glossary.md#character)_ - the player's avatar in the game, controlled from
 _[account](./Glossary.md#account)_
+- _[contrib](./Glossary.md#contrib)_ - a term used for optional code contributed by the community.
 - _[core](./Glossary.md#core)_ - a term used for the code distributed with Evennia proper
 - _[django](./Glossary.md#django)_ - web framework Evennia uses for database access and web integration
 - _[field](./Glossary.md#field)_ - a _[typeclass](./Glossary.md#typeclass)_ property representing a database
@@ -38,9 +39,9 @@ communications
 
 ---
 
-### _account_
+## _account_
 
-The term 'account' refers to the player's unique account on the game. It is
+The term 'account' refers to the [player's](./Glossary.md#account) unique account on the game. It is
 represented by the `Account` [typeclass](./Glossary.md#typeclass) and holds things like email, password,
 configuration etc.
 
@@ -49,42 +50,42 @@ representation in the game world. Through their Account they can instead choose 
 [puppet](./Glossary.md#puppet) one (or more, depending on game mode) [Characters](./Glossary.md#character) in
 the game.
 
-In the default [multisession mode](./Sessions.md#multisession-mode) of Evennia, you immediately start
+In the default [multisession mode](Components/Sessions.md#multisession-mode) of Evennia, you immediately start
 puppeting a Character with the same name as your Account when you log in - mimicking how older
 servers used to work.
 
-### _admin-site_
+## _admin-site_
 
 This usually refers to [Django's](./Glossary.md#django) *Admin site* or database-administration web page
 ([link to Django docs](https://docs.djangoproject.com/en/2.1/ref/contrib/admin/)). The admin site is
 an automatically generated web interface to the database (it can be customized extensively). It's
 reachable from the `admin` link on the default Evennia website you get with your server.
 
-### _attribute_
+## _attribute_
 
 The term _Attribute_ should not be confused with ([properties](./Glossary.md#property) or
 [fields](./Glossary.md#field). The `Attribute` represents arbitrary pieces of data that can be attached
 to any [typeclassed](./Glossary.md#typeclass) entity in Evennia. Attributes allows storing new persistent
-data on typeclasses without changing their underlying database schemas. [Read more about Attributes
-here](./Attributes.md).
+data on typeclasses without changing their underlying database schemas.
+[Read more about Attributes here](Components/Attributes.md).
 
-### _channel_
+## _channel_
 
 A _Channel_ refers to an in-game communication channel. It's an entity that people subscribe to and
 which re-distributes messages between all subscribers. Such subscribers default to being
 [Accounts](./Glossary.md#account), for out-of-game communication but could also be [Objects (usually
 Characters)](./Glossary.md#character) if one wanted to adopt Channels for things like in-game walkie-
 talkies or phone systems. It is represented by the `Channel` typeclass. [You can read more about the
-comm system here](./Communications.md#channels).
+comm system here](Components/Channels.md).
 
-### _character_
+## _character_
 
 The _Character_ is the term we use for the default avatar being [puppeted](./Glossary.md#puppet) by the
 [account](./Glossary.md#account) in the game world. It is represented by the `Character` typeclass (which
 is a child of [Object](./Glossary.md#object)). Many developers use children of this class to represent
-monsters and other NPCs. You can [read more about it here](./Objects.md#subclasses-of-object).
+monsters and other NPCs. You can [read more about it here](Components/Objects.md#subclasses-of-object).
 
-### _django_
+## _django_
 
 [Django](https://www.djangoproject.com/) is a professional and very popular Python web framework,
 similar to Rails for the Ruby language. It is one of Evennia's central library dependencies (the
@@ -99,7 +100,7 @@ There is usually no need to know the details of Django's database handling in or
 it will handle most of the complexity for you under the hood using what we call
 [typeclasses](./Glossary.md#typeclass). But should you need the power of Django you can always get it.
 Most commonly people want to use "raw" Django when doing more advanced/custom database queries than
-offered by Evennia's [default search functions](./Tutorial-Searching-For-Objects.md). One will then need
+offered by Evennia's [default search functions](Howtos/Beginner-Tutorial/Part1/Searching-Things.md). One will then need
 to read about Django's _querysets_. Querysets are Python method calls on a special form that lets
 you build complex queries. They get converted into optimized SQL queries under the hood, suitable
 for your current database. [Here is our tutorial/explanation of Django queries](Tutorial-Searching-
@@ -118,29 +119,29 @@ count on the web page). [Here is one of our tutorials on wiring up such a web pa
 new-web-page). Django also comes with the [admin site](./Glossary.md#admin-site), which automatically
 maps the database into a form accessible from a web browser.
 
-### _contrib_ 
-
-Contribs are optional and often more game-specific code-snippets contributed by the Evennia community.
-They are distributed with Evennia in the `contrib/` folder.
-
-### _core_
+## _core_
 
 This term is sometimes used to represent the main Evennia library code suite, *excluding* its
-[contrib](./Glossary.md#contrib) directory. It can sometimes come up in code reviews, such as
+[contribs](./Glossary.md#contrib) directory. It can sometimes come up in code reviews, such as
 
 > Evennia is game-agnostic but this feature is for a particular game genre. So it does not belong in
 core. Better make it a contrib.
+ 
+## _contrib_
 
-### _field_
+Game-specific code and examples are distributed in evennia's [contribs/](Contribs/Contribs-Overview.md) folder. 
+This is game-specific, optional code created by the Evennia community.
+
+## _field_
 
 A _field_ or _database field_ in Evennia refers to a [property](./Glossary.md#property) on a
 [typeclass](./Glossary.md#typeclass) directly linked to an underlying database column. Only a few fixed
 properties per typeclass are database fields but they are often tied to the core functionality of
 that base typeclass (for example [Objects](./Glossary.md#object) store its location as a field). In all
 other cases, [attributes](./Glossary.md#attribute) are used to add new persistent data to the typeclass.
-[Read more about typeclass properties here](./Typeclasses.md#about-typeclass-properties).
+[Read more about typeclass properties here](Components/Typeclasses.md#about-typeclass-properties).
 
-### _git_
+## _git_
 
 [Git](https://git-scm.com/) is a [version control](https://en.wikipedia.org/wiki/Version_control)
 tool. It allows us to track the development of the Evennia code by dividing it into units called
@@ -171,10 +172,10 @@ Common usage (for non-Evennia developers):
 you 'download' Evennia. You only need to do this once.
 - `git pull` (inside local copy of repository) - sync your local repository with what is online.
 
-> Full usage of Git is way beyond the scope of this glossary. See [Tutorial - version
-control](./Version-Control.md) for more info and links to the Git documentation.
+> Full usage of Git is way beyond the scope of this glossary. See
+[Tutorial - version control](Coding/Version-Control.md) for more info and links to the Git documentation.
 
-### _migrate_
+## _migrate_
 
 This term is used for upgrading the database structure (it's _schema_ )to a new version. Most often
 this is due to Evennia's [upstream](./Glossary.md#github) schema changing. When that happens you need to
@@ -184,20 +185,20 @@ latest changes, just `cd` into your game dir and run
     evennia migrate
 
 That should be it (see [virtualenv](./Glossary.md#virtualenv) if you get a warning that the `evennia`
-command is not available). See also [Updating your game](./Updating-Your-Game.md) for more details.
+command is not available). See also [Updating your game](Coding/Updating-Your-Game.md) for more details.
 
 > Technically, migrations are shipped as little Python snippets of code that explains which database
 actions must be taken to upgrade from one version of the schema to the next. When you run the
 command above, those snippets are run in sequence.
 
-### _multisession mode_
+## _multisession mode_
 
 This term refers to the `MULTISESSION_MODE` setting, which has a value of 0 to 3. The mode alters
 how players can connect to the game, such as how many Sessions a player can start with one account
 and how many Characters they can control at the same time. It is [described in detail
-here](./Sessions.md#multisession-mode).
+here](Components/Sessions.md#multisession-mode).
 
-### _github_
+## _github_
 
 [Github](https://github.com/evennia) is where Evennia's source code and documentation is hosted.
 This online [repository](./Glossary.md#repository) of code we also sometimes refer to as _upstream_.
@@ -207,18 +208,18 @@ similarity in name, don't confuse GitHub the website with [Git](./Glossary.md#gi
 system. Github hosts Git [repositories](./Glossary.md#repository) online and helps with collaboration and
 infrastructure. Git itself is a separate project.
 
-### _object_
+## _object_
 
-In general Python (and other [object-oriented languages](https://en.wikipedia.org/wiki/Object-oriented_programming)), an `object` is what we call the instance of a *class*. But one of Evennia's
+In general Python (and other [object-oriented languages](https://en.wikipedia.org/wiki/Object-
+oriented_programming)), an `object` is what we call the instance of a *class*. But one of Evennia's
 core [typeclasses](./Glossary.md#typeclass) is also called "Object". To separate these in the docs we
 try to use `object` to refer to the general term and capitalized `Object` when we refer to the
 typeclass.
 
 The `Object` is a typeclass that represents all *in-game* entities, including
-[Characters](./Glossary.md#character), rooms, trees, weapons etc. [Read more about Objects
-here](./Objects.md).
+[Characters](./Glossary.md#character), rooms, trees, weapons etc. [Read more about Objects here](Components/Objects.md).
 
-### _pip_
+## _pip_
 
 _[pip](https://pypi.org/project/pip/)_ comes with Python and is the main tool for installing third-
 party Python packages from the web. Once a python package is installed you can do `import
@@ -240,20 +241,21 @@ changes available when you import this package into your code. Evennia is instal
 For development, `pip` is usually used together with a [virtualenv](./Glossary.md#virtualenv) to install
 all packages and dependencies needed for a project in one, isolated location on the hard drive.
 
-### _puppet_
+## _puppet_
 
 An [account](./Glossary.md#account) can take control and "play as" any [Object](./Glossary.md#object). When
 doing so, we call this _puppeting_, (like [puppeteering](https://en.wikipedia.org/wiki/Puppeteer)).
 Normally the entity being puppeted is of the [Character](./Glossary.md#character) subclass but it does
 not have to be.
 
-### _property_
+## _property_
 
 A _property_ is a general term used for properties on any Python object. The term also sometimes
-refers to the `property` built-in function of Python ([read more here](https://www.python-course.eu/python3_properties.php)). Note the distinction between properties,
+refers to the `property` built-in function of Python ([read more here](https://www.python-
+course.eu/python3_properties.php)). Note the distinction between properties,
 [fields](./Glossary.md#field) and [Attributes](./Glossary.md#attribute).
 
-### _repository_
+## _repository_
 
 A _repository_ is a version control/[git](./Glossary.md#git) term. It represents a folder containing
 source code plus its versioning history.
@@ -266,18 +268,18 @@ The `evennia` folder you download from us with `git clone` is a repository. The 
 repository). If you put your game dir under version control, that of course becomes a repository as
 well.
 
-### _script_
+## _script_
 
-When we refer to _Scripts_, we generally refer to the `Script` [typeclass](./Typeclasses.md). Scripts are
+When we refer to _Scripts_, we generally refer to the `Script` [typeclass](Components/Typeclasses.md). Scripts are
 the mavericks of Evennia - they are like [Objects](./Glossary.md#object) but without any in-game
 existence. They are useful as custom places to store data but also as building blocks in persistent
 game systems. Since the can be initialized with timing capabilities they can also be used for long-
-time persistent time keeping (for fast updates other types of timers may be better though). [Read
-more about Scripts here](./Scripts.md)
+time persistent time keeping (for fast updates other types of timers may be better though).
+[Read more about Scripts here](Components/Scripts.md)
 
-### _session_
+## _session_
 
-A [Session](./Sessions.md) is a Python object representing a single client connection to the server. A
+A [Session](Components/Sessions.md) is a Python object representing a single client connection to the server. A
 given human player could connect to the game from different clients and each would get a Session
 (even if you did not allow them to actually log in and get access to an
 [account](./Glossary.md#account)).
@@ -286,24 +288,23 @@ Sessions are _not_ [typeclassed](./Glossary.md#typeclass) and has no database pe
 always exist (also when not logged in), they share some common functionality with typeclasses that
 can be useful for certain game states.
 
-### _tag_
+## _tag_
 
-A [Tag](./Tags.md) is a simple label one can attach to one or more objects in the game. Tagging is a 
-powerful way to group entities and can also be used to indicate they have particular shared abilities.
-Tags are shared between objects (unlike [Attributes](#attribute)).
+A [Tag](Components/Tags.md) is used to group and categorize other database entitiess together in an efficient way
+so they can be efficiently searched later.
 
-### _ticker_
+## _ticker_
 
-The [Ticker handler](./TickerHandler.md) runs Evennia's optional 'ticker' system. In other engines, such
+The [Ticker handler](Components/TickerHandler.md) runs Evennia's optional 'ticker' system. In other engines, such
 as [DIKU](https://en.wikipedia.org/wiki/DikuMUD), all game events are processed only at specific
 intervals called 'ticks'. Evennia has no such technical limitation (events are processed whenever
 needed) but using a fixed tick can still be useful for certain types of game systems, like combat.
 Ticker Handler allows you to emulate any number of tick rates (not just one) and subscribe actions
 to be called when those ticks come around.
 
-### _typeclass_
+## _typeclass_
 
-The [typeclass](./Typeclasses.md) is an Evennia-specific term. A typeclass allows developers to work with
+The [typeclass](Components/Typeclasses.md) is an Evennia-specific term. A typeclass allows developers to work with
 database-persistent objects as if they were normal Python objects. It makes use of specific
 [Django](./Glossary.md#django) features to link a Python class to a database table. Sometimes we refer to
 such code entities as _being typeclassed_.
@@ -320,7 +321,7 @@ The [core](./Glossary.md#core) typeclasses in the Evennia library are all named 
 `DefaultObject` etc. When you initialize your [game dir] you automatically get empty children of
 these, called `Account`, `Object` etc that you can start working with.
 
-### _twisted_
+## _twisted_
 
 [Twisted](https://twistedmatrix.com/trac/) is a heavy-duty asynchronous networking engine. It is one
 of Evennia's two major library dependencies (the other one is [Django](./Glossary.md#django)). Twisted is
@@ -329,7 +330,7 @@ to construct network protocols and communicate with the outside world; such as o
 version of Telnet, Telnet+SSL, SSH, webclient-websockets etc. Twisted also runs our integrated web
 server, serving the Django-based website for your game.
 
-### _virtualenv_
+## _virtualenv_
 
 The standard [virtualenv](https://virtualenv.pypa.io/en/stable/) program comes with Python. It is
 used to isolate all Python packages needed by a given Python project into one folder (we call that
@@ -339,12 +340,12 @@ something like "the command 'evennia' is not available" - it's probably because 
 not 'active' yet (see below).
 
 Usage:
-- `virtualenv <name>` - initialize a new virtualenv `<name>` in a new folder `<name>` in the current
-location. Called `evenv` in these docs.
-- `virtualenv -p path/to/alternate/python_executable <name>` - create a virtualenv using another
-Python version than default.
-- `source <folder_name>/bin/activate`(linux/mac) - activate the virtualenv in `<folder_name>`.
-- `<folder_name>\Scripts\activate` (windows)
+
+- `python3.10 -m venv evenv` - initialize a new virtualenv-folder `evenv` in the current
+location. You can call this whatever you like. The Python-version you use for this call will be the one used
+for everything inside the virtualenv.
+- `source evenv/bin/activate` (linux/mac) or `evenv\Scripts\activate`(windows) - this activates the 
+  virtualenv. 
 - `deactivate` - turn off the currently activated virtualenv.
 
 A virtualenv is 'activated' only for the console/terminal it was started in, but it's safe to
@@ -376,6 +377,6 @@ never have to actually `cd` into the `evenv` folder. You can activate it from an
 still be considered "in" the virtualenv wherever you go until you `deactivate` or close the
 console/terminal.
 
-So, when do I *need* to activate my virtualenv? If the virtualenv is not active, none of the Python
+So, when do you *need* to activate my virtualenv? If the virtualenv is not active, none of the Python
 packages/programs you installed in it will be available to you. So at a minimum, *it needs to be
 activated whenever you want to use the `evennia` command* for any reason.

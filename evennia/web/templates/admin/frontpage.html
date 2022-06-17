@@ -1,0 +1,154 @@
+{% extends "website/base.html" %}
+
+{% block titleblock %}Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-sm border">
+                <p class="card-text">
+                <p class="lead"><a href="{% url "admin:accounts_accountdb_changelist" %}">Accounts</a></h4>
+                  <small class="text-muted">
+                      hold a player's configuration and password. An account can
+                      control one or more in-game characters (Objects).
+                  </small>
+                </p>
+            </div>
+
+            <div class="col-sm border">
+                <p class="card-text">
+                  <p class="lead"><a href="{% url "admin:objects_objectdb_changelist" %}">Objects</a></h4>
+                  <small class="text-muted">
+                      include everything inside the game-world, from Characters
+                      to Rooms, Exits, swords and monsters.
+                  </small>
+                </p>
+            </div>
+
+            <div class="col-sm border">
+                <p class="card-text">
+                  <p class="lead"><a href="{% url "admin:scripts_scriptdb_changelist" %}">Scripts</a></h4>
+                  <small class="text-muted">
+                      are 'Objects without an in-game existence'. They are used to store game
+                      information and state, handle special functionality or perform timed actions.
+                  </small>
+                </p>
+            </div>
+
+            <div class="col-sm border">
+                <p class="card-text">
+                  <p class="lead"><a href="{% url "admin:typeclasses_tag_changelist" %}">Tags</a></h4>
+                  <small class="text-muted">
+                      are used to group, organize and quickly find other types of
+                      entities (usually Objects). A tag is unique and 'shared' for each type of entity.
+                  </small>
+                </p>
+            </div>
+
+        </div>
+        <div class="row">
+
+            <div class="col-sm border">
+                <p class="card-text">
+                  <p class="lead"><a href="{% url "admin:comms_channeldb_changelist" %}">Channels</a></h4>
+                  <small class="text-muted">
+                      redirect communication between subscribers, chat-room style. The
+                      channel object holds subscriptions, options and access. The
+                      text itself is logged to file.
+                  </small>
+                </p>
+            </div>
+
+            <div class="col-sm border">
+                <p class="card-text">
+                  <p class="lead"><a href="{% url "admin:comms_msg_changelist" %}">Msgs</a></h4>
+                  <small class="text-muted">
+                      store one unit of communication between a sender and
+                      one or more receivers, like an email or single chat message. It is used by
+                      page/tell and the in-game mail contrib.
+                  </small>
+                </p>
+            </div>
+
+            <div class="col-sm border">
+                <p class="card-text">
+                  <p class="lead"><a href="{% url "admin:help_helpentry_changelist" %}">Help Topics</a></h4>
+                  <small class="text-muted">
+                      store help entries. Dynamic command-help (based on source code) and file-based
+                      help entries (stored in modules defined by <code>FILEHELP_MODULES</code> setting)
+                      are not possible to edit from this admin.
+                  </small>
+                </p>
+            </div>
+
+            <div class="col-sm border">
+                <p class="card-text">
+                  <p class="lead"><a href="{% url "admin:server_serverconfig_changelist" %}">ServerConfigs</a></h4>
+                  <small class="text-muted">
+                      store variables set by the running server. These are maintained
+                      by the server and should usually never need to be edited manually.
+                  </small>
+                </p>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm border">
+                <p class="card-text">
+                <p class="lead"><a href="{% url "admin:sites_site_changelist" %}">Site-Domains</a></h4>
+                  <small class="text-muted">
+                        define domains for <code>Flat Pages</code>. For local-only testing, create a
+                        domain named <code>localhost:4001</code>. Then manually add
+                        <code>SITE_ID=&lt;id&gt;</code> to your settings, where &lt;id&gt;
+                        is the database-id of the domain you just created.
+                  </small>
+                </p>
+            </div>
+
+            <div class="col-sm border">
+                <p class="card-text">
+                <p class="lead"><a href="{% url "admin:flatpages_flatpage_changelist" %}">Flat Pages</a></h4>
+                  <small class="text-muted">
+                      Create, edit and publish new web pages without needing to know how to
+                      code. Make sure to assign to a <code>Site-Domain</code> created previously.
+                  </small>
+                </p>
+            </div>
+
+            <div class="col-sm border">
+                <p class="card-text">
+                <p class="lead"><a href="{% url "admin:auth_group_changelist" %}">Groups</a></h4>
+                  <small class="text-muted">
+                      are permission groups used only by the admin. You usually don't
+                      need to modify these.
+                  </small>
+                </p>
+
+            </div>
+
+        </div>
+
+        <p class="card-text">
+        <p class="card-text text-center">
+          <small class="text-muted">
+              The Evennia admin allows for modifying database entities using a
+              graphical interface. This bypasses in-game locks and permissions.
+              <br>You can disable this front page and use the base
+              <a href="{% url "django_admin" %}">django admin panel page</a>
+               by adding <code>EVENNIA_ADMIN=False</code> to
+              <code>server/conf/settings.py</code> and reload.
+          </small>
+        </p>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -26,7 +26,7 @@ Example: To reach the search method 'get_object_with_account'
 
 # Import the manager methods to be wrapped
 
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.contenttypes.models import ContentType
 
 # limit symbol import from API
@@ -37,7 +37,7 @@ __all__ = (
     "search_message",
     "search_channel",
     "search_help_entry",
-    "search_tag",  # object-tag
+    "search_tag",
     "search_script_tag",
     "search_account_tag",
     "search_channel_tag",
@@ -53,15 +53,15 @@ try:
     ChannelDB = ContentType.objects.get(app_label="comms", model="channeldb").model_class()
     HelpEntry = ContentType.objects.get(app_label="help", model="helpentry").model_class()
     Tag = ContentType.objects.get(app_label="typeclasses", model="tag").model_class()
-except OperationalError:
+except (OperationalError, ProgrammingError):
     # this is a fallback used during tests/doc building
-   print("Couldn't initialize search managers - db not set up.")
-   from evennia.objects.models import ObjectDB
-   from evennia.accounts.models import AccountDB
-   from evennia.scripts.models import ScriptDB
-   from evennia.comms.models import Msg, ChannelDB
-   from evennia.help.models import HelpEntry
-   from evennia.typeclasses.tags import Tag
+    print("Database not available yet - using temporary fallback for search managers.")
+    from evennia.objects.models import ObjectDB
+    from evennia.accounts.models import AccountDB
+    from evennia.scripts.models import ScriptDB
+    from evennia.comms.models import Msg, ChannelDB
+    from evennia.help.models import HelpEntry
+    from evennia.typeclasses.tags import Tag  # noqa
 
 # -------------------------------------------------------------------
 # Search manager-wrappers
@@ -110,7 +110,7 @@ except OperationalError:
 #                      candidates=None,
 #                      attribute_name=None):
 #
-search_object = ObjectDB.objects.object_search
+search_object = ObjectDB.objects.search_object
 search_objects = search_object
 object_search = search_object
 objects = search_objects
@@ -126,7 +126,7 @@ objects = search_objects
 #     ostring = a string or database id.
 #
 
-search_account = AccountDB.objects.account_search
+search_account = AccountDB.objects.search_account
 search_accounts = search_account
 account_search = search_account
 accounts = search_accounts
@@ -144,7 +144,7 @@ accounts = search_accounts
 #                  on a timer.
 #
 
-search_script = ScriptDB.objects.script_search
+search_script = ScriptDB.objects.search_script
 search_scripts = search_script
 script_search = search_script
 scripts = search_scripts
@@ -165,7 +165,7 @@ scripts = search_scripts
 #                one of the other arguments to limit the search.
 #
 
-search_message = Msg.objects.message_search
+search_message = Msg.objects.search_message
 search_messages = search_message
 message_search = search_message
 messages = search_messages
@@ -181,7 +181,7 @@ messages = search_messages
 #     exact -  requires an exact ostring match (not case sensitive)
 #
 
-search_channel = ChannelDB.objects.channel_search
+search_channel = ChannelDB.objects.search_channel
 search_channels = search_channel
 channel_search = search_channel
 channels = search_channels

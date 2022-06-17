@@ -14,6 +14,7 @@ from django.conf import settings
 
 NAWS = bytes([31])  # b"\x1f"
 IS = bytes([0])  # b"\x00"
+
 # default taken from telnet specification
 DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 DEFAULT_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
@@ -21,7 +22,7 @@ DEFAULT_HEIGHT = settings.CLIENT_DEFAULT_HEIGHT
 # try to get the customized mssp info, if it exists.
 
 
-class Naws(object):
+class Naws:
     """
     Implements the NAWS protocol. Add this to a variable on the telnet
     protocol to set it up.

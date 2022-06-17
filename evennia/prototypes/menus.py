@@ -177,9 +177,7 @@ def _set_property(caller, raw_string, **kwargs):
 
     if kwargs.get("test_parse", True):
         out.append(" Simulating prototype-func parsing ...")
-        err, parsed_value = protlib.protfunc_parser(value, testing=True)
-        if err:
-            out.append(" |yPython `literal_eval` warning: {}|n".format(err))
+        parsed_value = protlib.protfunc_parser(value, testing=True, prototype=prototype)
         if parsed_value != value:
             out.append(
                 " |g(Example-)value when parsed ({}):|n {}".format(type(parsed_value), parsed_value)
@@ -264,7 +262,8 @@ def _validate_prototype(prototype):
 def _format_protfuncs():
     out = []
     sorted_funcs = [
-        (key, func) for key, func in sorted(protlib.PROT_FUNCS.items(), key=lambda tup: tup[0])
+        (key, func)
+        for key, func in sorted(protlib.FUNC_PARSER.callables.items(), key=lambda tup: tup[0])
     ]
     for protfunc_name, protfunc in sorted_funcs:
         out.append(
@@ -967,7 +966,7 @@ def _typeclass_actions(caller, raw_inp, **kwargs):
         return "node_typeclass"
 
 
-def _typeclass_select(caller, typeclass):
+def _typeclass_select(caller, typeclass, **kwargs):
     """Select typeclass from list and add it to prototype. Return next node to go to."""
     ret = _set_property(caller, typeclass, prop="typeclass", processor=str)
     caller.msg("Selected typeclass |c{}|n.".format(typeclass))
@@ -2115,7 +2114,9 @@ def _apply_diff(caller, **kwargs):
     objects = kwargs["objects"]
     back_node = kwargs["back_node"]
     diff = kwargs.get("diff", None)
-    num_changed = spawner.batch_update_objects_with_prototype(prototype, diff=diff, objects=objects)
+    num_changed = spawner.batch_update_objects_with_prototype(
+        prototype, diff=diff, objects=objects, caller=caller
+    )
     caller.msg("|g{num} objects were updated successfully.|n".format(num=num_changed))
     return back_node
 
@@ -2355,7 +2356,7 @@ def node_apply_diff(caller, **kwargs):
 
 
 def node_prototype_save(caller, **kwargs):
-    """Save prototype to disk """
+    """Save prototype to disk"""
     # these are only set if we selected 'yes' to save on a previous pass
     prototype = kwargs.get("prototype", None)
     # set to True/False if answered, None if first pass
@@ -2483,7 +2484,7 @@ def _spawn(caller, **kwargs):
     if not prototype.get("location"):
         prototype["location"] = caller
 
-    obj = spawner.spawn(prototype)
+    obj = spawner.spawn(prototype, caller=caller)
     if obj:
         obj = obj[0]
         text = "|gNew instance|n {key} ({dbref}) |gspawned at location |n{loc}|n|g.|n".format(
@@ -2581,7 +2582,7 @@ def node_prototype_spawn(caller, **kwargs):
 # prototype load node
 
 
-def _prototype_load_select(caller, prototype_key):
+def _prototype_load_select(caller, prototype_key, **kwargs):
     matches = protlib.search_prototype(key=prototype_key)
     if matches:
         prototype = matches[0]
@@ -2662,7 +2663,7 @@ class OLCMenu(EvMenu):
         Format the node text itself.
 
         """
-        return super(OLCMenu, self).nodetext_formatter(nodetext)
+        return super().nodetext_formatter(nodetext)
 
     def options_formatter(self, optionlist):
         """
@@ -2698,7 +2699,7 @@ class OLCMenu(EvMenu):
             if olc_options
             else ""
         )
-        other_options = super(OLCMenu, self).options_formatter(other_options)
+        other_options = super().options_formatter(other_options)
         sep = "\n\n" if olc_options and other_options else ""
 
         return "{}{}{}".format(olc_options, sep, other_options)

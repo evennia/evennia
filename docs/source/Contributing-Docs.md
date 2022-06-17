@@ -12,10 +12,10 @@ in `evennia/docs/source/` and make a PR for it!
 The documentation source files are `*.md` (Markdown) files found in `evennia/docs/source/`.
 Markdown files are simple text files that can be edited with a normal text editor. They can also
 contain raw HTML directives (but that is very rarely needed). They use
-the [Markdown][commonmark] syntax with [MyST extensions][MyST]. 
+the [Markdown][commonmark] syntax with [MyST extensions][MyST].
 
 ```{important}
-You do _not_ need to be able to test/build the docs locally to contribute a documentation PR. 
+You do _not_ need to be able to test/build the docs locally to contribute a documentation PR.
 We'll resolve any issues when we merge and build documentation. If you still want to build
 the docs for yourself, instructions are [at the end of this document](#building-the-docs-locally).
 ```
@@ -56,19 +56,19 @@ primarily be accessed as link refs (e.g. `Component/Accounts`)
     the Evennia version on a new branch.
 
 
-# Editing syntax
+## Editing syntax
 
 The format used for Evennia's docs is [Markdown][commonmark-help] (Commonmark). While markdown
 supports a few alternative forms for some of these, we try to stick to the below forms for consistency.
 
-## Italic/Bold
+### Italic/Bold
 
 We generally use underscores for italics and double-asterisks for bold:
 
 - `_Italic text_` - _Italic text_
 - `**Bold Text**` - **Bold text**
 
-## Headings
+### Headings
 
 We use `#` to indicate sections/headings. The more `#` the more of a sub-heading it is (will get
 smaller and smaller font).
@@ -82,7 +82,7 @@ smaller and smaller font).
 does not prevent it, it will make it impossible to refer to that heading uniquely.
 The Evennia documentation preparser will detect this and give you an error.
 
-## Lists
+### Lists
 
 One can create both bullet-point lists and numbered lists:
 
@@ -106,7 +106,7 @@ One can create both bullet-point lists and numbered lists:
 2. Numbered point two
 3. Numbered point three
 
-## Blockquotes
+### Blockquotes
 
 A blockquote will create an indented block. It's useful for emphasis and is
 added by starting one or more lines with `>`. For 'notes' you can also use
@@ -120,21 +120,21 @@ an explicit [Note](#note).
 > Note: This is an important
 > thing to remember.
 
-## Links
+### Links
 
 The link syntax is `[linktext](url_or_ref)` - this gives a clickable link [linktext](#links).
 
-### Internal links
+#### Internal links
 
-Most links will be to other pages of the documentation or to Evennia's API docs. Each document 
-heading can be referenced. The reference always starts with `#`. The heading-name is always 
-given in lowercase and ignores any non-letters. Spaces in the heading title are replaced with 
+Most links will be to other pages of the documentation or to Evennia's API docs. Each document
+heading can be referenced. The reference always starts with `#`. The heading-name is always
+given in lowercase and ignores any non-letters. Spaces in the heading title are replaced with
 a single dash `-`.
 
 As an example, let's assume the following is the contents of a file `Menu-stuff.md`:
 
 ```
-# Menu items 
+# Menu items
 
 Some text...
 
@@ -143,33 +143,33 @@ Some text...
 Some more text...
 ```
 
-- From _inside the same file_ you can refer to each heading as 
+- From _inside the same file_ you can refer to each heading as
 
       [menus](#menu-items)
       [example](#a-yesno-example)
 
-- From _another file_, you reference them as as 
+- From _another file_, you reference them as as
 
       [menus](Menu-Stuff.md#menu-items)
       [example](Menu-Stuff.md#a-yesno-example)
 
-> It's fine to not include the `.md` file ending in the reference. The Evennia doc-build process 
+> It's fine to not include the `.md` file ending in the reference. The Evennia doc-build process
 > will correct for this (and also insert any needed relative paths in the reference).
 
-### API links 
+#### API links
 
-The documentation contains auto-generated documentation for all of Evennia's source code. You 
-can direct the reader to the sources by just giving the python-path to the location of the 
+The documentation contains auto-generated documentation for all of Evennia's source code. You
+can direct the reader to the sources by just giving the python-path to the location of the
 resource under the `evennia/` repository:
 
       [DefaultObject](evennia.objects.objects.DefaultObject)
 
-[DefaultObject](evennia.objects.objects.DefaultObject)  <- like this! 
+[DefaultObject](evennia.objects.objects.DefaultObject)  <- like this!
 
 Note that you can't refer to files in the `mygame` folder this way. The game folder is generated
 dynamically and is not part of the api docs. Refer to the parent classes in `evennia` where possible.
 
-### External links
+#### External links
 
 These are links to resources outside of the documentation. We also provide some convenient shortcuts.
 
@@ -180,12 +180,12 @@ These are links to resources outside of the documentation. We also provide some 
 - `[linkname](github:develop/evennia/objects.objects.py` - this points to code in the `develop` branch.
 - `[make an issue](github:issue)` - this is a shortcut to the Evennia github issue-creation page.
 
-> Note that if you want to refer to code, it's usually better to [link to the API](#api-links) as 
+> Note that if you want to refer to code, it's usually better to [link to the API](#api-links) as
 > described above.
 
 ### Urls/References in one place
 
-Urls can get long and if you are using the same url/reference in many places it can get a 
+Urls can get long and if you are using the same url/reference in many places it can get a
 little cluttered. So you can also put the url as a 'footnote' at the end of your document.
 You can then refer to it by putting your reference within square brackets `[ ]`. Here's an example:
 
@@ -202,29 +202,29 @@ This is a [clickable link][mylink]. This is [another link][1].
 
 This makes the main text a little shorter.
 
-## Tables 
+### Tables
 
-A table is done like this: 
+A table is done like this:
 
-```` 
+````
 | heading1 | heading2 | heading3 |
-| --- | --- | --- | 
+| --- | --- | --- |
 | value1 | value2 | value3 |
 |  | value 4 | |
 | value 5 | value 6 | |
 ````
 
 | heading1 | heading2 | heading3 |
-| --- | --- | --- | 
+| --- | --- | --- |
 | value1 | value2 | value3 |
 |  | value 4 | |
 | value 5 | value 6 | |
 
-As seen, the Markdown syntax can be pretty sloppy (columns don't need to line up) as long as you 
+As seen, the Markdown syntax can be pretty sloppy (columns don't need to line up) as long as you
 include the heading separators and make sure to add the correct number of `|` on every line.
 
 
-## Verbatim text
+### Verbatim text
 
 It's common to want to mark something to be displayed verbatim - just as written - without any
 Markdown parsing. In running text, this is done using backticks (\`), like \`verbatim text\` becomes
@@ -252,7 +252,7 @@ Everything within these backticks will be verbatim.
 
 ### Code blocks
 
-A special 'verbatim' case is code examples - we want them to get code-highlighting for readability. 
+A special 'verbatim' case is code examples - we want them to get code-highlighting for readability.
 This is done by using the triple-backticks and specify which language we use:
 
 ````
@@ -279,13 +279,64 @@ class CmdEcho(Command):
     self.caller.msg(self.args.strip())
 ```
 
-## MyST directives 
+For examples of using the Python command-line, use `python` language and `>>>` prompt.
+````
+```python
+>>> print("Hello World")
+Hello World
+```
+````
+
+```python
+>>> print("Hello World")
+Hello World
+```
+
+When showing an in-game command, use the `shell` language type and `>` as the prompt.
+Indent returns from the game.
+
+````
+```shell
+> look at flower
+  Red Flower(#34)
+  A flower with red petals.
+```
+````
+
+```shell
+> look at flower
+  Red Flower(#34)
+  A flower with red petals.
+```
+
+
+For actual shell prompts you can either use `bash` language type or just indent the line.
+Use `$` for the prompt when wanting to show what is an input and what is an output, otherwise
+skip it - it can be confusing to users not that familiar with the command line.
+
+````
+```bash
+$ ls
+evennia/ mygame/
+```
+    evennia start --log
+````
+
+```bash
+$ ls
+evennia/ mygame/
+```
+
+    evennia start --log
+
+
+### MyST directives
 
 Markdown is easy to read and use. But while it does most of what we need, there are some things it's
-not quite as expressive as it needs to be. For this we use extended [MyST][MyST] syntax. This is 
-on the form 
+not quite as expressive as it needs to be. For this we use extended [MyST][MyST] syntax. This is
+on the form
 
-```` 
+````
 ```{directive} any_options_here
 
 content
@@ -296,7 +347,7 @@ content
 
 #### Note
 
-This kind of note may pop more than doing a `> Note: ...`. 
+This kind of note may pop more than doing a `> Note: ...`.
 
 ````
 ```{note}
@@ -314,7 +365,7 @@ Also the important/warning notes indents like this.
 
 ```
 
-### Important
+#### Important
 
 This is for particularly important and visible notes.
 
@@ -328,7 +379,7 @@ This is for particularly important and visible notes.
   This is important because it is!
 ```
 
-### Warning
+#### Warning
 
 A warning block is used to draw attention to particularly dangerous things, or features easy to
 mess up.
@@ -343,7 +394,7 @@ mess up.
   Be careful about this ...
 ```
 
-### Version changes and deprecations
+#### Version changes and deprecations
 
 These will show up as one-line warnings that suggest an added, changed or deprecated
 feature beginning with particular version.
@@ -374,7 +425,7 @@ feature beginning with particular version.
 ```{deprecated} 1.0
 ```
 
-### Sidebar
+#### Sidebar
 
 This will display an informative sidebar that floats to the side of regular content. This is useful
 for example to remind the reader of some concept relevant to the text.
@@ -385,7 +436,7 @@ for example to remind the reader of some concept relevant to the text.
 - There can be bullet lists
 - in here.
 
-Separate sections with 
+Separate sections with
 
 an empty line.
 ```
@@ -396,12 +447,12 @@ an empty line.
 - There can be bullet lists
 - in here.
 
-Separate sections with 
+Separate sections with
 
 an empty line.
 ```
 
-Hint: If wanting to make sure to have the next header appear on a row of its own (rather than 
+Hint: If wanting to make sure to have the next header appear on a row of its own (rather than
 squeezed to the left of the sidebar), one can embed a plain HTML string in the markdown like so:
 
 ```html
@@ -410,10 +461,10 @@ squeezed to the left of the sidebar), one can embed a plain HTML string in the m
 
 <div style="clear: right;"></div>
 
-### A more flexible code block
+#### A more flexible code block
 
 The regular Markdown Python codeblock is usually enough but for more direct control over the style, one
-can also use the `{code-block}` directive that takes a set of additional `:options:`: 
+can also use the `{code-block}` directive that takes a set of additional `:options:`:
 
 ````
 ```{code-block} python
@@ -455,7 +506,7 @@ block through the link that will appear (so it should be unique for a given docu
 
 
 
-### eval-rst directive
+#### eval-rst directive
 
 As a last resort, we can also fall back to writing [ReST][ReST] directives directly:
 
@@ -485,7 +536,7 @@ same as Markdown.
 The source code docstrings will be parsed as Markdown. When writing a module docstring, you can use Markdown formatting,
 including header levels down to 4th level (`#### SubSubSubHeader`). After the module documentation it's
 a good idea to end with four dashes `----`. This will create a visible line between the documentation and the
-class/function docs to follow. 
+class/function docs to follow. See for example [the Traits docs](evennia.contrib.rpg.traits).
 
 All non-private classes, methods and functions must have a Google-style docstring, as per the
 [Evennia coding style guidelines][github:evennia/CODING_STYLE.md]. This will then be correctly formatted
@@ -494,14 +545,14 @@ into pretty api docs.
 ## Technical
 
 Evennia leverages [Sphinx][sphinx] with the [MyST][MyST] extension, which allows us
-to write our docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github) 
-rather than Sphinx' normal ReST syntax. The `MyST` parser allows for some extra syntax to 
+to write our docs in light-weight Markdown (more specifically [CommonMark][commonmark], like on github)
+rather than Sphinx' normal ReST syntax. The `MyST` parser allows for some extra syntax to
 make us able to express more complex displays than plain Markdown can.
 
 For [autodoc-generation][sphinx-autodoc] generation, we use the sphinx-[napoleon][sphinx-napoleon]
 extension to understand our friendly Google-style docstrings used in classes and functions etc.
 
-# Building the docs locally
+## Building the docs locally
 
 The sources in `evennia/docs/source/` are built into a documentation using the
 [Sphinx][sphinx] static generator system. To do this locally you need to use a
@@ -662,14 +713,13 @@ After deployment finishes, the updated live documentation will be
 available at https://evennia.github.io/evennia/latest/.
 
 
-
 [sphinx]: https://www.sphinx-doc.org/en/master/
 [MyST]: https://myst-parser.readthedocs.io/en/latest/syntax/reference.html
 [commonmark]: https://spec.commonmark.org/current/
 [commonmark-help]: https://commonmark.org/help/
 [sphinx-autodoc]: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc
 [sphinx-napoleon]: https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
-[getting-started]: Setup/Setup-Quickstart
+[getting-started]: Setup/Installation
 [contributing]: ./Contributing
 [ReST]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
 [ReST-tables]: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#tables

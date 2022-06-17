@@ -3,10 +3,10 @@ Unit tests for all sorts of inline text-tag parsing, like ANSI, html conversion,
 
 """
 import re
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from evennia.utils.ansi import ANSIString
 from evennia.utils.text2html import TextToHTMLparser
-from evennia.utils import inlinefuncs
+from evennia.utils import funcparser
 
 
 class ANSIStringTestCase(TestCase):
@@ -145,13 +145,17 @@ class ANSIStringTestCase(TestCase):
         """
         mxp1 = "|lclook|ltat|le"
         mxp2 = "Start to |lclook here|ltclick somewhere here|le first"
+        mxp3 = "Check out |luhttps://www.example.com|ltmy website|le!"
         self.assertEqual(15, len(ANSIString(mxp1)))
         self.assertEqual(53, len(ANSIString(mxp2)))
+        self.assertEqual(53, len(ANSIString(mxp3)))
         # These would indicate an issue with the tables.
         self.assertEqual(len(ANSIString(mxp1)), len(ANSIString(mxp1).split("\n")[0]))
         self.assertEqual(len(ANSIString(mxp2)), len(ANSIString(mxp2).split("\n")[0]))
+        self.assertEqual(len(ANSIString(mxp3)), len(ANSIString(mxp3).split("\n")[0]))
         self.assertEqual(mxp1, ANSIString(mxp1))
         self.assertEqual(mxp2, str(ANSIString(mxp2)))
+        self.assertEqual(mxp3, str(ANSIString(mxp3)))
 
     def test_add(self):
         """
@@ -220,10 +224,15 @@ class ANSIStringTestCase(TestCase):
         # from evennia import set_trace;set_trace()
         split_string = string[:9] + "Test" + string[13:]
         self.assertEqual(
-            repr((ANSIString("A bigger ")
-            + ANSIString("|rTest")  # note that the |r|n is replayed together on next line
-            + ANSIString("|r|n of things |bwith more color|n")).raw()),
-            repr(split_string.raw()))
+            repr(
+                (
+                    ANSIString("A bigger ")
+                    + ANSIString("|rTest")  # note that the |r|n is replayed together on next line
+                    + ANSIString("|r|n of things |bwith more color|n")
+                ).raw()
+            ),
+            repr(split_string.raw()),
+        )
 
     def test_slice_full(self):
         string = ANSIString("A bigger |rTest|n of things |bwith more color|n")
@@ -346,50 +355,4 @@ class TestTextToHTMLparser(TestCase):
             self.parser.convert_urls('</span>http://example.com/<span class="red">'),
             '</span><a href="http://example.com/" target="_blank">'
             'http://example.com/</a><span class="red">',
-        )
-
-
-class TestInlineFuncs(TestCase):
-    """Test the nested inlinefunc module"""
-
-    def test_nofunc(self):
-        self.assertEqual(
-            inlinefuncs.parse_inlinefunc("as$382ewrw w we w werw,|44943}"),
-            "as$382ewrw w we w werw,|44943}",
-        )
-
-    def test_incomplete(self):
-        self.assertEqual(
-            inlinefuncs.parse_inlinefunc("testing $blah{without an ending."),
-            "testing $blah{without an ending.",
-        )
-
-    def test_single_func(self):
-        self.assertEqual(
-            inlinefuncs.parse_inlinefunc("this is a test with $pad(centered, 20) text in it."),
-            "this is a test with       centered       text in it.",
-        )
-
-    def test_nested(self):
-        self.assertEqual(
-            inlinefuncs.parse_inlinefunc(
-                "this $crop(is a test with $pad(padded, 20) text in $pad(pad2, 10) a crop, 80)"
-            ),
-            "this is a test with        padded        text in    pad2    a crop",
-        )
-
-    def test_escaped(self):
-        self.assertEqual(
-            inlinefuncs.parse_inlinefunc(
-                "this should be $pad('''escaped,''' and '''instead,''' cropped $crop(with a long,5) text., 80)"
-            ),
-            "this should be                    escaped, and instead, cropped with  text.                    ",
-        )
-
-    def test_escaped2(self):
-        self.assertEqual(
-            inlinefuncs.parse_inlinefunc(
-                'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5) text., 80)'
-            ),
-            "this should be                    escaped, and instead, cropped with  text.                    ",
         )

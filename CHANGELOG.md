@@ -1,9 +1,30 @@
 # Changelog
 
-## Evennia 1.0-dev (2019-) (WIP)
+### Evennia 1.0
+
+> Not released yet
+> 2019-2022 develop branch (WIP)
+
+Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0
+- REST API allows you external access to db objects through HTTP requests (Tehom)
+- `Object.normalize_name` and `.validate_name` added to (by default) enforce latinify
+  on character name and avoid potential exploits using clever Unicode chars (trhr)
+- New `utils.format_grid` for easily displaying long lists of items in a block.
+- Using `lunr` search indexing for better `help` matching and suggestions. Also improve
+  the main help command's default listing output.
+- Added `content_types` indexing to DefaultObject's ContentsHandler. (volund)
+- Made most of the networking classes such as Protocols and the SessionHandlers
+  replaceable via `settings.py` for modding enthusiasts. (volund)
+- The `initial_setup.py` file can now be substituted in `settings.py` to customize
+  initial game database state. (volund)
+- Added new Traits contrib, converted and expanded from Ainneve project.
+- Added new `requirements_extra.txt` file for easily getting all optional dependencies.
+- Change default multi-match syntax from 1-obj, 2-obj to obj-1, obj-2.
+- Make `object.search` support 'stacks=0' keyword - if ``>0``, the method will return
+  N identical matches instead of triggering a multi-match error.
 - Add `tags.has()` method for checking if an object has a tag or tags (PR by ChrisLR)
 - Make IP throttle use Django-based cache system for optional persistence (PR by strikaco)
 - Renamed Tutorial classes "Weapon" and "WeaponRack" to "TutorialWeapon" and
@@ -15,16 +36,147 @@
 - Fix typo in UnixCommand contrib, where `help` was given as `--hel`.
 - Latin (la) i18n translation (jamalainm)
 - Made the `evennia` dir possible to use without gamedir for purpose of doc generation.
+- Make Scripts' timer component independent from script object deletion; can now start/stop
+  timer without deleting Script. The `.persistent` flag now only controls if timer survives
+  reload - Script has to be removed with `.delete()` like other typeclassed entities.
+- Add `utils.repeat` and `utils.unrepeat` as shortcuts to TickerHandler add/remove, similar
+  to how `utils.delay` is a shortcut for TaskHandler add.
+- Refactor the classic `red_button` example to use `utils.delay/repeat` and modern recommended
+  code style and paradigms instead of relying on `Scripts` for everything.
+- Expand `CommandTest` with ability to check multiple message-receivers; inspired by PR by
+  user davewiththenicehat. Also add new doc string.
+- Add central `FuncParser` as a much more powerful replacement for the old `parse_inlinefunc`
+  function.
+- Attribute/NAttribute got a homogenous representation, using intefaces, both
+  `AttributeHandler` and `NAttributeHandler` has same api now.
+- Add `evennia/utils/verb_conjugation` for automatic verb conjugation (English only). This
+  is useful for implementing actor-stance emoting for sending a string to different targets.
+- New version of Italian translation (rpolve)
+- `utils.evmenu.ask_yes_no` is a helper function that makes it easy to ask a yes/no question
+  to the user and respond to their input. This complements the existing `get_input` helper.
+- Allow sending messages with `page/tell` without a `=` if target name contains no spaces.
+- New FileHelpStorage system allows adding help entries via external files.
+- `sethelp` command now warns if shadowing other help-types when creating a new
+  entry.
+- Help command now uses `view` lock to determine if cmd/entry shows in index and
+  `read` lock to determine if it can be read. It used to be `view` in the role
+  of the latter. Migration swaps these around.
+- In modules given by `settings.PROTOTYPE_MODULES`, spawner will now first look for a global
+  list `PROTOTYPE_LIST` of dicts before loading all dicts in the module as prototypes.
+- New Channel-System using the `channel` command and nicks. Removed the `ChannelHandler` and the
+  concept of a dynamically created `ChannelCmdSet`.
+- Add `Msg.db_receiver_external` field to allowe external, string-id message-receivers.
+- Renamed `app.css` to `website.css` for consistency. Removed old prosimii-css files.
+- Remove `mygame/web/static_overrides` and -`template_overrides`, reorganize website/admin/client/api
+  into a more consistent structure for overriding. Expanded webpage documentation considerably.
+- REST API list-view was shortened (#2401). New CSS/HTML. Add ReDoc for API autodoc page.
+- Update and fix dummyrunner with cleaner code and setup.
+- Made `iter_to_str` format prettier strings, using Oxford comma.
+- Added an MXP anchor tag to also support clickable web links.
+- New `tasks` command for managing tasks started with `utils.delay` (PR by davewiththenicehat)
+- Make `help` index output clickable for webclient/clients with MXP (PR by davewiththenicehat)
+- Custom `evennia` launcher commands (e.g. `evennia mycmd foo bar`). Add new commands as callables
+  accepting `*args`, as `settings.EXTRA_LAUNCHER_COMMANDS = {'mycmd': 'path.to.callable', ...}`.
+- New `XYZGrid` contrib, adding x,y,z grid coordinates with in-game map and
+  pathfinding. Controlled outside of the game via custom evennia launcher command.
+- `Script.delete` has new kwarg `stop_task=True`, that can be used to avoid
+  infinite recursion when wanting to set up Script to delete-on-stop.
+- Command executions now done on copies to make sure `yield` don't cause crossovers. Add
+  `Command.retain_instance` flag for reusing the same command instance.
+- The `typeclass` command will now correctly search the correct database-table for the target
+  obj (avoids mistakenly assigning an AccountDB-typeclass to a Character etc).
+- Merged `script` and `scripts` commands into one, for both managing global- and
+  on-object Scripts. Moved `CmdScripts` and `CmdObjects` to `commands/default/building.py`.
+- Keep GMCP function case if outputfunc starts with capital letter (so `cmd_name` -> `Cmd.Name`
+  but `Cmd_nAmE` -> `Cmd.nAmE`). This helps e.g Mudlet's legacy `Client_GUI` implementation)
+- Prototypes now allow setting `prototype_parent` directly to a prototype-dict.
+  This makes it easier when dynamically building in-module prototypes.
+- `RPSystem contrib` was expanded to support case, so /tall becomes 'tall man'
+  while /Tall becomes 'Tall man'. One can turn this off if wanting the old style.
+- Change `EvTable` fixed-height rebalance algorithm to fill with empty lines at end of
+  column instead of inserting rows based on cell-size (could be mistaken for a bug).
+- Split `return_appearance` hook with helper methods and have it use a template
+  string in order to make it easier to override.
+- Add validation question to default account creation.
+- Add `LOCALECHO` client option to add server-side echo for clients that does
+  not support this (useful for getting a complete log).
+- Make `@lazy_property` decorator create read/delete-protected properties. This is
+  because it's used for handlers, and e.g. self.locks=[] is a common beginner mistake.
+- Add `$pron()` inlinefunc for pronoun parsing in actor-stance strings using
+  `msg_contents`.
+- Update defauklt website to show Telnet/SSL/SSH connect info. Added new
+  `SERVER_HOSTNAME` setting for use in the server:port stanza.
+- Changed all `at_before/after_*` hooks to `at_pre/post_*` for consistency
+  across Evennia (the old names still work but are deprecated)
+- Change `settings.COMMAND_DEFAULT_ARG_REGEX` default from `None` to a regex meaning that
+  a space or `/` must separate the cmdname and args. This better fits common expectations.
+- Add confirmation question to `ban`/`unban` commands.
+- Check new `teleport` and `teleport_here` lock-types in `teleport` command to optionally
+  allow to limit teleportation of an object or to a specific destination.
+- Add `settings.MXP_ENABLED=True` and `settings.MXP_OUTGOING_ONLY=True` as sane defaults,
+  to avoid known security issues with players entering MXP links.
+- Add browser name to webclient `CLIENT_NAME` in `session.protocol_flags`, e.g.
+  `"Evennia webclient (websocket:firefox)"` or `"evennia webclient (ajax:chrome)"`.
+- `TagHandler.add/has(tag=...)` kwarg changed to `add/has(key=...)` for consistency
+  with other handlers.
+- Make `DefaultScript.delete`, `DefaultChannel.delete` and `DefaultAccount.delete` return
+  bool True/False if deletion was successful (like `DefaultObject.delete` before them)
+- `contrib.custom_gametime` days/weeks/months now always starts from 1 (to match
+  the standard calendar form ... there is no month 0 every year after all).
+- `AttributeProperty`/`NAttributeProperty` to allow managing Attributes/NAttributes
+  on typeclasses in the same way as Django fields.
+- Give build/system commands a `@name` to fall back to if the non-@ name is used
+  by another command (like `open` and `@open`. If no duplicate, @ is optional.
+- Move legacy channel-management commands (`ccreate`, `addcom` etc) to a contrib
+  since their work is now fully handled by the single `channel` command.
+- Expand `examine` command's code to much more extensible and modular. Show
+  attribute categories and value types (when not strings).
+- `AttributeHandler.remove(key, return_exception=False, category=None, ...)` changed
+  to `.remove(key, category=None, return_exception=False, ...)` for consistency.
+- New `command cooldown` contrib for making it easier to manage commands using
+  dynamic cooldowns between uses (owllex)
+- Restructured `contrib/` folder, placing all contribs as separate packages under
+  subfolders. All imports will need to be updated.
+- Made `MonitorHandler.add/remove` support `category` for monitoring Attributes
+  with a category (before only key was used, ignoring category entirely).
+- Move `create_*` functions into db managers, leaving `utils.create` only being
+  wrapper functions (consistent with `utils.search`). No change of api otherwise.
+- Add support for `$dbref()` and `$search` when assigning an Attribute value
+  with the `set` command. This allows assigning real objects from in-game.
+- Add ability to examine `/script` and `/channel` entities  with `examine` command.
+- Homogenize manager search methods to return querysets and not lists.
+- Restructure unit tests to always honor default settings; make new parents in
+  on location for easy use in game dir.
+- The `Lunr` search engine used by help excludes common words; the settings-list
+  `LUNR_STOP_WORD_FILTER_EXCEPTIONS` can be extended to make sure common names are included.
+- Add `.deserialize()` method to `_Saver*` structures to help completely
+  decouple structures from database without needing separate import.
+- Add `run_in_main_thread` as a helper for those wanting to code server code
+  from a web view.
+- Update `evennia.utils.logger` to use Twisted's new logging API. No change in Evennia API
+  except more standard aliases logger.error/info/exception/debug etc can now be used.
+- Have `type/force` default to `update`-mode rather than `reset`mode and add more verbose
+  warning when using reset mode.
+- Attribute storage support defaultdics (Hendher)
+- Add ObjectParent mixin to default game folder template as an easy, ready-made
+  way to override features on all ObjectDB-inheriting objects easily.
+- Add `TagProperty`, `AliasProperty` and `PermissionProperty` to assign these
+  data in a similar way to django fields.
+- The db pickle-serializer now checks for methods `__serialize_dbobjs__` and `__deserialize_dbobjs__`
+  to allow custom packing/unpacking of nested dbobjs, to allow storing in Attribute.
+- Optimizations to rpsystem contrib performance. Breaking change: `.get_sdesc()` will
+  now return `None` instead of `.db.desc` if no sdesc is set; fallback in hook (inspectorCaracal)
+- Reworked text2html parser to avoid problems with stateful color tags (inspectorCaracal)
+- Simplified `EvMenu.options_formatter` hook to use `EvColumn` and f-strings (inspectorcaracal)
 
-### Backports from 1.0 to 0.9.5 since 0.9.5 release
 
-- Fix to TaskHandler to complate api and allow manipulation of `utils.delay`
-  return as originall intended.
-- Support for Python 3.9.
+## Evennia 0.9.5
 
-### Evennia 0.9.5 (Nov 2020)
+> 2019-2020
+> Released 2020-11-14.
+> Transitional release, including new doc system.
 
-A transitional release, including new doc system.
+Backported from develop: Python 3.8, 3.9 support. Django 3.2+ support, Twisted 21+ support.
 
 - `is_typeclass(obj (Object), exact (bool))` now defaults to exact=False
 - `py` command now reroutes stdout to output results in-game client. `py`
@@ -91,8 +243,7 @@ without arguments starts a full interactive Python console.
 - Make `cmd.at_post_cmd()` always run after `cmd.func()`, even when the latter uses delays
   with yield.
 - `EvMore` support for db queries and django paginators as well as easier to override for custom
-  pagination (e.g. to create EvTables for every page instead of splitting one table).
-- New `EvMore` methods `.init_pages`, `paginator` and `page_formatter` for easily customize pagination.
+  pagination (e.g. to create EvTables for every page instead of splittine one table)
 - Using `EvMore pagination`, dramatically improves performance of `spawn/list` and `scripts` listings
   (100x speed increase for displaying 1000+ prototypes/scripts).
 - `EvMenu` now uses the more logically named `.ndb._evmenu` instead of `.ndb._menutree` to store itself.
@@ -104,10 +255,16 @@ without arguments starts a full interactive Python console.
 - Include more Web-client info in `session.protocol_flags`.
 - Fixes in multi-match situations - don't allow finding/listing multimatches for 3-box when
   only two boxes in location.
-- Made the `evennia` dir possible to use without gamedir for purpose of doc generation.
+- Fix for TaskHandler with proper deferred returns/ability to cancel etc (PR by davewiththenicehat)
+- Add `PermissionHandler.check` method for straight string perm-checks without needing lockstrings.
+- Add `evennia.utils.utils.strip_unsafe_input` for removing html/newlines/tags from user input. The
+  `INPUT_CLEANUP_BYPASS_PERMISSIONS` is a list of perms that bypass this safety stripping.
+- Make default `set` and `examine` commands aware of Attribute categories.
 
+## Evennia 0.9
 
-## Evennia 0.9 (2018-2019)
+> 2018-2019
+> Released Oct 2019
 
 ### Distribution
 
@@ -305,7 +462,10 @@ without arguments starts a full interactive Python console.
 - Simplified chinese, courtesy of user MaxAlex.
 
 
-## Evennia 0.8 (2018)
+## Evennia 0.8
+
+> 2017-2018
+> Released Nov 2018
 
 ### Requirements
 
@@ -432,7 +592,9 @@ without arguments starts a full interactive Python console.
 
 - Polish translation by user ogotai
 
-# Overviews
+# Overview-Changelogs
+
+> These are changelogs from a time before we used formal version numbers.
 
 ## Sept 2017:
 Release of Evennia 0.7; upgrade to Django 1.11, change 'Player' to
@@ -554,24 +716,9 @@ to Events, Commands and Permissions.
 Griatch takes over Maintainership of the Evennia project from
 the original creator Greg Taylor.
 
-(Earlier revisions, with previous maintainer, go back to 2005)
+# Older
 
+Earlier revisions, with previous maintainer, used SVN on Google Code
+and have no changelogs.
 
-# Contact, Support and Development
-
-Make a post to the mailing list or chat us up on IRC. We also have a
-bug tracker if you want to report bugs. Finally, if you are willing to
-help with the code work, we much appreciate all help!  Visit either of
-the following resources:
-
-* Evennia Webpage
-  http://evennia.com
-* Evennia manual (wiki)
-  https://github.com/evennia/evennia/wiki
-* Evennia Code Page (See INSTALL text for installation)
-  https://github.com/evennia/evennia
-* Bug tracker
-  https://github.com/evennia/evennia/issues
-* IRC channel
-  visit channel #evennia on irc.freenode.com
-  or the webclient: http://tinyurl.com/evchat
+First commit (Evennia's birthday) was November 20, 2006.

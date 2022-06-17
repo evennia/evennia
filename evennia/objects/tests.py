@@ -1,9 +1,13 @@
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 from evennia import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
+from evennia.typeclasses.attributes import AttributeProperty
+from evennia.typeclasses.tags import TagProperty, AliasProperty, PermissionProperty
 from evennia.objects.models import ObjectDB
+from evennia.objects.objects import DefaultObject
+from evennia.utils import create
 
 
-class DefaultObjectTest(EvenniaTest):
+class DefaultObjectTest(BaseEvenniaTest):
 
     ip = "212.216.139.14"
 
@@ -39,6 +43,14 @@ class DefaultObjectTest(EvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(obj.db_home, self.room1)
 
+    def test_character_create_weirdname(self):
+        obj, errors = DefaultCharacter.create(
+            "SigurðurÞórarinsson", self.account, home=self.room1.dbref
+        )
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertEqual(obj.name, "SigurXurXorarinsson")
+
     def test_room_create(self):
         description = "A dimly-lit alley behind the local Chinese restaurant."
         obj, errors = DefaultRoom.create("alley", self.account, description=description, ip=self.ip)
@@ -65,8 +77,20 @@ class DefaultObjectTest(EvenniaTest):
         self.assertTrue(self.room1.get_absolute_url())
         self.assertTrue("admin" in self.room1.web_get_admin_url())
 
+    def test_search_stacked(self):
+        "Test searching stacks"
+        coin1 = DefaultObject.create("coin", location=self.room1)[0]
+        coin2 = DefaultObject.create("coin", location=self.room1)[0]
+        colon = DefaultObject.create("colon", location=self.room1)[0]
 
-class TestObjectManager(EvenniaTest):
+        # stack
+        self.assertEqual(self.char1.search("coin", stacked=2), [coin1, coin2])
+        self.assertEqual(self.char1.search("coin", stacked=5), [coin1, coin2])
+        # partial match to 'colon' - multimatch error since stack is not homogenous
+        self.assertEqual(self.char1.search("co", stacked=2), None)
+
+
+class TestObjectManager(BaseEvenniaTest):
     "Test object manager methods"
 
     def test_get_object_with_account(self):
@@ -137,3 +161,147 @@ class TestObjectManager(EvenniaTest):
         self.assertEqual(obj2.attributes.get(key="phrase"), "xyzzy")
         self.assertEqual(self.obj1.attributes.get(key="phrase", category="adventure"), "plugh")
         self.assertEqual(obj2.attributes.get(key="phrase", category="adventure"), "plugh")
+
+
+class TestContentHandler(BaseEvenniaTest):
+    "Test the ContentHandler (obj.contents)"
+
+    def test_object_create_remove(self):
+        """Create/destroy object"""
+        self.assertTrue(self.obj1 in self.room1.contents)
+        self.assertTrue(self.obj2 in self.room1.contents)
+
+        obj3 = create.create_object(key="obj3", location=self.room1)
+        self.assertTrue(obj3 in self.room1.contents)
+
+        obj3.delete()
+        self.assertFalse(obj3 in self.room1.contents)
+
+    def test_object_move(self):
+        """Move object from room to room in various ways"""
+        self.assertTrue(self.obj1 in self.room1.contents)
+        # use move_to hook
+        self.obj1.move_to(self.room2)
+        self.assertFalse(self.obj1 in self.room1.contents)
+        self.assertTrue(self.obj1 in self.room2.contents)
+
+        # move back via direct setting of .location
+        self.obj1.location = self.room1
+        self.assertTrue(self.obj1 in self.room1.contents)
+        self.assertFalse(self.obj1 in self.room2.contents)
+
+    def test_content_type(self):
+        self.assertEqual(
+            set(self.room1.contents_get()),
+            set([self.char1, self.char2, self.obj1, self.obj2, self.exit]),
+        )
+        self.assertEqual(
+            set(self.room1.contents_get(content_type="object")), set([self.obj1, self.obj2])
+        )
+        self.assertEqual(
+            set(self.room1.contents_get(content_type="character")), set([self.char1, self.char2])
+        )
+        self.assertEqual(set(self.room1.contents_get(content_type="exit")), set([self.exit]))
+
+    def test_contents_order(self):
+        """Move object from room to room in various ways"""
+        self.assertEqual(
+            self.room1.contents, [self.exit, self.obj1, self.obj2, self.char1, self.char2]
+        )
+        self.assertEqual(self.room2.contents, [])
+
+        # use move_to hook to move obj1
+        self.obj1.move_to(self.room2)
+        self.assertEqual(self.room1.contents, [self.exit, self.obj2, self.char1, self.char2])
+        self.assertEqual(self.room2.contents, [self.obj1])
+
+        # move obj2
+        self.obj2.move_to(self.room2)
+        self.assertEqual(self.room1.contents, [self.exit, self.char1, self.char2])
+        self.assertEqual(self.room2.contents, [self.obj1, self.obj2])
+
+        # move back and forth - it should
+        self.obj1.move_to(self.room1)
+        self.assertEqual(self.room1.contents, [self.exit, self.char1, self.char2, self.obj1])
+        self.obj1.move_to(self.room2)
+        self.assertEqual(self.room2.contents, [self.obj2, self.obj1])
+
+        # use move_to hook
+        self.obj2.move_to(self.room1)
+        self.obj2.move_to(self.room2)
+        self.assertEqual(self.room2.contents, [self.obj1, self.obj2])
+
+
+class SubAttributeProperty(AttributeProperty):
+    pass
+
+
+class SubTagProperty(TagProperty):
+    pass
+
+
+class TestObjectPropertiesClass(DefaultObject):
+    attr1 = AttributeProperty(default="attr1")
+    attr2 = AttributeProperty(default="attr2", category="attrcategory")
+    attr3 = AttributeProperty(default="attr3", autocreate=False)
+    attr4 = SubAttributeProperty(default="attr4")
+    tag1 = TagProperty()
+    tag2 = TagProperty(category="tagcategory")
+    tag3 = SubTagProperty()
+    testalias = AliasProperty()
+    testperm = PermissionProperty()
+
+    @property
+    def base_property(self):
+        self.property_initialized = True
+
+
+class TestProperties(EvenniaTestCase):
+    """
+    Test Properties.
+
+    """
+
+    def setUp(self):
+        self.obj = create.create_object(TestObjectPropertiesClass, key="testobj")
+
+    def tearDown(self):
+        self.obj.delete()
+
+    def test_properties(self):
+        """
+        Test all properties assigned at class level.
+        """
+        obj = self.obj
+
+        self.assertEqual(obj.db.attr1, "attr1")
+        self.assertEqual(obj.attributes.get("attr1"), "attr1")
+        self.assertEqual(obj.attr1, "attr1")
+
+        self.assertEqual(obj.attributes.get("attr2", category="attrcategory"), "attr2")
+        self.assertEqual(obj.db.attr2, None)  # category mismatch
+        self.assertEqual(obj.attr2, "attr2")
+
+        self.assertEqual(obj.db.attr3, None)  # non-autocreate, so not in db yet
+        self.assertFalse(obj.attributes.has("attr3"))
+        self.assertEqual(obj.attr3, "attr3")
+
+        self.assertEqual(obj.db.attr4, "attr4")
+        self.assertEqual(obj.attributes.get("attr4"), "attr4")
+        self.assertEqual(obj.attr4, "attr4")
+
+        obj.attr3 = "attr3b"  # stores it in db!
+
+        self.assertEqual(obj.db.attr3, "attr3b")
+        self.assertTrue(obj.attributes.has("attr3"))
+
+        self.assertTrue(obj.tags.has("tag1"))
+        self.assertTrue(obj.tags.has("tag2", category="tagcategory"))
+        self.assertTrue(obj.tags.has("tag3"))
+
+        self.assertTrue(obj.aliases.has("testalias"))
+        self.assertTrue(obj.permissions.has("testperm"))
+
+        # Verify that regular properties do not get fetched in init_evennia_properties,
+        # only Attribute or TagProperties.
+        self.assertFalse(hasattr(obj, "property_initialized"))

@@ -1,6 +1,6 @@
-# API Summary 
+# API Summary
 
-[evennia](api/evennia.md) - library root
+[evennia](api/evennia-api.md) - library source tree
 - [evennia.accounts](evennia.accounts) - the out-of-character entities representing players
 - [evennia.commands](evennia.commands) - handle all inputs. Also includes default commands
 - [evennia.comms](evennia.comms) - in-game channels and messaging
@@ -24,13 +24,13 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 
 ### Main config
 
-- [evennia.settings_default](github:evennia/settings_default.py) - all settings (modify/override in `mygame/server/settings.py`)
+- [evennia.settings_default](Setup/Settings-Default.md) - all settings (modify/override in `mygame/server/settings.py`)
 
 ### Search functions
 
 - [evennia.search_account](evennia.utils.search.search_account)
 - [evennia.search_object](evennia.utils.search.search_object)
-- [evennia.search_object_by_tag](evennia.utils.search.search_tag)
+- [evennia.search_tag](evennia.utils.search.search_tag)
 - [evennia.search_script](evennia.utils.search.search_script)
 - [evennia.search_channel](evennia.utils.search.search_channel)
 - [evennia.search_message](evennia.utils.search.search_message)
@@ -47,41 +47,43 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 
 ### Typeclasses
 
-- [evennia.Defaultaccount](evennia.accounts.accounts.DefaultAccount) - player account class ([docs](./Accounts.md))
+- [evennia.Defaultaccount](evennia.accounts.accounts.DefaultAccount) - player account class ([docs](Components/Accounts.md))
 - [evennia.DefaultGuest](evennia.accounts.accounts.DefaultGuest) - base guest account class
-- [evennia.DefaultObject](evennia.objects.objects.DefaultObject) - base class for all objects ([docs](./Objects.md))
-- [evennia.DefaultCharacter](evennia.objects.objects.DefaultCharacter) - base class for in-game characters ([docs](./Objects.md#characters))
-- [evennia.DefaultRoom](evennia.objects.objects.DefaultRoom) - base class for rooms ([docs](./Objects.md#rooms))
-- [evennia.DefaultExit](evennia.objects.objects.DefaultExit) - base class for exits ([docs](./Objects.md#exits))
-- [evennia.DefaultScript](evennia.scripts.scripts.DefaultScript) - base class for OOC-objects ([docs](./Scripts.md))
-- [evennia.DefaultChannel](evennia.comms.comms.DefaultChannel) - base class for in-game channels ([docs](./Communications.md))
+- [evennia.DefaultObject](evennia.objects.objects.DefaultObject) - base class for all objects ([docs](Components/Objects.md))
+- [evennia.DefaultCharacter](evennia.objects.objects.DefaultCharacter) - base class for in-game characters ([docs](Components/Objects.md#characters))
+- [evennia.DefaultRoom](evennia.objects.objects.DefaultRoom) - base class for rooms ([docs](Components/Objects.md#rooms))
+- [evennia.DefaultExit](evennia.objects.objects.DefaultExit) - base class for exits ([docs](Components/Objects.md#exits))
+- [evennia.DefaultScript](evennia.scripts.scripts.DefaultScript) - base class for OOC-objects ([docs](Components/Scripts.md))
+- [evennia.DefaultChannel](evennia.comms.comms.DefaultChannel) - base class for in-game channels ([docs](Components/Channels.md))
 
 ### Commands
 
-- [evennia.Command](evennia.commands.command.Command) - base [Command](./Commands.md) class. See also `evennia.default_cmds.MuxCommand`
-- [evennia.CmdSet](evennia.commands.cmdset.CmdSet) - base [Cmdset](./Command-Sets.md) class
-- evennia.default_cmds - access to all [default command classes](evennia.commands.default) as properties
-- evennia.syscmdkeys - access to all [system command](./Commands.md#system-commands) names as properties
+- [evennia.Command](evennia.commands.command.Command) - base [Command](Components/Commands.md) class. See also `evennia.default_cmds.MuxCommand`
+- [evennia.CmdSet](evennia.commands.cmdset.CmdSet) - base [CmdSet](Components/Command-Sets.md) class
+- [evennia.default_cmds](Components/Default-Commands.md) - access all default command classes as properties
+
+- [evennia.syscmdkeys](Components/Commands.md#system-commands) - access system command keys as properties
 
 ### Utilities
 
 - [evennia.utils.utils](evennia.utils.utils) - mixed useful utilities
-- [evennia.gametime](evennia.utils.gametime) - server run- and game time ([docs](./Coding-Utils.md#game-time))
+- [evennia.gametime](evennia.utils.gametime.TimeScript) - server run- and game time ([docs](Components/Coding-Utils.md#game-time))
 - [evennia.logger](evennia.utils.logger) - logging tools
 - [evennia.ansi](evennia.utils.ansi) - ansi coloring tools
-- [evennia.spawn](evennia.prototypes.spawner.spawn) - spawn/prototype system ([docs](./Spawner-and-Prototypes.md))
-- [evennia.lockfuncs](evennia.locks.lockfuncs) - default lock functions for access control ([docs](./Locks.md))
-- [evennia.EvMenu](evennia.utils.evmenu.EvMenu) - menu system ([docs](./EvMenu.md))
+- [evennia.spawn](evennia.prototypes.spawner.spawn) - spawn/prototype system ([docs](Components/Prototypes.md))
+- [evennia.lockfuncs](evennia.locks.lockfuncs) - default lock functions for access control ([docs](Components/Locks.md))
+- [evennia.EvMenu](evennia.utils.evmenu.EvMenu) - menu system ([docs](Components/EvMenu.md))
 - [evennia.EvTable](evennia.utils.evtable.EvTable) - text table creater
 - [evennia.EvForm](evennia.utils.evform.EvForm) - text form creator
-- [evennia.EvEditor](evennia.utils.eveditor.EvEditor) - in game text line editor ([docs](./EvEditor.md))
+- Evennia.EvMore - text paginator
+- [evennia.EvEditor](evennia.utils.eveditor.EvEditor) - in game text line editor ([docs](Components/EvEditor.md))
+- [evennia.utils.funcparser.Funcparser](evennia.utils.funcparser.FuncParser) - inline parsing of functions ([docs](Components/FuncParser.md))
 
 ### Global singleton handlers
 
-- [evennia.TICKER_HANDLER](evennia.scripts.tickerhandler) - allow objects subscribe to tickers ([docs](./TickerHandler.md))
-- [evennia.MONITOR_HANDLER](evennia.scripts.monitorhandler) - monitor changes ([docs](./MonitorHandler.md))
-- [evennia.CHANNEL_HANDLER](evennia.comms.channelhandler) - maintains channels
-- [evennia.SESSION_HANDLER](evennia.server.sessionhandler) - manages all sessions
+- [evennia.TICKER_HANDLER](evennia.scripts.tickerhandler.TickerHandler) - allow objects subscribe to tickers ([docs](Components/TickerHandler.md))
+- [evennia.MONITOR_HANDLER](evennia.scripts.monitorhandler.MonitorHandler) - monitor changes ([docs](Components/MonitorHandler.md))
+- [evennia.SESSION_HANDLER](evennia.server.sessionhandler.SessionHandler) - manages all sessionsmain session handler
 
 ### Database core models (for more advanced lookups)
 
@@ -94,4 +96,11 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 
 ### Contributions
 
-- [evennia.contrib](evennia.contrib) - game-specific contributions and plugins ([README](github:evennia/contrib/README.md))
+- [evennia.contrib](https://github.com/evennia/evennia/blob/master/evennia/contrib/) -
+game-specific contributions and plugins ([docs](https://github.com/evennia/evennia/blob/master/evennia/contrib/README.md))
+
+```{toctree} 
+:hidden:
+api/evennia-api.md
+
+```

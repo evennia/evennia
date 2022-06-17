@@ -15,6 +15,7 @@ http://localhost:4001/webclient.)
                  The WebClient resource in this module will
                  handle these requests and act as a gateway
                  to sessions connected over the webclient.
+
 """
 import json
 import re
@@ -27,7 +28,7 @@ from django.utils.functional import Promise
 from django.conf import settings
 from evennia.utils.ansi import parse_ansi
 from evennia.utils import utils
-from evennia.utils.utils import to_bytes, to_str
+from evennia.utils.utils import to_bytes
 from evennia.utils.text2html import parse_html
 from evennia.server import session
 
@@ -128,6 +129,19 @@ class AjaxWebClient(resource.Resource):
         """
         return html.escape(request.args[b"csessid"][0].decode("utf-8"))
 
+    def get_browserstr(self, request):
+        """
+        Get browser-string out of the request.
+
+        Args:
+            request (Request): Incoming request object.
+        Returns:
+            str: The browser name.
+
+
+        """
+        return html.escape(request.args[b"browserstr"][0].decode("utf-8"))
+
     def at_login(self):
         """
         Called when this session gets authenticated by the server.
@@ -180,6 +194,7 @@ class AjaxWebClient(resource.Resource):
 
         """
         csessid = self.get_client_sessid(request)
+        browserstr = self.get_browserstr(request)
 
         remote_addr = request.getClientIP()
 
@@ -203,6 +218,7 @@ class AjaxWebClient(resource.Resource):
         sess.init_session("ajax/comet", remote_addr, self.sessionhandler)
 
         sess.csessid = csessid
+        sess.browserstr = browserstr
         csession = _CLIENT_SESSIONS(session_key=sess.csessid)
         uid = csession and csession.get("webclient_authenticated_uid", False)
         if uid:
@@ -217,16 +233,24 @@ class AjaxWebClient(resource.Resource):
             self.keep_alive = LoopingCall(self._keepalive)
             self.keep_alive.start(_KEEPALIVE, now=False)
 
+        browserstr = f":{browserstr}" if browserstr else ""
+        sess.protocol_flags["CLIENTNAME"] = f"Evennia Webclient (ajax{browserstr})"
+        sess.protocol_flags["UTF-8"] = True
+        sess.protocol_flags["OOB"] = True
+
         # actually do the connection
         sess.sessionhandler.connect(sess)
 
         return jsonify({"msg": host_string, "csessid": csessid})
 
     def mode_keepalive(self, request):
-
         """
         This is called by render_POST when the
         client is replying to the keepalive.
+
+        Args:
+            request (Request): Incoming request.
+
         """
         csessid = self.get_client_sessid(request)
         self.last_alive[csessid] = (time.time(), False)

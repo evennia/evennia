@@ -22,7 +22,7 @@ __all__ = (
     "CmdUnconnectedHelp",
     "CmdUnconnectedEncoding",
     "CmdUnconnectedInfo",
-    "CmdUnconnectedScreenreader"
+    "CmdUnconnectedScreenreader",
 )
 
 MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -197,6 +197,24 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
 
         username, password = parts
 
+        # pre-normalize username so the user know what they get
+        non_normalized_username = username
+        username = Account.normalize_username(username)
+        if non_normalized_username != username:
+            session.msg(
+                "Note: your username was normalized to strip spaces and remove characters "
+                "that could be visually confusing."
+            )
+
+        # have the user verify their new account was what they intended
+        answer = yield (
+            f"You want to create an account '{username}' with password '{password}'."
+            "\nIs this what you intended? [Y]/N?"
+        )
+        if answer.lower() in ("n", "no"):
+            session.msg("Aborted. If your user name contains spaces, surround it by quotes.")
+            return
+
         # everything's ok. Create the new account account.
         account, errors = Account.create(
             username=username, password=password, ip=address, session=session
@@ -297,6 +315,7 @@ You are not yet logged into the game. Commands available at this point:
   |wquit|n - abort the connection
 
 First create an account e.g. with |wcreate Anna c67jHL8p|n
+(If you have spaces in your name, use double quotes: |wcreate "Anna the Barbarian" c67jHL8p|n
 Next you can connect to the game: |wconnect Anna c67jHL8p|n
 
 You can use the |wlook|n command if you want to see the connect screen again.
@@ -329,7 +348,7 @@ class CmdUnconnectedEncoding(COMMAND_DEFAULT_CLASS):
 
     If you don't submit an encoding, the current encoding will be displayed
     instead.
-  """
+    """
 
     key = "encoding"
     aliases = "encode"

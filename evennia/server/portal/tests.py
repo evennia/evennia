@@ -16,7 +16,7 @@ import json
 
 from mock import Mock, MagicMock
 from evennia.server.portal import irc
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 
 from twisted.conch.telnet import IAC, WILL, DONT, SB, SE, NAWS, DO
 from twisted.test import proto_helpers
@@ -46,7 +46,7 @@ class TestAMPServer(TwistedTestCase):
     """
 
     def setUp(self):
-        super(TestAMPServer, self).setUp()
+        super().setUp()
         portal = Mock()
         factory = AMPServerFactory(portal)
         self.proto = factory.buildProtocol(("localhost", 0))
@@ -217,7 +217,7 @@ class TestIRC(TestCase):
 
 class TestTelnet(TwistedTestCase):
     def setUp(self):
-        super(TestTelnet, self).setUp()
+        super().setUp()
         factory = TelnetServerFactory()
         factory.protocol = TelnetProtocol
         factory.sessionhandler = PORTAL_SESSIONS
@@ -281,7 +281,7 @@ class TestTelnet(TwistedTestCase):
         return d
 
 
-class TestWebSocket(EvenniaTest):
+class TestWebSocket(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         self.proto = WebSocketClient()

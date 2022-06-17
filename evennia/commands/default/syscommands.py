@@ -27,7 +27,6 @@ from evennia.utils.utils import at_search_result
 from evennia.commands.cmdhandler import CMD_NOINPUT
 from evennia.commands.cmdhandler import CMD_NOMATCH
 from evennia.commands.cmdhandler import CMD_MULTIMATCH
-from evennia.commands.cmdhandler import CMD_CHANNEL
 from evennia.utils import utils
 
 from django.conf import settings
@@ -104,50 +103,3 @@ class SystemMultimatch(COMMAND_DEFAULT_CLASS):
         matches = self.matches
         # at_search_result will itself msg the multimatch options to the caller.
         at_search_result([match[2] for match in matches], self.caller, query=matches[0][0])
-
-
-# Command called when the command given at the command line
-# was identified as a channel name, like there existing a
-# channel named 'ooc' and the user wrote
-#  > ooc Hello!
-
-
-class SystemSendToChannel(COMMAND_DEFAULT_CLASS):
-    """
-    This is a special command that the cmdhandler calls
-    when it detects that the command given matches
-    an existing Channel object key (or alias).
-    """
-
-    key = CMD_CHANNEL
-    locks = "cmd:all()"
-
-    def parse(self):
-        channelname, msg = self.args.split(":", 1)
-        self.args = channelname.strip(), msg.strip()
-
-    def func(self):
-        """
-        Create a new message and send it to channel, using
-        the already formatted input.
-        """
-        caller = self.caller
-        channelkey, msg = self.args
-        if not msg:
-            caller.msg("Say what?")
-            return
-        channel = ChannelDB.objects.get_channel(channelkey)
-        if not channel:
-            caller.msg("Channel '%s' not found." % channelkey)
-            return
-        if not channel.has_connection(caller):
-            string = "You are not connected to channel '%s'."
-            caller.msg(string % channelkey)
-            return
-        if not channel.access(caller, "send"):
-            string = "You are not permitted to send to channel '%s'."
-            caller.msg(string % channelkey)
-            return
-        msg = "[%s] %s: %s" % (channel.key, caller.name, msg)
-        msgobj = create.create_message(caller, msg, channels=[channel])
-        channel.msg(msgobj)

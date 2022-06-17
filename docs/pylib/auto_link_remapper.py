@@ -32,41 +32,37 @@ _STRIP_PREFIX = [
     "api/",
     "api:",
 ]
-TXT_REMAPS = {}
-#     "Developer Central": "Evennia Components overview",
-#     "Getting Started": "Setup Quickstart",
-# }
-URL_REMAPS = {
-    "Default-Command-Help": "Default-Commands",
-    "./Default-Command-Help.md": "Default-Commands.md"
+TXT_REMAPS = {
+    "Developer Central": "Evennia Components overview",
+    "Getting Started": "Setup Quickstart",
 }
-#     "Developer-Central": "Components/Components-Overview",
-#     "Tutorials": "Howto/Howto-Overview",
-#     "../Howto/Starting/Directory-Overview": "Gamedir-Overview",
-#     "Howto/Starting/Directory-Overview": "Gamedir-Overview",
-#     "Starting/Directory-Overview": "Gamedir-Overview",
-#     "Directory-Overview": "Gamedir-Overview",
-#     "../Setup/Getting-Started": "Setup-Quickstart",
-#     "Setup/Getting-Started": "Setup-Quickstart",
-#     "Setup-Quickstart": "Setup-Quickstart",
-#     "Setup-Quickstart": "Getting-Started", # back again
-#     "First-Steps-Coding": "Starting-Part1",
-#     "../Howto/Starting/Adding-Command-Tutorial": "Adding-Commands",
-#     "Howto/Starting/Adding-Command-Tutorial": "Adding-Commands",
-#     "Starting/Adding-Command-Tutorial": "Adding-Commands",
-#     "Adding-Command-Tutorial": "Adding-Commands",
-#     "CmdSet": "Command-Sets",
-#     "Spawner": "Prototypes",
-#     "issue": "github:issue",
-#     "issues": "github:issue",
-#     "bug": "github:issue",
-#     "bug-report": "github:issue",
-#     "./Default-Command-Help": "api:evennia.commands.default#modules",
-#     "../Components/Default-Command-Help": "api:evennia.commands.default#modules",
-#     "../../../Components/Default-Command-Help": "api:evennia.commands.default#modules",
-#     "./Locks.md#permissions": "Permissions",
-#     "Permissions": "./Locks.md#permissions",  # back again
-# }
+URL_REMAPS = {
+    "Developer-Central": "Components/Components-Overview",
+    "Tutorials": "Howtos/Howtos-Overview",
+    "../Howtos/Beginner-Tutorial/Directory-Overview": "Gamedir-Overview",
+    "Howtos/Beginner-Tutorial/Directory-Overview": "Gamedir-Overview",
+    "Beginner-Tutorial/Directory-Overview": "Gamedir-Overview",
+    "Directory-Overview": "Gamedir-Overview",
+    "../Setup/Getting-Started": "Setup-Quickstart",
+    "Setup/Getting-Started": "Setup-Quickstart",
+    "Getting-Started": "Setup-Quickstart",
+    "First-Steps-Coding": "Beginner-Tutorial-Part1",
+    "../Howtos/Beginner-Tutorial/Adding-Command-Tutorial": "Adding-Commands",
+    "Howtos/Beginner-Tutorial/Adding-Command-Tutorial": "Adding-Commands",
+    "Beginner-Tutorial/Adding-Command-Tutorial": "Adding-Commands",
+    "Adding-Command-Tutorial": "Adding-Commands",
+    "CmdSet": "Command-Sets",
+    "Spawner": "Prototypes",
+    "issue": "github:issue",
+    "issues": "github:issue",
+    "bug": "github:issue",
+    "bug-report": "github:issue",
+    "./Default-Command-Help": "api:evennia.commands.default#modules",
+    "../Components/Default-Command-Help": "api:evennia.commands.default#modules",
+    "../../../Components/Default-Command-Help": "api:evennia.commands.default#modules",
+    "./Locks.md#permissions": "Permissions",
+    "modules": "Default-Commands.md",
+}
 
 _USED_REFS = {}
 
@@ -153,7 +149,7 @@ def auto_link_remapper(no_autodoc=False):
 
         for strip_prefix in _STRIP_PREFIX:
             if url.startswith(strip_prefix):
-                url = url[len(strip_prefix):]
+                url = url[len(strip_prefix) :]
 
         if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
             # skip regular http/s urls etc
@@ -161,10 +157,10 @@ def auto_link_remapper(no_autodoc=False):
 
         if url.startswith("evennia."):
             # api link - we want to remove legacy #reference and remove .md
-            if '#' in url:
-                _, url = url.rsplit('#', 1)
+            if "#" in url:
+                _, url = url.rsplit("#", 1)
             if url.endswith(".md"):
-                url, _ = url.rsplit('.', 1)
+                url, _ = url.rsplit(".", 1)
             return f"[{txt}]({url})"
 
         fname, *part = url.rsplit("/", 1)
@@ -178,7 +174,9 @@ def auto_link_remapper(no_autodoc=False):
 
         if _CURRFILE in docref_map and fname in docref_map[_CURRFILE]:
             cfilename = _CURRFILE.rsplit("/", 1)[-1]
-            urlout = docref_map[_CURRFILE][fname] + ".md" + ("#" + anchor[0].lower() if anchor else "")
+            urlout = (
+                docref_map[_CURRFILE][fname] + ".md" + ("#" + anchor[0].lower() if anchor else "")
+            )
             if urlout != url:
                 print(f"  {cfilename}: [{txt}]({url}) -> [{txt}]({urlout})")
         else:
@@ -197,19 +195,17 @@ def auto_link_remapper(no_autodoc=False):
 
         for strip_prefix in _STRIP_PREFIX:
             if url.startswith(strip_prefix):
-                url = url[len(strip_prefix):]
+                url = url[len(strip_prefix) :]
 
         if any(url.startswith(noremap) for noremap in _NO_REMAP_STARTSWITH):
             return f"[{txt}]: {url}"
-
-        urlout = url
 
         if "http" in url and "://" in url:
             urlout = url
         elif url.startswith("evennia."):
             # api link - we want to remove legacy #reference
-            if '#' in url:
-                _, urlout = url.rsplit('#', 1)
+            if "#" in url:
+                _, urlout = url.rsplit("#", 1)
         else:
             fname, *part = url.rsplit("/", 1)
             fname = part[0] if part else fname
@@ -254,25 +250,26 @@ def auto_link_remapper(no_autodoc=False):
             print(f"  ORPHANED DOC: no refs found to {src_url}.md")
 
     # write tocfile
-    with open(_TOC_FILE, "w") as fil:
-        fil.write("```{toctree}\n")
+    # with open(_TOC_FILE, "w") as fil:
+    #     fil.write("```{toctree}\n")
 
-        if not no_autodoc:
-            fil.write("- [API root](api/evennia-api.rst)")
+    #     if not no_autodoc:
+    #         fil.write("- [API root](api/evennia-api.rst)")
 
-        for ref in sorted(toc_map.values()):
+    #     for ref in sorted(toc_map.values()):
 
-            if ref == "toc":
-                continue
+    #         if ref == "toc":
+    #             continue
 
-            # if not "/" in ref:
-            #     ref = "./" + ref
+    #         # if not "/" in ref:
+    #         #     ref = "./" + ref
 
-            # linkname = ref.replace("-", " ")
-            fil.write(f"\n{ref}")  # - [{linkname}]({ref})")
+    #         # linkname = ref.replace("-", " ")
+    #         fil.write(f"\n{ref}")  # - [{linkname}]({ref})")
 
-        # we add a self-reference so the toc itself is also a part of a toctree
-        fil.write("\n```\n\n```{toctree}\n  :hidden:\n\ntoc\n```")
+    #     # we add a self-reference so the toc itself is also a part of a toctree
+    #     fil.write("\n```\n\n```{toctree}\n  :hidden:\n\ntoc\n```")
+    #     print("  -- File toc.md updated.")
 
     print("  -- Auto-Remapper finished.")
 

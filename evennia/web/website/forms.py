@@ -28,7 +28,7 @@ class EvenniaForm(forms.Form):
 
         """
         # Call parent function
-        cleaned = super(EvenniaForm, self).clean()
+        cleaned = super().clean()
 
         # Escape all values provided by user
         cleaned = {k: escape(v) for k, v in cleaned.items()}
@@ -52,8 +52,9 @@ class AccountForm(UserCreationForm):
         """
 
         # The model/typeclass this form creates
-        model = class_from_module(settings.BASE_ACCOUNT_TYPECLASS,
-                                  fallback=settings.FALLBACK_ACCOUNT_TYPECLASS)
+        model = class_from_module(
+            settings.BASE_ACCOUNT_TYPECLASS, fallback=settings.FALLBACK_ACCOUNT_TYPECLASS
+        )
 
         # The fields to display on the form, in the given order
         fields = ("username", "email")
@@ -88,8 +89,9 @@ class ObjectForm(EvenniaForm, ModelForm):
         """
 
         # The model/typeclass this form creates
-        model = class_from_module(settings.BASE_OBJECT_TYPECLASS,
-                                  fallback=settings.FALLBACK_OBJECT_TYPECLASS)
+        model = class_from_module(
+            settings.BASE_OBJECT_TYPECLASS, fallback=settings.FALLBACK_OBJECT_TYPECLASS
+        )
 
         # The fields to display on the form, in the given order
         fields = ("db_key",)
@@ -142,8 +144,9 @@ class CharacterForm(ObjectForm):
         """
 
         # Get the correct object model
-        model = class_from_module(settings.BASE_CHARACTER_TYPECLASS,
-                                  fallback=settings.FALLBACK_CHARACTER_TYPECLASS)
+        model = class_from_module(
+            settings.BASE_CHARACTER_TYPECLASS, fallback=settings.FALLBACK_CHARACTER_TYPECLASS
+        )
 
         # Allow entry of the 'key' field
         fields = ("db_key",)

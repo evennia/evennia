@@ -3,7 +3,7 @@
 SOURCEDIR     = source
 BUILDDIR      = build
 AUTODOCDIR = $(SOURCEDIR)/api
-
+#
 # You can set these variables from the command line, and also
 # from the environment for the first two.
 SPHINXOPTS    ?=
@@ -34,7 +34,7 @@ help:
 	@echo "  $(cblue)quick$(cnorm)       to build local docs but skip the autodocs (for quick testing)"
 	@echo "  $(cblue)quickstrict$(cnorm) to build like 'quick' but abort immediately on any error"
 	@echo "  $(cblue)local$(cnorm)       to build local html docs of the current branch (no multiversion)."
-	@echo "  $(cblue)localupdate$(cnorm) to build local html docs (only update changes)
+	@echo "  $(cblue)localupdate$(cnorm) to build local html docs (only update changes)"
 	@echo "  $(cblue)mv-local$(cnorm)    to build multiversion html docs, without deploying (req: local git commit first)"
 	@echo "  $(cblue)deploy$(cnorm)      to deploy previously built multiversion docs online (req: commit and github push access)"
 	@echo "  $(cblue)release$(cnorm)     to build + deploy multiversion docs online (req: commit and github push access)"
@@ -110,13 +110,14 @@ pdf:
 	@echo "To see result, open evennia/docs/build/latex/evennia.pdf in a PDF reader."
 
 quick:
+	make _check-env
 	make _quick_autodoc-index
-	make _quick-html-build $(FILES)
+	make _html-build
 	@echo ""
 	@echo "Documentation built (single version, no autodocs)."
 	@echo "To see result, open evennia/docs/build/html/index.html in a browser."
 
-# abort on warnings too
+# abort on warnings too (not working atm)
 quickstrict:
 	SPHINXOPTS=-W make quick
 
@@ -151,11 +152,14 @@ mv-local:
 	@echo "Documentation built (multiversion + autodocs)."
 	@echo "To see result, open evennia/docs/build/html/<version>/index.html in a browser."
 
+# note - don't run deploy/release manually, the result will clash with the
+# result of the github actions! 
 deploy:
 	make _multiversion-deploy
 	@echo "Documentation deployed."
 
 # build and prepare the docs for release
+#
 release:
 	make mv-local
 	make deploy

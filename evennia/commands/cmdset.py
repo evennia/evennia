@@ -177,7 +177,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
     # merge-stack, every cmdset in the stack must have `duplicates` set explicitly.
     duplicates = None
 
-    permanent = False
+    persistent = False
     key_mergetypes = {}
     errmessage = ""
     # pre-store properties to duplicate straight off
@@ -187,7 +187,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         "no_exits",
         "no_objs",
         "no_channels",
-        "permanent",
+        "persistent",
         "mergetype",
         "priority",
         "duplicates",
@@ -357,7 +357,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             commands (str): Representation of commands in Cmdset.
 
         """
-        perm = "perm" if self.permanent else "non-perm"
+        perm = "perm" if self.persistent else "non-perm"
         options = ", ".join(
             [
                 "{}:{}".format(opt, "T" if getattr(self, opt) else "F")
@@ -481,7 +481,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # This is used for diagnosis.
         cmdset_c.actual_mergetype = mergetype
 
-        # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority, cmdset_a.key, cmdset_a.priority)
+        # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority,
+        # cmdset_a.key, cmdset_a.priority)
 
         # return the system commands to the cmdset
         cmdset_c.add(sys_commands, allow_duplicates=True)
@@ -522,10 +523,12 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             try:
                 cmdset = self._instantiate(cmdset)
             except RuntimeError:
-                err = ("Adding cmdset {cmdset} to {cls} lead to an "
-                       "infinite loop. When adding a cmdset to another, "
-                       "make sure they are not themself cyclically added to "
-                       "the new cmdset somewhere in the chain.")
+                err = (
+                    "Adding cmdset {cmdset} to {cls} lead to an "
+                    "infinite loop. When adding a cmdset to another, "
+                    "make sure they are not themself cyclically added to "
+                    "the new cmdset somewhere in the chain."
+                )
                 raise RuntimeError(_(err.format(cmdset=cmdset, cls=self.__class__)))
             cmds = cmdset.commands
         elif is_iter(cmd):
@@ -674,5 +677,6 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         Hook method - this should be overloaded in the inheriting
         class, and should take care of populating the cmdset by use of
         self.add().
+
         """
         pass

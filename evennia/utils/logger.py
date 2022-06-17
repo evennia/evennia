@@ -16,18 +16,219 @@ log_typemsg(). This is for historical, back-compatible reasons.
 
 import os
 import time
-import glob
 from datetime import datetime
 from traceback import format_exc
-from twisted.python import log, logfile
+from twisted import logger as twisted_logger
+from twisted.python import logfile
 from twisted.python import util as twisted_util
 from twisted.internet.threads import deferToThread
 
+log = twisted_logger.Logger()
 
 _LOGDIR = None
 _LOG_ROTATE_SIZE = None
 _TIMEZONE = None
 _CHANNEL_LOG_NUM_TAIL_LINES = None
+
+_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+def _log(msg, logfunc, prefix="", **kwargs):
+    try:
+        msg = str(msg)
+    except Exception as err:
+        msg = str(e)
+    if kwargs:
+        logfunc(msg, **kwargs)
+    else:
+        try:
+            for line in msg.splitlines():
+                logfunc("{line}", prefix=prefix, line=line)
+        except Exception as err:
+            log.error("Log failure: {err}", err=err)
+
+
+# log call functions (each has legacy aliases)
+
+
+def log_info(msg, **kwargs):
+    """
+    Logs any generic debugging/informative info that should appear in the log.
+
+    Args:
+        msg: (string) The message to be logged.
+        **kwargs: If given, The `msg` is parsed as a format string with `{..}`
+            formatting markers that should match the keywords.
+
+    """
+    _log(msg, log.info, **kwargs)
+
+
+info = log_info
+log_infomsg = log_info
+log_msg = log_info
+
+
+def log_warn(msg, **kwargs):
+    """
+    Logs warnings that aren't critical but should be noted.
+
+    Args:
+        msg (str): The message to be logged.
+        **kwargs: If given, The `msg` is parsed as a format string with `{..}`
+            formatting markers that should match the keywords.
+
+    """
+    _log(msg, log.warn, **kwargs)
+
+
+warn = log_warn
+warning = log_warn
+log_warnmsg = log_warn
+
+
+def log_err(msg, **kwargs):
+    """
+    Logs an error message to the server log.
+
+    Args:
+        msg (str): The message to be logged.
+        **kwargs: If given, The `msg` is parsed as a format string with `{..}`
+            formatting markers that should match the keywords.
+
+    """
+    _log(msg, log.error, **kwargs)
+
+
+error = log_err
+err = log_err
+log_errmsg = log_err
+
+
+def log_trace(msg=None, **kwargs):
+    """
+    Log a traceback to the log. This should be called from within an
+    exception.
+
+    Args:
+        msg (str, optional): Adds an extra line with added info
+            at the end of the traceback in the log.
+        **kwargs: If given, The `msg` is parsed as a format string with `{..}`
+            formatting markers that should match the keywords.
+
+    """
+    tracestring = format_exc()
+    if tracestring:
+        _log(tracestring, log.error, prefix="!!", **kwargs)
+        if msg:
+            _log(msg, log.error, prefix="!!", **kwargs)
+
+
+log_tracemsg = log_trace
+exception = log_trace
+critical = log_trace
+trace = log_trace
+
+
+def log_dep(msg, **kwargs):
+    """
+    Prints a deprecation message.
+
+    Args:
+        msg (str): The deprecation message to log.
+        **kwargs: If given, The `msg` is parsed as a format string with `{..}`
+            formatting markers that should match the keywords.
+
+    """
+    _log(msg, log.warn, prefix="DP", **kwargs)
+
+
+dep = log_dep
+deprecated = log_dep
+log_depmsg = log_dep
+
+
+def log_sec(msg, **kwargs):
+    """
+    Prints a security-related message.
+
+    Args:
+        msg (str): The security message to log.
+        **kwargs: If given, The `msg` is parsed as a format string with `{..}`
+            formatting markers that should match the keywords.
+
+    """
+    _log(msg, log.info, prefix="SS", **kwargs)
+
+
+sec = log_sec
+security = log_sec
+log_secmsg = log_sec
+
+
+def log_server(msg, **kwargs):
+    """
+    This is for the Portal to log captured Server stdout messages (it's
+    usually only used during startup, before Server log is open)
+
+    Args:
+        msg (str): The message to be logged.
+        **kwargs: If given, The `msg` is parsed as a format string with `{..}`
+            formatting markers that should match the keywords.
+    """
+    _log(msg, log.info, prefix="Server", **kwargs)
+
+
+class GetLogObserver:
+    """
+    Sets up how the system logs are formatted.
+
+    """
+
+    component_prefix = ""
+    event_levels = {
+        twisted_logger.LogLevel.debug: "??",
+        twisted_logger.LogLevel.info: "..",
+        twisted_logger.LogLevel.warn: "WW",
+        twisted_logger.LogLevel.error: "EE",
+        twisted_logger.LogLevel.critical: "!!",
+    }
+
+    def format_log_event(self, event):
+        """
+        By assigning log_system here, we skip the spammy display of namespace/level
+        in the default log output.
+
+        [component_prefix] [date] [system/lvl] [msg]
+
+        """
+        # setting log_system fills the [..] block after the time stamp
+        prefix = event.get("prefix", "")
+        if prefix:
+            event["log_system"] = prefix
+        else:
+            lvl = event.get("log_level", twisted_logger.LogLevel.info)
+            event["log_system"] = self.event_levels.get(lvl, "-")
+        event["log_format"] = str(event.get("log_format", ""))
+        component_prefix = self.component_prefix or ""
+        log_msg = twisted_logger.formatEventAsClassicLogText(
+            event, formatTime=lambda e: twisted_logger.formatTime(e, _TIME_FORMAT)
+        )
+        return f"{component_prefix}{log_msg}"
+
+    def __call__(self, outfile):
+        return twisted_logger.FileLogObserver(outfile, self.format_log_event)
+
+
+# Called by server/portal on startup
+
+
+class GetPortalLogObserver(GetLogObserver):
+    component_prefix = "|Portal| "
+
+
+class GetServerLogObserver(GetLogObserver):
+    component_prefix = ""
 
 
 # logging overrides
@@ -38,7 +239,7 @@ def timeformat(when=None):
     This helper function will format the current time in the same
     way as the twisted logger does, including time zone info. Only
     difference from official logger is that we only use two digits
-    for the year and don't show timezone for CET times.
+    for the year and don't show timezone for GMT times.
 
     Args:
         when (int, optional): This is a time in POSIX seconds on the form
@@ -47,6 +248,7 @@ def timeformat(when=None):
 
     Returns:
         timestring (str): A formatted string of the given time.
+
     """
     when = when if when else time.time()
 
@@ -126,6 +328,7 @@ class WeeklyLogFile(logfile.DailyLogFile):
             server.log.2020_01_29
             server.log.2020_01_29__1
             server.log.2020_01_29__2
+
         """
         suffix = ""
         copy_suffix = 0
@@ -146,195 +349,13 @@ class WeeklyLogFile(logfile.DailyLogFile):
         return suffix
 
     def write(self, data):
-        "Write data to log file"
+        """
+        Write data to log file
+
+        """
         logfile.BaseLogFile.write(self, data)
         self.lastDate = max(self.lastDate, self.toDate())
         self.size += len(data)
-
-
-class PortalLogObserver(log.FileLogObserver):
-    """
-    Reformat logging
-    """
-
-    timeFormat = None
-    prefix = "  |Portal| "
-
-    def emit(self, eventDict):
-        """
-        Copied from Twisted parent, to change logging output
-
-        """
-        text = log.textFromEventDict(eventDict)
-        if text is None:
-            return
-
-        # timeStr = self.formatTime(eventDict["time"])
-        timeStr = timeformat(eventDict["time"])
-        fmtDict = {"text": text.replace("\n", "\n\t")}
-
-        msgStr = log._safeFormat("%(text)s\n", fmtDict)
-
-        twisted_util.untilConcludes(self.write, timeStr + "%s" % self.prefix + msgStr)
-        twisted_util.untilConcludes(self.flush)
-
-
-class ServerLogObserver(PortalLogObserver):
-    prefix = " "
-
-
-def log_msg(msg):
-    """
-    Wrapper around log.msg call to catch any exceptions that might
-    occur in logging. If an exception is raised, we'll print to
-    stdout instead.
-
-    Args:
-        msg: The message that was passed to log.msg
-
-    """
-    try:
-        log.msg(msg)
-    except Exception:
-        print("Exception raised while writing message to log. Original message: %s" % msg)
-
-
-def log_trace(errmsg=None):
-    """
-    Log a traceback to the log. This should be called from within an
-    exception.
-
-    Args:
-        errmsg (str, optional): Adds an extra line with added info
-            at the end of the traceback in the log.
-
-    """
-    tracestring = format_exc()
-    try:
-        if tracestring:
-            for line in tracestring.splitlines():
-                log.msg("[::] %s" % line)
-        if errmsg:
-            try:
-                errmsg = str(errmsg)
-            except Exception as e:
-                errmsg = str(e)
-            for line in errmsg.splitlines():
-                log_msg("[EE] %s" % line)
-    except Exception:
-        log_msg("[EE] %s" % errmsg)
-
-
-log_tracemsg = log_trace
-
-
-def log_err(errmsg):
-    """
-    Prints/logs an error message to the server log.
-
-    Args:
-        errmsg (str): The message to be logged.
-
-    """
-    try:
-        errmsg = str(errmsg)
-    except Exception as e:
-        errmsg = str(e)
-    for line in errmsg.splitlines():
-        log_msg("[EE] %s" % line)
-
-    # log.err('ERROR: %s' % (errmsg,))
-
-
-log_errmsg = log_err
-
-
-def log_server(servermsg):
-    """
-    This is for the Portal to log captured Server stdout messages (it's
-    usually only used during startup, before Server log is open)
-
-    """
-    try:
-        servermsg = str(servermsg)
-    except Exception as e:
-        servermsg = str(e)
-    for line in servermsg.splitlines():
-        log_msg("[Server] %s" % line)
-
-
-def log_warn(warnmsg):
-    """
-    Prints/logs any warnings that aren't critical but should be noted.
-
-    Args:
-        warnmsg (str): The message to be logged.
-
-    """
-    try:
-        warnmsg = str(warnmsg)
-    except Exception as e:
-        warnmsg = str(e)
-    for line in warnmsg.splitlines():
-        log_msg("[WW] %s" % line)
-
-    # log.msg('WARNING: %s' % (warnmsg,))
-
-
-log_warnmsg = log_warn
-
-
-def log_info(infomsg):
-    """
-    Prints any generic debugging/informative info that should appear in the log.
-
-    infomsg: (string) The message to be logged.
-    """
-    try:
-        infomsg = str(infomsg)
-    except Exception as e:
-        infomsg = str(e)
-    for line in infomsg.splitlines():
-        log_msg("[..] %s" % line)
-
-
-log_infomsg = log_info
-
-
-def log_dep(depmsg):
-    """
-    Prints a deprecation message.
-
-    Args:
-        depmsg (str): The deprecation message to log.
-    """
-    try:
-        depmsg = str(depmsg)
-    except Exception as e:
-        depmsg = str(e)
-    for line in depmsg.splitlines():
-        log_msg("[DP] %s" % line)
-
-
-log_depmsg = log_dep
-
-
-def log_sec(secmsg):
-    """
-    Prints a security-related message.
-
-    Args:
-        secmsg (str): The security message to log.
-    """
-    try:
-        secmsg = str(secmsg)
-    except Exception as e:
-        secmsg = str(e)
-    for line in secmsg.splitlines():
-        log_msg("[SS] %s" % line)
-
-
-log_secmsg = log_sec
 
 
 # Arbitrary file logger
@@ -346,6 +367,7 @@ class EvenniaLogFile(logfile.LogFile):
     the LogFile's rotate method in order to append some of the last
     lines of the previous log to the start of the new log, in order
     to preserve a continuous chat history for channel log files.
+
     """
 
     # we delay import of settings to keep logger module as free
@@ -357,12 +379,15 @@ class EvenniaLogFile(logfile.LogFile):
         _CHANNEL_LOG_NUM_TAIL_LINES = settings.CHANNEL_LOG_NUM_TAIL_LINES
     num_lines_to_append = _CHANNEL_LOG_NUM_TAIL_LINES
 
-    def rotate(self):
+    def rotate(self, num_lines_to_append=None):
         """
         Rotates our log file and appends some number of lines from
         the previous log to the start of the new one.
+
         """
-        append_tail = self.num_lines_to_append > 0
+        append_tail = (
+            num_lines_to_append if num_lines_to_append is not None else self.num_lines_to_append
+        )
         if not append_tail:
             logfile.LogFile.rotate(self)
             return
@@ -375,9 +400,11 @@ class EvenniaLogFile(logfile.LogFile):
         """
         Convenience method for accessing our _file attribute's seek method,
         which is used in tail_log_function.
+
         Args:
             *args: Same args as file.seek
             **kwargs: Same kwargs as file.seek
+
         """
         return self._file.seek(*args, **kwargs)
 
@@ -385,12 +412,14 @@ class EvenniaLogFile(logfile.LogFile):
         """
         Convenience method for accessing our _file attribute's readlines method,
         which is used in tail_log_function.
+
         Args:
             *args: same args as file.readlines
             **kwargs: same kwargs as file.readlines
 
         Returns:
             lines (list): lines from our _file attribute.
+
         """
         lines = []
         for line in self._file.readlines(*args, **kwargs):
@@ -481,6 +510,44 @@ def log_file(msg, filename="game.log"):
         deferToThread(callback, filehandle, msg).addErrback(errback)
 
 
+def log_file_exists(filename="game.log"):
+    """
+    Determine if a log-file already exists.
+
+    Args:
+        filename (str): The filename (within the log-dir).
+
+    Returns:
+        bool: If the log file exists or not.
+
+    """
+    global _LOGDIR
+    if not _LOGDIR:
+        from django.conf import settings
+
+        _LOGDIR = settings.LOG_DIR
+
+    filename = os.path.join(_LOGDIR, filename)
+    return os.path.exists(filename)
+
+
+def rotate_log_file(filename="game.log", num_lines_to_append=None):
+    """
+    Force-rotate a log-file, without
+
+    Args:
+        filename (str): The log file, located in settings.LOG_DIR.
+        num_lines_to_append (int, optional): Include N number of
+            lines from previous file in new one. If `None`, use default.
+            Set to 0 to include no lines.
+
+    """
+    if log_file_exists(filename):
+        file_handle = _open_log_file(filename)
+        if file_handle:
+            file_handle.rotate(num_lines_to_append=num_lines_to_append)
+
+
 def tail_log_file(filename, offset, nlines, callback=None):
     """
     Return the tail of the log file.
@@ -520,7 +587,7 @@ def tail_log_file(filename, offset, nlines, callback=None):
             lines_found = filehandle.readlines()
             block_count -= 1
         # return the right number of lines
-        lines_found = lines_found[-nlines - offset: -offset if offset else None]
+        lines_found = lines_found[-nlines - offset : -offset if offset else None]
         if callback:
             callback(lines_found)
             return None

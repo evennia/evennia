@@ -4,7 +4,7 @@ Unit testing for the Command system itself.
 """
 
 from django.test import override_settings
-from evennia.utils.test_resources import EvenniaTest, TestCase
+from evennia.utils.test_resources import BaseEvenniaTest, TestCase
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.commands import cmdparser
@@ -990,7 +990,7 @@ def _mockdelay(time, func, *args, **kwargs):
     return func(*args, **kwargs)
 
 
-class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
+class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
     "Test the cmdhandler.get_and_merge_cmdsets function."
 
     def setUp(self):
@@ -1035,7 +1035,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
             pcmdset = AccountCmdSet()
             pcmdset.at_cmdset_creation()
             pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"]
-            self.assertTrue(all(cmd.key in pcmds for cmd in cmdset.commands))
+            self.assertEqual(set(cmd.key for cmd in cmdset.commands), set(pcmds))
 
         # _callback = lambda cmdset: self.assertEqual(sum(1 for cmd in cmdset.commands if cmd.key in ("a", "b", "c", "d")), 4)
         deferred.addCallback(_callback)
@@ -1070,34 +1070,6 @@ class TestGetAndMergeCmdSets(TwistedTestCase, EvenniaTest):
         deferred.addCallback(_callback)
         return deferred
 
-    def test_autocmdsets(self):
-        import evennia
-        from evennia.commands.default.cmdset_account import AccountCmdSet
-        from evennia.comms.channelhandler import CHANNEL_HANDLER
-
-        testchannel = evennia.create_channel("channeltest", locks="listen:all();send:all()")
-        CHANNEL_HANDLER.add(testchannel)
-        CHANNEL_HANDLER.update()
-        self.assertTrue(testchannel.connect(self.account))
-        self.assertTrue(testchannel.has_connection(self.account))
-        a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
-        self.set_cmdsets(self.account, a, b, c, d)
-        deferred = cmdhandler.get_and_merge_cmdsets(
-            self.session, self.session, self.account, self.char1, "session", ""
-        )
-
-        def _callback(cmdset):
-            pcmdset = AccountCmdSet()
-            pcmdset.at_cmdset_creation()
-            pcmds = [cmd.key for cmd in pcmdset.commands] + ["a", "b", "c", "d"] + ["out"]
-            self.assertTrue(
-                all(cmd.key or hasattr(cmd, "is_channel") in pcmds for cmd in cmdset.commands)
-            )
-            self.assertTrue(any(hasattr(cmd, "is_channel") for cmd in cmdset.commands))
-
-        deferred.addCallback(_callback)
-        return deferred
-
     def test_duplicates(self):
         a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d
         a.no_exits = True
@@ -1121,18 +1093,22 @@ class AccessableCommand(Command):
 
 class _CmdTest1(AccessableCommand):
     key = "test1"
+    arg_regex = None
 
 
 class _CmdTest2(AccessableCommand):
     key = "another command"
+    arg_regex = None
 
 
 class _CmdTest3(AccessableCommand):
     key = "&the third command"
+    arg_regex = None
 
 
 class _CmdTest4(AccessableCommand):
     key = "test2"
+    arg_regex = None
 
 
 class _CmdSetTest(CmdSet):
@@ -1183,10 +1159,10 @@ class TestCmdParser(TestCase):
         )
 
     @override_settings(SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)")
-    def test_num_prefixes(self):
-        self.assertEqual(cmdparser.try_num_prefixes("look me"), (None, None))
-        self.assertEqual(cmdparser.try_num_prefixes("3-look me"), ("3", "look me"))
-        self.assertEqual(cmdparser.try_num_prefixes("567-look me"), ("567", "look me"))
+    def test_num_differentiators(self):
+        self.assertEqual(cmdparser.try_num_differentiators("look me"), (None, None))
+        self.assertEqual(cmdparser.try_num_differentiators("look me-3"), (3, "look me"))
+        self.assertEqual(cmdparser.try_num_differentiators("look me-567"), (567, "look me"))
 
     @override_settings(
         SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)", CMD_IGNORE_PREFIXES="@&/+"
@@ -1201,13 +1177,12 @@ class TestCmdParser(TestCase):
         )
 
 
-class TestCmdSetNesting(EvenniaTest):
+class TestCmdSetNesting(BaseEvenniaTest):
     """
     Test 'nesting' of cmdsets by adding
     """
 
     def test_nest(self):
-
         class CmdA(Command):
             key = "a"
 

@@ -4,10 +4,10 @@ The gametime module handles the global passage of time in the mud.
 It also supplies some useful methods to convert between
 in-mud time and real-world time as well allows to get the
 total runtime of the server and the current uptime.
+
 """
 
 import time
-from calendar import monthrange
 from datetime import datetime, timedelta
 
 from django.db.utils import OperationalError
@@ -27,6 +27,7 @@ IGNORE_DOWNTIMES = settings.TIME_IGNORE_DOWNTIMES
 try:
     GAME_TIME_OFFSET = ServerConfig.objects.conf("gametime_offset", default=0)
 except OperationalError:
+    # the db is not initialized
     print("Gametime offset could not load - db not set up.")
     GAME_TIME_OFFSET = 0
 
@@ -60,11 +61,13 @@ class TimeScript(DefaultScript):
     def at_repeat(self):
         """Call the callback and reset interval."""
         callback = self.db.callback
+        args = self.db.schedule_args or []
+        kwargs = self.db.schedule_kwargs or {}
         if callback:
-            callback()
+            callback(*args, **kwargs)
 
         seconds = real_seconds_until(**self.db.gametime)
-        self.restart(interval=seconds)
+        self.start(interval=seconds, force_restart=True)
 
 
 # Access functions
@@ -216,7 +219,16 @@ def real_seconds_until(sec=None, min=None, hour=None, day=None, month=None, year
 
 
 def schedule(
-    callback, repeat=False, sec=None, min=None, hour=None, day=None, month=None, year=None
+    callback,
+    repeat=False,
+    sec=None,
+    min=None,
+    hour=None,
+    day=None,
+    month=None,
+    year=None,
+    *args,
+    **kwargs,
 ):
     """
     Call a callback at a given in-game time.
@@ -224,7 +236,8 @@ def schedule(
     Args:
         callback (function): The callback function that will be called. Note
             that the callback must be a module-level function, since the script will
-            be persistent.
+            be persistent. The callable should be on form `callable(*args, **kwargs)`
+            where args/kwargs are passed into this schedule.
         repeat (bool, optional): Defines if the callback should be called regularly
             at the specified time.
         sec (int or None): Number of absolute game seconds at which to run repeat.
@@ -233,13 +246,18 @@ def schedule(
         day (int or None): Number of absolute days.
         month (int or None): Number of absolute months.
         year (int or None): Number of absolute years.
+        *args, **kwargs: Will be passed into the callable. These must be possible
+            to store in Attributes on the generated scheduling Script.
 
     Returns:
-        script (Script): The created Script handling the sceduling.
+        Script: The created Script handling the scheduling.
 
     Examples:
-        schedule(func, min=5, sec=0) # Will call 5 minutes past the next (in-game) hour.
-        schedule(func, hour=2, min=30, sec=0) # Will call the next (in-game) day at 02:30.
+        ::
+
+            schedule(func, min=5, sec=0)  # Will call 5 minutes past the next (in-game) hour.
+            schedule(func, hour=2, min=30, sec=0)  # Will call the next (in-game) day at 02:30.
+
     """
     seconds = real_seconds_until(sec=sec, min=min, hour=hour, day=day, month=month, year=year)
     script = create_script(
@@ -259,6 +277,8 @@ def schedule(
         "month": month,
         "year": year,
     }
+    script.db.schedule_args = args
+    script.db.schedule_kwargs = kwargs
     return script
 
 

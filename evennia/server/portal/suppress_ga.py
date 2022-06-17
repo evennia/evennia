@@ -13,6 +13,7 @@ It is set as the NOGOAHEAD protocol_flag option.
 http://www.faqs.org/rfcs/rfc858.html
 
 """
+
 SUPPRESS_GA = bytes([3])  # b"\x03"
 
 # default taken from telnet specification
@@ -20,7 +21,7 @@ SUPPRESS_GA = bytes([3])  # b"\x03"
 # try to get the customized mssp info, if it exists.
 
 
-class SuppressGA(object):
+class SuppressGA:
     """
     Implements the SUPRESS-GO-AHEAD protocol. Add this to a variable on the telnet
     protocol to set it up.

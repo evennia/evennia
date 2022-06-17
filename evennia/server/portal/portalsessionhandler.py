@@ -1,5 +1,6 @@
 """
-Sessionhandler for portal sessions
+Sessionhandler for portal sessions.
+
 """
 
 
@@ -7,8 +8,11 @@ import time
 from collections import deque, namedtuple
 from twisted.internet import reactor
 from django.conf import settings
-from evennia.server.sessionhandler import SessionHandler, PCONN, PDISCONN, PCONNSYNC, PDISCONNALL
+from evennia.server.sessionhandler import SessionHandler
+from evennia.server.portal.amp import PCONN, PDISCONN, PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
+from evennia.utils.utils import class_from_module
+from django.utils.translation import gettext as _
 
 # module import
 _MOD_IMPORT = None
@@ -32,6 +36,10 @@ DUMMYSESSION = namedtuple("DummySession", ["sessid"])(0)
 # -------------------------------------------------------------
 # Portal-SessionHandler class
 # -------------------------------------------------------------
+
+DOS_PROTECTION_MSG = _(
+    "{servername} DoS protection is active." "You are queued to connect in {num} seconds ..."
+)
 
 
 class PortalSessionHandler(SessionHandler):
@@ -68,6 +76,19 @@ class PortalSessionHandler(SessionHandler):
         """
         self.connection_time = time.time()
 
+    def generate_sessid(self):
+        """
+        Simply generates a sessid that's guaranteed to be unique for this Portal run.
+
+        Returns:
+            sessid
+
+        """
+        self.latest_sessid += 1
+        if self.latest_sessid in self:
+            return self.generate_sessid()
+        return self.latest_sessid
+
     def connect(self, session):
         """
         Called by protocol at first connect. This adds a not-yet
@@ -91,22 +112,20 @@ class PortalSessionHandler(SessionHandler):
             if not session.sessid:
                 # if the session already has a sessid (e.g. being inherited in the
                 # case of a webclient auto-reconnect), keep it
-                self.latest_sessid += 1
-                session.sessid = self.latest_sessid
+                session.sessid = self.generate_sessid()
             session.server_connected = False
             _CONNECTION_QUEUE.appendleft(session)
             if len(_CONNECTION_QUEUE) > 1:
                 session.data_out(
-                    text=[
-                        [
-                            "%s DoS protection is active. You are queued to connect in %g seconds ..."
-                            % (
-                                settings.SERVERNAME,
-                                len(_CONNECTION_QUEUE) * _MIN_TIME_BETWEEN_CONNECTS,
-                            )
-                        ],
+                    text=(
+                        (
+                            DOS_PROTECTION_MSG.format(
+                                servername=settings.SERVERNAME,
+                                num=len(_CONNECTION_QUEUE) * _MIN_TIME_BETWEEN_CONNECTS,
+                            ),
+                        ),
                         {},
-                    ]
+                    )
                 )
         now = time.time()
         if (
@@ -206,6 +225,7 @@ class PortalSessionHandler(SessionHandler):
     def disconnect_all(self):
         """
         Disconnect all sessions, informing the Server.
+
         """
 
         def _callback(result, sessionhandler):
@@ -425,6 +445,10 @@ class PortalSessionHandler(SessionHandler):
             session.cmd_last = now
             self.portal.amp_protocol.send_MsgPortal2Server(session, **kwargs)
 
+            # eventual local echo (text input only)
+            if "text" in kwargs and session.protocol_flags.get("LOCALECHO", False):
+                self.data_out(session, text=kwargs["text"])
+
     def data_out(self, session, **kwargs):
         """
         Called by server for having the portal relay messages and data
@@ -463,4 +487,5 @@ class PortalSessionHandler(SessionHandler):
                         log_trace()
 
 
-PORTAL_SESSIONS = PortalSessionHandler()
+_PORTAL_SESSION_HANDLER_CLASS = class_from_module(settings.PORTAL_SESSION_HANDLER_CLASS)
+PORTAL_SESSIONS = _PORTAL_SESSION_HANDLER_CLASS()

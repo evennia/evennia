@@ -4,34 +4,33 @@ This module defines the basic `DefaultObject` and its children
 These are the (default) starting points for all in-game visible
 entities.
 
+This is the v1.0 develop version (for ref in doc building).
+
 """
 import time
-import inflect
 from collections import defaultdict
 
+import inflect
 from django.conf import settings
+from django.utils.translation import gettext as _
 
-from evennia.typeclasses.models import TypeclassBase
-from evennia.typeclasses.attributes import NickHandler
+from evennia.commands import cmdset
+from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
 from evennia.objects.models import ObjectDB
 from evennia.scripts.scripthandler import ScriptHandler
-from evennia.commands import cmdset, command
-from evennia.commands.cmdsethandler import CmdSetHandler
-from evennia.utils import create
-from evennia.utils import search
-from evennia.utils import logger
-from evennia.utils import ansi
+from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
+from evennia.typeclasses.models import TypeclassBase
+from evennia.utils import ansi, create, funcparser, logger, search
 from evennia.utils.utils import (
     class_from_module,
-    variable_from_module,
-    lazy_property,
-    make_iter,
     is_iter,
+    lazy_property,
     list_to_string,
+    make_iter,
     to_str,
+    variable_from_module,
 )
-from django.utils.translation import gettext as _
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -45,11 +44,14 @@ _COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 # the sessid_max is based on the length of the db_sessid csv field (excluding commas)
 _SESSID_MAX = 16 if _MULTISESSION_MODE in (1, 3) else 1
 
+# init the actor-stance funcparser for msg_contents
+_MSG_CONTENTS_PARSER = funcparser.FuncParser(funcparser.ACTOR_STANCE_CALLABLES)
 
-class ObjectSessionHandler(object):
+
+class ObjectSessionHandler:
     """
-    Handles the get/setting of the sessid
-    comma-separated integer field
+    Handles the get/setting of the sessid comma-separated integer field
+
     """
 
     def __init__(self, obj):
@@ -107,7 +109,7 @@ class ObjectSessionHandler(object):
             ]
         if None in sessions:
             # this happens only if our cache has gone out of sync with the SessionHandler.
-            self._recache()
+
             return self.get(sessid=sessid)
         return sessions
 
@@ -206,11 +208,23 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     """
 
+    # Used for sorting / filtering in inventories / room contents.
+    _content_types = ("object",)
+
     # lockstring of newly created objects, for easy overloading.
     # Will be formatted with the appropriate attributes.
     lockstring = "control:id({account_id}) or perm(Admin);delete:id({account_id}) or perm(Admin)"
 
     objects = ObjectManager()
+
+    # populated by `return_apperance`
+    appearance_template = """
+{header}
+|c{name}|n
+{desc}
+{exits}{characters}{things}
+{footer}
+    """
 
     # on-object properties
 
@@ -224,7 +238,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     @lazy_property
     def nicks(self):
-        return NickHandler(self)
+        return NickHandler(self, ModelAttributeBackend)
 
     @lazy_property
     def sessions(self):
@@ -259,7 +273,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             and not self.db_account.attributes.get("_quell")
         )
 
-    def contents_get(self, exclude=None):
+    def contents_get(self, exclude=None, content_type=None):
         """
         Returns the contents of this object, i.e. all
         objects that has this object set as its location.
@@ -268,17 +282,18 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Args:
             exclude (Object): Object to exclude from returned
                 contents list
+            content_type (str): A content_type to filter by. None for no
+                filtering.
 
         Returns:
             contents (list): List of contents of this Object.
 
         Notes:
-            Also available as the `contents` property.
+            Also available as the `contents` property, minus exclusion
+            and filtering.
 
         """
-        con = self.contents_cache.get(exclude=exclude)
-        # print "contents_get:", self, con, id(self), calledby()  # DEBUG
-        return con
+        return self.contents_cache.get(exclude=exclude, content_type=content_type)
 
     def contents_set(self, *args):
         "You cannot replace this property"
@@ -294,12 +309,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Returns all exits from this object, i.e. all objects at this
         location having the property destination != `None`.
+
         """
         return [exi for exi in self.contents if exi.destination]
 
     # main methods
 
-    def get_display_name(self, looker, **kwargs):
+    def get_display_name(self, looker=None, **kwargs):
         """
         Displays the name of the object in a viewer-aware manner.
 
@@ -320,7 +336,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             builders.
 
         """
-        if self.locks.check_lockstring(looker, "perm(Builder)"):
+        if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
             return "{}(#{})".format(self.name, self.id)
         return self.name
 
@@ -340,6 +356,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Returns:
             singular (str): The singular form to display.
             plural (str): The determined plural form of the key, including the count.
+
         """
         plural_category = "plural_key"
         key = kwargs.get("key", self.key)
@@ -374,6 +391,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         nofound_string=None,
         multimatch_string=None,
         use_dbref=None,
+        stacked=0,
     ):
         """
         Returns an Object matching a search string/condition
@@ -387,10 +405,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 against `object.key` (with `object.aliases` second) unless
                 the keyword attribute_name specifies otherwise.
 
-                Special strings:
+                Special keywords:
 
-                - `#<num>`: search by unique dbref. This is always
-                   a global search.
+                - `#<num>`: search by unique dbref. This is always a global search.
                 - `me,self`: self-reference to this object
                 - `<num>-<string>` - can be used to differentiate
                    between multiple same-named matches. The exact form of this input
@@ -405,7 +422,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 to search. Note that this is used to query the *contents* of a
                 location and will not match for the location itself -
                 if you want that, don't set this or use `candidates` to specify
-                exactly which objects should be searched.
+                exactly which objects should be searched. If this nor candidates are
+                given, candidates will include caller's inventory, current location and
+                all objects in the current location.
             attribute_name (str): Define which property to search. If set, no
                 key+alias search will be performed. This can be used
                 to search database fields (db_ will be automatically
@@ -433,11 +452,17 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 will be treated like a normal string. If `None` (default), the ability to query by
                 #dbref is turned on if `self` has the permission 'Builder' and is turned off
                 otherwise.
+            stacked (int, optional): If > 0, multimatches will be analyzed to determine if they
+                only contains identical objects; these are then assumed 'stacked' and no multi-match
+                error will be generated, instead `stacked` number of matches will be returned. If
+                `stacked` is larger than number of matches, returns that number of matches. If
+                the found stack is a mix of objects, return None and handle the multi-match
+                error depending on the value of `quiet`.
 
         Returns:
-            Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return a
-            list with 0, 1 or more matches if `quiet=True`. If `stacked` is a positive integer, this
-            list may contain all stacked identical matches.
+            Object, None or list: Will return an `Object` or `None` if `quiet=False`. Will return
+            a `list` with 0, 1 or more matches if `quiet=True`. If `stacked` is a positive integer,
+            this list may contain all stacked identical matches.
 
         Notes:
             To find Accounts, use eg. `evennia.account_search`. If
@@ -505,8 +530,31 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             use_dbref=use_dbref,
         )
 
+        nresults = len(results)
+        if stacked > 0 and nresults > 1:
+            # handle stacks, disable multimatch errors
+            nstack = nresults
+            if not exact:
+                # we re-run exact match agains one of the matches to
+                # make sure we were not catching partial matches not belonging
+                # to the stack
+                nstack = len(
+                    ObjectDB.objects.get_objs_with_key_or_alias(
+                        results[0].key,
+                        exact=True,
+                        candidates=list(results),
+                        typeclasses=[typeclass] if typeclass else None,
+                    )
+                )
+            if nstack == nresults:
+                # a valid stack, return multiple results
+                return list(results)[:stacked]
+
         if quiet:
+            # don't auto-handle error messaging
             return list(results)
+
+        # handle error messages
         return _AT_SEARCH_RESULT(
             results,
             self,
@@ -590,9 +638,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=True
         )
-        return _CMDHANDLER(
-            self, raw_string, callertype="object", session=session, **kwargs
-        )
+        return _CMDHANDLER(self, raw_string, callertype="object", session=session, **kwargs)
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """
@@ -666,6 +712,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Keyword Args:
             Keyword arguments will be passed to the function for all objects.
+
         """
         contents = self.contents
         if exclude:
@@ -682,64 +729,104 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             text (str or tuple): Message to send. If a tuple, this should be
                 on the valid OOB outmessage form `(message, {kwargs})`,
                 where kwargs are optional data passed to the `text`
-                outputfunc.
+                outputfunc. The message will be parsed for `{key}` formatting and
+                `$You/$you()/$You()`, `$obj(name)`, `$conj(verb)` and `$pron(pronoun, option)`
+                inline function callables.
+                The `name` is taken from the `mapping` kwarg {"name": object, ...}`.
+                The `mapping[key].get_display_name(looker=recipient)` will be called
+                for that key for every recipient of the string.
             exclude (list, optional): A list of objects not to send to.
             from_obj (Object, optional): An object designated as the
                 "sender" of the message. See `DefaultObject.msg()` for
                 more info.
             mapping (dict, optional): A mapping of formatting keys
-                `{"key":<object>, "key2":<object2>,...}. The keys
-                must match `{key}` markers in the `text` if this is a string or
-                in the internal `message` if `text` is a tuple. These
-                formatting statements will be
-                replaced by the return of `<object>.get_display_name(looker)`
-                for every looker in contents that receives the
-                message. This allows for every object to potentially
-                get its own customized string.
-        Keyword Args:
-            Keyword arguments will be passed on to `obj.msg()` for all
-            messaged objects.
+                `{"key":<object>, "key2":<object2>,...}.
+                The keys must either match `{key}` or `$You(key)/$you(key)` markers
+                in the `text` string. If `<object>` doesn't have a `get_display_name`
+                method, it will be returned as a string. If not set, a key `you` will
+                be auto-added to point to `from_obj` if given, otherwise to `self`.
+            **kwargs: Keyword arguments will be passed on to `obj.msg()` for all
+                messaged objects.
 
         Notes:
-            The `mapping` argument is required if `message` contains
-            {}-style format syntax. The keys of `mapping` should match
-            named format tokens, and its values will have their
-            `get_display_name()` function called for  each object in
-            the room before substitution. If an item in the mapping does
-            not have `get_display_name()`, its string value will be used.
+            For 'actor-stance' reporting (You say/Name says), use the
+            `$You()/$you()/$You(key)` and `$conj(verb)` (verb-conjugation)
+            inline callables. This will use the respective `get_display_name()`
+            for all onlookers except for `from_obj or self`, which will become
+            'You/you'. If you use `$You/you(key)`, the key must be in `mapping`.
 
-        Example:
-            Say Char is a Character object and Npc is an NPC object:
+            For 'director-stance' reporting (Name says/Name says), use {key}
+            syntax directly. For both `{key}` and `You/you(key)`,
+            `mapping[key].get_display_name(looker=recipient)` may be called
+            depending on who the recipient is.
 
-            char.location.msg_contents(
-                "{attacker} kicks {defender}",
-                mapping=dict(attacker=char, defender=npc), exclude=(char, npc))
+        Examples:
 
-            This will result in everyone in the room seeing 'Char kicks NPC'
-            where everyone may potentially see different results for Char and Npc
-            depending on the results of `char.get_display_name(looker)` and
-            `npc.get_display_name(looker)` for each particular onlooker
+            Let's assume
+            - `player1.key -> "Player1"`,
+              `player1.get_display_name(looker=player2) -> "The First girl"`
+            - `player2.key -> "Player2"`,
+              `player2.get_display_name(looker=player1) -> "The Second girl"`
+
+            Actor-stance:
+            ::
+
+                char.location.msg_contents(
+                    "$You() $conj(attack) $you(defender).",
+                    mapping={"defender": player2})
+
+            - player1 will see `You attack The Second girl.`
+            - player2 will see 'The First girl attacks you.'
+
+            Director-stance:
+            ::
+
+                char.location.msg_contents(
+                    "{attacker} attacks {defender}.",
+                    mapping={"attacker:player1, "defender":player2})
+
+            - player1 will see: 'Player1 attacks The Second girl.'
+            - player2 will see: 'The First girl attacks Player2'
 
         """
         # we also accept an outcommand on the form (message, {kwargs})
         is_outcmd = text and is_iter(text)
         inmessage = text[0] if is_outcmd else text
         outkwargs = text[1] if is_outcmd and len(text) > 1 else {}
+        mapping = mapping or {}
+        you = from_obj or self
+
+        if "you" not in mapping:
+            mapping[you] = you
 
         contents = self.contents
         if exclude:
             exclude = make_iter(exclude)
             contents = [obj for obj in contents if obj not in exclude]
-        for obj in contents:
-            if mapping:
-                substitutions = {
-                    t: sub.get_display_name(obj) if hasattr(sub, "get_display_name") else str(sub)
-                    for t, sub in mapping.items()
+
+        for receiver in contents:
+
+            # actor-stance replacements
+            inmessage = _MSG_CONTENTS_PARSER.parse(
+                inmessage,
+                raise_errors=True,
+                return_string=True,
+                caller=you,
+                receiver=receiver,
+                mapping=mapping,
+            )
+
+            # director-stance replacements
+            outmessage = inmessage.format(
+                **{
+                    key: obj.get_display_name(looker=receiver)
+                    if hasattr(obj, "get_display_name")
+                    else str(obj)
+                    for key, obj in mapping.items()
                 }
-                outmessage = inmessage.format(**substitutions)
-            else:
-                outmessage = inmessage
-            obj.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
+            )
+
+            receiver.msg(text=(outmessage, outkwargs), from_obj=from_obj, **kwargs)
 
     def move_to(
         self,
@@ -768,7 +855,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                  moving to a None location. If you want to run hooks, run them manually
                  (and make sure they can manage None locations).
             move_hooks (bool): If False, turn off the calling of move-related hooks
-                (at_before/after_move etc) with quiet=True, this is as quiet a move
+                (at_pre/post_move etc) with quiet=True, this is as quiet a move
                 as can be done.
 
         Keyword Args:
@@ -785,13 +872,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             The `DefaultObject` hooks called (if `move_hooks=True`) are, in order:
 
-             1. `self.at_before_move(destination)` (if this returns False, move is aborted)
+             1. `self.at_pre_move(destination)` (if this returns False, move is aborted)
              2. `source_location.at_object_leave(self, destination)`
              3. `self.announce_move_from(destination)`
              4. (move happens here)
              5. `self.announce_move_to(source_location)`
              6. `destination.at_object_receive(self, source_location)`
-             7. `self.at_after_move(source_location)`
+             7. `self.at_post_move(source_location)`
 
         """
 
@@ -801,7 +888,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             self.msg("%s%s" % (string, "" if err is None else " (%s)" % err))
             return
 
-        errtxt = _("Couldn't perform move ('%s'). Contact an admin.")
+        errtxt = _("Couldn't perform move ({err}). Contact an admin.")
         if not emit_to_obj:
             emit_to_obj = self
 
@@ -816,14 +903,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if destination.destination and use_destination:
             # traverse exits
             destination = destination.destination
-
         # Before the move, call eventual pre-commands.
         if move_hooks:
             try:
-                if not self.at_before_move(destination):
+                if not self.at_pre_move(destination, **kwargs):
                     return False
             except Exception as err:
-                logerr(errtxt % "at_before_move()", err)
+                logerr(errtxt.format(err="at_pre_move()"), err)
                 return False
 
         # Save the old location
@@ -832,9 +918,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Call hook on source location
         if move_hooks and source_location:
             try:
-                source_location.at_object_leave(self, destination)
+                source_location.at_object_leave(self, destination, **kwargs)
             except Exception as err:
-                logerr(errtxt % "at_object_leave()", err)
+                logerr(errtxt.format(err="at_object_leave()"), err)
                 return False
 
         if not quiet:
@@ -842,14 +928,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             try:
                 self.announce_move_from(destination, **kwargs)
             except Exception as err:
-                logerr(errtxt % "at_announce_move()", err)
+                logerr(errtxt.format(err="announce_move_from()"), err)
                 return False
 
         # Perform move
         try:
             self.location = destination
         except Exception as err:
-            logerr(errtxt % "location change", err)
+            logerr(errtxt.format(err="location change"), err)
             return False
 
         if not quiet:
@@ -857,25 +943,25 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             try:
                 self.announce_move_to(source_location, **kwargs)
             except Exception as err:
-                logerr(errtxt % "announce_move_to()", err)
+                logerr(errtxt.format(err="announce_move_to()"), err)
                 return False
 
         if move_hooks:
             # Perform eventual extra commands on the receiving location
             # (the object has already arrived at this point)
             try:
-                destination.at_object_receive(self, source_location)
+                destination.at_object_receive(self, source_location, **kwargs)
             except Exception as err:
-                logerr(errtxt % "at_object_receive()", err)
+                logerr(errtxt.format(err="at_object_receive()"), err)
                 return False
 
         # Execute eventual extra commands on this object after moving it
         # (usually calling 'look')
         if move_hooks:
             try:
-                self.at_after_move(source_location)
+                self.at_post_move(source_location, **kwargs)
             except Exception as err:
-                logerr(errtxt % "at_after_move", err)
+                logerr(errtxt.format(err="at_post_move"), err)
                 return False
         return True
 
@@ -883,6 +969,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Destroys all of the exits and any exits pointing to this
         object as a destination.
+
         """
         for out_exit in [exi for exi in ObjectDB.objects.get_contents(self) if exi.db_destination]:
             out_exit.delete()
@@ -893,6 +980,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         Moves all objects (accounts/things) to their home location or
         to default home.
+
         """
         # Gather up everything that thinks this is its location.
         default_home_id = int(settings.DEFAULT_HOME.lstrip("#"))
@@ -902,8 +990,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 # we are deleting default home!
                 default_home = None
         except Exception:
-            string = _("Could not find default home '(#%d)'.")
-            logger.log_err(string % default_home_id)
+            string = _("Could not find default home '(#{dbid})'.")
+            logger.log_err(string.format(dbid=default_home_id))
             default_home = None
 
         for obj in self.contents:
@@ -915,18 +1003,19 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             # If for some reason it's still None...
             if not home:
-                string = "Missing default home, '%s(#%d)' "
-                string += "now has a null location."
                 obj.location = None
                 obj.msg(_("Something went wrong! You are dumped into nowhere. Contact an admin."))
-                logger.log_err(string % (obj.name, obj.dbid))
+                logger.log_err(
+                    "Missing default home - '{name}(#{dbid})' now "
+                    "has a null location.".format(name=obj.name, dbid=obj.dbid)
+                )
                 return
 
             if obj.has_account:
                 if home:
                     string = "Your current location has ceased to exist,"
-                    string += " moving you to %s(#%d)."
-                    obj.msg(_(string) % (home.name, home.dbid))
+                    string += " moving you to (#{dbid})."
+                    obj.msg(_(string).format(dbid=home.dbid))
                 else:
                     # Famous last words: The account should never see this.
                     string = "This place should not exist ... contact an admin."
@@ -1033,8 +1122,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def at_object_post_copy(self, new_obj, **kwargs):
         """
-        Called by DefaultObject.copy(). Meant to be overloaded. In case there's extra data not covered by
-        .copy(), this can be used to deal with it.
+        Called by DefaultObject.copy(). Meant to be overloaded. In case there's extra data not
+        covered by .copy(), this can be used to deal with it.
 
         Args:
             new_obj (Object): The new Copy of this object.
@@ -1082,7 +1171,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self.account = None
 
         for script in _ScriptDB.objects.get_all_scripts_on_obj(self):
-            script.stop()
+            script.delete()
 
         # Destroy any exits to and from this room, if any
         self.clear_exits()
@@ -1139,6 +1228,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         self.basetype_setup()
         self.at_object_creation()
+        # initialize Attribute/TagProperties
+        self.init_evennia_properties()
 
         if hasattr(self, "_createdict"):
             # this will only be set if the utils.create function
@@ -1173,7 +1264,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 self.aliases.batch_add(*cdict["aliases"])
             if cdict.get("location"):
                 cdict["location"].at_object_receive(self, None)
-                self.at_after_move(None)
+                self.at_post_move(None)
             if cdict.get("tags"):
                 # this should be a list of tags, tuples (key, category) or (key, category, data)
                 self.tags.batch_add(*cdict["tags"])
@@ -1244,7 +1335,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     def at_object_delete(self):
         """
-        Called just before the database object is permanently
+        Called just before the database object is persistently
         delete()d from the database. If this method returns False,
         deletion is aborted.
 
@@ -1381,7 +1472,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # hooks called when moving the object
 
-    def at_before_move(self, destination, **kwargs):
+    def at_pre_move(self, destination, **kwargs):
         """
         Called just before starting to move this object to
         destination.
@@ -1401,6 +1492,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         # return has_perm(self, destination, "can_move")
         return True
+
+    # deprecated alias
+    at_before_move = at_pre_move
 
     def announce_move_from(self, destination, msg=None, mapping=None, **kwargs):
         """
@@ -1475,7 +1569,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not source_location and self.location.has_account:
             # This was created from nowhere and added to an account's
             # inventory; it's probably the result of a create command.
-            string = "You now have %s in your possession." % self.get_display_name(self.location)
+            string = _("You now have {name} in your possession.").format(
+                name=self.get_display_name(self.location)
+            )
             self.location.msg(string)
             return
 
@@ -1483,9 +1579,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             if msg:
                 string = msg
             else:
-                string = "{object} arrives to {destination} from {origin}."
+                string = _("{object} arrives to {destination} from {origin}.")
         else:
-            string = "{object} arrives to {destination}."
+            string = _("{object} arrives to {destination}.")
 
         origin = source_location
         destination = self.location
@@ -1511,7 +1607,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         destination.msg_contents(string, exclude=(self,), from_obj=self, mapping=mapping)
 
-    def at_after_move(self, source_location, **kwargs):
+    def at_post_move(self, source_location, **kwargs):
         """
         Called after move has completed, regardless of quiet mode or
         not.  Allows changes to the object due to the location it is
@@ -1524,6 +1620,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         pass
+
+    # deprecated
+    at_after_move = at_post_move
 
     def at_object_leave(self, moved_obj, target_location, **kwargs):
         """
@@ -1558,7 +1657,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         normally by calling
         `traversing_object.move_to(target_location)`. It is normally
         only implemented by Exit objects. If it returns False (usually
-        because `move_to` returned False), `at_after_traverse` below
+        because `move_to` returned False), `at_post_traverse` below
         should not be called and instead `at_failed_traverse` should be
         called.
 
@@ -1571,7 +1670,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         pass
 
-    def at_after_traverse(self, traversing_object, source_location, **kwargs):
+    def at_post_traverse(self, traversing_object, source_location, **kwargs):
         """
         Called just after an object successfully used this object to
         traverse to another object (i.e. this object is a type of
@@ -1587,6 +1686,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             The target location should normally be available as `self.destination`.
         """
         pass
+
+    # deprecated
+    at_after_traverse = at_post_traverse
 
     def at_failed_traverse(self, traversing_object, **kwargs):
         """
@@ -1658,53 +1760,128 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # hooks called by the default cmdset.
 
+    def get_visible_contents(self, looker, **kwargs):
+        """
+        Get all contents of this object that a looker can see (whatever that means, by default it
+        checks the 'view' lock), grouped by type. Helper method to return_appearance.
+
+        Args:
+            looker (Object): The entity looking.
+            **kwargs (any): Passed from `return_appearance`. Unused by default.
+
+        Returns:
+            dict: A dict of lists categorized by type. Byt default this
+                contains 'exits', 'characters' and 'things'. The elements of these
+                lists are the actual objects.
+
+        """
+
+        def filter_visible(obj_list):
+            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
+
+        return {
+            "exits": filter_visible(self.contents_get(content_type="exit")),
+            "characters": filter_visible(self.contents_get(content_type="character")),
+            "things": filter_visible(self.contents_get(content_type="object")),
+        }
+
+    def get_content_names(self, looker, **kwargs):
+        """
+        Get the proper names for all contents of this object. Helper method
+        for return_appearance.
+
+        Args:
+            looker (Object): The entity looking.
+            **kwargs (any): Passed from `return_appearance`. Passed into
+                `get_display_name` for each found entity.
+
+        Returns:
+            dict: A dict of lists categorized by type. Byt default this
+                contains 'exits', 'characters' and 'things'. The elements
+                of these lists are strings - names of the objects that
+                can depend on the looker and also be grouped in the case
+                of multiple same-named things etc.
+
+        Notes:
+            This method shouldn't add extra coloring to the names beyond what is
+            already given by the .get_display_name() (and the .name field) already.
+            Per-type coloring can be applied in `return_apperance`.
+
+        """
+        # a mapping {'exits': [...], 'characters': [...], 'things': [...]}
+        contents_map = self.get_visible_contents(looker, **kwargs)
+
+        character_names = [
+            char.get_display_name(looker, **kwargs) for char in contents_map["characters"]
+        ]
+        exit_names = [exi.get_display_name(looker, **kwargs) for exi in contents_map["exits"]]
+
+        # group all same-named things under one name
+        things = defaultdict(list)
+        for thing in contents_map["things"]:
+            things[thing.get_display_name(looker, **kwargs)].append(thing)
+
+        # pluralize same-named things
+        thing_names = []
+        for thingname, thinglist in sorted(things.items()):
+            nthings = len(thinglist)
+            thing = thinglist[0]
+            singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
+            thing_names.append(singular if nthings == 1 else plural)
+
+        return {"exits": exit_names, "characters": character_names, "things": thing_names}
+
     def return_appearance(self, looker, **kwargs):
         """
-        This formats a description. It is the hook a 'look' command
-        should call.
+        Main callback used by 'look' for the object to describe itself.
+        This formats a description. By default, this looks for the `appearance_template`
+        string set on this class and populates it with formatting keys
+            'name', 'desc', 'exits', 'characters', 'things' as well as
+            (currently empty) 'header'/'footer'.
 
         Args:
             looker (Object): Object doing the looking.
             **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call (unused by default).
+                overriding the call. This is passed into the helper
+                methods and into `get_display_name` calls.
+
+        Returns:
+            str: The description of this entity. By default this includes
+                the entity's name, description and any contents inside it.
+
+        Notes:
+            To simply change the layout of how the object displays itself (like
+            adding some line decorations or change colors of different sections),
+            you can simply edit `.appearance_template`. You only need to override
+            this method (and/or its helpers) if you want to change what is passed
+            into the template or want the most control over output.
+
         """
+
         if not looker:
             return ""
-        # get and identify all objects
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
-        exits, users, things = [], [], defaultdict(list)
-        for con in visible:
-            key = con.get_display_name(looker)
-            if con.destination:
-                exits.append(key)
-            elif con.has_account:
-                users.append("|c%s|n" % key)
-            else:
-                # things can be pluralized
-                things[key].append(con)
-        # get description, build string
-        string = "|c%s|n\n" % self.get_display_name(looker)
-        desc = self.db.desc
-        if desc:
-            string += "%s" % desc
-        if exits:
-            string += "\n|wExits:|n " + list_to_string(exits)
-        if users or things:
-            # handle pluralization of things (never pluralize users)
-            thing_strings = []
-            for key, itemlist in sorted(things.items()):
-                nitem = len(itemlist)
-                if nitem == 1:
-                    key, _ = itemlist[0].get_numbered_name(nitem, looker, key=key)
-                else:
-                    key = [item.get_numbered_name(nitem, looker, key=key)[1] for item in itemlist][
-                        0
-                    ]
-                thing_strings.append(key)
 
-            string += "\n|wYou see:|n " + list_to_string(users + thing_strings)
+        # ourselves
+        name = self.get_display_name(looker, **kwargs)
+        desc = self.db.desc or "You see nothing special."
 
-        return string
+        # contents
+        content_names_map = self.get_content_names(looker, **kwargs)
+        exits = list_to_string(content_names_map["exits"])
+        characters = list_to_string(content_names_map["characters"])
+        things = list_to_string(content_names_map["things"])
+
+        # populate the appearance_template string. It's a good idea to strip it and
+        # let the client add any extra spaces instead.
+        return self.appearance_template.format(
+            header="",
+            name=name,
+            desc=desc,
+            exits=f"|wExits:|n {exits}" if exits else "",
+            characters=f"\n|wCharacters:|n {characters}" if characters else "",
+            things=f"\n|wYou see:|n {things}" if things else "",
+            footer="",
+        ).strip()
 
     def at_look(self, target, **kwargs):
         """
@@ -1752,7 +1929,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         pass
 
-    def at_before_get(self, getter, **kwargs):
+    def at_pre_get(self, getter, **kwargs):
         """
         Called by the default `get` command before this object has been
         picked up.
@@ -1771,6 +1948,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         return True
 
+    # deprecated
+    at_before_get = at_pre_get
+
     def at_get(self, getter, **kwargs):
         """
         Called by the default `get` command when this object has been
@@ -1783,12 +1963,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Notes:
             This hook cannot stop the pickup from happening. Use
-            permissions or the at_before_get() hook for that.
+            permissions or the at_pre_get() hook for that.
 
         """
         pass
 
-    def at_before_give(self, giver, getter, **kwargs):
+    def at_pre_give(self, giver, getter, **kwargs):
         """
         Called by the default `give` command before this object has been
         given.
@@ -1809,6 +1989,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         return True
 
+    # deprecated
+    at_before_give = at_pre_give
+
     def at_give(self, giver, getter, **kwargs):
         """
         Called by the default `give` command when this object has been
@@ -1822,12 +2005,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Notes:
             This hook cannot stop the give from happening. Use
-            permissions or the at_before_give() hook for that.
+            permissions or the at_pre_give() hook for that.
 
         """
         pass
 
-    def at_before_drop(self, dropper, **kwargs):
+    def at_pre_drop(self, dropper, **kwargs):
         """
         Called by the default `drop` command before this object has been
         dropped.
@@ -1853,6 +2036,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             return False
         return True
 
+    # deprecated
+    at_before_drop = at_pre_drop
+
     def at_drop(self, dropper, **kwargs):
         """
         Called by the default `drop` command when this object has been
@@ -1865,12 +2051,12 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Notes:
             This hook cannot stop the drop from happening. Use
-            permissions or the at_before_drop() hook for that.
+            permissions or the at_pre_drop() hook for that.
 
         """
         pass
 
-    def at_before_say(self, message, **kwargs):
+    def at_pre_say(self, message, **kwargs):
         """
         Before the object says something.
 
@@ -1886,13 +2072,17 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 a say. This is sent by the whisper command by default.
                 Other verbal commands could use this hook in similar
                 ways.
-            receivers (Object or iterable): If set, this is the target or targets for the say/whisper.
+            receivers (Object or iterable): If set, this is the target or targets for the
+                say/whisper.
 
         Returns:
             message (str): The (possibly modified) text to be spoken.
 
         """
         return message
+
+    # deprecated
+    at_before_say = at_pre_say
 
     def at_say(
         self,
@@ -1917,8 +2107,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             msg_self (bool or str, optional): If boolean True, echo `message` to self. If a string,
                 return that message. If False or unset, don't echo to self.
             msg_location (str, optional): The message to echo to self's location.
-            receivers (Object or iterable, optional): An eventual receiver or receivers of the message
-                (by default only used by whispers).
+            receivers (Object or iterable, optional): An eventual receiver or receivers of the
+                message (by default only used by whispers).
             msg_receivers(str): Specific message to pass to the receiver(s). This will parsed
                 with the {receiver} placeholder replaced with the given receiver.
         Keyword Args:
@@ -2041,11 +2231,15 @@ class DefaultCharacter(DefaultObject):
 
     """
 
+    # Tuple of types used for indexing inventory contents. Characters generally wouldn't be in
+    # anyone's inventory, but this also governs displays in room contents.
+    _content_types = ("character",)
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the appropriate attributes.
     lockstring = (
         "puppet:id({character_id}) or pid({account_id}) or perm(Developer) or pperm(Developer);"
-        "delete:id({account_id}) or perm(Admin)"
+        "delete:id({account_id}) or perm(Admin);"
+        "edit:pid({account_id}) or perm(Admin)"
     )
 
     @classmethod
@@ -2080,6 +2274,13 @@ class DefaultCharacter(DefaultObject):
         # If no typeclass supplied, use this class
         kwargs["typeclass"] = kwargs.pop("typeclass", cls)
 
+        # Normalize to latin characters and validate, if necessary, the supplied key
+        key = cls.normalize_name(key)
+
+        if not cls.validate_name(key):
+            errors.append(_("Invalid character name."))
+            return obj, errors
+
         # Set the supplied key as the name of the intended object
         kwargs["key"] = key
 
@@ -2096,7 +2297,7 @@ class DefaultCharacter(DefaultObject):
             # Check to make sure account does not have too many chars
             if account:
                 if len(account.characters) >= settings.MAX_NR_CHARACTERS:
-                    errors.append("There are too many characters associated with this account.")
+                    errors.append(_("There are too many characters associated with this account."))
                     return obj, errors
 
             # Create the Character
@@ -2112,7 +2313,8 @@ class DefaultCharacter(DefaultObject):
 
             # Add locks
             if not locks and account:
-                # Allow only the character itself and the creator account to puppet this character (and Developers).
+                # Allow only the character itself and the creator account to puppet this character
+                # (and Developers).
                 locks = cls.lockstring.format(**{"character_id": obj.id, "account_id": account.id})
             elif not locks and not account:
                 locks = cls.lockstring.format(**{"character_id": obj.id, "account_id": -1})
@@ -2121,13 +2323,46 @@ class DefaultCharacter(DefaultObject):
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
-                obj.db.desc = description if description else "This is a character."
+                obj.db.desc = description if description else _("This is a character.")
 
         except Exception as e:
-            errors.append("An error occurred while creating this '%s' object." % key)
+            errors.append(f"An error occurred while creating object '{key} object.")
             logger.log_err(e)
 
         return obj, errors
+
+    @classmethod
+    def normalize_name(cls, name):
+        """
+        Normalize the character name prior to creating. Note that this should be refactored to
+        support i18n for non-latin scripts, but as we (currently) have no bug reports requesting
+        better support of non-latin character sets, requiring character names to be latinified is an
+        acceptable option.
+
+        Args:
+            name (str) : The name of the character
+
+        Returns:
+            latin_name (str) : A valid name.
+        """
+
+        from evennia.utils.utils import latinify
+
+        latin_name = latinify(name, default="X")
+        return latin_name
+
+    @classmethod
+    def validate_name(cls, name):
+        """Validate the character name prior to creating. Overload this function to add custom validators
+
+        Args:
+            name (str) : The name of the character
+        Returns:
+            valid (bool) : True if character creation should continue; False if it should fail
+
+        """
+
+        return True  # Default validator does not perform any operations
 
     def basetype_setup(self):
         """
@@ -2144,15 +2379,18 @@ class DefaultCharacter(DefaultObject):
             ";".join(["get:false()", "call:false()"])  # noone can pick up the character
         )  # no commands can be called on character from outside
         # add the default cmdset
-        self.cmdset.add_default(settings.CMDSET_CHARACTER, permanent=True)
+        self.cmdset.add_default(settings.CMDSET_CHARACTER, persistent=True)
 
-    def at_after_move(self, source_location, **kwargs):
+    def at_post_move(self, source_location, **kwargs):
         """
         We make sure to look around after a move.
 
         """
         if self.location.access(self, "view"):
-            self.msg(self.at_look(self.location))
+            self.msg(text=(self.at_look(self.location), {"type": "look"}))
+
+    # deprecated
+    at_after_move = at_post_move
 
     def at_pre_puppet(self, account, session=None, **kwargs):
         """
@@ -2160,6 +2398,7 @@ class DefaultCharacter(DefaultObject):
         Args:
             account (Account): This is the connecting account.
             session (Session): Session controlling the connection.
+
         """
         if (
             self.location is None
@@ -2173,7 +2412,7 @@ class DefaultCharacter(DefaultObject):
             self.db.prelogout_location = self.location  # save location again to be sure.
         else:
             account.msg(
-                "|r%s has no location and no home is set.|n" % self, session=session
+                _("|r{obj} has no location and no home is set.|n").format(obj=self), session=session
             )  # Note to set home.
 
     def at_post_puppet(self, **kwargs):
@@ -2191,11 +2430,14 @@ class DefaultCharacter(DefaultObject):
             puppeting this Object.
 
         """
-        self.msg("\nYou become |c%s|n.\n" % self.name)
+        self.msg(_("\nYou become |c{name}|n.\n").format(name=self.key))
         self.msg((self.at_look(self.location), {"type": "look"}), options=None)
 
         def message(obj, from_obj):
-            obj.msg("%s has entered the game." % self.get_display_name(obj), from_obj=from_obj)
+            obj.msg(
+                _("{name} has entered the game.").format(name=self.get_display_name(obj)),
+                from_obj=from_obj,
+            )
 
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
@@ -2218,7 +2460,10 @@ class DefaultCharacter(DefaultObject):
             if self.location:
 
                 def message(obj, from_obj):
-                    obj.msg("%s has left the game." % self.get_display_name(obj), from_obj=from_obj)
+                    obj.msg(
+                        _("{name} has left the game.").format(name=self.get_display_name(obj)),
+                        from_obj=from_obj,
+                    )
 
                 self.location.for_contents(message, exclude=[self], from_obj=self)
                 self.db.prelogout_location = self.location
@@ -2229,6 +2474,7 @@ class DefaultCharacter(DefaultObject):
         """
         Returns the idle time of the least idle session in seconds. If
         no sessions are connected it returns nothing.
+
         """
         idle = [session.cmd_last_visible for session in self.sessions.all()]
         if idle:
@@ -2240,6 +2486,7 @@ class DefaultCharacter(DefaultObject):
         """
         Returns the maximum connection time of all connected sessions
         in seconds. Returns nothing if there are no sessions.
+
         """
         conn = [session.conn_time for session in self.sessions.all()]
         if conn:
@@ -2256,6 +2503,10 @@ class DefaultRoom(DefaultObject):
     This is the base room object. It's just like any Object except its
     location is always `None`.
     """
+
+    # A tuple of strings used for indexing this object inside an inventory.
+    # Generally, a room isn't expected to HAVE a location, but maybe in some games?
+    _content_types = ("room",)
 
     # lockstring of newly created rooms, for easy overloading.
     # Will be formatted with the {id} of the creating object.
@@ -2317,7 +2568,7 @@ class DefaultRoom(DefaultObject):
             if not locks and account:
                 locks = cls.lockstring.format(**{"id": account.id})
             elif not locks and not account:
-                locks = cls.lockstring(**{"id": obj.id})
+                locks = cls.lockstring.format(**{"id": obj.id})
 
             obj.locks.add(locks)
 
@@ -2329,7 +2580,7 @@ class DefaultRoom(DefaultObject):
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
-                obj.db.desc = description if description else "This is a room."
+                obj.db.desc = description if description else _("This is a room.")
 
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
@@ -2354,6 +2605,7 @@ class DefaultRoom(DefaultObject):
 #
 # Default Exit command, used by the base exit object
 #
+
 
 class ExitCommand(_COMMAND_DEFAULT_CLASS):
     """
@@ -2391,7 +2643,9 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
                 overriding the call (unused by default).
 
         Returns:
-            A string with identifying information to disambiguate the command, conventionally with a preceding space.
+            A string with identifying information to disambiguate the command, conventionally with a
+            preceding space.
+
         """
         if self.obj.destination:
             return " (exit to %s)" % self.obj.destination.get_display_name(caller)
@@ -2415,6 +2669,7 @@ class DefaultExit(DefaultObject):
 
     """
 
+    _content_types = ("exit",)
     exit_command = ExitCommand
     priority = 101
 
@@ -2532,7 +2787,7 @@ class DefaultExit(DefaultObject):
 
             # If no description is set, set a default description
             if description or not obj.db.desc:
-                obj.db.desc = description if description else "This is an exit."
+                obj.db.desc = description if description else _("This is an exit.")
 
         except Exception as e:
             errors.append("An error occurred while creating this '%s' object." % key)
@@ -2581,7 +2836,7 @@ class DefaultExit(DefaultObject):
 
         if "force_init" in kwargs or not self.cmdset.has_cmdset("ExitCmdSet", must_be_default=True):
             # we are resetting, or no exit-cmdset was set. Create one dynamically.
-            self.cmdset.add_default(self.create_exit_cmdset(self), permanent=False)
+            self.cmdset.add_default(self.create_exit_cmdset(self), persistent=False)
 
     def at_init(self):
         """
@@ -2605,7 +2860,7 @@ class DefaultExit(DefaultObject):
         """
         source_location = traversing_object.location
         if traversing_object.move_to(target_location):
-            self.at_after_traverse(traversing_object, source_location)
+            self.at_post_traverse(traversing_object, source_location)
         else:
             if self.db.err_traverse:
                 # if exit has a better error message, let's use it.
@@ -2629,4 +2884,4 @@ class DefaultExit(DefaultObject):
             read for an error string instead.
 
         """
-        traversing_object.msg("You cannot go there.")
+        traversing_object.msg(_("You cannot go there."))

@@ -2,12 +2,18 @@
 The custom manager for Scripts.
 """
 
+from django.conf import settings
 from django.db.models import Q
 from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
-from evennia.utils.utils import make_iter
+from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj
+from evennia.server import signals
 
 __all__ = ("ScriptManager", "ScriptDBManager")
 _GA = object.__getattribute__
+
+_ObjectDB = None
+_AccountDB = None
+
 
 VALIDATE_ITERATION = 0
 
@@ -22,7 +28,7 @@ class ScriptDBManager(TypedObjectManager):
     Querysets or database objects).
 
     dbref (converter)
-    get_id  (or dbref_search)
+    dbref_search
     get_dbref_range
     object_totals
     typeclass_search
@@ -81,7 +87,6 @@ class ScriptDBManager(TypedObjectManager):
 
         """
         if key:
-            script = []
             dbref = self.dbref(key)
             if dbref:
                 return self.filter(id=dbref)
@@ -104,112 +109,22 @@ class ScriptDBManager(TypedObjectManager):
         scripts = self.get_id(dbref)
         for script in make_iter(scripts):
             script.stop()
-
-    def remove_non_persistent(self, obj=None):
-        """
-        This cleans up the script database of all non-persistent
-        scripts. It is called every time the server restarts.
-
-        Args:
-            obj (Object, optional): Only remove non-persistent scripts
-                assigned to this object.
-
-        """
-        if obj:
-            to_stop = self.filter(db_obj=obj, db_persistent=False, db_is_active=True)
-            to_delete = self.filter(db_obj=obj, db_persistent=False, db_is_active=False)
-        else:
-            to_stop = self.filter(db_persistent=False, db_is_active=True)
-            to_delete = self.filter(db_persistent=False, db_is_active=False)
-        nr_deleted = to_stop.count() + to_delete.count()
-        for script in to_stop:
-            script.stop()
-        for script in to_delete:
             script.delete()
-        return nr_deleted
 
-    def validate(self, scripts=None, obj=None, key=None, dbref=None, init_mode=None):
+    def update_scripts_after_server_start(self):
         """
-        This will step through the script database and make sure
-        all objects run scripts that are still valid in the context
-        they are in. This is called by the game engine at regular
-        intervals but can also be initiated by player scripts.
-
-        Only one of the arguments are supposed to be supplied
-        at a time, since they are exclusive to each other.
-
-        Args:
-            scripts (list, optional): A list of script objects to
-                validate.
-            obj (Object, optional): Validate only scripts defined on
-                this object.
-            key (str): Validate only scripts with this key.
-            dbref (int): Validate only the single script with this
-                particular id.
-            init_mode (str, optional): This is used during server
-                upstart and can have three values:
-                - `None` (no init mode). Called during run.
-                - `"reset"` - server reboot. Kill non-persistent scripts
-                - `"reload"` - server reload. Keep non-persistent scripts.
-        Returns:
-            nr_started, nr_stopped (tuple): Statistics on how many objects
-                where started and stopped.
-
-        Notes:
-            This method also makes sure start any scripts it validates
-            which should be harmless, since already-active scripts have
-            the property 'is_running' set and will be skipped.
+        Update/sync/restart/delete scripts after server shutdown/restart.
 
         """
+        for script in self.filter(db_is_active=True, db_persistent=False):
+            script._stop_task()
 
-        # we store a variable that tracks if we are calling a
-        # validation from within another validation (avoids
-        # loops).
+        for script in self.filter(db_is_active=True):
+            script._unpause_task(auto_unpause=True)
+            script.at_server_start()
 
-        global VALIDATE_ITERATION
-        if VALIDATE_ITERATION > 0:
-            # we are in a nested validation. Exit.
-            VALIDATE_ITERATION -= 1
-            return None, None
-        VALIDATE_ITERATION += 1
-
-        # not in a validation - loop. Validate as normal.
-
-        nr_started = 0
-        nr_stopped = 0
-
-        if init_mode:
-            if init_mode == "reset":
-                # special mode when server starts or object logs in.
-                # This deletes all non-persistent scripts from database
-                nr_stopped += self.remove_non_persistent(obj=obj)
-            # turn off the activity flag for all remaining scripts
-            scripts = self.get_all_scripts()
-            for script in scripts:
-                script.is_active = False
-
-        elif not scripts:
-            # normal operation
-            if dbref and self.dbref(dbref, reqhash=False):
-                scripts = self.get_id(dbref)
-            elif obj:
-                scripts = self.get_all_scripts_on_obj(obj, key=key)
-            else:
-                scripts = self.get_all_scripts(key=key)
-
-        if not scripts:
-            # no scripts available to validate
-            VALIDATE_ITERATION -= 1
-            return None, None
-
-        for script in scripts:
-            if script.is_valid():
-                nr_started += script.start(force_restart=init_mode)
-            else:
-                script.stop()
-                nr_stopped += 1
-        VALIDATE_ITERATION -= 1
-        return nr_started, nr_stopped
+        for script in self.filter(db_is_active=False):
+            script.at_server_start()
 
     def search_script(self, ostring, obj=None, only_timed=False, typeclass=None):
         """
@@ -223,6 +138,9 @@ class ScriptDBManager(TypedObjectManager):
                 on a timer.
             typeclass (class or str): Typeclass or path to typeclass.
 
+        Returns:
+            Queryset: An iterable with 0, 1 or more results.
+
         """
 
         ostring = ostring.strip()
@@ -231,10 +149,10 @@ class ScriptDBManager(TypedObjectManager):
         if dbref:
             # this is a dbref, try to find the script directly
             dbref_match = self.dbref_search(dbref)
-            if dbref_match and not (
-                (obj and obj != dbref_match.obj) or (only_timed and dbref_match.interval)
-            ):
-                return [dbref_match]
+            if dbref_match:
+                dmatch = dbref_match[0]
+                if not (obj and obj != dmatch.obj) or (only_timed and dmatch.interval):
+                    return dbref_match
 
         if typeclass:
             if callable(typeclass):
@@ -279,6 +197,129 @@ class ScriptDBManager(TypedObjectManager):
         new_script = create.create_script(
             typeclass, key=new_key, obj=new_obj, locks=new_locks, autostart=True
         )
+        return new_script
+
+    def create_script(
+        self,
+        typeclass=None,
+        key=None,
+        obj=None,
+        account=None,
+        locks=None,
+        interval=None,
+        start_delay=None,
+        repeats=None,
+        persistent=None,
+        autostart=True,
+        report_to=None,
+        desc=None,
+        tags=None,
+        attributes=None,
+    ):
+        """
+        Create a new script. All scripts are a combination of a database
+        object that communicates with the database, and an typeclass that
+        'decorates' the database object into being different types of
+        scripts.  It's behaviour is similar to the game objects except
+        scripts has a time component and are more limited in scope.
+
+        Keyword Args:
+            typeclass (class or str): Class or python path to a typeclass.
+            key (str): Name of the new object. If not set, a name of
+                #dbref will be set.
+            obj (Object): The entity on which this Script sits. If this
+                is `None`, we are creating a "global" script.
+            account (Account): The account on which this Script sits. It is
+                exclusiv to `obj`.
+            locks (str): one or more lockstrings, separated by semicolons.
+            interval (int): The triggering interval for this Script, in
+                seconds. If unset, the Script will not have a timing
+                component.
+            start_delay (bool): If `True`, will wait `interval` seconds
+                before triggering the first time.
+            repeats (int): The number of times to trigger before stopping.
+                If unset, will repeat indefinitely.
+            persistent (bool): If this Script survives a server shutdown
+                or not (all Scripts will survive a reload).
+            autostart (bool): If this Script will start immediately when
+                created or if the `start` method must be called explicitly.
+            report_to (Object): The object to return error messages to.
+            desc (str): Optional description of script
+            tags (list): List of tags or tuples (tag, category).
+            attributes (list): List if tuples (key, value) or (key, value, category)
+               (key, value, lockstring) or (key, value, lockstring, default_access).
+
+        Returns:
+            script (obj): An instance of the script created
+
+        See evennia.scripts.manager for methods to manipulate existing
+        scripts in the database.
+
+        """
+        global _ObjectDB, _AccountDB
+        if not _ObjectDB:
+            from evennia.objects.models import ObjectDB as _ObjectDB
+            from evennia.accounts.models import AccountDB as _AccountDB
+
+        typeclass = typeclass if typeclass else settings.BASE_SCRIPT_TYPECLASS
+
+        if isinstance(typeclass, str):
+            # a path is given. Load the actual typeclass
+            typeclass = class_from_module(typeclass, settings.TYPECLASS_PATHS)
+
+        # validate input
+        kwarg = {}
+        if key:
+            kwarg["db_key"] = key
+        if account:
+            kwarg["db_account"] = dbid_to_obj(account, _AccountDB)
+        if obj:
+            kwarg["db_obj"] = dbid_to_obj(obj, _ObjectDB)
+        if interval:
+            kwarg["db_interval"] = max(0, interval)
+        if start_delay:
+            kwarg["db_start_delay"] = start_delay
+        if repeats:
+            kwarg["db_repeats"] = max(0, repeats)
+        if persistent:
+            kwarg["db_persistent"] = persistent
+        if desc:
+            kwarg["db_desc"] = desc
+        tags = make_iter(tags) if tags is not None else None
+        attributes = make_iter(attributes) if attributes is not None else None
+
+        # create new instance
+        new_script = typeclass(**kwarg)
+
+        # store the call signature for the signal
+        new_script._createdict = dict(
+            key=key,
+            obj=obj,
+            account=account,
+            locks=locks,
+            interval=interval,
+            start_delay=start_delay,
+            repeats=repeats,
+            persistent=persistent,
+            autostart=autostart,
+            report_to=report_to,
+            desc=desc,
+            tags=tags,
+            attributes=attributes,
+        )
+        # this will trigger the save signal which in turn calls the
+        # at_first_save hook on the typeclass, where the _createdict
+        # can be used.
+        new_script.save()
+
+        if not new_script.id:
+            # this happens in the case of having a repeating script with `repeats=1` and
+            # `start_delay=False` - the script will run once and immediately stop before
+            # save is over.
+            return None
+
+        signals.SIGNAL_SCRIPT_POST_CREATE.send(sender=new_script)
+
         return new_script
 
 

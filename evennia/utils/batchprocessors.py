@@ -1,23 +1,21 @@
 """
 This module contains the core methods for the Batch-command- and
-Batch-code-processors respectively. In short, these are two different
-ways to build a game world using a normal text-editor without having
-to do so 'on the fly' in-game. They also serve as an automatic backup
-so you can quickly recreate a world also after a server reset. The
-functions in this module is meant to form the backbone of a system
-called and accessed through game commands.
+Batch-code-processors respectively. In short, these are two different ways to
+build a game world using a normal text-editor without having to do so 'on the
+fly' in-game. They also serve as an automatic backup so you can quickly
+recreate a world also after a server reset. The functions in this module is
+meant to form the backbone of a system called and accessed through game
+commands.
 
-The Batch-command processor is the simplest. It simply runs a list of
-in-game commands in sequence by reading them from a text file. The
-advantage of this is that the builder only need to remember the normal
-in-game commands. They are also executing with full permission checks
-etc, making it relatively safe for builders to use. The drawback is
-that in-game there is really a builder-character walking around
-building things, and it can be important to create rooms and objects
-in the right order, so the character can move between them. Also
-objects that affects players (such as mobs, dark rooms etc) will
-affect the building character too, requiring extra care to turn
-off/on.
+The Batch-command processor is the simplest. It simply runs a list of in-game
+commands in sequence by reading them from a text file. The advantage of this is
+that the builder only need to remember the normal in-game commands. They are
+also executing with full permission checks etc, making it relatively safe for
+builders to use. The drawback is that in-game there is really a
+builder-character walking around building things, and it can be important to
+create rooms and objects in the right order, so the character can move between
+them. Also objects that affects players (such as mobs, dark rooms etc) will
+affect the building character too, requiring extra care to turn off/on.
 
 The Batch-code processor is a more advanced system that accepts full
 Python code, executing in chunks. The advantage of this is much more
@@ -31,8 +29,7 @@ etc. You also need to know Python and Evennia's API. Hence it's
 recommended that the batch-code processor is limited only to
 superusers or highly trusted staff.
 
-Batch-Command processor file syntax
------------------------------------
+# Batch-command processor file syntax
 
 The batch-command processor accepts 'batchcommand files' e.g
 `batch.ev`, containing a sequence of valid Evennia commands in a
@@ -40,31 +37,39 @@ simple format. The engine runs each command in sequence, as if they
 had been run at the game prompt.
 
 Each Evennia command must be delimited by a line comment to mark its
-end. This way entire game worlds can be created and planned offline; it is
+end.
+
+::
+
+    look
+    # delimiting comment
+    create/drop box
+    # another required comment
+
+One can also inject another batchcmdfile:
+
+::
+
+    #INSERT path.batchcmdfile
+
+This way entire game worlds can be created and planned offline; it is
 especially useful in order to create long room descriptions where a
 real offline text editor is often much better than any online text
 editor or prompt.
 
-There is only one batchcommand-specific entry to use in a batch-command
-files (all others are just like in-game commands):
+## Example of batch.ev file:
 
-- `#INSERT path.batchcmdfile` - this as the first entry on a line will
-  import and run a batch.ev file in this position, as if it was
-  written in this file.
-
-
-Example of batch.ev file:
 ::
 
     # batch file
     # all lines starting with # are comments; they also indicate
     # that a command definition is over.
 
-    @create box
+    create box
 
     # this comment ends the @create command.
 
-    @set box/desc = A large box.
+    set box/desc = A large box.
 
     Inside are some scattered piles of clothing.
 
@@ -76,25 +81,22 @@ Example of batch.ev file:
     # is ignored.  An empty line in the command definition is parsed as a \n
     # (so two empty lines becomes a new paragraph).
 
-    @teleport #221
+    teleport #221
 
     # (Assuming #221 is a warehouse or something.)
     # (remember, this comment ends the @teleport command! Don'f forget it)
 
     # Example of importing another file at this point.
-    #INSERT examples.batch
+    #IMPORT examples.batch
 
-    @drop box
+    drop box
 
     # Done, the box is in the warehouse! (this last comment is not necessary to
-    # close the @drop command since it's the end of the file)
-
+    # close the drop command since it's the end of the file)
 
 An example batch file is `contrib/examples/batch_example.ev`.
 
-
-Batch-Code processor file syntax
---------------------------------
+# Batch-code processor file syntax
 
 The Batch-code processor accepts full python modules (e.g. `batch.py`)
 that looks identical to normal Python files. The difference from
@@ -128,13 +130,14 @@ Code blocks are marked by commented tokens alone on a line:
 Importing works as normal. The following variables are automatically
 made available in the script namespace.
 
-- `caller` -  The object executing the batchscript
+- `caller` - The object executing the batchscript
 - `DEBUG` - This is a boolean marking if the batchprocessor is running
-  in debug mode. It can be checked to e.g. delete created objects
-  when running a CODE block multiple times during testing.
-  (avoids creating a slew of same-named db objects)
+            in debug mode. It can be checked to e.g. delete created objects
+            when running a CODE block multiple times during testing.
+            (avoids creating a slew of same-named db objects)
 
-Example batch.py file:
+## Example batch.py file
+
 ::
 
     #HEADER
@@ -162,8 +165,6 @@ Example batch.py file:
     #CODE
 
     script = create.create_script()
-
-----
 
 """
 import re
@@ -202,7 +203,7 @@ def read_batchfile(pythonpath, file_ending=".py"):
         file_ending (str): The file ending of this file (.ev or .py)
 
     Returns:
-        str: The text content of the batch file.
+        text (str): The text content of the batch file.
 
     Raises:
         IOError: If problems reading file.
@@ -249,22 +250,30 @@ class BatchCommandProcessor(object):
 
     def parse_file(self, pythonpath):
         """
-        This parses the lines of a batchfile according to the following
-        rules:
+        This parses the lines of a batch-command-file.
 
-        1. `#` at the beginning of a line marks the end of the command before
-           it. It is also a comment and any number of # can exist on
-           subsequent lines (but not inside comments).
-        2. `#INSERT` at the beginning of a line imports another
-           batch-cmd file file and pastes it into the batch file as if
-           it was written there.
-        3. Commands are placed alone at the beginning of a line and their
-           arguments are considered to be everything following (on any
-           number of lines) until the next comment line beginning with #.
-        4. Newlines are ignored in command definitions
-        5. A completely empty line in a command line definition is condered
-           a newline (so two empty lines is a paragraph).
-        6. Excess spaces and indents inside arguments are stripped.
+        Args:
+            pythonpath (str): The dot-python path to the file.
+
+        Returns:
+            list: A list of all parsed commands with arguments, as strings.
+
+        Notes:
+            Parsing follows the following rules:
+
+            1. A `#` at the beginning of a line marks the end of the command before
+               it. It is also a comment and any number of # can exist on
+               subsequent lines (but not inside comments).
+            2. #INSERT at the beginning of a line imports another
+               batch-cmd file file and pastes it into the batch file as if
+               it was written there.
+            3. Commands are placed alone at the beginning of a line and their
+               arguments are considered to be everything following (on any
+               number of lines) until the next comment line beginning with #.
+            4. Newlines are ignored in command definitions
+            5. A completely empty line in a command line definition is condered
+               a newline (so two empty lines is a paragraph).
+            6. Excess spaces and indents inside arguments are stripped.
 
         """
 
@@ -275,7 +284,7 @@ class BatchCommandProcessor(object):
             try:
                 path = match.group(1)
                 return "\n#\n".join(self.parse_file(path))
-            except IOError as err:
+            except IOError:
                 raise IOError("#INSERT {} failed.".format(path))
 
         text = _RE_INSERT.sub(replace_insert, text)
@@ -313,21 +322,23 @@ class BatchCodeProcessor(object):
 
     def parse_file(self, pythonpath):
         """
-        This parses the lines of a batchfile according to the following
-        rules:
+        This parses the lines of a batch-code file
 
         Args:
             pythonpath (str): The dot-python path to the file.
 
         Returns:
-            codeblocks (list): A list of all #CODE blocks, each with
-                prepended #HEADER data. If no #CODE blocks were found,
-                this will be a list of one element.
+            list: A list of all `#CODE` blocks, each with
+                prepended `#HEADER` block data. If no `#CODE`
+                blocks were found, this will be a list of one element
+                containing all code in the file (so a normal Python file).
 
         Notes:
+            Parsing is done according to the following rules:
+
             1. Code before a #CODE/HEADER block are considered part of
-                the first code/header block or is the ONLY block if no
-                #CODE/HEADER blocks are defined.
+               the first code/header block or is the ONLY block if no
+               `#CODE/HEADER` blocks are defined.
             2. Lines starting with #HEADER starts a header block (ends other blocks)
             3. Lines starting with #CODE begins a code block (ends other blocks)
             4. Lines starting with #INSERT are on form #INSERT filename. Code from
@@ -335,6 +346,7 @@ class BatchCodeProcessor(object):
                being inserted at the point of the #INSERT.
             5. Code after the last block is considered part of the last header/code
                block
+
 
         """
 

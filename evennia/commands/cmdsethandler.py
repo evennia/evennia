@@ -62,6 +62,7 @@ Since any number of CommandSets can be piled on top of each other, you
 can then implement separate sets for different situations. For
 example, you can have a 'On a boat' set, onto which you then tack on
 the 'Fishing' set. Fishing from a boat? No problem!
+
 """
 import sys
 from traceback import format_exc
@@ -103,7 +104,7 @@ SyntaxError encountered when loading cmdset '{path}'.
 
 _ERROR_CMDSET_EXCEPTION = _(
     """{traceback}
-Compile/Run error when loading cmdset '{path}'.",
+Compile/Run error when loading cmdset '{path}'.
 (Traceback was logged {timestamp})"""
 )
 
@@ -168,7 +169,7 @@ def import_cmdset(path, cmdsetobj, emit_to_obj=None, no_logging=False):
         if "." in path:
             modpath, classname = python_path.rsplit(".", 1)
         else:
-            raise ImportError("The path '%s' is not on the form modulepath.ClassName" % path)
+            raise ImportError(f"The path '{path}' is not on the form modulepath.ClassName")
 
         try:
             # first try to get from cache
@@ -304,7 +305,7 @@ class CmdSetHandler(object):
         self.mergetype_stack = ["Union"]
 
         # the subset of the cmdset_paths that are to be stored in the database
-        self.permanent_paths = [""]
+        self.persistent_paths = [""]
 
         if init_true:
             self.update(init_mode=True)  # is then called from the object __init__.
@@ -312,6 +313,7 @@ class CmdSetHandler(object):
     def __str__(self):
         """
         Display current commands
+
         """
 
         strings = ["<CmdSetHandler> stack:"]
@@ -361,7 +363,7 @@ class CmdSetHandler(object):
 
         Args:
             init_mode (bool, optional): Used automatically right after
-                this handler was created; it imports all permanent cmdsets
+                this handler was created; it imports all persistent cmdsets
                 from the database.
 
         Notes:
@@ -376,7 +378,7 @@ class CmdSetHandler(object):
 
         """
         if init_mode:
-            # reimport all permanent cmdsets
+            # reimport all persistent cmdsets
             storage = self.obj.cmdset_storage
             if storage:
                 self.cmdset_stack = []
@@ -406,7 +408,7 @@ class CmdSetHandler(object):
                                     if _IN_GAME_ERRORS:
                                         self.obj.msg(err)
                                     continue
-                            cmdset.permanent = cmdset.key != "_CMDSET_ERROR"
+                            cmdset.persistent = cmdset.key != "_CMDSET_ERROR"
                             self.cmdset_stack.append(cmdset)
 
         # merge the stack into a new merged cmdset
@@ -421,7 +423,7 @@ class CmdSetHandler(object):
             self.mergetype_stack.append(new_current.actual_mergetype)
         self.current = new_current
 
-    def add(self, cmdset, emit_to_obj=None, permanent=False, default_cmdset=False):
+    def add(self, cmdset, emit_to_obj=None, persistent=False, default_cmdset=False, **kwargs):
         """
         Add a cmdset to the handler, on top of the old ones, unless it
         is set as the default one (it will then end up at the bottom of the stack)
@@ -430,7 +432,7 @@ class CmdSetHandler(object):
             cmdset (CmdSet or str): Can be a cmdset object or the python path
                 to such an object.
             emit_to_obj (Object, optional): An object to receive error messages.
-            permanent (bool, optional): This cmdset will remain across a server reboot.
+            persistent (bool, optional): Let cmdset remain across server reload.
             default_cmdset (Cmdset, optional): Insert this to replace the
                 default cmdset position (there is only one such position,
                 always at the bottom of the stack).
@@ -447,6 +449,10 @@ class CmdSetHandler(object):
           it's a 'quirk' that has to be documented.
 
         """
+        if "permanent" in kwargs:
+            logger.log_dep("obj.cmdset.add() kwarg 'permanent' has changed name to 'persistent'.")
+            persistent = kwargs["permanent"] if persistent is False else persistent
+
         if not (isinstance(cmdset, str) or utils.inherits_from(cmdset, CmdSet)):
             string = _("Only CmdSets can be added to the cmdsethandler!")
             raise Exception(string)
@@ -457,8 +463,8 @@ class CmdSetHandler(object):
             # this is (maybe) a python path. Try to import from cache.
             cmdset = self._import_cmdset(cmdset)
         if cmdset and cmdset.key != "_CMDSET_ERROR":
-            cmdset.permanent = permanent
-            if permanent and cmdset.key != "_CMDSET_ERROR":
+            cmdset.persistent = persistent
+            if persistent and cmdset.key != "_CMDSET_ERROR":
                 # store the path permanently
                 storage = self.obj.cmdset_storage or [""]
                 if default_cmdset:
@@ -472,17 +478,22 @@ class CmdSetHandler(object):
                 self.cmdset_stack.append(cmdset)
             self.update()
 
-    def add_default(self, cmdset, emit_to_obj=None, permanent=True):
+    def add_default(self, cmdset, emit_to_obj=None, persistent=True, **kwargs):
         """
         Shortcut for adding a default cmdset.
 
         Args:
             cmdset (Cmdset): The Cmdset to add.
             emit_to_obj (Object, optional): Gets error messages
-            permanent (bool, optional): The new Cmdset should survive a server reboot.
+            persistent (bool, optional): The new Cmdset should survive a server reboot.
 
         """
-        self.add(cmdset, emit_to_obj=emit_to_obj, permanent=permanent, default_cmdset=True)
+        if "permanent" in kwargs:
+            logger.log_dep(
+                "obj.cmdset.add_default() kwarg 'permanent' has changed name to 'persistent'."
+            )
+            persistent = kwargs["permanent"] if persistent is None else persistent
+        self.add(cmdset, emit_to_obj=emit_to_obj, persistent=persistent, default_cmdset=True)
 
     def remove(self, cmdset=None, default_cmdset=False):
         """
@@ -502,7 +513,7 @@ class CmdSetHandler(object):
             # remove the default cmdset only
             if self.cmdset_stack:
                 cmdset = self.cmdset_stack[0]
-                if cmdset.permanent:
+                if cmdset.persistent:
                     storage = self.obj.cmdset_storage or [""]
                     storage[0] = ""
                     self.obj.cmdset_storage = storage
@@ -519,7 +530,7 @@ class CmdSetHandler(object):
         if not cmdset:
             # remove the last one in the stack
             cmdset = self.cmdset_stack.pop()
-            if cmdset.permanent:
+            if cmdset.persistent:
                 storage = self.obj.cmdset_storage
                 storage.pop()
                 self.obj.cmdset_storage = storage
@@ -536,12 +547,12 @@ class CmdSetHandler(object):
                 ]
             storage = []
 
-            if any(cset.permanent for cset in delcmdsets):
+            if any(cset.persistent for cset in delcmdsets):
                 # only hit database if there's need to
                 storage = self.obj.cmdset_storage
                 updated = False
                 for cset in delcmdsets:
-                    if cset.permanent:
+                    if cset.persistent:
                         try:
                             storage.remove(cset.path)
                             updated = True

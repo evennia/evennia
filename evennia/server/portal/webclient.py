@@ -17,10 +17,8 @@ from the command line and interprets it as an Evennia Command: `["text", ["look"
 import re
 import json
 import html
-from twisted.internet.protocol import Protocol
 from django.conf import settings
-from evennia.server.session import Session
-from evennia.utils.utils import to_str, mod_import
+from evennia.utils.utils import mod_import, class_from_module
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
 from autobahn.twisted.websocket import WebSocketServerProtocol
@@ -40,21 +38,23 @@ CLOSE_NORMAL = WebSocketServerProtocol.CLOSE_STATUS_CODE_NORMAL
 #   called when the browser is navigating away from the page
 GOING_AWAY = WebSocketServerProtocol.CLOSE_STATUS_CODE_GOING_AWAY
 
-STATE_CLOSING = WebSocketServerProtocol.STATE_CLOSING
+_BASE_SESSION_CLASS = class_from_module(settings.BASE_SESSION_CLASS)
 
 
-class WebSocketClient(WebSocketServerProtocol, Session):
+class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
     """
     Implements the server-side of the Websocket connection.
+
     """
 
     # nonce value, used to prevent the webclient from erasing the
     # webclient_authenticated_uid value of csession on disconnect
-    nonce = None
+    nonce = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol_key = "webclient/websocket"
+        self.browserstr = ""
 
     def get_client_session(self):
         """
@@ -66,7 +66,8 @@ class WebSocketClient(WebSocketServerProtocol, Session):
 
         """
         try:
-            self.csessid = self.http_request_uri.split("?", 1)[1]
+            # client will connect with wsurl?csessid&browserid
+            webarg = self.http_request_uri.split("?", 1)[1]
         except IndexError:
             # this may happen for custom webclients not caring for the
             # browser session.
@@ -78,6 +79,11 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             self.csessid = None
             logger.log_trace(str(self))
             return None
+
+        self.csessid, *browserstr = webarg.split("&", 1)
+        if browserstr:
+            self.browserstr = str(browserstr[0])
+
         if self.csessid:
             return _CLIENT_SESSIONS(session_key=self.csessid)
 
@@ -119,7 +125,8 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                     self.sessid = old_session.sessid
                     self.sessionhandler.disconnect(old_session)
 
-        self.protocol_flags["CLIENTNAME"] = "Evennia Webclient (websocket)"
+        browserstr = f":{self.browserstr}" if self.browserstr else ""
+        self.protocol_flags["CLIENTNAME"] = f"Evennia Webclient (websocket{browserstr})"
         self.protocol_flags["UTF-8"] = True
         self.protocol_flags["OOB"] = True
 
@@ -144,7 +151,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
             # set *before* this disconnect (disconnect called after a new client
             # connects, which occurs in some 'fast' browsers like Google Chrome
             # and Mobile Safari)
-            if csession.get("webclient_authenticated_nonce", None) == self.nonce:
+            if csession.get("webclient_authenticated_nonce", 0) == self.nonce:
                 csession["webclient_authenticated_uid"] = None
                 csession["webclient_authenticated_nonce"] = 0
                 csession.save()
@@ -157,7 +164,7 @@ class WebSocketClient(WebSocketServerProtocol, Session):
         # in case anyone wants to expose this functionality later.
         #
         # sendClose() under autobahn/websocket/interfaces.py
-        ret = self.sendClose(CLOSE_NORMAL, reason)
+        self.sendClose(CLOSE_NORMAL, reason)
 
     def onClose(self, wasClean, code=None, reason=None):
         """
@@ -261,8 +268,6 @@ class WebSocketClient(WebSocketServerProtocol, Session):
                 return
         else:
             return
-        # just to be sure
-        text = to_str(text)
 
         flags = self.protocol_flags
 

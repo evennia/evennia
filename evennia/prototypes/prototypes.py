@@ -7,10 +7,10 @@ Handling storage of prototypes, both database-based ones (DBPrototypes) and thos
 
 import hashlib
 import time
-from ast import literal_eval
 from django.conf import settings
-from django.db.models import Q, Subquery
+from django.db.models import Q
 from django.core.paginator import Paginator
+from django.utils.translation import gettext as _
 from evennia.scripts.scripts import DefaultScript
 from evennia.objects.models import ObjectDB
 from evennia.typeclasses.attributes import Attribute
@@ -18,21 +18,18 @@ from evennia.utils.create import create_script
 from evennia.utils.evmore import EvMore
 from evennia.utils.utils import (
     all_from_module,
+    variable_from_module,
     make_iter,
     is_iter,
     dbid_to_obj,
-    callables_from_module,
-    get_all_typeclasses,
-    to_str,
-    dbref,
     justify,
     class_from_module,
 )
 from evennia.locks.lockhandler import validate_lockstring, check_lockstring
 from evennia.utils import logger
-from evennia.utils import inlinefuncs, dbserialize
+from evennia.utils.funcparser import FuncParser
+from evennia.utils import dbserialize
 from evennia.utils.evtable import EvTable
-
 
 _MODULE_PROTOTYPE_MODULES = {}
 _MODULE_PROTOTYPES = {}
@@ -52,15 +49,19 @@ _PROTOTYPE_RESERVED_KEYS = _PROTOTYPE_META_NAMES + (
     "destination",
     "permissions",
     "locks",
-    "exec",
     "tags",
     "attrs",
 )
+_ERRSTR = _("Error")
+_WARNSTR = _("Warning")
 PROTOTYPE_TAG_CATEGORY = "from_prototype"
 _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
-PROT_FUNCS = {}
 
 _PROTOTYPE_FALLBACK_LOCK = "spawn:all();edit:all()"
+
+
+# the protfunc parser
+FUNC_PARSER = FuncParser(settings.PROT_FUNC_MODULES)
 
 
 class PermissionError(RuntimeError):
@@ -79,7 +80,6 @@ def homogenize_prototype(prototype, custom_keys=None):
     """
     Homogenize the more free-form prototype supported pre Evennia 0.7 into the stricter form.
 
-
     Args:
         prototype (dict): Prototype.
         custom_keys (list, optional): Custom keys which should not be interpreted as attrs, beyond
@@ -90,8 +90,8 @@ def homogenize_prototype(prototype, custom_keys=None):
             homogenizations like adding missing prototype_keys and setting a default typeclass.
 
     """
-    if not prototype or not isinstance(prototype, dict):
-        return {}
+    if not prototype or isinstance(prototype, str):
+        return prototype
 
     reserved = _PROTOTYPE_RESERVED_KEYS + (custom_keys or ())
 
@@ -103,28 +103,76 @@ def homogenize_prototype(prototype, custom_keys=None):
             elif protkey in ("prototype_key", "prototype_desc"):
                 prototype[protkey] = ""
 
-    attrs = list(prototype.get("attrs", []))  # break reference
-    tags = make_iter(prototype.get("tags", []))
-    homogenized_tags = []
-
     homogenized = {}
+    homogenized_tags = []
+    homogenized_attrs = []
+    homogenized_parents = []
+
     for key, val in prototype.items():
         if key in reserved:
+            # check all reserved keys
             if key == "tags":
+                # tags must be on form [(tag, category, data), ...]
+                tags = make_iter(prototype.get("tags", []))
                 for tag in tags:
                     if not is_iter(tag):
                         homogenized_tags.append((tag, None, None))
+                    elif tag:
+                        ntag = len(tag)
+                        if ntag == 1:
+                            homogenized_tags.append((tag[0], None, None))
+                        elif ntag == 2:
+                            homogenized_tags.append((tag[0], tag[1], None))
+                        else:
+                            homogenized_tags.append(tag[:3])
+
+            elif key == "attrs":
+                attrs = list(prototype.get("attrs", []))  # break reference
+                for attr in attrs:
+                    # attrs must be on form [(key, value, category, lockstr)]
+                    if not is_iter(attr):
+                        logger.log_error(
+                            "Prototype's 'attr' field must " f"be a list of tuples: {prototype}"
+                        )
+                    elif attr:
+                        nattr = len(attr)
+                        if nattr == 1:
+                            # we assume a None-value
+                            homogenized_attrs.append((attr[0], None, None, ""))
+                        elif nattr == 2:
+                            homogenized_attrs.append((attr[0], attr[1], None, ""))
+                        elif nattr == 3:
+                            homogenized_attrs.append((attr[0], attr[1], attr[2], ""))
+                        else:
+                            homogenized_attrs.append(attr[:4])
+
+            elif key == "prototype_parent":
+                # homogenize any prototype-parents embedded directly as dicts
+                protparents = prototype.get("prototype_parent", [])
+                if isinstance(protparents, dict):
+                    protparents = [protparents]
+                for parent in make_iter(protparents):
+                    if isinstance(parent, dict):
+                        # recursively homogenize directly embedded prototype parents
+                        homogenized_parents.append(
+                            homogenize_prototype(parent, custom_keys=custom_keys)
+                        )
                     else:
-                        homogenized_tags.append(tag)
+                        # normal prototype-parent names are added as-is
+                        homogenized_parents.append(parent)
+
             else:
+                # another reserved key
                 homogenized[key] = val
         else:
-            # unassigned keys -> attrs
-            attrs.append((key, val, None, ""))
-    if attrs:
-        homogenized["attrs"] = attrs
+            # unreserved keys -> attrs
+            homogenized_attrs.append((key, val, None, ""))
+    if homogenized_attrs:
+        homogenized["attrs"] = homogenized_attrs
     if homogenized_tags:
         homogenized["tags"] = homogenized_tags
+    if homogenized_parents:
+        homogenized["prototype_parent"] = homogenized_parents
 
     # add required missing parts that had defaults before
 
@@ -142,43 +190,143 @@ def homogenize_prototype(prototype, custom_keys=None):
     return homogenized
 
 
-# module-based prototypes
+# module/dict-based prototypes
 
-def load_module_prototypes():
+
+def load_module_prototypes(*mod_or_prototypes, override=True):
     """
-    This is called by `evennia.__init__` as Evennia initializes. It's important
-    to do this late so as to not interfere with evennia initialization.
+    Load module prototypes. Also prototype-dicts passed directly to this function are considered
+    'module' prototypes (they are impossible to change) but will have a module of None.
+
+    Args:
+        *mod_or_prototypes (module or dict): Each arg should be a separate module or
+            prototype-dict to load. If none are given, `settings.PROTOTYPE_MODULES` will be used.
+        override (bool, optional): If prototypes should override existing ones already loaded.
+            Disabling this can allow for injecting prototypes into the system dynamically while
+            still allowing same prototype-keys to be overridden from settings (even though settings
+            is usually loaded before dynamic loading).
+
+    Note:
+        This is called (without arguments) by `evennia.__init__` as Evennia initializes. It's
+        important to do this late so as to not interfere with evennia initialization. But it can
+        also be used later to add more prototypes to the library on the fly. This is requried
+        before a module-based prototype can be accessed by prototype-key.
 
     """
-    for mod in settings.PROTOTYPE_MODULES:
-        # to remove a default prototype, override it with an empty dict.
-        # internally we store as (key, desc, locks, tags, prototype_dict)
+    global _MODULE_PROTOTYPE_MODULES, _MODULE_PROTOTYPES
+
+    def _prototypes_from_module(mod):
+        """
+        Load prototypes from a module, first by looking for a global list PROTOTYPE_LIST (a list of
+        dict-prototypes), and if not found, assuming all global-level dicts in the module are
+        prototypes.
+
+        Args:
+            mod (module): The module to load from.evennia
+
+        Returns:
+            list: A list of tuples `(prototype_key, prototype-dict)` where the prototype
+                has been homogenized.
+
+        """
         prots = []
-        for variable_name, prot in all_from_module(mod).items():
-            if isinstance(prot, dict):
-                if "prototype_key" not in prot:
-                    prot["prototype_key"] = variable_name.lower()
+        prototype_list = variable_from_module(mod, "PROTOTYPE_LIST")
+        if prototype_list:
+            # found mod.PROTOTYPE_LIST - this should be a list of valid
+            # prototype dicts that must have 'prototype_key' set.
+            for prot in prototype_list:
+                if not isinstance(prot, dict):
+                    logger.log_err(
+                        f"Prototype read from {mod}.PROTOTYPE_LIST "
+                        f"is not a dict (skipping): {prot}"
+                    )
+                    continue
+                elif "prototype_key" not in prot:
+                    logger.log_err(
+                        f"Prototype read from {mod}.PROTOTYPE_LIST "
+                        f"is missing the 'prototype_key' (skipping): {prot}"
+                    )
+                    continue
                 prots.append((prot["prototype_key"], homogenize_prototype(prot)))
-        # assign module path to each prototype_key for easy reference
-        _MODULE_PROTOTYPE_MODULES.update({prototype_key.lower(): mod for prototype_key, _ in prots})
-        # make sure the prototype contains all meta info
+        else:
+            # load all global dicts in module as prototypes. If the prototype_key
+            # is not given, the variable name will be used.
+            for variable_name, prot in all_from_module(mod).items():
+                if isinstance(prot, dict):
+                    if "prototype_key" not in prot:
+                        prot["prototype_key"] = variable_name.lower()
+                    prots.append((prot["prototype_key"], homogenize_prototype(prot)))
+        return prots
+
+    def _cleanup_prototype(prototype_key, prototype, mod=None):
+        """
+        We need to handle externally determined prototype-keys and to make sure
+        the prototype contains all needed meta information.
+
+        Args:
+            prototype_key (str): The determined name of the prototype.
+            prototype (dict): The prototype itself.
+            mod (module, optional): The module the prototype was loaded from, if any.
+
+        Returns:
+            dict: The cleaned up prototype.
+
+        """
+        actual_prot_key = prototype.get("prototype_key", prototype_key).lower()
+        prototype.update(
+            {
+                "prototype_key": actual_prot_key,
+                "prototype_desc": (
+                    prototype["prototype_desc"] if "prototype_desc" in prototype else (mod or "N/A")
+                ),
+                "prototype_locks": (
+                    prototype["prototype_locks"]
+                    if "prototype_locks" in prototype
+                    else "use:all();edit:false()"
+                ),
+                "prototype_tags": list(
+                    set(list(make_iter(prototype.get("prototype_tags", []))) + ["module"])
+                ),
+            }
+        )
+        return prototype
+
+    if not mod_or_prototypes:
+        # in principle this means PROTOTYPE_MODULES could also contain prototypes, but that is
+        # rarely useful ...
+        mod_or_prototypes = settings.PROTOTYPE_MODULES
+
+    for mod_or_dict in mod_or_prototypes:
+
+        if isinstance(mod_or_dict, dict):
+            # a single prototype; we must make sure it has its key
+            prototype_key = mod_or_dict.get("prototype_key")
+            if not prototype_key:
+                raise ValidationError(
+                    f"The prototype {mod_or_prototype} does not contain a 'prototype_key'"
+                )
+            prots = [(prototype_key, mod_or_dict)]
+            mod = None
+        else:
+            # a module (or path to module). This can contain many prototypes; they can be keyed by
+            # variable-name too
+            prots = _prototypes_from_module(mod_or_dict)
+            mod = repr(mod_or_dict)
+
+        # store all found prototypes
         for prototype_key, prot in prots:
-            actual_prot_key = prot.get("prototype_key", prototype_key).lower()
-            prot.update(
-                {
-                    "prototype_key": actual_prot_key,
-                    "prototype_desc": prot["prototype_desc"] if "prototype_desc" in prot else mod,
-                    "prototype_locks": (
-                        prot["prototype_locks"]
-                        if "prototype_locks" in prot
-                        else "use:all();edit:false()"
-                    ),
-                    "prototype_tags": list(
-                        set(list(make_iter(prot.get("prototype_tags", []))) + ["module"])
-                    ),
-                }
-            )
-            _MODULE_PROTOTYPES[actual_prot_key] = prot
+            prototype = _cleanup_prototype(prototype_key, prot, mod=mod)
+            # the key can change since in-proto key is given prio over variable-name-based keys
+            actual_prototype_key = prototype["prototype_key"]
+
+            if actual_prototype_key in _MODULE_PROTOTYPES and not override:
+                # don't override - useful to still let settings replace dynamic inserts
+                continue
+
+            # make sure the prototype contains all meta info
+            _MODULE_PROTOTYPES[actual_prototype_key] = prototype
+            # track module path for display purposes
+            _MODULE_PROTOTYPE_MODULES[actual_prototype_key.lower()] = mod
 
 
 # Db-based prototypes
@@ -187,6 +335,7 @@ def load_module_prototypes():
 class DbPrototype(DefaultScript):
     """
     This stores a single prototype, in an Attribute `prototype`.
+
     """
 
     def at_script_creation(self):
@@ -238,16 +387,18 @@ def save_prototype(prototype):
 
     prototype_key = in_prototype.get("prototype_key")
     if not prototype_key:
-        raise ValidationError("Prototype requires a prototype_key")
+        raise ValidationError(_("Prototype requires a prototype_key"))
 
     prototype_key = str(prototype_key).lower()
 
     # we can't edit a prototype defined in a module
     if prototype_key in _MODULE_PROTOTYPES:
-        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
-        raise PermissionError(
-            "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
-        )
+        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key)
+        if mod:
+            err = _("{protkey} is a read-only prototype (defined as code in {module}).")
+        else:
+            err = _("{protkey} is a read-only prototype (passed directly as a dict).")
+        raise PermissionError(err.format(protkey=prototype_key, module=mod))
 
     # make sure meta properties are included with defaults
     in_prototype["prototype_desc"] = in_prototype.get(
@@ -311,28 +462,36 @@ def delete_prototype(prototype_key, caller=None):
 
     """
     if prototype_key in _MODULE_PROTOTYPES:
-        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key.lower(), "N/A")
-        raise PermissionError(
-            "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
-        )
+        mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key)
+        if mod:
+            err = _("{protkey} is a read-only prototype (defined as code in {module}).")
+        else:
+            err = _("{protkey} is a read-only prototype (passed directly as a dict).")
+        raise PermissionError(err.format(protkey=prototype_key, module=mod))
 
     stored_prototype = DbPrototype.objects.filter(db_key__iexact=prototype_key)
 
     if not stored_prototype:
-        raise PermissionError("Prototype {} was not found.".format(prototype_key))
+        raise PermissionError(
+            _("Prototype {prototype_key} was not found.").format(prototype_key=prototype_key)
+        )
 
     stored_prototype = stored_prototype[0]
     if caller:
         if not stored_prototype.access(caller, "edit"):
             raise PermissionError(
-                "{} needs explicit 'edit' permissions to "
-                "delete prototype {}.".format(caller, prototype_key)
+                _(
+                    "{caller} needs explicit 'edit' permissions to "
+                    "delete prototype {prototype_key}."
+                ).format(caller=caller, prototype_key=prototype_key)
             )
     stored_prototype.delete()
     return True
 
 
-def search_prototype(key=None, tags=None, require_single=False, return_iterators=False):
+def search_prototype(
+    key=None, tags=None, require_single=False, return_iterators=False, no_db=False
+):
     """
     Find prototypes based on key and/or tags, or all prototypes.
 
@@ -346,6 +505,9 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         return_iterators (bool): Optimized return for large numbers of db-prototypes.
             If set, separate returns of module based prototypes and paginate
             the db-prototype return.
+        no_db (bool): Optimization. If set, skip querying for database-generated prototypes and only
+            include module-based prototypes. This can lead to a dramatic speedup since
+            module-prototypes are static and require no db-lookup.
 
     Return:
         matches (list): Default return, all found prototype dicts. Empty list if
@@ -365,9 +527,15 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
         be found as a match.
 
     """
+    # This will load the prototypes the first time they are searched
+    loaded = getattr(load_module_prototypes, "_LOADED", False)
+    if not loaded:
+        load_module_prototypes()
+        setattr(load_module_prototypes, "_LOADED", True)
+
     # prototype keys are always in lowecase
     if key:
-      key = key.lower()
+        key = key.lower()
 
     # search module prototypes
 
@@ -387,7 +555,7 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
     if key:
         if key in mod_matches:
             # exact match
-            module_prototypes = [mod_matches[key]]
+            module_prototypes = [mod_matches[key].copy()]
             allow_fuzzy = False
         else:
             # fuzzy matching
@@ -397,39 +565,48 @@ def search_prototype(key=None, tags=None, require_single=False, return_iterators
                 if key in prototype_key
             ]
     else:
-        module_prototypes = [match for match in mod_matches.values()]
+        # note - we return a copy of the prototype dict, otherwise using this with e.g.
+        # prototype_from_object will modify the base prototype for every object
+        module_prototypes = [match.copy() for match in mod_matches.values()]
 
-    # search db-stored prototypes
-
-    if tags:
-        # exact match on tag(s)
-        tags = make_iter(tags)
-        tag_categories = ["db_prototype" for _ in tags]
-        db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
+    if no_db:
+        db_matches = []
     else:
-        db_matches = DbPrototype.objects.all()
-
-    if key:
-        # exact or partial match on key
-        exact_match = db_matches.filter(Q(db_key__iexact=key)).order_by("db_key")
-        if not exact_match and allow_fuzzy:
-            # try with partial match instead
-            db_matches = db_matches.filter(Q(db_key__icontains=key)).order_by("db_key")
+        # search db-stored prototypes
+        if tags:
+            # exact match on tag(s)
+            tags = make_iter(tags)
+            tag_categories = ["db_prototype" for _ in tags]
+            db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
         else:
-            db_matches = exact_match
+            db_matches = DbPrototype.objects.all()
 
-    # convert to prototype
-    db_ids = db_matches.values_list("id", flat=True)
-    db_matches = (
-        Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
-        .values_list("db_value", flat=True)
-        .order_by("scriptdb__db_key")
-    )
+        if key:
+            # exact or partial match on key
+            exact_match = db_matches.filter(Q(db_key__iexact=key)).order_by("db_key")
+            if not exact_match and allow_fuzzy:
+                # try with partial match instead
+                db_matches = db_matches.filter(Q(db_key__icontains=key)).order_by("db_key")
+            else:
+                db_matches = exact_match
+
+        # convert to prototype
+        db_ids = db_matches.values_list("id", flat=True)
+        db_matches = (
+            Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
+            .values_list("db_value", flat=True)
+            .order_by("scriptdb__db_key")
+        )
+
     if key and require_single:
         nmodules = len(module_prototypes)
-        ndbprots = db_matches.count()
+        ndbprots = db_matches.count() if db_matches else 0
         if nmodules + ndbprots != 1:
-            raise KeyError(f"Found {nmodules + ndbprots} matching prototypes {module_prototypes}.")
+            raise KeyError(
+                _("Found {num} matching prototypes among {module_prototypes}.").format(
+                    num=nmodules + ndbprots, module_prototypes=module_prototypes
+                )
+            )
 
     if return_iterators:
         # trying to get the entire set of prototypes - we must paginate
@@ -459,10 +636,14 @@ class PrototypeEvMore(EvMore):
     Listing 1000+ prototypes can be very slow. So we customize EvMore to
     display an EvTable per paginated page rather than to try creating an
     EvTable for the entire dataset and then paginate it.
+
     """
 
     def __init__(self, caller, *args, session=None, **kwargs):
-        """Store some extra properties on the EvMore class"""
+        """
+        Store some extra properties on the EvMore class
+
+        """
         self.show_non_use = kwargs.pop("show_non_use", False)
         self.show_non_edit = kwargs.pop("show_non_edit", False)
         super().__init__(caller, *args, session=session, **kwargs)
@@ -473,6 +654,7 @@ class PrototypeEvMore(EvMore):
         and we must handle these separately since they cannot be paginated in the same
         way. We will build the prototypes so that the db-prototypes come first (they
         are likely the most volatile), followed by the mod-prototypes.
+
         """
         dbprot_query, modprot_list = inp
         # set the number of entries per page to half the reported height of the screen
@@ -494,6 +676,7 @@ class PrototypeEvMore(EvMore):
         """
         The listing is separated in db/mod prototypes, so we need to figure out which
         one to pick based on the page number. Also, pageno starts from 0.
+
         """
         dbprot_pages, modprot_list = self._data
 
@@ -505,12 +688,13 @@ class PrototypeEvMore(EvMore):
             return modprot_list[pageno * self.height : pageno * self.height + self.height]
 
     def page_formatter(self, page):
-        """Input is a queryset page from django.Paginator"""
+        """
+        Input is a queryset page from django.Paginator
+
+        """
         caller = self._caller
 
         # get use-permissions of readonly attributes (edit is always False)
-        display_tuples = []
-
         table = EvTable(
             "|wKey|n",
             "|wSpawn/Edit|n",
@@ -579,7 +763,7 @@ def list_prototypes(
     dbprot_query, modprot_list = search_prototype(key, tags, return_iterators=True)
 
     if not dbprot_query and not modprot_list:
-        caller.msg("No prototypes found.", session=session)
+        caller.msg(_("No prototypes found."), session=session)
         return None
 
     # get specific prototype (one value or exception)
@@ -630,7 +814,7 @@ def validate_prototype(
     protkey = protkey and protkey.lower() or prototype.get("prototype_key", None)
 
     if strict and not bool(protkey):
-        _flags["errors"].append("Prototype lacks a `prototype_key`.")
+        _flags["errors"].append(_("Prototype lacks a 'prototype_key'."))
         protkey = "[UNSET]"
 
     typeclass = prototype.get("typeclass")
@@ -639,12 +823,16 @@ def validate_prototype(
     if strict and not (typeclass or prototype_parent):
         if is_prototype_base:
             _flags["errors"].append(
-                "Prototype {} requires `typeclass` " "or 'prototype_parent'.".format(protkey)
+                _("Prototype {protkey} requires `typeclass` " "or 'prototype_parent'.").format(
+                    protkey=protkey
+                )
             )
         else:
             _flags["warnings"].append(
-                "Prototype {} can only be used as a mixin since it lacks "
-                "a typeclass or a prototype_parent.".format(protkey)
+                _(
+                    "Prototype {protkey} can only be used as a mixin since it lacks "
+                    "'typeclass' or 'prototype_parent' keys."
+                ).format(protkey=protkey)
             )
 
     if strict and typeclass:
@@ -652,34 +840,55 @@ def validate_prototype(
             class_from_module(typeclass)
         except ImportError as err:
             _flags["errors"].append(
-                "{}: Prototype {} is based on typeclass {}, which could not be imported!".format(
-                    err, protkey, typeclass
+                _(
+                    "{err}: Prototype {protkey} is based on typeclass {typeclass}, "
+                    "which could not be imported!"
+                ).format(err=err, protkey=protkey, typeclass=typeclass)
+            )
+
+    if prototype_parent and isinstance(prototype_parent, dict):
+        # the protparent is already embedded as a dict;
+        prototype_parent = [prototype_parent]
+
+    # recursively traverse prototype_parent chain
+    for protstring in make_iter(prototype_parent):
+        if isinstance(protstring, dict):
+            # an already embedded prototype_parent
+            protparent = protstring
+            protstring = None
+        else:
+            protstring = protstring.lower()
+            if protkey is not None and protstring == protkey:
+                _flags["errors"].append(
+                    _("Prototype {protkey} tries to parent itself.").format(protkey=protkey)
+                )
+            protparent = protparents.get(protstring)
+            if not protparent:
+                _flags["errors"].append(
+                    _(
+                        "Prototype {protkey}'s `prototype_parent` (named '{parent}') "
+                        "was not found."
+                    ).format(protkey=protkey, parent=protstring)
+                )
+
+        # check for infinite recursion
+        if id(prototype) in _flags["visited"]:
+            _flags["errors"].append(
+                _("{protkey} has infinite nesting of prototypes.").format(
+                    protkey=protkey or prototype
                 )
             )
 
-    # recursively traverse prototype_parent chain
-
-    for protstring in make_iter(prototype_parent):
-        protstring = protstring.lower()
-        if protkey is not None and protstring == protkey:
-            _flags["errors"].append("Prototype {} tries to parent itself.".format(protkey))
-        protparent = protparents.get(protstring)
-        if not protparent:
-            _flags["errors"].append(
-                "Prototype {}'s prototype_parent '{}' was not found.".format(protkey, protstring)
-            )
-        if id(prototype) in _flags["visited"]:
-            _flags["errors"].append(
-                "{} has infinite nesting of prototypes.".format(protkey or prototype)
-            )
-
         if _flags["errors"]:
-            raise RuntimeError("Error: " + "\nError: ".join(_flags["errors"]))
+            raise RuntimeError(f"{_ERRSTR}: " + f"\n{_ERRSTR}: ".join(_flags["errors"]))
         _flags["visited"].append(id(prototype))
         _flags["depth"] += 1
+
+        # next step of recursive validation
         validate_prototype(
             protparent, protstring, protparents, is_prototype_base=is_prototype_base, _flags=_flags
         )
+
         _flags["visited"].pop()
         _flags["depth"] -= 1
 
@@ -689,16 +898,18 @@ def validate_prototype(
     # if we get back to the current level without a typeclass it's an error.
     if strict and is_prototype_base and _flags["depth"] <= 0 and not _flags["typeclass"]:
         _flags["errors"].append(
-            "Prototype {} has no `typeclass` defined anywhere in its parent\n "
-            "chain. Add `typeclass`, or a `prototype_parent` pointing to a "
-            "prototype with a typeclass.".format(protkey)
+            _(
+                "Prototype {protkey} has no `typeclass` defined anywhere in its parent\n "
+                "chain. Add `typeclass`, or a `prototype_parent` pointing to a "
+                "prototype with a typeclass."
+            ).format(protkey=protkey)
         )
 
     if _flags["depth"] <= 0:
         if _flags["errors"]:
-            raise RuntimeError("Error: " + "\nError: ".join(_flags["errors"]))
+            raise RuntimeError(f"{_ERRSTR}:_" + f"\n{_ERRSTR}: ".join(_flags["errors"]))
         if _flags["warnings"]:
-            raise RuntimeWarning("Warning: " + "\nWarning: ".join(_flags["warnings"]))
+            raise RuntimeWarning(f"{_WARNSTR}: " + f"\n{_WARNSTR}: ".join(_flags["warnings"]))
 
     # make sure prototype_locks are set to defaults
     prototype_locks = [
@@ -715,18 +926,9 @@ def validate_prototype(
     prototype["prototype_locks"] = prototype_locks
 
 
-# Protfunc parsing (in-prototype functions)
-
-for mod in settings.PROT_FUNC_MODULES:
-    try:
-        callables = callables_from_module(mod)
-        PROT_FUNCS.update(callables)
-    except ImportError:
-        logger.log_trace()
-        raise
-
-
-def protfunc_parser(value, available_functions=None, testing=False, stacktrace=False, **kwargs):
+def protfunc_parser(
+    value, available_functions=None, testing=False, stacktrace=False, caller=None, **kwargs
+):
     """
     Parse a prototype value string for a protfunc and process it.
 
@@ -738,45 +940,27 @@ def protfunc_parser(value, available_functions=None, testing=False, stacktrace=F
             protfuncs, all other types are returned as-is.
         available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
             If not set, use default sources.
-        testing (bool, optional): Passed to protfunc. If in a testing mode, some protfuncs may
-            behave differently.
         stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
 
     Keyword Args:
         session (Session): Passed to protfunc. Session of the entity spawning the prototype.
         protototype (dict): Passed to protfunc. The dict this protfunc is a part of.
         current_key(str): Passed to protfunc. The key in the prototype that will hold this value.
+        caller (Object or Account): This is necessary for certain protfuncs that perform object
+            searches and have to check permissions.
         any (any): Passed on to the protfunc.
 
     Returns:
-        testresult (tuple): If `testing` is set, returns a tuple (error, result) where error is
-            either None or a string detailing the error from protfunc_parser or seen when trying to
-            run `literal_eval` on the parsed string.
-        any (any): A structure to replace the string on the prototype level. If this is a
-            callable or a (callable, (args,)) structure, it will be executed as if one had supplied
-            it to the prototype directly. This structure is also passed through literal_eval so one
-            can get actual Python primitives out of it (not just strings). It will also identify
-            eventual object #dbrefs in the output from the protfunc.
+        any: A structure to replace the string on the prototype leve.  Note
+        that FunctionParser functions $funcname(*args, **kwargs) can return any
+        data type to insert into the prototype.
 
     """
     if not isinstance(value, str):
         return value
 
-    available_functions = PROT_FUNCS if available_functions is None else available_functions
+    result = FUNC_PARSER.parse(value, raise_errors=True, return_str=False, caller=caller, **kwargs)
 
-    result = inlinefuncs.parse_inlinefunc(
-        value, available_funcs=available_functions, stacktrace=stacktrace, testing=testing, **kwargs
-    )
-
-    err = None
-    try:
-        result = literal_eval(result)
-    except ValueError:
-        pass
-    except Exception as exc:
-        err = str(exc)
-    if testing:
-        return err, result
     return result
 
 
@@ -791,7 +975,7 @@ def format_available_protfuncs():
         clr (str, optional): What coloration tag to use.
     """
     out = []
-    for protfunc_name, protfunc in PROT_FUNCS.items():
+    for protfunc_name, protfunc in FUNC_PARSER.callables.items():
         out.append(
             "- |c${name}|n - |W{docs}".format(
                 name=protfunc_name, docs=protfunc.__doc__.strip().replace("\n", "")
@@ -832,7 +1016,7 @@ def prototype_to_str(prototype):
         attrs = prototype["attrs"]
         out = []
         for (attrkey, value, category, locks) in attrs:
-            locks = ", ".join(lock for lock in locks if lock)
+            locks = locks if isinstance(locks, str) else ", ".join(lock for lock in locks if lock)
             category = "|ccategory:|n {}".format(category) if category else ""
             cat_locks = ""
             if category or locks:
@@ -840,10 +1024,10 @@ def prototype_to_str(prototype):
                     category=category if category else "|wNone|n"
                 )
             out.append(
-                "{attrkey}{cat_locks} |c=|n {value}".format(
+                "{attrkey}{cat_locks}{locks} |c=|n {value}".format(
                     attrkey=attrkey,
                     cat_locks=cat_locks,
-                    locks=locks if locks else "|wNone|n",
+                    locks=" |w(locks:|n {locks})".format(locks=locks) if locks else "",
                     value=value,
                 )
             )
@@ -898,10 +1082,12 @@ def check_permission(prototype_key, action, default=True):
     """
     if action == "edit":
         if prototype_key in _MODULE_PROTOTYPES:
-            mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key, "N/A")
-            logger.log_err(
-                "{} is a read-only prototype " "(defined as code in {}).".format(prototype_key, mod)
-            )
+            mod = _MODULE_PROTOTYPE_MODULES.get(prototype_key)
+            if mod:
+                err = _("{protkey} is a read-only prototype (defined as code in {module}).")
+            else:
+                err = _("{protkey} is a read-only prototype (passed directly as a dict).")
+            logger.log_err(err.format(protkey=prototype_key, module=mod))
             return False
 
     prototype = search_prototype(key=prototype_key)
@@ -916,7 +1102,7 @@ def check_permission(prototype_key, action, default=True):
     return default
 
 
-def init_spawn_value(value, validator=None):
+def init_spawn_value(value, validator=None, caller=None, prototype=None):
     """
     Analyze the prototype value and produce a value useful at the point of spawning.
 
@@ -927,6 +1113,9 @@ def init_spawn_value(value, validator=None):
             other - will be assigned depending on the variable type
             validator (callable, optional): If given, this will be called with the value to
                 check and guarantee the outcome is of a given type.
+            caller (Object or Account): This is necessary for certain protfuncs that perform object
+                searches and have to check permissions.
+            prototype (dict): Prototype this is to be used for. Necessary for certain protfuncs.
 
     Returns:
         any (any): The (potentially pre-processed value to use for this prototype key)
@@ -941,7 +1130,7 @@ def init_spawn_value(value, validator=None):
         value = validator(value[0](*make_iter(args)))
     else:
         value = validator(value)
-    result = protfunc_parser(value)
+    result = protfunc_parser(value, caller=caller, prototype=prototype)
     if result != value:
         return validator(result)
     return result
@@ -966,7 +1155,9 @@ def value_to_obj(value, force=True):
     stype = type(value)
     if is_iter(value):
         if stype == dict:
-            return {value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.iter()}
+            return {
+                value_to_obj_or_any(key): value_to_obj_or_any(val) for key, val in value.items()
+            }
         else:
             return stype([value_to_obj_or_any(val) for val in value])
     return dbid_to_obj(value, ObjectDB)

@@ -175,8 +175,8 @@ class MuxCommand(Command):
         rhs = rhs.strip() if rhs is not None else None
         lhs = lhs.strip()
         # Further split left/right sides by comma delimiter
-        lhslist = [arg.strip() for arg in lhs.split(",")] if lhs is not None else ""
-        rhslist = [arg.strip() for arg in rhs.split(",")] if rhs is not None else ""
+        lhslist = [arg.strip() for arg in lhs.split(",")] if lhs is not None else []
+        rhslist = [arg.strip() for arg in rhs.split(",")] if rhs is not None else []
         # save to object properties:
         self.raw = raw
         self.switches = switches

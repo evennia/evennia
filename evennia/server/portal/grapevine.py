@@ -335,7 +335,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
             # incoming broadcast from network
             payload = data["payload"]
 
-            print("channels/broadcast:", payload["channel"], self.channel)
+            # print("channels/broadcast:", payload["channel"], self.channel)
             if str(payload["channel"]) != self.channel:
                 # only echo from channels this particular bot actually listens to
                 return

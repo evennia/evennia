@@ -40,8 +40,18 @@ from twisted.conch import telnet
 from twisted.internet import reactor, protocol
 from twisted.internet.task import LoopingCall
 
-from django.conf import settings
-from evennia.utils import mod_import, time_format
+import django
+
+django.setup()
+import evennia  # noqa
+
+evennia._init()
+
+from django.conf import settings  # noqa
+from evennia.utils import mod_import, time_format  # noqa
+from evennia.commands.command import Command  # noqa
+from evennia.commands.cmdset import CmdSet  # noqa
+from evennia.utils.ansi import strip_ansi  # noqa
 
 # Load the dummyrunner settings module
 
@@ -51,8 +61,10 @@ if not DUMMYRUNNER_SETTINGS:
         "Error: Dummyrunner could not find settings file at %s"
         % settings.DUMMYRUNNER_SETTINGS_MODULE
     )
+IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 
 DATESTRING = "%Y%m%d%H%M%S"
+CLIENTS = []
 
 # Settings
 
@@ -71,18 +83,37 @@ CHANCE_OF_LOGIN = DUMMYRUNNER_SETTINGS.CHANCE_OF_LOGIN
 # Port to use, if not specified on command line
 TELNET_PORT = DUMMYRUNNER_SETTINGS.TELNET_PORT or settings.TELNET_PORTS[0]
 #
-NLOGGED_IN = 0
+NCONNECTED = 0  # client has received a connection
+NLOGIN_SCREEN = 0  # client has seen the login screen (server responded)
+NLOGGING_IN = 0  # client starting login procedure
+NLOGGED_IN = 0  # client has authenticated and logged in
 
-
-# Messages
+# time when all clients have logged_in
+TIME_ALL_LOGIN = 0
+# actions since all logged in
+TOTAL_ACTIONS = 0
+TOTAL_LAG_MEASURES = 0
+# lag per 30s for all logged in
+TOTAL_LAG = 0
+TOTAL_LAG_IN = 0
+TOTAL_LAG_OUT = 0
 
 
 INFO_STARTING = """
-    Dummyrunner starting using {N} dummy account(s). If you don't see
+    Dummyrunner starting using {nclients} dummy account(s). If you don't see
     any connection messages, make sure that the Evennia server is
     running.
 
-    Use Ctrl-C to stop/disconnect clients.
+    TELNET_PORT = {port}
+    IDMAPPER_CACHE_MAXSIZE = {idmapper_cache_size} MB
+    TIMESTEP = {timestep} (rate {rate}/s)
+    CHANCE_OF_LOGIN = {chance_of_login}% per time step
+    CHANCE_OF_ACTION = {chance_of_action}% per time step
+    -> avg rate (per client, after login): {avg_rate} cmds/s
+    -> total avg rate (after login): {avg_rate_total} cmds/s
+
+    Use Ctrl-C (or Cmd-C) to stop/disconnect all clients.
+
     """
 
 ERROR_NO_MIXIN = """
@@ -97,6 +128,7 @@ ERROR_NO_MIXIN = """
           to test all commands
         - change PASSWORD_HASHERS to use a faster (but less safe) algorithm
           when creating large numbers of accounts at the same time
+        - set LOGIN_THROTTLE/CREATION_THROTTLE=None to disable it
 
     If you don't want to use the custom settings of the mixin for some
     reason, you can change their values manually after the import, or
@@ -168,6 +200,42 @@ until you see the initial login slows things too much.
 
 """
 
+
+class CmdDummyRunnerEchoResponse(Command):
+    """
+    Dummyrunner command measuring the round-about response time
+    from sending to receiving a result.
+
+    Usage:
+        dummyrunner_echo_response <timestamp>
+
+    Responds with
+        dummyrunner_echo_response:<timestamp>,<current_time>
+
+    The dummyrunner will send this and then compare the send time
+    with the receive time on both ends.
+
+    """
+
+    key = "dummyrunner_echo_response"
+
+    def func(self):
+        # returns (dummy_client_timestamp,current_time)
+        self.msg(f"dummyrunner_echo_response:{self.args},{time.time()}")
+        if self.caller.account.is_superuser:
+            print(f"cmddummyrunner lag in: {time.time() - float(self.args)}s")
+
+
+class DummyRunnerCmdSet(CmdSet):
+    """
+    Dummyrunner injected cmdset.
+
+    """
+
+    def at_cmdset_creation(self):
+        self.add(CmdDummyRunnerEchoResponse())
+
+
 # ------------------------------------------------------------
 # Helper functions
 # ------------------------------------------------------------
@@ -181,12 +249,12 @@ def idcounter():
     Makes unique ids.
 
     Returns:
-        count (int): A globally unique counter.
+        str: A globally unique id.
 
     """
     global ICOUNT
     ICOUNT += 1
-    return str(ICOUNT)
+    return str("{:03d}".format(ICOUNT))
 
 
 GCOUNT = 0
@@ -202,7 +270,7 @@ def gidcounter():
     """
     global GCOUNT
     GCOUNT += 1
-    return "%s-%s" % (time.strftime(DATESTRING), GCOUNT)
+    return "%s_%s" % (time.strftime(DATESTRING), GCOUNT)
 
 
 def makeiter(obj):
@@ -231,22 +299,38 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
     """
 
+    def report(self, text, clientkey):
+        pad = " " * (25 - len(text))
+        tim = round(time.time() - self.connection_timestamp)
+        print(
+            f"{text} {clientkey}{pad}\t"
+            f"conn: {NCONNECTED} -> "
+            f"welcome screen: {NLOGIN_SCREEN} -> "
+            f"authing: {NLOGGING_IN} -> "
+            f"loggedin/tot: {NLOGGED_IN}/{NCLIENTS} (after {tim}s)"
+        )
+
     def connectionMade(self):
         """
         Called when connection is first established.
 
         """
+        global NCONNECTED
         # public properties
         self.cid = idcounter()
-        self.key = "Dummy-%s" % self.cid
-        self.gid = "%s-%s" % (time.strftime(DATESTRING), self.cid)
+        self.key = f"Dummy-{self.cid}"
+        self.gid = f"{time.strftime(DATESTRING)}_{self.cid}"
         self.istep = 0
         self.exits = []  # exit names created
         self.objs = []  # obj names created
+        self.connection_timestamp = time.time()
+        self.connection_attempt = 0
+        self.action_started = 0
 
         self._connected = False
         self._loggedin = False
         self._logging_out = False
+        self._ready = False
         self._report = ""
         self._cmdlist = []  # already stepping in a cmd definition
         self._login = self.factory.actions[0]
@@ -254,6 +338,45 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         self._actions = self.factory.actions[2:]
 
         reactor.addSystemEventTrigger("before", "shutdown", self.logout)
+
+        NCONNECTED += 1
+        self.report("-> connected", self.key)
+
+        reactor.callLater(30, self._retry_welcome_screen)
+
+    def _retry_welcome_screen(self):
+        if not self._connected and not self._ready:
+            # we have connected but not received anything for 30s.
+            # (unclear why this would be - overload?)
+            # try sending a look to get something to start with
+            self.report("?? retrying welcome screen", self.key)
+            self.sendLine(bytes("look", "utf-8"))
+            # make sure to check again later
+            reactor.callLater(30, self._retry_welcome_screen)
+
+    def _print_statistics(self):
+        global TIME_ALL_LOGIN, TOTAL_ACTIONS
+        global TOTAL_LAG, TOTAL_LAG_MEASURES, TOTAL_LAG_IN, TOTAL_LAG_OUT
+
+        tim = time.time() - TIME_ALL_LOGIN
+        avgrate = round(TOTAL_ACTIONS / tim)
+        lag = TOTAL_LAG / (TOTAL_LAG_MEASURES or 1)
+        lag_in = TOTAL_LAG_IN / (TOTAL_LAG_MEASURES or 1)
+        lag_out = TOTAL_LAG_OUT / (TOTAL_LAG_MEASURES or 1)
+
+        TOTAL_ACTIONS = 0
+        TOTAL_LAG = 0
+        TOTAL_LAG_IN = 0
+        TOTAL_LAG_OUT = 0
+        TOTAL_LAG_MEASURES = 0
+        TIME_ALL_LOGIN = time.time()
+
+        print(
+            f".. running 30s average: ~{avgrate} actions/s "
+            f"lag: {lag:.2}s (in: {lag_in:.2}s, out: {lag_out:.2}s)"
+        )
+
+        reactor.callLater(30, self._print_statistics)
 
     def dataReceived(self, data):
         """
@@ -264,15 +387,67 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             data (str): Incoming data.
 
         """
-        if not self._connected and not data.startswith(chr(255)):
-            # wait until we actually get text back (not just telnet
-            # negotiation)
-            self._connected = True
-            # start client tick
-            d = LoopingCall(self.step)
-            # dissipate exact step by up to +/- 0.5 second
-            timestep = TIMESTEP + (-0.5 + (random.random() * 1.0))
-            d.start(timestep, now=True).addErrback(self.error)
+        global NLOGIN_SCREEN, NLOGGED_IN, NLOGGING_IN, NCONNECTED
+        global TOTAL_ACTIONS, TIME_ALL_LOGIN
+        global TOTAL_LAG, TOTAL_LAG_MEASURES, TOTAL_LAG_IN, TOTAL_LAG_OUT
+
+        if not data.startswith(b"\xff"):
+            # regular text, not a telnet command
+
+            if NCLIENTS == 1:
+                print("dummy-client sees:", str(data, "utf-8"))
+
+            if not self._connected:
+                # waiting for connection
+                # wait until we actually get text back (not just telnet
+                # negotiation)
+                # start client tick
+                d = LoopingCall(self.step)
+                df = max(abs(TIMESTEP * 0.001), min(TIMESTEP / 10, 0.5))
+                # dither next attempt with random time
+                timestep = TIMESTEP + (-df + (random.random() * df))
+                d.start(timestep, now=True).addErrback(self.error)
+                self.connection_attempt += 1
+
+                self._connected = True
+                NLOGIN_SCREEN += 1
+                NCONNECTED -= 1
+                self.report("<- server sent login screen", self.key)
+
+            elif self._loggedin:
+                if not self._ready:
+                    # logged in, ready to run
+                    NLOGGED_IN += 1
+                    NLOGGING_IN -= 1
+                    self._ready = True
+                    self.report("== logged in", self.key)
+                    if NLOGGED_IN == NCLIENTS and not TIME_ALL_LOGIN:
+                        # all are logged in! We can start collecting statistics
+                        print(".. All clients connected and logged in!")
+                        TIME_ALL_LOGIN = time.time()
+                        reactor.callLater(30, self._print_statistics)
+
+                elif TIME_ALL_LOGIN:
+                    TOTAL_ACTIONS += 1
+
+                    try:
+                        data = strip_ansi(str(data, "utf-8").strip())
+                        if data.startswith("dummyrunner_echo_response:"):
+                            # handle special lag-measuring command. This returns
+                            # dummyrunner_echo_response:<starttime>,<midpointtime>
+                            now = time.time()
+                            _, data = data.split(":", 1)
+                            start_time, mid_time = (float(part) for part in data.split(",", 1))
+                            lag_in = mid_time - start_time
+                            lag_out = now - mid_time
+                            total_lag = now - start_time  # full round-about time
+
+                            TOTAL_LAG += total_lag
+                            TOTAL_LAG_IN += lag_in
+                            TOTAL_LAG_OUT += lag_out
+                            TOTAL_LAG_MEASURES += 1
+                    except Exception:
+                        pass
 
     def connectionLost(self, reason):
         """
@@ -283,7 +458,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
         """
         if not self._logging_out:
-            print("client %s(%s) lost connection (%s)" % (self.key, self.cid, reason))
+            self.report("XX lost connection", self.key)
 
     def error(self, err):
         """
@@ -310,9 +485,9 @@ class DummyClient(telnet.StatefulTelnetProtocol):
 
         """
         self._logging_out = True
-        cmd = self._logout(self)
-        print("client %s(%s) logout (%s actions)" % (self.key, self.cid, self.istep))
-        self.sendLine(cmd)
+        cmd = self._logout(self)[0]
+        self.report(f"-> logout/disconnect ({self.istep} actions)", self.key)
+        self.sendLine(bytes(cmd, "utf-8"))
 
     def step(self):
         """
@@ -321,7 +496,7 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         all "intelligence" of the dummy client.
 
         """
-        global NLOGGED_IN
+        global NLOGGING_IN, NLOGIN_SCREEN
 
         rand = random.random()
 
@@ -329,11 +504,13 @@ class DummyClient(telnet.StatefulTelnetProtocol):
             # no commands ready. Load some.
 
             if not self._loggedin:
-                if rand < CHANCE_OF_LOGIN:
+                if rand < CHANCE_OF_LOGIN or NLOGGING_IN < 10:
+                    # lower rate of logins, but not below 1 / s
                     # get the login commands
                     self._cmdlist = list(makeiter(self._login(self)))
-                    NLOGGED_IN += 1  # this is for book-keeping
-                    print("connecting client %s (%i/%i)..." % (self.key, NLOGGED_IN, NCLIENTS))
+                    NLOGGING_IN += 1  # this is for book-keeping
+                    NLOGIN_SCREEN -= 1
+                    self.report("-> create/login", self.key)
                     self._loggedin = True
                 else:
                     # no login yet, so cmdlist not yet set
@@ -347,12 +524,26 @@ class DummyClient(telnet.StatefulTelnetProtocol):
         # at this point we always have a list of commands
         if rand < CHANCE_OF_ACTION:
             # send to the game
-            self.sendLine(str(self._cmdlist.pop(0)))
+            cmd = str(self._cmdlist.pop(0))
+
+            if cmd.startswith("dummyrunner_echo_response"):
+                # we need to set the timer element as close to
+                # the send as possible
+                cmd = cmd.format(timestamp=time.time())
+
+            self.sendLine(bytes(cmd, "utf-8"))
+            self.action_started = time.time()
             self.istep += 1
 
+            if NCLIENTS == 1:
+                print(f"dummy-client sent: {cmd}")
 
-class DummyFactory(protocol.ClientFactory):
+
+class DummyFactory(protocol.ReconnectingClientFactory):
     protocol = DummyClient
+    initialDelay = 1
+    maxDelay = 1
+    noisy = False
 
     def __init__(self, actions):
         "Setup the factory base (shared by all clients)"
@@ -397,7 +588,7 @@ def start_all_dummy_clients(nclients):
     # setting up all clients (they are automatically started)
     factory = DummyFactory(actions)
     for i in range(NCLIENTS):
-        reactor.connectTCP("localhost", TELNET_PORT, factory)
+        reactor.connectTCP("127.0.0.1", TELNET_PORT, factory)
     # start reactor
     reactor.run()
 
@@ -422,12 +613,25 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+    nclients = int(args.nclients[0])
 
-    print(INFO_STARTING.format(N=args.nclients[0]))
+    print(
+        INFO_STARTING.format(
+            nclients=nclients,
+            port=TELNET_PORT,
+            idmapper_cache_size=IDMAPPER_CACHE_MAXSIZE,
+            timestep=TIMESTEP,
+            rate=1 / TIMESTEP,
+            chance_of_login=CHANCE_OF_LOGIN * 100,
+            chance_of_action=CHANCE_OF_ACTION * 100,
+            avg_rate=(1 / TIMESTEP) * CHANCE_OF_ACTION,
+            avg_rate_total=(1 / TIMESTEP) * CHANCE_OF_ACTION * nclients,
+        )
+    )
 
     # run the dummyrunner
-    t0 = time.time()
-    start_all_dummy_clients(nclients=args.nclients[0])
+    TIME_START = t0 = time.time()
+    start_all_dummy_clients(nclients=nclients)
     ttot = time.time() - t0
 
     # output runtime

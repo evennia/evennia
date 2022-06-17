@@ -37,7 +37,7 @@ def mccp_compress(protocol, data):
     return data
 
 
-class Mccp(object):
+class Mccp:
     """
     Implements the MCCP protocol. Add this to a
     variable on the telnet protocol to set it up.

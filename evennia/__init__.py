@@ -95,11 +95,11 @@ SESSION_HANDLER = None
 TASK_HANDLER = None
 TICKER_HANDLER = None
 MONITOR_HANDLER = None
-CHANNEL_HANDLER = None
 
 # Containers
 GLOBAL_SCRIPTS = None
 OPTION_CLASSES = None
+
 
 def _create_version():
     """
@@ -149,7 +149,7 @@ def _init():
     global signals
     global settings, lockfuncs, logger, utils, gametime, ansi, spawn, managers
     global contrib, TICKER_HANDLER, MONITOR_HANDLER, SESSION_HANDLER
-    global CHANNEL_HANDLER, TASK_HANDLER
+    global TASK_HANDLER
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
@@ -212,7 +212,6 @@ def _init():
     from .scripts.tickerhandler import TICKER_HANDLER
     from .scripts.taskhandler import TASK_HANDLER
     from .server.sessionhandler import SESSION_HANDLER
-    from .comms.channelhandler import CHANNEL_HANDLER
     from .scripts.monitorhandler import MONITOR_HANDLER
 
     # containers
@@ -341,7 +340,6 @@ def _init():
         CMD_NOINPUT - no input was given on command line
         CMD_NOMATCH - no valid command key was found
         CMD_MULTIMATCH - multiple command matches were found
-        CMD_CHANNEL - the command name is a channel name
         CMD_LOGINSTART - this command will be called as the very
                          first command when an account connects to
                          the server.
@@ -356,7 +354,6 @@ def _init():
         CMD_NOINPUT = cmdhandler.CMD_NOINPUT
         CMD_NOMATCH = cmdhandler.CMD_NOMATCH
         CMD_MULTIMATCH = cmdhandler.CMD_MULTIMATCH
-        CMD_CHANNEL = cmdhandler.CMD_CHANNEL
         CMD_LOGINSTART = cmdhandler.CMD_LOGINSTART
         del cmdhandler
 
@@ -367,9 +364,6 @@ def _init():
     # delayed starts - important so as to not back-access evennia before it has
     # finished initializing
     GLOBAL_SCRIPTS.start()
-    from .prototypes import prototypes
-    prototypes.load_module_prototypes()
-    del prototypes
 
 
 def set_trace(term_size=(140, 80), debugger="auto"):

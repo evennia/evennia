@@ -90,6 +90,7 @@ a text-game, and if you want to update some property, consider doing so
 on-demand rather than using a ticker.
 """
 
+
 class Ticker(object):
     """
     Represents a repeatedly running task that calls
@@ -584,9 +585,9 @@ class TickerHandler(object):
         self.ticker_pool.stop(interval)
         if interval:
             self.ticker_storage = dict(
-                (store_key, store_key)
-                for store_key in self.ticker_storage
-                if store_key[1] != interval
+                (store_key, store_value)
+                for store_key, store_value in self.ticker_storage.items()
+                if store_key[3] != interval
             )
         else:
             self.ticker_storage = {}

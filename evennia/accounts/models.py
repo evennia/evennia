@@ -94,7 +94,8 @@ class AccountDB(TypedObject, AbstractUser):
         "cmdset",
         max_length=255,
         null=True,
-        help_text="optional python path to a cmdset class. If creating a Character, this will default to settings.CMDSET_CHARACTER.",
+        help_text="optional python path to a cmdset class. If creating a Character, this will "
+        "default to settings.CMDSET_CHARACTER.",
     )
     # marks if this is a "virtual" bot account object
     db_is_bot = models.BooleanField(
@@ -109,8 +110,8 @@ class AccountDB(TypedObject, AbstractUser):
     __applabel__ = "accounts"
     __settingsclasspath__ = settings.BASE_SCRIPT_TYPECLASS
 
-    #  class Meta:
-    #      verbose_name = "Account"
+    class Meta:
+        verbose_name = "Account"
 
     # cmdset_storage property
     # This seems very sensitive to caching, so leaving it be for now /Griatch

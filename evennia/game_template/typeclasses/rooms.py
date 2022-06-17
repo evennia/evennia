@@ -5,10 +5,11 @@ Rooms are simple containers that has no location of their own.
 
 """
 
-from evennia import DefaultRoom
+from evennia.objects.objects import DefaultRoom
+from .objects import ObjectParent
 
 
-class Room(DefaultRoom):
+class Room(ObjectParent, DefaultRoom):
     """
     Rooms are like any Object, except their location is None
     (which is default). They also use basetype_setup() to

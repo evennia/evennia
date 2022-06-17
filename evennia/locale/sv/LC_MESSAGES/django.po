@@ -1,228 +1,559 @@
 # Evennia Swedish translation
-# Copyright (C) 2010- Griatch
+# Copyright (C) 2021- Griatch
 # This file is distributed under the same license as the Evennia package.
-# Griatch <griatchATgmailDOTcom>, 2012.
+# Griatch <griatch@gmail.com>, 2021.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Evennia Beta\n"
+"Project-Id-Version: Evennia 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-07 23:43+0100\n"
-"PO-Revision-Date: 2014-04-13 09:22+0100\n"
+"POT-Creation-Date: 2021-05-29 16:25+0000\n"
+"PO-Revision-Date: 2021-05-29 17:54+0200\n"
 "Last-Translator: Griatch <griatch@gmail.com>\n"
 "Language-Team: Swedish <>\n"
-"Language: \n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
 
-#: commands/cmdhandler.py:452
+#: accounts/accounts.py:321
+#, python-brace-format
+msgid "|c{key}|R is already puppeted by another Account."
+msgstr "|c{key}|R styrs redan av ett annat Spelarkonto."
+
+#: accounts/accounts.py:515
+msgid "Too many login failures; please try again in a few minutes."
+msgstr "För många fel under inloggning. Vänligen försök igen om några minuter."
+
+#: accounts/accounts.py:528 accounts/accounts.py:789
+msgid ""
+"|rYou have been banned and cannot continue from here.\n"
+"If you feel this ban is in error, please email an admin.|x"
+msgstr ""
+"|rDu har blivit bannlyst och kan inte fortsätta.\n"
+"Om du anser detta är felaktigt, vänligen email:a en administrator.|x"
+
+#: accounts/accounts.py:540
+msgid "Username and/or password is incorrect."
+msgstr "Användarnamn och/eller lösenord är felaktigt."
+
+#: accounts/accounts.py:547
+msgid "Too many authentication failures."
+msgstr "För många auktoriserings-fel."
+
+#: accounts/accounts.py:760
+msgid ""
+"You are creating too many accounts. Please log into an existing account."
+msgstr ""
+"Du håller pä att skapa för många konton. Vänligen anslut till ett "
+"existerande konto."
+
+#: accounts/accounts.py:805
+msgid ""
+"There was an error creating the Account. If this problem persists, contact "
+"an admin."
+msgstr ""
+"Ett fel uppstod när kontot skulle skapas. Kontakta en administrator om detta "
+"fel består."
+
+#: accounts/accounts.py:839 accounts/accounts.py:1751
+msgid "An error occurred. Please e-mail an admin if the problem persists."
+msgstr "Ett fel uppstod. Om felet består, vänligen email:a en administrator."
+
+#: accounts/accounts.py:866
+msgid "Account being deleted."
+msgstr "Kontot raderas."
+
+#: accounts/accounts.py:1417 accounts/accounts.py:1768
+#, python-brace-format
+msgid "|G{key} connected|n"
+msgstr "|G{key} anslöt|n"
+
+#: accounts/accounts.py:1424 accounts/accounts.py:1431
+msgid "The Character does not exist."
+msgstr "Karaktären existerar inte."
+
+#: accounts/accounts.py:1470
+#, python-brace-format
+msgid "|R{key} disconnected{reason}|n"
+msgstr "|R{key} frånkopplad{reason}|n"
+
+#: accounts/accounts.py:1704
+msgid "Guest accounts are not enabled on this server."
+msgstr "Gästkonton är inte aktiverade på denna server."
+
+#: accounts/accounts.py:1714
+msgid "All guest accounts are in use. Please try again later."
+msgstr "Alla gästkonton används redan. Vänligen försök senare."
+
+#: commands/cmdhandler.py:83
+msgid ""
+"\n"
+"An untrapped error occurred.\n"
+msgstr ""
+"\n"
+"Ett ohanterat fel inträffade.\n"
+
+#: commands/cmdhandler.py:86
+msgid ""
+"\n"
+"An untrapped error occurred. Please file a bug report detailing the steps to "
+"reproduce.\n"
+msgstr ""
+"\n"
+"Ett ohanterat fel inträffade. Vänligen gör en felrapport som specifierar hur "
+"felet uppstod.\n"
+
+#: commands/cmdhandler.py:92
+msgid ""
+"\n"
+"A cmdset merger-error occurred. This is often due to a syntax\n"
+"error in one of the cmdsets to merge.\n"
+msgstr ""
+"\n"
+"Ett CmdSet-sammanslagningsfel uppstod. Detta beror oftast på ett syntaktiskt "
+"fel i ett av de sammansatta CmdSet:en.\n"
+
+#: commands/cmdhandler.py:96
+msgid ""
+"\n"
+"A cmdset merger-error occurred. Please file a bug report detailing the\n"
+"steps to reproduce.\n"
+msgstr ""
+"\n"
+"Ett CmdSet-sammanslagningsfel uppstod. Vänligen rapportera felet och hur det "
+"kan äterskapas.\n"
+
+#: commands/cmdhandler.py:103
+msgid ""
+"\n"
+"No command sets found! This is a critical bug that can have\n"
+"multiple causes.\n"
+msgstr ""
+"\n"
+"Inga CmdSets hittades. Detta är ett kritiskt fel som kan ha många "
+"anledningar.\n"
+
+#: commands/cmdhandler.py:107
+msgid ""
+"\n"
+"No command sets found! This is a sign of a critical bug.  If\n"
+"disconnecting/reconnecting doesn't\" solve the problem, try to contact\n"
+"the server admin through\" some other means for assistance.\n"
+msgstr ""
+"\n"
+"Inga CmdSets hittades! Detta tyder på ett kritiskt fel. Om det inte "
+"hjälper \n"
+"att koppla av/på, försök att kontakta servern:s administratorer på något "
+"annat sätt.\n"
+
+#: commands/cmdhandler.py:115
+msgid ""
+"\n"
+"A command handler bug occurred. If this is not due to a local change,\n"
+"please file a bug report with the Evennia project, including the\n"
+"traceback and steps to reproduce.\n"
+msgstr ""
+"\n"
+"Ett fel inträffade i Kommandohanteraren. Om detta inte beror på en lokal "
+"förändring,\n"
+"gör en felrapport till Evennia-projektet. Inkludera Traceback och steg för "
+"att återskapa.\n"
+
+#: commands/cmdhandler.py:120
+msgid ""
+"\n"
+"A command handler bug occurred. Please notify staff - they should\n"
+"likely file a bug report with the Evennia project.\n"
+msgstr ""
+"\n"
+"Ett fel inträffade i Kommandohanteraren. Vänligen rapportera till \n"
+"administrationen - de bör antagligen göra en rapport till Evennia-"
+"projektet.\n"
+
+#: commands/cmdhandler.py:127
+#, python-brace-format
+msgid ""
+"Command recursion limit ({recursion_limit}) reached for "
+"'{raw_cmdname}' ({cmdclass})."
+msgstr ""
+"Kommando-rekursionens gräns ({recursion_limit}) uppnådd för "
+"'{raw_cmdname}' ({cmdclass})."
+
+#: commands/cmdhandler.py:149
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"{errmsg}\n"
+"(Traceback was logged {timestamp})."
+msgstr ""
+"{traceback}\n"
+"{errmsg}\n"
+"(Traceback loggades {timestamp})."
+
+#: commands/cmdhandler.py:699
 msgid "There were multiple matches."
 msgstr "Det fanns många träffar."
 
-#: commands/cmdhandler.py:480
-#, python-format
-msgid "Command '%s' is not available."
-msgstr "Kommandot '%s' är inte tillgängligt."
+#: commands/cmdhandler.py:724
+#, python-brace-format
+msgid "Command '{command}' is not available."
+msgstr "Kommandot '{command}' är inte tillgängligt."
 
-#: commands/cmdhandler.py:485
-#, python-format
-msgid " Maybe you meant %s?"
-msgstr "Menade du kanske %s?"
+#: commands/cmdhandler.py:734
+#, python-brace-format
+msgid " Maybe you meant {command}?"
+msgstr "Menade du kanske {command}?"
 
-#: commands/cmdhandler.py:485
+#: commands/cmdhandler.py:735
 msgid "or"
 msgstr "eller"
 
-#: commands/cmdhandler.py:487
+#: commands/cmdhandler.py:738
 msgid " Type \"help\" for help."
 msgstr "Skriv \"help\" för hjälp."
 
-#: commands/cmdparser.py:159
-#, python-format
-msgid "Could not find '%s'."
-msgstr "Kunde inte hitta '%s'."
-
-#: commands/cmdparser.py:180
-msgid "location"
-msgstr "plats"
-
-#: commands/cmdparser.py:181
-msgid " (carried)"
-msgstr "(buren)"
-
-#: commands/cmdparser.py:261
-msgid " (channel)"
-msgstr "(kanal)"
-
-#: commands/cmdsethandler.py:132
+#: commands/cmdsethandler.py:89
 #, python-brace-format
-msgid "Error loading cmdset {path}: {error}"
+msgid ""
+"{traceback}\n"
+"Error loading cmdset '{path}'\n"
+"(Traceback was logged {timestamp})"
 msgstr ""
+"{traceback}\n"
+"Fel uppstod att ladda CmdSet '{path}\n"
+"(Traceback loggades {timestamp})"
 
-#: commands/cmdsethandler.py:136
-#, fuzzy, python-brace-format
-#| msgid ""
-#| "Error in loading cmdset: No cmdset class '%(classname)s' in "
-#| "%(modulepath)s."
-msgid "Error in loading cmdset: No cmdset class '{classname}' in {path}."
-msgstr ""
-"Fel medan cmdset laddades: Ingen cmdset-klass med namn '%(classname)s' i "
-"%(modulepath)s."
-
-#: commands/cmdsethandler.py:140
+#: commands/cmdsethandler.py:95
 #, python-brace-format
-msgid "SyntaxError encountered when loading cmdset '{path}': {error}."
+msgid ""
+"Error loading cmdset: No cmdset class '{classname}' in '{path}'.\n"
+"(Traceback was logged {timestamp})"
 msgstr ""
+"Fel medan cmdset laddades: Ingen cmdset-klass med namn '{classname}' i "
+"{path}.\n"
+"(Traceback loggades {timestamp})"
 
-#: commands/cmdsethandler.py:144
-#, fuzzy, python-brace-format
-#| msgid "Compile/Run error when loading cmdset '%s'. Error was logged."
-msgid "Compile/Run error when loading cmdset '{path}': {error}."
+#: commands/cmdsethandler.py:100
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"SyntaxError encountered when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
 msgstr ""
-"Kompilerings/Körningsfel när cmdset '%s' laddades. Felet skrevs i loggen."
+"{traceback}\n"
+"SyntaxError påträffades när cmdset laddades '{path}'.\n"
+"(Traceback loggades {timestamp})"
 
-#: commands/cmdsethandler.py:154
+#: commands/cmdsethandler.py:106
+#, python-brace-format
+msgid ""
+"{traceback}\n"
+"Compile/Run error when loading cmdset '{path}'.\n"
+"(Traceback was logged {timestamp})"
+msgstr ""
+"{traceback}\n"
+"Kompilerings/Körningsfel när cmdset '{path}' laddades.\n"
+"(Traceback loggades {timestamp})"
+
+#: commands/cmdsethandler.py:112
+#, python-brace-format
 msgid ""
 "\n"
-" (See log for details.)"
+"Error encountered for cmdset at path '{path}'.\n"
+"Replacing with fallback '{fallback_path}'.\n"
 msgstr ""
+"\n"
+"Fel påträffades för cmdset från '{path}'.\n"
+"Ersätter med reserv från '{fallback_path}.\n"
 
-#: commands/cmdsethandler.py:221
-#, fuzzy, python-brace-format
-#| msgid "custom %(mergetype)s on cmdset '%(merged_on)s'"
+#: commands/cmdsethandler.py:118
+#, python-brace-format
+msgid "Fallback path '{fallback_path}' failed to generate a cmdset."
+msgstr "Reserv-path '{fallback_path}' kunde inte generera ett cmdset."
+
+#: commands/cmdsethandler.py:188 commands/cmdsethandler.py:200
+#, python-brace-format
+msgid ""
+"\n"
+"(Unsuccessfully tried '{path}')."
+msgstr ""
+"\n"
+"(Misslyckades med '{path}')."
+
+#: commands/cmdsethandler.py:331
+#, python-brace-format
 msgid "custom {mergetype} on cmdset '{cmdset}'"
-msgstr "särskild %(mergetype)s på cmdset '%(merged_on)s'"
+msgstr "särskild {mergetype} på cmdset '{cmdset}'"
 
-#: commands/cmdsethandler.py:224
-#, fuzzy, python-brace-format
-#| msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
-msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
-msgstr ""
-"<Sammanslagen %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
-
-#: commands/cmdsethandler.py:232
-#, fuzzy, python-brace-format
-#| msgid ""
-#| " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
-msgid " <{key} ({mergetype} prio {prio}, {permstring}>: {keylist}"
-msgstr " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
-
-#: commands/cmdsethandler.py:308 commands/cmdsethandler.py:343
+#: commands/cmdsethandler.py:459
 msgid "Only CmdSets can be added to the cmdsethandler!"
 msgstr "Bara CmdSets can läggas till cmdsethandler!"
 
-#: locks/lockhandler.py:218
-#, fuzzy, python-format
-#| msgid "Lock: function '%s' is not available."
-msgid "Lock: lock-function '%s' is not available."
-msgstr "Lås: funktionen '%s' kunde inte hittas."
+#: locks/lockhandler.py:238
+#, python-brace-format
+msgid "Lock: lock-function '{lockfunc}' is not available."
+msgstr "Lås: lås-funktionen '{lockfunc}' är inte tillgänglig."
 
-#: locks/lockhandler.py:231
-#, python-format
-msgid "Lock: definition '%s' has syntax errors."
-msgstr "Lås: definitionen '%s' har syntaktiska fel."
+#: locks/lockhandler.py:259
+#, python-brace-format
+msgid "Lock: definition '{lock_string}' has syntax errors."
+msgstr "Lås: definitionen '{lock_string}' har syntaktiska fel."
 
-#: locks/lockhandler.py:235
-#, fuzzy, python-format
-#| msgid ""
-#| "Lock: access type '%(access_type)s' changed from '%(source)s' to "
-#| "'%(goal)s' "
+#: locks/lockhandler.py:267
+#, python-brace-format
 msgid ""
-"LockHandler on %(obj)s: access type '%(access_type)s' changed from "
-"'%(source)s' to '%(goal)s' "
+"LockHandler on {obj}: access type '{access_type}' changed from '{source}' to "
+"'{goal}' "
 msgstr ""
-"Lås: låstypen '%(access_type)s' ändrade sig från '%(source)s' till '%(goal)s'"
+"Låshanterare på {obj}: Access-typen '{access_type}' ändrades från '{source}' "
+"till '{goal}'"
 
-#: locks/lockhandler.py:275
-#, python-format
-msgid "Lock: '%s' contains no colon (:)."
-msgstr "Lås: '%s' innehåller inget kolon (:)."
+#: locks/lockhandler.py:341
+#, python-brace-format
+msgid "Lock: '{lockdef}' contains no colon (:)."
+msgstr "Lås: '{lockdef}' innehåller inget kolon (:)."
 
-#: locks/lockhandler.py:279
-#, python-format
-msgid "Lock: '%s' has no access_type (left-side of colon is empty)."
-msgstr "Lås: '%s' saknar låstyp (ingenting till vänster om kolonet)."
+#: locks/lockhandler.py:350
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
+msgstr "Lås: '{lockdef}' saknar låstyp (ingenting till vänster om kolonet)."
 
-#: locks/lockhandler.py:282
-#, python-format
-msgid "Lock: '%s' has mismatched parentheses."
-msgstr "Lås: '%s' has ickematchande parenteser."
+#: locks/lockhandler.py:358
+#, python-brace-format
+msgid "Lock: '{lockdef}' has mismatched parentheses."
+msgstr "Lås: '{lockdef}' has icke-matchande parenteser."
 
-#: locks/lockhandler.py:285
-#, python-format
-msgid "Lock: '%s' has no valid lock functions."
-msgstr "Lås: '%s' innehåller inga acceptabla låsfunktioner."
+#: locks/lockhandler.py:365
+#, python-brace-format
+msgid "Lock: '{lockdef}' has no valid lock functions."
+msgstr "Lås: '{lockdef}' innehåller inga acceptabla låsfunktioner."
 
-#: objects/objects.py:597
-#, python-format
-msgid "Couldn't perform move ('%s'). Contact an admin."
-msgstr "Kunde inte utföra föflyttningen ('%s'). Kontakta en admininstrator."
+#: objects/objects.py:871
+#, python-brace-format
+msgid "Couldn't perform move ({err}). Contact an admin."
+msgstr "Kunde inte utföra föflyttningen ('{err}'). Kontakta en admininstrator."
 
-#: objects/objects.py:607
+#: objects/objects.py:881
 msgid "The destination doesn't exist."
 msgstr "Destinationen existerar inte."
 
-#: objects/objects.py:720
-#, python-format
-msgid "Could not find default home '(#%d)'."
-msgstr "Kunde inte hitta standard-hem '(#'%d)'."
+#: objects/objects.py:974
+#, python-brace-format
+msgid "Could not find default home '(#{dbid})'."
+msgstr "Kunde inte hitta standard-hem '(#{dbid})'."
 
-#: objects/objects.py:736
+#: objects/objects.py:988
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
 msgstr ""
 "Nåtgot gick fel! Du har blivit flyttat till en icke-existerande plats. "
 "Kontakta en admininstrator."
 
-#: objects/objects.py:809
-#, python-format
-msgid "Your character %s has been destroyed."
-msgstr "Din karaktär %s har blivit raderad."
+#: objects/objects.py:1138
+#, python-brace-format
+msgid "Your character {key} has been destroyed."
+msgstr "Din karaktär {key} har raderats."
 
-#: players/players.py:325
-msgid "Player being deleted."
-msgstr "Spelaren raderas."
+#: objects/objects.py:1546
+#, python-brace-format
+msgid "You now have {name} in your possession."
+msgstr "Du har nu {name}."
 
-#: scripts/scripthandler.py:45
-#, python-format
+#: objects/objects.py:1555
+#, python-brace-format
+msgid "{object} arrives to {destination} from {origin}."
+msgstr "{object} anländer till {destination} från {origin}."
+
+#: objects/objects.py:1557
+#, python-brace-format
+msgid "{object} arrives to {destination}."
+msgstr "{object} anländer till {destination}."
+
+#: objects/objects.py:2165
+msgid "Invalid character name."
+msgstr "Inkorrekt karaktärsnamn."
+
+#: objects/objects.py:2184
+msgid "There are too many characters associated with this account."
+msgstr "Det finns för många karaktärer associerade till detta konto."
+
+#: objects/objects.py:2210
+msgid "This is a character."
+msgstr "Detta är en karaktär."
+
+#: objects/objects.py:2296
+#, python-brace-format
+msgid "|r{obj} has no location and no home is set.|n"
+msgstr "|r{obj} har ingen location och inget home är satt.|n"
+
+#: objects/objects.py:2315
+#, python-brace-format
 msgid ""
 "\n"
-" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repeats): %(desc)s"
+"You become |c{name}|n.\n"
 msgstr ""
 "\n"
-" '%(key)s' (%(next_repeat)s/%(interval)s, %(repeats)s repetitioner): %(desc)s"
+"Du blir |c{name}|n.\n"
 
-#: scripts/scripts.py:158
-#, fuzzy, python-format
-#| msgid ""
-#| "Script %(key)s(#%(dbid)i) of type '%(cname)s': at_repeat() error "
-#| "'%(err)s'."
-msgid ""
-"Script %(key)s(#%(dbid)s) of type '%(cname)s': at_repeat() error '%(err)s'."
+#: objects/objects.py:2319
+#, python-brace-format
+msgid "{name} has entered the game."
+msgstr "{name} har anslutit."
+
+#: objects/objects.py:2343
+#, python-brace-format
+msgid "{name} has left the game."
+msgstr "{name} lämnade spelet."
+
+#: objects/objects.py:2461
+msgid "This is a room."
+msgstr "Detta är ett rum."
+
+#: objects/objects.py:2667
+msgid "This is an exit."
+msgstr "Detta är en utgång."
+
+#: objects/objects.py:2764
+msgid "You cannot go there."
+msgstr "Du kan inte gå dit."
+
+#: prototypes/prototypes.py:57
+msgid "Error"
+msgstr "Fel"
+
+#: prototypes/prototypes.py:58
+msgid "Warning"
+msgstr "Varning"
+
+#: prototypes/prototypes.py:263
+msgid "Prototype requires a prototype_key"
+msgstr "Prototypen kräver en prototype_key"
+
+#: prototypes/prototypes.py:271 prototypes/prototypes.py:339
+#, python-brace-format
+msgid "{protkey} is a read-only prototype (defined as code in {module})."
 msgstr ""
-"Script %(key)s(#%(dbid)i) av typ '%(cname)s': at_repeat() fel '%(err)s'."
+"{protkey} är en prototyp som enbart är läsbar (definierad som kod i "
+"{module})."
 
-#: scripts/scripts.py:534
-msgid "This is an empty placeholder script."
-msgstr "Detta är ett tomt platshållar-script."
+#: prototypes/prototypes.py:346
+#, python-brace-format
+msgid "Prototype {prototype_key} was not found."
+msgstr "Prototypen {prototype_key} hittades inte."
 
-#: scripts/scripts.py:542
-msgid "This is a generic storage container."
-msgstr "Detta är en generisk lagringskontainer."
+#: prototypes/prototypes.py:353
+#, python-brace-format
+msgid ""
+"{caller} needs explicit 'edit' permissions to delete prototype "
+"{prototype_key}."
+msgstr ""
+"{caller} behöver 'edit'-permission för att radera prototypen {prototype_key}."
 
-#: server/initial_setup.py:29
+#: prototypes/prototypes.py:455
+#, python-brace-format
+msgid "Found {num} matching prototypes {module_prototypes}."
+msgstr "Hittade {num} matchande prototyper {module_prototypes}."
+
+#: prototypes/prototypes.py:615
+msgid "No prototypes found."
+msgstr "Ingen prototype hittades."
+
+#: prototypes/prototypes.py:666
+msgid "Prototype lacks a 'prototype_key'."
+msgstr "Prototypen saknar en 'prototype_key'."
+
+#: prototypes/prototypes.py:675
+#, python-brace-format
+msgid "Prototype {protkey} requires `typeclass` or 'prototype_parent'."
+msgstr "Prototype {protkey} kräver 'typeclass' eller 'prototype_parent'."
+
+#: prototypes/prototypes.py:680
+#, python-brace-format
+msgid ""
+"Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' "
+"or 'prototype_parent' keys."
+msgstr ""
+"Prototypen {protkey} kan bara användas som en mixin eftersom den saknar "
+"'typeclass'- eller 'prototype_parent'-nycklar."
+
+#: prototypes/prototypes.py:689
+#, python-brace-format
+msgid ""
+"{err}: Prototype {protkey} is based on typeclass {typeclass}, which could "
+"not be imported!"
+msgstr ""
+"{err}: Prototypen {protkey} är baserad på typeclassen {typeclass}, vilken "
+"inte kunde importeras!"
+
+#: prototypes/prototypes.py:699
+#, python-brace-format
+msgid "Prototype {protkey} tries to parent itself."
+msgstr "Prototypen {protkey} försöker bli sin egen förälder."
+
+#: prototypes/prototypes.py:704
+#, python-brace-format
+msgid "Prototype {protkey}'s prototype_parent '{parent}' was not found."
+msgstr "Prototypen {protkey} har in okänd 'prototype_parent' ({parent})."
+
+#: prototypes/prototypes.py:709
+#, python-brace-format
+msgid "{protkey} has infinite nesting of prototypes."
+msgstr "{protkey} har en oändlig nästling av prototyper."
+
+#: prototypes/prototypes.py:729
+#, python-brace-format
+msgid ""
+"Prototype {protkey} has no `typeclass` defined anywhere in its parent\n"
+" chain. Add `typeclass`, or a `prototype_parent` pointing to a prototype "
+"with a typeclass."
+msgstr ""
+"Prototypen {protkey} har ingen 'typeclass' definierad i sin förälder-kedja.\n"
+"Lägg till 'typeclass' eller en 'prototype_parent' som pekar på en prototyp "
+"med 'typeclass'."
+
+#: prototypes/spawner.py:473
+#, python-brace-format
+msgid ""
+"Diff contains non-dicts that are not on the form (old, new, action_to_take): "
+"{diffpart}"
+msgstr ""
+"Diff innehåller icke-dicts som inte är på formen (gammal, ny, "
+"handling_att_utföra): {diffpart}"
+
+#: scripts/scripthandler.py:51
+#, python-brace-format
 msgid ""
 "\n"
-"Welcome to your new |wEvennia|n-based game! Visit http://www.evennia.com if "
+" '{key}' ({next_repeat}/{interval}, {repeats} repeats): {desc}"
+msgstr ""
+"\n"
+" '{key}' ({next_repeat}/{interval}, {repeats} repetitioner): {desc}"
+
+#: scripts/scripts.py:329
+#, python-brace-format
+msgid "Script {key}(#{dbid}) of type '{name}': at_repeat() error '{err}'."
+msgstr "Script {key}(#{dbid}) av typ '{name}': at_repeat() fel '{err}'."
+
+#: server/initial_setup.py:28
+msgid ""
+"\n"
+"Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if "
 "you need\n"
 "help, want to contribute, report issues or just join the community.\n"
-"As Player #1 you can create a demo/tutorial area with |w@batchcommand "
-"tutorial_world.build|n.\n"
-"    "
+"As Account #1 you can create a demo/tutorial area with '|wbatchcommand "
+"tutorial_world.build|n'.\n"
 msgstr ""
+"\n"
+"Välkommen till ditt nya |wEvennia|n-baserade spel! Besök https://www.evennia."
+"com om du\n"
+"behöver hjälp, vill hjälpa till, rapportera fel eller bara gå med i "
+"utvecklar-communityn.\n"
+"Som konto #1 kan du skapa en demo/tutorial-area med '|wbatchcommand "
+"tutorial_world.build|n'.\n"
 
-#: server/initial_setup.py:99
+#: server/initial_setup.py:92
 msgid "This is User #1."
 msgstr "Detta är användare #1."
 
@@ -230,31 +561,724 @@ msgstr "Detta är användare #1."
 msgid "Limbo"
 msgstr "Limbo"
 
-#: server/sessionhandler.py:221
+#: server/portal/portalsessionhandler.py:40
+#, python-brace-format
+msgid ""
+"{servername} DoS protection is active. You are queued to connect in {num} "
+"seconds ..."
+msgstr ""
+"{servername} DoS-skydd är aktiv. Du har hamnat i kö och ansluter om {num} "
+"sekunder ..."
+
+#: server/server.py:152
+msgid "idle timeout exceeded"
+msgstr "Timeout. Kopplar ur"
+
+#: server/sessionhandler.py:42
+msgid "Your client sent an incorrect UTF-8 sequence."
+msgstr "Din klient skickade en inkorrekt UTF-8-sekvens."
+
+#: server/sessionhandler.py:399
 msgid " ... Server restarted."
 msgstr "... Servern startades om."
 
-#: server/sessionhandler.py:284
-#, python-brace-format
-msgid "Logged in: {player} {address} ({nsessions} session(s) total)"
-msgstr ""
-
-#: server/sessionhandler.py:309
-#, python-brace-format
-msgid "Logged out: {player} {address} ({nsessions} sessions(s) remaining)"
-msgstr ""
-
-#: server/sessionhandler.py:331
-msgid "You have been disconnected."
-msgstr "Du har blivit frånkopplad."
-
-#: server/sessionhandler.py:344
+#: server/sessionhandler.py:623
 msgid "Logged in from elsewhere. Disconnecting."
 msgstr "Inloggad från någon annanstans ifrån. Kopplas ifrån."
 
-#: server/sessionhandler.py:362
+#: server/sessionhandler.py:652
 msgid "Idle timeout exceeded, disconnecting."
-msgstr "Timeout. Kopplar ur."
+msgstr "Timeout. Kopplar ifrån."
+
+#: server/throttle.py:21
+msgid ""
+"Too many failed attempts; you must wait a few minutes before trying again."
+msgstr ""
+"För många misslyckade försök; vänta några minuter och försök sedan igen."
+
+#: server/validators.py:31
+msgid "Sorry, that username is reserved."
+msgstr "Det användarnamnet är tyvärr reserverat."
+
+#: server/validators.py:38
+msgid "Sorry, that username is already taken."
+msgstr "Det användarnamnet är tyvärr redan taget."
+
+#: server/validators.py:88
+#, python-brace-format
+msgid ""
+"{policy} From a terminal client, you can also use a phrase of multiple words "
+"if you enclose the password in double quotes."
+msgstr ""
+"{policy} Från en konsolklient kan du också använda flera ord om du "
+"innesluter lösenordet i dubbla citationstecken (\"...\")."
+
+#: utils/eveditor.py:67
+msgid ""
+"\n"
+" <txt>  - any non-command is appended to the end of the buffer.\n"
+" :  <l> - view buffer or only line(s) <l>\n"
+" :: <l> - raw-view buffer or only line(s) <l>\n"
+" :::    - escape - enter ':' as the only character on the line.\n"
+" :h     - this help.\n"
+"\n"
+" :w     - save the buffer (don't quit)\n"
+" :wq    - save buffer and quit\n"
+" :q     - quit (will be asked to save if buffer was changed)\n"
+" :q!    - quit without saving, no questions asked\n"
+"\n"
+" :u     - (undo) step backwards in undo history\n"
+" :uu    - (redo) step forward in undo history\n"
+" :UU    - reset all changes back to initial state\n"
+"\n"
+" :dd <l>     - delete last line or line(s) <l>\n"
+" :dw <l> <w> - delete word or regex <w> in entire buffer or on line <l>\n"
+" :DD         - clear entire buffer\n"
+"\n"
+" :y  <l>        - yank (copy) line(s) <l> to the copy buffer\n"
+" :x  <l>        - cut line(s) <l> and store it in the copy buffer\n"
+" :p  <l>        - put (paste) previously copied line(s) directly after <l>\n"
+" :i  <l> <txt>  - insert new text <txt> at line <l>. Old line will move "
+"down\n"
+" :r  <l> <txt>  - replace line <l> with text <txt>\n"
+" :I  <l> <txt>  - insert text at the beginning of line <l>\n"
+" :A  <l> <txt>  - append text after the end of line <l>\n"
+"\n"
+" :s <l> <w> <txt> - search/replace word or regex <w> in buffer or on line "
+"<l>\n"
+"\n"
+" :j <l> <w> - justify buffer or line <l>. <w> is f, c, l or r. Default f "
+"(full)\n"
+" :f <l>     - flood-fill entire buffer or line <l>: Equivalent to :j left\n"
+" :fi <l>    - indent entire buffer or line <l>\n"
+" :fd <l>    - de-indent entire buffer or line <l>\n"
+"\n"
+" :echo - turn echoing of the input on/off (helpful for some clients)\n"
+msgstr ""
+"\n"
+" <txt>  - alla icke-kommandon läggs till slutet av bufferten.\n"
+" :  <l> - se bufferten eller bara rad/rader <l>\n"
+" :: <l> - se ickeformatterad buffer eller bara rad/rader <l>\n"
+" :::    - escape för att skriva ':' som enda karaktär på raden.\n"
+" :h     - denna hjälp.\n"
+"\n"
+" :w     - spara bufferten (utan att avsluta)\n"
+" :wq    - spara bufferten and avsluta\n"
+" :q     - avsluta (om bufferten ändrats blir du frågad om du vill spara "
+"först)\n"
+" :q!    - avsluta utan att spara, inget snack\n"
+"\n"
+" :u     - (undo) stega baklänges i undo-historiken\n"
+" :uu    - (redo) stega framåt i undo-historiken\n"
+" :UU    - återställ alla ändringar\n"
+"\n"
+" :dd <l>     - radera senaste raden eller rad/rader <l>\n"
+" :dw <l> <w> - radera ord eller regex <w> i hela bufferten eller on rad/"
+"rader <l>\n"
+" :DD         - radera hela buffern\n"
+"\n"
+" :y  <l>        - yank (kopiera) rad/rader <l> till copy-bufferten\n"
+" :x  <l>        - cut (klipp) rad/rader <l> och lagra i copy-bufferten\n"
+" :p  <l>        - put (paste) rader från copy-bufferten till direkt efter "
+"rad <l>\n"
+" :i  <l> <txt>  - insert (sätt in) ny text <txt> vid radposition <l>. Gamla "
+"raden flyttas ner\n"
+" :r  <l> <txt>  - replace (ersätt) text på rad <l> med text <txt>\n"
+" :I  <l> <txt>  - insert (sätt in) text i början på rad <l>\n"
+" :A  <l> <txt>  - append (lägg till) text efter slutet på rad <l>\n"
+"\n"
+" :s <l> <w> <txt> - sök/ersätt ord eller reges <w> i hela bufferten eller på "
+"rad <l>\n"
+"\n"
+" :j <l> <w> - justera bufferten eller rad <l>. där <w> är f (full), c "
+"(center), l (vänster) or r (höger). Standard är f. \n"
+" :f <l>     - fyll hela bufferten eller rad/rader <l>: Lika med :j l\n"
+" :fi <l>    - indentera (öka vánstermarginalen i) hela bufferten, eller rad/"
+"rader <l> ett steg\n"
+" :fd <l>    - av-indentera (minska vänstermarginalen i) hela bufferten eller "
+"rad/rader <l> ett steg\n"
+"\n"
+" :echo - sätt eko av input av/på (användbart för vissa klienter)\n"
+
+#: utils/eveditor.py:105
+msgid ""
+"\n"
+"    Legend:\n"
+"    <l>   - line number, like '5' or range, like '3:7'.\n"
+"    <w>   - a single word, or multiple words with quotes around them.\n"
+"    <txt> - longer string, usually not needing quotes.\n"
+msgstr ""
+"\n"
+"    Legend:\n"
+"    <l>   - radnummer, antingen typ '5' eller ett intervall, som '3:7'.\n"
+"    <w>   - ett enda ord, eller många ord omgivna med citationstecken.\n"
+"    <txt> - längre sträng, behöver vanligtvis inga citationstecken.\n"
+
+#: utils/eveditor.py:112
+msgid ""
+"\n"
+" :!    - Execute code buffer without saving\n"
+" :<    - Decrease the level of automatic indentation for the next lines\n"
+" :>    - Increase the level of automatic indentation for the next lines\n"
+" :=    - Switch automatic indentation on/off\n"
+msgstr ""
+"\n"
+" :!    - Exekvera kod i buffer utan att spara först\n"
+" :<    - Minska automatisk indentering för efterföljande rader\n"
+" :>    - Ökja tutomatisk indentering för efterföljande rader\n"
+" :=    - Sätt automatisk indentering på/av\n"
+
+#: utils/eveditor.py:121
+#, python-brace-format
+msgid ""
+"\n"
+"{error}\n"
+"\n"
+"|rBuffer load function error. Could not load initial data.|n\n"
+msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|rBuffern kunde inte ladda sin laddningsfunktion och initialdata.|n\n"
+
+#: utils/eveditor.py:127
+#, python-brace-format
+msgid ""
+"\n"
+"{error}\n"
+"\n"
+"|rSave function returned an error. Buffer not saved.|n\n"
+msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|rSparfunktionen stötte på ett fel. Bufferten kunde inte sparas.|n\n"
+
+#: utils/eveditor.py:133
+msgid "|rNo save function defined. Buffer cannot be saved.|n"
+msgstr "|rIngen sparfunktion specificerad. Bufferten kan inte sparas.|n"
+
+#: utils/eveditor.py:135
+msgid "No changes need saving"
+msgstr "Inga ändringar behöver sparas"
+
+#: utils/eveditor.py:136
+msgid "Exited editor."
+msgstr "Lämnade editorn."
+
+#: utils/eveditor.py:138
+#, python-brace-format
+msgid ""
+"\n"
+"{error}\n"
+"\n"
+"|rQuit function gave an error. Skipping.|n\n"
+msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|rAvslutningsfunktionen gav ett fel. Ignorerade den.|n\n"
+
+#: utils/eveditor.py:144
+#, python-brace-format
+msgid ""
+"\n"
+"{error}\n"
+"\n"
+"|rThe editor state could not be saved for persistent mode. Switching\n"
+"to non-persistent mode (which means the editor session won't survive\n"
+"an eventual server reload - so save often!)|n\n"
+msgstr ""
+"\n"
+"{error}\n"
+"\n"
+"|rEditorns tillstånd kunde inte sparas permanent. Byter till icke-permanent\n"
+"läge (vilket betyder att editorn inte överlever en server-reload - så \n"
+"spara ofta!)|n\n"
+
+#: utils/eveditor.py:153
+msgid ""
+"EvEditor persistent-mode error. Commonly, this is because one or more of the "
+"EvEditor callbacks could not be pickled, for example because it's a class "
+"method or is defined inside another function."
+msgstr ""
+"EvEditor persistent-mode-fel. Vanligen beror detta på att en eller fler "
+"EvEditor-funktioner inte kunde serialiseras med pickle. Till exempel för att "
+"det är en klass-metod eller är definierad inuti en annan funktion."
+
+#: utils/eveditor.py:159
+msgid "Nothing to undo."
+msgstr "Inget att göra ogjort (nothing to undo)."
+
+#: utils/eveditor.py:160
+msgid "Nothing to redo."
+msgstr "Inga ogjorda steg att ångra (nothing to redo)."
+
+#: utils/eveditor.py:161
+msgid "Undid one step."
+msgstr "Gjorde ett steg ogjort (undo)"
+
+#: utils/eveditor.py:162
+msgid "Redid one step."
+msgstr "Ångrade ett tidigare ogjort steg (redo)"
+
+#: utils/eveditor.py:480
+msgid "Single ':' added to buffer."
+msgstr "Ensamt ':' lades till bufferten."
+
+#: utils/eveditor.py:495
+msgid "Save before quitting?"
+msgstr "Avslutar. Spara först?"
+
+#: utils/eveditor.py:510
+msgid "Reverted all changes to the buffer back to original state."
+msgstr ""
+"Återställde alla ändringar i bufferten tillabaka till ursprungstillståndet."
+
+#: utils/eveditor.py:515
+#, python-brace-format
+msgid "Deleted {string}."
+msgstr "Raderade {string}."
+
+#: utils/eveditor.py:520
+msgid "You must give a search word to delete."
+msgstr "Du måste ange ett sök-ord som ska raderas."
+
+#: utils/eveditor.py:525
+#, python-brace-format
+msgid "Removed {arg1} for lines {l1}-{l2}."
+msgstr "Raderade {arg1} för rader {l1}-{l2}."
+
+#: utils/eveditor.py:528
+#, python-brace-format
+msgid "Removed {arg1} for {line}."
+msgstr "Raderade {arg1} på rad {line}."
+
+#: utils/eveditor.py:544
+#, python-brace-format
+msgid "Cleared {nlines} lines from buffer."
+msgstr "Raderade {nlines} rader från bufferten."
+
+#: utils/eveditor.py:549
+#, python-brace-format
+msgid "{line}, {cbuf} yanked."
+msgstr "{line}, {cbuf} kopierades (yanked)."
+
+#: utils/eveditor.py:556
+#, python-brace-format
+msgid "{line}, {cbuf} cut."
+msgstr "{line}, {cbuf} utklippt (cut}."
+
+#: utils/eveditor.py:560
+msgid "Copy buffer is empty."
+msgstr "Kopieringsbuffer är tom."
+
+#: utils/eveditor.py:564
+#, python-brace-format
+msgid "Pasted buffer {cbuf} to {line}."
+msgstr "Klistrade in buffer {cbuf} i {line}."
+
+#: utils/eveditor.py:570
+msgid "You need to enter a new line and where to insert it."
+msgstr "Du måste ange en ny rad och var den ska klistras in."
+
+#: utils/eveditor.py:574
+#, python-brace-format
+msgid "Inserted {num} new line(s) at {line}."
+msgstr "Klistrade in {num} ny/nya rad/rader vid rad {line}."
+
+#: utils/eveditor.py:580
+msgid "You need to enter a replacement string."
+msgstr "Du måste ange en ersättningssträng."
+
+#: utils/eveditor.py:584
+#, python-brace-format
+msgid "Replaced {num} line(s) at {line}."
+msgstr "Ersatte {num} rader vid {line}"
+
+#: utils/eveditor.py:589
+msgid "You need to enter text to insert."
+msgstr "Du måste ange en text att klistra in."
+
+#: utils/eveditor.py:597
+#, python-brace-format
+msgid "Inserted text at beginning of {line}."
+msgstr "Klistrade in texten i början av {line}."
+
+#: utils/eveditor.py:601
+msgid "You need to enter text to append."
+msgstr "Du måste ange en text att lägga till."
+
+#: utils/eveditor.py:609
+#, python-brace-format
+msgid "Appended text to end of {line}."
+msgstr "Lade till texten i slutet av {line}."
+
+#: utils/eveditor.py:614
+msgid "You must give a search word and something to replace it with."
+msgstr "Du måste ange ett sökord och vad det ska ersättas med."
+
+#: utils/eveditor.py:620
+#, python-brace-format
+msgid "Search-replaced {arg1} -> {arg2} for lines {l1}-{l2}."
+msgstr "Sökte och ersatte {arg1} -> {arg2} för rader {l1}-{l2}"
+
+#: utils/eveditor.py:625
+#, python-brace-format
+msgid "Search-replaced {arg1} -> {arg2} for {line}."
+msgstr "Sökte och ersatte {arg1} -> {arg2} för {line}"
+
+#: utils/eveditor.py:648
+#, python-brace-format
+msgid "Flood filled lines {l1}-{l2}."
+msgstr "Fyllde rader {l1}-{l2}"
+
+#: utils/eveditor.py:651
+#, python-brace-format
+msgid "Flood filled {line}."
+msgstr "Fyllde rader {line}."
+
+#: utils/eveditor.py:673
+msgid "Valid justifications are"
+msgstr "Accepterade justifikationstyper är"
+
+#: utils/eveditor.py:681
+#, python-brace-format
+msgid "{align}-justified lines {l1}-{l2}."
+msgstr "{align}-justerade rader {l1}-{l2}."
+
+#: utils/eveditor.py:684
+#, python-brace-format
+msgid "{align}-justified {line}."
+msgstr "{align}-justerade {line}"
+
+#: utils/eveditor.py:696
+#, python-brace-format
+msgid "Indented lines {l1}-{l2}."
+msgstr "Indenterade rader {l1}-{l2}"
+
+#: utils/eveditor.py:698
+#, python-brace-format
+msgid "Indented {line}."
+msgstr "Indenterade rad {line}"
+
+#: utils/eveditor.py:707
+#, python-brace-format
+msgid "Removed left margin (dedented) lines {l1}-{l2}."
+msgstr "Tog bort vänstermarginal (dedent) för rader {l1}-{l2}."
+
+#: utils/eveditor.py:710
+#, python-brace-format
+msgid "Removed left margin (dedented) {line}."
+msgstr "Raderade vänstermarginal (dedent) från {line}."
+
+#: utils/eveditor.py:718
+#, python-brace-format
+msgid "Echo mode set to {mode}"
+msgstr "Eko-läge satt till {mode}"
+
+#: utils/eveditor.py:723 utils/eveditor.py:736 utils/eveditor.py:749
+#: utils/eveditor.py:760
+msgid "This command is only available in code editor mode."
+msgstr "Detta kommando är bara tillgängligt i kod-editorläge."
+
+#: utils/eveditor.py:731
+#, python-brace-format
+msgid "Decreased indentation: new indentation is {indent}."
+msgstr "Minskade vänstermarginalen: Ny marginal är {indent}."
+
+#: utils/eveditor.py:734 utils/eveditor.py:747
+msgid "|rManual indentation is OFF.|n Use := to turn it on."
+msgstr "|rManuell vänstermarginal är avstängd. |n Använd := för att aktivera."
+
+#: utils/eveditor.py:744
+#, python-brace-format
+msgid "Increased indentation: new indentation is {indent}."
+msgstr "Ökade vänstermarginalen: Ny marginal är {indent}."
+
+#: utils/eveditor.py:756
+msgid "Auto-indentation turned on."
+msgstr "Auto-vänstermarginaler är påslagna."
+
+#: utils/eveditor.py:758
+msgid "Auto-indentation turned off."
+msgstr "Auto-vänstermarginaler är avstängda."
+
+#: utils/eveditor.py:913
+msgid "|rNote: input buffer was converted to a string.|n"
+msgstr "|rNotera: Den ingående bufferten konverterades till en string.|n"
+
+#: utils/eveditor.py:1050
+#, python-brace-format
+msgid "Line Editor [{name}]"
+msgstr "Linje-editor [{name}]"
+
+#: utils/eveditor.py:1058
+msgid "(:h for help)"
+msgstr "(:h för hjälp)"
+
+#: utils/evmenu.py:302
+#, python-brace-format
+msgid ""
+"Menu node '{nodename}' is either not implemented or caused an error. Make "
+"another choice or try 'q' to abort."
+msgstr ""
+"Meny-noden '{nodename}' är antingen inte implementerad eller orsakade ett "
+"fel. Välj något annat eller 'q' för att avsluta."
+
+#: utils/evmenu.py:305
+#, python-brace-format
+msgid "Error in menu node '{nodename}'."
+msgstr "Fel i meny-noden '{nodename}'"
+
+#: utils/evmenu.py:306
+msgid "No description."
+msgstr "Ingen beskrivning."
+
+#: utils/evmenu.py:307
+msgid "Commands: <menu option>, help, quit"
+msgstr "Kommandon: <menyval>, help, quit"
+
+#: utils/evmenu.py:308
+msgid "Commands: <menu option>, help"
+msgstr "Kommandon: <menyval>, help"
+
+#: utils/evmenu.py:309
+msgid "Commands: help, quit"
+msgstr "Kommandon: help, quit"
+
+#: utils/evmenu.py:310
+msgid "Commands: help"
+msgstr "Kommando: help"
+
+#: utils/evmenu.py:311 utils/evmenu.py:1842
+msgid "Choose an option or try 'help'."
+msgstr "Gör ett val eller försök med 'help'."
+
+#: utils/evmenu.py:1383
+msgid "|rInvalid choice.|n"
+msgstr "|rFelaktigt val.|n"
+
+#: utils/evmenu.py:1441
+msgid "|Wcurrent|n"
+msgstr "|Wnuvarande|n"
+
+#: utils/evmenu.py:1449
+msgid "|wp|Wrevious page|n"
+msgstr "(wp|W)föregående sida|n"
+
+#: utils/evmenu.py:1456
+msgid "|wn|Wext page|n"
+msgstr "|wn|ästa sida|n"
+
+#: utils/evmenu.py:1690
+msgid "Aborted."
+msgstr "Avbruten."
+
+#: utils/evmenu.py:1713
+msgid "|rError in ask_yes_no. Choice not confirmed (report to admin)|n"
+msgstr "|rFel i ask_yes_no. Valet inte bekräftat. Rapportera till admin.|n"
+
+#: utils/evmore.py:235
+msgid "Exited |wmore|n pager."
+msgstr "Lämndade |wmore|n-pagineraren."
+
+#: utils/optionhandler.py:138 utils/optionhandler.py:162
+msgid "Option not found!"
+msgstr "Valet hittades inte!"
+
+#: utils/optionhandler.py:159
+msgid "Option field blank!"
+msgstr "Valfältet lämnades tomt!"
+
+#: utils/optionhandler.py:164
+msgid "Multiple matches:"
+msgstr "Det fanns många träffar:"
+
+#: utils/optionhandler.py:166
+msgid "Please be more specific."
+msgstr "Försök vara mer specifik."
+
+#: utils/utils.py:2219
+#, python-brace-format
+msgid "Could not find '{query}'."
+msgstr "Kunde inte hitta '{query}'."
+
+#: utils/utils.py:2226
+#, python-brace-format
+msgid "More than one match for '{query}' (please narrow target):\n"
+msgstr "Mer än en träff för '{query}' (försök vara mer specifik):\n"
+
+#: utils/validatorfuncs.py:25
+#, python-brace-format
+msgid "Input could not be converted to text ({err})"
+msgstr "Detta kunde inte konverteras till text ({err})"
+
+#: utils/validatorfuncs.py:34
+#, python-brace-format
+msgid "Nothing entered for a {option_key}!"
+msgstr "Inget var angivet för '{option_key}'!"
+
+#: utils/validatorfuncs.py:37
+#, python-brace-format
+msgid "'{entry}' is not a valid {option_key}."
+msgstr "'{entry}' är inte en giltig '{option_key}'."
+
+#: utils/validatorfuncs.py:62 utils/validatorfuncs.py:223
+#, python-brace-format
+msgid "No {option_key} entered!"
+msgstr "Ingen '{option_key}' var angiven!"
+
+#: utils/validatorfuncs.py:71
+#, python-brace-format
+msgid "Timezone string '{acct_tz}' is not a valid timezone ({err})"
+msgstr "Tidszone-strängen '{acct_tz}' är inte en korrekt tidszon ({err})"
+
+#: utils/validatorfuncs.py:88 utils/validatorfuncs.py:96
+#, python-brace-format
+msgid "{option_key} must be entered in a 24-hour format such as: {timeformat}"
+msgstr "{option_key} måste vara angiven i 24-timmarsformat, såsom {timeformat}"
+
+#: utils/validatorfuncs.py:140
+#, python-brace-format
+msgid "Could not convert section '{interval}' to a {option_key}."
+msgstr "Kunde inte konvertera '{interval}' till '{option_key}'."
+
+#: utils/validatorfuncs.py:150
+#, python-brace-format
+msgid "That {option_key} is in the past! Must give a Future datetime!"
+msgstr "Datumet {option_key} är i dåtid! Det måste vara en tid i framtiden."
+
+#: utils/validatorfuncs.py:157
+#, python-brace-format
+msgid "Must enter a whole number for {option_key}!"
+msgstr "{option_key} måste vara angivet som ett heltalsnummer."
+
+#: utils/validatorfuncs.py:162
+#, python-brace-format
+msgid "Could not convert '{entry}' to a whole number for {option_key}!"
+msgstr ""
+"Kunde inte konvertera '{entry}' till ett heltalsnummer för {option_key}!"
+
+#: utils/validatorfuncs.py:171
+#, python-brace-format
+msgid "Must enter a whole number greater than 0 for {option_key}!"
+msgstr "{option_key} måste vara ett heltalsnummer större än 0."
+
+#: utils/validatorfuncs.py:179
+#, python-brace-format
+msgid "{option_key} must be a whole number greater than or equal to 0!"
+msgstr "{option_key} måste vara ett heltalsnummer lika med eller större än 0!"
+
+#: utils/validatorfuncs.py:197
+#, python-brace-format
+msgid "Must enter a true/false input for {option_key}. Accepts {alternatives}."
+msgstr "{option_key} måste vara sant/falskt. Giltiga värden är {alternatives}."
+
+#: utils/validatorfuncs.py:227
+#, python-brace-format
+msgid "That matched: {matches}. Please be more specific!"
+msgstr "Följande träffar matchade: {matches}. Försök vara mer specifik!"
+
+#: utils/validatorfuncs.py:231
+#, python-brace-format
+msgid "Could not find timezone '{entry}' for {option_key}!"
+msgstr "Kunde inte hitta tidszonen '{entry}' för {option_key}!"
+
+#: utils/validatorfuncs.py:237
+msgid "Email address field empty!"
+msgstr "Email-addressfältet är tomt!"
+
+#: utils/validatorfuncs.py:240
+#, python-brace-format
+msgid "That isn't a valid {option_key}!"
+msgstr "{option_key} är inte ett accepterat val."
+
+#: utils/validatorfuncs.py:247
+#, python-brace-format
+msgid "No {option_key} entered to set!"
+msgstr "Inget värde var angivet för {option_key}!"
+
+#: utils/validatorfuncs.py:251
+msgid "Must enter an access type!"
+msgstr "Måste ange en access-typ!"
+
+#: utils/validatorfuncs.py:254
+#, python-brace-format
+msgid "Access type must be one of: {alternatives}"
+msgstr "Access-typen måste vara en av följande: {alternatives}"
+
+#: utils/validatorfuncs.py:257
+msgid "Lock func not entered."
+msgstr "Låsfunktion inte angiven."
+
+#: web/templates/admin/app_list.html:19
+msgid "Add"
+msgstr "Lägg till"
+
+#: web/templates/admin/app_list.html:26
+msgid "View"
+msgstr "Visa"
+
+#: web/templates/admin/app_list.html:28
+msgid "Change"
+msgstr "Ändra"
+
+#: web/templates/admin/app_list.html:39
+msgid "You don’t have permission to view or edit anything."
+msgstr "Du har inte rättigheter att se eller ändra någonting."
+
+#~ msgid ""
+#~ "\n"
+#~ "Error: "
+#~ msgstr ""
+#~ "\n"
+#~ "Fel:"
+
+#~ msgid ""
+#~ "Error: \n"
+#~ "Error: "
+#~ msgstr ""
+#~ "Fel:\n"
+#~ "Fel:"
+
+#, fuzzy
+#~| msgid "Models available in the %(name)s application."
+#~ msgid "Models in the %(name)s application"
+#~ msgstr "Modeller tillgängliga i %(name)s applikation."
+
+#, fuzzy
+#~| msgid "joined %s."
+#~ msgid "%s-justified %s."
+#~ msgstr "lyssnar till %s."
+
+#~ msgid "location"
+#~ msgstr "plats"
+
+#~ msgid " (carried)"
+#~ msgstr "(buren)"
+
+#~ msgid " (channel)"
+#~ msgstr "(kanal)"
+
+#, fuzzy
+#~| msgid " <Merged %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+#~ msgid " <Merged {mergelist} {mergetype}, prio {prio}>: {current}"
+#~ msgstr ""
+#~ "<Sammanslagen %(mergelist)s (%(mergetype)s, prio %(prio)i)>: %(current)s"
+
+#, fuzzy
+#~| msgid ""
+#~| " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+#~ msgid " <{key} ({mergetype} prio {prio}, {permstring}>: {keylist}"
+#~ msgstr ""
+#~ " <%(key)s (%(mergetype)s, prio %(prio)i, %(permstring)s)>: %(keylist)s"
+
+#~ msgid "This is an empty placeholder script."
+#~ msgstr "Detta är ett tomt platshållar-script."
+
+#~ msgid "You have been disconnected."
+#~ msgstr "Du har blivit frånkopplad."
 
 #~ msgid "Error loading cmdset: Couldn't import module '%s'."
 #~ msgstr "Fel medan cmdset laddades: Kunde inte importera modulen '%s'."
@@ -289,20 +1313,8 @@ msgstr "Timeout. Kopplar ur."
 #~ msgid "Evennia database administration"
 #~ msgstr "Evennia databasadministration"
 
-#~ msgid "Models available in the %(name)s application."
-#~ msgstr "Modeller tillgängliga i %(name)s applikation."
-
 #~ msgid "%(name)s"
 #~ msgstr "%(name)s"
-
-#~ msgid "Add"
-#~ msgstr "Lägg till"
-
-#~ msgid "Change"
-#~ msgstr "Ändra"
-
-#~ msgid "You don't have permission to edit anything."
-#~ msgstr "Du har inte rättigheter att ändra någonting."
 
 #~ msgid "Recent Actions"
 #~ msgstr "Senaste Aktiviteter"
@@ -322,9 +1334,6 @@ msgstr "Timeout. Kopplar ur."
 #~ msgstr ""
 #~ "Först, ange ett användarnamn och lösenord. Då kommer du att kunna "
 #~ "modifiera fler Player-inställningar."
-
-#~ msgid "Enter a username and password."
-#~ msgstr "Ange ett användarnamn och lösenord."
 
 #~ msgid "Home"
 #~ msgstr "Hem"
@@ -360,9 +1369,6 @@ msgstr "Timeout. Kopplar ur."
 
 #~ msgid "Connection lost: %s"
 #~ msgstr "Uppkopplingen förlorades: %s"
-
-#~ msgid "joined %s."
-#~ msgstr "lyssnar till %s."
 
 #~ msgid "Unknown"
 #~ msgstr "Okänd"

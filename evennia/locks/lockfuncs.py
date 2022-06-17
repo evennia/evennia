@@ -11,81 +11,6 @@ Note that `accessing_obj` and `accessed_obj` can be any object type
 with a lock variable/field, so be careful to not expect
 a certain object type.
 
-
-**Appendix: MUX locks**
-
-Below is a list nicked from the MUX help file on the locks available
-in standard MUX. Most of these are not relevant to core Evennia since
-locks in Evennia are considerably more flexible and can be implemented
-on an individual command/typeclass basis rather than as globally
-available like the MUX ones. So many of these are not available in
-basic Evennia, but could all be implemented easily if needed for the
-individual game.
-
-```
-MUX Name:      Affects:        Effect:
-----------------------------------------------------------------------
-DefaultLock:   Exits:          controls who may traverse the exit to
-                               its destination.
-                                 Evennia: "traverse:<lockfunc()>"
-               Rooms:          controls whether the account sees the
-                               SUCC or FAIL message for the room
-                               following the room description when
-                               looking at the room.
-                                 Evennia: Custom typeclass
-               Accounts/Things: controls who may GET the object.
-                                 Evennia: "get:<lockfunc()"
- EnterLock:    Accounts/Things: controls who may ENTER the object
-                                 Evennia:
- GetFromLock:  All but Exits:  controls who may gets things from a
-                               given location.
-                                 Evennia:
- GiveLock:     Accounts/Things: controls who may give the object.
-                                 Evennia:
- LeaveLock:    Accounts/Things: controls who may LEAVE the object.
-                                 Evennia:
- LinkLock:     All but Exits:  controls who may link to the location
-                               if the location is LINK_OK (for linking
-                               exits or setting drop-tos) or ABODE (for
-                               setting homes)
-                                 Evennia:
- MailLock:     Accounts:        controls who may @mail the account.
-                               Evennia:
- OpenLock:     All but Exits:  controls who may open an exit.
-                                 Evennia:
- PageLock:     Accounts:        controls who may page the account.
-                                 Evennia: "send:<lockfunc()>"
- ParentLock:   All:            controls who may make @parent links to
-                               the object.
-                                 Evennia: Typeclasses and
-                               "puppet:<lockstring()>"
- ReceiveLock:  Accounts/Things: controls who may give things to the
-                               object.
-                                 Evennia:
- SpeechLock:   All but Exits:  controls who may speak in that location
-                                 Evennia:
- TeloutLock:   All but Exits:  controls who may teleport out of the
-                               location.
-                                 Evennia:
- TportLock:    Rooms/Things:   controls who may teleport there
-                                 Evennia:
- UseLock:      All but Exits:  controls who may USE the object, GIVE
-                               the object money and have the PAY
-                               attributes run, have their messages
-                               heard and possibly acted on by LISTEN
-                               and AxHEAR, and invoke $-commands
-                               stored on the object.
-                                 Evennia: Commands and Cmdsets.
- DropLock:     All but rooms:  controls who may drop that object.
-                                 Evennia:
- VisibleLock:  All:            Controls object visibility when the
-                               object is not dark and the looker
-                               passes the lock. In DARK locations, the
-                               object must also be set LIGHT and the
-                               viewer must pass the VisibleLock.
-                                 Evennia: Room typeclass with
-                                          Dark/light script
-```
 """
 
 
@@ -112,7 +37,10 @@ def _to_account(accessing_obj):
 
 
 def true(*args, **kwargs):
-    "Always returns True."
+    """
+    Always returns True.
+
+    """
     return True
 
 
@@ -121,11 +49,18 @@ def all(*args, **kwargs):
 
 
 def false(*args, **kwargs):
-    "Always returns False"
+    """
+    Always returns False
+
+    """
     return False
 
 
 def none(*args, **kwargs):
+    return False
+
+
+def superuser(*args, **kwargs):
     return False
 
 
@@ -161,6 +96,9 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     LOWEST hieararcy-permission of the Account/Object-pair will be used
     (this is order to avoid Accounts potentially escalating their own permissions
     by use of a higher-level Object)
+
+    For non-hierarchical permissions, a puppeted object's account is checked first,
+    followed by the puppet (unless quelled, when only puppet's access is checked).
 
     """
     # this allows the perm_above lockfunc to make use of this function too
@@ -235,11 +173,17 @@ def perm(accessing_obj, accessed_obj, *args, **kwargs):
     else:
         # no hierarchy match - check direct matches
         if account:
-            # account exists, check it first unless quelled
+            # account exists
             if is_quell and permission in perms_object:
+                # if quelled, first check object
                 return True
             elif permission in perms_account:
+                # unquelled - check account
                 return True
+            else:
+                # no account-pass, check object pass
+                return permission in perms_object
+
         elif permission in perms_object:
             return True
 
@@ -530,6 +474,30 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
     return bool(accessing_obj.tags.get(tagkey, category=category))
 
 
+def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+        is_ooc()
+
+    This is normally used to lock a Command, so it can be used
+    only when out of character.
+    """
+    obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
+    account = obj.account if hasattr(obj, "account") else obj
+    if not account:
+        return True
+    try:
+        session = accessed_obj.session
+    except AttributeError:
+        session = account.sessions.get()[0]  # note-this doesn't work well
+        # for high multisession mode. We may need
+        # to change to sessiondb to resolve this
+    try:
+        return not account.get_puppet(session)
+    except TypeError:
+        return not session.get_puppet()
+
+
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -539,8 +507,6 @@ def objtag(accessing_obj, accessed_obj, *args, **kwargs):
     Only true if accessed_obj has the specified tag and optional
     category.
     """
-    if hasattr(accessed_obj, "obj"):
-        accessed_obj = accessed_obj.obj
     tagkey = args[0] if args else None
     category = args[1] if len(args) > 1 else None
     return bool(accessed_obj.tags.get(tagkey, category=category))
@@ -571,9 +537,6 @@ def inside_rec(accessing_obj, accessed_obj, *args, **kwargs):
     of recursion (so if this lock is on a room, then an object inside a box
     in your inventory will also pass the lock).
     """
-
-    if hasattr(accessed_obj, "obj"):
-        accessed_obj = accessed_obj.obj
 
     def _recursive_inside(obj, accessed_obj, lvl=1):
         if obj.location:
@@ -646,17 +609,6 @@ def holds(accessing_obj, accessed_obj, *args, **kwargs):
         for obj in contents:
             if obj.attributes.get(args[0]) == args[1]:
                 return True
-    return False
-
-
-def superuser(*args, **kwargs):
-    """
-    Only accepts an accesing_obj that is superuser (e.g. user #1)
-
-    Since a superuser would not ever reach this check (superusers
-    bypass the lock entirely), any user who gets this far cannot be a
-    superuser, hence we just return False. :)
-    """
     return False
 
 

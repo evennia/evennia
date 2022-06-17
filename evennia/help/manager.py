@@ -1,9 +1,11 @@
 """
 Custom manager for HelpEntry objects.
 """
-from django.db import models
+from django.db import IntegrityError
 from evennia.utils import logger, utils
 from evennia.typeclasses.managers import TypedObjectManager
+from evennia.utils.utils import make_iter
+from evennia.server import signals
 
 __all__ = ("HelpEntryManager",)
 
@@ -131,7 +133,7 @@ class HelpEntryManager(TypedObjectManager):
         for topic in topics:
             topic.help_category = default_category
             topic.save()
-        string = _("Help database moved to category {default_category}").format(
+        string = "Help database moved to category {default_category}".format(
             default_category=default_category
         )
         logger.log_info(string)
@@ -144,9 +146,55 @@ class HelpEntryManager(TypedObjectManager):
             ostring (str): The help topic to look for.
             category (str): Limit the search to a particular help topic
 
+        Returns:
+            Queryset: An iterable with 0, 1 or more matches.
+
         """
         ostring = ostring.strip().lower()
         if help_category:
             return self.filter(db_key__iexact=ostring, db_help_category__iexact=help_category)
         else:
             return self.filter(db_key__iexact=ostring)
+
+    def create_help(self, key, entrytext, category="General", locks=None, aliases=None, tags=None):
+        """
+        Create a static help entry in the help database. Note that Command
+        help entries are dynamic and directly taken from the __doc__
+        entries of the command. The database-stored help entries are
+        intended for more general help on the game, more extensive info,
+        in-game setting information and so on.
+
+        Args:
+            key (str): The name of the help entry.
+            entrytext (str): The body of te help entry
+            category (str, optional): The help category of the entry.
+            locks (str, optional): A lockstring to restrict access.
+            aliases (list of str, optional): List of alternative (likely shorter) keynames.
+            tags (lst, optional): List of tags or tuples `(tag, category)`.
+
+        Returns:
+            help (HelpEntry): A newly created help entry.
+
+        """
+        try:
+            new_help = self.model()
+            new_help.key = key
+            new_help.entrytext = entrytext
+            new_help.help_category = category
+            if locks:
+                new_help.locks.add(locks)
+            if aliases:
+                new_help.aliases.add(make_iter(aliases))
+            if tags:
+                new_help.tags.batch_add(*tags)
+            new_help.save()
+            return new_help
+        except IntegrityError:
+            string = "Could not add help entry: key '%s' already exists." % key
+            logger.log_err(string)
+            return None
+        except Exception:
+            logger.log_trace()
+            return None
+
+        signals.SIGNAL_HELPENTRY_POST_CREATE.send(sender=new_help)

@@ -183,7 +183,7 @@ def purge_processor(caller):
         # something went wrong. Purge cmdset except default
         caller.cmdset.clear()
 
-    caller.scripts.validate()  # this will purge interactive mode
+    # caller.scripts.validate()  # this will purge interactive mode
 
 
 # -------------------------------------------------------------

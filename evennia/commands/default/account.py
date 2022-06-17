@@ -696,6 +696,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "XTERM256": validate_bool,
             "INPUTDEBUG": validate_bool,
             "FORCEDENDLINE": validate_bool,
+            "LOCALECHO": validate_bool,
         }
 
         name = self.lhs.upper()
@@ -820,7 +821,7 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     testing which colors your client support
 
     Usage:
-      color ansi||xterm256
+      color ansi | xterm256
 
     Prints a color map along with in-mud color codes to use to produce
     them.  It also tests what is supported in your client. Choices are

@@ -4,12 +4,12 @@ Tests of create functions
 """
 
 from django.test import TestCase
-from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import create
 
 
-class TestCreateScript(EvenniaTest):
+class TestCreateScript(BaseEvenniaTest):
     def test_create_script(self):
         class TestScriptA(DefaultScript):
             def at_script_creation(self):
@@ -31,9 +31,11 @@ class TestCreateScript(EvenniaTest):
                 self.repeats = 1
                 self.persistent = False
 
-        # script is already stopped (interval=1, start_delay=False)
+        # script should still exist even though repeats=1, start_delay=False
         script = create.create_script(TestScriptB, key="test_script")
-        assert script is None
+        assert script
+        # but the timer should be inactive now
+        assert not script.is_active
 
     def test_create_script_w_repeats_equal_1_persisted(self):
         class TestScriptB1(DefaultScript):
@@ -45,7 +47,8 @@ class TestCreateScript(EvenniaTest):
 
         # script is already stopped (interval=1, start_delay=False)
         script = create.create_script(TestScriptB1, key="test_script")
-        assert script is None
+        assert script
+        assert not script.is_active
 
     def test_create_script_w_repeats_equal_2(self):
         class TestScriptC(DefaultScript):
@@ -76,45 +79,6 @@ class TestCreateScript(EvenniaTest):
         assert script.interval == 10
         assert script.repeats == 1
         assert script.key == "test_script"
-        script.stop()
-
-    def test_attr_creation_func(self):
-        """
-        Test of assigning attributes during creation
-
-        """
-        attrvalue = {'test1': 1, 'test2': 'boo'}
-
-        # creation-function direct call
-        script = create.create_script(
-            key='script_broken',
-            attributes=[
-                ('testname', attrvalue, '')
-            ]
-        )
-        self.assertTrue(script)
-        self.assertEqual(script.db.testname, None)  # since the category is '' and not None
-        self.assertEqual(script.attributes.get("testname", category=''), attrvalue)
-        script.stop()
-
-    def test_attr_method_creation_malformed(self):
-        """
-        Adding the wrong type for one attribute-tuple element
-
-        """
-        attrvalue = {'test1': 1, 'test2': 'boo'}
-
-        # method-based creation
-        script, err = DefaultScript.create(
-            'scripttest2',
-            attributes=[
-                # test of wrong syntax - last element should be bool
-                ('testname', attrvalue, None, '', '')
-            ]
-        )
-        self.assertFalse(err)
-        self.assertTrue(script)
-        self.assertEqual(script.db.testname, attrvalue)
         script.stop()
 
 
@@ -164,7 +128,7 @@ class TestCreateHelpEntry(TestCase):
         self.assertEqual(entry.tags.all(return_key_and_category=True), tags)
 
 
-class TestCreateMessage(EvenniaTest):
+class TestCreateMessage(BaseEvenniaTest):
 
     msgtext = """
     Qui laborum voluptas quis commodi ipsum quo temporibus eum. Facilis
@@ -174,18 +138,15 @@ class TestCreateMessage(EvenniaTest):
     """
 
     def test_create_msg__simple(self):
+        # from evennia import set_trace;set_trace()
         msg = create.create_message(self.char1, self.msgtext, header="TestHeader")
+        msg.senders = "ExternalSender"
+        msg.receivers = self.char2
+        msg.receivers = "ExternalReceiver"
         self.assertEqual(msg.message, self.msgtext)
         self.assertEqual(msg.header, "TestHeader")
-        self.assertEqual(msg.senders, [self.char1])
-
-    def test_create_msg__channel(self):
-        chan1 = create.create_channel("DummyChannel1")
-        chan2 = create.create_channel("DummyChannel2")
-        msg = create.create_message(
-            self.char1, self.msgtext, channels=[chan1, chan2], header="TestHeader"
-        )
-        self.assertEqual(list(msg.channels), [chan1, chan2])
+        self.assertEqual(msg.senders, [self.char1, "ExternalSender"])
+        self.assertEqual(msg.receivers, [self.char2, "ExternalReceiver"])
 
     def test_create_msg__custom(self):
         locks = "foo:false();bar:true()"
@@ -194,11 +155,11 @@ class TestCreateMessage(EvenniaTest):
             self.char1,
             self.msgtext,
             header="TestHeader",
-            receivers=[self.char1, self.char2],
+            receivers=[self.char1, self.char2, "ExternalReceiver"],
             locks=locks,
             tags=tags,
         )
-        self.assertEqual(set(msg.receivers), set([self.char1, self.char2]))
+        self.assertEqual(set(msg.receivers), set([self.char1, self.char2, "ExternalReceiver"]))
         self.assertTrue(all(lock in msg.locks.all() for lock in locks.split(";")))
         self.assertEqual(msg.tags.all(), tags)
 

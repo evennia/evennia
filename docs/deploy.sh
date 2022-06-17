@@ -11,11 +11,13 @@ if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
 fi
 
 # get the deployment branch
+git fetch
 git checkout gh-pages
 # at this point we should be inside the docs/ folder of the gh-pages branch,
 # with the build/ directory available since this is not in git
 
 # remove all but the build dir
+# TODO don't delete old branches after 1.0 release; they will get harder and harder to rebuild
 ls -Q | grep -v build | xargs rm -Rf
 
 cp -Rf build/html/* .
@@ -28,10 +30,9 @@ git add .
 
 git commit -a -m "Updated HTML docs"
 
-echo "Skipping deployment"
 git push origin gh-pages
 
 # get back to previous branch 
 git checkout -
 
-echo "Deployed to https://evennia.github.io/evennia-docs."
+echo "Deployed to https://evennia.github.io/evennia/"

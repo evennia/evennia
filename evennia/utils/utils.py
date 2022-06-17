@@ -9,9 +9,9 @@ be of use when designing your own game.
 import os
 import gc
 import sys
-import copy
 import types
 import math
+import threading
 import re
 import textwrap
 import random
@@ -20,25 +20,36 @@ import traceback
 import importlib
 import importlib.util
 import importlib.machinery
+from ast import literal_eval
+from simpleeval import simple_eval
 from unicodedata import east_asian_width
 from twisted.internet.task import deferLater
 from twisted.internet.defer import returnValue  # noqa - used as import target
+from twisted.internet import threads, reactor
 from os.path import join as osjoin
 from inspect import ismodule, trace, getmembers, getmodule, getmro
 from collections import defaultdict, OrderedDict
-from twisted.internet import threads, reactor
 from django.conf import settings
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
 from django.apps import apps
 from django.core.validators import validate_email as django_validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
+
 from evennia.utils import logger
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
 _GAME_DIR = settings.GAME_DIR
+_IS_MAIN_THREAD = threading.current_thread().name == "MainThread"
+
 ENCODINGS = settings.ENCODINGS
+
+_TASK_HANDLER = None
+_TICKER_HANDLER = None
+_STRIP_UNSAFE_TOKENS = None
+
 _GA = object.__getattribute__
 _SA = object.__setattr__
 _DA = object.__delattr__
@@ -162,16 +173,18 @@ def crop(text, width=None, suffix="[...]"):
         return to_str(text)
 
 
-def dedent(text, baseline_index=None):
+def dedent(text, baseline_index=None, indent=None):
     """
     Safely clean all whitespace at the left of a paragraph.
 
     Args:
         text (str): The text to dedent.
-        baseline_index (int or None, optional): Which row to use as a 'base'
+        baseline_index (int, optional): Which row to use as a 'base'
             for the indentation. Lines will be dedented to this level but
             no further. If None, indent so as to completely deindent the
             least indented text.
+        indent (int, optional): If given, force all lines to this indent.
+            This bypasses `baseline_index`.
 
     Returns:
         text (str): Dedented string.
@@ -184,7 +197,12 @@ def dedent(text, baseline_index=None):
     """
     if not text:
         return ""
-    if baseline_index is None:
+    if indent is not None:
+        lines = text.split("\n")
+        ind = " " * indent
+        indline = "\n" + ind
+        return ind + indline.join(line.strip() for line in lines)
+    elif baseline_index is None:
         return textwrap.dedent(text)
     else:
         lines = text.split("\n")
@@ -344,14 +362,14 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     return "\n".join(rows)
 
 
-def iter_to_string(initer, endsep="and", addquote=False):
+def iter_to_str(iterable, endsep=", and", addquote=False):
     """
     This pretty-formats an iterable list as string output, adding an optional
     alternative separator to the second to last entry.  If `addquote`
     is `True`, the outgoing strings will be surrounded by quotes.
 
     Args:
-        initer (any): Usually an iterable to print. Each element must be possible to
+        iterable (any): Usually an iterable to print. Each element must be possible to
             present with a string. Note that if this is a generator, it will be
             consumed by this operation.
         endsep (str, optional): If set, the last item separator will
@@ -360,39 +378,55 @@ def iter_to_string(initer, endsep="and", addquote=False):
             values with double quotes.
 
     Returns:
-        liststr (str): The list represented as a string.
+        str: The list represented as a string.
+
+    Notes:
+        Default is to use 'Oxford comma', like 1, 2, 3, and 4. To remove, give
+        `endsep` as just `and`.
 
     Examples:
 
         ```python
-         # no endsep:
-            [1,2,3] -> '1, 2, 3'
-         # with endsep=='and':
-            [1,2,3] -> '1, 2 and 3'
-         # with addquote and endsep
-            [1,2,3] -> '"1", "2" and "3"'
+        >>> list_to_string([1,2,3], endsep='')
+        '1, 2, 3'
+        >>> list_to_string([1,2,3], ensdep='and')
+        '1, 2 and 3'
+        >>> list_to_string([1,2,3], endsep=', and', addquote=True)
+        '"1", "2", and "3"'
         ```
 
     """
-    if not endsep:
-        endsep = ","
-    else:
-        endsep = " " + endsep
-    if not initer:
+    if not iterable:
         return ""
-    initer = tuple(str(val) for val in make_iter(initer))
+    iterable = list(make_iter(iterable))
+    len_iter = len(iterable)
+
     if addquote:
-        if len(initer) == 1:
-            return '"%s"' % initer[0]
-        return ", ".join('"%s"' % v for v in initer[:-1]) + "%s %s" % (endsep, '"%s"' % initer[-1])
+        iterable = tuple(f'"{val}"' for val in iterable)
     else:
-        if len(initer) == 1:
-            return str(initer[0])
-        return ", ".join(str(v) for v in initer[:-1]) + "%s %s" % (endsep, initer[-1])
+        iterable = tuple(str(val) for val in iterable)
+
+    if endsep.startswith(","):
+        # oxford comma alternative
+        endsep = endsep[1:] if len_iter < 3 else endsep
+    elif endsep:
+        # normal space-separated end separator
+        endsep = " " + str(endsep).strip()
+    else:
+        # no separator given - use comma
+        endsep = ","
+
+    if len_iter == 1:
+        return str(iterable[0])
+    elif len_iter == 2:
+        return f"{endsep} ".join(str(v) for v in iterable)
+    else:
+        return ", ".join(str(v) for v in iterable[:-1]) + f"{endsep} {iterable[-1]}"
 
 
-# legacy alias
-list_to_string = iter_to_string
+# legacy aliases
+list_to_string = iter_to_str
+iter_to_string = iter_to_str
 
 
 def wildcard_to_regexp(instring):
@@ -850,7 +884,7 @@ def to_bytes(text, session=None):
             the text with "?" in place of problematic characters.  If the specified encoding cannot
             be found, the protocol flag is reset to utf-8.  In any case, returns bytes.
 
-    Note:
+    Notes:
         If `text` is already bytes, return it as is.
 
     """
@@ -890,7 +924,7 @@ def to_str(text, session=None):
     Returns:
         decoded_text (str): The decoded text.
 
-    Note:
+    Notes:
         If `text` is already str, return it as is.
     """
     if isinstance(text, str):
@@ -944,18 +978,17 @@ def inherits_from(obj, parent):
     distance from parent.
 
     Args:
-        obj (any): Object to analyze. This may be either an instance
-            or a class.
-        parent (any): Can be either instance, class or python path to class.
+        obj (any): Object to analyze. This may be either an instance or
+            a class.
+        parent (any): Can be either an instance, a class or the python
+            path to the class.
 
     Returns:
         inherits_from (bool): If `parent` is a parent to `obj` or not.
 
     Notes:
-        What differs this function from e.g.  `isinstance()` is that `obj`
-        may be both an instance and a class, and parent may be an
-        instance, a class, or the python path to a class (counting from
-        the evennia root directory).
+        What differentiates this function from Python's `isinstance()` is the
+        flexibility in the types allowed for the object and parent being compared.
 
     """
 
@@ -1003,8 +1036,7 @@ def uses_database(name="sqlite3"):
     shortcut to having to use the full backend name.
 
     Args:
-        name (str): One of 'sqlite3', 'mysql', 'postgresql'
-        or 'oracle'.
+        name (str): One of 'sqlite3', 'mysql', 'postgresql' or 'oracle'.
 
     Returns:
         uses (bool): If the given database is used or not.
@@ -1017,9 +1049,6 @@ def uses_database(name="sqlite3"):
     return engine == "django.db.backends.%s" % name
 
 
-_TASK_HANDLER = None
-
-
 def delay(timedelay, callback, *args, **kwargs):
     """
     Delay the calling of a callback (function).
@@ -1028,8 +1057,7 @@ def delay(timedelay, callback, *args, **kwargs):
         timedelay (int or float): The delay in seconds.
         callback (callable): Will be called as `callback(*args, **kwargs)`
             after `timedelay` seconds.
-        args (any): Will be used as arguments to callback.
-
+        *args: Will be used as arguments to callback
     Keyword Args:
         persistent (bool, optional): If True the delay remains after a server restart.
             persistent is False by default.
@@ -1039,7 +1067,7 @@ def delay(timedelay, callback, *args, **kwargs):
         task (TaskHandlerTask): An instance of a task.
             Refer to, evennia.scripts.taskhandler.TaskHandlerTask
 
-    Note:
+    Notes:
         The task handler (`evennia.scripts.taskhandler.TASK_HANDLER`) will
         be called for persistent or non-persistent tasks.
         If persistent is set to True, the callback, its arguments
@@ -1056,10 +1084,83 @@ def delay(timedelay, callback, *args, **kwargs):
 
     """
     global _TASK_HANDLER
-    # Do some imports here to avoid circular import and speed things up
     if _TASK_HANDLER is None:
         from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+
     return _TASK_HANDLER.add(timedelay, callback, *args, **kwargs)
+
+
+def repeat(
+    interval, callback, persistent=True, idstring="", stop=False, store_key=None, *args, **kwargs
+):
+    """
+    Start a repeating task using the TickerHandler.
+
+    Args:
+        interval (int): How often to call callback.
+        callback (callable): This will be called with `*args, **kwargs` every
+            `interval` seconds. This must be possible to pickle regardless
+            of if `persistent` is set or not!
+        persistent (bool, optional): If ticker survives a server reload.
+        idstring (str, optional): Separates multiple tickers. This is useful
+            mainly if wanting to set up multiple repeats for the same
+            interval/callback but with different args/kwargs.
+        stop (bool, optional): If set, use the given parameters to _stop_ a running
+            ticker instead of creating a new one.
+        store_key (tuple, optional): This is only used in combination with `stop` and
+            should be the return given from the original `repeat` call. If this
+            is given, all other args except `stop` are ignored.
+        *args: Used as arguments to `callback`.
+        **kwargs: Keyword-arguments to pass to `callback`.
+
+    Returns:
+        tuple or None: The tuple is the `store_key` - the identifier for the
+        created ticker.  Store this and pass into unrepat() in order to to stop
+        this ticker later. Returns `None` if `stop=True`.
+
+    Raises:
+        KeyError: If trying to stop a ticker that was not found.
+
+    """
+    global _TICKER_HANDLER
+    if _TICKER_HANDLER is None:
+        from evennia.scripts.tickerhandler import TICKER_HANDLER as _TICKER_HANDLER
+
+    if stop:
+        # we pass all args, but only store_key matters if given
+        _TICKER_HANDLER.remove(
+            interval=interval,
+            callback=callback,
+            idstring=idstring,
+            persistent=persistent,
+            store_key=store_key,
+        )
+    else:
+        return _TICKER_HANDLER.add(
+            interval=interval, callback=callback, idstring=idstring, persistent=persistent
+        )
+
+
+def unrepeat(store_key):
+    """
+    This is used to stop a ticker previously started with `repeat`.
+
+    Args:
+        store_key (tuple): This is the return from `repeat`, used to uniquely
+            identify the ticker to stop. Without the store_key, the ticker
+            must be stopped by passing its parameters to `TICKER_HANDLER.remove`
+            directly.
+
+    Returns:
+        bool: True if a ticker was stopped, False if not (for example because no
+            matching ticker was found or it was already stopped).
+
+    """
+    try:
+        repeat(None, None, stop=True, store_key=store_key)
+        return True
+    except KeyError:
+        return False
 
 
 _PPOOL = None
@@ -1076,17 +1177,16 @@ def run_async(to_execute, *args, **kwargs):
             executed with `*args` and non-reserved `**kwargs` as arguments.
             The callable will be executed using ProcPool, or in a thread
             if ProcPool is not available.
-
     Keyword Args:
         at_return (callable): Should point to a callable with one
-            argument.  It will be called with the return value from
-            to_execute.
+          argument.  It will be called with the return value from
+          to_execute.
         at_return_kwargs (dict): This dictionary will be used as
-            keyword arguments to the at_return callback.
+          keyword arguments to the at_return callback.
         at_err (callable): This will be called with a Failure instance
-            if there is an error in to_execute.
+          if there is an error in to_execute.
         at_err_kwargs (dict): This dictionary will be used as keyword
-            arguments to the at_err errback.
+          arguments to the at_err errback.
 
     Notes:
         All other `*args` and `**kwargs` will be passed on to
@@ -1159,8 +1259,8 @@ def check_evennia_dependencies():
         except ImportError:
             errstring += (
                 "\n ERROR: IRC is enabled, but twisted.words is not installed. Please install it."
-                "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', others"
-                "\n   can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
+                "\n   Linux Debian/Ubuntu users should install package 'python-twisted-words', "
+                "\n others can get it from http://twistedmatrix.com/trac/wiki/TwistedWords."
             )
             not_error = False
     errstring = errstring.strip()
@@ -1172,7 +1272,7 @@ def check_evennia_dependencies():
 
 def has_parent(basepath, obj):
     """
-    Checks if `basepath` is somewhere in `obj`'s parent tree.
+    Checks if `basepath` is somewhere in obj's parent tree.
 
     Args:
         basepath (str): Python dotpath to compare against obj path.
@@ -1260,18 +1360,19 @@ def all_from_module(module):
             already imported module object (e.g. `models`)
 
     Returns:
-        variables (dict): A dict of {variablename: variable} for all
+        dict: A dict of {variablename: variable} for all
             variables in the given module.
 
     Notes:
-        Ignores modules and variable names starting with an underscore.
+        Ignores modules and variable names starting with an underscore, as well
+        as variables imported into the module from other modules.
 
     """
     mod = mod_import(module)
     if not mod:
         return {}
     # make sure to only return variables actually defined in this
-    # module if available (try to avoid not imports)
+    # module if available (try to avoid imports)
     members = getmembers(mod, predicate=lambda obj: getmodule(obj) in (mod, None))
     return dict((key, val) for key, val in members if not key.startswith("_"))
 
@@ -1422,7 +1523,7 @@ def fuzzy_import_from_module(path, variable, default=None, defaultpaths=None):
 
 def class_from_module(path, defaultpaths=None, fallback=None):
     """
-    Return a class from a module, given the module's path. This is
+    Return a class from a module, given the class' full python path. This is
     primarily used to convert db_typeclass_path:s to classes.
 
     Args:
@@ -1531,7 +1632,7 @@ def string_similarity(string1, string2):
     vec2 = [string2.count(v) for v in vocabulary]
     try:
         return float(sum(vec1[i] * vec2[i] for i in range(len(vocabulary)))) / (
-            math.sqrt(sum(v1 ** 2 for v1 in vec1)) * math.sqrt(sum(v2 ** 2 for v2 in vec2))
+            math.sqrt(sum(v1**2 for v1 in vec1)) * math.sqrt(sum(v2**2 for v2 in vec2))
         )
     except ZeroDivisionError:
         # can happen if empty-string cmdnames appear for some reason.
@@ -1553,8 +1654,8 @@ def string_suggestions(string, vocabulary, cutoff=0.6, maxnum=3):
 
     Returns:
         suggestions (list): Suggestions from `vocabulary` with a
-            similarity-rating that higher than or equal to `cutoff`.
-            Could be empty if there are no matches.
+        similarity-rating that higher than or equal to `cutoff`.
+        Could be empty if there are no matches.
 
     """
     return [
@@ -1622,11 +1723,9 @@ def string_partial_matching(alternatives, inp, ret_index=True):
 
 def format_table(table, extra_space=1):
     """
-    Note: `evennia.utils.evtable` is more powerful than this, but this function
-    can be useful when the number of columns and rows are unknown and must be
-    calculated on the fly.
+    Format a 2D array of strings into a multi-column table.
 
-    Args.
+    Args:
         table (list): A list of lists to represent columns in the
             table: `[[val,val,val,...], [val,val,val,...], ...]`, where
             each val will be placed on a separate row in the
@@ -1636,26 +1735,30 @@ def format_table(table, extra_space=1):
             padding (in characters) should  be left between columns.
 
     Returns:
-        table (list): A list of lists representing the rows to print
-            out one by one.
+        list: A list of lists representing the rows to print out one by one.
 
     Notes:
         The function formats the columns to be as wide as the widest member
         of each column.
 
-    Example:
-        ::
+        `evennia.utils.evtable` is more powerful than this, but this
+        function can be useful when the number of columns and rows are
+        unknown and must be calculated on the fly.
 
-            ftable = format_table([[...], [...], ...])
-            for ir, row in enumarate(ftable):
-                if ir == 0:
-                    # make first row white
-                    string += "\\\\n|w" + ""join(row) + "|n"
-                else:
-                    string += "\\\\n" + "".join(row)
-            print(string)
+    Examples: ::
+
+        ftable = format_table([[1,2,3], [4,5,6]])
+        string = ""
+        for ir, row in enumarate(ftable):
+            if ir == 0:
+                # make first row white
+                string += "\\n|w" + "".join(row) + "|n"
+            else:
+                string += "\\n" + "".join(row)
+        print(string)
 
     """
+
     if not table:
         return [[]]
 
@@ -1671,6 +1774,226 @@ def format_table(table, extra_space=1):
     return ftable
 
 
+def percent(value, minval, maxval, formatting="{:3.1f}%"):
+    """
+    Get a value in an interval as a percentage of its position
+    in that interval. This also understands negative numbers.
+
+    Args:
+        value (number): This should be a value minval<=value<=maxval.
+        minval (number or None): Smallest value in interval. This could be None
+            for an open interval (then return will always be 100%)
+        maxval (number or None): Biggest value in interval. This could be None
+            for an open interval (then return will always be 100%)
+        formatted (str, optional): This is a string that should
+            accept one formatting tag. This will receive the
+            current value as a percentage. If None, the
+            raw float will be returned instead.
+    Returns:
+        str or float: The formatted value or the raw percentage as a float.
+    Notes:
+        We try to handle a weird interval gracefully.
+
+        - If either maxval or minval is None (open interval), we (aribtrarily) assume 100%.
+        - If minval > maxval, we return 0%.
+        - If minval == maxval == value we are looking at a single value match and return 100%.
+        - If minval == maxval != value we return 0%.
+        - If value not in [minval..maxval], we set value to the  closest
+          boundary, so the result will be 0% or 100%, respectively.
+
+    """
+    result = None
+    if None in (minval, maxval):
+        # we have no boundaries, percent calculation makes no sense,
+        # we set this to 100% since it
+        result = 100.0
+    elif minval > maxval:
+        # interval has no width so we cannot
+        # occupy any position within it.
+        result = 0.0
+    elif minval == maxval == value:
+        # this is a single value that we match
+        result = 100.0
+    elif minval == maxval != value:
+        # interval has no width so we cannot be in it.
+        result = 0.0
+
+    if result is None:
+        # constrain value to interval
+        value = min(max(minval, value), maxval)
+
+        # these should both be >0
+        dpart = value - minval
+        dfull = maxval - minval
+        result = (dpart / dfull) * 100.0
+
+    if isinstance(formatting, str):
+        return formatting.format(result)
+    return result
+
+
+import functools  # noqa
+
+
+def percentile(iterable, percent, key=lambda x: x):
+    """
+    Find the percentile of a list of values.
+
+    Args:
+        iterable (iterable): A list of values. Note N MUST BE already sorted.
+        percent (float): A value from 0.0 to 1.0.
+        key (callable, optional). Function to compute value from each element of N.
+
+    Returns:
+        float: The percentile of the values
+
+    """
+    if not iterable:
+        return None
+    k = (len(iterable) - 1) * percent
+    f = math.floor(k)
+    c = math.ceil(k)
+    if f == c:
+        return key(iterable[int(k)])
+    d0 = key(iterable[int(f)]) * (c - k)
+    d1 = key(iterable[int(c)]) * (k - f)
+    return d0 + d1
+
+
+def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
+    """
+    This helper function makes a 'grid' output, where it distributes the given
+    string-elements as evenly as possible to fill out the given width.
+    will not work well if the variation of length is very big!
+
+    Args:
+        elements (iterable): A 1D list of string elements to put in the grid.
+        width (int, optional): The width of the grid area to fill.
+        sep (str, optional): The extra separator to put between words. If
+            set to the empty string, words may run into each other.
+        verbatim_elements (list, optional): This is a list of indices pointing to
+            specific items in the `elements` list. An element at this index will
+            not be included in the calculation of the slot sizes. It will still
+            be inserted into the grid at the correct position and may be surrounded
+            by padding unless filling the entire line. This is useful for embedding
+            decorations in the grid, such as horizontal bars.
+        ignore_ansi (bool, optional): Ignore ansi markups when calculating white spacing.
+
+    Returns:
+        list: The grid as a list of ready-formatted rows. We return it
+        like this to make it easier to insert decorations between rows, such
+        as horizontal bars.
+    """
+
+    def _minimal_rows(elements):
+        """
+        Minimalistic distribution with minimal spacing, good for single-line
+        grids but will look messy over many lines.
+        """
+        rows = [""]
+        for element in elements:
+            rowlen = display_len((rows[-1]))
+            elen = display_len((element))
+            if rowlen + elen <= width:
+                rows[-1] += element
+            else:
+                rows.append(element)
+        return rows
+
+    def _weighted_rows(elements):
+        """
+        Dynamic-space, good for making even columns in a multi-line grid but
+        will look strange for a single line.
+        """
+        wls = [display_len((elem)) for elem in elements]
+        wls_percentile = [wl for iw, wl in enumerate(wls) if iw not in verbatim_elements]
+
+        if wls_percentile:
+            # get the nth percentile as a good representation of average width
+            averlen = int(percentile(sorted(wls_percentile), 0.9)) + 2  # include extra space
+            aver_per_row = width // averlen + 1
+        else:
+            # no adjustable rows, just keep all as-is
+            aver_per_row = 1
+
+        if aver_per_row == 1:
+            # one line per row, output directly since this is trivial
+            # we use rstrip here to remove extra spaces added by sep
+            return [
+                crop(element.rstrip(), width)
+                + " " * max(0, width - display_len((element.rstrip())))
+                for iel, element in enumerate(elements)
+            ]
+
+        indices = [averlen * ind for ind in range(aver_per_row - 1)]
+
+        rows = []
+        ic = 0
+        row = ""
+        for ie, element in enumerate(elements):
+
+            wl = wls[ie]
+            lrow = display_len((row))
+            # debug = row.replace(" ", ".")
+
+            if lrow + wl > width:
+                # this slot extends outside grid, move to next line
+                row += " " * (width - lrow)
+                rows.append(row)
+                if wl >= width:
+                    # remove sep if this fills the entire line
+                    element = element.rstrip()
+                row = crop(element, width)
+                ic = 0
+            elif ic >= aver_per_row - 1:
+                # no more slots available on this line
+                row += " " * max(0, (width - lrow))
+                rows.append(row)
+                row = crop(element, width)
+                ic = 0
+            else:
+                try:
+                    while lrow > max(0, indices[ic]):
+                        # slot too wide, extend into adjacent slot
+                        ic += 1
+                    row += " " * max(0, indices[ic] - lrow)
+                except IndexError:
+                    # we extended past edge of grid, crop or move to next line
+                    if ic == 0:
+                        row = crop(element, width)
+                    else:
+                        row += " " * max(0, width - lrow)
+                    rows.append(row)
+                    row = ""
+                    ic = 0
+                else:
+                    # add a new slot
+                    row += element + " " * max(0, averlen - wl)
+                    ic += 1
+
+            if ie >= nelements - 1:
+                # last element, make sure to store
+                row += " " * max(0, width - display_len((row)))
+                rows.append(row)
+        return rows
+
+    if not elements:
+        return []
+    if not verbatim_elements:
+        verbatim_elements = []
+
+    nelements = len(elements)
+    # add sep to all but the very last element
+    elements = [elements[ie] + sep for ie in range(nelements - 1)] + [elements[-1]]
+
+    if sum(display_len((element)) for element in elements) <= width:
+        # grid fits in one line
+        return _minimal_rows(elements)
+    else:
+        # full multi-line grid
+        return _weighted_rows(elements)
+
+
 def get_evennia_pids():
     """
     Get the currently valid PIDs (Process IDs) of the Portal and
@@ -1682,13 +2005,13 @@ def get_evennia_pids():
 
     Examples:
         This can be used to determine if we are in a subprocess by
-        something like:
 
         ```python
         self_pid = os.getpid()
         server_pid, portal_pid = get_evennia_pids()
         is_subprocess = self_pid not in (server_pid, portal_pid)
         ```
+
     """
     server_pidfile = os.path.join(settings.GAME_DIR, "server.pid")
     portal_pidfile = os.path.join(settings.GAME_DIR, "portal.pid")
@@ -1746,7 +2069,7 @@ def deepsize(obj, max_depth=4):
 _missing = object()
 
 
-class lazy_property(object):
+class lazy_property:
     """
     Delays loading of property until first access. Credit goes to the
     Implementation in the werkzeug suite:
@@ -1762,7 +2085,8 @@ class lazy_property(object):
         ```
 
     Once initialized, the `AttributeHandler` will be available as a
-    property "attributes" on the object.
+    property "attributes" on the object. This is read-only since
+    this functionality is pretty much exclusively used by handlers.
 
     """
 
@@ -1782,6 +2106,26 @@ class lazy_property(object):
             value = self.func(obj)
         obj.__dict__[self.__name__] = value
         return value
+
+    def __set__(self, obj, value):
+        """Protect against setting"""
+        handlername = self.__name__
+        raise AttributeError(
+            _(
+                "{obj}.{handlername} is a handler and can't be set directly. "
+                "To add values, use `{obj}.{handlername}.add()` instead."
+            ).format(obj=obj, handlername=handlername)
+        )
+
+    def __delete__(self, obj):
+        """Protect against deleting"""
+        handlername = self.__name__
+        raise AttributeError(
+            _(
+                "{obj}.{handlername} is a handler and can't be deleted directly. "
+                "To remove values, use `{obj}.{handlername}.remove()` instead."
+            ).format(obj=obj, handlername=handlername)
+        )
 
 
 _STRIP_ANSI = None
@@ -1904,23 +2248,22 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         query (str, optional): The search query used to produce `matches`.
         quiet (bool, optional): If `True`, no messages will be echoed to caller
             on errors.
-
     Keyword Args:
         nofound_string (str): Replacement string to echo on a notfound error.
         multimatch_string (str): Replacement string to echo on a multimatch error.
 
     Returns:
         processed_result (Object or None): This is always a single result
-            or `None`. If `None`, any error reporting/handling should
-            already have happened. The returned object is of the type we are
-            checking multimatches for (e.g. Objects or Commands)
+        or `None`. If `None`, any error reporting/handling should
+        already have happened. The returned object is of the type we are
+        checking multimatches for (e.g. Objects or Commands)
 
     """
 
     error = ""
     if not matches:
         # no results.
-        error = kwargs.get("nofound_string") or _("Could not find '%s'." % query)
+        error = kwargs.get("nofound_string") or _("Could not find '{query}'.").format(query=query)
         matches = None
     elif len(matches) > 1:
         multimatch_string = kwargs.get("multimatch_string")
@@ -1945,7 +2288,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 name=result.get_display_name(caller)
                 if hasattr(result, "get_display_name")
                 else query,
-                aliases=" [%s]" % ";".join(aliases) if aliases else "",
+                aliases=" [{alias}]".format(alias=";".join(aliases) if aliases else ""),
                 info=result.get_extra_info(caller),
             )
         matches = None
@@ -1972,10 +2315,10 @@ class LimitedSizeOrderedDict(OrderedDict):
 
         Keyword Args:
             size_limit (int): Use this to limit the number of elements
-                alloweds to be in this list. By default the overshooting elements
-                will be removed in FIFO order.
+              alloweds to be in this list. By default the overshooting elements
+              will be removed in FIFO order.
             fifo (bool, optional): Defaults to `True`. Remove overshooting elements
-                in FIFO order. If `False`, remove in FILO order.
+              in FIFO order. If `False`, remove in FILO order.
 
         """
         super().__init__()
@@ -2023,7 +2366,7 @@ def get_game_dir_path():
 
     """
     # current working directory, assumed to be somewhere inside gamedir.
-    for _ in range(10):
+    for inum in range(10):
         gpath = os.getcwd()
         if "server" in os.listdir(gpath):
             if os.path.isfile(os.path.join("server", "conf", "settings.py")):
@@ -2038,16 +2381,16 @@ def get_all_typeclasses(parent=None):
     List available typeclasses from all available modules.
 
     Args:
-        parent (str, optional): If given, only return typeclasses inheriting (at any distance)
-            from this parent.
+        parent (str, optional): If given, only return typeclasses inheriting
+            (at any distance) from this parent.
 
     Returns:
-        typeclasses (dict): On the form {"typeclass.path": typeclass, ...}
+        dict: On the form `{"typeclass.path": typeclass, ...}`
 
     Notes:
-        This will dynamicall retrieve all abstract django models inheriting at any distance
-        from the TypedObject base (aka a Typeclass) so it will work fine with any custom
-        classes being added.
+        This will dynamically retrieve all abstract django models inheriting at
+        any distance from the TypedObject base (aka a Typeclass) so it will
+        work fine with any custom classes being added.
 
     """
     from evennia.typeclasses.models import TypedObject
@@ -2066,16 +2409,49 @@ def get_all_typeclasses(parent=None):
     return typeclasses
 
 
+def get_all_cmdsets(parent=None):
+    """
+    List available cmdsets from all available modules.
+
+    Args:
+        parent (str, optional): If given, only return cmdsets inheriting (at
+            any distance) from this parent.
+
+    Returns:
+        dict: On the form {"cmdset.path": cmdset, ...}
+
+    Notes:
+        This will dynamically retrieve all abstract django models inheriting at
+        any distance from the CmdSet base so it will work fine with any custom
+        classes being added.
+
+    """
+    from evennia.commands.cmdset import CmdSet
+
+    base_cmdset = class_from_module(parent) if parent else CmdSet
+
+    cmdsets = {
+        "{}.{}".format(subclass.__module__, subclass.__name__): subclass
+        for subclass in base_cmdset.__subclasses__()
+    }
+    return cmdsets
+
+
 def interactive(func):
     """
-    Decorator to make a method pausable with yield(seconds) and able to ask for
-    user-input with `response=yield(question)`.  For the question-asking to
-    work, 'caller' must the name of an argument or kwarg to the decorated
-    function.
+    Decorator to make a method pausable with `yield(seconds)`
+    and able to ask for user-input with `response=yield(question)`.
+    For the question-asking to work, one of the args or kwargs to the
+    decorated function must be named 'caller'.
 
-    Example:
-    ::
+    Raises:
+        ValueError: If asking an interactive question but the decorated
+            function has no arg or kwarg named 'caller'.
+        ValueError: If passing non int/float to yield using for pausing.
 
+    Examples:
+
+        ```python
         @interactive
         def myfunc(caller):
             caller.msg("This is a test")
@@ -2087,9 +2463,10 @@ def interactive(func):
                 yield(5)
             else:
                 # ...
+        ```
 
     Notes:
-        This turns the method into a generator!
+       This turns the decorated function or method into a generator.
 
     """
     from evennia.utils.evmenu import get_input
@@ -2133,3 +2510,205 @@ def interactive(func):
             return ret
 
     return decorator
+
+
+def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
+    """
+    Helper function to safely convert inputs to expected data types.
+
+    Args:
+        converters (tuple): A tuple `((converter, converter,...), {kwarg: converter, ...})` to
+            match a converter to each element in `*args` and `**kwargs`.
+            Each converter will will be called with the arg/kwarg-value as the only argument.
+            If there are too few converters given, the others will simply not be converter. If the
+            converter is given as the string 'py', it attempts to run
+            `safe_eval`/`literal_eval` on  the input arg or kwarg value. It's possible to
+            skip the arg/kwarg part of the tuple, an empty tuple/dict will then be assumed.
+        *args: The arguments to convert with `argtypes`.
+        raise_errors (bool, optional): If set, raise any errors. This will
+            abort the conversion at that arg/kwarg. Otherwise, just skip the
+            conversion of the failing arg/kwarg. This will be set by the FuncParser if
+            this is used as a part of a FuncParser callable.
+        **kwargs: The kwargs to convert with `kwargtypes`
+
+    Returns:
+        tuple: `(args, kwargs)` in converted form.
+
+    Raises:
+        utils.funcparser.ParsingError: If parsing failed in the `'py'`
+            converter. This also makes this compatible with the FuncParser
+            interface.
+        any: Any other exception raised from other converters, if raise_errors is True.
+
+    Notes:
+        This function is often used to validate/convert input from untrusted sources. For
+        security, the "py"-converter is deliberately limited and uses `safe_eval`/`literal_eval`
+        which  only supports simple expressions or simple containers with literals. NEVER
+        use the python `eval` or `exec` methods as a converter for any untrusted input! Allowing
+        untrusted sources to execute arbitrary python on your server is a severe security risk,
+
+    Example:
+    ::
+
+        $funcname(1, 2, 3.0, c=[1,2,3])
+
+        def _funcname(*args, **kwargs):
+            args, kwargs = safe_convert_input(((int, int, float), {'c': 'py'}), *args, **kwargs)
+            # ...
+
+    """
+
+    def _safe_eval(inp):
+        if not inp:
+            return ""
+        if not isinstance(inp, str):
+            # already converted
+            return inp
+
+        try:
+            return literal_eval(inp)
+        except Exception as err:
+            literal_err = f"{err.__class__.__name__}: {err}"
+            try:
+                return simple_eval(inp)
+            except Exception as err:
+                simple_err = f"{str(err.__class__.__name__)}: {err}"
+                pass
+
+        if raise_errors:
+            from evennia.utils.funcparser import ParsingError
+
+            err = (
+                f"Errors converting '{inp}' to python:\n"
+                f"literal_eval raised {literal_err}\n"
+                f"simple_eval raised {simple_err}"
+            )
+            raise ParsingError(err)
+
+    # handle an incomplete/mixed set of input converters
+    if not converters:
+        return args, kwargs
+    arg_converters, *kwarg_converters = converters
+    arg_converters = make_iter(arg_converters)
+    kwarg_converters = kwarg_converters[0] if kwarg_converters else {}
+
+    # apply the converters
+    if args and arg_converters:
+        args = list(args)
+        arg_converters = make_iter(arg_converters)
+        for iarg, arg in enumerate(args[: len(arg_converters)]):
+            converter = arg_converters[iarg]
+            converter = _safe_eval if converter in ("py", "python") else converter
+            try:
+                args[iarg] = converter(arg)
+            except Exception:
+                if raise_errors:
+                    raise
+        args = tuple(args)
+    if kwarg_converters and isinstance(kwarg_converters, dict):
+        for key, converter in kwarg_converters.items():
+            converter = _safe_eval if converter in ("py", "python") else converter
+            if key in {**kwargs}:
+                try:
+                    kwargs[key] = converter(kwargs[key])
+                except Exception:
+                    if raise_errors:
+                        raise
+    return args, kwargs
+
+
+def strip_unsafe_input(txt, session=None, bypass_perms=None):
+    """
+    Remove 'unsafe' text codes from text; these are used to elimitate
+    exploits in user-provided data, such as html-tags, line breaks etc.
+
+    Args:
+        txt (str): The text to clean.
+        session (Session, optional): A Session in order to determine if
+            the check should be bypassed by permission (will be checked
+            with the 'perm' lock, taking permission hierarchies into account).
+        bypass_perms (list, optional): Iterable of permission strings
+            to check for bypassing the strip. If not given, use
+            `settings.INPUT_CLEANUP_BYPASS_PERMISSIONS`.
+
+    Returns:
+        str: The cleaned string.
+
+    Notes:
+        The `INPUT_CLEANUP_BYPASS_PERMISSIONS` list defines what account
+        permissions are required to bypass this strip.
+
+    """
+    global _STRIP_UNSAFE_TOKENS
+    if not _STRIP_UNSAFE_TOKENS:
+        from evennia.utils.ansi import strip_unsafe_tokens as _STRIP_UNSAFE_TOKENS
+
+    if session:
+        obj = session.puppet if session.puppet else session.account
+        bypass_perms = bypass_perms or settings.INPUT_CLEANUP_BYPASS_PERMISSIONS
+        if obj.permissions.check(*bypass_perms):
+            return txt
+
+    # remove html codes
+    txt = strip_tags(txt)
+    txt = _STRIP_UNSAFE_TOKENS(txt)
+    return txt
+
+
+def copy_word_case(base_word, new_word):
+    """
+    Converts a word to use the same capitalization as a first word.
+
+    Args:
+        base_word (str): A word to get the capitalization from.
+        new_word (str): A new word to capitalize in the same way as `base_word`.
+
+    Returns:
+        str: The `new_word` with capitalization matching the first word.
+
+    Notes:
+        This is meant for words. Longer sentences may get unexpected results.
+
+        If the two words have a mix of capital/lower letters _and_ `new_word`
+        is longer than `base_word`, the excess will retain its original case.
+
+    """
+
+    # Word
+    if base_word.istitle():
+        return new_word.title()
+    # word
+    elif base_word.islower():
+        return new_word.lower()
+    # WORD
+    elif base_word.isupper():
+        return new_word.upper()
+    else:
+        # WorD - a mix. Handle each character
+        maxlen = len(base_word)
+        shared, excess = new_word[:maxlen], new_word[maxlen - 1 :]
+        return (
+            "".join(
+                char.upper() if base_word[ic].isupper() else char.lower()
+                for ic, char in enumerate(new_word)
+            )
+            + excess
+        )
+
+
+def run_in_main_thread(function_or_method, *args, **kwargs):
+    """
+    Force a callable to execute in the main Evennia thread. This is only relevant when
+    calling code from e.g. web views, which run in a separate threadpool. Use this
+    to avoid race conditions.
+
+    Args:
+        function_or_method (callable): A function or method to fire.
+        *args: Will be passed into the callable.
+        **kwargs: Will be passed into the callable.
+
+    """
+    if _IS_MAIN_THREAD:
+        return function_or_method(*args, **kwargs)
+    else:
+        return threads.blockingCallFromThread(reactor, function_or_method, *args, **kwargs)

@@ -1,18 +1,64 @@
 """
 ANSI - Gives colour to text.
 
-Use the codes defined in ANSIPARSER in your text to apply colour to text
-according to the ANSI standard.
+Use the codes defined in the *ANSIParser* class to apply colour to text. The
+`parse_ansi` function in this module parses text for markup and `strip_ansi`
+removes it.
 
-Examples:
+You should usually not need to call `parse_ansi` explicitly; it is run by
+Evennia just before returning data to/from the user. Alternative markup is
+possible by overriding the parser class (see also contrib/ for deprecated
+markup schemes).
+
+
+Supported standards:
+
+- ANSI 8 bright and 8 dark fg (foreground) colors
+- ANSI 8 dark bg (background) colors
+- 'ANSI' 8 bright bg colors 'faked' with xterm256 (bright bg not included in ANSI standard)
+- Xterm256 - 255 fg/bg colors + 26 greyscale fg/bg colors
+
+## Markup
+
+ANSI colors: `r` ed, `g` reen, `y` ellow, `b` lue, `m` agenta, `c` yan, `n` ormal (no color).
+Capital letters indicate the 'dark' variant.
+
+- `|r` fg bright red
+- `|R` fg dark red
+- `|[r` bg bright red
+- `|[R` bg dark red
+- `|[R|g` bg dark red, fg bright green
 
 ```python
 "This is |rRed text|n and this is normal again."
+
 ```
 
-Mostly you should not need to call `parse_ansi()` explicitly; it is run by
-Evennia just before returning data to/from the user. Depreciated example forms
-are available by extending the ansi mapping.
+Xterm256 colors are given as RGB (Red-Green-Blue), with values 0-5:
+
+- `|500` fg bright red
+- `|050` fg bright green
+- `|005` fg bright blue
+- `|110` fg dark brown
+- `|425` fg pink
+- `|[431` bg orange
+
+Xterm256 greyscale:
+
+- `|=a` fg black
+- `|=g` fg dark grey
+- `|=o` fg middle grey
+- `|=v` fg bright grey
+- `|=z` fg white
+- `|[=r` bg middle grey
+
+```python
+"This is |500Red text|n and this is normal again."
+"This is |[=jText on dark grey background"
+
+```
+
+----
 
 """
 import functools
@@ -26,6 +72,8 @@ from evennia.utils import utils
 from evennia.utils import logger
 
 from evennia.utils.utils import to_str
+
+MXP_ENABLED = settings.MXP_ENABLED
 
 
 # ANSI definitions
@@ -80,9 +128,11 @@ _COLOR_NO_DEFAULT = settings.COLOR_NO_DEFAULT
 
 class ANSIParser(object):
     """
-    A class that parses ANSI markup to ANSI command sequences.
+    A class that parses ANSI markup
+    to ANSI command sequences
 
-    We also allow to escape colour codes by prepending with an extra `|`.
+    We also allow to escape colour codes
+    by prepending with an extra `|`.
 
     """
 
@@ -175,6 +225,7 @@ class ANSIParser(object):
         ansi_xterm256_bright_bg_map += settings.COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 
     mxp_re = r"\|lc(.*?)\|lt(.*?)\|le"
+    mxp_url_re = r"\|lu(.*?)\|lt(.*?)\|le"
 
     # prepare regex matching
     brightbg_sub = re.compile(
@@ -189,6 +240,7 @@ class ANSIParser(object):
     # xterm256_sub = re.compile(r"|".join([tup[0] for tup in xterm256_map]), re.DOTALL)
     ansi_sub = re.compile(r"|".join([re.escape(tup[0]) for tup in ansi_map]), re.DOTALL)
     mxp_sub = re.compile(mxp_re, re.DOTALL)
+    mxp_url_sub = re.compile(mxp_url_re, re.DOTALL)
 
     # used by regex replacer to correctly map ansi sequences
     ansi_map_dict = dict(ansi_map)
@@ -201,6 +253,9 @@ class ANSIParser(object):
     # escapes - these double-chars will be replaced with a single
     # instance of each
     ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
+
+    # tabs/linebreaks |/ and |- should be able to be cleaned
+    unsafe_tokens = re.compile(r"\|\/|\|-", re.DOTALL)
 
     def sub_ansi(self, ansimatch):
         """
@@ -289,8 +344,9 @@ class ANSIParser(object):
                 colval = 16 + (red * 36) + (green * 6) + blue
 
             return "\033[%s8;5;%sm" % (3 + int(background), colval)
-            # replaced since some clients (like Potato) does not accept codes with leading zeroes, see issue #1024.
-            # return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)
+            # replaced since some clients (like Potato) does not accept codes with leading zeroes,
+            # see issue #1024.
+            # return "\033[%s8;5;%s%s%sm" % (3 + int(background), colval // 100, (colval % 100) // 10, colval%10)  # noqa
 
         else:
             # xterm256 not supported, convert the rgb value to ansi instead
@@ -375,7 +431,16 @@ class ANSIParser(object):
             string (str): The processed string.
 
         """
-        return self.mxp_sub.sub(r"\2", string)
+        string = self.mxp_sub.sub(r"\2", string)
+        string = self.mxp_url_sub.sub(r"\1", string)  # replace with url verbatim
+        return string
+
+    def strip_unsafe_tokens(self, string):
+        """
+        Strip explicitly ansi line breaks and tabs.
+
+        """
+        return self.unsafe_tokens.sub("", string)
 
     def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False):
         """
@@ -476,6 +541,7 @@ def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp
         string (str): The parsed string.
 
     """
+    string = string or ""
     return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp)
 
 
@@ -492,6 +558,7 @@ def strip_ansi(string, parser=ANSI_PARSER):
         string (str): The stripped string.
 
     """
+    string = string or ""
     return parser.parse_ansi(string, strip_ansi=True)
 
 
@@ -508,7 +575,26 @@ def strip_raw_ansi(string, parser=ANSI_PARSER):
         string (str): the stripped string.
 
     """
+    string = string or ""
     return parser.strip_raw_codes(string)
+
+
+def strip_unsafe_tokens(string, parser=ANSI_PARSER):
+    """
+    Strip markup that can be used to create visual exploits
+    (notably linebreaks and tags)
+
+    """
+    return parser.strip_unsafe_tokens(string)
+
+
+def strip_mxp(string, parser=ANSI_PARSER):
+    """
+    Strip MXP markup.
+
+    """
+    string = string or ""
+    return parser.strip_mxp(string)
 
 
 def raw(string):
@@ -520,6 +606,7 @@ def raw(string):
         string (str): The raw, escaped string.
 
     """
+    string = string or ""
     return string.replace("{", "{{").replace("|", "||")
 
 
@@ -681,7 +768,8 @@ class ANSIString(str, metaclass=ANSIMeta):
 
     """
 
-    # A compiled Regex for the format mini-language: https://docs.python.org/3/library/string.html#formatspec
+    # A compiled Regex for the format mini-language:
+    # https://docs.python.org/3/library/string.html#formatspec
     re_format = re.compile(
         r"(?i)(?P<just>(?P<fill>.)?(?P<align>\<|\>|\=|\^))?(?P<sign>\+|\-| )?(?P<alt>\#)?"
         r"(?P<zero>0)?(?P<width>\d+)?(?P<grouping>\_|\,)?(?:\.(?P<precision>\d+))?"
@@ -719,8 +807,8 @@ class ANSIString(str, metaclass=ANSIMeta):
             decoded = True
         if not decoded:
             # Completely new ANSI String
-            clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=True)
-            string = parser.parse_ansi(string, xterm256=True, mxp=True)
+            clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=MXP_ENABLED)
+            string = parser.parse_ansi(string, xterm256=True, mxp=MXP_ENABLED)
         elif clean_string is not None:
             # We have an explicit clean string.
             pass
@@ -754,12 +842,14 @@ class ANSIString(str, metaclass=ANSIMeta):
         Current features supported: fill, align, width.
 
         Args:
-            format_spec (str): The format specification passed by f-string or str.format(). This is a string such as
-                "0<30" which would mean "left justify to 30, filling with zeros". The full specification can be found
-                at https://docs.python.org/3/library/string.html#formatspec
+            format_spec (str): The format specification passed by f-string or str.format(). This is
+            a string such as "0<30" which would mean "left justify to 30, filling with zeros".
+            The full specification can be found at
+            https://docs.python.org/3/library/string.html#formatspec
 
         Returns:
             ansi_str (str): The formatted ANSIString's .raw() form, for display.
+
         """
         # This calls the compiled regex stored on ANSIString's class to analyze the format spec.
         # It returns a dictionary.
@@ -913,10 +1003,10 @@ class ANSIString(str, metaclass=ANSIMeta):
                     return ANSIString(self._raw_string[slc])
                 if slc.start is None:
                     # this is a [:x] slice
-                    return ANSIString(self._raw_string[:char_indexes[0]])
+                    return ANSIString(self._raw_string[: char_indexes[0]])
                 if slc.stop is None:
                     # a [x:] slice
-                    return ANSIString(self._raw_string[char_indexes[-1] + 1:])
+                    return ANSIString(self._raw_string[char_indexes[-1] + 1 :])
             return ANSIString("")
         try:
             string = self[slc.start or 0]._raw_string

@@ -52,7 +52,7 @@ are useful in the game ...
 Sectioning (`# title`,  `## subtile` etc) should not be used in
 freeform docstrings - this will confuse the sectioning of the auto
 documentation page and the auto-api will create this automatically.
-Write just the section name bolded on its own line to mark a section. 
+Write just the section name bolded on its own line to mark a section.
 Beyond sections markdown should be used as needed to format
 the text.
 
@@ -68,7 +68,7 @@ other text, only code).
 
 ### Class docstrings
 
-The root class docstring should describe the over-arcing use of the
+The root class docstring should describe the over-arching use of the
 class. It should usually not describe the exact call sequence nor list
 important methods, this tends to be hard to keep updated as the API
 develops. Don't use section markers (`#`, `##` etc).
@@ -105,7 +105,7 @@ def funcname(a, b, c, d=False, **kwargs):
         test (list): A test keyword.
 
     Returns:
-        e (str): The result of the function.
+        str: The result of the function.
 
     Raises:
         RuntimeException: If there is a critical error,
@@ -129,18 +129,12 @@ indents to be 4 spaces wide (no tabs!).
 Here are all the supported block headers:
 
 ```
-    Args/Arg/Kwargs/Kwarg:
+    Args/Keyword Args:
         argname (freeform type): text
-        or
-        freeform text
     Returns/Yields:
-        kwargname (freeform type): text
-        or
-        freeform text
+        type: text
     Raises:
         Exceptiontype: text
-        or
-        freeform text
     Notes/Note/Examples/Example:
         freeform text
 ```
@@ -153,7 +147,7 @@ freeform counterpart (this will produce nicer output) but in some
 cases the freeform may produce a more compact and readable result
 (such as when describing an `*args` or `**kwargs` statement in general
 terms). The first `self` argument of class methods should never be
-documented. 
+documented.
 
 Note that
 
@@ -165,29 +159,29 @@ Args:
 and
 
 ```
-Keyword Args:
+Kwargs:
    argname (type): text
 ```
 
 mean the same thing! Which one is used depends on the function or
 method documented, but there are no hard rules; If there is a large
-`**kwargs` block in the function, using the `Keyword Args:` block may be a
+`**kwargs` block in the function, using the `Kwargs:` block may be a
 good idea, for a small number of arguments though, just using `Args:`
 and marking keywords as `optional` will shorten the docstring and make
 it easier to read.
 
 ### Default Commands
 
-These represent a special case since Commands in Evennia are using their
-class docstrings to represent the in-game help entry for that command. 
-So for the default look of Command class docstrings see instead 
+These represent a special case since Commands in Evennia use their
+class docstrings to represent the in-game help entry for that command.
+For the default look of Command class docstrings see instead
 [the default command documentation policy][command-docstrings].
 
-### Automatic docstring templating 
+### Automatic docstring templating
 
 The Python IDE [Pycharm][pycharm] will generate Evennia-friendly
 docstring stubs automatically for you, but the default format is
-reStructuredText. To change it to Evennia's Google-style, follow 
+reStructuredText. To change it to Evennia's Google-style, follow
 [this guide][pycharm-guide].
 
 ## Ask Questions!

@@ -2,29 +2,38 @@
 Building and world design commands
 """
 import re
+from django.core.paginator import Paginator
 from django.conf import settings
 from django.db.models import Q, Min, Max
+from evennia import InterruptCommand
+from evennia.scripts.models import ScriptDB
 from evennia.objects.models import ObjectDB
 from evennia.locks.lockhandler import LockException
 from evennia.commands.cmdhandler import get_and_merge_cmdsets
-from evennia.utils import create, utils, search, logger
+from evennia.utils import create, utils, search, logger, funcparser
+from evennia.utils.dbserialize import deserialize
 from evennia.utils.utils import (
     inherits_from,
     class_from_module,
     get_all_typeclasses,
     variable_from_module,
     dbref,
+    crop,
     interactive,
     list_to_string,
     display_len,
+    format_grid,
 )
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evmore import EvMore
+from evennia.utils.evtable import EvTable
 from evennia.prototypes import spawner, prototypes as protlib, menus as olc_menus
 from evennia.utils.ansi import raw as ansi_raw
-from evennia.utils.inlinefuncs import raw as inlinefunc_raw
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
+
+_FUNCPARSER = None
+_ATTRFUNCPARSER = None
 
 # limit symbol import for API
 __all__ = (
@@ -51,7 +60,8 @@ __all__ = (
     "CmdExamine",
     "CmdFind",
     "CmdTeleport",
-    "CmdScript",
+    "CmdScripts",
+    "CmdObjects",
     "CmdTag",
     "CmdSpawn",
 )
@@ -151,7 +161,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
     by everyone.
     """
 
-    key = "alias"
+    key = "@alias"
     aliases = "setobjalias"
     switch_options = ("category",)
     locks = "cmd:perm(setobjalias) or perm(Builder)"
@@ -260,7 +270,7 @@ class CmdCopy(ObjManipCommand):
     one exact copy of the original object will be created with the name *_copy.
     """
 
-    key = "copy"
+    key = "@copy"
     locks = "cmd:perm(copy) or perm(Builder)"
     help_category = "Building"
 
@@ -351,7 +361,7 @@ class CmdCpAttr(ObjManipCommand):
     If you don't supply a source object, yourself is used.
     """
 
-    key = "cpattr"
+    key = "@cpattr"
     switch_options = ("move",)
     locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
@@ -490,7 +500,7 @@ class CmdMvAttr(ObjManipCommand):
     object. If you don't supply a source object, yourself is used.
     """
 
-    key = "mvattr"
+    key = "@mvattr"
     switch_options = ("copy",)
     locks = "cmd:perm(mvattr) or perm(Builder)"
     help_category = "Building"
@@ -539,7 +549,7 @@ class CmdCreate(ObjManipCommand):
 
     """
 
-    key = "create"
+    key = "@create"
     switch_options = ("drop",)
     locks = "cmd:perm(create) or perm(Builder)"
     help_category = "Building"
@@ -631,15 +641,14 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
     describe the current room.
     """
 
-    key = "desc"
-    aliases = "describe"
+    key = "@desc"
     switch_options = ("edit",)
     locks = "cmd:perm(desc) or perm(Builder)"
     help_category = "Building"
 
     def edit_handler(self):
         if self.rhs:
-            self.msg("|rYou may specify a value, or use the edit switch, " "but not both.|n")
+            self.msg("|rYou may specify a value, or use the edit switch, but not both.|n")
             return
         if self.args:
             obj = self.caller.search(self.args)
@@ -650,6 +659,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
 
         if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
             self.caller.msg("You don't have permission to edit the description of %s." % obj.key)
+            return
 
         self.caller.db.evmenu_target = obj
         # launch the editor
@@ -682,7 +692,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
                 return
             desc = self.rhs or ""
         else:
-            obj = caller.location or self.msg("|rYou can't describe oblivion.|n")
+            obj = caller.location or self.msg("|rYou don't have a location to describe.|n")
             if not obj:
                 return
             desc = self.args
@@ -715,8 +725,8 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
     You can specify the /force switch to bypass this confirmation.
     """
 
-    key = "destroy"
-    aliases = ["delete", "del"]
+    key = "@destroy"
+    aliases = ["@delete", "@del"]
     switch_options = ("override", "force")
     locks = "cmd:perm(destroy) or perm(Builder)"
     help_category = "Building"
@@ -857,7 +867,7 @@ class CmdDig(ObjManipCommand):
     would be 'north;no;n'.
     """
 
-    key = "dig"
+    key = "@dig"
     switch_options = ("teleport",)
     locks = "cmd:perm(dig) or perm(Builder)"
     help_category = "Building"
@@ -1013,8 +1023,8 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
     For more flexibility and power in creating rooms, use dig.
     """
 
-    key = "tunnel"
-    aliases = ["tun"]
+    key = "@tunnel"
+    aliases = ["@tun"]
     switch_options = ("oneway", "tel")
     locks = "cmd: perm(tunnel) or perm(Builder)"
     help_category = "Building"
@@ -1107,7 +1117,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
     currently set destination.
     """
 
-    key = "link"
+    key = "@link"
     locks = "cmd:perm(link) or perm(Builder)"
     help_category = "Building"
 
@@ -1244,7 +1254,7 @@ class CmdSetHome(CmdLink):
     If no location is given, just view the object's home location.
     """
 
-    key = "sethome"
+    key = "@sethome"
     locks = "cmd:perm(sethome) or perm(Builder)"
     help_category = "Building"
 
@@ -1296,8 +1306,7 @@ class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
     to a user. Defaults to yourself.
     """
 
-    key = "cmdsets"
-    aliases = "listcmsets"
+    key = "@cmdsets"
     locks = "cmd:perm(listcmdsets) or perm(Builder)"
     help_category = "Building"
 
@@ -1327,8 +1336,8 @@ class CmdName(ObjManipCommand):
 
     """
 
-    key = "name"
-    aliases = ["rename"]
+    key = "@name"
+    aliases = ["@rename"]
     locks = "cmd:perm(rename) or perm(Builder)"
     help_category = "Building"
 
@@ -1379,7 +1388,7 @@ class CmdName(ObjManipCommand):
             return
         # change the name and set aliases:
         if newname:
-            obj.name = newname
+            obj.key = newname
         astring = ""
         if aliases:
             [obj.aliases.add(alias) for alias in aliases]
@@ -1405,7 +1414,7 @@ class CmdOpen(ObjManipCommand):
 
     """
 
-    key = "open"
+    key = "@open"
     locks = "cmd:perm(open) or perm(Builder)"
     help_category = "Building"
 
@@ -1486,40 +1495,36 @@ class CmdOpen(ObjManipCommand):
         caller.msg(string)
         return exit_obj
 
+    def parse(self):
+        super().parse()
+        self.location = self.caller.location
+        if not self.args or not self.rhs:
+            self.caller.msg(
+                "Usage: open <new exit>[;alias...][:typeclass]"
+                "[,<return exit>[;alias..][:typeclass]]] "
+                "= <destination>"
+            )
+            raise InterruptCommand
+        if not self.location:
+            self.caller.msg("You cannot create an exit from a None-location.")
+            raise InterruptCommand
+        self.destination = self.caller.search(self.rhs, global_search=True)
+        if not self.destination:
+            raise InterruptCommand
+        self.exit_name = self.lhs_objs[0]["name"]
+        self.exit_aliases = self.lhs_objs[0]["aliases"]
+        self.exit_typeclass = self.lhs_objs[0]["option"]
+
     def func(self):
         """
         This is where the processing starts.
         Uses the ObjManipCommand.parser() for pre-processing
         as well as the self.create_exit() method.
         """
-        caller = self.caller
-
-        if not self.args or not self.rhs:
-            string = "Usage: open <new exit>[;alias...][:typeclass][,<return exit>[;alias..][:typeclass]]] "
-            string += "= <destination>"
-            caller.msg(string)
-            return
-
-        # We must have a location to open an exit
-        location = caller.location
-        if not location:
-            caller.msg("You cannot create an exit from a None-location.")
-            return
-
-        # obtain needed info from cmdline
-
-        exit_name = self.lhs_objs[0]["name"]
-        exit_aliases = self.lhs_objs[0]["aliases"]
-        exit_typeclass = self.lhs_objs[0]["option"]
-        dest_name = self.rhs
-
-        # first, check so the destination exists.
-        destination = caller.search(dest_name, global_search=True)
-        if not destination:
-            return
-
         # Create exit
-        ok = self.create_exit(exit_name, location, destination, exit_aliases, exit_typeclass)
+        ok = self.create_exit(
+            self.exit_name, self.location, self.destination, self.exit_aliases, self.exit_typeclass
+        )
         if not ok:
             # an error; the exit was not created, so we quit.
             return
@@ -1529,7 +1534,11 @@ class CmdOpen(ObjManipCommand):
             back_exit_aliases = self.lhs_objs[1]["aliases"]
             back_exit_typeclass = self.lhs_objs[1]["option"]
             self.create_exit(
-                back_exit_name, destination, location, back_exit_aliases, back_exit_typeclass
+                back_exit_name,
+                self.destination,
+                self.location,
+                back_exit_aliases,
+                back_exit_typeclass,
             )
 
 
@@ -1579,10 +1588,10 @@ class CmdSetAttribute(ObjManipCommand):
     set attribute on an object or account
 
     Usage:
-      set <obj>/<attr> = <value>
-      set <obj>/<attr> =
-      set <obj>/<attr>
-      set *<account>/<attr> = <value>
+      set[/switch] <obj>/<attr>[:category] = <value>
+      set[/switch] <obj>/<attr>[:category] =                  # delete attribute
+      set[/switch] <obj>/<attr>[:category]                    # view attribute
+      set[/switch] *<account>/<attr>[:category] = <value>
 
     Switch:
         edit: Open the line editor (string values only)
@@ -1594,10 +1603,19 @@ class CmdSetAttribute(ObjManipCommand):
         char: Setting an attribute on a character (global search)
         character: Alias for char, as above.
 
+    Example:
+        set self/foo = "bar"
+        set/delete self/foo
+        set self/foo = $dbref(#53)
+
     Sets attributes on objects. The second example form above clears a
     previously set attribute while the third form inspects the current value of
     the attribute (if any). The last one (with the star) is a shortcut for
     operating on a player Account rather than an Object.
+
+    If you want <value> to be an object, use $dbef(#dbref) or
+    $search(key) to assign it. You need control or edit access to
+    the object you are adding.
 
     The most common data to save with this command are strings and
     numbers. You can however also set Python primitives such as lists,
@@ -1615,7 +1633,7 @@ class CmdSetAttribute(ObjManipCommand):
 
     """
 
-    key = "set"
+    key = "@set"
     locks = "cmd:perm(set) or perm(Builder)"
     help_category = "Building"
     nested_re = re.compile(r"\[.*?\]")
@@ -1633,7 +1651,7 @@ class CmdSetAttribute(ObjManipCommand):
         """
         return True
 
-    def check_attr(self, obj, attr_name):
+    def check_attr(self, obj, attr_name, category):
         """
         This may be overridden by subclasses in case restrictions need to be
         placed on what attributes can be set by who beyond the normal lock.
@@ -1690,7 +1708,7 @@ class CmdSetAttribute(ObjManipCommand):
                 return self.not_found
         return result
 
-    def view_attr(self, obj, attr):
+    def view_attr(self, obj, attr, category):
         """
         Look up the value of an attribute and return a string displaying it.
         """
@@ -1701,45 +1719,51 @@ class CmdSetAttribute(ObjManipCommand):
                 val = obj.attributes.get(key)
                 val = self.do_nested_lookup(val, *nested_keys)
                 if val is not self.not_found:
-                    return "\nAttribute %s/%s = %s" % (obj.name, attr, val)
-        error = "\n%s has no attribute '%s'." % (obj.name, attr)
+                    return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
+        error = f"\nAttribute {obj.name}/|w{attr} [category:{category}] does not exist."
         if nested:
             error += " (Nested lookups attempted)"
         return error
 
-    def rm_attr(self, obj, attr):
+    def rm_attr(self, obj, attr, category):
         """
         Remove an attribute from the object, or a nested data structure, and report back.
         """
         nested = False
         for key, nested_keys in self.split_nested_attr(attr):
             nested = True
-            if obj.attributes.has(key):
+            if obj.attributes.has(key, category):
                 if nested_keys:
                     del_key = nested_keys[-1]
-                    val = obj.attributes.get(key)
+                    val = obj.attributes.get(key, category=category)
                     deep = self.do_nested_lookup(val, *nested_keys[:-1])
                     if deep is not self.not_found:
                         try:
                             del deep[del_key]
                         except (IndexError, KeyError, TypeError):
                             continue
-                    return "\nDeleted attribute '%s' (= nested) from %s." % (attr, obj.name)
+                    return f"\nDeleted attribute {obj.name}/|w{attr}|n [category:{category}]."
                 else:
-                    exists = obj.attributes.has(key)
-                    obj.attributes.remove(attr)
-                    return "\nDeleted attribute '%s' (= %s) from %s." % (attr, exists, obj.name)
-        error = "\n%s has no attribute '%s'." % (obj.name, attr)
+                    exists = obj.attributes.has(key, category)
+                    if exists:
+                        obj.attributes.remove(attr, category=category)
+                        return f"\nDeleted attribute {obj.name}/|w{attr}|n [category:{category}]."
+                    else:
+                        return (
+                            f"\nNo attribute {obj.name}/|w{attr}|n [category: {category}] "
+                            "was found to delete."
+                        )
+        error = f"\nNo attribute {obj.name}/|w{attr}|n [category: {category}] was found to delete."
         if nested:
             error += " (Nested lookups attempted)"
         return error
 
-    def set_attr(self, obj, attr, value):
+    def set_attr(self, obj, attr, value, category):
         done = False
         for key, nested_keys in self.split_nested_attr(attr):
-            if obj.attributes.has(key) and nested_keys:
+            if obj.attributes.has(key, category) and nested_keys:
                 acc_key = nested_keys[-1]
-                lookup_value = obj.attributes.get(key)
+                lookup_value = obj.attributes.get(key, category)
                 deep = self.do_nested_lookup(lookup_value, *nested_keys[:-1])
                 if deep is not self.not_found:
                     # To support appending and inserting to lists
@@ -1766,7 +1790,7 @@ class CmdSetAttribute(ObjManipCommand):
                         deep[acc_key] = value
                     except TypeError as err:
                         # Tuples can't be modified
-                        return "\n%s - %s" % (err, deep)
+                        return f"\n{err} - {deep}"
 
                     value = lookup_value
                     attr = key
@@ -1776,8 +1800,8 @@ class CmdSetAttribute(ObjManipCommand):
         verb = "Modified" if obj.attributes.has(attr) else "Created"
         try:
             if not done:
-                obj.attributes.add(attr, value)
-            return "\n%s attribute %s/%s = %s" % (verb, obj.name, attr, repr(value))
+                obj.attributes.add(attr, value, category)
+            return f"\n{verb} attribute {obj.name}/|w{attr}|n [category:{category}] = {value}"
         except SyntaxError:
             # this means literal_eval tried to parse a faulty string
             return (
@@ -1788,28 +1812,43 @@ class CmdSetAttribute(ObjManipCommand):
                 "dicts.|n"
             )
 
-    def edit_handler(self, obj, attr):
+    @interactive
+    def edit_handler(self, obj, attr, caller):
         """Activate the line editor"""
 
         def load(caller):
             """Called for the editor to load the buffer"""
-            old_value = obj.attributes.get(attr)
-            if old_value is not None and not isinstance(old_value, str):
-                typ = type(old_value).__name__
-                self.caller.msg(
-                    "|RWARNING! Saving this buffer will overwrite the "
-                    "current attribute (of type %s) with a string!|n" % typ
-                )
-                return str(old_value)
-            return old_value
+
+            try:
+                old_value = obj.attributes.get(attr, raise_exception=True)
+            except AttributeError:
+                # we set empty buffer on nonexisting Attribute because otherwise
+                # we'd always have the string "None" in the buffer to start with
+                old_value = ""
+            return str(old_value)  # we already confirmed we are ok with this
 
         def save(caller, buf):
             """Called when editor saves its buffer."""
             obj.attributes.add(attr, buf)
             caller.msg("Saved Attribute %s." % attr)
 
+        # check non-strings before activating editor
+        try:
+            old_value = obj.attributes.get(attr, raise_exception=True)
+            if not isinstance(old_value, str):
+                answer = yield (
+                    f"|rWarning: Attribute |w{attr}|r is of type |w{type(old_value).__name__}|r. "
+                    "\nTo continue editing, it must be converted to (and saved as) a string. "
+                    "Continue? [Y]/N?"
+                )
+                if answer.lower() in ("n", "no"):
+                    self.caller.msg("Aborted edit.")
+                    return
+        except AttributeError:
+            pass
+
         # start the editor
-        EvEditor(self.caller, load, save, key="%s/%s" % (obj, attr))
+        EvEditor(self.caller, load, save, key=f"{obj}/{attr}")
 
     def search_for_obj(self, objname):
         """
@@ -1849,13 +1888,14 @@ class CmdSetAttribute(ObjManipCommand):
 
         caller = self.caller
         if not self.args:
-            caller.msg("Usage: set obj/attr = value. Use empty value to clear.")
+            caller.msg("Usage: set obj/attr[:category] = value. Use empty value to clear.")
             return
 
         # get values prepared by the parser
         value = self.rhs
         objname = self.lhs_objattr[0]["name"]
         attrs = self.lhs_objattr[0]["attrs"]
+        category = self.lhs_objs[0].get("option")  # None if unset
 
         obj = self.search_for_obj(objname)
         if not obj:
@@ -1875,21 +1915,23 @@ class CmdSetAttribute(ObjManipCommand):
                 caller.msg("The Line editor can only be applied " "to one attribute at a time.")
                 return
             if not attrs:
-                caller.msg("Use `set/edit <objname>/<attr>` to define the Attribute to edit.\nTo "
-                           "edit the current room description, use `set/edit here/desc` (or "
-                           "use the `desc` command).")
+                caller.msg(
+                    "Use `set/edit <objname>/<attr>` to define the Attribute to edit.\nTo "
+                    "edit the current room description, use `set/edit here/desc` (or "
+                    "use the `desc` command)."
+                )
                 return
-            self.edit_handler(obj, attrs[0])
+            self.edit_handler(obj, attrs[0], caller)
             return
         if not value:
             if self.rhs is None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
-                    attrs = [attr.key for attr in obj.attributes.all()]
+                    attrs = [attr.key for attr in obj.attributes.get(category=None)]
                 for attr in attrs:
-                    if not self.check_attr(obj, attr):
+                    if not self.check_attr(obj, attr, category):
                         continue
-                    result.append(self.view_attr(obj, attr))
+                    result.append(self.view_attr(obj, attr, category))
                 # we view it without parsing markup.
                 self.caller.msg("".join(result).strip(), options={"raw": True})
                 return
@@ -1899,19 +1941,44 @@ class CmdSetAttribute(ObjManipCommand):
                     caller.msg("You don't have permission to edit %s." % obj.key)
                     return
                 for attr in attrs:
-                    if not self.check_attr(obj, attr):
+                    if not self.check_attr(obj, attr, category):
                         continue
-                    result.append(self.rm_attr(obj, attr))
+                    result.append(self.rm_attr(obj, attr, category))
         else:
             # setting attribute(s). Make sure to convert to real Python type before saving.
+            # add support for $dbref() and $search() in set argument
+            global _ATTRFUNCPARSER
+            if not _ATTRFUNCPARSER:
+                _ATTRFUNCPARSER = funcparser.FuncParser(
+                    {
+                        "dbref": funcparser.funcparser_callable_search,
+                        "search": funcparser.funcparser_callable_search,
+                    }
+                )
+
             if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
                 caller.msg("You don't have permission to edit %s." % obj.key)
                 return
             for attr in attrs:
-                if not self.check_attr(obj, attr):
+                if not self.check_attr(obj, attr, category):
                     continue
-                value = _convert_from_string(self, value)
-                result.append(self.set_attr(obj, attr, value))
+                # from evennia import set_trace;set_trace()
+                parsed_value = _ATTRFUNCPARSER.parse(value, return_str=False, caller=caller)
+                if hasattr(parsed_value, "access"):
+                    # if this is an object we must have the right to read it, if so,
+                    # we will not convert it to a string
+                    if not (
+                        parsed_value.access(caller, "control")
+                        or parsed_value.access(self.caller, "edit")
+                    ):
+                        caller.msg(
+                            "You don't have permission to set " f"object with identifier '{value}'."
+                        )
+                        continue
+                    value = parsed_value
+                else:
+                    value = _convert_from_string(self, value)
+                result.append(self.set_attr(obj, attr, value, category))
         # send feedback
         caller.msg("".join(result).strip("\n"))
 
@@ -1924,7 +1991,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       typeclass[/switch] <object> [= typeclass.path]
       typeclass/prototype <object> = prototype_key
 
-      typeclass/list/show [typeclass.path]
+      typeclasses or typeclass/list/show [typeclass.path]
       swap - this is a shorthand for using /force/reset flags.
       update - this is a shorthand for using the /force/reload flag.
 
@@ -1934,8 +2001,8 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
       update - *only* re-run at_object_creation on this object
               meaning locks or other properties set later may remain.
       reset - clean out *all* the attributes and properties on the
-              object - basically making this a new clean object. This will
-              also reset cmdsets.
+              object - basically making this a new clean object. This will also
+              reset cmdsets!
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
       list - show available typeclasses. Only typeclasses in modules actually
@@ -1966,18 +2033,64 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "typeclass"
-    aliases = ["type", "parent", "swap", "update"]
+    key = "@typeclass"
+    aliases = ["@type", "@parent", "@swap", "@update", "@typeclasses"]
     switch_options = ("show", "examine", "update", "reset", "force", "list", "prototype")
     locks = "cmd:perm(typeclass) or perm(Builder)"
     help_category = "Building"
+
+    def _generic_search(self, query, typeclass_path):
+
+        caller = self.caller
+        if typeclass_path:
+            # make sure we search the right database table
+            try:
+                new_typeclass = class_from_module(typeclass_path)
+            except ImportError:
+                # this could be a prototype and not a typeclass at all
+                return caller.search(query)
+
+            dbclass = new_typeclass.__dbclass__
+
+            if caller.__dbclass__ == dbclass:
+                # object or account match
+                obj = caller.search(query)
+                if not obj:
+                    return
+            elif self.account and self.account.__dbclass__ == dbclass:
+                # applying account while caller is object
+                caller.msg(f"Trying to search {new_typeclass} with query '{self.lhs}'.")
+                obj = self.account.search(query)
+                if not obj:
+                    return
+            elif hasattr(caller, "puppet") and caller.puppet.__dbclass__ == dbclass:
+                # applying object while caller is account
+                caller.msg(f"Trying to search {new_typeclass} with query '{self.lhs}'.")
+                obj = caller.puppet.search(query)
+                if not obj:
+                    return
+            else:
+                # other mismatch between caller and specified typeclass
+                caller.msg(f"Trying to search {new_typeclass} with query '{self.lhs}'.")
+                obj = new_typeclass.search(query)
+                if not obj:
+                    if isinstance(obj, list):
+                        caller.msg(f"Could not find {new_typeclass} with query '{self.lhs}'.")
+                    return
+        else:
+            # no rhs, use caller's typeclass
+            obj = caller.search(query)
+            if not obj:
+                return
+
+        return obj
 
     def func(self):
         """Implements command"""
 
         caller = self.caller
 
-        if "list" in self.switches:
+        if "list" in self.switches or self.cmdname in ("typeclasses", "@typeclasses"):
             tclasses = get_all_typeclasses()
             contribs = [key for key in sorted(tclasses) if key.startswith("evennia.contrib")] or [
                 "<None loaded>"
@@ -2040,8 +2153,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 )
             return
 
-        # get object to swap on
-        obj = caller.search(self.lhs)
+        obj = self._generic_search(self.lhs, self.rhs)
         if not obj:
             return
 
@@ -2078,10 +2190,10 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             caller.msg(string)
             return
 
-        if self.cmdstring == "swap":
+        if self.cmdstring in ("swap", "@swap"):
             self.switches.append("force")
             self.switches.append("reset")
-        elif self.cmdstring == "update":
+        elif self.cmdstring in ("update", "@update"):
             self.switches.append("force")
             self.switches.append("update")
 
@@ -2095,15 +2207,28 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
 
         is_same = obj.is_typeclass(new_typeclass, exact=True)
         if is_same and "force" not in self.switches:
-            string = "%s already has the typeclass '%s'. Use /force to override." % (
-                obj.name,
-                new_typeclass,
+            string = (
+                f"{obj.name} already has the typeclass '{new_typeclass}'. "
+                "Use /force to override."
             )
         else:
-            update = "update" in self.switches
             reset = "reset" in self.switches
+            update = "update" in self.switches or not reset  # default to update
+
             hooks = "at_object_creation" if update and not reset else "all"
             old_typeclass_path = obj.typeclass_path
+
+            if reset:
+                answer = yield (
+                    "|yNote that this will reset the object back to its typeclass' default state, "
+                    "removing any custom locks/perms/attributes etc that may have been added "
+                    "by an explicit create_object call. Use `update` or type/force instead in order "
+                    "to keep such data. "
+                    "Continue [Y]/N?|n"
+                )
+                if answer.upper() in ("N", "NO"):
+                    caller.msg("Aborted.")
+                    return
 
             # special prompt for the user in cases where we want
             # to confirm changes.
@@ -2128,7 +2253,9 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             )
 
             if "prototype" in self.switches:
-                modified = spawner.batch_update_objects_with_prototype(prototype, objects=[obj])
+                modified = spawner.batch_update_objects_with_prototype(
+                    prototype, objects=[obj], caller=self.caller
+                )
                 prototype_success = modified > 0
                 if not prototype_success:
                     caller.msg("Prototype %s failed to apply." % prototype["key"])
@@ -2148,7 +2275,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             if reset:
                 string += " All old attributes where deleted before the swap."
             else:
-                string += " Attributes set before swap were not removed."
+                string += " Attributes set before swap were not removed\n(use `swap` or `type/reset` to clear all)."
             if "prototype" in self.switches and prototype_success:
                 string += (
                     " Prototype '%s' was successfully applied over the object type."
@@ -2173,7 +2300,7 @@ class CmdWipe(ObjManipCommand):
     matching the given attribute-wildcard search string.
     """
 
-    key = "wipe"
+    key = "@wipe"
     locks = "cmd:perm(wipe) or perm(Builder)"
     help_category = "Building"
 
@@ -2242,8 +2369,8 @@ class CmdLock(ObjManipCommand):
        'get:id(25); delete:perm(Builder)'
     """
 
-    key = "lock"
-    aliases = ["locks"]
+    key = "@lock"
+    aliases = ["@locks"]
     locks = "cmd: perm(locks) or perm(Builder)"
     help_category = "Building"
 
@@ -2354,6 +2481,8 @@ class CmdExamine(ObjManipCommand):
     Switch:
       account - examine an Account (same as adding *)
       object - examine an Object (useful when OOC)
+      script - examine a Script
+      channel - examine a Channel
 
     The examine command shows detailed game info about an
     object and optionally a specific attribute on it.
@@ -2363,380 +2492,515 @@ class CmdExamine(ObjManipCommand):
 
     """
 
-    key = "examine"
-    aliases = ["ex", "exam"]
+    key = "@examine"
+    aliases = ["@ex", "@exam"]
     locks = "cmd:perm(examine) or perm(Builder)"
     help_category = "Building"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
+    switch_options = ["account", "object", "script", "channel"]
 
-    account_mode = False
+    object_type = "object"
+
     detail_color = "|c"
     header_color = "|w"
     quell_color = "|r"
     separator = "-"
 
-    def list_attribute(self, crop, attr, category, value):
+    def msg(self, text):
         """
-        Formats a single attribute line.
+        Central point for sending messages to the caller. This tags
+        the message as 'examine' for eventual custom markup in the client.
 
-        Args:
-            crop (bool): If output should be cropped if too long.
-            attr (str): Attribute key.
-            category (str): Attribute category.
-            value (any): Attribute value.
-        Returns:
+        Attributes:
+            text (str): The text to send.
+
         """
-        if attr is None:
-            return "No such attribute was found."
-        value = utils.to_str(value)
-        if crop:
-            value = utils.crop(value)
-        value = inlinefunc_raw(ansi_raw(value))
-        if category:
-            return f"{attr}[{category}] = {value}"
+        self.caller.msg(text=(text, {"type": "examine"}))
+
+    def format_key(self, obj):
+        return f"{obj.name} ({obj.dbref})"
+
+    def format_aliases(self, obj):
+        if hasattr(obj, "aliases") and obj.aliases.all():
+            return ", ".join(utils.make_iter(str(obj.aliases)))
+
+    def format_typeclass(self, obj):
+        if hasattr(obj, "typeclass_path"):
+            return f"{obj.typename} ({obj.typeclass_path})"
+
+    def format_sessions(self, obj):
+        if hasattr(obj, "sessions"):
+            sessions = obj.sessions.all()
+            if sessions:
+                return ", ".join(f"#{sess.sessid}" for sess in obj.sessions.all())
+
+    def format_email(self, obj):
+        if hasattr(obj, "email") and obj.email:
+            return f"{self.detail_color}{obj.email}|n"
+
+    def format_account_key(self, account):
+        return f"{self.detail_color}{account.name}|n ({account.dbref})"
+
+    def format_account_typeclass(self, account):
+        return f"{account.typename} ({account.typeclass_path})"
+
+    def format_account_permissions(self, account):
+        perms = account.permissions.all()
+        if account.is_superuser:
+            perms = ["<Superuser>"]
+        elif not perms:
+            perms = ["<None>"]
+        perms = ", ".join(perms)
+        if account.attributes.has("_quell"):
+            perms += f" {self.quell_color}(quelled)|n"
+        return perms
+
+    def format_location(self, obj):
+        if hasattr(obj, "location") and obj.location:
+            return f"{obj.location.key} (#{obj.location.id})"
+
+    def format_home(self, obj):
+        if hasattr(obj, "home") and obj.home:
+            return f"{obj.home.key} (#{obj.home.id})"
+
+    def format_destination(self, obj):
+        if hasattr(obj, "destination") and obj.destination:
+            return f"{obj.destination.key} (#{obj.destination.id})"
+
+    def format_permissions(self, obj):
+        perms = obj.permissions.all()
+        if perms:
+            perms_string = ", ".join(perms)
+            if obj.is_superuser:
+                perms_string += " <Superuser>"
+            return perms_string
+
+    def format_locks(self, obj):
+        locks = str(obj.locks)
+        if locks:
+            return utils.fill("; ".join([lock for lock in locks.split(";")]), indent=2)
+        return "Default"
+
+    def format_scripts(self, obj):
+        if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
+            return f"{obj.scripts}"
+
+    def format_single_tag(self, tag):
+        if tag.db_category:
+            return f"{tag.db_key}[{tag.db_category}]"
         else:
-            return f"{attr} = {value}"
+            return f"{tag.db_key}"
 
-    def format_attributes(self, obj, attrname=None, crop=True):
-        """
-        Helper function that returns info about attributes and/or
-        non-persistent data stored on object
+    def format_tags(self, obj):
+        if hasattr(obj, "tags"):
+            tags = sorted(obj.tags.all(return_objs=True))
+            if tags:
+                formatted_tags = [self.format_single_tag(tag) for tag in tags]
+                return utils.fill(", ".join(formatted_tags), indent=2)
 
-        """
-        if attrname:
-            if obj.attributes.has(attrname):
-                db_attr = [(attrname, obj.attributes.get(attrname), None)]
-            else:
-                db_attr = None
-            try:
-                ndb_attr = [(attrname, object.__getattribute__(obj.ndb, attrname))]
-            except Exception:
-                ndb_attr = None
-            if not (db_attr or ndb_attr):
-                return {"Attribue(s)": f"\n  No Attribute '{attrname}' found on {obj.name}"}
-        else:
-            db_attr = [(attr.key, attr.value, attr.category) for attr in obj.db_attributes.all()]
-            try:
-                ndb_attr = obj.nattributes.all(return_tuples=True)
-            except Exception:
-                ndb_attr = (None, None, None)
+    def format_single_cmdset_options(self, cmdset):
+        def _truefalse(string, value):
+            if value is None:
+                return ""
+            if value:
+                return f"{string}: T"
+            return f"{string}: F"
 
-        output = {}
-        if db_attr and db_attr[0]:
-            output["Persistent attribute(s)"] = "\n  " + "\n  ".join(
-                sorted(
-                    self.list_attribute(crop, attr, category, value)
-                    for attr, value, category in db_attr
+        txt = ", ".join(
+            _truefalse(opt, getattr(cmdset, opt))
+            for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
+            if getattr(cmdset, opt) is not None
+        )
+        return ", " + txt if txt else ""
+
+    def format_single_cmdset(self, cmdset):
+        options = self.format_single_cmdset_options(cmdset)
+        return f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority}{options})"
+
+    def format_stored_cmdsets(self, obj):
+        if hasattr(obj, "cmdset"):
+            stored_cmdset_strings = []
+            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
+            for cmdset in stored_cmdsets:
+                if cmdset.key != "_EMPTY_CMDSET":
+                    stored_cmdset_strings.append(self.format_single_cmdset(cmdset))
+            return "\n  " + "\n  ".join(stored_cmdset_strings)
+
+    def format_merged_cmdsets(self, obj, current_cmdset):
+        if not hasattr(obj, "cmdset"):
+            return None
+
+        all_cmdsets = [(cmdset.key, cmdset) for cmdset in current_cmdset.merged_from]
+        # we always at least try to add account- and session sets since these are ignored
+        # if we merge on the object level.
+        if hasattr(obj, "account") and obj.account:
+            # get Attribute-cmdsets if they exist
+            all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.account.cmdset.all()])
+            if obj.sessions.count():
+                # if there are more sessions than one on objects it's because of multisession mode
+                # we only show the first session's cmdset here (it is -in principle- possible
+                # that different sessions have different cmdsets but for admins who want such
+                # madness it is better that they overload with their own CmdExamine to handle it).
+                all_cmdsets.extend(
+                    [(cmdset.key, cmdset) for cmdset in obj.account.sessions.all()[0].cmdset.all()]
                 )
-            )
+        else:
+            try:
+                # we have to protect this since many objects don't have sessions.
+                all_cmdsets.extend(
+                    [
+                        (cmdset.key, cmdset)
+                        for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()
+                    ]
+                )
+            except (TypeError, AttributeError):
+                # an error means we are merging an object without a session
+                pass
+        all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
+        all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
+
+        merged_cmdset_strings = []
+        for cmdset in all_cmdsets:
+            if cmdset.key != "_EMPTY_CMDSET":
+                merged_cmdset_strings.append(self.format_single_cmdset(cmdset))
+        return "\n  " + "\n  ".join(merged_cmdset_strings)
+
+    def format_current_cmds(self, obj, current_cmdset):
+        current_commands = sorted([cmd.key for cmd in current_cmdset if cmd.access(obj, "cmd")])
+        return "\n" + utils.fill(", ".join(current_commands), indent=2)
+
+    def _get_attribute_value_type(self, attrvalue):
+        typ = ""
+        if not isinstance(attrvalue, str):
+            try:
+                name = attrvalue.__class__.__name__
+            except AttributeError:
+                try:
+                    name = attrvalue.__name__
+                except AttributeError:
+                    name = attrvalue
+            if str(name).startswith("_Saver"):
+                try:
+                    typ = str(type(deserialize(attrvalue)))
+                except Exception:
+                    typ = str(type(deserialize(attrvalue)))
+            else:
+                typ = str(type(attrvalue))
+        return typ
+
+    def format_single_attribute_detail(self, obj, attr):
+        global _FUNCPARSER
+        if not _FUNCPARSER:
+            _FUNCPARSER = funcparser.FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES)
+
+        key, category, value = attr.db_key, attr.db_category, attr.value
+        typ = self._get_attribute_value_type(value)
+        typ = f" |B[type: {typ}]|n" if typ else ""
+        value = utils.to_str(value)
+        value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
+        return (
+            f"Attribute {obj.name}/{self.header_color}{key}|n "
+            f"[category={category}]{typ}:\n\n{value}"
+        )
+
+    def format_single_attribute(self, attr):
+        global _FUNCPARSER
+        if not _FUNCPARSER:
+            _FUNCPARSER = funcparser.FuncParser(settings.FUNCPARSER_OUTGOING_MESSAGES_MODULES)
+
+        key, category, value = attr.db_key, attr.db_category, attr.value
+        typ = self._get_attribute_value_type(value)
+        typ = f" |B[type: {typ}]|n" if typ else ""
+        value = utils.to_str(value)
+        value = _FUNCPARSER.parse(ansi_raw(value), escape=True)
+        value = utils.crop(value)
+        if category:
+            return f"{self.header_color}{key}|n[{category}]={value}{typ}"
+        else:
+            return f"{self.header_color}{key}|n={value}{typ}"
+
+    def format_attributes(self, obj):
+        output = "\n  " + "\n  ".join(
+            sorted(self.format_single_attribute(attr) for attr in obj.db_attributes.all())
+        )
+        if output.strip():
+            # we don't want just an empty line
+            return output
+
+    def format_nattributes(self, obj):
+        try:
+            ndb_attr = obj.nattributes.all()
+        except Exception:
+            return
+
         if ndb_attr and ndb_attr[0]:
-            output["Non-Persistent attribute(s)"] = "  \n" + "  \n".join(
-                sorted(self.list_attribute(crop, attr, None, value) for attr, value in ndb_attr)
+            return "\n  " + "\n  ".join(
+                sorted(self.format_single_attribute(attr) for attr in ndb_attr)
             )
-        return output
+
+    def format_exits(self, obj):
+        if hasattr(obj, "exits"):
+            exits = ", ".join(f"{exit.name}({exit.dbref})" for exit in obj.exits)
+            return exits if exits else None
+
+    def format_chars(self, obj):
+        if hasattr(obj, "contents"):
+            chars = ", ".join(f"{obj.name}({obj.dbref})" for obj in obj.contents if obj.account)
+            return chars if chars else None
+
+    def format_things(self, obj):
+        if hasattr(obj, "contents"):
+            things = ", ".join(
+                f"{obj.name}({obj.dbref})"
+                for obj in obj.contents
+                if not obj.account and not obj.destination
+            )
+            return things if things else None
+
+    def format_script_desc(self, obj):
+        if hasattr(obj, "db_desc") and obj.db_desc:
+            return crop(obj.db_desc, 20)
+
+    def format_script_is_persistent(self, obj):
+        if hasattr(obj, "db_persistent"):
+            return "T" if obj.db_persistent else "F"
+
+    def format_script_timer_data(self, obj):
+        if hasattr(obj, "db_interval") and obj.db_interval > 0:
+            start_delay = "T" if obj.db_start_delay else "F"
+            next_repeat = obj.time_until_next_repeat()
+            active = "|grunning|n" if obj.db_is_active and next_repeat else "|rinactive|n"
+            interval = obj.db_interval
+            next_repeat = "N/A" if next_repeat is None else f"{next_repeat}s"
+            repeats = ""
+            if obj.db_repeats:
+                remaining_repeats = obj.remaining_repeats()
+                remaining_repeats = 0 if remaining_repeats is None else remaining_repeats
+                repeats = f" - {remaining_repeats}/{obj.db_repeats} remain"
+            return (
+                f"{active} - interval: {interval}s "
+                f"(next: {next_repeat}{repeats}, start_delay: {start_delay})"
+            )
+
+    def format_channel_sub_totals(self, obj):
+        if hasattr(obj, "db_account_subscriptions"):
+            account_subs = obj.db_account_subscriptions.all()
+            object_subs = obj.db_object_subscriptions.all()
+            online = len(obj.subscriptions.online())
+            ntotal = account_subs.count() + object_subs.count()
+            return f"{ntotal} ({online} online)"
+
+    def format_channel_account_subs(self, obj):
+        if hasattr(obj, "db_account_subscriptions"):
+            account_subs = obj.db_account_subscriptions.all()
+            if account_subs:
+                return "\n  " + "\n  ".join(
+                    format_grid([sub.key for sub in account_subs], sep=" ", width=_DEFAULT_WIDTH)
+                )
+
+    def format_channel_object_subs(self, obj):
+        if hasattr(obj, "db_object_subscriptions"):
+            object_subs = obj.db_object_subscriptions.all()
+            if object_subs:
+                return "\n  " + "\n  ".join(
+                    format_grid([sub.key for sub in object_subs], sep=" ", width=_DEFAULT_WIDTH)
+                )
+
+    def get_formatted_obj_data(self, obj, current_cmdset):
+        """
+        Calls all other `format_*` methods.
+
+        """
+        objdata = {}
+        objdata["Name/key"] = self.format_key(obj)
+        objdata["Aliases"] = self.format_aliases(obj)
+        objdata["Typeclass"] = self.format_typeclass(obj)
+        objdata["Sessions"] = self.format_sessions(obj)
+        objdata["Email"] = self.format_email(obj)
+        if hasattr(obj, "has_account") and obj.has_account:
+            objdata["Account"] = self.format_account_key(obj.account)
+            objdata["  Account Typeclass"] = self.format_account_typeclass(obj.account)
+            objdata["  Account Permissions"] = self.format_account_permissions(obj.account)
+        objdata["Location"] = self.format_location(obj)
+        objdata["Home"] = self.format_home(obj)
+        objdata["Destination"] = self.format_destination(obj)
+        objdata["Permissions"] = self.format_permissions(obj)
+        objdata["Locks"] = self.format_locks(obj)
+        if current_cmdset and not (
+            len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"
+        ):
+            objdata["Stored Cmdset(s)"] = self.format_stored_cmdsets(obj)
+            objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
+            objdata[
+                f"Commands vailable to {obj.key} (result of Merged Cmdset(s))"
+            ] = self.format_current_cmds(obj, current_cmdset)
+        if self.object_type == "script":
+            objdata["Description"] = self.format_script_desc(obj)
+            objdata["Persistent"] = self.format_script_is_persistent(obj)
+            objdata["Script Repeat"] = self.format_script_timer_data(obj)
+        objdata["Scripts"] = self.format_scripts(obj)
+        objdata["Tags"] = self.format_tags(obj)
+        objdata["Persistent Attributes"] = self.format_attributes(obj)
+        objdata["Non-Persistent Attributes"] = self.format_nattributes(obj)
+        objdata["Exits"] = self.format_exits(obj)
+        objdata["Characters"] = self.format_chars(obj)
+        objdata["Content"] = self.format_things(obj)
+        if self.object_type == "channel":
+            objdata["Subscription Totals"] = self.format_channel_sub_totals(obj)
+            objdata["Account Subscriptions"] = self.format_channel_account_subs(obj)
+            objdata["Object Subscriptions"] = self.format_channel_object_subs(obj)
+
+        return objdata
 
     def format_output(self, obj, current_cmdset):
         """
-        Helper function that creates a nice report about an object.
-
-        Args:
-            obj (any): Object to analyze.
-            current_cmdset (CmdSet): Current cmdset for object.
-
-        Returns:
-            str: The formatted string.
+        Formats the full examine page return.
 
         """
-        hclr = self.header_color
-        dclr = self.detail_color
-        qclr = self.quell_color
+        objdata = self.get_formatted_obj_data(obj, current_cmdset)
 
-        output = {}
-        # main key
-        output["Name/key"] = f"{dclr}{obj.name}|n ({obj.dbref})"
-        # aliases
-        if hasattr(obj, "aliases") and obj.aliases.all():
-            output["Aliases"] = ", ".join(utils.make_iter(str(obj.aliases)))
-        # typeclass
-        output["Typeclass"] = f"{obj.typename} ({obj.typeclass_path})"
-        # sessions
-        if hasattr(obj, "sessions") and obj.sessions.all():
-            output["Session id(s)"] = ", ".join(f"#{sess.sessid}" for sess in obj.sessions.all())
-        # email, if any
-        if hasattr(obj, "email") and obj.email:
-            output["Email"] = f"{dclr}{obj.email}|n"
-        # account, for puppeted objects
-        if hasattr(obj, "has_account") and obj.has_account:
-            output["Account"] = f"{dclr}{obj.account.name}|n ({obj.account.dbref})"
-            # account typeclass
-            output["  Account Typeclass"] = f"{obj.account.typename} ({obj.account.typeclass_path})"
-            # account permissions
-            perms = obj.account.permissions.all()
-            if obj.account.is_superuser:
-                perms = ["<Superuser>"]
-            elif not perms:
-                perms = ["<None>"]
-            perms = ", ".join(perms)
-            if obj.account.attributes.has("_quell"):
-                perms += f" {qclr}(quelled)|n"
-            output["  Account Permissions"] = perms
-        # location
-        if hasattr(obj, "location"):
-            loc = str(obj.location)
-            if obj.location:
-                loc += f" (#{obj.location.id})"
-            output["Location"] = loc
-        # home
-        if hasattr(obj, "home"):
-            home = str(obj.home)
-            if obj.home:
-                home += f" (#{obj.home.id})"
-            output["Home"] = home
-        # destination, for exits
-        if hasattr(obj, "destination") and obj.destination:
-            dest = str(obj.destination)
-            if obj.destination:
-                dest += f" (#{obj.destination.id})"
-            output["Destination"] = dest
-        # main permissions
-        perms = obj.permissions.all()
-        perms_string = ""
-        if perms:
-            perms_string = ", ".join(perms)
-        if obj.is_superuser:
-            perms_string += " <Superuser>"
-        if perms_string:
-            output["Permissions"] = perms_string
-        # locks
-        locks = str(obj.locks)
-        if locks:
-            locks_string = "\n" + utils.fill(
-                "; ".join([lock for lock in locks.split(";")]), indent=2
-            )
-        else:
-            locks_string = " Default"
-        output["Locks"] = locks_string
-        # cmdsets
-        if current_cmdset and not (
-                len(obj.cmdset.all()) == 1 and obj.cmdset.current.key == "_EMPTY_CMDSET"):
-            # all() returns a 'stack', so make a copy to sort.
-
-            def _format_options(cmdset):
-                """helper for cmdset-option display"""
-
-                def _truefalse(string, value):
-                    if value is None:
-                        return ""
-                    if value:
-                        return f"{string}: T"
-                    return f"{string}: F"
-
-                options = ", ".join(
-                    _truefalse(opt, getattr(cmdset, opt))
-                    for opt in ("no_exits", "no_objs", "no_channels", "duplicates")
-                    if getattr(cmdset, opt) is not None
-                )
-                options = ", " + options if options else ""
-                return options
-
-            # cmdset stored on us
-            stored_cmdsets = sorted(obj.cmdset.all(), key=lambda x: x.priority, reverse=True)
-            stored = []
-            for cmdset in stored_cmdsets:
-                if cmdset.key == "_EMPTY_CMDSET":
-                    continue
-                options = _format_options(cmdset)
-                stored.append(
-                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype}, prio {cmdset.priority}{options})"
-                )
-            output["Stored Cmdset(s)"] = "\n  " + "\n  ".join(stored)
-
-            # this gets all components of the currently merged set
-            all_cmdsets = [(cmdset.key, cmdset) for cmdset in current_cmdset.merged_from]
-            # we always at least try to add account- and session sets since these are ignored
-            # if we merge on the object level.
-            if hasattr(obj, "account") and obj.account:
-                all_cmdsets.extend([(cmdset.key, cmdset) for cmdset in obj.account.cmdset.all()])
-                if obj.sessions.count():
-                    # if there are more sessions than one on objects it's because of multisession mode 3.
-                    # we only show the first session's cmdset here (it is -in principle- possible that
-                    # different sessions have different cmdsets but for admins who want such madness
-                    # it is better that they overload with their own CmdExamine to handle it).
-                    all_cmdsets.extend(
-                        [
-                            (cmdset.key, cmdset)
-                            for cmdset in obj.account.sessions.all()[0].cmdset.all()
-                        ]
-                    )
-            else:
-                try:
-                    # we have to protect this since many objects don't have sessions.
-                    all_cmdsets.extend(
-                        [
-                            (cmdset.key, cmdset)
-                            for cmdset in obj.get_session(obj.sessions.get()).cmdset.all()
-                        ]
-                    )
-                except (TypeError, AttributeError):
-                    # an error means we are merging an object without a session
-                    pass
-            all_cmdsets = [cmdset for cmdset in dict(all_cmdsets).values()]
-            all_cmdsets.sort(key=lambda x: x.priority, reverse=True)
-
-            # the resulting merged cmdset
-            options = _format_options(current_cmdset)
-            merged = [
-                f"<Current merged cmdset> ({current_cmdset.mergetype} prio {current_cmdset.priority}{options})"
-            ]
-
-            # the merge stack
-            for cmdset in all_cmdsets:
-                options = _format_options(cmdset)
-                merged.append(
-                    f"{cmdset.path} [{cmdset.key}] ({cmdset.mergetype} prio {cmdset.priority}{options})"
-                )
-            output["Merged Cmdset(s)"] = "\n  " + "\n  ".join(merged)
-
-            # list the commands available to this object
-            current_commands = sorted([cmd.key for cmd in current_cmdset if cmd.access(obj, "cmd")])
-            cmdsetstr = "\n" + utils.fill(", ".join(current_commands), indent=2)
-            output[f"Commands available to {obj.key} (result of Merged CmdSets)"] = str(cmdsetstr)
-
-        # scripts
-        if hasattr(obj, "scripts") and hasattr(obj.scripts, "all") and obj.scripts.all():
-            output["Scripts"] = "\n  " + f"{obj.scripts}"
-        # add the attributes
-        output.update(self.format_attributes(obj))
-        # Tags
-        tags = obj.tags.all(return_key_and_category=True)
-        tags_string = "\n" + utils.fill(
-            ", ".join(sorted(f"{tag}[{category}]" for tag, category in tags)), indent=2,
-        )
-        if tags:
-            output["Tags[category]"] = tags_string
-        # Contents of object
-        exits = []
-        pobjs = []
-        things = []
-        if hasattr(obj, "contents"):
-            for content in obj.contents:
-                if content.destination:
-                    exits.append(content)
-                elif content.account:
-                    pobjs.append(content)
-                else:
-                    things.append(content)
-            if exits:
-                output["Exits (has .destination)"] = ", ".join(
-                    f"{exit.name}({exit.dbref})" for exit in exits
-                )
-            if pobjs:
-                output["Characters"] = ", ".join(
-                    f"{dclr}{pobj.name}|n({pobj.dbref})" for pobj in pobjs
-                )
-            if things:
-                output["Contents"] = ", ".join(
-                    f"{cont.name}({cont.dbref})"
-                    for cont in obj.contents
-                    if cont not in exits and cont not in pobjs
-                )
         # format output
+        main_str = []
         max_width = -1
-        for block in output.values():
-            max_width = max(max_width, max(display_len(line) for line in block.split("\n")))
+        for header, block in objdata.items():
+            if block is not None:
+                blockstr = f"{self.header_color}{header}|n: {block}"
+                max_width = max(max_width, max(display_len(line) for line in blockstr.split("\n")))
+                main_str.append(blockstr)
+        main_str = "\n".join(main_str)
+
         max_width = max(0, min(self.client_width(), max_width))
-
         sep = self.separator * max_width
-        mainstr = "\n".join(f"{hclr}{header}|n: {block}" for (header, block) in output.items())
-        return f"{sep}\n{mainstr}\n{sep}"
 
-    def func(self):
-        """Process command"""
-        caller = self.caller
+        return f"{sep}\n{main_str}\n{sep}"
 
-        def get_cmdset_callback(cmdset):
-            """
-            We make use of the cmdhandeler.get_and_merge_cmdsets below. This
-            is an asynchronous function, returning a Twisted deferred.
-            So in order to properly use this we need use this callback;
-            it is called with the result of get_and_merge_cmdsets, whenever
-            that function finishes. Taking the resulting cmdset, we continue
-            to format and output the result.
-            """
-            self.msg(self.format_output(obj, cmdset).strip())
+    def _search_by_object_type(self, obj_name, objtype):
+        """
+        Route to different search functions depending on the object type being
+        examined. This also handles error reporting for multimatches/no matches.
+
+        Args:
+            obj_name (str): The search query.
+            objtype (str): One of 'object', 'account', 'script' or 'channel'.
+        Returns:
+            any: `None` if no match or multimatch, otherwise a single result.
+
+        """
+        obj = None
+
+        if objtype == "object":
+            obj = self.caller.search(obj_name)
+        elif objtype == "account":
+            try:
+                obj = self.caller.search_account(obj_name.lstrip("*"))
+            except AttributeError:
+                # this means we are calling examine from an account object
+                obj = self.caller.search(
+                    obj_name.lstrip("*"), search_object="object" in self.switches
+                )
+        else:
+            obj = getattr(search, f"search_{objtype}")(obj_name)
+            if not obj:
+                self.caller.msg(f"No {objtype} found with key {obj_name}.")
+                obj = None
+            elif len(obj) > 1:
+                err = "Multiple {objtype} found with key {obj_name}:\n{matches}"
+                self.caller.msg(
+                    err.format(
+                        obj_name=obj_name, matches=", ".join(f"{ob.key}(#{ob.id})" for ob in obj)
+                    )
+                )
+                obj = None
+            else:
+                obj = obj[0]
+        return obj
+
+    def parse(self):
+        super().parse()
+
+        self.examine_objs = []
 
         if not self.args:
             # If no arguments are provided, examine the invoker's location.
-            if hasattr(caller, "location"):
-                obj = caller.location
-                if not obj.access(caller, "examine"):
-                    # If we don't have special info access, just look at the object instead.
-                    self.msg(caller.at_look(obj))
-                    return
-                obj_session = obj.sessions.get()[0] if obj.sessions.count() else None
-
-                # using callback for printing result whenever function returns.
-                get_and_merge_cmdsets(
-                    obj, obj_session, self.account, obj, "object", self.raw_string
-                ).addCallback(get_cmdset_callback)
+            if hasattr(self.caller, "location"):
+                self.examine_objs.append((self.caller.location, None))
             else:
                 self.msg("You need to supply a target to examine.")
-            return
+                raise InterruptCommand
+        else:
+            for objdef in self.lhs_objattr:
+                # note that we check the objtype for every repeat; this will always
+                # be the same result, but it makes for a cleaner code and multi-examine
+                # is not so common anyway.
 
-        # we have given a specific target object
-        for objdef in self.lhs_objattr:
+                obj = None
+                obj_name = objdef["name"]  # name
+                obj_attrs = objdef["attrs"]  # /attrs
 
-            obj = None
-            obj_name = objdef["name"]
-            obj_attrs = objdef["attrs"]
+                # identify object type, in prio account - script - channel
+                object_type = "object"
+                if (
+                    utils.inherits_from(self.caller, "evennia.accounts.accounts.DefaultAccount")
+                    or "account" in self.switches
+                    or obj_name.startswith("*")
+                ):
+                    object_type = "account"
+                elif "script" in self.switches:
+                    object_type = "script"
+                elif "channel" in self.switches:
+                    object_type = "channel"
 
-            self.account_mode = (
-                utils.inherits_from(caller, "evennia.accounts.accounts.DefaultAccount")
-                or "account" in self.switches
-                or obj_name.startswith("*")
-            )
-            if self.account_mode:
-                try:
-                    obj = caller.search_account(obj_name.lstrip("*"))
-                except AttributeError:
-                    # this means we are calling examine from an account object
-                    obj = caller.search(
-                        obj_name.lstrip("*"), search_object="object" in self.switches
-                    )
-            else:
-                obj = caller.search(obj_name)
-            if not obj:
-                continue
+                self.object_type = object_type
+                obj = self._search_by_object_type(obj_name, object_type)
 
-            if not obj.access(caller, "examine"):
+                if obj:
+                    self.examine_objs.append((obj, obj_attrs))
+
+    def func(self):
+        """Process command"""
+        for obj, obj_attrs in self.examine_objs:
+            # these are parsed out in .parse already
+
+            if not obj.access(self.caller, "examine"):
                 # If we don't have special info access, just look
                 # at the object instead.
-                self.msg(caller.at_look(obj))
+                self.msg(self.caller.at_look(obj))
                 continue
 
             if obj_attrs:
-                for attrname in obj_attrs:
-                    # we are only interested in specific attributes
-                    ret = "\n".join(
-                        f"{self.header_color}{header}|n:{value}"
-                        for header, value in self.format_attributes(
-                            obj, attrname, crop=False
-                        ).items()
-                    )
-                    self.caller.msg(ret)
-            else:
+                # we are only interested in specific attributes
+                attrs = [attr for attr in obj.db_attributes.all() if attr.db_key in obj_attrs]
+                if not attrs:
+                    self.msg(f"No attributes found on {obj.name}.")
+                else:
+                    out_strings = []
+                    for attr in attrs:
+                        out_strings.append(self.format_single_attribute_detail(obj, attr))
+                    out_str = "\n".join(out_strings)
+                    max_width = max(display_len(line) for line in out_strings)
+                    max_width = max(0, min(max_width, self.client_width()))
+                    sep = self.separator * max_width
+                    self.msg(f"{sep}\n{out_str}")
+                return
+
+            # examine the obj itself
+
+            if self.object_type in ("object", "account"):
+                # for objects and accounts we need to set up an asynchronous
+                # fetch of the cmdset and not proceed with the examine display
+                # until the fetch is complete
                 session = None
                 if obj.sessions.count():
                     mergemode = "session"
                     session = obj.sessions.get()[0]
-                elif self.account_mode:
+                elif self.object_type == "account":
                     mergemode = "account"
                 else:
                     mergemode = "object"
 
                 account = None
                 objct = None
-                if self.account_mode:
+                if self.object_type == "account":
                     account = obj
                 else:
                     account = obj.account
@@ -2746,9 +3010,17 @@ class CmdExamine(ObjManipCommand):
                 # we may have leftover inherited cmdsets directly after a move etc.
                 obj.cmdset.update()
                 # using callback to print results whenever function returns.
+
+                def _get_cmdset_callback(current_cmdset):
+                    self.msg(self.format_output(obj, current_cmdset).strip())
+
                 get_and_merge_cmdsets(
                     obj, session, account, objct, mergemode, self.raw_string
-                ).addCallback(get_cmdset_callback)
+                ).addCallback(_get_cmdset_callback)
+
+            else:
+                # for objects without cmdsets we can proceed to examine immediately
+                self.msg(self.format_output(obj, None).strip())
 
 
 class CmdFind(COMMAND_DEFAULT_CLASS):
@@ -2774,8 +3046,8 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
     one is given.
     """
 
-    key = "find"
-    aliases = "search, locate"
+    key = "@find"
+    aliases = ["@search", "@locate"]
     switch_options = ("room", "exit", "char", "exact", "loc", "startswith")
     locks = "cmd:perm(find) or perm(Builder)"
     help_category = "Building"
@@ -2951,6 +3223,351 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
         caller.msg(string.strip())
 
 
+class ScriptEvMore(EvMore):
+    """
+    Listing 1000+ Scripts can be very slow and memory-consuming. So
+    we use this custom EvMore child to build en EvTable only for
+    each page of the list.
+
+    """
+
+    def init_pages(self, scripts):
+        """Prepare the script list pagination"""
+        script_pages = Paginator(scripts, max(1, int(self.height / 2)))
+        super().init_pages(script_pages)
+
+    def page_formatter(self, scripts):
+        """Takes a page of scripts and formats the output
+        into an EvTable."""
+
+        if not scripts:
+            return "<No scripts>"
+
+        table = EvTable(
+            "|wdbref|n",
+            "|wobj|n",
+            "|wkey|n",
+            "|wintval|n",
+            "|wnext|n",
+            "|wrept|n",
+            "|wtypeclass|n",
+            "|wdesc|n",
+            align="r",
+            border="tablecols",
+            width=self.width,
+        )
+
+        for script in scripts:
+
+            nextrep = script.time_until_next_repeat()
+            if nextrep is None:
+                nextrep = script.db._paused_time
+                nextrep = f"PAUSED {int(nextrep)}s" if nextrep else "--"
+            else:
+                nextrep = f"{nextrep}s"
+
+            maxrepeat = script.repeats
+            remaining = script.remaining_repeats() or 0
+            if maxrepeat:
+                rept = "%i/%i" % (maxrepeat - remaining, maxrepeat)
+            else:
+                rept = "-/-"
+
+            table.add_row(
+                f"#{script.id}",
+                f"{script.obj.key}({script.obj.dbref})"
+                if (hasattr(script, "obj") and script.obj)
+                else "<Global>",
+                script.key,
+                script.interval if script.interval > 0 else "--",
+                nextrep,
+                rept,
+                script.typeclass_path.rsplit(".", 1)[-1],
+                crop(script.desc, width=20),
+            )
+
+        return str(table)
+
+
+class CmdScripts(COMMAND_DEFAULT_CLASS):
+    """
+    List and manage all running scripts. Allows for creating new global
+    scripts.
+
+    Usage:
+      script[/switches] [script-#dbref, key, script.path or <obj>]
+      script[/start||stop] <obj> = <script.path or script-key>
+
+    Switches:
+      start - start/unpause an existing script's timer.
+      stop - stops an existing script's timer
+      pause - pause a script's timer
+      delete - deletes script. This will also stop the timer as needed
+
+    Examples:
+        script                         - list scripts
+        script myobj                   - list all scripts on object
+        script foo.bar.Script          - create a new global Script
+        script scriptname              - examine named existing global script
+        script myobj = foo.bar.Script  - create and assign script to object
+        script/stop myobj = scriptname - stop script on object
+        script/pause foo.Bar.Script    - pause global script
+        script/delete myobj            - delete ALL scripts on object
+        script/delete #dbref[-#dbref]  - delete script or range by dbref
+
+    When given with an `<obj>` as left-hand-side, this creates and
+    assigns a new script to that object. Without an `<obj>`, this
+    manages and inspects global scripts
+
+    If no switches are given, this command just views all active
+    scripts. The argument can be either an object, at which point it
+    will be searched for all scripts defined on it, or a script name
+    or #dbref. For using the /stop switch, a unique script #dbref is
+    required since whole classes of scripts often have the same name.
+
+    Use the `script` build-level command for managing scripts attached to
+    objects.
+
+    """
+
+    key = "@scripts"
+    aliases = ["@script"]
+    switch_options = ("create", "start", "stop", "pause", "delete")
+    locks = "cmd:perm(scripts) or perm(Builder)"
+    help_category = "System"
+
+    excluded_typeclass_paths = ["evennia.prototypes.prototypes.DbPrototype"]
+
+    switch_mapping = {
+        "create": "|gCreated|n",
+        "start": "|gStarted|n",
+        "stop": "|RStopped|n",
+        "pause": "|Paused|n",
+        "delete": "|rDeleted|n",
+    }
+
+    def _search_script(self, args):
+        # test first if this is a script match
+        scripts = ScriptDB.objects.get_all_scripts(key=args)
+        if scripts:
+            return scripts
+        # try typeclass path
+        scripts = ScriptDB.objects.filter(db_typeclass_path__iendswith=args)
+        if scripts:
+            return scripts
+        if "-" in args:
+            # may be a dbref-range
+            val1, val2 = (dbref(part.strip()) for part in args.split("-", 1))
+            if val1 and val2:
+                scripts = ScriptDB.objects.filter(id__in=(range(val1, val2 + 1)))
+                if scripts:
+                    return scripts
+
+    def func(self):
+        """implement method"""
+
+        caller = self.caller
+
+        if not self.args:
+            # show all scripts
+            scripts = ScriptDB.objects.all()
+            if not scripts:
+                caller.msg("No scripts found.")
+                return
+            ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
+            return
+
+        # find script or object to operate on
+        scripts, obj = None, None
+        if self.rhs:
+            obj_query = self.lhs
+            script_query = self.rhs
+        else:
+            obj_query = script_query = self.args
+
+        scripts = self._search_script(script_query)
+        objects = caller.search(obj_query, quiet=True)
+        obj = objects[0] if objects else None
+
+        if not self.switches:
+            # creation / view mode
+            if obj:
+                # we have an object
+                if self.rhs:
+                    # creation mode
+                    if obj.scripts.add(self.rhs, autostart=True):
+                        caller.msg(
+                            f"Script |w{self.rhs}|n successfully added and "
+                            f"started on {obj.get_display_name(caller)}."
+                        )
+                    else:
+                        caller.msg(
+                            f"Script {self.rhs} could not be added and/or started "
+                            f"on {obj.get_display_name(caller)} (or it started and "
+                            "immediately shut down)."
+                        )
+                else:
+                    # just show all scripts on object
+                    scripts = ScriptDB.objects.filter(db_obj=obj)
+                    if scripts:
+                        ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
+                    else:
+                        caller.msg(f"No scripts defined on {obj}")
+
+            elif scripts:
+                # show found script(s)
+                ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
+
+            else:
+                # create global script
+                try:
+                    new_script = create.create_script(self.args)
+                except ImportError:
+                    logger.log_trace()
+                    new_script = None
+
+                if new_script:
+                    caller.msg(
+                        f"Global Script Created - "
+                        f"{new_script.key} ({new_script.typeclass_path})"
+                    )
+                    ScriptEvMore(caller, [new_script], session=self.session)
+                else:
+                    caller.msg(
+                        f"Global Script |rNOT|n Created |r(see log)|n - " f"arguments: {self.args}"
+                    )
+
+        elif scripts or obj:
+            # modification switches - must operate on existing scripts
+
+            if not scripts:
+                scripts = ScriptDB.objects.filter(db_obj=obj)
+
+            if scripts.count() > 1:
+                ret = yield (
+                    f"Multiple scripts found: {scripts}. Are you sure you want to "
+                    "operate on all of them? [Y]/N? "
+                )
+                if ret.lower() in ("n", "no"):
+                    caller.msg("Aborted.")
+                    return
+
+            for script in scripts:
+                script_key = script.key
+                script_typeclass_path = script.typeclass_path
+                scripttype = f"Script on {obj}" if obj else "Global Script"
+
+                for switch in self.switches:
+                    verb = self.switch_mapping[switch]
+                    msgs = []
+                    try:
+                        getattr(script, switch)()
+                    except Exception:
+                        logger.log_trace()
+                        msgs.append(
+                            f"{scripttype} |rNOT|n {verb} |r(see log)|n - "
+                            f"{script_key} ({script_typeclass_path})|n"
+                        )
+                    else:
+                        msgs.append(
+                            f"{scripttype} {verb} - " f"{script_key} ({script_typeclass_path})"
+                        )
+                caller.msg("\n".join(msgs))
+                if "delete" not in self.switches:
+                    if script and script.pk:
+                        ScriptEvMore(caller, [script], session=self.session)
+                    else:
+                        caller.msg("Script was deleted automatically.")
+        else:
+            caller.msg("No scripts found.")
+
+
+class CmdObjects(COMMAND_DEFAULT_CLASS):
+    """
+    statistics on objects in the database
+
+    Usage:
+      objects [<nr>]
+
+    Gives statictics on objects in database as well as
+    a list of <nr> latest objects in database. If not
+    given, <nr> defaults to 10.
+    """
+
+    key = "@objects"
+    locks = "cmd:perm(listobjects) or perm(Builder)"
+    help_category = "System"
+
+    def func(self):
+        """Implement the command"""
+
+        caller = self.caller
+        nlim = int(self.args) if self.args and self.args.isdigit() else 10
+        nobjs = ObjectDB.objects.count()
+        Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
+        nchars = Character.objects.all_family().count()
+        Room = class_from_module(settings.BASE_ROOM_TYPECLASS)
+        nrooms = Room.objects.all_family().count()
+        Exit = class_from_module(settings.BASE_EXIT_TYPECLASS)
+        nexits = Exit.objects.all_family().count()
+        nother = nobjs - nchars - nrooms - nexits
+        nobjs = nobjs or 1  # fix zero-div error with empty database
+
+        # total object sum table
+        totaltable = self.styled_table(
+            "|wtype|n", "|wcomment|n", "|wcount|n", "|w%|n", border="table", align="l"
+        )
+        totaltable.align = "l"
+        totaltable.add_row(
+            "Characters",
+            "(BASE_CHARACTER_TYPECLASS + children)",
+            nchars,
+            "%.2f" % ((float(nchars) / nobjs) * 100),
+        )
+        totaltable.add_row(
+            "Rooms",
+            "(BASE_ROOM_TYPECLASS + children)",
+            nrooms,
+            "%.2f" % ((float(nrooms) / nobjs) * 100),
+        )
+        totaltable.add_row(
+            "Exits",
+            "(BASE_EXIT_TYPECLASS + children)",
+            nexits,
+            "%.2f" % ((float(nexits) / nobjs) * 100),
+        )
+        totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
+
+        # typeclass table
+        typetable = self.styled_table(
+            "|wtypeclass|n", "|wcount|n", "|w%|n", border="table", align="l"
+        )
+        typetable.align = "l"
+        dbtotals = ObjectDB.objects.get_typeclass_totals()
+        for stat in dbtotals:
+            typetable.add_row(
+                stat.get("typeclass", "<error>"),
+                stat.get("count", -1),
+                "%.2f" % stat.get("percent", -1),
+            )
+
+        # last N table
+        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim) :]
+        latesttable = self.styled_table(
+            "|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table"
+        )
+        latesttable.align = "l"
+        for obj in objs:
+            latesttable.add_row(
+                utils.datetime_format(obj.date_created), obj.dbref, obj.key, obj.path
+            )
+
+        string = "\n|wObject subtype totals (out of %i Objects):|n\n%s" % (nobjs, totaltable)
+        string += "\n|wObject typeclass distribution:|n\n%s" % typetable
+        string += "\n|wLast %s Objects created:|n\n%s" % (min(nobjs, nlim), latesttable)
+        caller.msg(string)
+
+
 class CmdTeleport(COMMAND_DEFAULT_CLASS):
     """
     teleport object to another location
@@ -2977,37 +3594,53 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
 
     Teleports an object somewhere. If no object is given, you yourself are
     teleported to the target location.
+
+    To lock an object from being teleported, set its `teleport` lock, it will be
+    checked with the caller. To block
+    a destination from being teleported to, set the destination's `teleport_here`
+    lock - it will be checked with the thing being teleported. Admins and
+    higher permissions can always teleport.
+
     """
 
-    key = "tel"
-    aliases = "teleport"
+    key = "@teleport"
+    aliases = "@tel"
     switch_options = ("quiet", "intoexit", "tonone", "loc")
     rhs_split = ("=", " to ")  # Prefer = delimiter, but allow " to " usage.
     locks = "cmd:perm(teleport) or perm(Builder)"
     help_category = "Building"
 
+    def parse(self):
+        """
+        Breaking out searching here to make this easier to override.
+
+        """
+        super().parse()
+        self.obj_to_teleport = self.caller
+        self.destination = None
+        if self.rhs:
+            self.obj_to_teleport = self.caller.search(self.lhs, global_search=True)
+            if not self.obj_to_teleport:
+                self.caller.msg("Did not find object to teleport.")
+                raise InterruptCommand
+            self.destination = self.caller.search(self.rhs, global_search=True)
+        elif self.lhs:
+            self.destination = self.caller.search(self.lhs, global_search=True)
+
     def func(self):
         """Performs the teleport"""
 
         caller = self.caller
-        args = self.args
-        lhs, rhs = self.lhs, self.rhs
-        switches = self.switches
+        obj_to_teleport = self.obj_to_teleport
+        destination = self.destination
 
-        # setting switches
-        tel_quietly = "quiet" in switches
-        to_none = "tonone" in switches
-        to_loc = "loc" in switches
-
-        if to_none:
+        if "tonone" in self.switches:
             # teleporting to None
-            if not args:
-                obj_to_teleport = caller
-            else:
-                obj_to_teleport = caller.search(lhs, global_search=True)
-                if not obj_to_teleport:
-                    caller.msg("Did not find object to teleport.")
-                    return
+
+            if destination:
+                # in this case lhs is always the object to teleport
+                obj_to_teleport = destination
+
             if obj_to_teleport.has_account:
                 caller.msg(
                     "Cannot teleport a puppeted object "
@@ -3016,166 +3649,73 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
                 )
                 return
             caller.msg("Teleported %s -> None-location." % obj_to_teleport)
-            if obj_to_teleport.location and not tel_quietly:
+            if obj_to_teleport.location and "quiet" not in self.switches:
                 obj_to_teleport.location.msg_contents(
                     "%s teleported %s into nothingness." % (caller, obj_to_teleport), exclude=caller
                 )
             obj_to_teleport.location = None
             return
 
-        # not teleporting to None location
-        if not args and not to_none:
-            caller.msg("Usage: teleport[/switches] [<obj> =] <target_loc>||home")
-            return
-
-        if rhs:
-            obj_to_teleport = caller.search(lhs, global_search=True)
-            destination = caller.search(rhs, global_search=True)
-        else:
-            obj_to_teleport = caller
-            destination = caller.search(lhs, global_search=True)
-        if not obj_to_teleport:
-            caller.msg("Did not find object to teleport.")
+        if not self.args:
+            caller.msg("Usage: teleport[/switches] [<obj> =] <target or (X,Y,Z)>||home")
             return
 
         if not destination:
             caller.msg("Destination not found.")
             return
-        if to_loc:
+
+        if "loc" in self.switches:
             destination = destination.location
             if not destination:
                 caller.msg("Destination has no location.")
                 return
+
         if obj_to_teleport == destination:
             caller.msg("You can't teleport an object inside of itself!")
             return
+
         if obj_to_teleport == destination.location:
             caller.msg("You can't teleport an object inside something it holds!")
             return
+
         if obj_to_teleport.location and obj_to_teleport.location == destination:
             caller.msg("%s is already at %s." % (obj_to_teleport, destination))
             return
-        use_destination = True
-        if "intoexit" in self.switches:
-            use_destination = False
+
+        # check any locks
+        if not (caller.permissions.check("Admin") or obj_to_teleport.access(caller, "teleport")):
+            caller.msg(
+                f"{obj_to_teleport} 'teleport'-lock blocks you from teleporting " "it anywhere."
+            )
+            return
+
+        if not (
+            caller.permissions.check("Admin")
+            or destination.access(obj_to_teleport, "teleport_here")
+        ):
+            caller.msg(
+                f"{destination} 'teleport_here'-lock blocks {obj_to_teleport} from " "moving there."
+            )
+            return
 
         # try the teleport
-        if obj_to_teleport.move_to(
-            destination, quiet=tel_quietly, emit_to_obj=caller, use_destination=use_destination
+        if not obj_to_teleport.location:
+            # teleporting from none-location
+            obj_to_teleport.location = destination
+            caller.msg(f"Teleported {obj_to_teleport} None -> {destination}")
+        elif obj_to_teleport.move_to(
+            destination,
+            quiet="quiet" in self.switches,
+            emit_to_obj=caller,
+            use_destination="intoexit" not in self.switches,
         ):
+
             if obj_to_teleport == caller:
-                caller.msg("Teleported to %s." % destination)
+                caller.msg(f"Teleported to {destination}.")
             else:
-                caller.msg("Teleported %s -> %s." % (obj_to_teleport, destination))
-
-
-class CmdScript(COMMAND_DEFAULT_CLASS):
-    """
-    attach a script to an object
-
-    Usage:
-      script[/switch] <obj> [= script_path or <scriptkey>]
-
-    Switches:
-      start - start all non-running scripts on object, or a given script only
-      stop - stop all scripts on objects, or a given script only
-
-    If no script path/key is given, lists all scripts active on the given
-    object.
-    Script path can be given from the base location for scripts as given in
-    settings. If adding a new script, it will be started automatically
-    (no /start switch is needed). Using the /start or /stop switches on an
-    object without specifying a script key/path will start/stop ALL scripts on
-    the object.
-    """
-
-    key = "script"
-    aliases = "addscript"
-    switch_options = ("start", "stop")
-    locks = "cmd:perm(script) or perm(Builder)"
-    help_category = "Building"
-
-    def func(self):
-        """Do stuff"""
-
-        caller = self.caller
-
-        if not self.args:
-            string = "Usage: script[/switch] <obj> [= script_path or <script key>]"
-            caller.msg(string)
-            return
-
-        if not self.lhs:
-            caller.msg("To create a global script you need |wscripts/add <typeclass>|n.")
-            return
-
-        obj = caller.search(self.lhs)
-        if not obj:
-            return
-
-        result = []
-        if not self.rhs:
-            # no rhs means we want to operate on all scripts
-            scripts = obj.scripts.all()
-            if not scripts:
-                result.append("No scripts defined on %s." % obj.get_display_name(caller))
-            elif not self.switches:
-                # view all scripts
-                from evennia.commands.default.system import ScriptEvMore
-
-                ScriptEvMore(self.caller, scripts.order_by("id"), session=self.session)
-                return
-            elif "start" in self.switches:
-                num = sum([obj.scripts.start(script.key) for script in scripts])
-                result.append("%s scripts started on %s." % (num, obj.get_display_name(caller)))
-            elif "stop" in self.switches:
-                for script in scripts:
-                    result.append(
-                        "Stopping script %s on %s."
-                        % (script.get_display_name(caller), obj.get_display_name(caller))
-                    )
-                    script.stop()
-            obj.scripts.validate()
-        else:  # rhs exists
-            if not self.switches:
-                # adding a new script, and starting it
-                ok = obj.scripts.add(self.rhs, autostart=True)
-                if not ok:
-                    result.append(
-                        "\nScript %s could not be added and/or started on %s "
-                        "(or it started and immediately shut down)."
-                        % (self.rhs, obj.get_display_name(caller))
-                    )
-                else:
-                    result.append(
-                        "Script |w%s|n successfully added and started on %s."
-                        % (self.rhs, obj.get_display_name(caller))
-                    )
-
-            else:
-                paths = [self.rhs] + [
-                    "%s.%s" % (prefix, self.rhs) for prefix in settings.TYPECLASS_PATHS
-                ]
-                if "stop" in self.switches:
-                    # we are stopping an already existing script
-                    for path in paths:
-                        ok = obj.scripts.stop(path)
-                        if not ok:
-                            result.append("\nScript %s could not be stopped. Does it exist?" % path)
-                        else:
-                            result = ["Script stopped and removed from object."]
-                            break
-                if "start" in self.switches:
-                    # we are starting an already existing script
-                    for path in paths:
-                        ok = obj.scripts.start(path)
-                        if not ok:
-                            result.append("\nScript %s could not be (re)started." % path)
-                        else:
-                            result = ["Script started successfully."]
-                            break
-
-        EvMore(caller, "".join(result).strip())
+                caller.msg(f"Teleported {obj_to_teleport} -> {destination}.")
+        else:
+            caller.msg("Teleportation failed.")
 
 
 class CmdTag(COMMAND_DEFAULT_CLASS):
@@ -3200,8 +3740,8 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
     enough to for most grouping schemes.
     """
 
-    key = "tag"
-    aliases = ["tags"]
+    key = "@tag"
+    aliases = ["@tags"]
     options = ("search", "del")
     locks = "cmd:perm(tag) or perm(Builder)"
     help_category = "Building"
@@ -3387,8 +3927,8 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "spawn"
-    aliases = ["olc"]
+    key = "@spawn"
+    aliases = ["@olc"]
     switch_options = (
         "noloc",
         "search",
@@ -3474,7 +4014,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                         "Python structures are allowed. \nMake sure to use correct "
                         "Python syntax. Remember especially to put quotes around all "
                         "strings inside lists and dicts.|n For more advanced uses, embed "
-                        "inlinefuncs in the strings."
+                        "funcparser callables ($funcs) in the strings."
                     )
                 else:
                     string = "Expected {}, got {}.".format(expect, type(prototype))
@@ -3526,7 +4066,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             self.caller.msg("No prototypes found.")
 
     def _list_prototypes(self, key=None, tags=None):
-        """Display prototypes as a list, optionally limited by key/tags. """
+        """Display prototypes as a list, optionally limited by key/tags."""
         protlib.list_prototypes(self.caller, key=key, tags=tags, session=self.session)
 
     @interactive
@@ -3570,7 +4110,9 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 return
             try:
                 n_updated = spawner.batch_update_objects_with_prototype(
-                    prototype, objects=existing_objects
+                    prototype,
+                    objects=existing_objects,
+                    caller=caller,
                 )
             except Exception:
                 logger.log_trace()
@@ -3822,7 +4364,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
 
         # proceed to spawning
         try:
-            for obj in spawner.spawn(prototype):
+            for obj in spawner.spawn(prototype, caller=self.caller):
                 self.caller.msg("Spawned %s." % obj.get_display_name(self.caller))
                 if not prototype.get("location") and not noloc:
                     # we don't hardcode the location in the prototype (unless the user

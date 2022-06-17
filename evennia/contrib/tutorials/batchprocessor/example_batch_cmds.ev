@@ -1,0 +1,56 @@
+#
+# This is an example batch build file for Evennia.
+#
+# It allows batch processing of normal Evennia commands.
+# Test it by loading it with @batchcommand:
+#
+#   batchcommand[/interactive] examples.batch_example
+#
+# A # as the first symbol on a line begins a comment and
+# marks the end of a previous command definition (important!).
+#
+# All supplied commands are given as normal, on their own line
+# and accept arguments in any format up until the first next
+# comment line begins. Extra whitespace is removed; an empty
+# line in a command definition translates into a newline.
+#
+
+# This creates a red button
+
+create button:red_button.RedButton
+
+# This comment ends input for @create
+# Next command:
+
+set button/desc =
+  This is a large red button. Now and then
+  it flashes in an evil, yet strangely tantalizing way.
+
+  A big sign sits next to it. It says:
+
+
+-----------
+
+ Press me!
+
+-----------
+
+
+  ... It really begs to be pressed, doesn't it? You
+know you want to!
+
+# This ends the @set command. Note that line breaks and extra spaces
+# in the argument are not considered. A completely empty line
+# translates to a \n newline in the command; two empty lines will thus
+# create a new paragraph. (note that few commands support it though, you
+# mainly want to use it for descriptions).
+
+# Now let's place the button where it belongs (let's say limbo #2 is
+# the evil lair in our example).
+
+teleport #2
+
+#... and drop it (remember, this comment ends input to @teleport, so don't
+#forget it!) The very last command in the file need not be ended with #.
+
+drop button

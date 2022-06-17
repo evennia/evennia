@@ -3,7 +3,7 @@ General Character commands usually available to all characters
 """
 import re
 from django.conf import settings
-from evennia.utils import utils, evtable
+from evennia.utils import utils
 from evennia.typeclasses.attributes import NickTemplateInvalid
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -83,7 +83,10 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
             target = caller.search(self.args)
             if not target:
                 return
-        self.msg((caller.at_look(target), {"type": "look"}), options=None)
+        desc = caller.at_look(target)
+        # add the type=look to the outputfunc to make it
+        # easy to separate this output in client.
+        self.msg(text=(desc, {"type": "look"}), options=None)
 
 
 class CmdNick(COMMAND_DEFAULT_CLASS):
@@ -138,7 +141,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         """
         Support escaping of = with \=
         """
-        super(CmdNick, self).parse()
+        super().parse()
         args = (self.lhs or "") + (" = %s" % self.rhs if self.rhs else "")
         parts = re.split(r"(?<!\\)=", args, 1)
         self.rhs = None
@@ -384,7 +387,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
             for item in items:
                 table.add_row(
                     f"|C{item.name}|n",
-                    "{}|n".format(utils.crop(raw_ansi(item.db.desc), width=50) or ""),
+                    "{}|n".format(utils.crop(raw_ansi(item.db.desc or ""), width=50) or ""),
                 )
             string = f"|wYou are carrying:\n{table}"
         self.caller.msg(string)
@@ -403,7 +406,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
 
     key = "get"
     aliases = "grab"
-    locks = "cmd:all()"
+    locks = "cmd:all();view:perm(Developer);read:perm(Developer)"
     arg_regex = r"\s|$"
 
     def func(self):
@@ -427,8 +430,8 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
                 caller.msg("You can't get that.")
             return
 
-        # calling at_before_get hook method
-        if not obj.at_before_get(caller):
+        # calling at_pre_get hook method
+        if not obj.at_pre_get(caller):
             return
 
         success = obj.move_to(caller, quiet=True)
@@ -477,8 +480,8 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
         if not obj:
             return
 
-        # Call the object script's at_before_drop() method.
-        if not obj.at_before_drop(caller):
+        # Call the object script's at_pre_drop() method.
+        if not obj.at_pre_drop(caller):
             return
 
         success = obj.move_to(caller.location, quiet=True)
@@ -530,8 +533,8 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
             caller.msg("You are not holding %s." % to_give.key)
             return
 
-        # calling at_before_give hook method
-        if not to_give.at_before_give(caller, target):
+        # calling at_pre_give hook method
+        if not to_give.at_pre_give(caller, target):
             return
 
         # give object
@@ -586,6 +589,9 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
     aliases = ['"', "'"]
     locks = "cmd:all()"
 
+    # don't require a space after `say/'/"`
+    arg_regex = None
+
     def func(self):
         """Run the say command"""
 
@@ -597,14 +603,14 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
 
         speech = self.args
 
-        # Calling the at_before_say hook on the character
-        speech = caller.at_before_say(speech)
+        # Calling the at_pre_say hook on the character
+        speech = caller.at_pre_say(speech)
 
         # If speech is empty, stop here
         if not speech:
             return
 
-        # Call the at_after_say hook on the character
+        # Call the at_post_say hook on the character
         caller.at_say(speech, msg_self=True)
 
 
@@ -643,7 +649,7 @@ class CmdWhisper(COMMAND_DEFAULT_CLASS):
             return
 
         # Call a hook to change the speech before whispering
-        speech = caller.at_before_say(speech, whisper=True, receivers=receivers)
+        speech = caller.at_pre_say(speech, whisper=True, receivers=receivers)
 
         # no need for self-message if we are whispering to ourselves (for some reason)
         msg_self = None if caller in receivers else True
@@ -670,6 +676,11 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
     key = "pose"
     aliases = [":", "emote"]
     locks = "cmd:all()"
+    arg_regex = ""
+
+    # we want to be able to pose without whitespace between
+    # the command/alias and the pose (e.g. :pose)
+    arg_regex = None
 
     def parse(self):
         """

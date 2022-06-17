@@ -1,0 +1,24 @@
+# Requirements for features not active in Evennia by default, but needed for
+# extra functionality and options.
+
+
+# Crypto libraries for SSH support 
+cryptography >= 2.8
+pyasn1 >= 0.4.8
+bcrypt >= 3.1.7
+
+# Library for Telnet-SSL support
+pyopenssl >= 19.1
+service_identity >= 18.1.0
+
+# AWS-storage contrib 
+boto3 >= 1.4.4
+botocore >= 1.15
+
+# Jupyter Notebook support
+jupyter >= 1.0.0
+ipython >= 7.19.0
+django-extensions >= 3.1.0
+
+# xyzroom contrib
+scipy<1.9

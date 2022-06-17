@@ -8,7 +8,6 @@ System commands
 import code
 import traceback
 import os
-import io
 import datetime
 import sys
 import django
@@ -16,18 +15,18 @@ import twisted
 import time
 
 from django.conf import settings
-from django.core.paginator import Paginator
 from evennia.server.sessionhandler import SESSIONS
-from evennia.scripts.models import ScriptDB
-from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
-from evennia.utils import logger, utils, gametime, create, search
+from evennia.utils import logger, utils, gametime, search
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.evtable import EvTable
-from evennia.utils.evmore import EvMore
-from evennia.utils.utils import crop, class_from_module
+from evennia.utils.evmenu import ask_yes_no
+from evennia.utils.utils import class_from_module, iter_to_str
+from evennia.scripts.taskhandler import TaskHandlerTask
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
+_TASK_HANDLER = None
+_BROADCAST_SERVER_RESTART_MESSAGES = settings.BROADCAST_SERVER_RESTART_MESSAGES
 
 # delayed imports
 _RESOURCE = None
@@ -35,18 +34,17 @@ _IDMAPPER = None
 
 # limit symbol import for API
 __all__ = (
+    "CmdAccounts",
     "CmdReload",
     "CmdReset",
     "CmdShutdown",
     "CmdPy",
-    "CmdScripts",
-    "CmdObjects",
     "CmdService",
     "CmdAbout",
     "CmdTime",
     "CmdServerLoad",
-    "CmdAccounts",
-    "CmdTickers"
+    "CmdTasks",
+    "CmdTickers",
 )
 
 
@@ -62,8 +60,8 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
     reset to purge) and at_reload() hooks will be called.
     """
 
-    key = "reload"
-    aliases = ["restart"]
+    key = "@reload"
+    aliases = ["@restart"]
     locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
@@ -74,7 +72,8 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         reason = ""
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
-        SESSIONS.announce_all(" Server restart initiated %s..." % reason)
+        if _BROADCAST_SERVER_RESTART_MESSAGES:
+            SESSIONS.announce_all(" Server restart initiated %s..." % reason)
         SESSIONS.portal_restart_server()
 
 
@@ -99,8 +98,8 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "reset"
-    aliases = ["reboot"]
+    key = "@reset"
+    aliases = ["@reboot"]
     locks = "cmd:perm(reload) or perm(Developer)"
     help_category = "System"
 
@@ -123,7 +122,7 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
     Gracefully shut down both Server and Portal.
     """
 
-    key = "shutdown"
+    key = "@shutdown"
     locks = "cmd:perm(shutdown) or perm(Developer)"
     help_category = "System"
 
@@ -346,11 +345,12 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "py"
-    aliases = ["!"]
+    key = "@py"
+    aliases = ["@!"]
     switch_options = ("time", "edit", "clientraw", "noecho")
     locks = "cmd:perm(py) or perm(Developer)"
     help_category = "System"
+    arg_regex = ""
 
     def func(self):
         """hook function"""
@@ -395,7 +395,9 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
                     if noecho:
                         prompt = "..." if console.push(line) else main_prompt
                     else:
-                        prompt = line if console.push(line) else f"{line}\n{main_prompt}"
+                        if line:
+                            self.caller.msg(f">>> {line}")
+                        prompt = line if console.push(line) else main_prompt
                 except SystemExit:
                     break
             self.msg("|gClosing the Python console.|n")
@@ -407,259 +409,6 @@ class CmdPy(COMMAND_DEFAULT_CLASS):
             measure_time="time" in self.switches,
             client_raw="clientraw" in self.switches,
         )
-
-
-class ScriptEvMore(EvMore):
-    """
-    Listing 1000+ Scripts can be very slow and memory-consuming. So
-    we use this custom EvMore child to build en EvTable only for
-    each page of the list.
-
-    """
-
-    def init_pages(self, scripts):
-        """Prepare the script list pagination"""
-        script_pages = Paginator(scripts, max(1, int(self.height / 2)))
-        super().init_pages(script_pages)
-
-    def page_formatter(self, scripts):
-        """Takes a page of scripts and formats the output
-        into an EvTable."""
-
-        if not scripts:
-            return "<No scripts>"
-
-        table = EvTable(
-            "|wdbref|n",
-            "|wobj|n",
-            "|wkey|n",
-            "|wintval|n",
-            "|wnext|n",
-            "|wrept|n",
-            "|wdb",
-            "|wtypeclass|n",
-            "|wdesc|n",
-            align="r",
-            border="tablecols",
-            width=self.width,
-        )
-
-        for script in scripts:
-
-            nextrep = script.time_until_next_repeat()
-            if nextrep is None:
-                nextrep = "PAUSED" if script.db._paused_time else "--"
-            else:
-                nextrep = "%ss" % nextrep
-
-            maxrepeat = script.repeats
-            remaining = script.remaining_repeats() or 0
-            if maxrepeat:
-                rept = "%i/%i" % (maxrepeat - remaining, maxrepeat)
-            else:
-                rept = "-/-"
-
-            table.add_row(
-                script.id,
-                f"{script.obj.key}({script.obj.dbref})"
-                if (hasattr(script, "obj") and script.obj)
-                else "<Global>",
-                script.key,
-                script.interval if script.interval > 0 else "--",
-                nextrep,
-                rept,
-                "*" if script.persistent else "-",
-                script.typeclass_path.rsplit(".", 1)[-1],
-                crop(script.desc, width=20),
-            )
-
-        return str(table)
-
-
-class CmdScripts(COMMAND_DEFAULT_CLASS):
-    """
-    list and manage all running scripts
-
-    Usage:
-      scripts[/switches] [#dbref, key, script.path or <obj>]
-
-    Switches:
-      start - start a script (must supply a script path)
-      stop - stops an existing script
-      kill - kills a script - without running its cleanup hooks
-      validate - run a validation on the script(s)
-
-    If no switches are given, this command just views all active
-    scripts. The argument can be either an object, at which point it
-    will be searched for all scripts defined on it, or a script name
-    or #dbref. For using the /stop switch, a unique script #dbref is
-    required since whole classes of scripts often have the same name.
-
-    Use script for managing commands on objects.
-    """
-
-    key = "scripts"
-    aliases = ["globalscript", "listscripts"]
-    switch_options = ("start", "stop", "kill", "validate")
-    locks = "cmd:perm(listscripts) or perm(Admin)"
-    help_category = "System"
-
-    excluded_typeclass_paths = ["evennia.prototypes.prototypes.DbPrototype"]
-
-    def func(self):
-        """implement method"""
-
-        caller = self.caller
-        args = self.args
-
-        if args:
-            if "start" in self.switches:
-                # global script-start mode
-                new_script = create.create_script(args)
-                if new_script:
-                    caller.msg("Global script %s was started successfully." % args)
-                else:
-                    caller.msg("Global script %s could not start correctly. See logs." % args)
-                return
-
-            # test first if this is a script match
-            scripts = ScriptDB.objects.get_all_scripts(key=args)
-            if not scripts:
-                # try to find an object instead.
-                objects = ObjectDB.objects.object_search(args)
-                if objects:
-                    scripts = []
-                    for obj in objects:
-                        # get all scripts on the object(s)
-                        scripts.extend(ScriptDB.objects.get_all_scripts_on_obj(obj))
-        else:
-            # we want all scripts.
-            scripts = ScriptDB.objects.get_all_scripts()
-            if not scripts:
-                caller.msg("No scripts are running.")
-                return
-        # filter any found scripts by tag category.
-        scripts = scripts.exclude(db_typeclass_path__in=self.excluded_typeclass_paths)
-
-        if not scripts:
-            string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
-            caller.msg(string)
-            return
-
-        if self.switches and self.switches[0] in ("stop", "del", "delete", "kill"):
-            # we want to delete something
-            if len(scripts) == 1:
-                # we have a unique match!
-                if "kill" in self.switches:
-                    string = "Killing script '%s'" % scripts[0].key
-                    scripts[0].stop(kill=True)
-                else:
-                    string = "Stopping script '%s'." % scripts[0].key
-                    scripts[0].stop()
-                # import pdb  # DEBUG
-                # pdb.set_trace()  # DEBUG
-                ScriptDB.objects.validate()  # just to be sure all is synced
-                caller.msg(string)
-            else:
-                # multiple matches.
-                ScriptEvMore(caller, scripts, session=self.session)
-                caller.msg("Multiple script matches. Please refine your search")
-        elif self.switches and self.switches[0] in ("validate", "valid", "val"):
-            # run validation on all found scripts
-            nr_started, nr_stopped = ScriptDB.objects.validate(scripts=scripts)
-            string = "Validated %s scripts. " % ScriptDB.objects.all().count()
-            string += "Started %s and stopped %s scripts." % (nr_started, nr_stopped)
-            caller.msg(string)
-        else:
-            # No stopping or validation. We just want to view things.
-            ScriptEvMore(caller, scripts.order_by("id"), session=self.session)
-
-
-class CmdObjects(COMMAND_DEFAULT_CLASS):
-    """
-    statistics on objects in the database
-
-    Usage:
-      objects [<nr>]
-
-    Gives statictics on objects in database as well as
-    a list of <nr> latest objects in database. If not
-    given, <nr> defaults to 10.
-    """
-
-    key = "objects"
-    aliases = ["listobjects", "listobjs", "stats", "db"]
-    locks = "cmd:perm(listobjects) or perm(Builder)"
-    help_category = "System"
-
-    def func(self):
-        """Implement the command"""
-
-        caller = self.caller
-        nlim = int(self.args) if self.args and self.args.isdigit() else 10
-        nobjs = ObjectDB.objects.count()
-        Character = class_from_module(settings.BASE_CHARACTER_TYPECLASS)
-        nchars = Character.objects.all_family().count()
-        Room = class_from_module(settings.BASE_ROOM_TYPECLASS)
-        nrooms = Room.objects.all_family().count()
-        Exit = class_from_module(settings.BASE_EXIT_TYPECLASS)
-        nexits = Exit.objects.all_family().count()
-        nother = nobjs - nchars - nrooms - nexits
-        nobjs = nobjs or 1  # fix zero-div error with empty database
-
-        # total object sum table
-        totaltable = self.styled_table(
-            "|wtype|n", "|wcomment|n", "|wcount|n", "|w%|n", border="table", align="l"
-        )
-        totaltable.align = "l"
-        totaltable.add_row(
-            "Characters",
-            "(BASE_CHARACTER_TYPECLASS + children)",
-            nchars,
-            "%.2f" % ((float(nchars) / nobjs) * 100),
-        )
-        totaltable.add_row(
-            "Rooms",
-            "(BASE_ROOM_TYPECLASS + children)",
-            nrooms,
-            "%.2f" % ((float(nrooms) / nobjs) * 100),
-        )
-        totaltable.add_row(
-            "Exits",
-            "(BASE_EXIT_TYPECLASS + children)",
-            nexits,
-            "%.2f" % ((float(nexits) / nobjs) * 100),
-        )
-        totaltable.add_row("Other", "", nother, "%.2f" % ((float(nother) / nobjs) * 100))
-
-        # typeclass table
-        typetable = self.styled_table(
-            "|wtypeclass|n", "|wcount|n", "|w%|n", border="table", align="l"
-        )
-        typetable.align = "l"
-        dbtotals = ObjectDB.objects.get_typeclass_totals()
-        for stat in dbtotals:
-            typetable.add_row(
-                stat.get("typeclass", "<error>"),
-                stat.get("count", -1),
-                "%.2f" % stat.get("percent", -1),
-            )
-
-        # last N table
-        objs = ObjectDB.objects.all().order_by("db_date_created")[max(0, nobjs - nlim) :]
-        latesttable = self.styled_table(
-            "|wcreated|n", "|wdbref|n", "|wname|n", "|wtypeclass|n", align="l", border="table"
-        )
-        latesttable.align = "l"
-        for obj in objs:
-            latesttable.add_row(
-                utils.datetime_format(obj.date_created), obj.dbref, obj.key, obj.path
-            )
-
-        string = "\n|wObject subtype totals (out of %i Objects):|n\n%s" % (nobjs, totaltable)
-        string += "\n|wObject typeclass distribution:|n\n%s" % typetable
-        string += "\n|wLast %s Objects created:|n\n%s" % (min(nobjs, nlim), latesttable)
-        caller.msg(string)
 
 
 class CmdAccounts(COMMAND_DEFAULT_CLASS):
@@ -678,8 +427,8 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
     If not given, <nr> defaults to 10.
     """
 
-    key = "accounts"
-    aliases = ["account", "listaccounts"]
+    key = "@accounts"
+    aliases = ["@account"]
     switch_options = ("delete",)
     locks = "cmd:perm(listaccounts) or perm(Admin)"
     help_category = "System"
@@ -792,8 +541,8 @@ class CmdService(COMMAND_DEFAULT_CLASS):
     in the list.
     """
 
-    key = "service"
-    aliases = ["services"]
+    key = "@service"
+    aliases = ["@services"]
     switch_options = ("list", "start", "stop", "delete")
     locks = "cmd:perm(service) or perm(Developer)"
     help_category = "System"
@@ -844,13 +593,15 @@ class CmdService(COMMAND_DEFAULT_CLASS):
                 if delmode:
                     caller.msg("You cannot remove a core Evennia service (named 'Evennia*').")
                     return
-                string = ("|RYou seem to be shutting down a core Evennia "
-                          "service (named 'Evennia*').\nNote that stopping "
-                          "some TCP port services will *not* disconnect users "
-                          "*already* connected on those ports, but *may* "
-                          "instead cause spurious errors for them.\nTo safely "
-                          "and permanently remove ports, change settings file "
-                          "and restart the server.|n\n")
+                string = (
+                    "|RYou seem to be shutting down a core Evennia "
+                    "service (named 'Evennia*').\nNote that stopping "
+                    "some TCP port services will *not* disconnect users "
+                    "*already* connected on those ports, but *may* "
+                    "instead cause spurious errors for them.\nTo safely "
+                    "and permanently remove ports, change settings file "
+                    "and restart the server.|n\n"
+                )
                 caller.msg(string)
 
             if delmode:
@@ -862,9 +613,11 @@ class CmdService(COMMAND_DEFAULT_CLASS):
                 try:
                     service.stopService()
                 except Exception as err:
-                    caller.msg(f"|rErrors were reported when stopping this service{err}.\n"
-                               "If there are remaining problems, try reloading "
-                               "or rebooting the server.")
+                    caller.msg(
+                        f"|rErrors were reported when stopping this service{err}.\n"
+                        "If there are remaining problems, try reloading "
+                        "or rebooting the server."
+                    )
                 caller.msg("|g... Stopped service '%s'.|n" % self.args)
             return
 
@@ -873,13 +626,15 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             if service.running:
                 caller.msg("That service is already running.")
                 return
-            caller.msg(f"Starting service '{self.args}' ...")
+            caller.msg(f"Beginner-Tutorial service '{self.args}' ...")
             try:
                 service.startService()
             except Exception as err:
-                caller.msg(f"|rErrors were reported when starting this service{err}.\n"
-                           "If there are remaining problems, try reloading the server, changing the "
-                           "settings if it's a non-standard service.|n")
+                caller.msg(
+                    f"|rErrors were reported when starting this service{err}.\n"
+                    "If there are remaining problems, try reloading the server, changing the "
+                    "settings if it's a non-standard service.|n"
+                )
             caller.msg("|gService started.|n")
 
 
@@ -893,8 +648,8 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
     Display info about the game engine.
     """
 
-    key = "about"
-    aliases = "version"
+    key = "@about"
+    aliases = "@version"
     locks = "cmd:all()"
     help_category = "System"
 
@@ -910,10 +665,13 @@ class CmdAbout(COMMAND_DEFAULT_CLASS):
          |wTwisted|n: {twisted}
          |wDjango|n: {django}
 
+         |wHomepage|n https://evennia.com
+         |wCode|n https://github.com/evennia/evennia
+         |wDemo|n https://demo.evennia.com
+         |wGame listing|n https://games.evennia.com
+         |wChat|n https://discord.gg/AJJpcRUhtF
+         |wForum|n https://github.com/evennia/evennia/discussions
          |wLicence|n https://opensource.org/licenses/BSD-3-Clause
-         |wWeb|n http://www.evennia.com
-         |wIrc|n #evennia on irc.freenode.net:6667
-         |wForum|n http://www.evennia.com/discussions
          |wMaintainer|n (2010-)   Griatch (griatch AT gmail DOT com)
          |wMaintainer|n (2006-10) Greg Taylor
 
@@ -938,8 +696,8 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
     and the current time stamp.
     """
 
-    key = "time"
-    aliases = "uptime"
+    key = "@time"
+    aliases = "@uptime"
     locks = "cmd:perm(time) or perm(Player)"
     help_category = "System"
 
@@ -956,7 +714,7 @@ class CmdTime(COMMAND_DEFAULT_CLASS):
             "|wIn-Game time",
             "|wReal time x %g" % gametime.TIMEFACTOR,
             align="l",
-            width=77,
+            width=78,
             border_top=0,
         )
         epochtxt = "Epoch (%s)" % ("from settings" if settings.TIME_GAME_EPOCH else "server start")
@@ -1006,8 +764,8 @@ class CmdServerLoad(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "server"
-    aliases = ["serverload", "serverprocess"]
+    key = "@server"
+    aliases = ["@serverload"]
     switch_options = ("mem", "flushmem")
     locks = "cmd:perm(list) or perm(Developer)"
     help_category = "System"
@@ -1155,7 +913,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
 
     """
 
-    key = "tickers"
+    key = "@tickers"
     help_category = "System"
     locks = "cmd:perm(tickers) or perm(Builder)"
 
@@ -1180,3 +938,237 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
                 "*" if sub[5] else "-",
             )
         self.caller.msg("|wActive tickers|n:\n" + str(table))
+
+
+class CmdTasks(COMMAND_DEFAULT_CLASS):
+    """
+    Display or terminate active tasks (delays).
+
+    Usage:
+        tasks[/switch] [task_id or function_name]
+
+    Switches:
+        pause   - Pause the callback of a task.
+        unpause - Process all callbacks made since pause() was called.
+        do_task - Execute the task (call its callback).
+        call    - Call the callback of this task.
+        remove  - Remove a task without executing it.
+        cancel  - Stop a task from automatically executing.
+
+    Notes:
+        A task is a single use method of delaying the call of a function. Calls are created
+        in code, using `evennia.utils.delay`.
+        See |luhttps://www.evennia.com/docs/latest/Command-Duration.html|ltthe docs|le for help.
+
+        By default, tasks that are canceled and never called are cleaned up after one minute.
+
+    Examples:
+        - `tasks/cancel move_callback` - Cancels all movement delays from the slow_exit contrib.
+            In this example slow exits creates it's tasks with
+            `utils.delay(move_delay, move_callback)`
+        - `tasks/cancel 2` - Cancel task id 2.
+
+    """
+
+    key = "@tasks"
+    aliases = ["@delays", "@task"]
+    switch_options = ("pause", "unpause", "do_task", "call", "remove", "cancel")
+    locks = "perm(Developer)"
+    help_category = "System"
+
+    @staticmethod
+    def coll_date_func(task):
+        """Replace regex characters in date string and collect deferred function name."""
+        t_comp_date = str(task[0]).replace("-", "/")
+        t_func_name = str(task[1]).split(" ")
+        t_func_mem_ref = t_func_name[3] if len(t_func_name) >= 4 else None
+        return t_comp_date, t_func_mem_ref
+
+    def do_task_action(self, *args, **kwargs):
+        """
+        Process the action of a tasks command.
+
+        This exists to gain support with yes or no function from EvMenu.
+        """
+        task_id = self.task_id
+
+        # get a reference of the global task handler
+        global _TASK_HANDLER
+        if _TASK_HANDLER is None:
+            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+
+        # verify manipulating the correct task
+        task_args = _TASK_HANDLER.tasks.get(task_id, False)
+        if not task_args:  # check if the task is still active
+            self.msg("Task completed while waiting for input.")
+            return
+        else:
+            # make certain a task with matching IDs has not been created
+            t_comp_date, t_func_mem_ref = self.coll_date_func(task_args)
+            if self.t_comp_date != t_comp_date or self.t_func_mem_ref != t_func_mem_ref:
+                self.msg("Task completed while waiting for input.")
+                return
+
+        # Do the action requested by command caller
+        action_return = self.task_action()
+        self.msg(f"{self.action_request} request completed.")
+        self.msg(f"The task function {self.action_request} returned: {action_return}")
+
+    def func(self):
+        # get a reference of the global task handler
+        global _TASK_HANDLER
+        if _TASK_HANDLER is None:
+            from evennia.scripts.taskhandler import TASK_HANDLER as _TASK_HANDLER
+        # handle no tasks active.
+        if not _TASK_HANDLER.tasks:
+            self.msg("There are no active tasks.")
+            if self.switches or self.args:
+                self.msg("Likely the task has completed and been removed.")
+            return
+
+        # handle caller's request to manipulate a task(s)
+        if self.switches and self.lhs:
+
+            # find if the argument is a task id or function name
+            action_request = self.switches[0]
+            try:
+                arg_is_id = int(self.lhslist[0])
+            except ValueError:
+                arg_is_id = False
+
+            # if the argument is a task id, proccess the action on a single task
+            if arg_is_id:
+
+                err_arg_msg = "Switch and task ID are required when manipulating a task."
+                task_comp_msg = "Task completed while processing request."
+
+                # handle missing arguments or switches
+                if not self.switches and self.lhs:
+                    self.msg(err_arg_msg)
+                    return
+
+                # create a handle for the task
+                task_id = arg_is_id
+                task = TaskHandlerTask(task_id)
+
+                # handle task no longer existing
+                if not task.exists():
+                    self.msg(f"Task {task_id} does not exist.")
+                    return
+
+                # get a reference of the function caller requested
+                switch_action = getattr(task, action_request, False)
+                if not switch_action:
+                    self.msg(
+                        f"{self.switches[0]}, is not an acceptable task action or "
+                        f"{task_comp_msg.lower()}"
+                    )
+
+                # verify manipulating the correct task
+                if task_id in _TASK_HANDLER.tasks:
+                    task_args = _TASK_HANDLER.tasks.get(task_id, False)
+                    if not task_args:  # check if the task is still active
+                        self.msg(task_comp_msg)
+                        return
+                    else:
+                        t_comp_date, t_func_mem_ref = self.coll_date_func(task_args)
+                        t_func_name = str(task_args[1]).split(" ")
+                        t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
+
+                if task.exists():  # make certain the task has not been called yet.
+                    prompt = (
+                        f"{action_request.capitalize()} task {task_id} with completion date "
+                        f"{t_comp_date} ({t_func_name}) {{options}}?"
+                    )
+                    no_msg = f"No {action_request} processed."
+                    # record variables for use in do_task_action method
+                    self.task_id = task_id
+                    self.t_comp_date = t_comp_date
+                    self.t_func_mem_ref = t_func_mem_ref
+                    self.task_action = switch_action
+                    self.action_request = action_request
+                    ask_yes_no(
+                        self.caller,
+                        prompt=prompt,
+                        yes_action=self.do_task_action,
+                        no_action=no_msg,
+                        default="Y",
+                        allow_abort=True,
+                    )
+                    return True
+                else:
+                    self.msg(task_comp_msg)
+                    return
+
+            # the argument is not a task id, process the action on all task deferring the function
+            # specified as an argument
+            else:
+
+                name_match_found = False
+                arg_func_name = self.lhslist[0].lower()
+
+                # repack tasks into a new dictionary
+                current_tasks = {}
+                for task_id, task_args in _TASK_HANDLER.tasks.items():
+                    current_tasks.update({task_id: task_args})
+
+                # call requested action on all tasks with the function name
+                for task_id, task_args in current_tasks.items():
+                    t_func_name = str(task_args[1]).split(" ")
+                    t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
+                    # skip this task if it is not for the function desired
+                    if arg_func_name != t_func_name:
+                        continue
+                    name_match_found = True
+                    task = TaskHandlerTask(task_id)
+                    switch_action = getattr(task, action_request, False)
+                    if switch_action:
+                        action_return = switch_action()
+                        self.msg(f"Task action {action_request} completed on task ID {task_id}.")
+                        self.msg(f"The task function {action_request} returned: {action_return}")
+
+                # provide a message if not tasks of the function name was found
+                if not name_match_found:
+                    self.msg(f"No tasks deferring function name {arg_func_name} found.")
+                    return
+                return True
+
+        # check if an maleformed request was created
+        elif self.switches or self.lhs:
+            self.msg("Task command misformed.")
+            self.msg("Proper format tasks[/switch] [function name or task id]")
+            return
+
+        # No task manupilation requested, build a table of tasks and display it
+        # get the width of screen in characters
+        width = self.client_width()
+        # create table header and list to hold tasks data and actions
+        tasks_header = (
+            "Task ID",
+            "Completion Date",
+            "Function",
+            "Arguments",
+            "KWARGS",
+            "persistent",
+        )
+        # empty list of lists, the size of the header
+        tasks_list = [list() for i in range(len(tasks_header))]
+        for task_id, task in _TASK_HANDLER.tasks.items():
+            # collect data from the task
+            t_comp_date, t_func_mem_ref = self.coll_date_func(task)
+            t_func_name = str(task[1]).split(" ")
+            t_func_name = t_func_name[1] if len(t_func_name) >= 2 else None
+            t_args = str(task[2])
+            t_kwargs = str(task[3])
+            t_pers = str(task[4])
+            # add task data to the tasks list
+            task_data = (task_id, t_comp_date, t_func_name, t_args, t_kwargs, t_pers)
+            for i in range(len(tasks_header)):
+                tasks_list[i].append(task_data[i])
+        # create and display the table
+        tasks_table = EvTable(
+            *tasks_header, table=tasks_list, maxwidth=width, border="cells", align="center"
+        )
+        actions = (f"/{switch}" for switch in self.switch_options)
+        helptxt = f"\nActions: {iter_to_str(actions)}"
+        self.msg(str(tasks_table) + helptxt)

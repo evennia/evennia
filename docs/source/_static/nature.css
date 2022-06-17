@@ -12,6 +12,7 @@
 @import url("basic.css");
 @import url(https://fonts.googleapis.com/css?family=Arvo:400,700,400italic);
 @import url(https://fonts.googleapis.com/css?family=Open%20Sans:400,700,400italic);
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 /* -- page layout ----------------------------------------------------------- */
 
@@ -184,6 +185,7 @@ div.body h6 {
 
 div.body h1 {
     margin-top: 20px solid #fff;
+    font-size: 230%;
 }
 div.body h2 {
     font-size: 150%;
@@ -220,6 +222,10 @@ div.admonition p.admonition-title + p {
     display: inline;
 }
 
+p.admonition-title {
+    margin-right: 0.2em;
+}
+
 div.highlight {
     background-color: #f1f1ef;
 }
@@ -228,6 +234,11 @@ div.note {
     background-color: #eee;
     border: 1px solid #ccc;
     font-style: italic;
+    text-indent: -2.9em;
+    padding-left: 3.5em;
+}
+div.note > p {
+    text-indent: 0em;
 }
 
 div.seealso {
@@ -243,6 +254,21 @@ div.warning {
     background-color: #ffe4e4;
     border: 1px solid #f66;
     font-style: italic;
+    text-indent: -4.6em;
+    padding-left: 5.2em;
+}
+
+div.warning > p {
+    text-indent: 0em;
+}
+
+div.important {
+    text-indent: -5.5em;
+    padding-left: 6.1em;
+}
+
+div.important > p {
+    text-indent: 0em;
 }
 
 p.admonition-title {
@@ -283,12 +309,6 @@ dd.field-odd > ul.simple > li > ul > li > dl.simple {
   background-color: #e1e8e2;
 }
 
-.admonition.important {
-  background-color: #fbf7c3;
-  border: 1px solid #c8c59b;
-  font-style: italic;
-}
-
 pre {
     padding: 10px;
     background-color: #e3e3e3;
@@ -306,12 +326,12 @@ code {
     color: #6e0e0e;
     /* padding: 1px 2px; */
     font-size: 0.8em;
-	  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	  font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     font-weight: bold;
 }
 
 .viewcode-back {
-	  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	  font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
 div.viewcode-block:target {
@@ -340,7 +360,8 @@ div.code-block-caption {
 }
 
 .versionchanged {
-  background-color: #f7f7f7;
+  background-color: #b7e6e8;
+  padding-left: 10px;
 }
 
 .deprecated {
@@ -351,7 +372,7 @@ div.code-block-caption {
 
 
 .class {
-	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
   font-size: 0.9em;
   background-color: #f5ffff;
   padding: 5px;
@@ -364,7 +385,7 @@ div.code-block-caption {
 }
 
 .sig-param {
-	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
 .sig-paren {
@@ -372,7 +393,7 @@ div.code-block-caption {
 }
 
 .property {
-	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
 dl.class > dd > p {
@@ -396,6 +417,16 @@ code.descname {
 .exception {
   background-color: #fff9f9;
   padding: 5px;
+}
+
+/* The develop-branch warning header */
+
+.develop {
+  background-color: #ffe4e4;
+  align-content: center;
+  width: auto;
+  text-align: center;
+  letter-spacing: 15px;
 }
 
 

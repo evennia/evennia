@@ -46,36 +46,33 @@ _CERTIFICATE_ISSUER = {
 
 # messages
 
-NO_AUTOGEN = """
+NO_AUTOGEN = f"""
 Evennia could not auto-generate the SSL private- and public keys ({{err}}).
 If this error persists, create them manually (using the tools for your OS). The files
 should be placed and named like this:
-    {}
-    {}
-""".format(
-    _PRIVATE_KEY_FILE, _PUBLIC_KEY_FILE
-)
+    {_PRIVATE_KEY_FILE}
+    {_PUBLIC_KEY_FILE}
+"""
 
 NO_AUTOCERT = """
 Evennia's could not auto-generate the SSL certificate ({{err}}).
 The private key already exists here:
-    {}
+    {_PRIVATE_KEY_FILE}
 If this error persists, create the certificate manually (using the private key and
 the tools for your OS). The file should be placed and named like this:
-    {}
-""".format(
-    _PRIVATE_KEY_FILE, _CERTIFICATE_FILE
-)
+    {_CERTIFICATE_FILE}
+"""
 
 
 class SSLProtocol(TelnetProtocol):
     """
     Communication is the same as telnet, except data transfer
     is done with encryption set up by the portal at start time.
+
     """
 
     def __init__(self, *args, **kwargs):
-        super(SSLProtocol, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.protocol_key = "telnet/ssl"
 
 

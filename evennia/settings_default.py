@@ -26,7 +26,11 @@ import sys
 SERVERNAME = "Evennia"
 # Short one-sentence blurb describing your game. Shown under the title
 # on the website and could be used in online listings of your game etc.
-GAME_SLOGAN = "Python MU* creation system"
+GAME_SLOGAN = "The Python MUD/MU* creation system"
+# The url address to your server, like mymudgame.com. This should be the publicly
+# visible location. This is used e.g. on the web site to show how you connect to the
+# game over telnet. Default is localhost (only on your machine).
+SERVER_HOSTNAME = "localhost"
 # Lockdown mode will cut off the game from any external connections
 # and only allow connections from localhost. Requires a cold reboot.
 LOCKDOWN_MODE = False
@@ -134,7 +138,6 @@ else:
                 GAME_DIR = gpath
                 break
         os.chdir(os.pardir)
-
 # Place to put log files, how often to rotate the log and how big each log file
 # may become before rotating.
 LOG_DIR = os.path.join(GAME_DIR, "server", "logs")
@@ -152,6 +155,10 @@ LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, "lockwarnings.log")
 CHANNEL_LOG_NUM_TAIL_LINES = 20
 # Max size (in bytes) of channel log files before they rotate
 CHANNEL_LOG_ROTATE_SIZE = 1000000
+# Unused by default, but used by e.g. the MapSystem contrib. A place for storing
+# semi-permanent data and avoid it being rebuilt over and over. It is created
+# on-demand only.
+CACHE_DIR = os.path.join(GAME_DIR, "server", ".cache")
 # Local time zone for this installation. All choices can be found here:
 # http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
 TIME_ZONE = "UTC"
@@ -185,6 +192,14 @@ ENCODINGS = ["utf-8", "latin-1", "ISO-8859-1"]
 # of users with screen readers. Note that ANSI/MXP doesn't need to
 # be stripped this way, that is handled automatically.
 SCREENREADER_REGEX_STRIP = r"\+-+|\+$|\+~|--+|~~+|==+"
+# MXP support means the ability to show clickable links in the client. Clicking
+# the link will execute a game command. It's a way to add mouse input to the game.
+MXP_ENABLED = True
+# If this is set, MXP can only be sent by the server and not added from the
+# client side. Disabling this is a potential security risk because it could
+# allow malevolent players to lure others to execute commands they did not
+# intend to.
+MXP_OUTGOING_ONLY = True
 # Database objects are cached in what is known as the idmapper. The idmapper
 # caching results in a massive speedup of the server (since it dramatically
 # limits the number of database accesses needed) and also allows for
@@ -222,6 +237,11 @@ MAX_CONNECTION_RATE = 2
 MAX_COMMAND_RATE = 80
 # The warning to echo back to users if they send commands too fast
 COMMAND_RATE_WARNING = "You entered commands too fast. Wait a moment and try again."
+# custom, extra commands to add to the `evennia` launcher. This is a dict
+# of {'cmdname': 'path.to.callable', ...}, where the callable will be passed
+# any extra args given on the command line. For example `evennia cmdname foo bar`.
+EXTRA_LAUNCHER_COMMANDS = {}
+
 # Determine how large of a string can be sent to the server in number
 # of characters. If they attempt to enter a string over this character
 # limit, we stop them and send a message. To make unlimited, set to
@@ -236,6 +256,8 @@ MAX_CHAR_LIMIT_WARNING = (
 # debugging. OBS: Showing full tracebacks to regular users could be a
 # security problem -turn this off in a production game!
 IN_GAME_ERRORS = True
+# Broadcast "Server restart"-like messages to all sessions.
+BROADCAST_SERVER_RESTART_MESSAGES = True
 
 ######################################################################
 # Evennia Database config
@@ -279,7 +301,23 @@ ATTRIBUTE_STORED_MODEL_RENAME = [
     (("typeclasses", "defaultplayer"), ("typeclasses", "defaultaccount")),
 ]
 # Default type of autofield (required by Django)
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+######################################################################
+# Evennia webclient options
+######################################################################
+
+# default webclient options (without user changing it)
+WEBCLIENT_OPTIONS = {
+    # Gags prompts in output window and puts them on the input bar
+    "gagprompt": True,
+    # Shows help files in a new popup window instead of in-pane
+    "helppopup": False,
+    # Shows notifications of new messages as popup windows
+    "notification_popup": False,
+    # Plays a sound for notifications of new messages
+    "notification_sound": False,
+}
 
 ######################################################################
 # Evennia pluggable modules
@@ -300,7 +338,7 @@ COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
 # parser expects this. It should also involve a number starting from 1.
 # When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE
 # to properly describe the syntax.
-SEARCH_MULTIMATCH_REGEX = r"(?P<number>[0-9]+)-(?P<name>.*)"
+SEARCH_MULTIMATCH_REGEX = r"(?P<name>[^-]*)-(?P<number>[0-9]+)(?P<args>.*)"
 # To display multimatch errors in various listings we must display
 # the syntax in a way that matches what SEARCH_MULTIMATCH_REGEX understand.
 # The template will be populated with data and expects the following markup:
@@ -308,7 +346,7 @@ SEARCH_MULTIMATCH_REGEX = r"(?P<number>[0-9]+)-(?P<name>.*)"
 # name (key) of the multimatched entity; {aliases} - eventual
 # aliases for the entity; {info} - extra info like #dbrefs for staff. Don't
 # forget a line break if you want one match per line.
-SEARCH_MULTIMATCH_TEMPLATE = " {number}-{name}{aliases}{info}\n"
+SEARCH_MULTIMATCH_TEMPLATE = " {name}-{number}{aliases}{info}\n"
 # The handler that outputs errors when using any API-level search
 # (not manager methods). This function should correctly report errors
 # both for command- and object-searches. This allows full control
@@ -333,6 +371,16 @@ CONNECTION_SCREEN_MODULE = "server.conf.connection_screens"
 # cause issues with menu-logins and autoconnects since the menu will not have
 # started when the autoconnects starts sending menu commands.
 DELAY_CMD_LOGINSTART = 0.3
+# A module that must exist - this holds the instructions Evennia will use to
+# first prepare the database for use (create user #1 and Limbo etc). Only override if
+# you really know what # you are doing. If replacing, it must contain a function
+# handle_setup(stepname=None). The function will start being called with no argument
+# and is expected to maintain a named sequence of steps. Once each step is completed, it
+# should be saved with ServerConfig.objects.conf('last_initial_setup_step', stepname)
+# on a crash, the system will continue by calling handle_setup with the last completed
+# step. The last step in the sequence must be named 'done'. Once this key is saved,
+# initialization will not run again.
+INITIAL_SETUP_MODULE = "evennia.server.initial_setup"
 # An optional module that, if existing, must hold a function
 # named at_initial_setup(). This hook method can be used to customize
 # the server's initial setup sequence (the very first startup of the system).
@@ -376,41 +424,29 @@ DUMMYRUNNER_SETTINGS_MODULE = "evennia.server.profiling.dummyrunner_settings"
 # tuples mapping the exact tag (not a regex!) to the ANSI convertion, like
 # `(r"%c%r", ansi.ANSI_RED)` (the evennia.utils.ansi module contains all
 # ANSI escape sequences). Default is to use `|` and `|[` -prefixes.
-# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_ANSI_EXTRA_MAP = []
 # Extend the available regexes for adding XTERM256 colors in-game. This is given
 # as a list of regexes, where each regex must contain three anonymous groups for
 # holding integers 0-5 for the red, green and blue components Default is
 # is r'\|([0-5])([0-5])([0-5])', which allows e.g. |500 for red.
-# Note that to apply all color changes, a full `evennia reboot` is needed!
-COLOR_ANSI_EXTRA_MAP = []
 # XTERM256 foreground color replacement
-# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_FG = []
 # XTERM256 background color replacement. Default is \|\[([0-5])([0-5])([0-5])'
-# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_BG = []
 # Extend the available regexes for adding XTERM256 grayscale values in-game. Given
 # as a list of regexes, where each regex must contain one anonymous group containing
 # a single letter a-z to mark the level from white to black. Default is r'\|=([a-z])',
 # which allows e.g. |=k for a medium gray.
 # XTERM256 grayscale foreground
-# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_GFG = []
 # XTERM256 grayscale background. Default is \|\[=([a-z])'
-# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_XTERM256_EXTRA_GBG = []
 # ANSI does not support bright backgrounds, so Evennia fakes this by mapping it to
 # XTERM256 backgrounds where supported. This is a list of tuples that maps the wanted
-# ansi tag (not a regex!) to a valid XTERM256 tag, such as `(r'|o', r'|531')`
-# for orange. By default this is only used for bright backgrounds but
-# both bright and dark colors can be mapped this way, and is a way to add
-# new shortcuts to xterm colors without having to write the RGB value.
-# Note that to apply all color changes, a full `evennia reboot` is needed!
+# ansi tag (not a regex!) to a valid XTERM256 background tag, such as `(r'{[r', r'{[500')`.
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = []
 # If set True, the above color settings *replace* the default |-style color markdown
 # rather than extend it.
-# Note that to apply all color changes, a full `evennia reboot` is needed!
 COLOR_NO_DEFAULT = False
 
 
@@ -448,44 +484,37 @@ CMDSET_FALLBACKS = {
 COMMAND_DEFAULT_CLASS = "evennia.commands.default.muxcommand.MuxCommand"
 # Command.arg_regex is a regular expression desribing how the arguments
 # to the command must be structured for the command to match a given user
-# input. By default there is no restriction as long as the input string
-# starts with the command name.
-COMMAND_DEFAULT_ARG_REGEX = None
+# input. By default the command-name should end with a space or / (since the
+# default commands uses MuxCommand and /switches). Note that the extra \n
+# is necessary for use with batchprocessor.
+COMMAND_DEFAULT_ARG_REGEX = r"^[ /]|\n|$"
 # By default, Command.msg will only send data to the Session calling
 # the Command in the first place. If set, Command.msg will instead return
 # data to all Sessions connected to the Account/Character associated with
 # calling the Command. This may be more intuitive for users in certain
 # multisession modes.
 COMMAND_DEFAULT_MSG_ALL_SESSIONS = False
-# The help category of a command if not otherwise specified.
-COMMAND_DEFAULT_HELP_CATEGORY = "general"
 # The default lockstring of a command.
 COMMAND_DEFAULT_LOCKS = ""
-# The Channel Handler is responsible for managing all available channels. By
-# default it builds the current channels into a channel-cmdset that it feeds
-# to the cmdhandler. Overloading this can completely change how Channels
-# are identified and called.
-CHANNEL_HANDLER_CLASS = "evennia.comms.channelhandler.ChannelHandler"
-# The (default) Channel Handler will create a command to represent each
-# channel, creating it with the key of the channel, its aliases, locks etc. The
-# default class logs channel messages to a file and allows for /history.  This
-# setting allows to override the command class used with your own.
-# If you implement CHANNEL_HANDLER_CLASS, you can change this directly and will
-# likely not need this setting.
-CHANNEL_COMMAND_CLASS = "evennia.comms.channelhandler.ChannelCommand"
 
 ######################################################################
 # Typeclasses and other paths
 ######################################################################
 
-# Server-side session class used.
-SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
-
 # These are paths that will be prefixed to the paths given if the
 # immediately entered path fail to find a typeclass. It allows for
 # shorter input strings. They must either base off the game directory
 # or start from the evennia library.
-TYPECLASS_PATHS = ["typeclasses", "evennia", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+TYPECLASS_PATHS = [
+    "typeclasses",
+    "evennia",
+    "evennia.contrib",
+    "evennia.contrib.game_systems",
+    "evennia.contrib.base_systems",
+    "evennia.contrib.full_systems",
+    "evennia.contrib.tutorials",
+    "evennia.contrib.utils",
+]
 
 # Typeclass for account objects (linked to a character) (fallback)
 BASE_ACCOUNT_TYPECLASS = "typeclasses.accounts.Account"
@@ -575,7 +604,11 @@ VALIDATOR_FUNC_MODULES = ["evennia.utils.validatorfuncs"]
 
 # Python path to a directory to be searched for batch scripts
 # for the batch processors (.ev and/or .py files).
-BASE_BATCHPROCESS_PATHS = ["world", "evennia.contrib", "evennia.contrib.tutorial_examples"]
+BASE_BATCHPROCESS_PATHS = [
+    "world",
+    "evennia.contrib",
+    "evennia.contrib.tutorials",
+]
 
 ######################################################################
 # Game Time setup
@@ -601,23 +634,57 @@ TIME_GAME_EPOCH = None
 TIME_IGNORE_DOWNTIMES = False
 
 ######################################################################
-# Inlinefunc, PrototypeFuncs
+# Help system
 ######################################################################
-# Evennia supports inline function preprocessing. This allows users
-# to supply inline calls on the form $func(arg, arg, ...) to do
-# session-aware text formatting and manipulation on the fly. If
-# disabled, such inline functions will not be parsed.
-INLINEFUNC_ENABLED = False
-# This defined how deeply nested inlinefuncs can be. Set to <=0 to
-# disable (not recommended, this is a safeguard against infinite loops).
-INLINEFUNC_STACK_MAXSIZE = 20
+# Help output from CmdHelp are wrapped in an EvMore call
+# (excluding webclient with separate help popups). If continuous scroll
+# is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
+HELP_MORE_ENABLED = True
+# The help category of a command if not specified.
+COMMAND_DEFAULT_HELP_CATEGORY = "general"
+# The help category of a db or file-based help entry if not specified
+DEFAULT_HELP_CATEGORY = "general"
+# File-based help entries. These are modules containing dicts defining help
+# entries. They can be used together with in-database entries created in-game.
+FILE_HELP_ENTRY_MODULES = ["world.help_entries"]
+# if topics listed in help should be clickable
+# clickable links only work on clients that support MXP.
+HELP_CLICKABLE_TOPICS = True
+# The Lunr search engine (used by help) excludes 'common' words from its search.
+# This is not so good when those words are names of commands, like who or say;
+# so we need to make sure to tell Lunr to not filter them out by adding them here
+# (many are auto-added out of the box, this extends the list).
+LUNR_STOP_WORD_FILTER_EXCEPTIONS = []
+
+######################################################################
+# FuncParser
+#
+# Strings parsed with the FuncParser can contain 'callables' on the
+# form $funcname(args,kwargs), which will lead to actual Python functions
+# being executed.
+######################################################################
+# This changes the start-symbol for the funcparser callable. Note that
+# this will make a lot of documentation invalid and there may also be
+# other unexpected side effects, so change with caution.
+FUNCPARSER_START_CHAR = "$"
+# The symbol to use to escape Func
+FUNCPARSER_ESCAPE_CHAR = "\\"
+# This is the global max nesting-level for nesting functions in
+# the funcparser. This protects against infinite loops.
+FUNCPARSER_MAX_NESTING = 20
+# Activate funcparser for all outgoing strings. The current Session
+# will be passed into the parser (used to be called inlinefuncs)
+FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = False
 # Only functions defined globally (and not starting with '_') in
 # these modules will be considered valid inlinefuncs. The list
 # is loaded from left-to-right, same-named functions will overload
-INLINEFUNC_MODULES = ["evennia.utils.inlinefuncs", "server.conf.inlinefuncs"]
-# Module holding handlers for ProtFuncs. These allow for embedding
-# functional code in prototypes and has the same syntax as inlinefuncs.
-PROTOTYPEFUNC_MODULES = ["evennia.utils.prototypefuncs", "server.conf.prototypefuncs"]
+FUNCPARSER_OUTGOING_MESSAGES_MODULES = ["evennia.utils.funcparser", "server.conf.inlinefuncs"]
+# Prototype values are also parsed with FuncParser. These modules
+# define which $func callables are available to use in prototypes.
+FUNCPARSER_PROTOTYPE_PARSING_MODULES = [
+    "evennia.prototypes.protfuncs",
+    "server.conf.prototypefuncs",
+]
 
 ######################################################################
 # Global Scripts
@@ -674,15 +741,18 @@ PERMISSION_ACCOUNT_DEFAULT = "Player"
 CLIENT_DEFAULT_WIDTH = 78
 # telnet standard height is 24; does anyone use such low-res displays anymore?
 CLIENT_DEFAULT_HEIGHT = 45
-# Help output from CmdHelp are wrapped in an EvMore call
-# (excluding webclient with separate help popups). If continuous scroll
-# is preferred, change 'HELP_MORE' to False. EvMORE uses CLIENT_DEFAULT_HEIGHT
-HELP_MORE = True
-# Set rate limits per-IP on account creations and login attempts
+# Set rate limits per-IP on account creations and login attempts. Set limits
+# to None to disable.
 CREATION_THROTTLE_LIMIT = 2
 CREATION_THROTTLE_TIMEOUT = 10 * 60
 LOGIN_THROTTLE_LIMIT = 5
 LOGIN_THROTTLE_TIMEOUT = 5 * 60
+# Certain characters, like html tags, line breaks and tabs are stripped
+# from user input for commands using the `evennia.utils.strip_unsafe_input` helper
+# since they can be exploitative. This list defines Account-level permissions
+# (and higher) that bypass this stripping. It is used as a fallback if a
+# specific list of perms are not given to the helper function.
+INPUT_CLEANUP_BYPASS_PERMISSIONS = ["Builder"]
 
 
 ######################################################################
@@ -710,36 +780,36 @@ GUEST_LIST = ["Guest" + str(s + 1) for s in range(9)]
 # In-game Channels created from server start
 ######################################################################
 
-# The mudinfo channel must always exist; it is used by Evennia itself to
-# relay status messages, connection info etc to staff. The superuser will be
-# automatically subscribed to this channel and it will be recreated on a
-# reload if deleted. This is a dict specifying the kwargs needed to create
-# the channel .
+# The mudinfo channel is a read-only channel used by Evennia to replay status
+# messages, connection info etc to staff. The superuser will automatically be
+# subscribed to this channel. If set to None, the channel is disabled and
+# status messages will only be logged (not recommended).
 CHANNEL_MUDINFO = {
     "key": "MudInfo",
     "aliases": "",
     "desc": "Connection log",
     "locks": "control:perm(Developer);listen:perm(Admin);send:false()",
 }
-# These are additional channels to offer. Usually, at least 'public'
-# should exist. The superuser will automatically be subscribed to all channels
-# in this list. New entries will be created on the next reload. But
-# removing or updating a same-key channel from this list will NOT automatically
-# change/remove it in the game, that needs to be done manually.
+# Optional channel (same form as CHANNEL_MUDINFO) that will receive connection
+# messages like ("<account> has (dis)connected"). While the MudInfo channel
+# will also receieve this info, this channel is meant for non-staffers. If
+# None, this information will only be logged.
+CHANNEL_CONNECTINFO = None
+# New accounts will auto-sub to the default channels given below (but they can
+# unsub at any time). Traditionally, at least 'public' should exist. Entries
+# will be (re)created on the next reload, but removing or updating a same-key
+# channel from this list will NOT automatically change/remove it in the game,
+# that needs to be done manually. Note: To create other, non-auto-subbed
+# channels, create them manually in server/conf/at_initial_setup.py.
 DEFAULT_CHANNELS = [
-    # public channel
     {
         "key": "Public",
-        "aliases": ("pub"),
+        "aliases": ("pub",),
         "desc": "Public discussion",
         "locks": "control:perm(Admin);listen:all();send:all()",
+        "typeclass": BASE_CHANNEL_TYPECLASS,
     }
 ]
-# Optional channel info (same form as CHANNEL_MUDINFO) for the channel to
-# receive connection messages ("<account> has (dis)connected").  While the
-# MudInfo channel will also receieve this info, this channel is meant for
-# non-staffers.
-CHANNEL_CONNECTINFO = None
 
 ######################################################################
 # External Connections
@@ -813,9 +883,6 @@ MANAGERS = ADMINS
 # This is a public point of contact for players or the public to contact
 # a staff member or administrator of the site. It is publicly posted.
 STAFF_CONTACT_EMAIL = None
-# Absolute path to the directory that holds file uploads from web apps.
-# Example: "/home/media/media.lawrence.com"
-MEDIA_ROOT = os.path.join(GAME_DIR, "web", "media")
 # If using Sites/Pages from the web admin, this value must be set to the
 # database-id of the Site (domain) we want to use with this game's Pages.
 SITE_ID = 1
@@ -834,8 +901,12 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = False
+
 # Where to find locales (no need to change this, most likely)
 LOCALE_PATHS = [os.path.join(EVENNIA_DIR, "locale/")]
+# How to display time stamps in e.g. the admin
+SHORT_DATETIME_FORMAT = "Y-m-d H:i:s.u"
+DATETIME_FORMAT = "Y-m-d H:i:s"  # ISO 8601 but without T and timezone
 # This should be turned off unless you want to do tests with Django's
 # development webserver (normally Evennia runs its own server)
 SERVE_MEDIA = False
@@ -851,16 +922,17 @@ LOGOUT_URL = reverse_lazy("logout")
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
 MEDIA_URL = "/media/"
+# Absolute path to the directory that holds file uploads from web apps.
+MEDIA_ROOT = os.path.join(GAME_DIR, "server", ".media")
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure
-# to use a trailing slash. Django1.4+ will look for admin files under
-# STATIC_URL/admin.
+# to use a trailing slash. Admin-related files are searched under STATIC_URL/admin.
 STATIC_URL = "/static/"
-
-STATIC_ROOT = os.path.join(GAME_DIR, "web", "static")
-
+# Absolute path to directory where the static data will be gathered into to be
+# served by webserver.
+STATIC_ROOT = os.path.join(GAME_DIR, "server", ".static")
 # Location of static data to overload the defaults from
-# evennia/web/webclient and evennia/web/website's static/ dirs.
-STATICFILES_DIRS = [os.path.join(GAME_DIR, "web", "static_overrides")]
+# evennia/web/static.
+STATICFILES_DIRS = [os.path.join(GAME_DIR, "web", "static")]
 # Patterns of files in the static directories. Used here to make sure that
 # its readme file is preserved but unused.
 STATICFILES_IGNORE_PATTERNS = ["README.md"]
@@ -868,29 +940,17 @@ STATICFILES_IGNORE_PATTERNS = ["README.md"]
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = "website"
 WEBCLIENT_TEMPLATE = "webclient"
-# The default options used by the webclient
-WEBCLIENT_OPTIONS = {
-    "gagprompt": True,  # Gags prompt from the output window and keep them
-    # together with the input bar
-    "helppopup": False,  # Shows help files in a new popup window
-    "notification_popup": False,  # Shows notifications of new messages as
-    # popup windows
-    "notification_sound": False  # Plays a sound for notifications of new
-    # messages
-}
-
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(GAME_DIR, "web", "template_overrides", WEBSITE_TEMPLATE),
-            os.path.join(GAME_DIR, "web", "template_overrides", WEBCLIENT_TEMPLATE),
-            os.path.join(GAME_DIR, "web", "template_overrides"),
-            os.path.join(EVENNIA_DIR, "web", "website", "templates", WEBSITE_TEMPLATE),
-            os.path.join(EVENNIA_DIR, "web", "website", "templates"),
-            os.path.join(EVENNIA_DIR, "web", "webclient", "templates", WEBCLIENT_TEMPLATE),
-            os.path.join(EVENNIA_DIR, "web", "webclient", "templates"),
+            os.path.join(GAME_DIR, "web", "templates"),
+            os.path.join(GAME_DIR, "web", "templates", WEBSITE_TEMPLATE),
+            os.path.join(GAME_DIR, "web", "templates", WEBCLIENT_TEMPLATE),
+            os.path.join(EVENNIA_DIR, "web", "templates"),
+            os.path.join(EVENNIA_DIR, "web", "templates", WEBSITE_TEMPLATE),
+            os.path.join(EVENNIA_DIR, "web", "templates", WEBCLIENT_TEMPLATE),
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -909,7 +969,18 @@ TEMPLATES = [
         },
     }
 ]
-
+# Django cache settings
+# https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    },
+    "throttle": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 60 * 5,
+        "OPTIONS": {"MAX_ENTRIES": 2000},
+    },
+}
 # MiddleWare are semi-transparent extensions to Django's functionality.
 # see http://www.djangoproject.com/documentation/middleware/ for a more detailed
 # explanation.
@@ -934,12 +1005,14 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    "django.contrib.admin",
     "django.contrib.admindocs",
     "django.contrib.flatpages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    "evennia.web.utils.adminsite.EvenniaAdminApp",  # replaces django.contrib.admin
     "django.contrib.messages",
+    "rest_framework",
+    "django_filters",
     "sekizai",
     "evennia.utils.idmapper",
     "evennia.server",
@@ -949,8 +1022,7 @@ INSTALLED_APPS = [
     "evennia.comms",
     "evennia.help",
     "evennia.scripts",
-    "evennia.web.website",
-    "evennia.web.webclient",
+    "evennia.web",
 ]
 # The user profile extends the User object with more functionality;
 # This should usually not be changed.
@@ -972,8 +1044,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Username validation plugins
 AUTH_USERNAME_VALIDATORS = [
     {"NAME": "django.contrib.auth.validators.ASCIIUsernameValidator"},
-    {"NAME": "django.core.validators.MinLengthValidator", "OPTIONS": {"limit_value": 3}},
-    {"NAME": "django.core.validators.MaxLengthValidator", "OPTIONS": {"limit_value": 30}},
+    {
+        "NAME": "django.core.validators.MinLengthValidator",
+        "OPTIONS": {"limit_value": 3},
+    },
+    {
+        "NAME": "django.core.validators.MaxLengthValidator",
+        "OPTIONS": {"limit_value": 30},
+    },
     {"NAME": "evennia.server.validators.EvenniaUsernameAvailabilityValidator"},
 ]
 
@@ -983,6 +1061,112 @@ TEST_RUNNER = "evennia.server.tests.testrunner.EvenniaTestSuiteRunner"
 # Messages and Bootstrap don't classify events the same way; this setting maps
 # messages.error() to Bootstrap 'danger' classes.
 MESSAGE_TAGS = {messages.ERROR: "danger"}
+
+# Django REST Framework settings
+REST_FRAMEWORK = {
+    # django_filters allows you to specify search fields for models in an API View
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    # whether to paginate results and how many per page
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 25,
+    # require logged in users to call API so that access checks can work on them
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    # These are the different ways people can authenticate for API requests - via
+    # session or with user/password. Other ways are possible, such as via tokens
+    # or oauth, but require additional dependencies.
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    # default permission checks used by the EvenniaPermission class
+    "DEFAULT_CREATE_PERMISSION": "builder",
+    "DEFAULT_LIST_PERMISSION": "builder",
+    "DEFAULT_VIEW_LOCKS": ["examine"],
+    "DEFAULT_DESTROY_LOCKS": ["delete"],
+    "DEFAULT_UPDATE_LOCKS": ["control", "edit"],
+    # No throttle class set by default. Setting one also requires a cache backend to be specified.
+}
+
+# To enable the REST api, turn this to True
+REST_API_ENABLED = False
+
+######################################################################
+# Networking Replaceables
+######################################################################
+# This allows for replacing the very core of the infrastructure holding Evennia
+# together with your own variations. You should usually never have to touch
+# this, and if so, you really need to know what you are doing.
+
+# The Base Session Class is used as a parent class for all Protocols such as
+# Telnet and SSH.) Changing this could be really dangerous. It will cascade
+# to tons of classes. You generally shouldn't need to touch protocols.
+BASE_SESSION_CLASS = "evennia.server.session.Session"
+
+# Telnet Protocol inherits from whatever above BASE_SESSION_CLASS is specified.
+# It is used for all telnet connections, and is also inherited by the SSL Protocol
+# (which is just TLS + Telnet).
+TELNET_PROTOCOL_CLASS = "evennia.server.portal.telnet.TelnetProtocol"
+SSL_PROTOCOL_CLASS = "evennia.server.portal.ssl.SSLProtocol"
+
+# Websocket Client Protocol. This inherits from BASE_SESSION_CLASS. It is used
+# for all webclient connections.
+WEBSOCKET_PROTOCOL_CLASS = "evennia.server.portal.webclient.WebSocketClient"
+
+# Protocol for the SSH interface. This inherits from BASE_SESSION_CLASS.
+SSH_PROTOCOL_CLASS = "evennia.server.portal.ssh.SshProtocol"
+
+# Server-side session class used. This will inherit from BASE_SESSION_CLASS.
+# This one isn't as dangerous to replace.
+SERVER_SESSION_CLASS = "evennia.server.serversession.ServerSession"
+
+# The Server SessionHandler manages all ServerSessions, handling logins,
+# ensuring the login process happens smoothly, handling expected and
+# unexpected disconnects. You shouldn't need to touch it, but you can.
+# Replace it to implement altered game logic.
+SERVER_SESSION_HANDLER_CLASS = "evennia.server.sessionhandler.ServerSessionHandler"
+
+# The Portal SessionHandler manages all incoming connections regardless of
+# the protocol in use. It is responsible for keeping them going and informing
+# the Server Session Handler of the connections and synchronizing them across the
+# AMP connection. You shouldn't ever need to change this. But you can.
+PORTAL_SESSION_HANDLER_CLASS = "evennia.server.portal.portalsessionhandler.PortalSessionHandler"
+
+
+# These are members / properties / attributes kept on both Server and
+# Portal Sessions. They are sync'd at various points, such as logins and
+# reloads. If you add to this, you may need to adjust the class __init__
+# so the additions have somewhere to go. These must be simple things that
+# can be pickled - stuff you could serialize to JSON is best.
+SESSION_SYNC_ATTRS = (
+    "protocol_key",
+    "address",
+    "suid",
+    "sessid",
+    "uid",
+    "csessid",
+    "uname",
+    "logged_in",
+    "puid",
+    "conn_time",
+    "cmd_last",
+    "cmd_last_visible",
+    "cmd_total",
+    "protocol_flags",
+    "server_data",
+    "cmdset_storage_string",
+)
+
+# The following are used for the communications between the Portal and Server.
+# Very dragons territory.
+AMP_SERVER_PROTOCOL_CLASS = "evennia.server.portal.amp_server.AMPServerProtocol"
+AMP_CLIENT_PROTOCOL_CLASS = "evennia.server.amp_client.AMPServerClientProtocol"
+
+# don't change this manually, it can be checked from code to know if
+# being run from a unit test (set by the evennia.utils.test_resources.BaseEvenniaTest
+# and BaseEvenniaTestCase unit testing parents)
+_TEST_ENVIRONMENT = False
 
 ######################################################################
 # Django extensions

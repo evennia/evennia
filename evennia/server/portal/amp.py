@@ -5,8 +5,8 @@ This module acts as a central place for AMP-servers and -clients to get commands
 
 """
 
-from functools import wraps
 import time
+from functools import wraps
 from twisted.protocols import amp
 from collections import defaultdict, namedtuple
 from io import BytesIO
@@ -15,7 +15,7 @@ import zlib  # Used in Compressed class
 import pickle
 
 from twisted.internet.defer import DeferredList, Deferred
-from evennia.utils.utils import to_str, variable_from_module
+from evennia.utils.utils import variable_from_module
 
 # delayed import
 _LOGGER = None
@@ -47,12 +47,12 @@ NULNUL = b"\x00\x00"
 AMP_MAXLEN = amp.MAX_VALUE_LENGTH  # max allowed data length in AMP protocol (cannot be changed)
 
 # amp internal
-ASK = b'_ask'
-ANSWER = b'_answer'
-ERROR = b'_error'
-ERROR_CODE = b'_error_code'
-ERROR_DESCRIPTION = b'_error_description'
-UNKNOWN_ERROR_CODE = b'UNKNOWN'
+ASK = b"_ask"
+ANSWER = b"_answer"
+ERROR = b"_error"
+ERROR_CODE = b"_error_code"
+ERROR_DESCRIPTION = b"_error_description"
+UNKNOWN_ERROR_CODE = b"UNKNOWN"
 
 # buffers
 _SENDBATCH = defaultdict(list)
@@ -93,7 +93,10 @@ def loads(data):
 
 
 def _get_logger():
-    "Delay import of logger until absolutely necessary"
+    """
+    Delay import of logger until absolutely necessary
+
+    """
     global _LOGGER
     if not _LOGGER:
         from evennia.utils import logger as _LOGGER
@@ -102,7 +105,10 @@ def _get_logger():
 
 @wraps
 def catch_traceback(func):
-    "Helper decorator"
+    """
+    Helper decorator
+
+    """
 
     def decorator(*args, **kwargs):
         try:
@@ -171,14 +177,14 @@ class Compressed(amp.String):
         Note: In Py3 this is really a byte stream.
 
         """
-        return zlib.compress(super(Compressed, self).toString(inObject), 9)
+        return zlib.compress(super().toString(inObject), 9)
 
     def fromString(self, inString):
         """
         Convert (decompress) from the string-representation on the wire to Python.
 
         """
-        return super(Compressed, self).fromString(zlib.decompress(inString))
+        return super().fromString(zlib.decompress(inString))
 
 
 class MsgLauncher2Portal(amp.Command):
@@ -307,7 +313,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         self.send_task = None
         self.multibatches = 0
         # later twisted amp has its own __init__
-        super(AMPMultiConnectionProtocol, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _commandReceived(self, box):
         """
@@ -316,6 +322,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         add a specific log of the problem on the erroring side.
 
         """
+
         def formatAnswer(answerBox):
             answerBox[ANSWER] = box[ASK]
             return answerBox
@@ -344,15 +351,59 @@ class AMPMultiConnectionProtocol(amp.AMP):
             errorBox[ERROR_DESCRIPTION] = desc
             errorBox[ERROR_CODE] = code
             return errorBox
+
         deferred = self.dispatchCommand(box)
         if ASK in box:
             deferred.addCallbacks(formatAnswer, formatError)
             deferred.addCallback(self._safeEmit)
         deferred.addErrback(self.unhandledError)
 
+    def stringReceived(self, string):
+        """
+        Overrides the base stringReceived of twisted in order to handle
+        the strange error reported in https://github.com/evennia/evennia/issues/2053,
+        which can lead to the amp connection locking up.
+
+        Args:
+            string (str): the data coming in.
+
+        Notes:
+
+            To test, add the following code to the beginning of
+            `evennia.server.amp_client.AMPServerClientProtocol.data_to_portal`, then
+            run multiple commands until the error trigger:
+            ::
+
+                import random
+                from twisted.protocols.amp import AmpBox
+                always_fail = False
+                if always_fail or random.random() < 0.05:
+                    breaker = AmpBox()
+                    breaker['_answer'.encode()]='13541'.encode()
+                    self.transport.write(breaker.serialize())
+
+        """
+        try:
+            pto = "proto_" + self.state
+            statehandler = getattr(self, pto)
+        except AttributeError:
+            log.msg("callback", self.state, "not found")
+        else:
+            try:
+                # make sure to catch a KeyError cleanly here
+                self.state = statehandler(string)
+                if self.state == "done":
+                    self.transport.loseConnection()
+            except KeyError as err:
+                _get_logger().log_err(
+                    f"AMP error (KeyError: {err}). Discarded data (see "
+                    "https://github.com/evennia/evennia/issues/2053)"
+                )
+
     def dataReceived(self, data):
         """
         Handle non-AMP messages, such as HTTP communication.
+
         """
         # print("dataReceived: {}".format(data))
         if data[:1] == NUL:
@@ -361,7 +412,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
                 # an incomplete AMP box means more batches are forthcoming.
                 self.multibatches += 1
             try:
-                super(AMPMultiConnectionProtocol, self).dataReceived(data)
+                super().dataReceived(data)
             except KeyError:
                 _get_logger().log_trace(
                     "Discarded incoming partial (packed) data (len {})".format(len(data))
@@ -372,7 +423,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
                 # end of existing multibatch
                 self.multibatches = max(0, self.multibatches - 1)
             try:
-                super(AMPMultiConnectionProtocol, self).dataReceived(data)
+                super().dataReceived(data)
             except KeyError:
                 _get_logger().log_trace(
                     "Discarded incoming multi-batch (packed) data (len {})".format(len(data))
@@ -413,6 +464,7 @@ class AMPMultiConnectionProtocol(amp.AMP):
         that is irrelevant. If a true connection error happens, the
         portal will continuously try to reconnect, showing the problem
         that way.
+
         """
         # print("ConnectionLost: {}: {}".format(self, reason))
         try:
@@ -422,20 +474,20 @@ class AMPMultiConnectionProtocol(amp.AMP):
 
     # Error handling
 
-    def errback(self, e, info):
+    def errback(self, err, info):
         """
         Error callback.
         Handles errors to avoid dropping connections on server tracebacks.
 
         Args:
-            e (Failure): Deferred error instance.
+            err (Failure): Deferred error instance.
             info (str): Error string.
 
         """
-        e.trap(Exception)
+        err.trap(Exception)
         _get_logger().log_err(
             "AMP Error from {info}: {trcbck} {err}".format(
-                info=info, trcbck=e.getTraceback(), err=e.getErrorMessage()
+                info=info, trcbck=err.getTraceback(), err=err.getErrorMessage()
             )
         )
 

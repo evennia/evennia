@@ -216,13 +216,18 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
             ipregex = ipregex.replace("*", "[0-9]{1,3}")
             ipregex = re.compile(r"%s" % ipregex)
             bantup = ("", ban, ipregex, now, reason)
+
+        ret = yield (f"Are you sure you want to {typ}-ban '|w{ban}|n' [Y]/N?")
+        if str(ret).lower() in ("no", "n"):
+            self.caller.msg("Aborted.")
+            return
+
         # save updated banlist
         banlist.append(bantup)
         ServerConfig.objects.conf("server_bans", banlist)
-        self.caller.msg("%s-Ban |w%s|n was added." % (typ, ban))
+        self.caller.msg(f"{typ}-ban '|w{ban}|n' was added. Use |wunban|n to reinstate.")
         logger.log_sec(
-            "Banned %s: %s (Caller: %s, IP: %s)."
-            % (typ, ban.strip(), self.caller, self.session.address)
+            "Banned {typ}: {ban.strip()} (Caller: {self.caller}, IP: {self.session.address})."
         )
 
 
@@ -264,15 +269,20 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
         elif not (0 < num < len(banlist) + 1):
             self.caller.msg("Ban id |w%s|x was not found." % self.args)
         else:
-            # all is ok, clear ban
+            # all is ok, ask, then clear ban
             ban = banlist[num - 1]
+            value = (" ".join([s for s in ban[:2]])).strip()
+
+            ret = yield (f"Are you sure you want to unban {num}: '|w{value}|n' [Y]/N?")
+            if str(ret).lower() in ("n", "no"):
+                self.caller.msg("Aborted.")
+                return
+
             del banlist[num - 1]
             ServerConfig.objects.conf("server_bans", banlist)
-            value = " ".join([s for s in ban[:2]])
-            self.caller.msg("Cleared ban %s: %s" % (num, value))
+            self.caller.msg(f"Cleared ban {num}: '{value}'")
             logger.log_sec(
-                "Unbanned: %s (Caller: %s, IP: %s)."
-                % (value.strip(), self.caller, self.session.address)
+                "Unbanned: {value.strip()} (Caller: {self.caller}, IP: {self.session.address})."
             )
 
 
