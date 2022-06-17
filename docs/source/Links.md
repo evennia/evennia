@@ -24,6 +24,7 @@ channel](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUm
 
 ## Third-party Evennia tools
 
+- [Discord relay](https://github.com/InspectorCaracal/evennia-things/tree/main/discord_relay) - Two-way chat relays between Evennia channels and Discord channels.
 - [Evcolor](https://github.com/taladan/Pegasus/blob/origin/world/utilities/evcolor) - Optional coloration for Evennia unit-test output.
 - [Evennia-docker](https://github.com/gtaylor/evennia-docker) - Evennia in a [Docker container](https://www.docker.com/) for quick install and deployment in just a few commands.
 - [Evennia-wiki](https://github.com/vincent-lg/evennia-wiki) - An Evennia-specific Wiki for your website.
