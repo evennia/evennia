@@ -273,7 +273,6 @@ The Evennia documentation supports some special reference shortcuts in links:
         If you find a problem, make a [bug report](issue)!
 
     This will generate a link to https://github.com/evennia/evennia/issues/new/choose.
- 
 
  > For some reason these particular shortcuts give a warning during documentation compilation. This warning
  > can be ignored.
@@ -305,7 +304,6 @@ Everything within these backticks will be verbatim.
 
 ## Code blocks
 
- 
 Code examples are a special case - we want them to get code-highlighting for readability. This is done by using
 the triple-backticks and specifying the language we use:
 ````
