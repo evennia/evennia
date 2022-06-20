@@ -115,7 +115,7 @@ Try to `look` at the box to see the (default) description.
 
 The description you get is not very exciting. Let's add some flavor.
 
-    describe box = This is a large and very heavy box.
+    desc box = This is a large and very heavy box.
 
 If you try the `get` command we will pick up the box. So far so good, but if we really want this to
 be a large and heavy box, people should _not_ be able to run off with it that easily. To prevent
