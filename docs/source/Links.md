@@ -17,19 +17,17 @@ offline in html, PDF or epub formats.
 
 - [Evennia Game Index](http://games.evennia.com/) - An automated listing of Evennia games.
 - [Evennia official Discord channel](https://discord.gg/AJJpcRUhtF)
-- [Evennia official IRC
-channel](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb) ( #evennia at [irc.freenode.net:6667](http://irc.freenode.net:6667/) )
 - [Evennia official forums](https://github.com/evennia/evennia/discussions) on Github Discussions.
 - [Evennia subreddit](https://www.reddit.com/r/Evennia/)
 
 ## Third-party Evennia tools
 
 - [Discord relay](https://github.com/InspectorCaracal/evennia-things/tree/main/discord_relay) - Two-way chat relays between Evennia channels and Discord channels.
+- [docker-compose for Evennia](https://github.com/gtaylor/evennia-docker) - A quick-install setup for running Evennia in a [Docker container](https://www.docker.com/). (See [the official Evennia docs](https://www.evennia.com/docs/latest/Running-Evennia-in-Docker.html) for more details on running Evennia with Docker.)
 - [Evcolor](https://github.com/taladan/Pegasus/blob/origin/world/utilities/evcolor) - Optional coloration for Evennia unit-test output.
-- [Evennia-docker](https://github.com/gtaylor/evennia-docker) - Evennia in a [Docker container](https://www.docker.com/) for quick install and deployment in just a few commands.
 - [Evennia-wiki](https://github.com/vincent-lg/evennia-wiki) - An Evennia-specific Wiki for your website.
-- [Paxboards](https://github.com/aurorachain/paxboards) - Evennia bulletin board system (both for telnet/web).
 - [nextRPI](https://github.com/cluebyte/nextrpi) - A github project for making a toolbox for people to make [RPI](https://www.topmudsites.com/forums/showthread.php?t=4804)-style Evennia games.
+- [Paxboards](https://github.com/aurorachain/paxboards) - Evennia bulletin board system (both for telnet/web).
 - [Unreal Engine Evennia plugin](https://www.unrealengine.com/marketplace/en-US/slug/evennia-plugin) an in-progress Unreal plugin for integrating Evennia with Epic Games' Unreal Engine.
 - [vim-evennia](https://github.com/amfl/vim-evennia) - A mode for editing batch-build files (`.ev`) files in the [vim](https://www.vim.org/) text editor (Emacs users can use [evennia-
 mode.el](https://github.com/evennia/evennia/blob/master/evennia/utils/evennia-mode.el)).
