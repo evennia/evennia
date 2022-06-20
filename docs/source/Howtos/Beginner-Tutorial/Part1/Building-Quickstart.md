@@ -301,7 +301,7 @@ The Command-help is something you modify in Python code. We'll get to that when 
 add Commands. But you can also add regular help entries, for example to explain something about
 the history of your game world:
 
-    sethelp/add History = At the dawn of time ...
+    sethelp History = At the dawn of time ...
 
 You will now find your new `History` entry in the `help` list and read your help-text with `help History`.
 
