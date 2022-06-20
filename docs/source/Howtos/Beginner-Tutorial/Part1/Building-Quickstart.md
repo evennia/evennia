@@ -199,7 +199,7 @@ named simply `Object`. Let's create an object that is a little more interesting.
 
 Let's make us one of _those_!
 
-    create/drop button:tutorial_examples.red_button.RedButton
+    create/drop button:tutorials.red_button.RedButton
 
 The same way we did with the Script Earler, we specify a "Python-path" to the Python code we want Evennia
 to use for creating the object. There you go - one red button.
