@@ -155,10 +155,10 @@ later, in the [Commands tutorial](./Adding-Commands.md).
 
 [Scripts](../../../Components/Scripts.md) are powerful out-of-character objects useful for many "under the hood" things.
 One of their optional abilities is to do things on a timer. To try out a first script, let's put one
-on ourselves. There is an example script in `evennia/contrib/tutorial_examples/bodyfunctions.py`
+on ourselves. There is an example script in `evennia/contrib/tutorials/bodyfunctions/bodyfunctions.py`
 that is called `BodyFunctions`. To add this to us we will use the `script` command:
 
-    script self = tutorial_examples.bodyfunctions.BodyFunctions
+    script self = tutorials.bodyfunctions.BodyFunctions
 
 This string will tell Evennia to dig up the Python code at the place we indicate. It already knows
 to look in the `contrib/` folder, so we don't have to give the full path.
@@ -179,7 +179,7 @@ output every time it fires.
 
 When you are tired of your character's "insights", kill the script with
 
-    script/stop self = tutorial_examples.bodyfunctions.BodyFunctions
+    script/stop self = tutorials.bodyfunctions.BodyFunctions
 
 You create your own scripts in Python, outside the game; the path you give to `script` is literally
 the Python path to your script file. The [Scripts](../../../Components/Scripts.md) page explains more details.
