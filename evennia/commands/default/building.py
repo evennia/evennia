@@ -2832,7 +2832,7 @@ class CmdExamine(ObjManipCommand):
             objdata["Stored Cmdset(s)"] = self.format_stored_cmdsets(obj)
             objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
             objdata[
-                f"Commands vailable to {obj.key} (result of Merged Cmdset(s))"
+                f"Commands available to {obj.key} (result of Merged Cmdset(s))"
             ] = self.format_current_cmds(obj, current_cmdset)
         if self.object_type == "script":
             objdata["Description"] = self.format_script_desc(obj)
