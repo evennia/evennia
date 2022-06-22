@@ -47,5 +47,4 @@ class TestSearch(EvenniaTest):
         script, errors = DefaultScript.create("a-script")
         script.db.an_attribute = "some value"
         found = search_script_attribute(key="an_attribute", value="wrong value")
-        self.assertEqual(len(found), 1, errors)
-        self.assertEqual(script.key, found[0].key, errors)
+        self.assertEqual(len(found), 0, errors)
