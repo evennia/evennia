@@ -43,11 +43,9 @@ class TestSearch(EvenniaTest):
         self.assertEqual(script.key, found[0].key, errors)
         
     def test_search_script_attribute_wrong(self):
-        """Check that a script can be found by its attributes."""
+        """Check that a script cannot be found by wrong value of its attributes."""
         script, errors = DefaultScript.create("a-script")
         script.db.an_attribute = "some value"
         found = search_script_attribute(key="an_attribute", value="wrong value")
         self.assertEqual(len(found), 1, errors)
         self.assertEqual(script.key, found[0].key, errors)
-
-    
