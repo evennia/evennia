@@ -14,7 +14,7 @@ autobahn >= 20.7.1, < 21.0.0
 lunr == 0.6.0
 simpleeval <= 1.0
 uritemplate == 4.1.1
-Jinja2<3.1
+Jinja2 < 3.1
 
 # try to resolve dependency issue in py3.7
 attrs >= 19.2.0
