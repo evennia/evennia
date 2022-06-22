@@ -138,7 +138,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         click_topics=True,
     ):
         """This visually formats the help entry.
-        This method can be overriden to customize the way a help
+        This method can be overridden to customize the way a help
         entry is displayed.
 
         Args:
