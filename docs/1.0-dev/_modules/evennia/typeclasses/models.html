@@ -81,11 +81,12 @@
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Attribute</span><span class="p">,</span>
     <span class="n">AttributeHandler</span><span class="p">,</span>
+    <span class="n">AttributeProperty</span><span class="p">,</span>
     <span class="n">ModelAttributeBackend</span><span class="p">,</span>
     <span class="n">InMemoryAttributeBackend</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">DbHolder</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">TagHandler</span><span class="p">,</span> <span class="n">AliasHandler</span><span class="p">,</span> <span class="n">PermissionHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">TagHandler</span><span class="p">,</span> <span class="n">AliasHandler</span><span class="p">,</span> <span class="n">PermissionHandler</span><span class="p">,</span> <span class="n">TagProperty</span>
 
 <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span><span class="p">,</span> <span class="n">SharedMemoryModelBase</span>
 <span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_TYPED_OBJECT_POST_RENAME</span>
@@ -366,6 +367,18 @@
         <span class="n">typeclass_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_class_from_typeclass</span><span class="p">(</span><span class="n">typeclass_path</span><span class="o">=</span><span class="n">typeclass_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TypedObject.init_evennia_properties"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.init_evennia_properties">[docs]</a>    <span class="k">def</span> <span class="nf">init_evennia_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called by creation methods; makes sure to initialize Attribute/TagProperties</span>
+<span class="sd">        by fetching them once.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">propkey</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="p">(</span><span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">TagProperty</span><span class="p">)):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propkey</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">log_trace</span><span class="p">()</span></div>
 
     <span class="c1"># initialize all handlers in a lazy fashion</span>
 <div class="viewcode-block" id="TypedObject.attributes"><a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject.attributes">[docs]</a>    <span class="nd">@lazy_property</span>

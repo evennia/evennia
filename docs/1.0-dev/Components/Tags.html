@@ -49,18 +49,33 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="tags">
 <h1>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h1>
-<p>A common task of a game designer is to organize and find groups of objects and do operations on
-them. A classic example is to have a weather script affect all “outside” rooms. Another would be for
-a player casting a magic spell that affects every location “in the dungeon”, but not those
-“outside”. Another would be to quickly find everyone joined with a particular guild or everyone
-currently dead.</p>
-<p><em>Tags</em> are short text labels that you attach to objects so as to easily be able to retrieve and
-group them. An Evennia entity can be tagged with any number of Tags. On the database side, Tag
-entities are <em>shared</em> between all objects with that tag. This makes them very efficient but also
-fundamentally different from <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a>, each of which always belongs to one <em>single</em>
-object.</p>
-<p>In Evennia, Tags are technically also used to implement <code class="docutils literal notranslate"><span class="pre">Aliases</span></code> (alternative names for objects)
-and <code class="docutils literal notranslate"><span class="pre">Permissions</span></code> (simple strings for <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> to check for).</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">In game</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tag</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">tagname</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">In code, using .tags (TagHandler)</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;mytag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mytag&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">In code, using TagProperty (auto-assign tag to all instances of the class)</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">TagProperty</span>
+<span class="k">class</span> <span class="nc">Sword</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
+    <span class="n">can_be_wielded</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;combat&#39;</span><span class="p">)</span>
+    <span class="n">has_sharp_edge</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;combat&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><em>Tags</em> are short text lables one can ‘hang’ on objects in order to organize, group and quickly find out their properties. An Evennia entity can be tagged by any number of tags. They are more efficient than <a class="reference internal" href="Attributes.html"><span class="doc std std-doc">Attributes</span></a> since on the database-side, Tags are <em>shared</em> between all objects with that particular tag. A tag does not carry a value in itself; it either sits on the entity</p>
+<p>Above, the tags inform us that the <code class="docutils literal notranslate"><span class="pre">Sword</span></code> is both sharp and can be wielded. If that’s all they do, they could just be a normal Python flag. When tags become important is if there are a lot of objects with different combinations of tags. Maybe you have a magical spell that dulls <em>all</em> sharp-edged objects in the castle - whether sword, dagger, spear or kitchen knife! You can then just grab all objects with the <code class="docutils literal notranslate"><span class="pre">has_sharp_edge</span></code> tag.
+Another example would be a weather script affecting all rooms tagged as <code class="docutils literal notranslate"><span class="pre">outdoors</span></code> or finding all characters tagged with <code class="docutils literal notranslate"><span class="pre">belongs_to_fighter_guild</span></code>.</p>
+<p>In Evennia, Tags are technically also used to implement <code class="docutils literal notranslate"><span class="pre">Aliases</span></code> (alternative names for objects) and <code class="docutils literal notranslate"><span class="pre">Permissions</span></code> (simple strings for <a class="reference internal" href="Locks.html"><span class="doc std std-doc">Locks</span></a> to check for).</p>
 <section id="properties-of-tags-and-aliases-and-permissions">
 <h2>Properties of Tags (and Aliases and Permissions)<a class="headerlink" href="#properties-of-tags-and-aliases-and-permissions" title="Permalink to this headline">¶</a></h2>
 <p>Tags are <em>unique</em>. This means that there is only ever one Tag object with a given key and category.</p>

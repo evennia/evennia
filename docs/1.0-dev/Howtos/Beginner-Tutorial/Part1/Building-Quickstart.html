@@ -158,7 +158,7 @@ You see nothing special.
 </pre></div>
 </div>
 <p>The description you get is not very exciting. Let’s add some flavor.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>describe box = This is a large and very heavy box.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>desc box = This is a large and very heavy box.
 </pre></div>
 </div>
 <p>If you try the <code class="docutils literal notranslate"><span class="pre">get</span></code> command we will pick up the box. So far so good, but if we really want this to
@@ -198,9 +198,9 @@ later, in the <a class="reference internal" href="Adding-Commands.html"><span cl
 <h2><span class="section-number">1.5. </span>Get a Personality<a class="headerlink" href="#get-a-personality" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a> are powerful out-of-character objects useful for many “under the hood” things.
 One of their optional abilities is to do things on a timer. To try out a first script, let’s put one
-on ourselves. There is an example script in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples/bodyfunctions.py</span></code>
+on ourselves. There is an example script in <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorials/bodyfunctions/bodyfunctions.py</span></code>
 that is called <code class="docutils literal notranslate"><span class="pre">BodyFunctions</span></code>. To add this to us we will use the <code class="docutils literal notranslate"><span class="pre">script</span></code> command:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>script self = tutorial_examples.bodyfunctions.BodyFunctions
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>script self = tutorials.bodyfunctions.BodyFunctions
 </pre></div>
 </div>
 <p>This string will tell Evennia to dig up the Python code at the place we indicate. It already knows
@@ -220,7 +220,7 @@ until it “fires” next. Don’t be alarmed if nothing happens when the countd
 particular script has a randomizer to determine if it will say something or not. So you will not see
 output every time it fires.</p>
 <p>When you are tired of your character’s “insights”, kill the script with</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>script/stop self = tutorial_examples.bodyfunctions.BodyFunctions
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>script/stop self = tutorials.bodyfunctions.BodyFunctions
 </pre></div>
 </div>
 <p>You create your own scripts in Python, outside the game; the path you give to <code class="docutils literal notranslate"><span class="pre">script</span></code> is literally
@@ -238,7 +238,7 @@ named simply <code class="docutils literal notranslate"><span class="pre">Object
 <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorial_examples</span></code> there is a module <code class="docutils literal notranslate"><span class="pre">red_button.py</span></code>.  It contains the enigmatic
 <code class="docutils literal notranslate"><span class="pre">RedButton</span></code> class.</p>
 <p>Let’s make us one of <em>those</em>!</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop button:tutorial_examples.red_button.RedButton
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop button:tutorials.red_button.RedButton
 </pre></div>
 </div>
 <p>The same way we did with the Script Earler, we specify a “Python-path” to the Python code we want Evennia
@@ -330,7 +330,7 @@ of #dbrefs, if they are not in the same location) to the command.</p>
 <p>The Command-help is something you modify in Python code. We’ll get to that when we get to how to
 add Commands. But you can also add regular help entries, for example to explain something about
 the history of your game world:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sethelp/add History = At the dawn of time ...
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sethelp History = At the dawn of time ...
 </pre></div>
 </div>
 <p>You will now find your new <code class="docutils literal notranslate"><span class="pre">History</span></code> entry in the <code class="docutils literal notranslate"><span class="pre">help</span></code> list and read your help-text with <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">History</span></code>.</p>

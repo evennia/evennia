@@ -39,7 +39,7 @@ class Health(Component):
 Components may define DBFields or NDBFields at the class level.
 DBField will store its values in the host's DB with a prefixed key.
 NDBField will store its values in the host's NDB and will not persist.
-The key used will be 'component_name__field_name'.
+The key used will be 'component_name::field_name'.
 They use AttributeProperty under the hood.
 
 Example:
@@ -50,7 +50,29 @@ class Health(Component):
     health = DBField(default=1)
 ```
 
-Note that default is optional and will default to None
+Note that default is optional and will default to None.
+
+Adding a component to a host will also a similarly named tag with 'components' as category.
+A Component named health will appear as key="health, category="components".
+This allows you to retrieve objects with specific components by searching with the tag.
+
+It is also possible to add Component Tags the same way, using TagField.
+TagField accepts a default value and can be used to store a single or multiple tags.
+Default values are automatically added when the component is added.
+Component Tags are cleared from the host if the component is removed.
+
+Example:
+```python
+from evennia.contrib.base_systems.components import Component, TagField
+
+class Health(Component):
+    resistances = TagField()
+    vulnerability = TagField(default="fire", enforce_single=True)
+```
+
+The 'resistances' field in this example can be set to multiple times and it will keep the added tags.
+The 'vulnerability' field in this example will override the previous tag with the new one.
+
 
 
 Each typeclass using the ComponentHolderMixin can declare its components

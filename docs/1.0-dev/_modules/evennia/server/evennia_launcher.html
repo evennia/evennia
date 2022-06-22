@@ -2358,9 +2358,11 @@
         <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;makemessages&quot;</span><span class="p">,</span> <span class="s2">&quot;compilemessages&quot;</span><span class="p">):</span>
             <span class="c1"># some commands don&#39;t require the presence of a game directory to work</span>
             <span class="n">need_gamedir</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">CURRENT_DIR</span> <span class="o">!=</span>  <span class="n">EVENNIA_LIB</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You must stand in the evennia/evennia/ folder (where the &#39;locale/&#39; &quot;</span>
-                      <span class="s2">&quot;folder is located) to run this command.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">CURRENT_DIR</span> <span class="o">!=</span> <span class="n">EVENNIA_LIB</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;You must stand in the evennia/evennia/ folder (where the &#39;locale/&#39; &quot;</span>
+                    <span class="s2">&quot;folder is located) to run this command.&quot;</span>
+                <span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="s2">&quot;check&quot;</span><span class="p">,</span> <span class="s2">&quot;makemigrations&quot;</span><span class="p">,</span> <span class="s2">&quot;createsuperuser&quot;</span><span class="p">,</span> <span class="s2">&quot;shell_plus&quot;</span><span class="p">):</span>

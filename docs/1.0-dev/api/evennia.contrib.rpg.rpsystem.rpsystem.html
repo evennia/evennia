@@ -118,7 +118,7 @@ in a room as sdesc + pose.</p>
 
 <span class="c1"># ...</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">RPSystemCmdSet</span>  <span class="o">&lt;---</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span> <span class="kn">import</span> <span class="n">RPSystemCmdSet</span>  <span class="o">&lt;---</span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdset</span><span class="p">):</span>
     <span class="c1"># ...</span>
@@ -131,7 +131,7 @@ in a room as sdesc + pose.</p>
 the typeclasses in this module:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPCharacter</span>
 
 <span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">ContribRPCharacter</span><span class="p">):</span>
     <span class="c1"># ...</span>
@@ -139,7 +139,7 @@ the typeclasses in this module:</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/objects.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPObject</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPObject</span>
 
 <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ContribRPObject</span><span class="p">):</span>
     <span class="c1"># ...</span>
@@ -147,7 +147,7 @@ the typeclasses in this module:</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/rooms.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib.rpg</span> <span class="kn">import</span> <span class="n">ContribRPRoom</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem.rpsystem</span> <span class="kn">import</span> <span class="n">ContribRPRoom</span>
 
 <span class="k">class</span> <span class="nc">Room</span><span class="p">(</span><span class="n">ContribRPRoom</span><span class="p">):</span>
     <span class="c1"># ...</span>
@@ -178,7 +178,7 @@ case_sensitive=False to the <strong>send_emote</strong> function.</p>
 <li><p>In typeclasses/character.py:
 Import the <strong>ContribRPCharacter</strong> class:</p>
 <blockquote>
-<div><p><strong>from evennia.contrib.rpg.rpsystem import ContribRPCharacter</strong></p>
+<div><p><strong>from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter</strong></p>
 </div></blockquote>
 <dl class="simple">
 <dt>Inherit ContribRPCharacter:</dt><dd><p>Change “class Character(DefaultCharacter):” to
@@ -190,7 +190,7 @@ Import the <strong>ContribRPCharacter</strong> class:</p>
 </li>
 <li><dl class="simple">
 <dt>In <strong>typeclasses/rooms.py</strong>:</dt><dd><p>Import the <strong>ContribRPRoom</strong> class:
-<strong>from evennia.contrib.rpg.rpsystem import ContribRPRoom</strong></p>
+<strong>from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom</strong></p>
 </dd>
 <dt>Inherit <strong>ContribRPRoom</strong>:</dt><dd><p>Change <strong>class Room(DefaultRoom):</strong> to
 <strong>class Room(ContribRPRoom):</strong></p>
@@ -199,7 +199,7 @@ Import the <strong>ContribRPCharacter</strong> class:</p>
 </li>
 <li><dl class="simple">
 <dt>In <strong>typeclasses/objects.py</strong></dt><dd><p>Import the <strong>ContribRPObject</strong> class:
-<strong>from evennia.contrib.rpg.rpsystem import ContribRPObject</strong></p>
+<strong>from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject</strong></p>
 </dd>
 <dt>Inherit <strong>ContribRPObject</strong>:</dt><dd><p>Change <strong>class Object(DefaultObject):</strong> to
 <strong>class Object(ContribRPObject):</strong></p>
@@ -235,60 +235,6 @@ Import the <strong>ContribRPCharacter</strong> class:</p>
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.LanguageError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.rpg.rpsystem.rpsystem.</code><code class="sig-name descname">LanguageError</code><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#LanguageError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.LanguageError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.contrib.rpg.rpsystem.rpsystem.ordered_permutation_regex">
-<code class="sig-prename descclassname">evennia.contrib.rpg.rpsystem.rpsystem.</code><code class="sig-name descname">ordered_permutation_regex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sentence</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#ordered_permutation_regex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.ordered_permutation_regex" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds a regex that matches ‘ordered permutations’ of a sentence’s
-words.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>sentence</strong> (<em>str</em>) – The sentence to build a match pattern to</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>regex (re object)</em> –</p>
-<dl class="simple">
-<dt>Compiled regex object represented the</dt><dd><p>possible ordered permutations of the sentence, from longest to
-shortest.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<p>The sdesc_regex for an sdesc of ” very tall man” will
-result in the following allowed permutations,
-regex-matched in inverse order of length (case-insensitive):
-“the very tall man”, “the very tall”, “very tall man”,
-“very tall”, “the very”, “tall man”, “the”, “very”, “tall”,
-and “man”.
-We also add regex to make sure it also accepts num-specifiers,
-like /2-tall.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.contrib.rpg.rpsystem.rpsystem.regex_tuple_from_key_alias">
-<code class="sig-prename descclassname">evennia.contrib.rpg.rpsystem.rpsystem.</code><code class="sig-name descname">regex_tuple_from_key_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#regex_tuple_from_key_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.regex_tuple_from_key_alias" title="Permalink to this definition">¶</a></dt>
-<dd><p>This will build a regex tuple for any object, not just from those
-with sdesc/recog handlers. It’s used as a legacy mechanism for
-being able to mix this contrib with objects not using sdescs, but
-note that creating the ordered permutation regex dynamically for
-every object will add computational overhead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<em>Object</em>) – This object’s key and eventual aliases will
-be used to build the tuple.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>regex_tuple (tuple)</em> –</p>
-<dl class="simple">
-<dt>A tuple</dt><dd><p>(ordered_permutation_regex, obj, key/alias)</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -479,17 +425,6 @@ of control sequences before setting.</p></li>
 be empty, but if it is we must fall back to the key.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.get_regex_tuple">
-<code class="sig-name descname">get_regex_tuple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#SdescHandler.get_regex_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.get_regex_tuple" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return data for sdesc/recog handling</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>tup (tuple)</em> – tuple (sdesc_regex, obj, sdesc)</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -502,8 +437,7 @@ of an Object.</p>
 the following names:</p>
 <blockquote>
 <div><p>_recog_ref2recog
-_recog_obj2recog
-_recog_obj2regex</p>
+_recog_obj2recog</p>
 </div></blockquote>
 <dl class="py method">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.__init__">
@@ -544,14 +478,18 @@ than <strong>max_length</strong>.</p>
 <dl class="py method">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.get">
 <code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#RecogHandler.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get recog replacement string, if one exists, otherwise
-get sdesc and as a last resort, the object’s key.</p>
+<dd><p>Get recog replacement string, if one exists.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>obj</strong> (<em>Object</em>) – The object, whose sdesc to replace</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>recog (str)</em> – The replacement string to use.</p>
+<dd class="field-even"><p><p><em>recog (str or None)</em> –</p>
+<dl class="simple">
+<dt>The replacement string to use, or</dt><dd><p>None if there is no recog for this object.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -578,16 +516,6 @@ mechanism. This is useful for adding masks/hoods etc.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>obj</strong> (<em>Object</em>) – The object for which to remove recog.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.get_regex_tuple">
-<code class="sig-name descname">get_regex_tuple</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#RecogHandler.get_regex_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.get_regex_tuple" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>rec (tuple)</em> – Tuple (recog_regex, obj, recog)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -882,7 +810,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['forget', 'recognize']</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['recognize', 'forget']</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -909,7 +837,7 @@ Using the command without arguments will list all current recogs.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'forget recognize', 'category': 'general', 'key': 'recog', 'no_prefix': ' forget recognize', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'recognize forget', 'category': 'general', 'key': 'recog', 'no_prefix': ' recognize forget', 'tags': '', 'text': '\n    Recognize another person in the same room.\n\n    Usage:\n      recog\n      recog sdesc as alias\n      forget alias\n\n    Example:\n        recog tall man as Griatch\n        forget griatch\n\n    This will assign a personal alias for a person, or forget said alias.\n    Using the command without arguments will list all current recogs.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -989,6 +917,11 @@ self.add().</p>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
 <p>This class is meant as a mix-in or parent for objects in an
 rp-heavy game. It implements the base functionality for poses.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.sdesc">
+<code class="sig-name descname">sdesc</code><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#ContribRPObject.sdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.sdesc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.at_object_creation">
 <code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#ContribRPObject.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.at_object_creation" title="Permalink to this definition">¶</a></dt>
@@ -1078,6 +1011,22 @@ messaging is assumed to be handled by the caller.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_posed_sdesc">
+<code class="sig-name descname">get_posed_sdesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sdesc</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#ContribRPObject.get_posed_sdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_posed_sdesc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the object with its current pose string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>pose (str)</em> –</p>
+<dl class="simple">
+<dt>A string containing the object’s sdesc and</dt><dd><p>current or default pose.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_display_name">
 <code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#ContribRPObject.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays the name of the object in a viewer-aware manner.</p>
@@ -1087,20 +1036,29 @@ messaging is assumed to be handled by the caller.</p>
 at/getting inforamtion for this object.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>pose</strong> (<em>bool</em>) – Include the pose (if available) in the return.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>pose</strong> (<em>bool</em>) – Include the pose (if available) in the return.</p></li>
+<li><p><strong>ref</strong> (<em>str</em>) – The reference marker found in string to replace.
+This is on the form #{num}{case}, like ‘#12^’, where
+the number is a processing location in the string and the
+case symbol indicates the case of the original tag input
+- <strong>t</strong> - input was Titled, like /Tall
+- <strong>^</strong> - input was all uppercase, like /TALL
+- <strong>v</strong> - input was all lowercase, like /tall
+- <strong>~</strong> - input case should be kept, or was mixed-case</p></li>
+<li><p><strong>noid</strong> (<em>bool</em>) – Don’t show DBREF even if viewer has control access.</p></li>
+</ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>name (str)</em> – A string of the sdesc containing the name of the object,
-if this is defined.</p>
-<blockquote>
-<div><p>including the DBREF if this user is privileged to control
-said object.</p>
-</div></blockquote>
+<dd class="field-odd"><p><p><em>name (str)</em> –</p>
+<dl class="simple">
+<dt>A string of the sdesc containing the name of the object,</dt><dd><p>if this is defined. By default, included the DBREF if this user
+is privileged to control said object.</p>
+</dd>
+</dl>
 </p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The RPObject version doesn’t add color to its display.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1111,6 +1069,14 @@ should call.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>string (str)</em> –</p>
+<dl class="simple">
+<dt>A string containing the name, appearance and contents</dt><dd><p>of the object.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1174,11 +1140,6 @@ should call.</p>
 <dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a>, <a class="reference internal" href="#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject" title="evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject</span></code></a></p>
 <p>This is a character class that has poses, sdesc and recog.</p>
 <dl class="py attribute">
-<dt id="evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.sdesc">
-<code class="sig-name descname">sdesc</code><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#ContribRPCharacter.sdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.sdesc" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt id="evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.recog">
 <code class="sig-name descname">recog</code><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#ContribRPCharacter.recog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.recog" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1193,20 +1154,31 @@ should call.</p>
 at/getting inforamtion for this object.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>pose</strong> (<em>bool</em>) – Include the pose (if available) in the return.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>pose</strong> (<em>bool</em>) – Include the pose (if available) in the return.</p></li>
+<li><p><strong>ref</strong> (<em>str</em>) – The reference marker found in string to replace.
+This is on the form #{num}{case}, like ‘#12^’, where
+the number is a processing location in the string and the
+case symbol indicates the case of the original tag input
+- <strong>t</strong> - input was Titled, like /Tall
+- <strong>^</strong> - input was all uppercase, like /TALL
+- <strong>v</strong> - input was all lowercase, like /tall
+- <strong>~</strong> - input case should be kept, or was mixed-case</p></li>
+<li><p><strong>noid</strong> (<em>bool</em>) – Don’t show DBREF even if viewer has control access.</p></li>
+</ul>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p><em>name (str)</em> – A string of the sdesc containing the name of the object,
-if this is defined.</p>
-<blockquote>
-<div><p>including the DBREF if this user is privileged to control
-said object.</p>
-</div></blockquote>
+<dd class="field-odd"><p><p><em>name (str)</em> –</p>
+<dl class="simple">
+<dt>A string of the sdesc containing the name of the object,</dt><dd><p>if this is defined. By default, included the DBREF if this user
+is privileged to control said object.</p>
+</dd>
+</dl>
 </p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The RPCharacter version of this method colors its display to make
+<p>The RPCharacter version adds additional processing to sdescs to make
 characters stand out from other objects.</p>
 </dd></dl>
 
@@ -1226,6 +1198,24 @@ characters stand out from other objects.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><p><strong>whisper</strong> (<em>bool</em>) – If True, this is a whisper rather than a say.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.get_sdesc">
+<code class="sig-name descname">get_sdesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">process</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rpsystem.html#ContribRPCharacter.get_sdesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.get_sdesc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single method to handle getting recogs with sdesc fallback in an
+aware manner, to allow separate processing of recogs from sdescs.
+Gets the sdesc or recog for obj from the view of self.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>Object</em>) – the object whose sdesc or recog is being gotten</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>process</strong> (<em>bool</em>) – If True, the sdesc/recog is run through the
+appropriate process method for self - .process_sdesc or
+.process_recog</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1284,14 +1274,8 @@ translated from the original sdesc at this point.</p></li>
 This is not used by default.</p></li>
 </ul>
 </dd>
-</dl>
-<dl class="simple">
-<dt>Kwargs:</dt><dd><p>ref (str): See process_sdesc.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>recog (str)</em> – The modified recog string.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>recog (str)</em> – The modified recog string.</p>
 </dd>
 </dl>
 </dd></dl>

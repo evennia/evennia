@@ -241,59 +241,59 @@ may trigger changes in the GUI or play a sound etc.</p>
 <a class="reference external" href="https://evennia.readthedocs.io/en/latest/Web-Client-Webclient.html">https://evennia.readthedocs.io/en/latest/Web-Client-Webclient.html</a> for getting set up with custom
 webclient code. Once you have a custom plugin defined and loaded, create a new function in the
 plugin, onCustomFunc() for example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span>    <span class="kd">var</span> <span class="nx">onCustomFunc</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">kwargs</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="kd">var</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kd">var</span><span class="p">)</span>
-    <span class="p">}</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">onCustomFunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span><span class="w"> </span><span class="nx">kwargs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">args</span><span class="p">.</span><span class="kd">var</span><span class="w"></span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kd">var</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>You’ll also need to add the function to what the main plugin function returns:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span>    <span class="k">return</span> <span class="p">{</span>
-        <span class="nx">init</span><span class="o">:</span> <span class="nx">init</span><span class="p">,</span>
-        <span class="nx">onCustomFunc</span><span class="p">,</span>
-    <span class="p">}</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nx">init</span><span class="o">:</span><span class="w"> </span><span class="nx">init</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onCustomFunc</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This defines the function and looks for “var” as a variable that is passed to it. Once you have this
 in place in your custom plugin, you also need to update the static/webclient/js/webclient_gui.js
 file to recognize the new function when it’s called. First you should add a new function inside the
 plugin_handler function to recognize the new function:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span>    <span class="kd">var</span> <span class="nx">onCustomFunc</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cmdname</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">kwargs</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">for</span><span class="p">(</span> <span class="kd">let</span> <span class="nx">n</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span> <span class="nx">n</span> <span class="o">&lt;</span> <span class="nx">ordered_plugins</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">n</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
-            <span class="kd">let</span> <span class="nx">plugin</span> <span class="o">=</span> <span class="nx">ordered_plugins</span><span class="p">[</span><span class="nx">n</span><span class="p">];</span>
-            <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;onCustomFunc&#39;</span> <span class="ow">in</span> <span class="nx">plugin</span> <span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span><span class="p">(</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">onCustomFunc</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">kwargs</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-                    <span class="c1">// True -- means this plugin claims this command exclusively.</span>
-                    <span class="k">return</span><span class="p">;</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">onCustomFunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">cmdname</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">,</span><span class="w"> </span><span class="nx">kwargs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="kd">let</span><span class="w"> </span><span class="nx">n</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">ordered_plugins</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">n</span><span class="o">++</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="nx">plugin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ordered_plugins</span><span class="p">[</span><span class="nx">n</span><span class="p">];</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="p">(</span><span class="w"> </span><span class="s1">&#39;onCustomFunc&#39;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">plugin</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="k">if</span><span class="p">(</span><span class="w"> </span><span class="nx">plugin</span><span class="p">.</span><span class="nx">onCustomFunc</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span><span class="w"> </span><span class="nx">kwargs</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                    </span><span class="c1">// True -- means this plugin claims this command exclusively.</span><span class="w"></span>
+<span class="w">                    </span><span class="k">return</span><span class="p">;</span><span class="w"></span>
+<span class="w">                </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This looks through all the plugins for a function that corresponds to the custom function being
 called. Next, add the custom function to the return statement of the plugin handler:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span>    <span class="k">return</span> <span class="p">{</span>
-        <span class="nx">add</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span>
-        <span class="nx">onKeydown</span><span class="o">:</span> <span class="nx">onKeydown</span><span class="p">,</span>
-        <span class="nx">onBeforeUnload</span><span class="o">:</span> <span class="nx">onBeforeUnload</span><span class="p">,</span>
-        <span class="nx">onLoggedIn</span><span class="o">:</span> <span class="nx">onLoggedIn</span><span class="p">,</span>
-        <span class="nx">onText</span><span class="o">:</span> <span class="nx">onText</span><span class="p">,</span>
-        <span class="nx">onGotOptions</span><span class="o">:</span> <span class="nx">onGotOptions</span><span class="p">,</span>
-        <span class="nx">onPrompt</span><span class="o">:</span> <span class="nx">onPrompt</span><span class="p">,</span>
-        <span class="nx">onDefault</span><span class="o">:</span> <span class="nx">onDefault</span><span class="p">,</span>
-        <span class="nx">onSilence</span><span class="o">:</span> <span class="nx">onSilence</span><span class="p">,</span>
-        <span class="nx">onConnectionClose</span><span class="o">:</span> <span class="nx">onConnectionClose</span><span class="p">,</span>
-        <span class="nx">onSend</span><span class="o">:</span> <span class="nx">onSend</span><span class="p">,</span>
-        <span class="nx">init</span><span class="o">:</span> <span class="nx">init</span><span class="p">,</span>
-        <span class="nx">postInit</span><span class="o">:</span> <span class="nx">postInit</span><span class="p">,</span>
-        <span class="nx">onCustomFunc</span><span class="o">:</span> <span class="nx">onCustomFunc</span><span class="p">,</span>
-    <span class="p">}</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nx">add</span><span class="o">:</span><span class="w"> </span><span class="nx">add</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onKeydown</span><span class="o">:</span><span class="w"> </span><span class="nx">onKeydown</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onBeforeUnload</span><span class="o">:</span><span class="w"> </span><span class="nx">onBeforeUnload</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onLoggedIn</span><span class="o">:</span><span class="w"> </span><span class="nx">onLoggedIn</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onText</span><span class="o">:</span><span class="w"> </span><span class="nx">onText</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onGotOptions</span><span class="o">:</span><span class="w"> </span><span class="nx">onGotOptions</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onPrompt</span><span class="o">:</span><span class="w"> </span><span class="nx">onPrompt</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onDefault</span><span class="o">:</span><span class="w"> </span><span class="nx">onDefault</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onSilence</span><span class="o">:</span><span class="w"> </span><span class="nx">onSilence</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onConnectionClose</span><span class="o">:</span><span class="w"> </span><span class="nx">onConnectionClose</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onSend</span><span class="o">:</span><span class="w"> </span><span class="nx">onSend</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">init</span><span class="o">:</span><span class="w"> </span><span class="nx">init</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">postInit</span><span class="o">:</span><span class="w"> </span><span class="nx">postInit</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">onCustomFunc</span><span class="o">:</span><span class="w"> </span><span class="nx">onCustomFunc</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Lastly, you will also need to need to add an entry to the Evennia emitter to tie the python function
 call to this new javascript function (this is in the $(document).ready function):</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span>    <span class="nx">Evennia</span><span class="p">.</span><span class="nx">emitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;customFunc&quot;</span><span class="p">,</span> <span class="nx">plugin_handler</span><span class="p">.</span><span class="nx">onCustomFunc</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nx">Evennia</span><span class="p">.</span><span class="nx">emitter</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;customFunc&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">plugin_handler</span><span class="p">.</span><span class="nx">onCustomFunc</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Now you can make a call from your python code to the new custom function to pass information from

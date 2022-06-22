@@ -210,6 +210,14 @@ warning when using reset mode.</p></li>
 <li><p>Attribute storage support defaultdics (Hendher)</p></li>
 <li><p>Add ObjectParent mixin to default game folder template as an easy, ready-made
 way to override features on all ObjectDB-inheriting objects easily.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code>, <code class="docutils literal notranslate"><span class="pre">AliasProperty</span></code> and <code class="docutils literal notranslate"><span class="pre">PermissionProperty</span></code> to assign these
+data in a similar way to django fields.</p></li>
+<li><p>The db pickle-serializer now checks for methods <code class="docutils literal notranslate"><span class="pre">__serialize_dbobjs__</span></code> and <code class="docutils literal notranslate"><span class="pre">__deserialize_dbobjs__</span></code>
+to allow custom packing/unpacking of nested dbobjs, to allow storing in Attribute.</p></li>
+<li><p>Optimizations to rpsystem contrib performance. Breaking change: <code class="docutils literal notranslate"><span class="pre">.get_sdesc()</span></code> will
+now return <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of <code class="docutils literal notranslate"><span class="pre">.db.desc</span></code> if no sdesc is set; fallback in hook (inspectorCaracal)</p></li>
+<li><p>Reworked text2html parser to avoid problems with stateful color tags (inspectorCaracal)</p></li>
+<li><p>Simplified <code class="docutils literal notranslate"><span class="pre">EvMenu.options_formatter</span></code> hook to use <code class="docutils literal notranslate"><span class="pre">EvColumn</span></code> and f-strings (inspectorcaracal)</p></li>
 </ul>
 </section>
 <section id="evennia-0-9-5">

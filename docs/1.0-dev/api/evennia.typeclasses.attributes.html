@@ -192,7 +192,7 @@ of a .pk field as a sign that the Attribute was deleted.</p></li>
 
 <dl class="py class">
 <dt id="evennia.typeclasses.attributes.AttributeProperty">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">AttributeProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">AttributeProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
 on the class level. Note that while one can set a lock on the Attribute,
@@ -210,7 +210,7 @@ the full AttributeHandler if you need to do access checks.</p>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.AttributeProperty.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize an Attribute as a property descriptor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -222,13 +222,46 @@ stored more efficiently.</p></li>
 <li><p><strong>lockstring</strong> (<em>str</em>) – This is not itself useful with the property, but only if
 using the full AttributeHandler.get(accessing_obj=…) to access the
 Attribute.</p></li>
-<li><p><strong>autocreate</strong> (<em>bool</em>) – If an un-found Attr should lead to auto-creating the
-Attribute (with the default value). If <strong>False</strong>, the property will
-return the default value until it has been explicitly set. This means
-less database accesses, but also means the property will have no
-corresponding Attribute if wanting to access it directly via the
-AttributeHandler (it will also not show up in <strong>examine</strong>).</p></li>
+<li><p><strong>autocreate</strong> (<em>bool</em>) – True by default; this means Evennia makes sure to create a new
+copy of the Attribute (with the default value) whenever a new object with this
+property is created. If <strong>False</strong>, no Attribute will be created until the property
+is explicitly assigned a value. This makes it more efficient while it retains
+its default (there’s no db access), but without an actual Attribute generated,
+one cannot access it via .db, the AttributeHandler or see it with <strong>examine</strong>.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.AttributeProperty.at_set">
+<code class="sig-name descname">at_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.at_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.at_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>The value to set is passed through the method. It can be used to customize/validate
+the input in a custom child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>any</em>) – The value about to the stored in this Attribute.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any</em> – The value to store.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>AttributeError</strong> – If the value is invalid to store.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.typeclasses.attributes.AttributeProperty.at_get">
+<code class="sig-name descname">at_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.at_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.at_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>The value returned from the Attribute is passed through this method. It can be used
+to react to the retrieval or modify the result in some way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>any</em>) – Value returned from the Attribute.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>any</em> – The value to return to the caller.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -237,7 +270,7 @@ AttributeHandler (it will also not show up in <strong>examine</strong>).</p></li
 
 <dl class="py class">
 <dt id="evennia.typeclasses.attributes.NAttributeProperty">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">NAttributeProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.typeclasses.attributes.</code><code class="sig-name descname">NAttributeProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#NAttributeProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.NAttributeProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.typeclasses.attributes.AttributeProperty" title="evennia.typeclasses.attributes.AttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.AttributeProperty</span></code></a></p>
 <p>NAttribute property descriptor. Allows for specifying NAttributes as Django-like ‘fields’
 on the class level.</p>

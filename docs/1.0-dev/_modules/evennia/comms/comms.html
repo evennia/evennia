@@ -61,15 +61,33 @@
 <span class="sd">    create different types of communication channels.</span>
 
 <span class="sd">    Class-level variables:</span>
-<span class="sd">        - `send_to_online_only` (bool, default True) - if set, will only try to</span>
-<span class="sd">          send to subscribers that are actually active. This is a useful optimization.</span>
-<span class="sd">        - `log_file` (str, default `&quot;channel_{channelname}.log&quot;`). This is the</span>
-<span class="sd">          log file to which the channel history will be saved. The `{channelname}` tag</span>
-<span class="sd">          will be replaced by the key of the Channel. If an Attribute &#39;log_file&#39;</span>
-<span class="sd">          is set, this will be used instead. If this is None and no Attribute is found,</span>
-<span class="sd">          no history will be saved.</span>
-<span class="sd">        - `channel_prefix_string` (str, default `&quot;[{channelname} ]&quot;`) - this is used</span>
-<span class="sd">          as a simple template to get the channel prefix with `.channel_prefix()`.</span>
+<span class="sd">    - `send_to_online_only` (bool, default True) - if set, will only try to</span>
+<span class="sd">      send to subscribers that are actually active. This is a useful optimization.</span>
+<span class="sd">    - `log_file` (str, default `&quot;channel_{channelname}.log&quot;`). This is the</span>
+<span class="sd">      log file to which the channel history will be saved. The `{channelname}` tag</span>
+<span class="sd">      will be replaced by the key of the Channel. If an Attribute &#39;log_file&#39;</span>
+<span class="sd">      is set, this will be used instead. If this is None and no Attribute is found,</span>
+<span class="sd">      no history will be saved.</span>
+<span class="sd">    - `channel_prefix_string` (str, default `&quot;[{channelname} ]&quot;`) - this is used</span>
+<span class="sd">      as a simple template to get the channel prefix with `.channel_prefix()`. It is used</span>
+<span class="sd">      in front of every channel message; use `{channelmessage}` token to insert the</span>
+<span class="sd">      name of the current channel. Set to `None` if you want no prefix (or want to</span>
+<span class="sd">      handle it in a hook during message generation instead.</span>
+<span class="sd">    - `channel_msg_nick_pattern`(str, default `&quot;{alias}\\s*?|{alias}\\s+?(?P&lt;arg1&gt;.+?)&quot;) -</span>
+<span class="sd">      this is what used when a channel subscriber gets a channel nick assigned to this</span>
+<span class="sd">      channel. The nickhandler uses the pattern to pick out this channel&#39;s name from user</span>
+<span class="sd">      input. The `{alias}` token will get both the channel&#39;s key and any set/custom aliases</span>
+<span class="sd">      per subscriber. You need to allow for an `&lt;arg1&gt;` regex group to catch any message</span>
+<span class="sd">      that should be send to the  channel. You usually don&#39;t need to change this pattern</span>
+<span class="sd">      unless you are changing channel command-style entirely.</span>
+<span class="sd">    - `channel_msg_nick_replacement` (str, default `&quot;channel {channelname} = $1&quot;` - this</span>
+<span class="sd">      is used by the nickhandler to generate a replacement string once the nickhandler (using</span>
+<span class="sd">      the `channel_msg_nick_pattern`) identifies that the channel should be addressed</span>
+<span class="sd">      to send a message to it. The `&lt;arg1&gt;` regex pattern match from `channel_msg_nick_pattern`</span>
+<span class="sd">      will end up at the `$1` position in the replacement. Together, this allows you do e.g.</span>
+<span class="sd">      &#39;public Hello&#39; and have that become a mapping to `channel public = Hello`. By default,</span>
+<span class="sd">      the account-level `channel` command is used. If you were to rename that command you must</span>
+<span class="sd">      tweak the output to something like `yourchannelcommandname {channelname} = $1`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -100,6 +118,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_channel_creation</span><span class="p">()</span>
+        <span class="c1"># initialize Attribute/TagProperties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_evennia_properties</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_createdict&quot;</span><span class="p">):</span>
             <span class="c1"># this is only set if the channel was created</span>
             <span class="c1"># with the utils.create.create_channel function.</span>

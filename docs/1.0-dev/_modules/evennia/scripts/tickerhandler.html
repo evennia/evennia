@@ -627,9 +627,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ticker_pool</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">interval</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="n">store_key</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">store_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span>
-                <span class="k">if</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">interval</span>
+                <span class="p">(</span><span class="n">store_key</span><span class="p">,</span> <span class="n">store_value</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">store_key</span><span class="p">,</span> <span class="n">store_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">store_key</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="n">interval</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ticker_storage</span> <span class="o">=</span> <span class="p">{}</span>

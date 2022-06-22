@@ -95,7 +95,7 @@
 
 <span class="sd"># ...</span>
 
-<span class="sd">from evennia.contrib.rpg.rpsystem import RPSystemCmdSet  &lt;---</span>
+<span class="sd">from evennia.contrib.rpg.rpsystem.rpsystem import RPSystemCmdSet  &lt;---</span>
 
 <span class="sd">class CharacterCmdSet(default_cmds.CharacterCmdset):</span>
 <span class="sd">    # ...</span>
@@ -111,7 +111,7 @@
 <span class="sd">```python</span>
 <span class="sd"># in mygame/typeclasses/characters.py</span>
 
-<span class="sd">from evennia.contrib.rpg import ContribRPCharacter</span>
+<span class="sd">from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter</span>
 
 <span class="sd">class Character(ContribRPCharacter):</span>
 <span class="sd">    # ...</span>
@@ -121,7 +121,7 @@
 <span class="sd">```python</span>
 <span class="sd"># in mygame/typeclasses/objects.py</span>
 
-<span class="sd">from evennia.contrib.rpg import ContribRPObject</span>
+<span class="sd">from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject</span>
 
 <span class="sd">class Object(ContribRPObject):</span>
 <span class="sd">    # ...</span>
@@ -131,7 +131,7 @@
 <span class="sd">```python</span>
 <span class="sd"># in mygame/typeclasses/rooms.py</span>
 
-<span class="sd">from evennia.contrib.rpg import ContribRPRoom</span>
+<span class="sd">from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom</span>
 
 <span class="sd">class Room(ContribRPRoom):</span>
 <span class="sd">    # ...</span>
@@ -167,7 +167,7 @@
 
 <span class="sd">1. In typeclasses/character.py:</span>
 <span class="sd">   Import the `ContribRPCharacter` class:</span>
-<span class="sd">       `from evennia.contrib.rpg.rpsystem import ContribRPCharacter`</span>
+<span class="sd">       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter`</span>
 <span class="sd">   Inherit ContribRPCharacter:</span>
 <span class="sd">       Change &quot;class Character(DefaultCharacter):&quot; to</span>
 <span class="sd">       `class Character(ContribRPCharacter):`</span>
@@ -175,13 +175,13 @@
 <span class="sd">       Add `super().at_object_creation()` as the top line.</span>
 <span class="sd">2. In `typeclasses/rooms.py`:</span>
 <span class="sd">       Import the `ContribRPRoom` class:</span>
-<span class="sd">       `from evennia.contrib.rpg.rpsystem import ContribRPRoom`</span>
+<span class="sd">       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom`</span>
 <span class="sd">   Inherit `ContribRPRoom`:</span>
 <span class="sd">       Change `class Room(DefaultRoom):` to</span>
 <span class="sd">       `class Room(ContribRPRoom):`</span>
 <span class="sd">3. In `typeclasses/objects.py`</span>
 <span class="sd">       Import the `ContribRPObject` class:</span>
-<span class="sd">       `from evennia.contrib.rpg.rpsystem import ContribRPObject`</span>
+<span class="sd">       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject`</span>
 <span class="sd">   Inherit `ContribRPObject`:</span>
 <span class="sd">       Change `class Object(DefaultObject):` to</span>
 <span class="sd">       `class Object(ContribRPObject):`</span>
@@ -191,17 +191,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">escape</span> <span class="k">as</span> <span class="n">re_escape</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">variable_from_module</span>
-
-<span class="n">_REGEX_TUPLE_CACHE</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="n">_AT_SEARCH_RESULT</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="c1"># ------------------------------------------------------------</span>
@@ -231,13 +228,13 @@
 
 <span class="n">_RE_FLAGS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span>
 
-<span class="n">_RE_PREFIX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">_PREFIX</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
+<span class="n">_RE_PREFIX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;^</span><span class="si">{</span><span class="n">_PREFIX</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
 
 <span class="c1"># This regex will return groups (num, word), where num is an optional counter to</span>
 <span class="c1"># separate multimatches from one another and word is the first word in the</span>
 <span class="c1"># marker. So entering &quot;/tall man&quot; will return groups (&quot;&quot;, &quot;tall&quot;)</span>
 <span class="c1"># and &quot;/2-tall man&quot; will return groups (&quot;2&quot;, &quot;tall&quot;).</span>
-<span class="n">_RE_OBJ_REF_START</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(?:([0-9]+)</span><span class="si">%s</span><span class="s2">)*(\w+)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_PREFIX</span><span class="p">,</span> <span class="n">_NUM_SEP</span><span class="p">),</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
+<span class="n">_RE_OBJ_REF_START</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_PREFIX</span><span class="si">}</span><span class="s2">(?:([0-9]+)</span><span class="si">{</span><span class="n">_NUM_SEP</span><span class="si">}</span><span class="s2">)*(\w+)&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
 
 <span class="n">_RE_LEFT_BRACKETS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\{+&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
 <span class="n">_RE_RIGHT_BRACKETS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\}+&quot;</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
@@ -281,96 +278,7 @@
     <span class="k">pass</span></div>
 
 
-<span class="k">def</span> <span class="nf">_dummy_process</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="s2">&quot;Pass-through processor&quot;</span>
-    <span class="k">return</span> <span class="n">text</span>
-
-
 <span class="c1"># emoting mechanisms</span>
-
-
-<div class="viewcode-block" id="ordered_permutation_regex"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ordered_permutation_regex">[docs]</a><span class="k">def</span> <span class="nf">ordered_permutation_regex</span><span class="p">(</span><span class="n">sentence</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Builds a regex that matches &#39;ordered permutations&#39; of a sentence&#39;s</span>
-<span class="sd">    words.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        sentence (str): The sentence to build a match pattern to</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        regex (re object): Compiled regex object represented the</span>
-<span class="sd">            possible ordered permutations of the sentence, from longest to</span>
-<span class="sd">            shortest.</span>
-<span class="sd">    Example:</span>
-<span class="sd">         The sdesc_regex for an sdesc of &quot; very tall man&quot; will</span>
-<span class="sd">         result in the following allowed permutations,</span>
-<span class="sd">         regex-matched in inverse order of length (case-insensitive):</span>
-<span class="sd">         &quot;the very tall man&quot;, &quot;the very tall&quot;, &quot;very tall man&quot;,</span>
-<span class="sd">         &quot;very tall&quot;, &quot;the very&quot;, &quot;tall man&quot;, &quot;the&quot;, &quot;very&quot;, &quot;tall&quot;,</span>
-<span class="sd">         and &quot;man&quot;.</span>
-<span class="sd">         We also add regex to make sure it also accepts num-specifiers,</span>
-<span class="sd">         like /2-tall.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># escape {#nnn} markers from sentence, replace with nnn</span>
-    <span class="n">sentence</span> <span class="o">=</span> <span class="n">_RE_REF</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
-    <span class="c1"># escape {##nnn} markers, replace with nnn</span>
-    <span class="n">sentence</span> <span class="o">=</span> <span class="n">_RE_REF_LANG</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
-    <span class="c1"># escape self-ref marker from sentence</span>
-    <span class="n">sentence</span> <span class="o">=</span> <span class="n">_RE_SELF_REF</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sentence</span><span class="p">)</span>
-
-    <span class="c1"># ordered permutation algorithm</span>
-    <span class="n">words</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-    <span class="n">combinations</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">((</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">))</span>
-    <span class="n">solution</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">combination</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>
-        <span class="n">comb</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">iword</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">words</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">combination</span><span class="p">[</span><span class="n">iword</span><span class="p">]:</span>
-                <span class="n">comb</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">comb</span><span class="p">:</span>
-                <span class="k">break</span>
-        <span class="k">if</span> <span class="n">comb</span><span class="p">:</span>
-            <span class="n">solution</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">_PREFIX</span>
-                <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;[0-9]*</span><span class="si">%s</span><span class="s2">*</span><span class="si">%s</span><span class="s2">(?=\W|$)+&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_NUM_SEP</span><span class="p">,</span> <span class="n">re_escape</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">comb</span><span class="p">))</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">))</span>
-            <span class="p">)</span>
-
-    <span class="c1"># combine into a match regex, first matching the longest down to the shortest components</span>
-    <span class="n">regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">solution</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">),</span> <span class="n">item</span><span class="p">)))</span>
-    <span class="k">return</span> <span class="n">regex</span></div>
-
-
-<div class="viewcode-block" id="regex_tuple_from_key_alias"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.regex_tuple_from_key_alias">[docs]</a><span class="k">def</span> <span class="nf">regex_tuple_from_key_alias</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This will build a regex tuple for any object, not just from those</span>
-<span class="sd">    with sdesc/recog handlers. It&#39;s used as a legacy mechanism for</span>
-<span class="sd">    being able to mix this contrib with objects not using sdescs, but</span>
-<span class="sd">    note that creating the ordered permutation regex dynamically for</span>
-<span class="sd">    every object will add computational overhead.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        obj (Object): This object&#39;s key and eventual aliases will</span>
-<span class="sd">            be used to build the tuple.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        regex_tuple (tuple): A tuple</span>
-<span class="sd">            (ordered_permutation_regex, obj, key/alias)</span>
-
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">_REGEX_TUPLE_CACHE</span>
-    <span class="n">permutation_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-
-    <span class="k">if</span> <span class="n">permutation_string</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_REGEX_TUPLE_CACHE</span><span class="p">:</span>
-        <span class="n">_REGEX_TUPLE_CACHE</span><span class="p">[</span><span class="n">permutation_string</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">ordered_permutation_regex</span><span class="p">(</span><span class="n">permutation_string</span><span class="p">),</span> <span class="n">_RE_FLAGS</span><span class="p">),</span>
-            <span class="n">obj</span><span class="p">,</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="n">_REGEX_TUPLE_CACHE</span><span class="p">[</span><span class="n">permutation_string</span><span class="p">]</span></div>
-
-
 <div class="viewcode-block" id="parse_language"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.parse_language">[docs]</a><span class="k">def</span> <span class="nf">parse_language</span><span class="p">(</span><span class="n">speaker</span><span class="p">,</span> <span class="n">emote</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the emote for language. This is</span>
@@ -416,9 +324,9 @@
         <span class="n">langname</span><span class="p">,</span> <span class="n">saytext</span> <span class="o">=</span> <span class="n">say_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
         <span class="n">istart</span><span class="p">,</span> <span class="n">iend</span> <span class="o">=</span> <span class="n">say_match</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">say_match</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
         <span class="c1"># the key is simply the running match in the emote</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;##</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">imatch</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;##</span><span class="si">{</span><span class="n">imatch</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="c1"># replace say with ref markers in emote</span>
-        <span class="n">emote</span> <span class="o">=</span> <span class="n">emote</span><span class="p">[:</span><span class="n">istart</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">key</span> <span class="o">+</span> <span class="n">emote</span><span class="p">[</span><span class="n">iend</span><span class="p">:]</span>
+        <span class="n">emote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{start}</span><span class="s2">{{</span><span class="si">{key}</span><span class="s2">}}</span><span class="si">{end}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">emote</span><span class="p">[:</span><span class="n">istart</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">emote</span><span class="p">[</span><span class="n">iend</span><span class="p">:])</span>
         <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">langname</span><span class="p">,</span> <span class="n">saytext</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
@@ -471,24 +379,20 @@
 <span class="sd">        - says, &quot;...&quot; are</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Load all candidate regex tuples [(regex, obj, sdesc/recog),...]</span>
-    <span class="n">candidate_regexes</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">([(</span><span class="n">_RE_SELF_REF</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">sender</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">())]</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">[])</span>
-        <span class="o">+</span> <span class="p">(</span>
-            <span class="p">[</span><span class="n">sender</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get_regex_tuple</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s2">&quot;recog&quot;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="p">[]</span>
-        <span class="p">)</span>
-        <span class="o">+</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get_regex_tuple</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)]</span>
-        <span class="o">+</span> <span class="p">[</span>
-            <span class="n">regex_tuple_from_key_alias</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>  <span class="c1"># handle objects without sdescs</span>
-            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">candidates</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;recog&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">))</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
-
-    <span class="c1"># filter out non-found data</span>
-    <span class="n">candidate_regexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">tup</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">candidate_regexes</span> <span class="k">if</span> <span class="n">tup</span><span class="p">]</span>
+    <span class="c1"># build a list of candidates with all possible referrable names</span>
+    <span class="c1"># include &#39;me&#39; keyword for self-ref</span>
+    <span class="n">candidate_map</span> <span class="o">=</span> <span class="p">[(</span><span class="n">sender</span><span class="p">,</span> <span class="s2">&quot;me&quot;</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+        <span class="c1"># check if sender has any recogs for obj and add</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="s2">&quot;recog&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">recog</span> <span class="o">:=</span> <span class="n">sender</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="n">candidate_map</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">recog</span><span class="p">))</span>
+        <span class="c1"># check if obj has an sdesc and add</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">):</span>
+            <span class="n">candidate_map</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
+        <span class="c1"># if no sdesc, include key plus aliases instead</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">candidate_map</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">obj</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()])</span>
 
     <span class="c1"># escape mapping syntax on the form {#id} if it exists already in emote,</span>
     <span class="c1"># if so it is replaced with just &quot;id&quot;.</span>
@@ -509,18 +413,57 @@
 
         <span class="c1"># first see if there is a number given (e.g. 1-tall)</span>
         <span class="n">num_identifier</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>  <span class="c1"># return &quot;&quot; if no match, rather than None</span>
-        <span class="n">istart0</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="n">istart</span> <span class="o">=</span> <span class="n">istart0</span>
+        <span class="n">match_index</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="c1"># split the emote string at the reference marker, to process everything after it</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">match_index</span><span class="p">]</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">match_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
 
-        <span class="c1"># loop over all candidate regexes and match against the string following the match</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="p">((</span><span class="n">reg</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="n">istart</span><span class="p">:]),</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">reg</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">candidate_regexes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">search_mode</span><span class="p">:</span>
+            <span class="c1"># match the candidates against the whole search string after the marker</span>
+            <span class="n">rquery</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="sa">r</span><span class="s2">&quot;\b(&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">word</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">punctuation</span><span class="p">))</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;).*&quot;</span>
+                    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">tail</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">rquery</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">candidate_map</span>
+            <span class="p">)</span>
+            <span class="c1"># filter out any non-matching candidates</span>
+            <span class="n">bestmatches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">obj</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">())</span> <span class="k">for</span> <span class="n">match</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">]</span>
 
-        <span class="c1"># score matches by how long part of the string was matched</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="k">if</span> <span class="n">match</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">match</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">]</span>
-        <span class="n">maxscore</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># to find the longest match, we start from the marker and lengthen the</span>
+            <span class="c1"># match query one word at a time.</span>
+            <span class="n">word_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">bestmatches</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># preserve punctuation when splitting</span>
+            <span class="n">tail</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(\W)&quot;</span><span class="p">,</span> <span class="n">tail</span><span class="p">)</span>
+            <span class="n">iend</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tail</span><span class="p">):</span>
+                <span class="c1"># don&#39;t add non-word characters to the search query</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">isalpha</span><span class="p">():</span>
+                    <span class="k">continue</span>
+                <span class="n">word_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">rquery</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">r</span><span class="s2">&quot;\b(&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;).*&quot;</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span><span class="p">])</span>
+                <span class="c1"># match candidates against the current set of words</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">rquery</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">),</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">candidate_map</span>
+                <span class="p">)</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">obj</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">())</span> <span class="k">for</span> <span class="n">match</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">match</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># no matches at this length, keep previous iteration as best</span>
+                    <span class="k">break</span>
+                <span class="c1"># since this is the longest match so far, set latest match set as best matches</span>
+                <span class="n">bestmatches</span> <span class="o">=</span> <span class="n">matches</span>
+                <span class="c1"># save current index as end point of matched text</span>
+                <span class="n">iend</span> <span class="o">=</span> <span class="n">i</span>
 
-        <span class="c1"># we have a valid maxscore, extract all matches with this value</span>
-        <span class="n">bestmatches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">maxscore</span> <span class="o">==</span> <span class="n">score</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># save search string</span>
+            <span class="n">matched_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tail</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">iend</span><span class="p">])</span>
+            <span class="c1"># recombine remainder of emote back into a string</span>
+            <span class="n">tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tail</span><span class="p">[</span><span class="n">iend</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span>
+
         <span class="n">nmatches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bestmatches</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">nmatches</span><span class="p">:</span>
@@ -529,12 +472,11 @@
             <span class="n">nmatches</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">elif</span> <span class="n">nmatches</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># an exact match.</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">bestmatches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">nmatches</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">obj</span><span class="p">,</span> <span class="n">match_str</span> <span class="o">=</span> <span class="n">bestmatches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">bestmatches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">bestmatches</span><span class="p">):</span>
             <span class="c1"># multi-match but all matches actually reference the same</span>
             <span class="c1"># obj (could happen with clashing recogs + sdescs)</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">bestmatches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">obj</span><span class="p">,</span> <span class="n">match_str</span> <span class="o">=</span> <span class="n">bestmatches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">nmatches</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># multi-match.</span>
@@ -542,7 +484,7 @@
             <span class="n">inum</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_identifier</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nmatches</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">num_identifier</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">inum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># A valid inum is given. Use this to separate data.</span>
-                <span class="n">obj</span> <span class="o">=</span> <span class="n">bestmatches</span><span class="p">[</span><span class="n">inum</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">obj</span><span class="p">,</span> <span class="n">match_str</span> <span class="o">=</span> <span class="n">bestmatches</span><span class="p">[</span><span class="n">inum</span><span class="p">]</span>
                 <span class="n">nmatches</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># no identifier given - a real multimatch.</span>
@@ -560,35 +502,32 @@
                 <span class="c1"># case sensitive mode</span>
                 <span class="c1"># internal flags for the case used for the original /query</span>
                 <span class="c1"># - t for titled input (like /Name)</span>
-                <span class="c1"># - ^ for all upercase input (likle /NAME)</span>
+                <span class="c1"># - ^ for all upercase input (like /NAME)</span>
                 <span class="c1"># - v for lower-case input (like /name)</span>
                 <span class="c1"># - ~ for mixed case input (like /nAmE)</span>
-                <span class="n">matchtext</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">_RE_SELF_REF</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">matchtext</span><span class="p">):</span>
-                    <span class="c1"># self-refs are kept as-is, others are parsed by case</span>
-                    <span class="n">matchtext</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_PREFIX</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">istitle</span><span class="p">():</span>
-                        <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;t&quot;</span>
-                    <span class="k">elif</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
-                        <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;^&quot;</span>
-                    <span class="k">elif</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
-                        <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span>
+                <span class="n">matchtext</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_PREFIX</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">istitle</span><span class="p">():</span>
+                    <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;t&quot;</span>
+                <span class="k">elif</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                    <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;^&quot;</span>
+                <span class="k">elif</span> <span class="n">matchtext</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
+                    <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span>
 
-            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">istart0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="n">key</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="n">istart</span> <span class="o">+</span> <span class="n">maxscore</span> <span class="p">:]</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}{</span><span class="n">case</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="c1"># recombine emote with matched text replaced by ref</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="se">{{</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="se">}}</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># multimatch error</span>
             <span class="n">refname</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
             <span class="n">reflist</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2"> (</span><span class="si">%s%s</span><span class="s2">)&quot;</span>
-                <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                    <span class="n">_NUM_SEP</span><span class="p">,</span>
-                    <span class="n">_RE_PREFIX</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">refname</span><span class="p">),</span>
-                    <span class="n">text</span><span class="p">,</span>
-                    <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">sender</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="n">sender</span> <span class="o">==</span> <span class="n">ob</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="si">{num}{sep}{name}</span><span class="s2"> (</span><span class="si">{text}{key}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">num</span><span class="o">=</span><span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">sep</span><span class="o">=</span><span class="n">_NUM_SEP</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">_RE_PREFIX</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">refname</span><span class="p">),</span>
+                    <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                    <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">sender</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">sender</span> <span class="o">==</span> <span class="n">ob</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="p">(</span><span class="n">ob</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="p">]</span>
@@ -652,7 +591,7 @@
         <span class="n">sender</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
         <span class="k">return</span>
 
-    <span class="n">skey</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sender</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">skey</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">sender</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="c1"># we escape the object mappings since we&#39;ll do the language ones first</span>
     <span class="c1"># (the text could have nested object mappings).</span>
@@ -660,66 +599,45 @@
     <span class="c1"># if anonymous_add is passed as a kwarg, collect and remove it from kwargs</span>
     <span class="k">if</span> <span class="s2">&quot;anonymous_add&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="n">anonymous_add</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;anonymous_add&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">anonymous_add</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">obj_mapping</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">skey</span><span class="p">)):</span>
-        <span class="c1"># no self-reference in the emote - add to the end</span>
-        <span class="n">obj_mapping</span><span class="p">[</span><span class="n">skey</span><span class="p">]</span> <span class="o">=</span> <span class="n">sender</span>
+    <span class="c1"># make sure to catch all possible self-refs</span>
+    <span class="n">self_refs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">skey</span><span class="si">}{</span><span class="n">ref</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">anonymous_add</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">obj_mapping</span> <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">self_refs</span><span class="p">):</span>
+        <span class="c1"># no self-reference in the emote - add it</span>
         <span class="k">if</span> <span class="n">anonymous_add</span> <span class="o">==</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span>
-            <span class="n">possessive</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">emote</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span>
-            <span class="n">emote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;{{</span><span class="si">%s</span><span class="s2">}}&quot;</span> <span class="o">%</span> <span class="n">skey</span><span class="p">,</span> <span class="n">possessive</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
+            <span class="c1"># add case flag for initial caps</span>
+            <span class="n">skey</span> <span class="o">+=</span> <span class="s2">&quot;t&quot;</span>
+            <span class="c1"># don&#39;t put a space after the self-ref if it&#39;s a possessive emote</span>
+            <span class="n">femote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{key}{emote}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">emote</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="si">{key}</span><span class="s2"> </span><span class="si">{emote}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">emote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">emote</span><span class="p">,</span> <span class="s2">&quot;{{</span><span class="si">%s</span><span class="s2">}}&quot;</span> <span class="o">%</span> <span class="n">skey</span><span class="p">)</span>
+            <span class="c1"># add it to the end</span>
+            <span class="n">femote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{emote}</span><span class="s2"> [</span><span class="si">{key}</span><span class="s2">]&quot;</span>
+        <span class="n">emote</span> <span class="o">=</span> <span class="n">femote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;{{&quot;</span> <span class="o">+</span> <span class="n">skey</span> <span class="o">+</span> <span class="s2">&quot;}}&quot;</span><span class="p">,</span> <span class="n">emote</span><span class="o">=</span><span class="n">emote</span><span class="p">)</span>
+        <span class="n">obj_mapping</span><span class="p">[</span><span class="n">skey</span><span class="p">]</span> <span class="o">=</span> <span class="n">sender</span>
 
     <span class="c1"># broadcast emote to everyone</span>
     <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">receivers</span><span class="p">:</span>
         <span class="c1"># first handle the language mapping, which always produce different keys ##nn</span>
-        <span class="n">receiver_lang_mapping</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">process_language</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">process_language</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">process_language</span> <span class="o">=</span> <span class="n">_dummy_process</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">langname</span><span class="p">,</span> <span class="n">saytext</span><span class="p">)</span> <span class="ow">in</span> <span class="n">language_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># color says</span>
-            <span class="n">receiver_lang_mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_language</span><span class="p">(</span><span class="n">saytext</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">langname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="s2">&quot;process_language&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span><span class="n">receiver</span><span class="o">.</span><span class="n">process_language</span><span class="p">):</span>
+            <span class="n">receiver_lang_mapping</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">receiver</span><span class="o">.</span><span class="n">process_language</span><span class="p">(</span><span class="n">saytext</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">langname</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">langname</span><span class="p">,</span> <span class="n">saytext</span><span class="p">)</span> <span class="ow">in</span> <span class="n">language_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">receiver_lang_mapping</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">saytext</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">langname</span><span class="p">,</span> <span class="n">saytext</span><span class="p">)</span> <span class="ow">in</span> <span class="n">language_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
         <span class="c1"># map the language {##num} markers. This will convert the escaped sdesc markers on</span>
         <span class="c1"># the form {{#num}} to {#num} markers ready to sdesc-map in the next step.</span>
         <span class="n">sendemote</span> <span class="o">=</span> <span class="n">emote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_lang_mapping</span><span class="p">)</span>
 
-        <span class="c1"># handle sdesc mappings. we make a temporary copy that we can modify</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">process_sdesc</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">process_sdesc</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">process_sdesc</span> <span class="o">=</span> <span class="n">_dummy_process</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">process_recog</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">process_recog</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">process_recog</span> <span class="o">=</span> <span class="n">_dummy_process</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">recog_get</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span>
-            <span class="n">receiver_sdesc_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">process_recog</span><span class="p">(</span><span class="n">recog_get</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">ref</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="c1"># map the ref keys to sdescs</span>
+        <span class="n">receiver_sdesc_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">ref</span><span class="p">,</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="n">noid</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
             <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">receiver_sdesc_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="n">ref</span><span class="p">,</span>
-                    <span class="n">process_sdesc</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">process_sdesc</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">),</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">ref</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="p">)</span>
-        <span class="c1"># make sure receiver always sees their real name</span>
-        <span class="n">rkey_start</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">receiver</span><span class="o">.</span><span class="n">id</span>
-        <span class="n">rkey_keep_case</span> <span class="o">=</span> <span class="n">rkey_start</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span>  <span class="c1"># signifies keeping the case</span>
-        <span class="k">for</span> <span class="n">rkey</span> <span class="ow">in</span> <span class="p">(</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">receiver_sdesc_mapping</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">rkey_start</span><span class="p">)):</span>
-            <span class="c1"># we could have #%i^, #%it etc depending on input case - we want the</span>
-            <span class="c1"># self-reference to retain case.</span>
-            <span class="n">receiver_sdesc_mapping</span><span class="p">[</span><span class="n">rkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">process_sdesc</span><span class="p">(</span>
-                <span class="n">receiver</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">rkey_keep_case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">ref</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
 
         <span class="c1"># do the template replacement of the sdesc/recog {#num} markers</span>
         <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">sendemote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_sdesc_mapping</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -754,17 +672,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cache data from storage</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_sdesc&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">sdesc_regex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_sdesc_regex&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">sdesc_regex</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_sdesc&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SdescHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -800,17 +714,15 @@
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned_sdesc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_length</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">SdescError</span><span class="p">(</span>
-                <span class="s2">&quot;Short desc can max be </span><span class="si">%i</span><span class="s2"> chars long (was </span><span class="si">%i</span><span class="s2"> chars).&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="n">max_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned_sdesc</span><span class="p">))</span>
+                <span class="s2">&quot;Short desc can max be </span><span class="si">{}</span><span class="s2"> chars long (was </span><span class="si">{}</span><span class="s2"> chars).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">max_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned_sdesc</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
         <span class="c1"># store to attributes</span>
-        <span class="n">sdesc_regex</span> <span class="o">=</span> <span class="n">ordered_permutation_regex</span><span class="p">(</span><span class="n">cleaned_sdesc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_sdesc&quot;</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_sdesc_regex&quot;</span><span class="p">,</span> <span class="n">sdesc_regex</span><span class="p">)</span>
         <span class="c1"># local caching</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">sdesc_regex</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">sdesc</span></div>
 
@@ -820,17 +732,7 @@
 <span class="sd">        be empty, but if it is we must fall back to the key.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span></div>
-
-<div class="viewcode-block" id="SdescHandler.get_regex_tuple"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.SdescHandler.get_regex_tuple">[docs]</a>    <span class="k">def</span> <span class="nf">get_regex_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return data for sdesc/recog handling</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            tup (tuple): tuple (sdesc_regex, obj, sdesc)</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span></div></div>
 
 
 <div class="viewcode-block" id="RecogHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler">[docs]</a><span class="k">class</span> <span class="nc">RecogHandler</span><span class="p">:</span>
@@ -843,7 +745,6 @@
 
 <span class="sd">        _recog_ref2recog</span>
 <span class="sd">        _recog_obj2recog</span>
-<span class="sd">        _recog_obj2regex</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -858,7 +759,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="c1"># mappings</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ref2recog</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj2regex</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">()</span></div>
 
@@ -867,11 +767,7 @@
 <span class="sd">        Load data to handler cache</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ref2recog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_recog_ref2recog&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
-        <span class="n">obj2regex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_recog_obj2regex&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
         <span class="n">obj2recog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_recog_obj2recog&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj2regex</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">))</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">regex</span> <span class="ow">in</span> <span class="n">obj2regex</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">obj</span>
-        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">recog</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">recog</span> <span class="ow">in</span> <span class="n">obj2recog</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">obj</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RecogHandler.add"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">recog</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
@@ -914,31 +810,29 @@
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned_recog</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_length</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RecogError</span><span class="p">(</span>
-                <span class="s2">&quot;Recog string cannot be longer than </span><span class="si">%i</span><span class="s2"> chars (was </span><span class="si">%i</span><span class="s2"> chars)&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="n">max_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned_recog</span><span class="p">))</span>
+                <span class="s2">&quot;Recog string cannot be longer than </span><span class="si">{}</span><span class="s2"> chars (was </span><span class="si">{}</span><span class="s2"> chars)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">max_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned_recog</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
         <span class="c1"># mapping #dbref:obj</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_recog_ref2recog&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">recog</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_recog_obj2recog&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">recog</span>
-        <span class="n">regex</span> <span class="o">=</span> <span class="n">ordered_permutation_regex</span><span class="p">(</span><span class="n">cleaned_recog</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_recog_obj2regex&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">regex</span>
         <span class="c1"># local caching</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ref2recog</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">recog</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">recog</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj2regex</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">_RE_FLAGS</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">recog</span></div>
 
 <div class="viewcode-block" id="RecogHandler.get"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get recog replacement string, if one exists, otherwise</span>
-<span class="sd">        get sdesc and as a last resort, the object&#39;s key.</span>
+<span class="sd">        Get recog replacement string, if one exists.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            obj (Object): The object, whose sdesc to replace</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            recog (str): The replacement string to use.</span>
+<span class="sd">            recog (str or None): The replacement string to use, or</span>
+<span class="sd">                None if there is no recog for this object.</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            This method will respect a &quot;enable_recog&quot; lock set on</span>
@@ -949,10 +843,10 @@
             <span class="c1"># check an eventual recog_masked lock on the object</span>
             <span class="c1"># to avoid revealing masked characters. If lock</span>
             <span class="c1"># does not exist, pass automatically.</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># recog_mask log not passed, disable recog</span>
-            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span></div>
+            <span class="c1"># recog_mask lock not passed, disable recog</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="RecogHandler.all"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -973,18 +867,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_obj2recog</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_obj2regex</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_ref2recog</span><span class="p">[</span><span class="s2">&quot;#</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="RecogHandler.get_regex_tuple"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.RecogHandler.get_regex_tuple">[docs]</a>    <span class="k">def</span> <span class="nf">get_regex_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            rec (tuple): Tuple (recog_regex, obj, recog)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2recog</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;enable_recog&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2regex</span><span class="p">[</span><span class="n">obj</span><span class="p">],</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2regex</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_ref2recog</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">()</span></div></div>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
@@ -1035,8 +919,8 @@
             <span class="c1"># we also include ourselves here.</span>
             <span class="n">emote</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
             <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">emote</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">)):</span>  <span class="c1"># If emote is not punctuated,</span>
-                <span class="n">emote</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">emote</span>  <span class="c1"># add a full-stop for good measure.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">emote</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)):</span>  <span class="c1"># If emote is not punctuated or speech,</span>
+                <span class="n">emote</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>  <span class="c1"># add a full-stop for good measure.</span>
             <span class="n">send_emote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)</span></div></div>
 
 
@@ -1066,7 +950,6 @@
 
         <span class="c1"># calling the speech modifying hook</span>
         <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_pre_say</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-        <span class="c1"># preparing the speech with sdesc/speech parsing.</span>
         <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
         <span class="n">send_emote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">speech</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
 
@@ -1102,7 +985,7 @@
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot set sdesc on </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;s sdesc was set to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">))</span></div></div>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;s sdesc was set to &#39;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdPose"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.CmdPose">[docs]</a><span class="k">class</span> <span class="nc">CmdPose</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># set current pose and default pose</span>
@@ -1162,8 +1045,8 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: pose &lt;pose-text&gt; OR pose obj = &lt;pose-text&gt;&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">pose</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-            <span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">pose</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pose</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)):</span>
+            <span class="n">pose</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>
         <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
             <span class="c1"># affect something else</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
@@ -1175,18 +1058,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span>
 
+        <span class="n">target_name</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">target</span><span class="o">.</span><span class="n">key</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">):</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> cannot be posed.&quot;</span> <span class="o">%</span> <span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target_name</span><span class="si">}</span><span class="s2"> cannot be posed.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">target_name</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">target</span><span class="o">.</span><span class="n">key</span>
         <span class="c1"># set the pose</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">:</span>
             <span class="n">pose</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose_default</span>
             <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="o">=</span> <span class="n">pose</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
             <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose_default</span> <span class="o">=</span> <span class="n">pose</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Default pose is now &#39;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">target_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Default pose is now &#39;</span><span class="si">{</span><span class="n">target_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pose</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># set the pose. We do one-time ref-&gt;sdesc mapping here.</span>
@@ -1198,12 +1081,12 @@
             <span class="n">pose</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">mapping</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_name</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">pose</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Your pose &#39;</span><span class="si">%s</span><span class="s2">&#39; is too long.&quot;</span> <span class="o">%</span> <span class="n">pose</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">pose</span><span class="si">}</span><span class="s2">&#39; is too long.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
 
             <span class="n">target</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="o">=</span> <span class="n">pose</span>
 
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Pose will read &#39;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">target_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">))</span></div></div>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pose will read &#39;</span><span class="si">{</span><span class="n">target_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pose</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdRecog"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.CmdRecog">[docs]</a><span class="k">class</span> <span class="nc">CmdRecog</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># assign personal alias to object in room</span>
@@ -1282,12 +1165,12 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_EMOTE_NOMATCH_ERROR</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="n">sdesc</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">nmatches</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">reflist</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="s2">&quot;</span><span class="si">{}{}{}</span><span class="s2"> (</span><span class="si">{}{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                    <span class="n">_NUM_SEP</span><span class="p">,</span>
-                    <span class="n">_RE_PREFIX</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">),</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
-                    <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">caller</span><span class="o">.</span><span class="n">key</span> <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">obj</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="si">{num}{sep}{sdesc}</span><span class="s2"> (</span><span class="si">{recog}{key}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">num</span><span class="o">=</span><span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">sep</span><span class="o">=</span><span class="n">_NUM_SEP</span><span class="p">,</span>
+                    <span class="n">sdesc</span><span class="o">=</span><span class="n">_RE_PREFIX</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">),</span>
+                    <span class="n">recog</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;no recog&quot;</span><span class="p">,</span>
+                    <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">caller</span> <span class="o">==</span> <span class="n">obj</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
             <span class="p">]</span>
@@ -1303,7 +1186,11 @@
             <span class="k">if</span> <span class="n">forget_mode</span><span class="p">:</span>
                 <span class="c1"># remove existing recog</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> will now know them only as &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">)))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;You will now know them only as &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">noid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># set recog</span>
                 <span class="n">sdesc</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span>
@@ -1312,7 +1199,7 @@
                 <span class="k">except</span> <span class="n">RecogError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
                     <span class="k">return</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> will now remember |w</span><span class="si">%s</span><span class="s2">|n as |w</span><span class="si">%s</span><span class="s2">|n.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="n">alias</span><span class="p">))</span></div></div>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You will now remember |w</span><span class="si">{}</span><span class="s2">|n as |w</span><span class="si">{}</span><span class="s2">|n.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sdesc</span><span class="p">,</span> <span class="n">alias</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="CmdMask"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.CmdMask">[docs]</a><span class="k">class</span> <span class="nc">CmdMask</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>
@@ -1343,14 +1230,14 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are already wearing a mask.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="n">sdesc</span> <span class="o">=</span> <span class="n">_RE_CHAREND</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-            <span class="n">sdesc</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> |H[masked]|n&quot;</span> <span class="o">%</span> <span class="n">sdesc</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2"> |H[masked]|n&quot;</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Your masked sdesc is too long.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unmasked_sdesc</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;enable_recog:false()&quot;</span><span class="p">)</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You wear a mask as &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">sdesc</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You wear a mask as &#39;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># unmask</span>
             <span class="n">old_sdesc</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unmasked_sdesc</span>
@@ -1360,7 +1247,7 @@
             <span class="k">del</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unmasked_sdesc</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;enable_recog&quot;</span><span class="p">)</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">old_sdesc</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You remove your mask and are again &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">old_sdesc</span><span class="p">)</span></div></div>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You remove your mask and are again &#39;</span><span class="si">{</span><span class="n">old_sdesc</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="RPSystemCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.RPSystemCmdSet">[docs]</a><span class="k">class</span> <span class="nc">RPSystemCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
@@ -1388,6 +1275,10 @@
 <span class="sd">    rp-heavy game. It implements the base functionality for poses.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="ContribRPObject.sdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.sdesc">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SdescHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="ContribRPObject.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called at initial creation.</span>
@@ -1396,7 +1287,11 @@
 
         <span class="c1"># emoting/recog data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose_default</span> <span class="o">=</span> <span class="s2">&quot;is here.&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose_default</span> <span class="o">=</span> <span class="s2">&quot;is here.&quot;</span>
+
+        <span class="c1"># initializing sdesc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_sdesc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Something&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ContribRPObject.search"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1570,6 +1465,21 @@
             <span class="n">multimatch_string</span><span class="o">=</span><span class="n">multimatch_string</span><span class="p">,</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="ContribRPObject.get_posed_sdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_posed_sdesc">[docs]</a>    <span class="k">def</span> <span class="nf">get_posed_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the object with its current pose string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pose (str): A string containing the object&#39;s sdesc and</span>
+<span class="sd">                current or default pose.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get the current pose, or default if no pose is set</span>
+        <span class="n">pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose_default</span>
+
+        <span class="c1"># return formatted string, or sdesc as fallback</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pose</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">pose</span> <span class="k">else</span> <span class="n">sdesc</span></div>
+
 <div class="viewcode-block" id="ContribRPObject.get_display_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the name of the object in a viewer-aware manner.</span>
@@ -1580,28 +1490,40 @@
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            pose (bool): Include the pose (if available) in the return.</span>
+<span class="sd">            ref (str): The reference marker found in string to replace.</span>
+<span class="sd">                This is on the form #{num}{case}, like &#39;#12^&#39;, where</span>
+<span class="sd">                the number is a processing location in the string and the</span>
+<span class="sd">                case symbol indicates the case of the original tag input</span>
+<span class="sd">                - `t` - input was Titled, like /Tall</span>
+<span class="sd">                - `^` - input was all uppercase, like /TALL</span>
+<span class="sd">                - `v` - input was all lowercase, like /tall</span>
+<span class="sd">                - `~` - input case should be kept, or was mixed-case</span>
+<span class="sd">            noid (bool): Don&#39;t show DBREF even if viewer has control access.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            name (str): A string of the sdesc containing the name of the object,</span>
-<span class="sd">            if this is defined.</span>
-<span class="sd">                including the DBREF if this user is privileged to control</span>
-<span class="sd">                said object.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            The RPObject version doesn&#39;t add color to its display.</span>
+<span class="sd">                if this is defined. By default, included the DBREF if this user</span>
+<span class="sd">                is privileged to control said object.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">idstr</span> <span class="o">=</span> <span class="s2">&quot;(#</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ref&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">looker</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="c1"># always show your own key</span>
             <span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">recog</span> <span class="o">=</span> <span class="n">looker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="c1"># get the sdesc looker should see</span>
+                <span class="n">sdesc</span> <span class="o">=</span> <span class="n">looker</span><span class="o">.</span><span class="n">get_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="n">recog</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">sdesc</span> <span class="o">=</span> <span class="n">recog</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">())</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
-        <span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sdesc</span><span class="p">,</span> <span class="n">idstr</span><span class="p">,</span> <span class="n">pose</span><span class="p">)</span></div>
+                <span class="c1"># use own sdesc as a fallback</span>
+                <span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="c1"># add dbref is looker has control access and `noid` is not set</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;noid&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2">(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_posed_sdesc</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">sdesc</span></div>
 
 <div class="viewcode-block" id="ContribRPObject.return_appearance"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1610,6 +1532,10 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            looker (Object): Object doing the looking.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string (str): A string containing the name, appearance and contents</span>
+<span class="sd">                of the object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">looker</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
@@ -1633,6 +1559,7 @@
             <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wExits:|n &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exits</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">users</span> <span class="ow">or</span> <span class="n">things</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">users</span> <span class="o">+</span> <span class="n">things</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">string</span></div></div>
 
 
@@ -1649,11 +1576,6 @@
 <span class="sd">    This is a character class that has poses, sdesc and recog.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Handlers</span>
-<div class="viewcode-block" id="ContribRPCharacter.sdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.sdesc">[docs]</a>    <span class="nd">@lazy_property</span>
-    <span class="k">def</span> <span class="nf">sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">SdescHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="ContribRPCharacter.recog"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.recog">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">recog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">RecogHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
@@ -1668,29 +1590,44 @@
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            pose (bool): Include the pose (if available) in the return.</span>
+<span class="sd">            ref (str): The reference marker found in string to replace.</span>
+<span class="sd">                This is on the form #{num}{case}, like &#39;#12^&#39;, where</span>
+<span class="sd">                the number is a processing location in the string and the</span>
+<span class="sd">                case symbol indicates the case of the original tag input</span>
+<span class="sd">                - `t` - input was Titled, like /Tall</span>
+<span class="sd">                - `^` - input was all uppercase, like /TALL</span>
+<span class="sd">                - `v` - input was all lowercase, like /tall</span>
+<span class="sd">                - `~` - input case should be kept, or was mixed-case</span>
+<span class="sd">            noid (bool): Don&#39;t show DBREF even if viewer has control access.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            name (str): A string of the sdesc containing the name of the object,</span>
-<span class="sd">            if this is defined.</span>
-<span class="sd">                including the DBREF if this user is privileged to control</span>
-<span class="sd">                said object.</span>
+<span class="sd">                if this is defined. By default, included the DBREF if this user</span>
+<span class="sd">                is privileged to control said object.</span>
 
 <span class="sd">        Notes:</span>
-<span class="sd">            The RPCharacter version of this method colors its display to make</span>
+<span class="sd">            The RPCharacter version adds additional processing to sdescs to make</span>
 <span class="sd">            characters stand out from other objects.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">idstr</span> <span class="o">=</span> <span class="s2">&quot;(#</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ref&quot;</span><span class="p">,</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">looker</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+            <span class="c1"># process your key as recog since you recognize yourself</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_recog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">recog</span> <span class="o">=</span> <span class="n">looker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="c1"># get the sdesc looker should see, with formatting</span>
+                <span class="n">sdesc</span> <span class="o">=</span> <span class="n">looker</span><span class="o">.</span><span class="n">get_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="n">recog</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">sdesc</span> <span class="o">=</span> <span class="n">recog</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">())</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
-        <span class="n">pose</span> <span class="o">=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">pose</span> <span class="ow">or</span> <span class="s2">&quot;is here.&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sdesc</span><span class="p">,</span> <span class="n">idstr</span><span class="p">,</span> <span class="n">pose</span><span class="p">)</span></div>
+                <span class="c1"># use own sdesc as a fallback</span>
+                <span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="c1"># add dbref is looker has control access and `noid` is not set</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;noid&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2">(#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_posed_sdesc</span><span class="p">(</span><span class="n">sdesc</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">sdesc</span></div>
 
 <div class="viewcode-block" id="ContribRPCharacter.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1699,10 +1636,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_sdesc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_sdesc_regex</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_ref2recog</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_obj2regex</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_recog_obj2recog</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RPSystemCmdSet</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1720,8 +1655,37 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;whisper&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;/me whispers &quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;/me says, &quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s1">&quot;&#39;</span></div>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;/Me whispers &quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;/Me says, &quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s1">&quot;&#39;</span></div>
+
+<div class="viewcode-block" id="ContribRPCharacter.get_sdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.get_sdesc">[docs]</a>    <span class="k">def</span> <span class="nf">get_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Single method to handle getting recogs with sdesc fallback in an</span>
+<span class="sd">        aware manner, to allow separate processing of recogs from sdescs.</span>
+<span class="sd">        Gets the sdesc or recog for obj from the view of self.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): the object whose sdesc or recog is being gotten</span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            process (bool): If True, the sdesc/recog is run through the</span>
+<span class="sd">                appropriate process method for self - .process_sdesc or</span>
+<span class="sd">                .process_recog</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># always see own key</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">recog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># first check if we have a recog for this object</span>
+            <span class="n">recog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="c1"># set sdesc to recog, using sdesc as a fallback, or the object&#39;s key if no sdesc</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="n">recog</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">())</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span>
+
+        <span class="k">if</span> <span class="n">process</span><span class="p">:</span>
+            <span class="c1"># process the sdesc as a recog if a recog was found, else as an sdesc</span>
+            <span class="n">sdesc</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_recog</span> <span class="k">if</span> <span class="n">recog</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_sdesc</span><span class="p">)(</span><span class="n">sdesc</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sdesc</span></div>
 
 <div class="viewcode-block" id="ContribRPCharacter.process_sdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.process_sdesc">[docs]</a>    <span class="k">def</span> <span class="nf">process_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdesc</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1762,7 +1726,7 @@
             <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="k">elif</span> <span class="s2">&quot;v&quot;</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">:</span>
             <span class="n">sdesc</span> <span class="o">=</span> <span class="n">sdesc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">return</span> <span class="s2">&quot;|b</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">sdesc</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;|b</span><span class="si">{</span><span class="n">sdesc</span><span class="si">}</span><span class="s2">|n&quot;</span></div>
 
 <div class="viewcode-block" id="ContribRPCharacter.process_recog"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.process_recog">[docs]</a>    <span class="k">def</span> <span class="nf">process_recog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recog</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1773,14 +1737,15 @@
 <span class="sd">                translated from the original sdesc at this point.</span>
 <span class="sd">            obj (Object): The object the recog:ed string belongs to.</span>
 <span class="sd">                This is not used by default.</span>
-<span class="sd">        Kwargs:</span>
-<span class="sd">            ref (str): See process_sdesc.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            recog (str): The modified recog string.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_sdesc</span><span class="p">(</span><span class="n">recog</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">recog</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;|m</span><span class="si">{</span><span class="n">recog</span><span class="si">}</span><span class="s2">|n&quot;</span></div>
 
 <div class="viewcode-block" id="ContribRPCharacter.process_language"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPCharacter.process_language">[docs]</a>    <span class="k">def</span> <span class="nf">process_language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">speaker</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1803,7 +1768,7 @@
 <span class="sd">            the evennia.contrib.rpg.rplanguage module.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">|w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;|W(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">language</span> <span class="k">if</span> <span class="n">language</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{label}</span><span class="s2">|w</span><span class="si">{text}</span><span class="s2">|n&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;|W(</span><span class="si">{</span><span class="n">language</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">language</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

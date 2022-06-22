@@ -2261,11 +2261,13 @@
             <span class="n">old_typeclass_path</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span>
 
             <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
-                <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span><span class="p">(</span><span class="s2">&quot;|yNote that this will reset the object back to its typeclass&#39; default state, &quot;</span>
-                               <span class="s2">&quot;removing any custom locks/perms/attributes etc that may have been added &quot;</span>
-                               <span class="s2">&quot;by an explicit create_object call. Use `update` or type/force instead in order &quot;</span>
-                               <span class="s2">&quot;to keep such data. &quot;</span>
-                               <span class="s2">&quot;Continue [Y]/N?|n&quot;</span><span class="p">)</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span>
+                    <span class="s2">&quot;|yNote that this will reset the object back to its typeclass&#39; default state, &quot;</span>
+                    <span class="s2">&quot;removing any custom locks/perms/attributes etc that may have been added &quot;</span>
+                    <span class="s2">&quot;by an explicit create_object call. Use `update` or type/force instead in order &quot;</span>
+                    <span class="s2">&quot;to keep such data. &quot;</span>
+                    <span class="s2">&quot;Continue [Y]/N?|n&quot;</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;NO&quot;</span><span class="p">):</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
@@ -2774,7 +2776,7 @@
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">ndb_attr</span> <span class="ow">and</span> <span class="n">ndb_attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;  </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_single_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ndb_attr</span><span class="p">)</span>
             <span class="p">)</span></div>
 
@@ -3515,7 +3517,7 @@
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msgs</span><span class="p">))</span>
                 <span class="k">if</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">script</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
-                            <span class="n">ScriptEvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="p">[</span><span class="n">script</span><span class="p">],</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+                        <span class="n">ScriptEvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="p">[</span><span class="n">script</span><span class="p">],</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Script was deleted automatically.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

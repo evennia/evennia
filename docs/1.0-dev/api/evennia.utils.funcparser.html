@@ -68,14 +68,14 @@ regular Python functions on the form:</p>
     <span class="c1"># use underscore to NOT make the function available as a callable</span>
 
 <span class="k">def</span> <span class="nf">funcname</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="c1"># this can be accecssed as $funcname(*args, **kwargs)</span>
+    <span class="c1"># this can be accessed as $funcname(*args, **kwargs)</span>
     <span class="c1"># it must always accept *args and **kwargs.</span>
     <span class="o">...</span>
     <span class="k">return</span> <span class="n">something</span>
 </pre></div>
 </div>
 <p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">FuncParser</span><span class="p">(</span><span class="s2">&quot;path.to.module_with_callables&quot;</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;String with $funcname() in it&quot;</span><span class="p">)</span>
@@ -612,7 +612,7 @@ used to find which object <strong>$you(key)</strong> refers to. If not given, th
 <p>The kwargs should be passed the to parser directly.</p>
 <p class="rubric">Examples</p>
 <p>This can be used by the say or emote hooks to pass actor stance
-strings. This should usually be combined with the $inflect() callable.</p>
+strings. This should usually be combined with the $conj() callable.</p>
 <ul class="simple">
 <li><p><strong>With a grin, $you() $conj(jump) at $you(tommy).</strong></p></li>
 </ul>
@@ -663,7 +663,7 @@ Others will see “With a grin, CharName jumps.”</p>
 <dl class="py function">
 <dt id="evennia.utils.funcparser.funcparser_callable_pronoun">
 <code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_pronoun</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_pronoun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_pronoun" title="Permalink to this definition">¶</a></dt>
-<dd><p>Usage: $prop(word, [options])</p>
+<dd><p>Usage: $pron(word, [options])</p>
 <p>Adjust pronouns to the expected form. Pronouns are words you use instead of a
 proper name, such as ‘him’, ‘herself’, ‘theirs’ etc. These look different
 depending on who sees the outgoing string.</p>
@@ -782,7 +782,7 @@ get a default gender fallback (if not specified in the call). If a callable,
 <strong>.gender</strong> will be called without arguments and should return a string
 <strong>male</strong>/<strong>female</strong>/<strong>neutral</strong>/<strong>plural</strong> (plural is considered a gender for this purpose).
 If no <strong>gender</strong> property/callable is found, <strong>neutral</strong> is used as a fallback.</p>
-<p>The pronoun-type default (if not spefified in call) is <strong>subject pronoun</strong>.</p>
+<p>The pronoun-type default (if not specified in call) is <strong>subject pronoun</strong>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -871,7 +871,7 @@ and the mapping can always be auto-detected.</p>
 <dl class="py function">
 <dt id="evennia.utils.funcparser.funcparser_callable_pronoun_capitalize">
 <code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_pronoun_capitalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">capitalize</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_pronoun_capitalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_pronoun_capitalize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Usage: $Pron(word) - always maps to a capitalized word.</p>
+<dd><p>Usage: $Pron(word, [options]) - always maps to a capitalized word.</p>
 </dd></dl>
 
 </section>

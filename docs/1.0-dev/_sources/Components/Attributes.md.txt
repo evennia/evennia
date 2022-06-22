@@ -3,33 +3,43 @@
 ```{code-block}
 :caption: In-game
 > set obj/myattr = "test"
-``` 
+```
 ```{code-block} python
-:caption: In-code
-obj.db.foo = [1,2,3, "bar"]
+:caption: In-code, using the .db wrapper
+obj.db.foo = [1, 2, 3, "bar"]
 value = obj.db.foo
-
+```
+```{code-block} python
+:caption: In-code, using the .attributes handler
 obj.attributes.add("myattr", 1234, category="bar")
 value = attributes.get("myattr", category="bar")
 ```
+```{code-block} python
+:caption: In-code, using `AttributeProperty` at class level
+from evennia import DefaultObject
+from evennia import AttributeProperty
 
-_Attributes_ allow you to to store arbitrary data on objects and make sure the data survives a 
-server reboot. An Attribute can store pretty much any 
-Python data structure and data type, like numbers, strings, lists, dicts etc. You can also 
+class MyObject(DefaultObject):
+    foo = AttributeProperty(default=[1, 2, 3, "bar"])
+    myattr = AttributeProperty(100, category='bar')
+
+```
+
+_Attributes_ allow you to to store arbitrary data on objects and make sure the data survives a server reboot. An Attribute can store pretty much any
+Python data structure and data type, like numbers, strings, lists, dicts etc. You can also
 store (references to) database objects like characters and rooms.
 
-- [What can be stored in an Attribute](#what-types-of-data-can-i-save-in-an-attribute) is a must-read
-  also for experienced developers, to avoid getting surprised. Attributes can store _almost_ everything
+- [What can be stored in an Attribute](#what-types-of-data-can-i-save-in-an-attribute) is a must-read to avoid being surprised, also for experienced developers. Attributes can store _almost_ everything
   but you need to know the quirks.
-- [NAttributes](#in-memory-attributes-nattributes) are the in-memory, non-persistent 
+- [NAttributes](#in-memory-attributes-nattributes) are the in-memory, non-persistent
   siblings of Attributes.
 - [Managing Attributes In-game](#managing-attributes-in-game) for in-game builder commands.
 
-## Managing Attributes in Code 
+## Managing Attributes in Code
 
-Attributes are usually handled in code. All [Typeclassed](./Typeclasses.md) entities 
-([Accounts](./Accounts.md), [Objects](./Objects.md), [Scripts](./Scripts.md) and 
-[Channels](./Channels.md)) all can (and usually do) have Attributes associated with them. There
+Attributes are usually handled in code. All [Typeclassed](./Typeclasses.md) entities
+([Accounts](./Accounts.md), [Objects](./Objects.md), [Scripts](./Scripts.md) and
+[Channels](./Channels.md)) can (and usually do) have Attributes associated with them. There
 are three ways to manage Attributes, all of which can be mixed.
 
 - [Using the `.db` property shortcut](#using-db)
@@ -38,10 +48,10 @@ are three ways to manage Attributes, all of which can be mixed.
 
 ### Using .db
 
-The simplest way to get/set Attributes is to use the `.db` shortcut: 
+The simplest way to get/set Attributes is to use the `.db` shortcut. This allows for setting and getting Attributes that lack a _category_ (having category `None`)
 
-```python 
-import evennia 
+```python
+import evennia
 
 obj = evennia.create_object(key="Foo")
 
@@ -54,10 +64,10 @@ obj.db.self_reference = obj   # stores a reference to the obj
 rose = evennia.search_object(key="rose")[0]  # returns a list, grab 0th element
 rose.db.has_thorns = True
 
-# retrieving  
+# retrieving
 val1 = obj.db.foo1
 val2 = obj.db.foo2
-weap = obj.db.weapon 
+weap = obj.db.weapon
 myself = obj.db.self_reference  # retrieve reference from db, get object back
 
 is_ouch = rose.db.has_thorns
@@ -65,26 +75,25 @@ is_ouch = rose.db.has_thorns
 # this will return None, not AttributeError!
 not_found = obj.db.jiwjpowiwwerw
 
-# returns all Attributes on the object 
-obj.db.all 
+# returns all Attributes on the object
+obj.db.all
 
 # delete an Attribute
 del obj.db.foo2
 ```
-Trying to access a non-existing Attribute will never lead to an `AttributeError`. Instead 
-you will get `None` back. The special `.db.all` will return a list of all Attributes on 
-the object. You can replace this with your own Attribute `all` if you want, it will replace the 
+Trying to access a non-existing Attribute will never lead to an `AttributeError`. Instead
+you will get `None` back. The special `.db.all` will return a list of all Attributes on
+the object. You can replace this with your own Attribute `all` if you want, it will replace the
 default `all` functionality until you delete it again.
 
 ### Using .attributes
 
-If you don't know the name of the Attribute beforehand you can also use 
-the `AttributeHandler`, available as `.attributes`. With no extra keywords this is identical 
-to using the `.db` shortcut (`.db` is actually using the `AttributeHandler` internally): 
+If you want to group your Attribute in a category, or don't know the name of the Attribute beforehand, you can make use of
+the [AttributeHandler](evennia.typeclasses.attributes.AttributeHandler), available as `.attributes` on all typeclassed entities. With no extra keywords, this is identical to using the `.db` shortcut (`.db` is actually using the `AttributeHandler` internally):
 
-```python 
-is_ouch = rose.attributes.get("has_thorns") 
- 
+```python
+is_ouch = rose.attributes.get("has_thorns")
+
 obj.attributes.add("helmet", "Knight's helmet")
 helmet = obj.attributes.get("helmet")
 
@@ -92,10 +101,9 @@ helmet = obj.attributes.get("helmet")
 obj.attributes.add("my game log", "long text about ...")
 ```
 
-With the `AttributeHandler` you can also give Attributes a `category`. By using a category you can 
-separate same-named Attributes on the same object which can help organization:
+By using a category you can separate same-named Attributes on the same object to help organization.
 
-```python 
+```python
 # store (let's say we have gold_necklace and ringmail_armor from before)
 obj.attributes.add("neck", gold_necklace, category="clothing")
 obj.attributes.add("neck", ringmail_armor, category="armor")
@@ -105,23 +113,19 @@ neck_clothing = obj.attributes.get("neck", category="clothing")
 neck_armor = obj.attributes.get("neck", category="armor")
 ```
 
-If you don't specify a category, the Attribute's `category` will be `None`. Note that 
-`None` is also considered a category of its own, so you won't find `None`-category Attributes mixed 
-with Attributes having categories. 
+If you don't specify a category, the Attribute's `category` will be `None` and can thus also be found via `.db`. `None` is considered a category of its own, so you won't find `None`-category Attributes mixed with Attributes having categories.
 
-> When using `.db`, you will always use the `None` category.
-
-Here are the methods of the `AttributeHandler`. See 
+Here are the methods of the `AttributeHandler`. See
 the [AttributeHandler API](evennia.typeclasses.attributes.AttributeHandler) for more details.
 
 - `has(...)` - this checks if the object has an Attribute with this key. This is equivalent
   to doing `obj.db.attrname` except you can also check for a specific `category.
-- `get(...)` - this retrieves the given Attribute. You can also provide a `default` value to return 
+- `get(...)` - this retrieves the given Attribute. You can also provide a `default` value to return
   if the Attribute is not defined (instead of None). By supplying an
   `accessing_object` to the call one can also make sure to check permissions before modifying
-  anything. The `raise_exception` kwarg allows you to raise an `AttributeError` instead of returning 
-  `None` when you access a non-existing `Attribute`. The `strattr` kwarg tells the system to store 
-  the Attribute as a raw string rather than to pickle it. While an optimization this should usually 
+  anything. The `raise_exception` kwarg allows you to raise an `AttributeError` instead of returning
+  `None` when you access a non-existing `Attribute`. The `strattr` kwarg tells the system to store
+  the Attribute as a raw string rather than to pickle it. While an optimization this should usually
   not be used unless the Attribute is used for some particular, limited purpose.
 - `add(...)` - this adds a new Attribute to the object. An optional [lockstring](./Locks.md) can be
   supplied here to restrict future access and also the call itself may be checked against locks.
@@ -131,31 +135,30 @@ the [AttributeHandler API](evennia.typeclasses.attributes.AttributeHandler) for 
 
 Examples:
 
-```python 
+```python
 try:
-  # raise error if Attribute foo does not exist 
+  # raise error if Attribute foo does not exist
   val = obj.attributes.get("foo", raise_exception=True):
 except AttributeError:
    # ...
-  
+
 # return default value if foo2 doesn't exist
-val2 = obj.attributes.get("foo2", default=[1, 2, 3, "bar"]) 
+val2 = obj.attributes.get("foo2", default=[1, 2, 3, "bar"])
 
 # delete foo if it exists (will silently fail if unset, unless
 # raise_exception is set)
 obj.attributes.remove("foo")
-  
+
 # view all clothes on obj
-all_clothes = obj.attributes.all(category="clothes") 
+all_clothes = obj.attributes.all(category="clothes")
 ```
 
-### Using AttributeProperty 
+### Using AttributeProperty
 
-There is a third way to set up an Attribute, and that is by setting up an `AttributeProperty`. This 
-is done on the _class level_ of your typeclass and allows you to treat Attributes a bit like Django 
-database Fields. 
+The third way to set up an Attribute is to use an `AttributeProperty`. This
+is done on the _class level_ of your typeclass and allows you to treat Attributes a bit like Django database Fields. Unlike using `.db` and `.attributes`, an `AttributeProperty` can't be created on the fly, you must assign it in the class code.
 
-```python 
+```python
 # mygame/typeclasses/characters.py
 
 from evennia import DefaultCharacter
@@ -163,161 +166,90 @@ from evennia.typeclasses.attributes import AttributeProperty
 
 class Character(DefaultCharacter):
 
-    strength = AttributeProperty(default=10, category='stat', autocreate=True)
-    constitution = AttributeProperty(default=10, category='stat', autocreate=True)
-    agility = AttributeProperty(default=10, category='stat', autocreate=True)
-    magic = AttributeProperty(default=10, category='stat', autocreate=True)
-    
-    sleepy = AttributeProperty(default=False)
-    poisoned = AttributeProperty(default=False)
-    
-    def at_object_creation(self): 
-      # ... 
-``` 
+    strength = AttributeProperty(10, category='stat')
+    constitution = AttributeProperty(11, category='stat')
+    agility = AttributeProperty(12, category='stat')
+    magic = AttributeProperty(13, category='stat')
 
-These "Attribute-properties" will be made available to all instances of the class.
-
-```{important} 
-If you change the `default` of an `AttributeProperty` (and reload), it will 
-change the default for _all_ instances of that class (it will not override 
-explicitly changed values).
-```
-
-```python
-char = evennia.search_object(Character, key="Bob")[0]  # returns list, get 0th element
-
-# get defaults 
-strength = char.strength   # will get the default value 10
-
-# assign new values (this will create/update new Attributes)
-char.strength = 12
-char.constitution = 16
-char.agility = 8
-char.magic = 2
-
-# you can also do arithmetic etc 
-char.magic += 2   # char.magic is now 4
-
-# check Attributes 
-strength = char.strength   # this is now 12
-is_sleepy = char.sleepy 
-is_poisoned = char.poisoned
-
-del char.strength   # wipes the Attribute
-strength  = char.strengh  # back to the default (10) again
-```
-
-See the [AttributeProperty](evennia.typeclasses.attributes.AttributeProperty) docs for more 
-details on arguments.
-
-An `AttributeProperty` will _not_ create an `Attribute` by default. A new `Attribute` will be created
-(or an existing one retrieved/updated) will happen differently depending on how the `autocreate`
-keyword: 
-
-- If `autocreate=False` (default), an `Attribute` will be created only if the field is explicitly 
-  assigned a value (even if the value is the same as the default, such as `char.strength = 10`).
-- If `autocreate=True`, an `Attribute` will be created as soon as the field is _accessed_ in 
-  any way (So both `strength = char.strength` and `char.strength = 10` will both make sure that
-  an `Attribute` exists. 
-
-Example: 
-
-```python 
-# in mygame/typeclasses/objects.py 
-
-from evennia import create_object 
-from evennia import DefaultObject
-from evennia.typeclasses.attributes import AttributeProperty
-
-class Object(DefaultObject):
-  
-    value_a = AttributeProperty(default="foo")
-    value_b = AttributeProperty(default="bar", autocreate=True)
-    
-obj = evennia.create_object(key="Dummy")
-
-# these will find NO Attributes! 
-obj.db.value_a 
-obj.attributes.get("value_a")
-obj.db.value_b 
-obj.attributes.get("value_b")
-
-# get data from attribute-properties
-vala = obj.value_a  # returns "foo"
-valb = obj.value_b  # return "bar" AND creates the Attribute (autocreate)
-
-# the autocreate property will now be found 
-obj.db.value_a                      # still not found 
-obj.attributes.get("value_a")       #       ''
-obj.db.value_b                      # now returns "bar" 
-obj.attributes.get("value_b")       #       ''
-
-# assign new values 
-obj.value_a = 10   # will now create a new Attribute 
-obj.value_b = 12   # will update the existing Attribute 
-
-# both are now found as Attributes 
-obj.db.value_a                      # now returns 10
-obj.attributes.get("value_a")       #       ''
-obj.db.value_b                      # now returns 12
-obj.attributes.get("value_b")       #       ''
-```
-
-If you always access your Attributes via the `AttributeProperty` this does not matter that much
-(it's also a bit of an optimization to not create an actual database `Attribute` unless the value changed). 
-But until an `Attribute` has been created, `AttributeProperty` fields will _not_ show up with the 
-`examine` command or by using the `.db` or `.attributes` handlers - so this is a bit inconsistent. 
-If this is important, you need to 'initialize' them by accessing them at least once ... something 
-like this: 
-
-
-```python 
-# ... 
-class Character(DefaultCharacter):
-
-    strength = AttributeProperty(12, autocreate=True)
-    agility = AttributeProperty(12, autocreate=True)
-
+    sleepy = AttributeProperty(False, autocreate=False)
+    poisoned = AttributeProperty(False, autocreate=False)
 
     def at_object_creation(self):
-        # initializing 
-        self.strength   # by accessing it, the Attribute is auto-created
-        self.agility    #             ''
+      # ...
 ```
 
-```{important}
-If you created your `AttributeProperty` with a `category`, you *must* specify the 
-category in `.attributes.get()` if you want to find it this way. Remember that 
-`.db` always uses a `category` of `None`.
+When a new instance of the class is created, new `Attributes` will be created with the value and category given.
+
+With `AttributeProperty`'s set up like this, one can access the underlying `Attribute` like a regular property on the created object:
+
+```python
+char = create_object(Character)
+
+char.strength   # returns 10
+char.agility = 15  # assign a new value (category remains 'stat')
+
+char.db.magic  # returns None (wrong category)
+char.attributes.get("agility", category="stat")  # returns 15
+
+char.db.sleepy # returns None because autocreate=False (see below)
+
 ```
+
+```{warning}
+Be careful to not assign AttributeProperty's to names of properties and methods already existing on the class, like 'key' or 'at_object_creation'. That could lead to very confusing errors.
+```
+
+The `autocreate=False` (default is `True`) used for `sleepy` and `poisoned` is worth a closer explanation. When `False`, _no_ Attribute will be auto-created for these AttributProperties unless they are _explicitly_ set.
+The advantage of not creating an Attribute is that the default value given to `AttributeProperty` is returned with no database access unless you change it. This also means that if you want to change the default later, all entities previously create will inherit the new default.
+The drawback is that without a database precense you can't find the Attribute via `.db` and `.attributes.get` (or by querying for it in other ways in the database):
+
+```python
+char.sleepy   # returns False, no db access
+
+char.db.sleepy   # returns None - no Attribute exists
+char.attributes.get("sleepy")  # returns None too
+
+char.sleepy = True  # now an Attribute is created
+char.db.sleepy   # now returns True!
+char.attributes.get("sleepy")  # now returns True
+
+char.sleepy  # now returns True, involves db access
+
+```
+
+You can e.g. `del char.strength` to set the value back to the default (the value defined
+in the `AttributeProperty`).
+
+See the [AttributeProperty API](evennia.typeclasses.attributes.AttributeProperty) for more details on how to create it with special options, like giving access-restrictions.
+
 
 ## Managing Attributes in-game
 
-Attributes are mainly used by code. But one can also allow the builder to use Attributes to 
-'turn knobs' in-game. For example a builder could want to manually tweak the "level" Attribute of an 
+Attributes are mainly used by code. But one can also allow the builder to use Attributes to
+'turn knobs' in-game. For example a builder could want to manually tweak the "level" Attribute of an
 enemy NPC to lower its difficuly.
 
-When setting Attributes this way, you are severely limited in what can be stored - this is because 
+When setting Attributes this way, you are severely limited in what can be stored - this is because
 giving players (even builders) the ability to store arbitrary Python would be a severe security
-problem. 
+problem.
 
-In game you can set an Attribute like this: 
+In game you can set an Attribute like this:
 
     set myobj/foo = "bar"
 
-To view, do 
+To view, do
 
-    set myobj/foo 
+    set myobj/foo
 
-or see them together with all object-info with 
+or see them together with all object-info with
 
     examine myobj
 
-The first `set`-example will store a new Attribute `foo` on the object `myobj` and give it the 
+The first `set`-example will store a new Attribute `foo` on the object `myobj` and give it the
 value "bar".
-You can store numbers, booleans, strings, tuples, lists and dicts this way. But if 
+You can store numbers, booleans, strings, tuples, lists and dicts this way. But if
 you store a list/tuple/dict they must be proper Python structures and may _only_ contain strings
-or numbers. If you try to insert an unsupported structure, the input will be converted to a 
+or numbers. If you try to insert an unsupported structure, the input will be converted to a
 string.
 
     set myobj/mybool = True
@@ -331,8 +263,8 @@ For the last line you'll get a warning and the value instead will be saved as a 
 
 ## Locking and checking Attributes
 
-While the `set` command is limited to builders, individual Attributes are usually not 
-locked down. You may want to lock certain sensitive Attributes, in particular for games 
+While the `set` command is limited to builders, individual Attributes are usually not
+locked down. You may want to lock certain sensitive Attributes, in particular for games
 where you allow player building. You can add such limitations by adding a [lock string](./Locks.md)
 to your Attribute. A NAttribute have no locks.
 
@@ -341,7 +273,7 @@ The relevant lock types are
 - `attrread` - limits who may read the value of the Attribute
 - `attredit` - limits who may set/change this Attribute
 
-You must use the `AttributeHandler` to assign the lockstring to the Attribute: 
+You must use the `AttributeHandler` to assign the lockstring to the Attribute:
 
 ```python
 lockstring = "attread:all();attredit:perm(Admins)"
@@ -349,7 +281,7 @@ obj.attributes.add("myattr", "bar", lockstring=lockstring)"
 ```
 
 If you already have an Attribute and want to add a lock in-place you can do so
-by having the `AttributeHandler` return the `Attribute` object itself (rather than 
+by having the `AttributeHandler` return the `Attribute` object itself (rather than
 its value) and then assign the lock to it directly:
 
 ```python
@@ -361,8 +293,8 @@ Note the `return_obj` keyword which makes sure to return the `Attribute` object 
 could be accessed.
 
 A lock is no good if nothing checks it -- and by default Evennia does not check locks on Attributes.
-To check the `lockstring` you provided, make sure you include `accessing_obj` and set 
-`default_access=False` as you make a `get` call. 
+To check the `lockstring` you provided, make sure you include `accessing_obj` and set
+`default_access=False` as you make a `get` call.
 
 ```python
     # in some command code where we want to limit
@@ -396,13 +328,13 @@ values into a string representation before storing it to the database. This is d
 With a single object, we mean anything that is *not iterable*, like numbers, strings or custom class
 instances without the `__iter__` method.
 
-* You can generally store any non-iterable Python entity that can be pickled.
-* Single database objects/typeclasses can be stored, despite them normally not being possible 
-  to pickle. Evennia wil convert them to an internal representation using their classname, 
-  database-id and creation-date with a microsecond precision. When retrieving, the object 
+* You can generally store any non-iterable Python entity that can be _pickled_.
+* Single database objects/typeclasses can be stored, despite them normally not being possible
+  to pickle. Evennia will convert them to an internal representation using theihr classname,
+  database-id and creation-date with a microsecond precision. When retrieving, the object
   instance will be re-fetched from the database using this information.
-* To convert the database object, Evennia must know it's there. If you *hide* a database object 
-  inside a non-iterable class, you will run into errors - this is not supported!
+* If you 'hide' a db-obj as a property on a custom class, Evennia will not be
+  able to find it to serialize it. For that you need to help it out (see below).
 
 ```{code-block} python
 :caption: Valid assignments
@@ -413,16 +345,55 @@ obj.db.test1 = False
 # a database object (will be stored as an internal representation)
 obj.db.test2 = myobj
 ```
+
+As mentioned, Evennia will not be able to automatically serialize db-objects
+'hidden' in arbitrary properties on an object. This will lead to an error
+when saving the Attribute.
+
 ```{code-block} python
 :caption: Invalid, 'hidden' dbobject
-
-# example of an invalid, "hidden" dbobject
+# example of storing an invalid, "hidden" dbobject in Attribute
 class Container:
     def __init__(self, mydbobj):
         # no way for Evennia to know this is a database object!
         self.mydbobj = mydbobj
+
+# let's assume myobj is a db-object
 container = Container(myobj)
-obj.db.invalid = container  # will cause error!
+obj.db.mydata = container  # will raise error!
+
+```
+
+By adding two methods `__serialize_dbobjs__` and `__deserialize_dbobjs__` to the
+object you want to save, you can pre-serialize and post-deserialize all 'hidden'
+objects before Evennia's main serializer gets to work. Inside these methods, use Evennia's
+[evennia.utils.dbserialize.dbserialize](evennia.utils.dbserialize.dbserialize) and
+[dbunserialize](evennia.utils.dbserialize.dbunserialize) functions to safely
+serialize the db-objects you want to store.
+
+```{code-block} python
+:caption: Fixing an invalid 'hidden' dbobj for storing in Attribute
+
+from evennia.utils import dbserialize  # important
+
+class Container:
+    def __init__(self, mydbobj):
+        # A 'hidden' db-object
+        self.mydbobj = mydbobj
+
+    def __serialize_dbobjs__(self):
+        """This is called before serialization and allows
+        us to custom-handle those 'hidden' dbobjs"""
+        self.mydbobj = dbserialize.dbserialize(self.mydbobj
+
+    def __deserialize_dbobjs__(self):
+        """This is called after deserialization and allows you to
+        restore the 'hidden' dbobjs you serialized before"""
+        self.mydbobj = dbserialize.dbunserialize(self.mydbobj)
+
+# let's assume myobj is a db-object
+container = Container(myobj)
+obj.db.mydata = container  # will now work fine!
 ```
 
 ### Storing multiple objects
@@ -472,6 +443,12 @@ obj.db.test8[2]["test"] = 5
 # test8 is now [4,2,{"test":5}]
 ```
 
+Note that if make some advanced iterable object, and store an db-object on it in
+a way such that it is _not_ returned by iterating over it, you have created a
+'hidden' db-object. See [the previous section](#storing-single-objects) for how
+to tell Evennia how to serialize such hidden objects safely.
+
+
 ### Retrieving Mutable objects
 
 A side effect of the way Evennia stores Attributes is that *mutable* iterables (iterables that can
@@ -497,41 +474,41 @@ print(obj.db.mylist)  # now also [1, 2, 3, 5]
 ```
 
 When you extract your mutable Attribute data into a variable like `mylist`, think of it as getting a _snapshot_
-of the variable. If you update the snapshot, it will save to the database, but this change _will not propagate to 
+of the variable. If you update the snapshot, it will save to the database, but this change _will not propagate to
 any other snapshots you may have done previously_.
 
-```python 
+```python
 obj.db.mylist = [1, 2, 3, 4]
-mylist1 = obj.db.mylist 
-mylist2 = obj.db.mylist 
-mylist1[3] = 5 
+mylist1 = obj.db.mylist
+mylist2 = obj.db.mylist
+mylist1[3] = 5
 
 print(mylist1)  # this is now [1, 2, 3, 5]
-print(obj.db.mylist)  # also updated to [1, 2, 3, 5] 
+print(obj.db.mylist)  # also updated to [1, 2, 3, 5]
 
-print(mylist2)  # still [1, 2, 3, 4]  ! 
+print(mylist2)  # still [1, 2, 3, 4]  !
 
 ```
 
 ```{sidebar}
 Remember, the complexities of this section only relate to *mutable* iterables - things you can update
-in-place, like lists and dicts. [Immutable](https://en.wikipedia.org/wiki/Immutable) objects (strings, 
+in-place, like lists and dicts. [Immutable](https://en.wikipedia.org/wiki/Immutable) objects (strings,
 numbers, tuples etc) are already disconnected from the database from the onset.
 ```
 
-To avoid confusion with mutable Attributes, only work with one variable (snapshot) at a time and save 
-back the results as needed. 
+To avoid confusion with mutable Attributes, only work with one variable (snapshot) at a time and save
+back the results as needed.
 
 You can also choose to "disconnect" the Attribute entirely from the
 database with the help of the `.deserialize()` method:
 
 ```python
 obj.db.mylist = [1, 2, 3, 4, {1: 2}]
-mylist = obj.db.mylist.deserialize() 
+mylist = obj.db.mylist.deserialize()
 ```
 
 The result of this operation will be a structure only consisting of normal Python mutables (`list`
-instead of `_SaverList`, `dict` instead of `_SaverDict` and so on). If you update it, you need to 
+instead of `_SaverList`, `dict` instead of `_SaverDict` and so on). If you update it, you need to
 explicitly save it back to the Attribute for it to save.
 
 ## Properties of Attributes
@@ -586,7 +563,7 @@ are **non-persistent** - they will _not_ survive a server reload.
 Differences between `Attributes` and `NAttributes`:
 
 - `NAttribute`s are always wiped on a server reload.
-- They only exist in memory and never involve the database at all, making them faster to 
+- They only exist in memory and never involve the database at all, making them faster to
   access and edit than `Attribute`s.
 - `NAttribute`s can store _any_ Python structure (and database object) without limit.
 - They can _not_ be set with the standard `set` command (but they are visible with `examine`)
@@ -594,10 +571,10 @@ Differences between `Attributes` and `NAttributes`:
 There are some important reasons we recommend using `ndb` to store temporary data rather than
 the simple alternative of just storing a variable directly on an object:
 
-- NAttributes are tracked by Evennia and will not be purged in various cache-cleanup operations 
-  the server may do. So using them guarantees that they'll remain available at least as long as 
+- NAttributes are tracked by Evennia and will not be purged in various cache-cleanup operations
+  the server may do. So using them guarantees that they'll remain available at least as long as
   the server lives.
-- It's a consistent style - `.db/.attributes` and `.ndb/.nattributes` makes for clean-looking code 
+- It's a consistent style - `.db/.attributes` and `.ndb/.nattributes` makes for clean-looking code
   where it's clear how long-lived (or not) your data is to be.
 
 ### Persistent vs non-persistent

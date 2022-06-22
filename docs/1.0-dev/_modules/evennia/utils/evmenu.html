@@ -316,12 +316,13 @@
 
 <span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
 <span class="kn">from</span> <span class="nn">fnmatch</span> <span class="kn">import</span> <span class="n">fnmatch</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isfunction</span><span class="p">,</span> <span class="n">getargspec</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvColumn</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">m_len</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">crop</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
@@ -1252,7 +1253,6 @@
 <span class="sd">        Args:</span>
 <span class="sd">            optionlist (list): List of (key, description) tuples for every</span>
 <span class="sd">                option related to this node.</span>
-<span class="sd">            caller (Object, Account or None, optional): The caller of the node.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            options (str): The formatted option display.</span>
@@ -1271,7 +1271,7 @@
         <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">optionlist</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">or</span> <span class="n">desc</span><span class="p">:</span>
-                <span class="n">desc_string</span> <span class="o">=</span> <span class="s2">&quot;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">desc</span> <span class="k">if</span> <span class="n">desc</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">desc_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;: </span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">desc</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
                 <span class="n">table_width_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
                     <span class="n">table_width_max</span><span class="p">,</span>
                     <span class="nb">max</span><span class="p">(</span><span class="n">m_len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
@@ -1281,42 +1281,31 @@
                 <span class="n">raw_key</span> <span class="o">=</span> <span class="n">strip_ansi</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">raw_key</span> <span class="o">!=</span> <span class="n">key</span><span class="p">:</span>
                     <span class="c1"># already decorations in key definition</span>
-                    <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; |lc</span><span class="si">%s</span><span class="s2">|lt</span><span class="si">%s</span><span class="s2">|le</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">raw_key</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">desc_string</span><span class="p">))</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; |lc</span><span class="si">{</span><span class="n">raw_key</span><span class="si">}</span><span class="s2">|lt</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">|le</span><span class="si">{</span><span class="n">desc_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># add a default white color to key</span>
-                    <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; |lc</span><span class="si">%s</span><span class="s2">|lt|w</span><span class="si">%s</span><span class="s2">|n|le</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">raw_key</span><span class="p">,</span> <span class="n">raw_key</span><span class="p">,</span> <span class="n">desc_string</span><span class="p">))</span>
-        <span class="n">ncols</span> <span class="o">=</span> <span class="n">_MAX_TEXT_WIDTH</span> <span class="o">//</span> <span class="n">table_width_max</span>  <span class="c1"># number of ncols</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; |lc</span><span class="si">{</span><span class="n">raw_key</span><span class="si">}</span><span class="s2">|lt|w</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">|n|le</span><span class="si">{</span><span class="n">desc_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="n">_MAX_TEXT_WIDTH</span> <span class="o">//</span> <span class="n">table_width_max</span>  <span class="c1"># number of columns</span>
 
         <span class="k">if</span> <span class="n">ncols</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># no visible option at all</span>
+            <span class="c1"># no visible options at all</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">ncols</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">ncols</span>
-        <span class="c1"># get the amount of rows needed (start with 4 rows)</span>
-        <span class="n">nrows</span> <span class="o">=</span> <span class="mi">4</span>
-        <span class="k">while</span> <span class="n">nrows</span> <span class="o">*</span> <span class="n">ncols</span> <span class="o">&lt;</span> <span class="n">nlist</span><span class="p">:</span>
-            <span class="n">nrows</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">ncols</span> <span class="o">=</span> <span class="n">nlist</span> <span class="o">//</span> <span class="n">nrows</span>  <span class="c1"># number of full columns</span>
-        <span class="n">nlastcol</span> <span class="o">=</span> <span class="n">nlist</span> <span class="o">%</span> <span class="n">nrows</span>  <span class="c1"># number of elements in last column</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">ncols</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">ncols</span>
 
-        <span class="c1"># get the final column count</span>
-        <span class="n">ncols</span> <span class="o">=</span> <span class="n">ncols</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">nlastcol</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">ncols</span>
-        <span class="k">if</span> <span class="n">ncols</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># only extend if longer than one column</span>
-            <span class="n">table</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot; &quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span> <span class="o">-</span> <span class="n">nlastcol</span><span class="p">)])</span>
+        <span class="c1"># minimum number of rows in a column</span>
+        <span class="n">min_rows</span> <span class="o">=</span> <span class="mi">4</span>
 
-        <span class="c1"># build the actual table grid</span>
-        <span class="n">table</span> <span class="o">=</span> <span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="n">icol</span> <span class="o">*</span> <span class="n">nrows</span> <span class="p">:</span> <span class="p">(</span><span class="n">icol</span> <span class="o">*</span> <span class="n">nrows</span><span class="p">)</span> <span class="o">+</span> <span class="n">nrows</span><span class="p">]</span> <span class="k">for</span> <span class="n">icol</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ncols</span><span class="p">)]</span>
+        <span class="c1"># split the items into columns</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_rows</span><span class="p">,</span> <span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)</span> <span class="o">/</span> <span class="n">ncols</span><span class="p">))</span>
+        <span class="n">max_end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="n">cols_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">icol</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncols</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">icol</span> <span class="o">*</span> <span class="n">split</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">split</span><span class="p">,</span> <span class="n">max_end</span><span class="p">)</span>
+            <span class="n">cols_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">table</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]))</span>
 
-        <span class="c1"># adjust the width of each column</span>
-        <span class="k">for</span> <span class="n">icol</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)):</span>
-            <span class="n">col_width</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">m_len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">table</span><span class="p">[</span><span class="n">icol</span><span class="p">])</span> <span class="o">+</span> <span class="n">colsep</span>
-            <span class="p">)</span>
-            <span class="n">table</span><span class="p">[</span><span class="n">icol</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">pad</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">col_width</span> <span class="o">+</span> <span class="n">colsep</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">table</span><span class="p">[</span><span class="n">icol</span><span class="p">]]</span>
-
-        <span class="c1"># format the table into columns</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">EvTable</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">EvTable</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="n">cols_list</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="EvMenu.node_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.node_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">node_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">optionstext</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

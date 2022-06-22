@@ -442,7 +442,10 @@
 <span class="sd">                overriding the call (unused by default).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">at_script_creation</span><span class="p">()</span>
+        <span class="c1"># initialize Attribute/TagProperties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_evennia_properties</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_createdict&quot;</span><span class="p">):</span>
             <span class="c1"># this will only be set if the utils.create_script</span>
@@ -512,6 +515,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_task</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">basetype_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes fundamental aspects of the type. Usually changes are made in at_script creation</span>
+<span class="sd">        instead.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

@@ -138,7 +138,7 @@
 <span class="n">recog02</span> <span class="o">=</span> <span class="s2">&quot;Mr Receiver2&quot;</span>
 <span class="n">recog10</span> <span class="o">=</span> <span class="s2">&quot;Mr Sender&quot;</span>
 <span class="n">emote</span> <span class="o">=</span> <span class="s1">&#39;With a flair, /me looks at /first and /colliding sdesc-guy. She says &quot;This is a test.&quot;&#39;</span>
-<span class="n">case_emote</span> <span class="o">=</span> <span class="s2">&quot;/me looks at /first, then /FIRST, /First and /Colliding twice.&quot;</span>
+<span class="n">case_emote</span> <span class="o">=</span> <span class="s2">&quot;/Me looks at /first. Then, /me looks at /FIRST, /First and /Colliding twice.&quot;</span>
 
 
 <div class="viewcode-block" id="TestRPSystem"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem">[docs]</a><span class="k">class</span> <span class="nc">TestRPSystem</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
@@ -155,41 +155,11 @@
             <span class="n">rpsystem</span><span class="o">.</span><span class="n">ContribRPCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Receiver2&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRPSystem.test_ordered_permutation_regex"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_ordered_permutation_regex">[docs]</a>    <span class="k">def</span> <span class="nf">test_ordered_permutation_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="n">rpsystem</span><span class="o">.</span><span class="n">ordered_permutation_regex</span><span class="p">(</span><span class="n">sdesc0</span><span class="p">),</span>
-            <span class="s2">&quot;/[0-9]*-*A</span><span class="se">\\</span><span class="s2"> nice</span><span class="se">\\</span><span class="s2"> sender</span><span class="se">\\</span><span class="s2"> of</span><span class="se">\\</span><span class="s2"> emotes(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*nice</span><span class="se">\\</span><span class="s2"> sender</span><span class="se">\\</span><span class="s2"> of</span><span class="se">\\</span><span class="s2"> emotes(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*A</span><span class="se">\\</span><span class="s2"> nice</span><span class="se">\\</span><span class="s2"> sender</span><span class="se">\\</span><span class="s2"> of(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*sender</span><span class="se">\\</span><span class="s2"> of</span><span class="se">\\</span><span class="s2"> emotes(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*nice</span><span class="se">\\</span><span class="s2"> sender</span><span class="se">\\</span><span class="s2"> of(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*A</span><span class="se">\\</span><span class="s2"> nice</span><span class="se">\\</span><span class="s2"> sender(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*nice</span><span class="se">\\</span><span class="s2"> sender(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*of</span><span class="se">\\</span><span class="s2"> emotes(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*sender</span><span class="se">\\</span><span class="s2"> of(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*A</span><span class="se">\\</span><span class="s2"> nice(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*emotes(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*sender(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*nice(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*of(?=</span><span class="se">\\</span><span class="s2">W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*A(?=</span><span class="se">\\</span><span class="s2">W|$)+&quot;</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
 <div class="viewcode-block" id="TestRPSystem.test_sdesc_handler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_sdesc_handler">[docs]</a>    <span class="k">def</span> <span class="nf">test_sdesc_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">sdesc0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;This is {#324} ignored&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="s2">&quot;This is 324 ignored&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Testing three words&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get_regex_tuple</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
-            <span class="s2">&quot;/[0-9]*-*Testing\ three\ words(?=\W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*Testing\ three(?=\W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*three\ words(?=\W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*Testing(?=\W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*three(?=\W|$)+|&quot;</span>
-            <span class="s2">&quot;/[0-9]*-*words(?=\W|$)+&quot;</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="s2">&quot;This is 324 ignored&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRPSystem.test_recog_handler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_recog_handler">[docs]</a>    <span class="k">def</span> <span class="nf">test_recog_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc0</span><span class="p">)</span>
@@ -198,12 +168,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="p">,</span> <span class="n">recog02</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">),</span> <span class="n">recog01</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="p">),</span> <span class="n">recog02</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get_regex_tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
-            <span class="s2">&quot;/[0-9]*-*Mr</span><span class="se">\\</span><span class="s2"> Receiver(?=</span><span class="se">\\</span><span class="s2">W|$)+|/[0-9]*-*Receiver(?=</span><span class="se">\\</span><span class="s2">W|$)+|/[0-9]*-*Mr(?=</span><span class="se">\\</span><span class="s2">W|$)+&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">),</span> <span class="n">sdesc1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="p">{</span><span class="s2">&quot;Mr Receiver2&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="p">})</span></div>
 
@@ -240,6 +206,26 @@
             <span class="n">result</span><span class="p">,</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="TestRPSystem.test_get_sdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_get_sdesc">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_sdesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">looker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span>  <span class="c1"># Sender</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span>  <span class="c1"># Receiver1</span>
+        <span class="n">looker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc0</span><span class="p">)</span>  <span class="c1"># A nice sender of emotes</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc1</span><span class="p">)</span>  <span class="c1"># The first receiver of emotes.</span>
+
+        <span class="c1"># sdesc with no processing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">looker</span><span class="o">.</span><span class="n">get_sdesc</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="s2">&quot;The first receiver of emotes.&quot;</span><span class="p">)</span>
+        <span class="c1"># sdesc with processing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">looker</span><span class="o">.</span><span class="n">get_sdesc</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="s2">&quot;|bThe first receiver of emotes.|n&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">looker</span><span class="o">.</span><span class="n">recog</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">recog01</span><span class="p">)</span>  <span class="c1"># Mr Receiver</span>
+
+        <span class="c1"># recog with no processing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">looker</span><span class="o">.</span><span class="n">get_sdesc</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="s2">&quot;Mr Receiver&quot;</span><span class="p">)</span>
+        <span class="c1"># recog with processing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">looker</span><span class="o">.</span><span class="n">get_sdesc</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="s2">&quot;|mMr Receiver|n&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="TestRPSystem.test_send_emote"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_send_emote">[docs]</a>    <span class="k">def</span> <span class="nf">test_send_emote</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">speaker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span>
         <span class="n">receiver1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span>
@@ -254,18 +240,18 @@
         <span class="n">rpsystem</span><span class="o">.</span><span class="n">send_emote</span><span class="p">(</span><span class="n">speaker</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out0</span><span class="p">,</span>
-            <span class="s2">&quot;With a flair, |bSender|n looks at |bThe first receiver of emotes.|n &quot;</span>
+            <span class="s2">&quot;With a flair, |mSender|n looks at |bThe first receiver of emotes.|n &quot;</span>
             <span class="s1">&#39;and |bAnother nice colliding sdesc-guy for tests|n. She says |w&quot;This is a test.&quot;|n&#39;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out1</span><span class="p">,</span>
-            <span class="s2">&quot;With a flair, |bA nice sender of emotes|n looks at |bReceiver1|n and &quot;</span>
+            <span class="s2">&quot;With a flair, |bA nice sender of emotes|n looks at |mReceiver1|n and &quot;</span>
             <span class="s1">&#39;|bAnother nice colliding sdesc-guy for tests|n. She says |w&quot;This is a test.&quot;|n&#39;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out2</span><span class="p">,</span>
             <span class="s2">&quot;With a flair, |bA nice sender of emotes|n looks at |bThe first &quot;</span>
-            <span class="s1">&#39;receiver of emotes.|n and |bReceiver2|n. She says |w&quot;This is a test.&quot;|n&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;receiver of emotes.|n and |mReceiver2|n. She says |w&quot;This is a test.&quot;|n&#39;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRPSystem.test_send_case_sensitive_emote"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_send_case_sensitive_emote">[docs]</a>    <span class="k">def</span> <span class="nf">test_send_case_sensitive_emote</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -283,20 +269,21 @@
         <span class="n">rpsystem</span><span class="o">.</span><span class="n">send_emote</span><span class="p">(</span><span class="n">speaker</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">case_emote</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out0</span><span class="p">,</span>
-            <span class="s2">&quot;|bSender|n looks at |bthe first receiver of emotes.|n, then &quot;</span>
-            <span class="s2">&quot;|bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n and &quot;</span>
-            <span class="s2">&quot;|bAnother nice colliding sdesc-guy for tests|n twice.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|mSender|n looks at |bthe first receiver of emotes.|n. Then, |mSender|n &quot;</span>
+            <span class="s2">&quot;looks at |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n &quot;</span>
+            <span class="s2">&quot;and |bAnother nice colliding sdesc-guy for tests|n twice.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out1</span><span class="p">,</span>
-            <span class="s2">&quot;|bA nice sender of emotes|n looks at |bReceiver1|n, then |bReceiver1|n, &quot;</span>
-            <span class="s2">&quot;|bReceiver1|n and |bAnother nice colliding sdesc-guy for tests|n twice.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|bA nice sender of emotes|n looks at |mReceiver1|n. Then, &quot;</span>
+            <span class="s2">&quot;|ba nice sender of emotes|n looks at |mReceiver1|n, |mReceiver1|n &quot;</span>
+            <span class="s2">&quot;and |bAnother nice colliding sdesc-guy for tests|n twice.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out2</span><span class="p">,</span>
-            <span class="s2">&quot;|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n, &quot;</span>
-            <span class="s2">&quot;then |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of &quot;</span>
-            <span class="s2">&quot;emotes.|n and |bReceiver2|n twice.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n. &quot;</span>
+            <span class="s2">&quot;Then, |ba nice sender of emotes|n looks at |bTHE FIRST RECEIVER OF EMOTES.|n, &quot;</span>
+            <span class="s2">&quot;|bThe first receiver of emotes.|n and |mReceiver2|n twice.&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRPSystem.test_rpsearch"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_rpsearch">[docs]</a>    <span class="k">def</span> <span class="nf">test_rpsearch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -305,19 +292,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;out0&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;receiver of emotes&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;colliding&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestRPSystem.test_regex_tuple_from_key_alias"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_regex_tuple_from_key_alias">[docs]</a>    <span class="k">def</span> <span class="nf">test_regex_tuple_from_key_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;foo bar&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;this thing is a long thing&quot;</span><span class="p">)</span>
-        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">rpsystem</span><span class="o">.</span><span class="n">regex_tuple_from_key_alias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="p">)</span>
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">rpsystem</span><span class="o">.</span><span class="n">regex_tuple_from_key_alias</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="p">)</span>
-        <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="c1"># print(f&quot;t1: {t1 - t0}, t2: {t2 - t1}&quot;)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertLess</span><span class="p">(</span><span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span><span class="p">,</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">4</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="n">Anything</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">key</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speaker</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;colliding&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TestRPSystemCommands"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystemCommands">[docs]</a><span class="k">class</span> <span class="nc">TestRPSystemCommands</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
@@ -347,7 +322,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">rpsystem</span><span class="o">.</span><span class="n">CmdRecog</span><span class="p">(),</span>
             <span class="s2">&quot;barfoo as friend&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Char will now remember BarFoo Character as friend.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;You will now remember BarFoo Character as friend.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">rpsystem</span><span class="o">.</span><span class="n">CmdRecog</span><span class="p">(),</span>
@@ -358,7 +333,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">rpsystem</span><span class="o">.</span><span class="n">CmdRecog</span><span class="p">(),</span>
             <span class="s2">&quot;friend&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Char will now know them only as &#39;BarFoo Character&#39;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;You will now know them only as &#39;BarFoo Character&#39;&quot;</span><span class="p">,</span>
             <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;forget&quot;</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 </pre></div>

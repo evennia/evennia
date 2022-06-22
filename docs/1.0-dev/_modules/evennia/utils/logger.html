@@ -92,6 +92,7 @@
 
 <span class="c1"># log call functions (each has legacy aliases)</span>
 
+
 <div class="viewcode-block" id="log_info"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.log_info">[docs]</a><span class="k">def</span> <span class="nf">log_info</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Logs any generic debugging/informative info that should appear in the log.</span>
@@ -103,6 +104,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 
 <span class="n">info</span> <span class="o">=</span> <span class="n">log_info</span>
 <span class="n">log_infomsg</span> <span class="o">=</span> <span class="n">log_info</span>
@@ -120,6 +122,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 
 <span class="n">warn</span> <span class="o">=</span> <span class="n">log_warn</span>
 <span class="n">warning</span> <span class="o">=</span> <span class="n">log_warn</span>
@@ -162,6 +165,7 @@
         <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
             <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;!!&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+
 <span class="n">log_tracemsg</span> <span class="o">=</span> <span class="n">log_trace</span>
 <span class="n">exception</span> <span class="o">=</span> <span class="n">log_trace</span>
 <span class="n">critical</span> <span class="o">=</span> <span class="n">log_trace</span>
@@ -198,6 +202,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+
 <span class="n">sec</span> <span class="o">=</span> <span class="n">log_sec</span>
 <span class="n">security</span> <span class="o">=</span> <span class="n">log_sec</span>
 <span class="n">log_secmsg</span> <span class="o">=</span> <span class="n">log_sec</span>
@@ -216,12 +221,12 @@
     <span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;Server&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-
 <div class="viewcode-block" id="GetLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetLogObserver</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up how the system logs are formatted.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">component_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">event_levels</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">twisted_logger</span><span class="o">.</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span> <span class="s2">&quot;??&quot;</span><span class="p">,</span>
@@ -249,8 +254,7 @@
         <span class="n">event</span><span class="p">[</span><span class="s2">&quot;log_format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_format&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
         <span class="n">component_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_prefix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
         <span class="n">log_msg</span> <span class="o">=</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">formatEventAsClassicLogText</span><span class="p">(</span>
-            <span class="n">event</span><span class="p">,</span>
-            <span class="n">formatTime</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">formatTime</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">_TIME_FORMAT</span><span class="p">)</span>
+            <span class="n">event</span><span class="p">,</span> <span class="n">formatTime</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">formatTime</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">_TIME_FORMAT</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">component_prefix</span><span class="si">}{</span><span class="n">log_msg</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -260,12 +264,13 @@
 
 <span class="c1"># Called by server/portal on startup</span>
 
+
 <div class="viewcode-block" id="GetPortalLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetPortalLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetPortalLogObserver</span><span class="p">(</span><span class="n">GetLogObserver</span><span class="p">):</span>
     <span class="n">component_prefix</span> <span class="o">=</span> <span class="s2">&quot;|Portal| &quot;</span></div>
 
+
 <div class="viewcode-block" id="GetServerLogObserver"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.GetServerLogObserver">[docs]</a><span class="k">class</span> <span class="nc">GetServerLogObserver</span><span class="p">(</span><span class="n">GetLogObserver</span><span class="p">):</span>
     <span class="n">component_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
-
 
 
 <span class="c1"># logging overrides</span>
@@ -393,6 +398,7 @@
         <span class="n">logfile</span><span class="o">.</span><span class="n">BaseLogFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lastDate</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lastDate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toDate</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div></div>
+
 
 <span class="c1"># Arbitrary file logger</span>
 

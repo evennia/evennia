@@ -1190,7 +1190,7 @@
 
 <div class="viewcode-block" id="StaticTrait"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.StaticTrait">[docs]</a><span class="k">class</span> <span class="nc">StaticTrait</span><span class="p">(</span><span class="n">Trait</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Static Trait. This is a single value with a modifier, </span>
+<span class="sd">    Static Trait. This is a single value with a modifier,</span>
 <span class="sd">    multiplier, and no concept of a &#39;current&#39; value or min/max etc.</span>
 
 <span class="sd">    value = (base + mod) * mult</span>
@@ -1203,7 +1203,9 @@
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{value:11}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{name:12}</span><span class="s2"> </span><span class="si">{status}</span><span class="s2"> (</span><span class="si">{mod:+3}</span><span class="s2">) (* </span><span class="si">{mult:.2f}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mult</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{name:12}</span><span class="s2"> </span><span class="si">{status}</span><span class="s2"> (</span><span class="si">{mod:+3}</span><span class="s2">) (* </span><span class="si">{mult:.2f}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mult</span>
+        <span class="p">)</span>
 
     <span class="c1"># Helpers</span>
     <span class="nd">@property</span>
@@ -1231,7 +1233,7 @@
     <span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The trait&#39;s multiplier.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;mult&quot;</span><span class="p">]</span>
-    
+
     <span class="nd">@mult</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
@@ -1364,16 +1366,16 @@
             <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
             <span class="n">tdiff</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span>
             <span class="n">current</span> <span class="o">+=</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">tdiff</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">current</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">current</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
 
             <span class="c1"># we must make sure so we don&#39;t overstep our bounds</span>
             <span class="c1"># even if .mod is included</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_passed_ratetarget</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-                <span class="n">current</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;ratetarget&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;ratetarget&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_stop_timer</span><span class="p">()</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_within_boundaries</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-                <span class="n">current</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_stop_timer</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;last_update&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">now</span>
@@ -1420,7 +1422,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;mult&quot;</span><span class="p">]</span>
-    
+
     <span class="nd">@mult</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
@@ -1613,7 +1615,9 @@
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{value:4}</span><span class="s2"> / </span><span class="si">{base:4}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{name:12}</span><span class="s2"> </span><span class="si">{status}</span><span class="s2"> (</span><span class="si">{mod:+3}</span><span class="s2">) (* </span><span class="si">{mult:.2f}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mult</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{name:12}</span><span class="s2"> </span><span class="si">{status}</span><span class="s2"> (</span><span class="si">{mod:+3}</span><span class="s2">) (* </span><span class="si">{mult:.2f}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="n">mult</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mult</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1638,11 +1642,11 @@
             <span class="k">if</span> <span class="n">value</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;mod&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;mult&quot;</span><span class="p">]</span>
-    
+
     <span class="nd">@mult</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">mult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
@@ -1663,7 +1667,7 @@
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_keys</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">value</span><span class="p">,</span>  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1686,7 +1690,7 @@
     <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The `current` value of the gauge.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_current</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;current&quot;</span><span class="p">,</span>  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;current&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult</span><span class="p">))</span>
         <span class="p">)</span>
 
     <span class="nd">@current</span><span class="o">.</span><span class="n">setter</span>
@@ -1697,7 +1701,7 @@
     <span class="nd">@current</span><span class="o">.</span><span class="n">deleter</span>
     <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Resets current back to &#39;full&#39;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span>  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

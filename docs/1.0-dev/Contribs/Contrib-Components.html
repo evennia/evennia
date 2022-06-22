@@ -92,7 +92,7 @@ import and inherit the ComponentHolderMixin, similar to this</p>
 <p>Components may define DBFields or NDBFields at the class level.
 DBField will store its values in the host’s DB with a prefixed key.
 NDBField will store its values in the host’s NDB and will not persist.
-The key used will be ‘component_name__field_name’.
+The key used will be ‘component_name::field_name’.
 They use AttributeProperty under the hood.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">DBField</span>
@@ -101,7 +101,24 @@ They use AttributeProperty under the hood.</p>
     <span class="n">health</span> <span class="o">=</span> <span class="n">DBField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Note that default is optional and will default to None</p>
+<p>Note that default is optional and will default to None.</p>
+<p>Adding a component to a host will also a similarly named tag with ‘components’ as category.
+A Component named health will appear as key=”health, category=“components”.
+This allows you to retrieve objects with specific components by searching with the tag.</p>
+<p>It is also possible to add Component Tags the same way, using TagField.
+TagField accepts a default value and can be used to store a single or multiple tags.
+Default values are automatically added when the component is added.
+Component Tags are cleared from the host if the component is removed.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">TagField</span>
+
+<span class="k">class</span> <span class="nc">Health</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="n">resistances</span> <span class="o">=</span> <span class="n">TagField</span><span class="p">()</span>
+    <span class="n">vulnerability</span> <span class="o">=</span> <span class="n">TagField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;fire&quot;</span><span class="p">,</span> <span class="n">enforce_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The ‘resistances’ field in this example can be set to multiple times and it will keep the added tags.
+The ‘vulnerability’ field in this example will override the previous tag with the new one.</p>
 <p>Each typeclass using the ComponentHolderMixin can declare its components
 in the class via the ComponentProperty.
 These are components that will always be present in a typeclass.

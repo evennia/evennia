@@ -115,7 +115,7 @@ Try to `look` at the box to see the (default) description.
 
 The description you get is not very exciting. Let's add some flavor.
 
-    describe box = This is a large and very heavy box.
+    desc box = This is a large and very heavy box.
 
 If you try the `get` command we will pick up the box. So far so good, but if we really want this to
 be a large and heavy box, people should _not_ be able to run off with it that easily. To prevent
@@ -155,10 +155,10 @@ later, in the [Commands tutorial](./Adding-Commands.md).
 
 [Scripts](../../../Components/Scripts.md) are powerful out-of-character objects useful for many "under the hood" things.
 One of their optional abilities is to do things on a timer. To try out a first script, let's put one
-on ourselves. There is an example script in `evennia/contrib/tutorial_examples/bodyfunctions.py`
+on ourselves. There is an example script in `evennia/contrib/tutorials/bodyfunctions/bodyfunctions.py`
 that is called `BodyFunctions`. To add this to us we will use the `script` command:
 
-    script self = tutorial_examples.bodyfunctions.BodyFunctions
+    script self = tutorials.bodyfunctions.BodyFunctions
 
 This string will tell Evennia to dig up the Python code at the place we indicate. It already knows
 to look in the `contrib/` folder, so we don't have to give the full path.
@@ -179,7 +179,7 @@ output every time it fires.
 
 When you are tired of your character's "insights", kill the script with
 
-    script/stop self = tutorial_examples.bodyfunctions.BodyFunctions
+    script/stop self = tutorials.bodyfunctions.BodyFunctions
 
 You create your own scripts in Python, outside the game; the path you give to `script` is literally
 the Python path to your script file. The [Scripts](../../../Components/Scripts.md) page explains more details.
@@ -199,7 +199,7 @@ named simply `Object`. Let's create an object that is a little more interesting.
 
 Let's make us one of _those_!
 
-    create/drop button:tutorial_examples.red_button.RedButton
+    create/drop button:tutorials.red_button.RedButton
 
 The same way we did with the Script Earler, we specify a "Python-path" to the Python code we want Evennia
 to use for creating the object. There you go - one red button.
@@ -301,7 +301,7 @@ The Command-help is something you modify in Python code. We'll get to that when 
 add Commands. But you can also add regular help entries, for example to explain something about
 the history of your game world:
 
-    sethelp/add History = At the dawn of time ...
+    sethelp History = At the dawn of time ...
 
 You will now find your new `History` entry in the `help` list and read your help-text with `help History`.
 

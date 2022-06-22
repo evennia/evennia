@@ -570,8 +570,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This will load the prototypes the first time they are searched</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_MODULE_PROTOTYPE_MODULES</span><span class="p">:</span>
+    <span class="n">loaded</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">load_module_prototypes</span><span class="p">,</span> <span class="s2">&quot;_LOADED&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">loaded</span><span class="p">:</span>
         <span class="n">load_module_prototypes</span><span class="p">()</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">load_module_prototypes</span><span class="p">,</span> <span class="s2">&quot;_LOADED&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># prototype keys are always in lowecase</span>
     <span class="k">if</span> <span class="n">key</span><span class="p">:</span>

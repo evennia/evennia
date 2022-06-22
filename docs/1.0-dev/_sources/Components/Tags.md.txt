@@ -1,20 +1,33 @@
 # Tags
 
+```{code-block}
+:caption: In game 
+> tag obj = tagname
+```
+```{code-block} python 
+:caption: In code, using .tags (TagHandler)
 
-A common task of a game designer is to organize and find groups of objects and do operations on
-them. A classic example is to have a weather script affect all "outside" rooms. Another would be for
-a player casting a magic spell that affects every location "in the dungeon", but not those
-"outside". Another would be to quickly find everyone joined with a particular guild or everyone
-currently dead.
+obj.tags.add("mytag", category="foo")
+obj.tags.get("mytag", category="foo")
+```
 
-*Tags* are short text labels that you attach to objects so as to easily be able to retrieve and
-group them. An Evennia entity can be tagged with any number of Tags. On the database side, Tag
-entities are *shared* between all objects with that tag. This makes them very efficient but also
-fundamentally different from [Attributes](./Attributes.md), each of which always belongs to one *single*
-object.
+```{code-block} python
+:caption: In code, using TagProperty (auto-assign tag to all instances of the class)
 
-In Evennia, Tags are technically also used to implement `Aliases` (alternative names for objects)
-and `Permissions` (simple strings for [Locks](./Locks.md) to check for).
+from evennia import DefaultObject
+from evennia import TagProperty
+class Sword(DefaultObject): 
+    can_be_wielded = TagProperty(category='combat')
+    has_sharp_edge = TagProperty(category='combat')
+
+```
+
+_Tags_ are short text lables one can 'hang' on objects in order to organize, group and quickly find out their properties. An Evennia entity can be tagged by any number of tags. They are more efficient than [Attributes](./Attributes.md) since on the database-side, Tags are _shared_ between all objects with that particular tag. A tag does not carry a value in itself; it either sits on the entity 
+
+Above, the tags inform us that the `Sword` is both sharp and can be wielded. If that's all they do, they could just be a normal Python flag. When tags become important is if there are a lot of objects with different combinations of tags. Maybe you have a magical spell that dulls _all_ sharp-edged objects in the castle - whether sword, dagger, spear or kitchen knife! You can then just grab all objects with the `has_sharp_edge` tag. 
+Another example would be a weather script affecting all rooms tagged as `outdoors` or finding all characters tagged with `belongs_to_fighter_guild`. 
+
+In Evennia, Tags are technically also used to implement `Aliases` (alternative names for objects) and `Permissions` (simple strings for [Locks](./Locks.md) to check for).
 
 
 ## Properties of Tags (and Aliases and Permissions)

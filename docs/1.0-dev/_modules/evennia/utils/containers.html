@@ -54,6 +54,7 @@
 
 
 <span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">dumps</span>
+<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span><span class="p">,</span> <span class="n">ProgrammingError</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">callables_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -209,7 +210,6 @@
 
             <span class="c1"># store a hash representation of the setup</span>
             <span class="n">script</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_global_script_settings&quot;</span><span class="p">,</span> <span class="n">compare_hash</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;settings_hash&quot;</span><span class="p">)</span>
-            <span class="n">script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">script</span>
 
@@ -225,9 +225,16 @@
         <span class="c1"># populate self.typeclass_storage</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 
-        <span class="c1"># start registered scripts</span>
+        <span class="c1"># make sure settings-defined scripts are loaded</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_load_script</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_script</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="c1"># start all global scripts</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scripts</span><span class="p">():</span>
+                <span class="n">script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">OperationalError</span><span class="p">,</span> <span class="n">ProgrammingError</span><span class="p">):</span>
+            <span class="c1"># this can happen if db is not loaded yet (such as when building docs)</span>
+            <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="GlobalScriptContainer.load_data"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer.load_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

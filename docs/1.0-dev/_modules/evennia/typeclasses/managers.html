@@ -328,7 +328,7 @@
         <span class="n">categories</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">category</span><span class="p">)</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="n">n_keys</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
         <span class="n">n_categories</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
-        <span class="n">unique_categories</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">categories</span><span class="p">))</span>
+        <span class="n">unique_categories</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
         <span class="n">n_unique_categories</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_categories</span><span class="p">)</span>
 
         <span class="n">dbmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>

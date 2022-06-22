@@ -54,9 +54,13 @@
 <span class="c1"># since we use them (e.g. as command names).</span>
 <span class="c1"># Lunr&#39;s default ignore-word list is found here:</span>
 <span class="c1"># https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py</span>
-<span class="n">_LUNR_STOP_WORD_FILTER_EXCEPTIONS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;about&quot;</span><span class="p">,</span> <span class="s2">&quot;might&quot;</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="s2">&quot;who&quot;</span><span class="p">,</span> <span class="s2">&quot;say&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">LUNR_STOP_WORD_FILTER_EXCEPTIONS</span>
-<span class="p">)</span>
+<span class="n">_LUNR_STOP_WORD_FILTER_EXCEPTIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;about&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;might&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;who&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;say&quot;</span><span class="p">,</span>
+<span class="p">]</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">LUNR_STOP_WORD_FILTER_EXCEPTIONS</span>
 
 
 <span class="n">_LUNR</span> <span class="o">=</span> <span class="kc">None</span>

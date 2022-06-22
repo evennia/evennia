@@ -717,11 +717,8 @@ should also report errors directly to the user.</p>
 <dd><p>Formats the option block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>optionlist</strong> (<em>list</em>) – List of (key, description) tuples for every
-option related to this node.</p></li>
-<li><p><strong>caller</strong> (<em>Object</em><em>, </em><em>Account</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The caller of the node.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>optionlist</strong> (<em>list</em>) – List of (key, description) tuples for every
+option related to this node.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>options (str)</em> – The formatted option display.</p>
@@ -957,7 +954,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['abort', 'yes', 'n', 'a', '__nomatch_command', 'y', 'no']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['n', 'a', 'abort', '__nomatch_command', 'yes', 'no', 'y']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -983,7 +980,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'abort yes n a __nomatch_command y no', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' abort yes n a __nomatch_command y no', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'n a abort __nomatch_command yes no y', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' n a abort __nomatch_command yes no y', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

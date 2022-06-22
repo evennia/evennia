@@ -299,7 +299,7 @@ You hit &lt;target&gt; with full force!
 </div>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">&lt;hitter&gt;</span></code> would be the one using the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command and <code class="docutils literal notranslate"><span class="pre">&lt;target&gt;</span></code> is the one doing the punching.</p>
 <p>Still in <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code>, add a new class, between <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> and <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -321,7 +321,7 @@ You hit &lt;target&gt; with full force!
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -344,8 +344,8 @@ You hit &lt;target&gt; with full force!
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
         <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with full force!&quot;</span><span class="p">)</span>
 <span class="c1"># ...</span>
-</pre></div>
-</td></tr></table></div>
+</pre></div></td></tr></table></div>
+</div>
 <p>A lot of things to dissect here:</p>
 <ul class="simple">
 <li><p><strong>Line 3</strong>: The normal <code class="docutils literal notranslate"><span class="pre">class</span></code> header. We inherit from <code class="docutils literal notranslate"><span class="pre">Command</span></code> which we imported at the top of this file.</p></li>

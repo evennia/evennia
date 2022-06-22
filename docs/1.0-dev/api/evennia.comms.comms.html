@@ -59,20 +59,38 @@
 <dd><p>Bases: <a class="reference internal" href="evennia.comms.models.html#evennia.comms.models.ChannelDB" title="evennia.comms.models.ChannelDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.comms.models.ChannelDB</span></code></a></p>
 <p>This is the base class for all Channel Comms. Inherit from this to
 create different types of communication channels.</p>
-<dl class="simple">
-<dt>Class-level variables:</dt><dd><ul class="simple">
-<li><p><strong>send_to_online_only</strong> (bool, default True) - if set, will only try to
-send to subscribers that are actually active. This is a useful optimization.</p></li>
+<p>Class-level variables:
+- <strong>send_to_online_only</strong> (bool, default True) - if set, will only try to</p>
+<blockquote>
+<div><p>send to subscribers that are actually active. This is a useful optimization.</p>
+</div></blockquote>
+<ul class="simple">
 <li><p><strong>log_file</strong> (str, default <strong>“channel_{channelname}.log”</strong>). This is the
 log file to which the channel history will be saved. The <strong>{channelname}</strong> tag
 will be replaced by the key of the Channel. If an Attribute ‘log_file’
 is set, this will be used instead. If this is None and no Attribute is found,
 no history will be saved.</p></li>
 <li><p><strong>channel_prefix_string</strong> (str, default <strong>“[{channelname} ]”</strong>) - this is used
-as a simple template to get the channel prefix with <strong>.channel_prefix()</strong>.</p></li>
+as a simple template to get the channel prefix with <strong>.channel_prefix()</strong>. It is used
+in front of every channel message; use <strong>{channelmessage}</strong> token to insert the
+name of the current channel. Set to <strong>None</strong> if you want no prefix (or want to
+handle it in a hook during message generation instead.</p></li>
+<li><p><strong>channel_msg_nick_pattern**(str, default **”{alias}s*?|{alias}s+?(?P&lt;arg1&gt;.+?)”) -
+this is what used when a channel subscriber gets a channel nick assigned to this
+channel. The nickhandler uses the pattern to pick out this channel’s name from user
+input. The **{alias}</strong> token will get both the channel’s key and any set/custom aliases
+per subscriber. You need to allow for an <strong>&lt;arg1&gt;</strong> regex group to catch any message
+that should be send to the  channel. You usually don’t need to change this pattern
+unless you are changing channel command-style entirely.</p></li>
+<li><p><strong>channel_msg_nick_replacement</strong> (str, default <strong>“channel {channelname} = $1”</strong> - this
+is used by the nickhandler to generate a replacement string once the nickhandler (using
+the <strong>channel_msg_nick_pattern</strong>) identifies that the channel should be addressed
+to send a message to it. The <strong>&lt;arg1&gt;</strong> regex pattern match from <strong>channel_msg_nick_pattern</strong>
+will end up at the <strong>$1</strong> position in the replacement. Together, this allows you do e.g.
+‘public Hello’ and have that become a mapping to <strong>channel public = Hello</strong>. By default,
+the account-level <strong>channel</strong> command is used. If you were to rename that command you must
+tweak the output to something like <strong>yourchannelcommandname {channelname} = $1</strong>.</p></li>
 </ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt id="evennia.comms.comms.DefaultChannel.objects">
 <code class="sig-name descname">objects</code><em class="property"> = &lt;evennia.comms.managers.ChannelManager object&gt;</em><a class="headerlink" href="#evennia.comms.comms.DefaultChannel.objects" title="Permalink to this definition">¶</a></dt>

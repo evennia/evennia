@@ -64,7 +64,7 @@
 <span class="sd">    # use underscore to NOT make the function available as a callable</span>
 
 <span class="sd">def funcname(*args, **kwargs):</span>
-<span class="sd">    # this can be accecssed as $funcname(*args, **kwargs)</span>
+<span class="sd">    # this can be accessed as $funcname(*args, **kwargs)</span>
 <span class="sd">    # it must always accept *args and **kwargs.</span>
 <span class="sd">    ...</span>
 <span class="sd">    return something</span>
@@ -73,7 +73,7 @@
 <span class="sd">Usage:</span>
 
 <span class="sd">```python</span>
-<span class="sd">from evennia.utils.funcparser</span>
+<span class="sd">from evennia.utils.funcparser import FuncParser</span>
 
 <span class="sd">parser = FuncParser(&quot;path.to.module_with_callables&quot;)</span>
 <span class="sd">result = parser.parse(&quot;String with $funcname() in it&quot;)</span>
@@ -126,8 +126,8 @@
     <span class="c1"># state storage</span>
     <span class="n">fullstr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">infuncstr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">single_quoted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">double_quoted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">single_quoted</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">double_quoted</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">current_kwarg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">open_lparens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">open_lsquate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -360,8 +360,8 @@
         <span class="c1"># parsing state</span>
         <span class="n">callstack</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">single_quoted</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">double_quoted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">single_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">double_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="n">open_lparens</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># open (</span>
         <span class="n">open_lsquare</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># open [</span>
         <span class="n">open_lcurly</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># open {</span>
@@ -372,6 +372,7 @@
         <span class="n">curr_func</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">fullstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># final string</span>
         <span class="n">infuncstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># string parts inside the current level of $funcdef (including $)</span>
+        <span class="n">literal_infuncstr</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span>
 
@@ -415,12 +416,13 @@
                         <span class="n">curr_func</span><span class="o">.</span><span class="n">open_lcurly</span> <span class="o">=</span> <span class="n">open_lcurly</span>
                         <span class="n">current_kwarg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                         <span class="n">infuncstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                        <span class="n">single_quoted</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="n">double_quoted</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">single_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                        <span class="n">double_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
                         <span class="n">open_lparens</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">open_lsquare</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">open_lcurly</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">exec_return</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                        <span class="n">literal_infuncstr</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="n">callstack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr_func</span><span class="p">)</span>
 
                 <span class="c1"># start a new func</span>
@@ -443,19 +445,41 @@
                 <span class="n">infuncstr</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">exec_return</span><span class="p">)</span>
                 <span class="n">exec_return</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">:</span>  <span class="c1"># note that this is the same as &quot;\&#39;&quot;</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span> <span class="ow">and</span> <span class="n">double_quoted</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># note that this is the same as &quot;\&#39;&quot;</span>
                 <span class="c1"># a single quote - flip status</span>
-                <span class="n">single_quoted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">single_quoted</span>
-                <span class="n">infuncstr</span> <span class="o">+=</span> <span class="n">char</span>
+                <span class="k">if</span> <span class="n">single_quoted</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">infuncstr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">single_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">single_quoted</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">prefix</span> <span class="o">=</span> <span class="n">infuncstr</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">single_quoted</span><span class="p">]</span>
+                    <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">infuncstr</span><span class="p">[</span><span class="n">single_quoted</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+                    <span class="n">single_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">infuncstr</span> <span class="o">+=</span> <span class="n">char</span>
+                    <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">infuncstr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">single_quoted</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">infuncstr</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">literal_infuncstr</span> <span class="o">=</span> <span class="kc">True</span>
+
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">:</span>  <span class="c1"># note that this is the same as &#39;\&quot;&#39;</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;&quot;&#39;</span> <span class="ow">and</span> <span class="n">single_quoted</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># note that this is the same as &#39;\&quot;&#39;</span>
                 <span class="c1"># a double quote = flip status</span>
-                <span class="n">double_quoted</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">double_quoted</span>
-                <span class="n">infuncstr</span> <span class="o">+=</span> <span class="n">char</span>
+                <span class="k">if</span> <span class="n">double_quoted</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">infuncstr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">double_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">double_quoted</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">prefix</span> <span class="o">=</span> <span class="n">infuncstr</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">double_quoted</span><span class="p">]</span>
+                    <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">infuncstr</span><span class="p">[</span><span class="n">double_quoted</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+                    <span class="n">double_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">infuncstr</span> <span class="o">+=</span> <span class="n">char</span>
+                    <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">infuncstr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">double_quoted</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">infuncstr</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">literal_infuncstr</span> <span class="o">=</span> <span class="kc">True</span>
+
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">double_quoted</span> <span class="ow">or</span> <span class="n">single_quoted</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">double_quoted</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">single_quoted</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># inside a string definition - this escapes everything else</span>
                 <span class="n">infuncstr</span> <span class="o">+=</span> <span class="n">char</span>
                 <span class="k">continue</span>
@@ -519,12 +543,15 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">curr_func</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exec_return</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">literal_infuncstr</span><span class="p">:</span>
+                        <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">infuncstr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
                     <span class="c1"># store a string instead</span>
                     <span class="k">if</span> <span class="n">current_kwarg</span><span class="p">:</span>
-                        <span class="n">curr_func</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="n">current_kwarg</span><span class="p">]</span> <span class="o">=</span> <span class="n">infuncstr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                    <span class="k">elif</span> <span class="n">infuncstr</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                        <span class="n">curr_func</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="n">current_kwarg</span><span class="p">]</span> <span class="o">=</span> <span class="n">infuncstr</span>
+                    <span class="k">elif</span> <span class="n">literal_infuncstr</span> <span class="ow">or</span> <span class="n">infuncstr</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
                         <span class="c1"># don&#39;t store the empty string</span>
-                        <span class="n">curr_func</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">infuncstr</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                        <span class="n">curr_func</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">infuncstr</span><span class="p">)</span>
 
                 <span class="c1"># note that at this point either exec_return or infuncstr will</span>
                 <span class="c1"># be empty. We need to store the full string so we can print</span>
@@ -535,6 +562,7 @@
                 <span class="n">current_kwarg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="n">exec_return</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="n">infuncstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">literal_infuncstr</span> <span class="o">=</span> <span class="kc">False</span>
 
                 <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
                     <span class="c1"># closing the function list - this means we have a</span>
@@ -578,6 +606,7 @@
                         <span class="k">if</span> <span class="n">return_str</span><span class="p">:</span>
                             <span class="n">exec_return</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                         <span class="n">infuncstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                        <span class="n">literal_infuncstr</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">continue</span>
 
             <span class="n">infuncstr</span> <span class="o">+=</span> <span class="n">char</span>
@@ -1139,7 +1168,7 @@
 
 <span class="sd">    Examples:</span>
 <span class="sd">        This can be used by the say or emote hooks to pass actor stance</span>
-<span class="sd">        strings. This should usually be combined with the $inflect() callable.</span>
+<span class="sd">        strings. This should usually be combined with the $conj() callable.</span>
 
 <span class="sd">        - `With a grin, $you() $conj(jump) at $you(tommy).`</span>
 
@@ -1223,7 +1252,7 @@
 <div class="viewcode-block" id="funcparser_callable_pronoun"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.funcparser_callable_pronoun">[docs]</a><span class="k">def</span> <span class="nf">funcparser_callable_pronoun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">    Usage: $prop(word, [options])</span>
+<span class="sd">    Usage: $pron(word, [options])</span>
 
 <span class="sd">    Adjust pronouns to the expected form. Pronouns are words you use instead of a</span>
 <span class="sd">    proper name, such as &#39;him&#39;, &#39;herself&#39;, &#39;theirs&#39; etc. These look different</span>
@@ -1259,7 +1288,7 @@
 <span class="sd">    `male`/`female`/`neutral`/`plural` (plural is considered a gender for this purpose).</span>
 <span class="sd">    If no `gender` property/callable is found, `neutral` is used as a fallback.</span>
 
-<span class="sd">    The pronoun-type default (if not spefified in call) is `subject pronoun`.</span>
+<span class="sd">    The pronoun-type default (if not specified in call) is `subject pronoun`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        pronoun (str): Input argument to parsed call. This can be any of the pronouns</span>
@@ -1329,7 +1358,7 @@
     <span class="n">default_viewpoint</span> <span class="o">=</span> <span class="s2">&quot;2nd person&quot;</span>
 
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;gender&quot;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">gender</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">gender</span><span class="p">):</span>
             <span class="n">default_gender</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">gender</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">default_gender</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">gender</span>
@@ -1357,7 +1386,7 @@
     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capitalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Usage: $Pron(word) - always maps to a capitalized word.</span>
+<span class="sd">    Usage: $Pron(word, [options]) - always maps to a capitalized word.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">funcparser_callable_pronoun</span><span class="p">(</span>

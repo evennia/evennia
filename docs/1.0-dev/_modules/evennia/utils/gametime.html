@@ -109,7 +109,7 @@
             <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="n">seconds</span> <span class="o">=</span> <span class="n">real_seconds_until</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gametime</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">seconds</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">seconds</span><span class="p">,</span> <span class="n">force_restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
 <span class="c1"># Access functions</span>
