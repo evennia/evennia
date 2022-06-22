@@ -819,7 +819,7 @@ def latinify(string, default="?", pure_ascii=False):
     This is used as a last resort when normal encoding does not work.
 
     Arguments:
-        string (str): A string to convert to 'safe characters' convertable
+        string (str): A string to convert to 'safe characters' convertible
             to an latin-1 bytestring later.
         default (str, optional): Characters resisting mapping will be replaced
             with this character or string. The intent is to apply an encode operation
@@ -1078,7 +1078,7 @@ def delay(timedelay, callback, *args, **kwargs):
         Keep in mind that persistent tasks arguments and callback should not
         use memory references.
         If persistent is set to True the delay function will return an int
-        which is the task's id itended for use with TASK_HANDLER's do_task
+        which is the task's id intended for use with TASK_HANDLER's do_task
         and remove methods.
         All persistent tasks whose time delays have passed will be called on server startup.
 
@@ -1531,12 +1531,12 @@ def class_from_module(path, defaultpaths=None, fallback=None):
         defaultpaths (iterable, optional): If a direct import from `path` fails,
             try subsequent imports by prepending those paths to `path`.
         fallback (str): If all other attempts fail, use this path as a fallback.
-            This is intended as a last-resport. In the example of Evennia
+            This is intended as a last-resort. In the example of Evennia
             loading, this would be a path to a default parent class in the
             evennia repo itself.
 
     Returns:
-        class (Class): An uninstatiated class recovered from path.
+        class (Class): An uninstantiated class recovered from path.
 
     Raises:
         ImportError: If all loading failed.
@@ -1675,7 +1675,7 @@ def string_partial_matching(alternatives, inp, ret_index=True):
     Matching is made from the start of each subword in each
     alternative. Case is not important. So e.g. "bi sh sw" or just
     "big" or "shiny" or "sw" will match "Big shiny sword". Scoring is
-    done to allow to separate by most common demoninator. You will get
+    done to allow to separate by most common denominator. You will get
     multiple matches returned if appropriate.
 
     Args:
@@ -1749,7 +1749,7 @@ def format_table(table, extra_space=1):
 
         ftable = format_table([[1,2,3], [4,5,6]])
         string = ""
-        for ir, row in enumarate(ftable):
+        for ir, row in enumerate(ftable):
             if ir == 0:
                 # make first row white
                 string += "\\n|w" + "".join(row) + "|n"
