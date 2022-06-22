@@ -173,7 +173,7 @@ class EvMore:
             justify (bool, optional): If set, auto-justify long lines. This must be turned
                 off for fixed-width or formatted output, like tables. It's force-disabled
                 if `inp` is an EvTable.
-            justify_kwargs (dict, optional): Keywords for the justifiy function. Used only
+            justify_kwargs (dict, optional): Keywords for the justify function. Used only
                 if `justify` is True. If this is not set, default arguments will be used.
             exit_on_lastpage (bool, optional): If reaching the last page without the
                 page being completely filled, exit pager immediately. If unset,
@@ -518,7 +518,7 @@ class EvMore:
     def page_formatter(self, page):
         """
         Page formatter. Every page passes through this method. Override
-        it to customize behvaior per-page. A common use is to generate a new
+        it to customize behavior per-page. A common use is to generate a new
         EvTable for every page (this is more efficient than to generate one huge
         EvTable across many pages and feed it into EvMore all at once).
 

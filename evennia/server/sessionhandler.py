@@ -58,7 +58,7 @@ SSHUTD = chr(7)  # server shutdown
 SSYNC = chr(8)  # server session sync
 SCONN = chr(11)  # server portal connection (for bots)
 PCONNSYNC = chr(12)  # portal post-syncing session
-PDISCONNALL = chr(13)  # portal session discnnect all
+PDISCONNALL = chr(13)  # portal session disconnect all
 SRELOAD = chr(14)  # server reloading (have portal start a new server)
 SSTART = chr(15)  # server start (portal must already be running anyway)
 PSHUTD = chr(16)  # portal (+server) shutdown
@@ -679,7 +679,7 @@ class ServerSessionHandler(SessionHandler):
         Get a unique list of connected and logged-in Accounts.
 
         Returns:
-            accounts (list): All conected Accounts (which may be fewer than the
+            accounts (list): All connected Accounts (which may be fewer than the
                 amount of Sessions due to multi-playing).
 
         """
