@@ -67,7 +67,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
       help <topic>/<subtopic>/<subsubtopic> ...
 
     Use the 'help' command alone to see an index of all help topics, organized
-    by category.eSome big topics may offer additional sub-topics.
+    by category. Some big topics may offer additional sub-topics.
 
     """
 
@@ -138,7 +138,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         click_topics=True,
     ):
         """This visually formats the help entry.
-        This method can be overriden to customize the way a help
+        This method can be overridden to customize the way a help
         entry is displayed.
 
         Args:
