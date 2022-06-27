@@ -211,7 +211,6 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         if key:
             self.key = key
         self.commands = []
-        self.commands_by_key = {}
         self.system_commands = []
         self.actual_mergetype = self.mergetype
         self.cmdsetobj = cmdsetobj
@@ -244,13 +243,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # we make copies, not refs by use of [:]
         cmdset_c.commands = cmdset_a.commands[:]
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
-            new_cmds = cmdset_b.commands
+            cmdset_c.commands.extend(cmdset_b.commands)
         else:
-            new_cmds = [cmd for cmd in cmdset_b if cmd not in cmdset_a]
-
-        cmdset_c.commands.extend(new_cmds)
-        cmdset_c.commands_by_key.update({cmd.key: cmd for cmd in new_cmds})
-
+            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in cmdset_a])
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -277,10 +272,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 cmdset_c.add(cmd)
                 cmdset_c.add(cmdset_b.get(cmd))
         else:
-            new_cmds = [cmd for cmd in cmdset_a if cmd in cmdset_b]
-            cmdset_c.commands = new_cmds
-            cmdset_c.commands_by_key = {cmd.key: cmd for cmd in new_cmds}
-
+            cmdset_c.commands = [cmd for cmd in cmdset_a if cmd in cmdset_b]
         return cmdset_c
 
     def _replace(self, cmdset_a, cmdset_b):
@@ -299,10 +291,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         cmdset_c = cmdset_a._duplicate()
-        commands = cmdset_a.commands[:]
-        cmdset_c.commands = commands
-        cmdset_c.commands_by_key = {cmd.key: cmd for cmd in commands}
-
+        cmdset_c.commands = cmdset_a.commands[:]
         return cmdset_c
 
     def _remove(self, cmdset_a, cmdset_b):
@@ -322,10 +311,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         """
 
         cmdset_c = cmdset_a._duplicate()
-        new_cmds = [cmd for cmd in cmdset_b if cmd not in cmdset_a]
-        cmdset_c.commands = new_cmds
-        cmdset_c.commands_by_key = {cmd.key: cmd for cmd in new_cmds}
-
+        cmdset_c.commands = [cmd for cmd in cmdset_b if cmd not in cmdset_a]
         return cmdset_c
 
     def _instantiate(self, cmd):
@@ -575,8 +561,6 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             # extra run to make sure to avoid doublets
             self.commands = list(set(self.commands))
 
-        self.commands_by_key = {cmd.key: cmd for cmd in self.commands}
-
     def remove(self, cmd):
         """
         Remove a command instance from the cmdset.
@@ -587,7 +571,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         if isinstance(cmd, str):
-            cmd = self.commands_by_key.get(cmd)
+            cmd = next((cmd for cmd in self.commands if cmd.key == cmd), None)
+            if cmd is None:
+                return None
 
         cmd = self._instantiate(cmd)
         if cmd.key.startswith("__"):
@@ -599,7 +585,6 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 pass
         else:
             self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]
-            self.commands_by_key = {cmd.key: cmd for cmd in self.commands}
 
     def get(self, cmd):
         """
@@ -614,7 +599,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         if isinstance(cmd, str):
-            cmd = self.commands_by_key.get(cmd)
+            cmd = next((cmd for cmd in self.commands if cmd.key == cmd), None)
+            if cmd is None:
+                return None
 
         cmd = self._instantiate(cmd)
         for thiscmd in self.commands:
@@ -674,9 +661,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                     unique[cmd.key] = cmd
             else:
                 unique[cmd.key] = cmd
-
         self.commands = list(unique.values())
-        self.commands_by_key = {cmd.key: cmd for cmd in self.commands}
 
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """
