@@ -372,8 +372,7 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
         iterable (any): Usually an iterable to print. Each element must be possible to
             present with a string. Note that if this is a generator, it will be
             consumed by this operation.
-        endsep (str, optional): If set, the last item separator will
-            be replaced with this value.
+        endsep (str, optional): The last item separator will be replaced with this value.
         addquote (bool, optional): This will surround all outgoing
             values with double quotes.
 
@@ -381,13 +380,12 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
         str: The list represented as a string.
 
     Notes:
-        Default is to use 'Oxford comma', like 1, 2, 3, and 4. To remove, give
-        `endsep` as just `and`.
+        Default is to use 'Oxford comma', like 1, 2, 3, and 4.
 
     Examples:
 
         ```python
-        >>> list_to_string([1,2,3], endsep='')
+        >>> list_to_string([1,2,3], endsep=',')
         '1, 2, 3'
         >>> list_to_string([1,2,3], ensdep='and')
         '1, 2 and 3'
@@ -412,9 +410,6 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
     elif endsep:
         # normal space-separated end separator
         endsep = " " + str(endsep).strip()
-    else:
-        # no separator given - use comma
-        endsep = ","
 
     if len_iter == 1:
         return str(iterable[0])
