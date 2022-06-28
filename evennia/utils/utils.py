@@ -372,6 +372,7 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
         iterable (any): Usually an iterable to print. Each element must be possible to
             present with a string. Note that if this is a generator, it will be
             consumed by this operation.
+        sep (str, optional): The string to use as a separator for each item in the iterable.
         endsep (str, optional): The last item separator will be replaced with this value.
         addquote (bool, optional): This will surround all outgoing
             values with double quotes.
@@ -389,7 +390,9 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
         '1, 2, 3'
         >>> list_to_string([1,2,3], ensdep='and')
         '1, 2 and 3'
-        >>> list_to_string([1,2,3], endsep=', and', addquote=True)
+        >>> list_to_string([1,2,3], sep=';', endsep=';')
+        '1; 2; 3'
+        >>> list_to_string([1,2,3], addquote=True)
         '"1", "2", and "3"'
         ```
 
