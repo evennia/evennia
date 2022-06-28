@@ -350,7 +350,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             candidate_map.append((obj, obj.sdesc.get()))
         # if no sdesc, include key plus aliases instead
         else:
-            candidate_map.append((obj, obj.key)
+            candidate_map.append((obj, obj.key))
         candidate_map.extend([(obj, alias) for alias in obj.aliases.all()])
 
     # escape mapping syntax on the form {#id} if it exists already in emote,
