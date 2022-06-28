@@ -362,7 +362,7 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     return "\n".join(rows)
 
 
-def iter_to_str(iterable, endsep=", and", addquote=False):
+def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
     """
     This pretty-formats an iterable list as string output, adding an optional
     alternative separator to the second to last entry.  If `addquote`
@@ -404,7 +404,7 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
     else:
         iterable = tuple(str(val) for val in iterable)
 
-    if endsep.startswith(","):
+    if endsep.startswith(sep):
         # oxford comma alternative
         endsep = endsep[1:] if len_iter < 3 else endsep
     elif endsep:
@@ -416,7 +416,7 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
     elif len_iter == 2:
         return f"{endsep} ".join(str(v) for v in iterable)
     else:
-        return ", ".join(str(v) for v in iterable[:-1]) + f"{endsep} {iterable[-1]}"
+        return f"{sep} ".join(str(v) for v in iterable[:-1]) + f"{endsep} {iterable[-1]}"
 
 
 # legacy aliases

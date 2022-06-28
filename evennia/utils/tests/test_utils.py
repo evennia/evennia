@@ -57,13 +57,15 @@ class TestDedent(TestCase):
 class TestListToString(TestCase):
     """
     Default function header from utils.py:
-    list_to_string(inlist, endsep=", and", addquote=False)
+    list_to_string(inlist, sep=",", endsep=", and", addquote=False)
 
     Examples:
-     with default endsep:
+     with defaults:
         [1,2,3] -> '1, 2, and 3'
      with endsep==',':
         [1,2,3] -> '1, 2, 3'
+     with sep==';' and endsep==';':
+        [1,2,3] -> '1; 2; 3'
      with endsep=='and':
         [1,2,3] -> '1, 2 and 3'
      with addquote and endsep="and"
@@ -74,6 +76,7 @@ class TestListToString(TestCase):
         self.assertEqual("1, 2, and 3", utils.list_to_string([1, 2, 3]))
         self.assertEqual("1, 2, 3", utils.list_to_string([1, 2, 3], endsep=","))
         self.assertEqual("1, 2 and 3", utils.list_to_string([1, 2, 3], endsep="and"))
+        self.assertEqual("1; 2; 3", utils.list_to_string([1, 2, 3], sep=";", endsep=";"))
         self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep=",", addquote=True))
         self.assertEqual(
             '"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
