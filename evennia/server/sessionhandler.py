@@ -269,7 +269,7 @@ class SessionHandler(dict):
                     rkwargs[key] = [_validate(data), {}]
             else:
                 rkwargs[key] = [[_validate(data)], {}]
-            rkwargs[key][1]["options"] = options
+            rkwargs[key][1]["options"] = dict(options)
         return rkwargs
 
 
