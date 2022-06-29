@@ -270,6 +270,11 @@ class SessionHandler(dict):
             else:
                 rkwargs[key] = [[_validate(data)], {}]
             rkwargs[key][1]["options"] = dict(options)
+        # make sure that any "text" message will be processed first
+        # by putting it at the beginning
+        if "text" in rkwargs:
+            text = rkwargs.pop("text")
+            rkwargs = { "text": text } | rkwargs
         return rkwargs
 
 
