@@ -16,11 +16,13 @@ To get the `value` of an enum (must always be hashable, useful for Attribute loo
 """
 from enum import Enum
 
+
 class Ability(Enum):
     """
     The six base abilities (defense is always bonus + 10)
 
     """
+
     STR = "strength"
     DEX = "dexterity"
     CON = "constitution"
@@ -45,11 +47,13 @@ class Ability(Enum):
     CRITICAL_FAILURE = "critical_failure"
     CRITICAL_SUCCESS = "critical_success"
 
+
 class WieldLocation(Enum):
     """
     Wield (or wear) locations.
 
     """
+
     # wield/wear location
     BACKPACK = "backpack"
     WEAPON_HAND = "weapon_hand"

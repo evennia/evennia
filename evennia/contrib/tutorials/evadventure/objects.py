@@ -13,12 +13,12 @@ from evennia.typeclasses.attributes import AttributeProperty
 from .enums import WieldLocation, Ability
 
 
-
 class EvAdventureObject(DefaultObject):
     """
     Base in-game entity.
 
     """
+
     # inventory management
     inventory_use_slot = AttributeProperty(default=WieldLocation.BACKPACK)
     # how many inventory slots it uses (can be a fraction)
@@ -41,6 +41,7 @@ class EvAdventureObjectFiller(EvAdventureObject):
     meaning it's unusable.
 
     """
+
     quality = AttributeProperty(default=0)
 
 
@@ -49,6 +50,7 @@ class EvAdventureWeapon(EvAdventureObject):
     Base weapon class for all EvAdventure weapons.
 
     """
+
     inventory_use_slot = AttributeProperty(WieldLocation.WEAPON_HAND)
 
     attack_type = AttributeProperty(default=Ability.STR)

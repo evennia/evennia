@@ -28,11 +28,12 @@ from evennia.utils.evtable import EvTable
 from .enums import Ability
 from .random_tables import (
     character_generation as chargen_table,
-    death_and_dismemberment as death_table
+    death_and_dismemberment as death_table,
 )
 
 
 # Basic rolls
+
 
 class EvAdventureRollEngine:
     """
@@ -66,10 +67,11 @@ class EvAdventureRollEngine:
         """
         max_diesize = 1000
         roll_string = roll_string.lower()
-        if 'd' not in roll_string:
-            raise TypeError(f"Dice roll '{roll_string}' was not recognized. "
-                            "Must be `<number>d<dicesize>`.")
-        number, diesize = roll_string.split('d', 1)
+        if "d" not in roll_string:
+            raise TypeError(
+                f"Dice roll '{roll_string}' was not recognized. " "Must be `<number>d<dicesize>`."
+            )
+        number, diesize = roll_string.split("d", 1)
         try:
             number = int(number)
             diesize = int(diesize)
@@ -104,8 +106,15 @@ class EvAdventureRollEngine:
         else:
             return min(self.roll("1d20"), self.roll("1d20"))
 
-    def saving_throw(self, character, bonus_type=Ability.STR, target=15,
-                     advantage=False, disadvantage=False, modifier=0):
+    def saving_throw(
+        self,
+        character,
+        bonus_type=Ability.STR,
+        target=15,
+        advantage=False,
+        disadvantage=False,
+        modifier=0,
+    ):
         """
         A saving throw without a clear enemy to beat. In _Knave_ all unopposed saving
         throws always tries to beat 15, so (d20 + bonus + modifier) > 15.
@@ -142,9 +151,15 @@ class EvAdventureRollEngine:
         return (dice_roll + bonus + modifier) > target, quality
 
     def opposed_saving_throw(
-            self, attacker, defender,
-            attack_type=Ability.STR, defense_type=Ability.ARMOR,
-            advantage=False, disadvantage=False, modifier=0):
+        self,
+        attacker,
+        defender,
+        attack_type=Ability.STR,
+        defense_type=Ability.ARMOR,
+        advantage=False,
+        disadvantage=False,
+        modifier=0,
+    ):
         """
         An saving throw that tries to beat an active opposing side.
 
@@ -167,10 +182,14 @@ class EvAdventureRollEngine:
 
         """
         defender_defense = getattr(defender, defense_type.value, 1) + 10
-        return self.saving_throw(attacker, bonus_type=attack_type,
-                                 target=defender_defense,
-                                 advantage=advantage, disadvantage=disadvantage,
-                                 modifier=modifier)
+        return self.saving_throw(
+            attacker,
+            bonus_type=attack_type,
+            target=defender_defense,
+            advantage=advantage,
+            disadvantage=disadvantage,
+            modifier=modifier,
+        )
 
     def roll_random_table(self, dieroll, table_choices):
         """
@@ -204,7 +223,7 @@ class EvAdventureRollEngine:
             min_range = 10**6
             for (valrange, choice) in table_choices:
 
-                minval, *maxval = valrange.split('-', 1)
+                minval, *maxval = valrange.split("-", 1)
                 minval = abs(int(minval))
                 maxval = abs(int(maxval[0]) if maxval else minval)
 
@@ -240,7 +259,7 @@ class EvAdventureRollEngine:
             bool: False if morale roll failed, True otherwise.
 
         """
-        return self.roll('2d6') <= defender.morale
+        return self.roll("2d6") <= defender.morale
 
     def heal(self, character, amount):
         """
@@ -265,7 +284,7 @@ class EvAdventureRollEngine:
             int: How much HP was healed. This is never more than how damaged we are.
 
         """
-        self.heal(character, self.roll('1d8') + character.constitution)
+        self.heal(character, self.roll("1d8") + character.constitution)
 
     death_map = {
         "weakened": "strength",
@@ -282,7 +301,7 @@ class EvAdventureRollEngine:
 
         """
 
-        result = self.roll_random_table('1d8', death_table)
+        result = self.roll_random_table("1d8", death_table)
         if result == "dead":
             character.handle_death()
         else:
@@ -304,15 +323,14 @@ class EvAdventureRollEngine:
                 character.hp = new_hp
 
                 character.msg(
-                    "~" * 78 +
-                    "\n|yYou survive your brush with death, "
+                    "~" * 78 + "\n|yYou survive your brush with death, "
                     f"but are |r{result.upper()}|y and permenently |rlose {loss} {abi}|y.|n\n"
-                    f"|GYou recover |g{new_hp}|G health|.\n"
-                    + "~" * 78
+                    f"|GYou recover |g{new_hp}|G health|.\n" + "~" * 78
                 )
 
 
 # character generation
+
 
 class EvAdventureCharacterGeneration:
     """
@@ -341,6 +359,7 @@ class EvAdventureCharacterGeneration:
         there is no GM to adjudicate a different choice).
 
     """
+
     def __init__(self):
         """
         Initialize starting values
@@ -351,7 +370,7 @@ class EvAdventureCharacterGeneration:
         roll_engine = EvAdventureRollEngine()
 
         # name will likely be modified later
-        self.name = roll_engine.roll_random_table('1d282', chargen_table['name'])
+        self.name = roll_engine.roll_random_table("1d282", chargen_table["name"])
 
         # base attribute bonuses (flat +1 bonus)
         self.strength = 2
@@ -362,17 +381,17 @@ class EvAdventureCharacterGeneration:
         self.charisma = 2
 
         # physical attributes (only for rp purposes)
-        self.physique = roll_engine.roll_random_table('1d20', chargen_table['physique'])
-        self.face = roll_engine.roll_random_table('1d20', chargen_table['face'])
-        self.skin = roll_engine.roll_random_table('1d20', chargen_table['skin'])
-        self.hair = roll_engine.roll_random_table('1d20', chargen_table['hair'])
-        self.clothing = roll_engine.roll_random_table('1d20', chargen_table['clothing'])
-        self.speech = roll_engine.roll_random_table('1d20', chargen_table['speech'])
-        self.virtue = roll_engine.roll_random_table('1d20', chargen_table['virtue'])
-        self.vice = roll_engine.roll_random_table('1d20', chargen_table['vice'])
-        self.background = roll_engine.roll_random_table('1d20', chargen_table['background'])
-        self.misfortune = roll_engine.roll_random_table('1d20', chargen_table['misfortune'])
-        self.alignment = roll_engine.roll_random_table('1d20', chargen_table['alignment'])
+        self.physique = roll_engine.roll_random_table("1d20", chargen_table["physique"])
+        self.face = roll_engine.roll_random_table("1d20", chargen_table["face"])
+        self.skin = roll_engine.roll_random_table("1d20", chargen_table["skin"])
+        self.hair = roll_engine.roll_random_table("1d20", chargen_table["hair"])
+        self.clothing = roll_engine.roll_random_table("1d20", chargen_table["clothing"])
+        self.speech = roll_engine.roll_random_table("1d20", chargen_table["speech"])
+        self.virtue = roll_engine.roll_random_table("1d20", chargen_table["virtue"])
+        self.vice = roll_engine.roll_random_table("1d20", chargen_table["vice"])
+        self.background = roll_engine.roll_random_table("1d20", chargen_table["background"])
+        self.misfortune = roll_engine.roll_random_table("1d20", chargen_table["misfortune"])
+        self.alignment = roll_engine.roll_random_table("1d20", chargen_table["alignment"])
 
         # same for all
         self.exploration_speed = 120
@@ -383,22 +402,23 @@ class EvAdventureCharacterGeneration:
         self.level = 1
 
         # random equipment
-        self.armor = roll_engine.roll_random_table('1d20', chargen_table['armor'])
+        self.armor = roll_engine.roll_random_table("1d20", chargen_table["armor"])
 
         _helmet_and_shield = roll_engine.roll_random_table(
-            '1d20', chargen_table["helmets and shields"])
+            "1d20", chargen_table["helmets and shields"]
+        )
         self.helmet = "helmet" if "helmet" in _helmet_and_shield else "none"
         self.shield = "shield" if "shield" in _helmet_and_shield else "none"
 
-        self.weapon = roll_engine.roll_random_table('1d20', chargen_table["starting weapon"])
+        self.weapon = roll_engine.roll_random_table("1d20", chargen_table["starting weapon"])
 
         self.backpack = [
             "ration",
             "ration",
-            roll_engine.roll_random_table('1d20', chargen_table["dungeoning gear"]),
-            roll_engine.roll_random_table('1d20', chargen_table["dungeoning gear"]),
-            roll_engine.roll_random_table('1d20', chargen_table["general gear 1"]),
-            roll_engine.roll_random_table('1d20', chargen_table["general gear 2"]),
+            roll_engine.roll_random_table("1d20", chargen_table["dungeoning gear"]),
+            roll_engine.roll_random_table("1d20", chargen_table["dungeoning gear"]),
+            roll_engine.roll_random_table("1d20", chargen_table["general gear 1"]),
+            roll_engine.roll_random_table("1d20", chargen_table["general gear 2"]),
         ]
 
     def build_desc(self):
@@ -489,12 +509,14 @@ class EvAdventureCharacterGeneration:
 
 # character improvement
 
+
 class EvAdventureImprovement:
     """
     Handle XP gains and level upgrades. Grouped in a class in order to
     make it easier to override the mechanism.
 
     """
+
     xp_per_level = 1000
     amount_of_abilities_to_upgrade = 3
     max_ability_bonus = 10  # bonus +10, defense 20
@@ -546,11 +568,13 @@ class EvAdventureImprovement:
             except AttributeError:
                 pass
 
-        character.hp_max = max(character.max_hp + 1,
-                               EvAdventureRollEngine.roll(f"{character.level}d8"))
+        character.hp_max = max(
+            character.max_hp + 1, EvAdventureRollEngine.roll(f"{character.level}d8")
+        )
 
 
 # character sheet visualization
+
 
 class EvAdventureCharacterSheet:
     """
@@ -596,9 +620,9 @@ class EvAdventureCharacterSheet:
         equipment = character.equipment.wielded + character.equipment.worn + character.carried
         # divide into chunks of max 10 length (to go into two columns)
         equipment_table = EvTable(
-            table=[equipment[i: i + 10] for i in range(0, len(equipment), 10)]
+            table=[equipment[i : i + 10] for i in range(0, len(equipment), 10)]
         )
-        form = EvForm({"FORMCHAR": 'x', "TABLECHAR": 'c', "SHEET": sheet})
+        form = EvForm({"FORMCHAR": "x", "TABLECHAR": "c", "SHEET": sheet})
         form.map(
             cells={
                 1: character.key,
@@ -610,12 +634,12 @@ class EvAdventureCharacterSheet:
                 7: f"{character.hp}/{character.hp_max}",
                 8: character.xp,
                 9: character.exploration_speed,
-                'A': character.combat_speed,
-                'B': character.db.desc,
+                "A": character.combat_speed,
+                "B": character.db.desc,
             },
             tables={
                 1: equipment_table,
-            }
+            },
         )
         return str(form)
 

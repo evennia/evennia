@@ -19,6 +19,7 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
     Test the roll engine in the rules module. This is the core of any RPG.
 
     """
+
     def setUp(self):
         super().setUp()
         self.roll_engine = rules.EvAdventureRollEngine()
@@ -40,15 +41,15 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
 
     def test_roll_limits(self):
         with self.assertRaises(TypeError):
-            self.roll_engine.roll('100d6', max_number=10)  # too many die
+            self.roll_engine.roll("100d6", max_number=10)  # too many die
         with self.assertRaises(TypeError):
-            self.roll_engine.roll('100')  # no d
+            self.roll_engine.roll("100")  # no d
         with self.assertRaises(TypeError):
-            self.roll_engine.roll('dummy')  # non-numerical
+            self.roll_engine.roll("dummy")  # non-numerical
         with self.assertRaises(TypeError):
-            self.roll_engine.roll('Ad4')  # non-numerical
+            self.roll_engine.roll("Ad4")  # non-numerical
         with self.assertRaises(TypeError):
-            self.roll_engine.roll('1d10000')  # limit is d1000
+            self.roll_engine.roll("1d10000")  # limit is d1000
 
     @patch("evennia.contrib.tutorials.evadventure.rules.randint")
     def test_roll_with_advantage_disadvantage(self, mock_randint):
@@ -61,19 +62,18 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
 
         # cancel each other out
         self.assertEqual(
-            self.roll_engine.roll_with_advantage_or_disadvantage(
-                disadvantage=True, advantage=True), 9)
+            self.roll_engine.roll_with_advantage_or_disadvantage(disadvantage=True, advantage=True),
+            9,
+        )
         mock_randint.assert_called_once()
         mock_randint.reset_mock()
 
         # run with advantage/disadvantage
-        self.assertEqual(
-            self.roll_engine.roll_with_advantage_or_disadvantage(advantage=True), 9)
+        self.assertEqual(self.roll_engine.roll_with_advantage_or_disadvantage(advantage=True), 9)
         mock_randint.assert_has_calls([call(1, 20), call(1, 20)])
         mock_randint.reset_mock()
 
-        self.assertEqual(
-            self.roll_engine.roll_with_advantage_or_disadvantage(disadvantage=True), 9)
+        self.assertEqual(self.roll_engine.roll_with_advantage_or_disadvantage(disadvantage=True), 9)
         mock_randint.assert_has_calls([call(1, 20), call(1, 20)])
         mock_randint.reset_mock()
 
@@ -86,39 +86,40 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
         character.dexterity = 1
 
         self.assertEqual(
-            self.roll_engine.saving_throw(character, bonus_type=enums.Ability.STR),
-            (False, None))
+            self.roll_engine.saving_throw(character, bonus_type=enums.Ability.STR), (False, None)
+        )
         self.assertEqual(
             self.roll_engine.saving_throw(character, bonus_type=enums.Ability.DEX, modifier=1),
-            (False, None))
+            (False, None),
+        )
         self.assertEqual(
             self.roll_engine.saving_throw(
-                character,
-                advantage=True,
-                bonus_type=enums.Ability.DEX, modifier=6),
-            (False, None))
+                character, advantage=True, bonus_type=enums.Ability.DEX, modifier=6
+            ),
+            (False, None),
+        )
         self.assertEqual(
             self.roll_engine.saving_throw(
-                character,
-                disadvantage=True,
-                bonus_type=enums.Ability.DEX, modifier=7),
-            (True, None))
+                character, disadvantage=True, bonus_type=enums.Ability.DEX, modifier=7
+            ),
+            (True, None),
+        )
 
         mock_randint.return_value = 1
         self.assertEqual(
             self.roll_engine.saving_throw(
-                character,
-                disadvantage=True,
-                bonus_type=enums.Ability.STR, modifier=2),
-            (False, enums.Ability.CRITICAL_FAILURE))
+                character, disadvantage=True, bonus_type=enums.Ability.STR, modifier=2
+            ),
+            (False, enums.Ability.CRITICAL_FAILURE),
+        )
 
         mock_randint.return_value = 20
         self.assertEqual(
             self.roll_engine.saving_throw(
-                character,
-                disadvantage=True,
-                bonus_type=enums.Ability.STR, modifier=2),
-            (True, enums.Ability.CRITICAL_SUCCESS))
+                character, disadvantage=True, bonus_type=enums.Ability.STR, modifier=2
+            ),
+            (True, enums.Ability.CRITICAL_SUCCESS),
+        )
 
     @patch("evennia.contrib.tutorials.evadventure.rules.randint")
     def test_opposed_saving_throw(self, mock_randint):
@@ -130,18 +131,19 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
 
         self.assertEqual(
             self.roll_engine.opposed_saving_throw(
-                attacker, defender,
-                attack_type=enums.Ability.STR, defense_type=enums.Ability.ARMOR
+                attacker, defender, attack_type=enums.Ability.STR, defense_type=enums.Ability.ARMOR
             ),
-            (False, None)
+            (False, None),
         )
         self.assertEqual(
             self.roll_engine.opposed_saving_throw(
-                attacker, defender,
-                attack_type=enums.Ability.STR, defense_type=enums.Ability.ARMOR,
-                modifier=2
+                attacker,
+                defender,
+                attack_type=enums.Ability.STR,
+                defense_type=enums.Ability.ARMOR,
+                modifier=2,
             ),
-            (True, None)
+            (True, None),
         )
 
     @patch("evennia.contrib.tutorials.evadventure.rules.randint")
@@ -150,36 +152,40 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
 
         self.assertEqual(
             self.roll_engine.roll_random_table(
-                "1d20", random_tables.character_generation['physique']),
-            "scrawny"
+                "1d20", random_tables.character_generation["physique"]
+            ),
+            "scrawny",
+        )
+        self.assertEqual(
+            self.roll_engine.roll_random_table("1d20", random_tables.character_generation["vice"]),
+            "irascible",
         )
         self.assertEqual(
             self.roll_engine.roll_random_table(
-                "1d20", random_tables.character_generation['vice']),
-            "irascible"
+                "1d20", random_tables.character_generation["alignment"]
+            ),
+            "neutrality",
         )
         self.assertEqual(
             self.roll_engine.roll_random_table(
-                "1d20", random_tables.character_generation['alignment']),
-            "neutrality"
-        )
-        self.assertEqual(
-            self.roll_engine.roll_random_table(
-                "1d20", random_tables.character_generation['helmets and shields']),
-            "no helmet or shield"
+                "1d20", random_tables.character_generation["helmets and shields"]
+            ),
+            "no helmet or shield",
         )
         # testing faulty rolls outside of the table ranges
         mock_randint.return_value = 25
         self.assertEqual(
             self.roll_engine.roll_random_table(
-                "1d20", random_tables.character_generation['helmets and shields']),
-            "helmet and shield"
+                "1d20", random_tables.character_generation["helmets and shields"]
+            ),
+            "helmet and shield",
         )
         mock_randint.return_value = -10
         self.assertEqual(
             self.roll_engine.roll_random_table(
-                "1d20", random_tables.character_generation['helmets and shields']),
-            "no helmet or shield"
+                "1d20", random_tables.character_generation["helmets and shields"]
+            ),
+            "no helmet or shield",
         )
 
     @patch("evennia.contrib.tutorials.evadventure.rules.randint")
@@ -202,11 +208,11 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
 
         mock_randint.return_value = 5
         self.roll_engine.heal_from_rest(character)
-        self.assertEqual(character.hp, 7)   # hp + 1d8 + consititution bonus
+        self.assertEqual(character.hp, 7)  # hp + 1d8 + consititution bonus
         mock_randint.assert_called_with(1, 8)  # 1d8
 
         self.roll_engine.heal_from_rest(character)
-        self.assertEqual(character.hp, 8)   # can't have more than max hp
+        self.assertEqual(character.hp, 8)  # can't have more than max hp
 
     @patch("evennia.contrib.tutorials.evadventure.rules.randint")
     def test_roll_death(self, mock_randint):
@@ -246,32 +252,33 @@ class EvAdventureCharacterGenerationTest(BaseEvenniaTest):
         self.assertEqual(self.chargen.misfortune, "exiled")
         self.assertEqual(self.chargen.armor, "gambeson")
         self.assertEqual(self.chargen.shield, "shield")
-        self.assertEqual(self.chargen.backpack, ['ration', 'ration', 'waterskin',
-                                                 'waterskin', 'drill', 'twine'])
+        self.assertEqual(
+            self.chargen.backpack, ["ration", "ration", "waterskin", "waterskin", "drill", "twine"]
+        )
 
     def test_build_desc(self):
         self.assertEqual(
             self.chargen.build_desc(),
             "Herbalist. Wears stained clothes, and has hoarse speech. Has a scrawny physique, "
             "a broken face, pockmarked skin and greased hair. Is honest, but irascible. "
-            "Has been exiled in the past. Favors neutrality."
+            "Has been exiled in the past. Favors neutrality.",
         )
 
-    @parameterized.expand([
-        # source, target, value, new_source_val, new_target_val
-        (enums.Ability.CON, enums.Ability.STR, 1, 1, 3),
-        (enums.Ability.INT, enums.Ability.DEX, 1, 1, 3),
-        (enums.Ability.CHA, enums.Ability.CON, 1, 1, 3),
-        (enums.Ability.STR, enums.Ability.WIS, 1, 1, 3),
-        (enums.Ability.WIS, enums.Ability.CHA, 1, 1, 3),
-        (enums.Ability.DEX, enums.Ability.DEX, 1, 2, 2),
-    ])
+    @parameterized.expand(
+        [
+            # source, target, value, new_source_val, new_target_val
+            (enums.Ability.CON, enums.Ability.STR, 1, 1, 3),
+            (enums.Ability.INT, enums.Ability.DEX, 1, 1, 3),
+            (enums.Ability.CHA, enums.Ability.CON, 1, 1, 3),
+            (enums.Ability.STR, enums.Ability.WIS, 1, 1, 3),
+            (enums.Ability.WIS, enums.Ability.CHA, 1, 1, 3),
+            (enums.Ability.DEX, enums.Ability.DEX, 1, 2, 2),
+        ]
+    )
     def test_adjust_attribute(self, source, target, value, new_source_val, new_target_val):
         self.chargen.adjust_attribute(source, target, value)
-        self.assertEqual(
-            getattr(self.chargen, source.value), new_source_val, f"{source}->{target}")
-        self.assertEqual(
-            getattr(self.chargen, target.value), new_target_val, f"{source}->{target}")
+        self.assertEqual(getattr(self.chargen, source.value), new_source_val, f"{source}->{target}")
+        self.assertEqual(getattr(self.chargen, target.value), new_target_val, f"{source}->{target}")
 
     def test_adjust_consecutive(self):
         # gradually shift all to STR (starts at 2)
@@ -311,6 +318,7 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
     Test the equipment mechanism.
 
     """
+
     def _get_empty_slots(self):
         return {
             enums.WieldLocation.BACKPACK: [],
@@ -324,15 +332,17 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
     def test_equipmenthandler_max_slots(self):
         self.assertEqual(self.character.equipment.max_slots, 11)
 
-    @parameterized.expand([
-        # size, pass_validation?
-        (1, True),
-        (2, True),
-        (11, True),
-        (12, False),
-        (20, False),
-        (25, False)
-    ])
+    @parameterized.expand(
+        [
+            # size, pass_validation?
+            (1, True),
+            (2, True),
+            (11, True),
+            (12, False),
+            (20, False),
+            (25, False),
+        ]
+    )
     def test_validate_slot_usage(self, size, is_ok):
         obj = MagicMock()
         obj.size = size
@@ -343,15 +353,17 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
             with self.assertRaises(characters.EquipmentError):
                 self.character.equipment.validate_slot_usage(obj)
 
-    @parameterized.expand([
-        # item, where
-        ("helmet", enums.WieldLocation.HEAD),
-        ("shield", enums.WieldLocation.SHIELD_HAND),
-        ("armor", enums.WieldLocation.BODY),
-        ("weapon", enums.WieldLocation.WEAPON_HAND),
-        ("big_weapon", enums.WieldLocation.TWO_HANDS),
-        ("item", enums.WieldLocation.BACKPACK),
-    ])
+    @parameterized.expand(
+        [
+            # item, where
+            ("helmet", enums.WieldLocation.HEAD),
+            ("shield", enums.WieldLocation.SHIELD_HAND),
+            ("armor", enums.WieldLocation.BODY),
+            ("weapon", enums.WieldLocation.WEAPON_HAND),
+            ("big_weapon", enums.WieldLocation.TWO_HANDS),
+            ("item", enums.WieldLocation.BACKPACK),
+        ]
+    )
     def test_use(self, itemname, where):
         self.assertEqual(self.character.equipment.slots, self._get_empty_slots())
 
@@ -366,32 +378,32 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
     def test_store(self):
         self.character.equipment.store(self.weapon)
         self.assertEqual(self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], None)
-        self.assertTrue(
-            self.weapon in self.character.equipment.slots[enums.WieldLocation.BACKPACK])
+        self.assertTrue(self.weapon in self.character.equipment.slots[enums.WieldLocation.BACKPACK])
 
     def test_two_handed_exclusive(self):
         """Two-handed weapons can't be used together with weapon+shield"""
         self.character.equipment.use(self.big_weapon)
         self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], self.big_weapon)
+            self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], self.big_weapon
+        )
         # equipping sword or shield removes two-hander
         self.character.equipment.use(self.shield)
         self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield)
-        self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], None)
+            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield
+        )
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], None)
         self.character.equipment.use(self.weapon)
         self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], self.weapon)
+            self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], self.weapon
+        )
 
         # the two-hander removes the two weapons
         self.character.equipment.use(self.big_weapon)
         self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], self.big_weapon)
-        self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
-        self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], None)
+            self.character.equipment.slots[enums.WieldLocation.TWO_HANDS], self.big_weapon
+        )
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], None)
 
     def test_remove__with_obj(self):
         self.character.equipment.use(self.shield)
@@ -399,16 +411,19 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
         self.character.equipment.store(self.weapon)
 
         self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield)
-        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK],
-                         [self.item, self.weapon])
+            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield
+        )
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.BACKPACK], [self.item, self.weapon]
+        )
 
         self.assertEqual(self.character.equipment.remove(self.shield), [self.shield])
         self.assertEqual(self.character.equipment.remove(self.item), [self.item])
 
         self.assertEqual(self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
-        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK],
-                         [self.weapon])
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.BACKPACK], [self.weapon]
+        )
 
     def test_remove__with_slot(self):
         self.character.equipment.use(self.shield)
@@ -416,17 +431,20 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
         self.character.equipment.store(self.helmet)
 
         self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield)
-        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK],
-                         [self.item, self.helmet])
-
-        self.assertEqual(self.character.equipment.remove(enums.WieldLocation.SHIELD_HAND),
-                         [self.shield])
-        self.assertEqual(self.character.equipment.remove(enums.WieldLocation.BACKPACK),
-                         [self.item, self.helmet])
+            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield
+        )
+        self.assertEqual(
+            self.character.equipment.slots[enums.WieldLocation.BACKPACK], [self.item, self.helmet]
+        )
 
         self.assertEqual(
-            self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
+            self.character.equipment.remove(enums.WieldLocation.SHIELD_HAND), [self.shield]
+        )
+        self.assertEqual(
+            self.character.equipment.remove(enums.WieldLocation.BACKPACK), [self.item, self.helmet]
+        )
+
+        self.assertEqual(self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], None)
         self.assertEqual(self.character.equipment.slots[enums.WieldLocation.BACKPACK], [])
 
     def test_properties(self):

@@ -8,7 +8,7 @@ from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils import create
 from .mixins import EvAdventureMixin
 from .. import combat_turnbased
-from .. charactersd import EvAdventureCharacter
+from ..charactersd import EvAdventureCharacter
 
 
 class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
@@ -16,8 +16,12 @@ class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
     Test the turn-based combat-handler implementation.
 
     """
-    @patch("evennia.contrib.tutorials.evadventure.combat_turnbased"
-           ".EvAdventureCombatHandler.interval", new=-1)
+
+    @patch(
+        "evennia.contrib.tutorials.evadventure.combat_turnbased"
+        ".EvAdventureCombatHandler.interval",
+        new=-1,
+    )
     def setUp(self):
         super().setUp()
         self.combathandler = combat_turnbased.EvAdventureCombatHandler.objects.create()
@@ -50,8 +54,6 @@ class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
     def test_attack(self, mock_randint):
         mock_randint = 8
         self.combathandler.register_action(
-            combat_turnbased.CombatActionAttack,
-            self.combatant, self.target)
+            combat_turnbased.CombatActionAttack, self.combatant, self.target
+        )
         self.combathandler._end_turn()
-
-
