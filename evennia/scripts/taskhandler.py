@@ -337,7 +337,7 @@ class TaskHandler(object):
 
         Returns:
             TaskHandlerTask: An object to represent a task.
-                Reference evennia.scripts.taskhandler.TaskHandlerTask for complete details.
+                Reference `evennia.scripts.taskhandler.TaskHandlerTask` for complete details.
 
         """
         # set the completion time
