@@ -35,6 +35,7 @@ class CombatFailure(RuntimeError):
     Some failure during actions.
     """
 
+
 class CombatAction:
     """
     This is the base of a combat-action, like 'attack' or defend.
