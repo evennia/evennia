@@ -31,6 +31,7 @@ class EvAdventureQuest:
     check_<name> and complete_<name>
 
     """
+
     # name + category must be globally unique. They are
     # queried as name:category or just name, if category is empty.
     name = ""
@@ -44,11 +45,9 @@ class EvAdventureQuest:
     def check():
         pass
 
-
     def progress(self, quester, *args, **kwargs):
-        """
+        """ """
 
-        """
 
 class EvAdventureQuestHandler:
     """
@@ -63,15 +62,14 @@ class EvAdventureQuestHandler:
     ```
 
     """
+
     quest_storage_attribute = "_quests"
     quest_storage_attribute_category = "evadventure"
 
     def __init__(self, obj):
         self.obj = obj
         self.storage = obj.attributes.get(
-            self.quest_storage_attribute,
-            category=self.quest_storage_attribute_category,
-            default={}
+            self.quest_storage_attribute, category=self.quest_storage_attribute_category, default={}
         )
 
     def quest_storage_key(self, name, category):
@@ -116,6 +114,3 @@ class EvAdventureQuestHandler:
                 start immediately.
 
         """
-
-
-

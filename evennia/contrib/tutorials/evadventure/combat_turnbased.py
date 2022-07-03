@@ -42,7 +42,8 @@ class CombatAction:
     Inherit from this to make new actions.
 
     """
-    key = 'action'
+
+    key = "action"
     help_text = "Combat action to perform."
     # action to echo to everyone.
     post_action_text = "{combatant} performed an action."
@@ -107,6 +108,7 @@ class CombatActionDoNothing(CombatAction):
     Do nothing this turn.
 
     """
+
     help_text = "Hold you position, doing nothing."
     post_action_text = "{combatant} does nothing this turn."
 
@@ -124,24 +126,29 @@ class CombatActionStunt(CombatAction):
     spend a use unless they succeed.
 
     """
+
     give_advantage = True
     give_disadvantage = False
     max_uses = 1
     priority = -1
     attack_type = Ability.DEX
     defense_type = Ability.DEX
-    help_text = ("Perform a stunt against a target. This will give you or an ally advantage "
-                 "on your next action against the same target [range 0-1, one use per combat. "
-                 "Bonus lasts for two turns].")
+    help_text = (
+        "Perform a stunt against a target. This will give you or an ally advantage "
+        "on your next action against the same target [range 0-1, one use per combat. "
+        "Bonus lasts for two turns]."
+    )
 
     def use(self, attacker, defender, *args, beneficiary=None, **kwargs):
         # quality doesn't matter for stunts, they are either successful or not
 
-        is_success, _  = rules.EvAdventureRollEngine.opposed_saving_throw(
-            attacker, defender,
+        is_success, _ = rules.EvAdventureRollEngine.opposed_saving_throw(
+            attacker,
+            defender,
             attack_type=self.attack_type,
             defense_type=self.defense_type,
-            advantage=False, disadvantage=disadvantage,
+            advantage=False,
+            disadvantage=disadvantage,
         )
         if is_success:
             beneficiary = beneficiary if beneficiary else attacker
@@ -161,6 +168,7 @@ class CombatActionAttack(CombatAction):
     melee attack.
 
     """
+
     key = "attack"
     priority = 1
 
@@ -176,14 +184,17 @@ class CombatActionAttack(CombatAction):
         disadvantage = bool(self.combathandler.disadvantage_matrix[attacker].pop(defender, False))
 
         is_hit, quality = rules.EvAdventureRollEngine.opposed_saving_throw(
-            attacker, defender,
+            attacker,
+            defender,
             attack_type=attacker.weapon.attack_type,
             defense_type=attacker.weapon.defense_type,
-            advantage=advantage, disadvantage=disadvantage
+            advantage=advantage,
+            disadvantage=disadvantage,
         )
         if is_hit:
-            self.combathandler.resolve_damage(attacker, defender,
-                                              critical=quality == "critical success")
+            self.combathandler.resolve_damage(
+                attacker, defender, critical=quality == "critical success"
+            )
 
             # TODO messaging here
 
@@ -204,6 +215,7 @@ class CombatActionUseItem(CombatAction):
         combat_post_use
 
     """
+
     def get_help(self, item, *args):
         return item.combat_get_help(*args)
 
@@ -227,6 +239,7 @@ class CombatActionFlee(CombatAction):
     end of the second turn.
 
     """
+
     key = "flee"
     priority = -1
 
@@ -234,37 +247,42 @@ class CombatActionFlee(CombatAction):
         # it's safe to do this twice
         self.combathandler.flee(combatant)
 
+
 class CombatActionChase(CombatAction):
 
-        """
-        Chasing is a way to counter a 'flee' action. It is a maximum movement towards the target
-        and will mean a DEX contest, if the fleeing target loses, they are moved back from
-        'disengaging' range and remain in combat at the new distance (likely 2 if max movement
-        is 2). Advantage/disadvantage are considered.
+    """
+    Chasing is a way to counter a 'flee' action. It is a maximum movement towards the target
+    and will mean a DEX contest, if the fleeing target loses, they are moved back from
+    'disengaging' range and remain in combat at the new distance (likely 2 if max movement
+    is 2). Advantage/disadvantage are considered.
 
-        """
-        key = "chase"
-        priority = -5  # checked last
+    """
 
-        attack_type = Ability.DEX  # or is it CON?
-        defense_type = Ability.DEX
+    key = "chase"
+    priority = -5  # checked last
 
-        def use(self, combatant, fleeing_target, *args, **kwargs):
+    attack_type = Ability.DEX  # or is it CON?
+    defense_type = Ability.DEX
 
-            advantage = bool(self.advantage_matrix[attacker].pop(fleeing_target, False))
-            disadvantage = bool(self.disadvantage_matrix[attacker].pop(fleeing_target, False))
+    def use(self, combatant, fleeing_target, *args, **kwargs):
 
-            is_success, _ = rules.EvAdventureRollEngine.opposed_saving_throw(
-                combatant, fleeing_target,
-                attack_type=self.attack_type, defense_type=self.defense_type,
-                advantage=advantage, disadvantage=disadvantage
-            )
+        advantage = bool(self.advantage_matrix[attacker].pop(fleeing_target, False))
+        disadvantage = bool(self.disadvantage_matrix[attacker].pop(fleeing_target, False))
 
-            if is_success:
-                # managed to stop the target from fleeing/disengaging
-                self.combatant.unflee(fleeing_target)
-            else:
-                pass  # they are getting away!
+        is_success, _ = rules.EvAdventureRollEngine.opposed_saving_throw(
+            combatant,
+            fleeing_target,
+            attack_type=self.attack_type,
+            defense_type=self.defense_type,
+            advantage=advantage,
+            disadvantage=disadvantage,
+        )
+
+        if is_success:
+            # managed to stop the target from fleeing/disengaging
+            self.combatant.unflee(fleeing_target)
+        else:
+            pass  # they are getting away!
 
 
 class EvAdventureCombatHandler(DefaultScript):
@@ -283,7 +301,7 @@ class EvAdventureCombatHandler(DefaultScript):
         CombatActionChase,
         CombatActionUseItem,
         CombatActionStunt,
-        CombatActionAttack
+        CombatActionAttack,
     ]
 
     # attributes
@@ -345,7 +363,8 @@ class EvAdventureCombatHandler(DefaultScript):
         for combatant in self.combatants:
             # read the current action type selected by the player
             action, args, kwargs = self.action_queue.get(
-                combatant, (CombatActionDoNothing(self, combatant), (), {}))
+                combatant, (CombatActionDoNothing(self, combatant), (), {})
+            )
             # perform the action on the CombatAction instance
             action.use(combatant, *args, **kwargs)
 
@@ -380,11 +399,13 @@ class EvAdventureCombatHandler(DefaultScript):
 
         for combatant in self.combatants:
             new_advantage_matrix[combatant] = {
-                target: set_at_turn for target, turn in advantage_matrix.items()
+                target: set_at_turn
+                for target, turn in advantage_matrix.items()
                 if set_at_turn > oldest_stunt_age
             }
             new_disadvantage_matrix[combatant] = {
-                target: set_at_turn for target, turn in disadvantage_matrix.items()
+                target: set_at_turn
+                for target, turn in disadvantage_matrix.items()
                 if set_at_turn > oldest_stunt_age
             }
 
@@ -500,8 +521,11 @@ class EvAdventureCombatHandler(DefaultScript):
 
             if defender.hp > 0:
                 # they are weakened, but with hp
-                self.msg("You are alive, but out of the fight. If you want to press your luck, "
-                         "you need to rejoin the combat.", targets=defender)
+                self.msg(
+                    "You are alive, but out of the fight. If you want to press your luck, "
+                    "you need to rejoin the combat.",
+                    targets=defender,
+                )
                 defender.at_defeat()  # note - NPC monsters may still 'die' here
             else:
                 # outright killed
@@ -537,19 +561,16 @@ combat_script = """
 """
 
 
-
 def _register_action(caller, raw_string, **kwargs):
     """
     Register action with handler.
 
     """
-    action = kwargs.get['action']
-    action_args = kwargs['action_args']
-    action_kwargs = kwargs['action_kwargs']
+    action = kwargs.get["action"]
+    action_args = kwargs["action_args"]
+    action_kwargs = kwargs["action_kwargs"]
     combat = caller.scripts.get("combathandler")
-    combat.register_action(
-        caller, action=action, *action_args, **action_kwargs
-    )
+    combat.register_action(caller, action=action, *action_args, **action_kwargs)
 
 
 def node_select_target(caller, raw_string, **kwargs):
@@ -558,9 +579,9 @@ def node_select_target(caller, raw_string, **kwargs):
     with all other actions.
 
     """
-    action = kwargs.get('action')
-    action_args = kwargs.get('action_args')
-    action_kwargs = kwargs.get('action_kwargs')
+    action = kwargs.get("action")
+    action_args = kwargs.get("action_args")
+    action_kwargs = kwargs.get("action_kwargs")
     combat = caller.scripts.get("combathandler")
     text = "Select target for |w{action}|n."
 
@@ -568,21 +589,25 @@ def node_select_target(caller, raw_string, **kwargs):
     options = [
         {
             "desc": combatant.key,
-            "goto": (_register_action, {"action": action,
-                                        "args": action_args,
-                                        "kwargs": action_kwargs})
+            "goto": (
+                _register_action,
+                {"action": action, "args": action_args, "kwargs": action_kwargs},
+            ),
         }
-    for combatant in combat.combatants]
+        for combatant in combat.combatants
+    ]
     # make the apply-self option always the last one
     options.append(
         {
             "desc": "(yourself)",
-            "goto": (_register_action, {"action": action,
-                                       "args": action_args,
-                                       "kwargs": action_kwargs})
+            "goto": (
+                _register_action,
+                {"action": action, "args": action_args, "kwargs": action_kwargs},
+            ),
         }
     )
     return text, options
+
 
 def node_select_action(caller, raw_string, **kwargs):
     """
@@ -593,13 +618,14 @@ def node_select_action(caller, raw_string, **kwargs):
     text = combat.get_previous_turn_status(caller)
     options = combat.get_available_options(caller)
 
-
     options = {
         "desc": action,
-        "goto": ("node_select_target", {"action": action,
-                                        })
-
+        "goto": (
+            "node_select_target",
+            {
+                "action": action,
+            },
+        ),
     }
-
 
     return text, options

@@ -27,6 +27,7 @@ class EquipmentHandler:
     until you clean them.
 
     """
+
     save_attribute = "inventory_slots"
 
     def __init__(self, obj):
@@ -47,8 +48,8 @@ class EquipmentHandler:
                 WieldLocation.TWO_HANDS: None,
                 WieldLocation.BODY: None,
                 WieldLocation.HEAD: None,
-                WieldLocation.BACKPACK: []
-            }
+                WieldLocation.BACKPACK: [],
+            },
         )
 
     def _count_slots(self):
@@ -64,8 +65,7 @@ class EquipmentHandler:
             if slot is not WieldLocation.BACKPACK
         )
         backpack_usage = sum(
-            getattr(slotobj, "size", 0) or 0
-            for slotobj in slots[WieldLocation.BACKPACK]
+            getattr(slotobj, "size", 0) or 0 for slotobj in slots[WieldLocation.BACKPACK]
         )
         return wield_usage + backpack_usage
 
@@ -101,9 +101,11 @@ class EquipmentHandler:
         current_slot_usage = self._count_slots()
         if current_slot_usage + size > max_slots:
             slots_left = max_slots - current_slot_usage
-            raise EquipmentError(f"Equipment full ($int2str({slots_left}) slots "
-                                 f"remaining, {obj.key} needs $int2str({size}) "
-                                 f"$pluralize(slot, {size})).")
+            raise EquipmentError(
+                f"Equipment full ($int2str({slots_left}) slots "
+                f"remaining, {obj.key} needs $int2str({size}) "
+                f"$pluralize(slot, {size}))."
+            )
         return True
 
     @property
@@ -120,11 +122,13 @@ class EquipmentHandler:
 
         """
         slots = self.slots
-        return sum((
-            getattr(slots[WieldLocation.BODY], "armor", 0),
-            getattr(slots[WieldLocation.SHIELD_HAND], "armor", 0),
-            getattr(slots[WieldLocation.HEAD], "armor", 0),
-        ))
+        return sum(
+            (
+                getattr(slots[WieldLocation.BODY], "armor", 0),
+                getattr(slots[WieldLocation.SHIELD_HAND], "armor", 0),
+                getattr(slots[WieldLocation.HEAD], "armor", 0),
+            )
+        )
 
     @property
     def weapon(self):
@@ -423,6 +427,7 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
     EvAdventureCharacter class instead.
 
     """
+
     hit_dice = AttributeProperty(default=1)
     armor = AttributeProperty(default=11)
     morale = AttributeProperty(default=9)
