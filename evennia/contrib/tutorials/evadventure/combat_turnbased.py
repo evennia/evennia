@@ -18,7 +18,6 @@ optimizal positioning.
 
 """
 
-from dataclasses import dataclass
 from collections import defaultdict
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
