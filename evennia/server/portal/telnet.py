@@ -226,6 +226,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                 or option == naws.NAWS
                 or option == MCCP
                 or option == mssp.MSSP
+                or option == ECHO
                 or option == suppress_ga.SUPPRESS_GA
             )
 
@@ -236,6 +237,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
             or option == naws.NAWS
             or option == MCCP
             or option == mssp.MSSP
+            or option == ECHO
             or option == suppress_ga.SUPPRESS_GA
         )
 
