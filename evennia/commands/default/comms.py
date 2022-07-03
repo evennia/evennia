@@ -1818,7 +1818,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
 
 class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
     """
-    Link an Evennia channel to an exteral Grapevine channel
+    Link an Evennia channel to an external Grapevine channel
 
     Usage:
       grapevine2chan[/switches] <evennia_channel> = <grapevine_channel>

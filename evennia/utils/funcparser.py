@@ -85,8 +85,8 @@ class _ParsedFunc:
     # state storage
     fullstr: str = ""
     infuncstr: str = ""
-    single_quoted: bool = False
-    double_quoted: bool = False
+    single_quoted: int = -1
+    double_quoted: int = -1
     current_kwarg: str = ""
     open_lparens: int = 0
     open_lsquate: int = 0
@@ -319,8 +319,8 @@ class FuncParser:
         # parsing state
         callstack = []
 
-        single_quoted = False
-        double_quoted = False
+        single_quoted = -1
+        double_quoted = -1
         open_lparens = 0  # open (
         open_lsquare = 0  # open [
         open_lcurly = 0  # open {
@@ -331,6 +331,7 @@ class FuncParser:
         curr_func = None
         fullstr = ""  # final string
         infuncstr = ""  # string parts inside the current level of $funcdef (including $)
+        literal_infuncstr = False
 
         for char in string:
 
@@ -374,12 +375,13 @@ class FuncParser:
                         curr_func.open_lcurly = open_lcurly
                         current_kwarg = ""
                         infuncstr = ""
-                        single_quoted = False
-                        double_quoted = False
+                        single_quoted = -1
+                        double_quoted = -1
                         open_lparens = 0
                         open_lsquare = 0
                         open_lcurly = 0
                         exec_return = ""
+                        literal_infuncstr = False
                         callstack.append(curr_func)
 
                 # start a new func
@@ -402,19 +404,41 @@ class FuncParser:
                 infuncstr += str(exec_return)
                 exec_return = ""
 
-            if char == "'":  # note that this is the same as "\'"
+            if char == "'" and double_quoted < 0:  # note that this is the same as "\'"
                 # a single quote - flip status
-                single_quoted = not single_quoted
-                infuncstr += char
+                if single_quoted == 0:
+                    infuncstr = infuncstr[1:]
+                    single_quoted = -1
+                elif single_quoted > 0:
+                    prefix = infuncstr[0:single_quoted]
+                    infuncstr = prefix + infuncstr[single_quoted + 1 :]
+                    single_quoted = -1
+                else:
+                    infuncstr += char
+                    infuncstr = infuncstr.strip()
+                    single_quoted = len(infuncstr) - 1
+                    literal_infuncstr = True
+
                 continue
 
-            if char == '"':  # note that this is the same as '\"'
+            if char == '"' and single_quoted < 0:  # note that this is the same as '\"'
                 # a double quote = flip status
-                double_quoted = not double_quoted
-                infuncstr += char
+                if double_quoted == 0:
+                    infuncstr = infuncstr[1:]
+                    double_quoted = -1
+                elif double_quoted > 0:
+                    prefix = infuncstr[0:double_quoted]
+                    infuncstr = prefix + infuncstr[double_quoted + 1 :]
+                    double_quoted = -1
+                else:
+                    infuncstr += char
+                    infuncstr = infuncstr.strip()
+                    double_quoted = len(infuncstr) - 1
+                    literal_infuncstr = True
+
                 continue
 
-            if double_quoted or single_quoted:
+            if double_quoted >= 0 or single_quoted >= 0:
                 # inside a string definition - this escapes everything else
                 infuncstr += char
                 continue
@@ -478,12 +502,15 @@ class FuncParser:
                     else:
                         curr_func.args.append(exec_return)
                 else:
+                    if not literal_infuncstr:
+                        infuncstr = infuncstr.strip()
+
                     # store a string instead
                     if current_kwarg:
-                        curr_func.kwargs[current_kwarg] = infuncstr.strip()
-                    elif infuncstr.strip():
+                        curr_func.kwargs[current_kwarg] = infuncstr
+                    elif literal_infuncstr or infuncstr.strip():
                         # don't store the empty string
-                        curr_func.args.append(infuncstr.strip())
+                        curr_func.args.append(infuncstr)
 
                 # note that at this point either exec_return or infuncstr will
                 # be empty. We need to store the full string so we can print
@@ -494,6 +521,7 @@ class FuncParser:
                 current_kwarg = ""
                 exec_return = ""
                 infuncstr = ""
+                literal_infuncstr = False
 
                 if char == ")":
                     # closing the function list - this means we have a
@@ -537,6 +565,7 @@ class FuncParser:
                         if return_str:
                             exec_return = ""
                         infuncstr = ""
+                        literal_infuncstr = False
                 continue
 
             infuncstr += char

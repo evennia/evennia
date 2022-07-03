@@ -96,6 +96,7 @@ class Tag(models.Model):
 # Handlers making use of the Tags model
 #
 
+
 class TagProperty:
     """
     Tag property descriptor. Allows for setting tags on an object as Django-like 'fields'
@@ -112,6 +113,7 @@ class TagProperty:
                 mytag2 = TagProperty(category="tagcategory")
 
     """
+
     taghandler_name = "tags"
 
     def __init__(self, category=None, data=None):
@@ -134,10 +136,7 @@ class TagProperty:
         """
         try:
             return getattr(instance, self.taghandler_name).get(
-                key=self._key,
-                category=self._category,
-                return_list=False,
-                raise_exception=True
+                key=self._key, category=self._category, return_list=False, raise_exception=True
             )
         except AttributeError:
             self.__set__(instance, self._category)
@@ -150,9 +149,7 @@ class TagProperty:
         self._category = category
         (
             getattr(instance, self.taghandler_name).add(
-                key=self._key,
-                category=self._category,
-                data=self._data
+                key=self._key, category=self._category, data=self._data
             )
         )
 
@@ -430,8 +427,15 @@ class TagHandler(object):
 
         return ret[0] if len(ret) == 1 else ret
 
-    def get(self, key=None, default=None, category=None, return_tagobj=False, return_list=False,
-            raise_exception=False):
+    def get(
+        self,
+        key=None,
+        default=None,
+        category=None,
+        return_tagobj=False,
+        return_list=False,
+        raise_exception=False,
+    ):
         """
         Get the tag for the given key, category or combination of the two.
 
@@ -613,6 +617,7 @@ class AliasProperty(TagProperty):
             bob = AliasProperty()
 
     """
+
     taghandler_name = "aliases"
 
 
@@ -636,6 +641,7 @@ class PermissionProperty(TagProperty):
             myperm = PermissionProperty()
 
     """
+
     taghandler_name = "permissions"
 
 
