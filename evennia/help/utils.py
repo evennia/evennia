@@ -12,9 +12,13 @@ import re
 # since we use them (e.g. as command names).
 # Lunr's default ignore-word list is found here:
 # https://github.com/yeraydiazdiaz/lunr.py/blob/master/lunr/stop_word_filter.py
-_LUNR_STOP_WORD_FILTER_EXCEPTIONS = (
-    ["about", "might", "get", "who", "say"] + settings.LUNR_STOP_WORD_FILTER_EXCEPTIONS
-)
+_LUNR_STOP_WORD_FILTER_EXCEPTIONS = [
+    "about",
+    "might",
+    "get",
+    "who",
+    "say",
+] + settings.LUNR_STOP_WORD_FILTER_EXCEPTIONS
 
 
 _LUNR = None

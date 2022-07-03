@@ -10,14 +10,15 @@ the return from the function.
 from evennia.utils.funcparser import FuncParser
 
 def _power_callable(*args, **kwargs):
-    """This will be callable as $square(number, power=<num>) in string"""
+    """This will be callable as $pow(number, power=<num>) in string"""
     pow = int(kwargs.get('power', 2))
     return float(args[0]) ** pow
 
+# create a parser and tell it that '$pow' means using _power_callable
 parser = FuncParser({"pow": _power_callable})
 
 ```
-Next, just pass a string into the parser, optionally containing `$func(...)` markers:
+Next, just pass a string into the parser, containing `$func(...)` markers:
 
 ```python
 parser.parse("We have that 4 x 4 x 4 is $pow(4, power=3).")
@@ -71,7 +72,7 @@ You can apply inline function parsing to any string. The
 from evennia.utils import funcparser
 
 parser = FuncParser(callables, **default_kwargs)
-parsed_string = parser.parser(input_string, raise_errors=False,
+parsed_string = parser.parse(input_string, raise_errors=False,
                               escape=False, strip=False,
                               return_str=True, **reserved_kwargs)
 
@@ -90,8 +91,12 @@ available to the parser as you parse strings with it. It can either be
   an underscore `_`) will be considered a suitable callable. The name of the function will be the `$funcname`
   by which it can be called.
 - A `list` of modules/paths. This allows you to pull in modules from many sources for your parsing.
+- The `**default` kwargs are optional kwargs that will be passed to _all_
+  callables every time this parser is used - unless the user overrides it explicitly in
+  their call. This is great for providing sensible standards that the user can
+  tweak as needed.
 
-The other arguments to the parser:
+`FuncParser.parse` takes further arguments, and can vary for every string parsed.
 
 - `raise_errors` - By default, any errors from a callable will be quietly ignored and the result
   will be that the failing function call will show verbatim. If `raise_errors` is set,
@@ -102,12 +107,14 @@ The other arguments to the parser:
 - `return_str` - When `True` (default), `parser` always returns a string. If `False`, it may return
   the return value of a single function call in the string. This is the same as using the `.parse_to_any`
   method.
-- The `**default/reserved_keywords` are optional and allow you to pass custom data into _every_ function
-  call. This is great for including things like the current session or config options. Defaults can be
-  replaced if the user gives the same-named kwarg in the string's function call. Reserved kwargs are always passed,
-  ignoring defaults or what the user passed. In addition, the `funcparser` and `raise_errors`
-  reserved kwargs are always passed - the first is a back-reference to the `FuncParser` instance and the second
-  is the `raise_errors` boolean passed into `FuncParser.parse`.
+- The `**reserved_keywords` are _always_ passed to every callable in the string.
+  They override any `**defaults` given when instantiating the parser and cannot
+  be overridden by the user - if they enter the same kwarg it will be ignored.
+  This is great for providing the current session, settings etc.
+- The `funcparser` and `raise_errors`
+  are always added as reserved keywords - the first is a
+  back-reference to the `FuncParser` instance and the second
+  is the `raise_errors` boolean given to `FuncParser.parse`.
 
 Here's an example of using the default/reserved keywords:
 
@@ -158,7 +165,8 @@ created the parser.
 
 However, if you _nest_ functions, the return of the innermost function may be something other than
 a string. Let's introduce the `$eval` function, which evaluates simple expressions using
-Python's `literal_eval` and/or `simple_eval`.
+Python's `literal_eval` and/or `simple_eval`. It returns whatever data type it
+evaluates to.
 
     "There's a $toint($eval(10 * 2.2))% chance of survival."
 
@@ -177,23 +185,66 @@ will be a string:
   "There's a 22% chance of survival."
 ```
 
-However, if you use the `parse_to_any` (or `parse(..., return_str=True)`) and _don't add any extra string around the outermost function call_,
+However, if you use the `parse_to_any` (or `parse(..., return_str=False)`) and
+_don't add any extra string around the outermost function call_,
 you'll get the return type of the outermost callable back:
 
 ```python
-parser.parse_to_any("$toint($eval(10 * 2.2)%")
-"22%"
 parser.parse_to_any("$toint($eval(10 * 2.2)")
 22
+parser.parse_to_any("the number $toint($eval(10 * 2.2).")
+"the number 22"
+parser.parse_to_any("$toint($eval(10 * 2.2)%")
+"22%"
 ```
+
+### Escaping special character
+
+When entering funcparser callables in strings, it looks like a regular
+function call inside a string:
+
+```python
+"This is a $myfunc(arg1, arg2, kwarg=foo)."
+```
+
+Commas (`,`) and equal-signs (`=`) are considered to separate the arguments and
+kwargs. In the same way, the right parenthesis (`)`) closes the argument list.
+Sometimes you want to include commas in the argument without it breaking the
+argument list.
+
+```python
+"There is a $format(beautiful meadow, with dandelions) to the west."
+```
+
+You can escape in various ways.
+
+- Prepending with the escape character `\`
+
+        ```python
+        "There is a $format(beautiful meadow\, with dandelions) to the west."
+        ```
+- Wrapping your strings in quotes. This works like Python, and you can nest
+   double and single quotes inside each other if so needed. The result will
+   be a verbatim string that contains everything but the outermost quotes.
+
+        ```python
+        "There is a $format('beautiful meadow, with dandelions') to the west."
+        ```
+- If you want verbatim quotes in your string, you can escape them too.
+
+        ```python
+        "There is a $format('beautiful meadow, with \'dandelions\'') to the west."
+        ```
 
 ### Safe convertion of inputs
 
-Since you don't know in which order users may use your callables, they should always check the types
-of its inputs and convert to the type the callable needs. Note also that when converting from strings,
-there are limits what inputs you can support. This is because FunctionParser strings are often used by
-non-developer players/builders and some things (such as complex classes/callables etc) are just not
-safe/possible to convert from string representation.
+Since you don't know in which order users may use your callables, they should
+always check the types of its inputs and convert to the type the callable needs.
+Note also that when converting from strings, there are limits what inputs you
+can support. This is because FunctionParser strings can be used by
+non-developer players/builders and some things (such as complex
+classes/callables etc) are just not safe/possible to convert from string
+representation.
 
 In `evennia.utils.utils` is a helper called
 [safe_convert_to_types](evennia.utils.utils.safe_convert_to_types). This function
@@ -204,18 +255,23 @@ from evennia.utils.utils import safe_convert_to_types
 
 def _process_callable(*args, **kwargs):
     """
-    A callable with a lot of custom options
-
-    $process(expression, local, extra=34, extra2=foo)
+    $process(expression, local, extra1=34, extra2=foo)
 
     """
     args, kwargs = safe_convert_to_type(
-      (('py', 'py'), {'extra1': int, 'extra2': str}),
+      (('py', str), {'extra1': int, 'extra2': str}),
       *args, **kwargs)
 
     # args/kwargs should be correct types now
 
 ```
+
+In other words, in the callable `$process(expression, local, extra1=..,
+extra2=...)`, the first argument will be handled by the 'py' converter
+(described below), the second will passed through regular Python `str`,
+kwargs will be handled by `int` and `str` respectively. You can supply
+your own converter function as long as it takes one argument and returns
+the converted result.
 
 In other words,
 
@@ -224,8 +280,7 @@ args, kwargs = safe_convert_to_type(
         (tuple_of_arg_converters, dict_of_kwarg_converters), *args, **kwargs)
 ```
 
-Each converter should be a callable taking one argument - this will be the arg/kwarg-value to convert. The
-special converter `"py"` will try to convert a string argument to a Python structure with the help of the
+The special converter `"py"` will try to convert a string argument to a Python structure with the help of the
 following tools (which you may also find useful to experiment with on your own):
 
 - [ast.literal_eval](https://docs.python.org/3.8/library/ast.html#ast.literal_eval) is an in-built Python
@@ -339,12 +394,12 @@ references to other objects accessible via these callables.
   result of `you_obj.get_display_name(looker=receiver)`. This allows for a single string to echo differently
   depending on who sees it, and also to reference other people in the same way.
 - `$You([key])` - same as `$you` but always capitalized.
-- `$conj(verb)` ([code](evennia.utils.funcparser.funcparser_callable_conjugate)) - conjugates a verb 
+- `$conj(verb)` ([code](evennia.utils.funcparser.funcparser_callable_conjugate)) - conjugates a verb
   between 2nd person presens to 3rd person presence depending on who
   sees the string. For example `"$You() $conj(smiles)".` will show as "You smile." and "Tom smiles." depending
   on who sees it. This makes use of the tools in [evennia.utils.verb_conjugation](evennia.utils.verb_conjugation)
   to do this, and only works for English verbs.
-- `$pron(pronoun [,options])` ([code](evennia.utils.funcparser.funcparser_callable_pronoun)) - Dynamically 
+- `$pron(pronoun [,options])` ([code](evennia.utils.funcparser.funcparser_callable_pronoun)) - Dynamically
   map pronouns (like his, herself, you, its etc) between 1st/2nd person to 3rd person.
 
 ### Example

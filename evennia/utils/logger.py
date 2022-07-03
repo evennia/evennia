@@ -50,6 +50,7 @@ def _log(msg, logfunc, prefix="", **kwargs):
 
 # log call functions (each has legacy aliases)
 
+
 def log_info(msg, **kwargs):
     """
     Logs any generic debugging/informative info that should appear in the log.
@@ -61,6 +62,7 @@ def log_info(msg, **kwargs):
 
     """
     _log(msg, log.info, **kwargs)
+
 
 info = log_info
 log_infomsg = log_info
@@ -78,6 +80,7 @@ def log_warn(msg, **kwargs):
 
     """
     _log(msg, log.warn, **kwargs)
+
 
 warn = log_warn
 warning = log_warn
@@ -120,6 +123,7 @@ def log_trace(msg=None, **kwargs):
         if msg:
             _log(msg, log.error, prefix="!!", **kwargs)
 
+
 log_tracemsg = log_trace
 exception = log_trace
 critical = log_trace
@@ -156,6 +160,7 @@ def log_sec(msg, **kwargs):
     """
     _log(msg, log.info, prefix="SS", **kwargs)
 
+
 sec = log_sec
 security = log_sec
 log_secmsg = log_sec
@@ -174,12 +179,12 @@ def log_server(msg, **kwargs):
     _log(msg, log.info, prefix="Server", **kwargs)
 
 
-
 class GetLogObserver:
     """
     Sets up how the system logs are formatted.
 
     """
+
     component_prefix = ""
     event_levels = {
         twisted_logger.LogLevel.debug: "??",
@@ -207,8 +212,7 @@ class GetLogObserver:
         event["log_format"] = str(event.get("log_format", ""))
         component_prefix = self.component_prefix or ""
         log_msg = twisted_logger.formatEventAsClassicLogText(
-            event,
-            formatTime=lambda e: twisted_logger.formatTime(e, _TIME_FORMAT)
+            event, formatTime=lambda e: twisted_logger.formatTime(e, _TIME_FORMAT)
         )
         return f"{component_prefix}{log_msg}"
 
@@ -218,12 +222,13 @@ class GetLogObserver:
 
 # Called by server/portal on startup
 
+
 class GetPortalLogObserver(GetLogObserver):
     component_prefix = "|Portal| "
 
+
 class GetServerLogObserver(GetLogObserver):
     component_prefix = ""
-
 
 
 # logging overrides
@@ -351,6 +356,7 @@ class WeeklyLogFile(logfile.DailyLogFile):
         logfile.BaseLogFile.write(self, data)
         self.lastDate = max(self.lastDate, self.toDate())
         self.size += len(data)
+
 
 # Arbitrary file logger
 

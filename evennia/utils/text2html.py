@@ -234,9 +234,9 @@ class TextToHTMLparser(object):
 
         for i, substr in enumerate(str_list):
             # reset all current styling
-            if substr == ANSI_NORMAL and not clean:
-                # replace with close existing tag
-                str_list[i] = "</span>"
+            if substr == ANSI_NORMAL:
+                # close any existing span if necessary
+                str_list[i] = "</span>" if not clean else ""
                 # reset to defaults
                 classes = []
                 clean = True

@@ -1255,12 +1255,12 @@ class EvMenu:
         min_rows = 4
 
         # split the items into columns
-        split = max(min_rows, ceil(len(table)/ncols))
+        split = max(min_rows, ceil(len(table) / ncols))
         max_end = len(table)
         cols_list = []
         for icol in range(ncols):
-            start = icol*split
-            end = min(start+split,max_end)
+            start = icol * split
+            end = min(start + split, max_end)
             cols_list.append(EvColumn(*table[start:end]))
 
         return str(EvTable(table=cols_list, border="none"))

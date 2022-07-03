@@ -13,6 +13,7 @@ class Component:
 
     Each Component must supply the name, it is used as a slot name but also part of the attribute key.
     """
+
     name = ""
 
     def __init__(self, host=None):

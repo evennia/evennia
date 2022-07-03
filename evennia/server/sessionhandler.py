@@ -683,7 +683,7 @@ class ServerSessionHandler(SessionHandler):
         Get a unique list of connected and logged-in Accounts.
 
         Returns:
-            accounts (list): All conected Accounts (which may be fewer than the
+            accounts (list): All connected Accounts (which may be fewer than the
                 amount of Sessions due to multi-playing).
 
         """

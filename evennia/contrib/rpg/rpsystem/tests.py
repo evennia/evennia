@@ -165,17 +165,19 @@ class TestRPSystem(BaseEvenniaTest):
         )
 
     def test_get_sdesc(self):
-        looker = self.speaker # Sender
-        target = self.receiver1 # Receiver1
-        looker.sdesc.add(sdesc0) # A nice sender of emotes
-        target.sdesc.add(sdesc1) # The first receiver of emotes.
+        looker = self.speaker  # Sender
+        target = self.receiver1  # Receiver1
+        looker.sdesc.add(sdesc0)  # A nice sender of emotes
+        target.sdesc.add(sdesc1)  # The first receiver of emotes.
 
         # sdesc with no processing
         self.assertEqual(looker.get_sdesc(target), "The first receiver of emotes.")
         # sdesc with processing
-        self.assertEqual(looker.get_sdesc(target, process=True), "|bThe first receiver of emotes.|n")
-        
-        looker.recog.add(target, recog01) # Mr Receiver
+        self.assertEqual(
+            looker.get_sdesc(target, process=True), "|bThe first receiver of emotes.|n"
+        )
+
+        looker.recog.add(target, recog01)  # Mr Receiver
 
         # recog with no processing
         self.assertEqual(looker.get_sdesc(target), "Mr Receiver")
@@ -233,7 +235,7 @@ class TestRPSystem(BaseEvenniaTest):
             self.out1,
             "|bA nice sender of emotes|n looks at |mReceiver1|n. Then, "
             "|ba nice sender of emotes|n looks at |mReceiver1|n, |mReceiver1|n "
-            "and |bAnother nice colliding sdesc-guy for tests|n twice."
+            "and |bAnother nice colliding sdesc-guy for tests|n twice.",
         )
         self.assertEqual(
             self.out2,

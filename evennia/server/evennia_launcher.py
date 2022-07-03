@@ -2316,9 +2316,11 @@ def main():
         if option in ("makemessages", "compilemessages"):
             # some commands don't require the presence of a game directory to work
             need_gamedir = False
-            if CURRENT_DIR !=  EVENNIA_LIB:
-                print("You must stand in the evennia/evennia/ folder (where the 'locale/' "
-                      "folder is located) to run this command.")
+            if CURRENT_DIR != EVENNIA_LIB:
+                print(
+                    "You must stand in the evennia/evennia/ folder (where the 'locale/' "
+                    "folder is located) to run this command."
+                )
                 sys.exit()
 
         if option in ("shell", "check", "makemigrations", "createsuperuser", "shell_plus"):

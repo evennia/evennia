@@ -107,8 +107,7 @@ class TestGeneral(BaseEvenniaCommandTest):
 
     def test_nick_list(self):
         self.call(general.CmdNick(), "/list", "No nicks defined.")
-        self.call(general.CmdNick(), "test1 = Hello", 
-            "Inputline-nick 'test1' mapped to 'Hello'.")
+        self.call(general.CmdNick(), "test1 = Hello", "Inputline-nick 'test1' mapped to 'Hello'.")
         self.call(general.CmdNick(), "/list", "Defined Nicks:")
 
     def test_get_and_drop(self):
@@ -1295,7 +1294,8 @@ class TestBuilding(BaseEvenniaCommandTest):
             "Obj2 = evennia.objects.objects.DefaultExit",
             "Obj2 changed typeclass from evennia.objects.objects.DefaultObject "
             "to evennia.objects.objects.DefaultExit.",
-            cmdstring="swap", inputs=["yes"],
+            cmdstring="swap",
+            inputs=["yes"],
         )
         self.call(building.CmdTypeclass(), "/list Obj", "Core typeclasses")
         self.call(
@@ -1332,7 +1332,7 @@ class TestBuilding(BaseEvenniaCommandTest):
             "/reset/force Obj=evennia.objects.objects.DefaultObject",
             "Obj updated its existing typeclass (evennia.objects.objects.DefaultObject).\n"
             "All object creation hooks were run. All old attributes where deleted before the swap.",
-            inputs=["yes"]
+            inputs=["yes"],
         )
 
         from evennia.prototypes.prototypes import homogenize_prototype
@@ -1359,7 +1359,7 @@ class TestBuilding(BaseEvenniaCommandTest):
                 "typeclasses.objects.Object.\nOnly the at_object_creation hook was run "
                 "(update mode). Attributes set before swap were not removed\n"
                 "(use `swap` or `type/reset` to clear all). Prototype 'replaced_obj' was "
-                "successfully applied over the object type."
+                "successfully applied over the object type.",
             )
             assert self.obj1.db.desc == "protdesc"
 
