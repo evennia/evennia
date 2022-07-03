@@ -8,7 +8,7 @@ from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils import create
 from .mixins import EvAdventureMixin
 from .. import combat_turnbased
-from ..charactersd import EvAdventureCharacter
+from ..characters import EvAdventureCharacter
 
 
 class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
@@ -52,7 +52,7 @@ class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
 
     @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
     def test_attack(self, mock_randint):
-        mock_randint = 8
+        mock_randint.return_value = 8
         self.combathandler.register_action(
             combat_turnbased.CombatActionAttack, self.combatant, self.target
         )
