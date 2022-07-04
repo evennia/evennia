@@ -388,6 +388,8 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
         ```python
         >>> list_to_string([1,2,3], endsep=',')
         '1, 2, 3'
+        >>> list_to_string([1,2,3], endsep='')
+        '1, 2 3'
         >>> list_to_string([1,2,3], ensdep='and')
         '1, 2 and 3'
         >>> list_to_string([1,2,3], sep=';', endsep=';')
