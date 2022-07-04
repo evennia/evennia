@@ -68,6 +68,8 @@ class TestListToString(TestCase):
         [1,2,3] -> '1; 2; 3'
      with endsep=='and':
         [1,2,3] -> '1, 2 and 3'
+     with endsep=='':
+        [1,2,3] -> '1, 2 3'
      with addquote and endsep="and"
         [1,2,3] -> '"1", "2" and "3"'
     """
@@ -76,6 +78,7 @@ class TestListToString(TestCase):
         self.assertEqual("1, 2, and 3", utils.list_to_string([1, 2, 3]))
         self.assertEqual("1, 2, 3", utils.list_to_string([1, 2, 3], endsep=","))
         self.assertEqual("1, 2 and 3", utils.list_to_string([1, 2, 3], endsep="and"))
+        self.assertEqual("1, 2 3", utils.list_to_string([1, 2, 3], endsep=""))
         self.assertEqual("1; 2; 3", utils.list_to_string([1, 2, 3], sep=";", endsep=";"))
         self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep=",", addquote=True))
         self.assertEqual(
