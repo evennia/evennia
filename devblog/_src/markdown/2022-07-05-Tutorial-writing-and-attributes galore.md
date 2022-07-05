@@ -29,10 +29,10 @@ The tutorial game itself is based on [Knave](https://www.gmbinder.com/share/-LZG
 - Character generation (Knave chargen is mostly random, but it still showcases Evennia's menu system EvMenu).
 - Inventory management and equipment (including limited storage as well as items worn or wielded).
 - Turn-based combat system (menu based)
-  - Attacking with wielded weapons (or spell rune)
-  - Stunts to give you advantages for later turns or give enemies disadvantage for later turns
-  - Using items for healing or other effects
-  - Fleeing and chasing
+- - Attacking with wielded weapons (or spell rune)
+- - Stunts to give you advantages for later turns or give enemies disadvantage for later turns
+- - Using items for healing or other effects
+- - Fleeing and chasing
 - Alternative Twitch-based combat system (might be a stretch goal)
 - NPCs with very simple AI, Death and respawn
 - Simple Questing system with NPC quest givers and quest states
