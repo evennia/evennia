@@ -861,7 +861,7 @@
 <span class="sd">    This is used as a last resort when normal encoding does not work.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        string (str): A string to convert to &#39;safe characters&#39; convertable</span>
+<span class="sd">        string (str): A string to convert to &#39;safe characters&#39; convertible</span>
 <span class="sd">            to an latin-1 bytestring later.</span>
 <span class="sd">        default (str, optional): Characters resisting mapping will be replaced</span>
 <span class="sd">            with this character or string. The intent is to apply an encode operation</span>
@@ -1120,7 +1120,7 @@
 <span class="sd">        Keep in mind that persistent tasks arguments and callback should not</span>
 <span class="sd">        use memory references.</span>
 <span class="sd">        If persistent is set to True the delay function will return an int</span>
-<span class="sd">        which is the task&#39;s id itended for use with TASK_HANDLER&#39;s do_task</span>
+<span class="sd">        which is the task&#39;s id intended for use with TASK_HANDLER&#39;s do_task</span>
 <span class="sd">        and remove methods.</span>
 <span class="sd">        All persistent tasks whose time delays have passed will be called on server startup.</span>
 
@@ -1573,12 +1573,12 @@
 <span class="sd">        defaultpaths (iterable, optional): If a direct import from `path` fails,</span>
 <span class="sd">            try subsequent imports by prepending those paths to `path`.</span>
 <span class="sd">        fallback (str): If all other attempts fail, use this path as a fallback.</span>
-<span class="sd">            This is intended as a last-resport. In the example of Evennia</span>
+<span class="sd">            This is intended as a last-resort. In the example of Evennia</span>
 <span class="sd">            loading, this would be a path to a default parent class in the</span>
 <span class="sd">            evennia repo itself.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        class (Class): An uninstatiated class recovered from path.</span>
+<span class="sd">        class (Class): An uninstantiated class recovered from path.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ImportError: If all loading failed.</span>
@@ -1717,7 +1717,7 @@
 <span class="sd">    Matching is made from the start of each subword in each</span>
 <span class="sd">    alternative. Case is not important. So e.g. &quot;bi sh sw&quot; or just</span>
 <span class="sd">    &quot;big&quot; or &quot;shiny&quot; or &quot;sw&quot; will match &quot;Big shiny sword&quot;. Scoring is</span>
-<span class="sd">    done to allow to separate by most common demoninator. You will get</span>
+<span class="sd">    done to allow to separate by most common denominator. You will get</span>
 <span class="sd">    multiple matches returned if appropriate.</span>
 
 <span class="sd">    Args:</span>
@@ -1791,7 +1791,7 @@
 
 <span class="sd">        ftable = format_table([[1,2,3], [4,5,6]])</span>
 <span class="sd">        string = &quot;&quot;</span>
-<span class="sd">        for ir, row in enumarate(ftable):</span>
+<span class="sd">        for ir, row in enumerate(ftable):</span>
 <span class="sd">            if ir == 0:</span>
 <span class="sd">                # make first row white</span>
 <span class="sd">                string += &quot;\\n|w&quot; + &quot;&quot;.join(row) + &quot;|n&quot;</span>

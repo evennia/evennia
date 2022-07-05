@@ -1113,7 +1113,7 @@
         <span class="n">exitname</span><span class="p">,</span> <span class="n">backshort</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">directions</span><span class="p">[</span><span class="n">exitshort</span><span class="p">]</span>
         <span class="n">backname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">directions</span><span class="p">[</span><span class="n">backshort</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="c1"># if we recieved a typeclass for the exit, add it to the alias(short name)</span>
+        <span class="c1"># if we received a typeclass for the exit, add it to the alias(short name)</span>
         <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
             <span class="c1"># limit to only the first : character</span>
             <span class="n">exit_typeclass</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -1707,7 +1707,7 @@
 <div class="viewcode-block" id="CmdSetAttribute.split_nested_attr"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdSetAttribute.split_nested_attr">[docs]</a>    <span class="k">def</span> <span class="nf">split_nested_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Yields tuples of (possible attr name, nested keys on that attr).</span>
-<span class="sd">        For performance, this is biased to the deepest match, but allows compatability</span>
+<span class="sd">        For performance, this is biased to the deepest match, but allows compatibility</span>
 <span class="sd">        with older attrs that might have been named with `[]`&#39;s.</span>
 
 <span class="sd">        &gt; list(split_nested_attr(&quot;nested[&#39;asdf&#39;][0]&quot;))</span>
@@ -2874,7 +2874,7 @@
             <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Stored Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_stored_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Merged Cmdset(s)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_merged_cmdsets</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">)</span>
             <span class="n">objdata</span><span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;Commands vailable to </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (result of Merged Cmdset(s))&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Commands available to </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (result of Merged Cmdset(s))&quot;</span>
             <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_current_cmds</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">current_cmdset</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span> <span class="o">==</span> <span class="s2">&quot;script&quot;</span><span class="p">:</span>
             <span class="n">objdata</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_script_desc</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -4073,7 +4073,7 @@
                 <span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># we homogenize the protoype first, to be more lenient with free-form</span>
+                <span class="c1"># we homogenize the prototype first, to be more lenient with free-form</span>
                 <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span><span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>

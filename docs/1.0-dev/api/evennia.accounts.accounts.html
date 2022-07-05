@@ -483,7 +483,7 @@ could get invalidated.</p>
 <li><p><strong>typeclass</strong> (<em>str</em><em>, </em><em>optional</em>) – Typeclass to use for this character. If
 not given, use settings.BASE_CHARACTER_TYPECLASS.</p></li>
 <li><p><strong>permissions</strong> (<em>list</em><em>, </em><em>optional</em>) – If not given, use the account’s permissions.</p></li>
-<li><p><strong>ip</strong> (<em>str</em><em>, </em><em>optiona</em>) – The client IP creating this character. Will fall back to the
+<li><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – The client IP creating this character. Will fall back to the
 one stored for the account if not given.</p></li>
 <li><p><strong>kwargs</strong> (<em>any</em>) – Other kwargs will be used in the create_call.</p></li>
 </ul>
@@ -592,7 +592,7 @@ for the command-send</p></li>
 <dd class="field-even"><p><strong>kwargs</strong> (<em>any</em>) – Other keyword arguments will be added to the
 found command object instance as variables before it
 executes. This is unused by default Evennia but may be
-used to set flags and change operating paramaters for
+used to set flags and change operating parameters for
 commands at run-time.</p>
 </dd>
 </dl>
@@ -897,7 +897,7 @@ auto-puppeting based on <strong>MULTISESSION_MODE</strong>.</p>
 <code class="sig-name descname">at_failed_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_failed_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_failed_login" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the login process if a user account is targeted correctly
 but provided with an invalid password. By default it does nothing,
-but exists to be overriden.</p>
+but exists to be overridden.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1078,7 +1078,7 @@ if one is available for use.</p>
 <dd><p>Gets or creates a Guest account object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – IP address of requestor; used for ban checking,
+<dd class="field-odd"><p><strong>ip</strong> (<em>str</em><em>, </em><em>optional</em>) – IP address of requester; used for ban checking,
 throttling and logging</p>
 </dd>
 <dt class="field-even">Returns</dt>

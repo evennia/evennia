@@ -559,7 +559,7 @@ This is used as a last resort when normal encoding does not work.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>string</strong> (<em>str</em>) – A string to convert to ‘safe characters’ convertable
+<li><p><strong>string</strong> (<em>str</em>) – A string to convert to ‘safe characters’ convertible
 to an latin-1 bytestring later.</p></li>
 <li><p><strong>default</strong> (<em>str</em><em>, </em><em>optional</em>) – Characters resisting mapping will be replaced
 with this character or string. The intent is to apply an encode operation
@@ -739,7 +739,7 @@ a server restart/reload, taking into account the specified delay
 Keep in mind that persistent tasks arguments and callback should not
 use memory references.
 If persistent is set to True the delay function will return an int
-which is the task’s id itended for use with TASK_HANDLER’s do_task
+which is the task’s id intended for use with TASK_HANDLER’s do_task
 and remove methods.
 All persistent tasks whose time delays have passed will be called on server startup.</p>
 </dd></dl>
@@ -1056,13 +1056,13 @@ primarily used to convert db_typeclass_path:s to classes.</p>
 <li><p><strong>defaultpaths</strong> (<em>iterable</em><em>, </em><em>optional</em>) – If a direct import from <strong>path</strong> fails,
 try subsequent imports by prepending those paths to <strong>path</strong>.</p></li>
 <li><p><strong>fallback</strong> (<em>str</em>) – If all other attempts fail, use this path as a fallback.
-This is intended as a last-resport. In the example of Evennia
+This is intended as a last-resort. In the example of Evennia
 loading, this would be a path to a default parent class in the
 evennia repo itself.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>class (Class)</em> – An uninstatiated class recovered from path.</p>
+<dd class="field-even"><p><em>class (Class)</em> – An uninstantiated class recovered from path.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>ImportError</strong> – If all loading failed.</p>
@@ -1082,13 +1082,13 @@ primarily used to convert db_typeclass_path:s to classes.</p>
 <li><p><strong>defaultpaths</strong> (<em>iterable</em><em>, </em><em>optional</em>) – If a direct import from <strong>path</strong> fails,
 try subsequent imports by prepending those paths to <strong>path</strong>.</p></li>
 <li><p><strong>fallback</strong> (<em>str</em>) – If all other attempts fail, use this path as a fallback.
-This is intended as a last-resport. In the example of Evennia
+This is intended as a last-resort. In the example of Evennia
 loading, this would be a path to a default parent class in the
 evennia repo itself.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>class (Class)</em> – An uninstatiated class recovered from path.</p>
+<dd class="field-even"><p><em>class (Class)</em> – An uninstantiated class recovered from path.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>ImportError</strong> – If all loading failed.</p>
@@ -1158,7 +1158,7 @@ Could be empty if there are no matches.</p>
 Matching is made from the start of each subword in each
 alternative. Case is not important. So e.g. “bi sh sw” or just
 “big” or “shiny” or “sw” will match “Big shiny sword”. Scoring is
-done to allow to separate by most common demoninator. You will get
+done to allow to separate by most common denominator. You will get
 multiple matches returned if appropriate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1205,7 +1205,7 @@ unknown and must be calculated on the fly.</p>
 <p>Examples:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ftable</span> <span class="o">=</span> <span class="n">format_table</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]])</span>
 <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-<span class="k">for</span> <span class="n">ir</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">enumarate</span><span class="p">(</span><span class="n">ftable</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">ir</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ftable</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">ir</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># make first row white</span>
         <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|w&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;|n&quot;</span>
