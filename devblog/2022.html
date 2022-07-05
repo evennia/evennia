@@ -621,7 +621,7 @@
 <p>Earlier this year I <a href="https://github.com/evennia/evennia/discussions/2640">invited people to try the Evennia develop branch</a> - what will become Evennia 1.0. A lot of bold beta-testers have since swapped to using the 1.0 branch. While there are plenty of issues being reported, most seem pretty happy about it so far. As mentioned in earlier dev blogs, Evennia 1.0 has a <a href="https://github.com/evennia/evennia/blob/master/CHANGELOG.md">lot of improvements and new features</a>!</p>
 <p>As part of this, the amount of PRs being made against develop branch has increased a lot, with awesome community members stepping up to fix bugs and even address long-standing annoyances. This includes everything from big improvements in ANSI parsing, fixes to the 1.0 FuncParser, RPSystem contrib optimizations and much more - <a href="https://github.com/evennia/evennia/pulls?page=2&amp;q=is%3Apr+is%3Aclosed">the list of closed PRs is long</a>.</p>
 <p>Another big part are everyone helping to answer questions in chat and suggesting improvements to the community in general. Thanks everyone!</p>
-<h2>The Upcoming beginner tutorial</h2>
+<h2>The upcoming beginner tutorial</h2>
 <p>On my end, I'm working on the Beginner Tutorial for the new 1.0 documentation. This will be a multi-part tutorial where you get to make a little MUD game from scratch. It goes through the basics of Evennia all the way to releasing your little game and I hope it will help people get started. This will also lead to a new contrib - the <code>evadventure</code> package, which should (I plan) have everything the tutorial needs to run. This is useful for those that prefer picking apart existing code over reading about it.</p>
 <p>The tutorial game itself is based on <a href="https://www.gmbinder.com/share/-LZGcbbCQaqjIV0TmLx3">Knave</a>, an light Old-School-Renaissance (OSR) tabletop roleplaying ruleset inspired by early editions Dungeons &amp; Dragons. It's simple enough to fit in a tutorial but with enough wrinkles to showcase how to create some basic rpg systems in Evennia:</p>
 <ul>
@@ -712,8 +712,7 @@ mana <span style="color: #666666">=</span> char<span style="color: #666666">.</s
 </pre></div>
 
 <p>directly (you'll need to be careful to not override any existing properties on objects this way of course).</p>
-<p>An interesting feature of using an <code>AttributeProperty</code> is that you can choose to <em>not</em></p>
-<p>actually create the <code>Attribute</code> under the hood unless the default changed:</p>
+<p>An interesting feature of using an <code>AttributeProperty</code> is that you can choose to <em>not</em> actually create the <code>Attribute</code> under the hood unless the default changed:</p>
 <div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Character</span>(DefaultCharacter):
 
     strength <span style="color: #666666">=</span> AttributeProperty(<span style="color: #666666">10</span>, autocreate<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>)
@@ -721,7 +720,7 @@ mana <span style="color: #666666">=</span> char<span style="color: #666666">.</s
     mana <span style="color: #666666">=</span> AttributeProperty(<span style="color: #666666">10</span>, autocreate<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">False</span>)
 </pre></div>
 
-<p>When you now access <code>char.stength</code> you will get <code>10</code> back but you won't actually be hitting the database to load anything - it's just giving you the default. Not until you <em>change</em> the default will the actual <code>Attribute</code> be created. While this can be very powerful for optimization, note that you can of course not access such data via <code>char.db</code> or <code>char.attributes.get</code> either (because no <code>Attribute</code> yet exists). So this functionality can be confusing unless you know what you are doing. Hence <code>autocreate</code> defaults to <code>True</code>.</p>
+<p>When you now access <code>char.strength</code> you will get <code>10</code> back but you won't actually be hitting the database to load anything - it's just giving you the default. Not until you <em>change</em> the default will the actual <code>Attribute</code> be created. While this can be very powerful for optimization, note that you can of course not access such data via <code>char.db</code> or <code>char.attributes.get</code> either (because no <code>Attribute</code> yet exists). So this functionality can be confusing unless you know what you are doing. Hence <code>autocreate</code> defaults to <code>True</code>.</p>
 <h3>Saving Attributes with hidden database objects</h3>
 <p>This is one of those classical quirks of Evennia that many have encountered. While Evennia can save a lot of things in an <code>Attribute</code>, including database objects, it cannot do so if it doesnt <em>know</em> those database objects are there. This is fine if you are saving a list or a dict with objects in it - Evennia will go through it and make sure to serialize each db-object in turn.</p>
 <p>But if you &quot;hide away&quot; your db-object you will be in trouble:</p>
@@ -746,9 +745,9 @@ obj<span style="color: #666666">.</span>db<span style="color: #666666">.</span>m
 
 <span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">MyStore</span>:
 
-    <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">__init__</span>(<span style="color: #008000">self</span>, dbobj): 
+    <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">__init__</span>(<span style="color: #008000">self</span>, dbobj):
 
-        <span style="color: #008000">self</span><span style="color: #666666">.</span>dbobj <span style="color: #666666">=</span> dbobj 
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>dbobj <span style="color: #666666">=</span> dbobj
 
     <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">__serialize_dbobjs__</span>(<span style="color: #008000">self</span>):
 
@@ -772,7 +771,7 @@ obj<span style="color: #666666">.</span>db<span style="color: #666666">.</span>m
 
 <footer class="devblog-footer">
     <span class="devblog-copyrights">
-        <p>[Alpha Stock Images](Alpha Stock Images - http://alphastockimages.com/) (released under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a> )</p>
+        <p><a href="http://alphastockimages.com/">Alpha Stock Images</a> (released under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a> )</p>
 
     </span>
     <a class="devblog-to-toplink" href="2022.html#2022-07-05-tutorial-writing-and-attributes-galore" title="Link to top of post">⇬(top)</a>
