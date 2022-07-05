@@ -13,7 +13,7 @@
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="description" content="
-        Latest Evennia dev blog:  Into 2022 with thanks and plans: <br>I didn't write an end-of-the year summary for 2021, so this first devblog of 2022 will also look back a bit at the past year. It also helps me get used to using this new blog platform I wrote about in the previous post. ...
+        Latest Evennia dev blog:  Tutorial-writing and Attributes galore: It has been a while since I wrote anything for the dev blog of Evennia, the MU creation system - so it's about time! ...
         ---
         Evennia is a modern Python library and server for creating text-based
         multi-player games and virtual worlds (also known as MUD, MUSH, MU,
@@ -49,10 +49,16 @@
                     <ul>
                         
                             <li>
-                                <a href="2022.html"> 2022 (1)
+                                <a href="2022.html"> 2022 (2)
                                     
                                         <ul class="devblog-calendar-closed">
                                     
+                                        
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2022.html#2022-07-05-tutorial-writing-and-attributes-galore">Jul  5
+                                                        <span class="devblog-calendar-tooltip-text"> Tutorial-writing and Attributes galore</span>
+                                                   </a>
+                                                </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
                                                     <a href="2022.html#2022-01-06-into-2022-with-thanks-and-plans">Jan  6
@@ -877,7 +883,7 @@
 <p>Next I added one new migration in the Account app - this is the migration that copies the data from the player to the equivalent account-named copies in the database. Since Player will not exist if you run this from scratch you have to make sure that the Player model exists at that point in the migration chain. You can't just do this with a normal import and traceback, you need to use the migration infrastructure. This kind of check works:</p>
 </li>
 </ul>
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>  <span style="color: #408080; font-style: italic"># ...  </span>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>  <span style="color: #3D7B7B; font-style: italic"># ...  </span>
 
  
 
@@ -887,19 +893,19 @@
 
           PlayerDB <span style="color: #666666">=</span> apps<span style="color: #666666">.</span>get_model(<span style="color: #BA2121">&quot;players&quot;</span>, <span style="color: #BA2121">&quot;PlayerDB&quot;</span>)  
 
-      <span style="color: #008000; font-weight: bold">except</span> <span style="color: #D2413A; font-weight: bold">LookupError</span>:  
+      <span style="color: #008000; font-weight: bold">except</span> <span style="color: #CB3F38; font-weight: bold">LookupError</span>:  
 
           <span style="color: #008000; font-weight: bold">return</span>  
 
  
 
-      <span style="color: #408080; font-style: italic"># copy data from player-tables to database tables here  </span>
+      <span style="color: #3D7B7B; font-style: italic"># copy data from player-tables to database tables here  </span>
 
  
 
  <span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Migrations</span>(migrations<span style="color: #666666">.</span>Migration):  
 
-     <span style="color: #408080; font-style: italic"># ...  </span>
+     <span style="color: #3D7B7B; font-style: italic"># ...  </span>
 
      operations <span style="color: #666666">=</span> [  
 
@@ -923,7 +929,7 @@
 
   
 
-    <span style="color: #408080; font-style: italic"># ...  </span>
+    <span style="color: #3D7B7B; font-style: italic"># ...  </span>
 
   
 
@@ -931,9 +937,9 @@
 
         <span style="color: #BA2121">&quot;Returns bool if table exists or not&quot;</span>  
 
-        sql_check_exists <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;SELECT * from </span><span style="color: #BB6688; font-weight: bold">%s</span><span style="color: #BA2121">;&quot;</span> <span style="color: #666666">%</span> tablename  
+        sql_check_exists <span style="color: #666666">=</span> <span style="color: #BA2121">&quot;SELECT * from </span><span style="color: #A45A77; font-weight: bold">%s</span><span style="color: #BA2121">;&quot;</span> <span style="color: #666666">%</span> tablename  
 
-    <span style="color: #408080; font-style: italic">### [Renaming Django&#39;s Auth User and App](https://evennia.blogspot.com/2017/08/renaming-djangos-auth-user-and-app.html)</span>
+    <span style="color: #3D7B7B; font-style: italic">### [Renaming Django&#39;s Auth User and App](https://evennia.blogspot.com/2017/08/renaming-djangos-auth-user-and-app.html)</span>
 </pre></div>
 
 <p><a href="https://4.bp.blogspot.com/-DRHk1mmLB0Y/WaCUd8tmYbI/AAAAAAAAHaU/QXkryhYVJBIVWPykT08nSokCHfFc6-2LACLcBGAs/s1600/birds-1976981_640.jpg"><img src="https://4.bp.blogspot.com/-DRHk1mmLB0Y/WaCUd8tmYbI/AAAAAAAAHaU/QXkryhYVJBIVWPykT08nSokCHfFc6-2LACLcBGAs/s400/birds-1976981_640.jpg" alt="" /></a></p>

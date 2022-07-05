@@ -13,7 +13,7 @@
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="description" content="
-        Latest Evennia dev blog:  Into 2022 with thanks and plans: <br>I didn't write an end-of-the year summary for 2021, so this first devblog of 2022 will also look back a bit at the past year. It also helps me get used to using this new blog platform I wrote about in the previous post. ...
+        Latest Evennia dev blog:  Tutorial-writing and Attributes galore: It has been a while since I wrote anything for the dev blog of Evennia, the MU creation system - so it's about time! ...
         ---
         Evennia is a modern Python library and server for creating text-based
         multi-player games and virtual worlds (also known as MUD, MUSH, MU,
@@ -49,10 +49,16 @@
                     <ul>
                         
                             <li>
-                                <a href="2022.html"> 2022 (1)
+                                <a href="2022.html"> 2022 (2)
                                     
                                         <ul class="devblog-calendar-closed">
                                     
+                                        
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2022.html#2022-07-05-tutorial-writing-and-attributes-galore">Jul  5
+                                                        <span class="devblog-calendar-tooltip-text"> Tutorial-writing and Attributes galore</span>
+                                                   </a>
+                                                </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
                                                     <a href="2022.html#2022-01-06-into-2022-with-thanks-and-plans">Jan  6
@@ -647,27 +653,27 @@ Here the blog starts...
 <p>I wrote my own <code>build_devblog.py</code> program that simple reads all <code>.md</code> files from a directory. It figures out the date and title (from file name or meta-header) and runs <code>mistletoe</code> on it. I create a dataclass with all the post-relevant properties on it. So far so good. Now we need to inject this into an HTML structure.</p>
 <h3>The html</h3>
 <p>Next I prepared a little <code>post.html</code> Jinja template:</p>
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>&lt;h1 id=<span style="color: #BC7A00">{{</span> <span style="color: #19177C">blogpost.anchor</span> <span style="color: #BC7A00">}}</span>&gt;
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span>&lt;h1 id=<span style="color: #9C6500">{{</span> <span style="color: #19177C">blogpost.anchor</span> <span style="color: #9C6500">}}</span>&gt;
 
-     <span style="color: #BC7A00">{{</span> <span style="color: #19177C">blogpost.title</span> <span style="color: #BC7A00">}}</span>
+     <span style="color: #9C6500">{{</span> <span style="color: #19177C">blogpost.title</span> <span style="color: #9C6500">}}</span>
 
-     &lt;a class=&quot;devblog-headerlink&quot; href=&quot;<span style="color: #BC7A00">{{</span> <span style="color: #19177C">blogpost.permalink</span> <span style="color: #BC7A00">}}</span>&quot; title=&quot;Permalink to this blog post&quot;&gt;¶&lt;/a&gt;
+     &lt;a class=&quot;devblog-headerlink&quot; href=&quot;<span style="color: #9C6500">{{</span> <span style="color: #19177C">blogpost.permalink</span> <span style="color: #9C6500">}}</span>&quot; title=&quot;Permalink to this blog post&quot;&gt;¶&lt;/a&gt;
 
-    &lt;div class=&quot;devblog-title-date&quot;&gt;- <span style="color: #BC7A00">{{</span> <span style="color: #19177C">blogpost.date_pretty</span> <span style="color: #BC7A00">}}</span>&lt;/div&gt;
+    &lt;div class=&quot;devblog-title-date&quot;&gt;- <span style="color: #9C6500">{{</span> <span style="color: #19177C">blogpost.date_pretty</span> <span style="color: #9C6500">}}</span>&lt;/div&gt;
 
 &lt;/h1&gt;
 
-<span style="color: #BC7A00">{{</span> <span style="color: #19177C">blogpost.html</span> <span style="color: #BC7A00">}}</span>
+<span style="color: #9C6500">{{</span> <span style="color: #19177C">blogpost.html</span> <span style="color: #9C6500">}}</span>
 
 &lt;footer class=&quot;devblog-footer&quot;&gt;
 
     &lt;span class=&quot;devblog-copyrights&quot;&gt;
 
-        <span style="color: #BC7A00">{{</span> <span style="color: #19177C">blogpost.image_copyrights</span> <span style="color: #BC7A00">}}</span>
+        <span style="color: #9C6500">{{</span> <span style="color: #19177C">blogpost.image_copyrights</span> <span style="color: #9C6500">}}</span>
 
     &lt;/span&gt;
 
-    &lt;a class=&quot;devblog-to-toplink&quot; href=&quot;<span style="color: #BC7A00">{{</span> <span style="color: #19177C">blogpost.permalink</span> <span style="color: #BC7A00">}}</span>&quot; title=&quot;Link to top of post&quot;&gt;⇬(top)&lt;/a&gt;
+    &lt;a class=&quot;devblog-to-toplink&quot; href=&quot;<span style="color: #9C6500">{{</span> <span style="color: #19177C">blogpost.permalink</span> <span style="color: #9C6500">}}</span>&quot; title=&quot;Link to top of post&quot;&gt;⇬(top)&lt;/a&gt;
 
 &lt;/footer&gt;
 </pre></div>

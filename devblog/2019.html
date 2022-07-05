@@ -13,7 +13,7 @@
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="description" content="
-        Latest Evennia dev blog:  Into 2022 with thanks and plans: <br>I didn't write an end-of-the year summary for 2021, so this first devblog of 2022 will also look back a bit at the past year. It also helps me get used to using this new blog platform I wrote about in the previous post. ...
+        Latest Evennia dev blog:  Tutorial-writing and Attributes galore: It has been a while since I wrote anything for the dev blog of Evennia, the MU creation system - so it's about time! ...
         ---
         Evennia is a modern Python library and server for creating text-based
         multi-player games and virtual worlds (also known as MUD, MUSH, MU,
@@ -49,10 +49,16 @@
                     <ul>
                         
                             <li>
-                                <a href="2022.html"> 2022 (1)
+                                <a href="2022.html"> 2022 (2)
                                     
                                         <ul class="devblog-calendar-closed">
                                     
+                                        
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2022.html#2022-07-05-tutorial-writing-and-attributes-galore">Jul  5
+                                                        <span class="devblog-calendar-tooltip-text"> Tutorial-writing and Attributes galore</span>
+                                                   </a>
+                                                </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
                                                     <a href="2022.html#2022-01-06-into-2022-with-thanks-and-plans">Jan  6
@@ -757,7 +763,7 @@ This is a brass key.
 
     objects<span style="color: #666666">.</span>Movable):  
 
-    <span style="color: #408080; font-style: italic"># ...  </span>
+    <span style="color: #3D7B7B; font-style: italic"># ...  </span>
 </pre></div>
 
 <p>This class will offer actions to open, insert a code and move the object around. It will need some more configuration and addition of messages to show etc. But overall, this method-to-command solution ended up being very stable and extremely easy to use to make complex, interactive objects.</p>
@@ -765,7 +771,7 @@ This is a brass key.
 <p>I think of the escape room as going through a series of <em>states</em>. A change of state could for example be that the user solved a puzzle to open a secret wall. That wall is now open, making new items and puzzles available. This means room description should change along with new objects being created or old ones deleted.</p>
 <p>I chose to represent states as Python modules in a folder. To be a state, each module needs to have a global-level class <strong>State</strong> inheriting from my new <strong>BaseState</strong> class. This class has methods for initializing and cleaning up the state, as well as was for figuring out which state to go to next. As the system initializes the new state, it gets the current room as argument, so it can modify it.</p>
 <p>This is a (simplified) example of a state module:</p>
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #408080; font-style: italic"># module `state_001_start.py`  </span>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><span style="color: #3D7B7B; font-style: italic"># module `state_001_start.py`  </span>
 
       
 
@@ -789,9 +795,9 @@ MUG_DESC <span style="color: #666666">=</span> <span style="color: #BA2121">&quo
 
     <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">at_focus_drink</span>(<span style="color: #008000">self</span>, caller, <span style="color: #666666">**</span>kwargs):   
 
-        caller<span style="color: #666666">.</span>msg(<span style="color: #BA2121">f&quot;You drink </span><span style="color: #BB6688; font-weight: bold">{</span><span style="color: #008000">self</span><span style="color: #666666">.</span>key<span style="color: #BB6688; font-weight: bold">}</span><span style="color: #BA2121">.&quot;</span>)   
+        caller<span style="color: #666666">.</span>msg(<span style="color: #BA2121">f&quot;You drink </span><span style="color: #A45A77; font-weight: bold">{</span><span style="color: #008000">self</span><span style="color: #666666">.</span>key<span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">.&quot;</span>)   
 
-        <span style="color: #008000">self</span><span style="color: #666666">.</span>next_state() <span style="color: #408080; font-style: italic"># trigger next state  </span>
+        <span style="color: #008000">self</span><span style="color: #666666">.</span>next_state() <span style="color: #3D7B7B; font-style: italic"># trigger next state  </span>
 
   
 
@@ -1074,7 +1080,7 @@ MUG_DESC <span style="color: #666666">=</span> <span style="color: #BA2121">&quo
 <p>A new year has come around and it's time to both look back at the old and onward to the future of <a href="https://www.evennia.com/">Evennia</a>, the Python MUD creation system!</p>
 <h4>Last year</h4>
 <p><a href="https://2.bp.blogspot.com/-BKHBV0L443U/W7EgLdZIQmI/AAAAAAAAJZs/CpmGtCk6U_QyoXGIEyQbIPBUmAbPbOgawCPcBGAYYCw/s1600/Screenshot%2Bfrom%2B2018-09-30%2B21-09-55.png"><img src="https://2.bp.blogspot.com/-BKHBV0L443U/W7EgLdZIQmI/AAAAAAAAJZs/CpmGtCk6U_QyoXGIEyQbIPBUmAbPbOgawCPcBGAYYCw/s320/Screenshot%2Bfrom%2B2018-09-30%2B21-09-55.png" alt="" /></a></p>
-<p>Last year saw the release of <a href="https://www.blogger.com/blogger.g?blogID=8338260444057832583#editor/target=post%3BpostID=7101674864552615043%3BonPublishedMenu=allposts%3BonClosedMenu=allposts%3BpostNum=2%3Bsrc=postname">Evennia 0.8</a>. This version of Evennia changes some fundamental aspects of the server infrastructure so that the server can truly run in daemon mode as you would expect (no more running it in a GnuScreen session if you want to see logging to the terminal). It also adds the new Online Creation System, which lets builders create and define prototypes using a menu system as well as big improvements in the web client, such as multiple window-panes (allows the user to assign text to different windows to keep their client uncluttered) as well as plenty of fixes and features to help ease life for the Evennia developer. Thanks again to everyone who helped out and contributed to the release of Evennia 0.8!</p>
+<p>Last year saw the release of <a href="https://www.blogger.com/blogger.g?blogID=8338260444057832583#editor/target=post;postID=7101674864552615043;onPublishedMenu=allposts;onClosedMenu=allposts;postNum=2;src=postname">Evennia 0.8</a>. This version of Evennia changes some fundamental aspects of the server infrastructure so that the server can truly run in daemon mode as you would expect (no more running it in a GnuScreen session if you want to see logging to the terminal). It also adds the new Online Creation System, which lets builders create and define prototypes using a menu system as well as big improvements in the web client, such as multiple window-panes (allows the user to assign text to different windows to keep their client uncluttered) as well as plenty of fixes and features to help ease life for the Evennia developer. Thanks again to everyone who helped out and contributed to the release of Evennia 0.8!</p>
 <p>On a personal note, I spoke about Evennia at PyCon Sweden this December, which was fun. I might put up my talk and make a more detailed blog post about that in the future, but my talk got a surprising amount of attention and positive feedback. Clearly many people have fond memories of MUDs and enjoy seeing they are not only still around but are possible to create in Python!</p>
 <h4>This year</h4>
 <p><a href="https://1.bp.blogspot.com/-zNtXFGrN344/XC0MhJjWzcI/AAAAAAAAJ1M/UDd_QQRYuh8GNuXefblRIh6qfcDB9784QCLcBGAs/s1600/61SA0Wq1P1L.png"><img src="https://1.bp.blogspot.com/-zNtXFGrN344/XC0MhJjWzcI/AAAAAAAAJ1M/UDd_QQRYuh8GNuXefblRIh6qfcDB9784QCLcBGAs/s200/61SA0Wq1P1L.png" alt="" /></a></p>
