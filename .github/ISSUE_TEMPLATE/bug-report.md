@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 #### Describe the bug
-(Replace with a clear and concise description of what the bug is.)
+<!--(Write with a clear and concise description of what the bug is.)-->
 
 #### To Reproduce
 Steps to reproduce the behavior:
@@ -18,10 +18,10 @@ Steps to reproduce the behavior:
 4. See error
 
 #### Expected behavior
-(Replace with a clear and concise description of what you expected to happen.)
+<!--(Write a clear and concise description of what you expected to happen.)-->
 
 #### Environment, Evennia version, OS etc
-(Replace with info. If unsure, run `evennia -v` or get the first few lines of the `about` command in-game.)
+<!--(Add Evennia version and ideally commit hash. If unsure, run `evennia -v` or get the first few lines of the `about` command in-game.)-->
 
 #### Additional context
-(Replace with any other context about the problem, or ideas on how to solve.)
+<!--(Add with any other context about the problem, or ideas on how to solve.)-->
