@@ -202,7 +202,7 @@ _RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
 _RE_REF = re.compile(r"\{+\#([0-9]+[\^\~tv]{0,1})\}+")
 
 # This regex is used to quickly reference one self in an emote.
-_RE_SELF_REF = re.compile(r"/me|@", _RE_FLAGS)
+_RE_SELF_REF = re.compile(r"/me\b|@", _RE_FLAGS)
 
 # regex for non-alphanumberic end of a string
 _RE_CHAREND = re.compile(r"\W+$", _RE_FLAGS)
@@ -365,6 +365,31 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     errors = []
     obj = None
     nmatches = 0
+    # first, find and replace any self-refs
+    for self_match in list(_RE_SELF_REF.finditer(string)):
+        matched = self_match.group()
+        case = "~"  # retain original case of sdesc
+        if case_sensitive:
+            # case sensitive mode
+            # internal flags for the case used for the original /query
+            # - t for titled input (like /Name)
+            # - ^ for all upercase input (like /NAME)
+            # - v for lower-case input (like /name)
+            # - ~ for mixed case input (like /nAmE)
+            matchtext = matched.lstrip(_PREFIX)
+            if matchtext.istitle():
+                case = "t"
+            elif matchtext.isupper():
+                case = "^"
+            elif matchtext.islower():
+                case = "v"
+
+        key = f"#{sender.id}{case}"
+        # replaced with ref
+        string = string.replace(matched,f"{{{key}}}")
+        mapping[key] = sender
+    
+    
     for marker_match in reversed(list(_RE_OBJ_REF_START.finditer(string))):
         # we scan backwards so we can replace in-situ without messing
         # up later occurrences. Given a marker match, query from
