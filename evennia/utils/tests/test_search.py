@@ -1,6 +1,6 @@
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils.test_resources import EvenniaTest
-from evennia.utils.search import search_script_attribute, search_script_tag
+from evennia.utils.search import search_script_attribute, search_script_tag, search_script
 
 class TestSearch(EvenniaTest):
 
