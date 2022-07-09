@@ -326,6 +326,8 @@ WEBCLIENT_OPTIONS = {
 # existing default, there are examples of many of these modules
 # in contrib/examples.
 
+# The class used for handling input text commands.
+COMMAND_HANDLER = "evennia.commands.cmdhandler.CommandHandler"
 # The command parser module to use. See the default module for which
 # functions it must implement
 COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"

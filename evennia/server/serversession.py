@@ -7,6 +7,7 @@ It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
 import time
+from twisted.internet.defer import inlineCallbacks, returnValue
 from django.utils import timezone
 from django.conf import settings
 from evennia.comms.models import ChannelDB
@@ -39,6 +40,7 @@ class ServerSession(_BASE_SESSION_CLASS):
     through their session.
 
     """
+    cmd_objects_sort_priority = 0
 
     def __init__(self):
         """
@@ -57,6 +59,28 @@ class ServerSession(_BASE_SESSION_CLASS):
         self.cmdset_storage_string = ",".join(str(val).strip() for val in make_iter(value))
 
     cmdset_storage = property(__cmdset_storage_get, __cmdset_storage_set)
+
+    def get_cmd_objects(self):
+        """
+        Of the three kinds of Command Objects, only Sessions can know the full chain.
+        """
+        cmd_objects = {"session": self}
+        if self.puppet:
+            cmd_objects["puppet"] = self.puppet
+        if self.account:
+            cmd_objects["account"] = self.account
+        return cmd_objects
+
+    @inlineCallbacks
+    def get_extra_cmdsets(self, caller, current, cmdsets):
+        """
+        Called by the CmdHandler to retrieve extra cmdsets from this object.
+
+        Evennia doesn't have any by default for Sessions, but you can
+        overload and add some.
+        """
+        out = yield list()
+        return out
 
     @property
     def id(self):

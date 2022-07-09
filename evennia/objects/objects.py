@@ -11,6 +11,10 @@ import time
 from collections import defaultdict
 
 import inflect
+from itertools import chain
+
+from twisted.internet.defer import inlineCallbacks, returnValue
+
 from django.conf import settings
 from django.utils.translation import gettext as _
 
@@ -207,6 +211,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     without `obj.save()` having to be called explicitly.
 
     """
+    cmd_objects_sort_priority = 100
 
     # Used for sorting / filtering in inventories / room contents.
     _content_types = ("object",)
@@ -314,6 +319,78 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         return [exi for exi in self.contents if exi.destination]
 
     # main methods
+
+    def get_cmd_objects(self):
+        """
+        An Object alone has no way to know which Session called a Command or which Account it might be associated with.
+        """
+        return {"puppet": self}
+
+    @inlineCallbacks
+    def get_location_cmdsets(self, caller, current, cmdsets):
+        """
+        Retrieve Cmdsets from nearby Objects.
+        """
+        try:
+            location = self.location
+        except Exception:
+            location = None
+
+        if not location:
+            returnValue(list())
+
+        local_objlist = yield (
+                location.contents_get(exclude=self) + self.contents_get() + [location]
+        )
+        local_objlist = [o for o in local_objlist if not o._is_deleted]
+        for lobj in local_objlist:
+            try:
+                # call hook in case we need to do dynamic changing to cmdset
+                object.__getattribute__(lobj, "at_cmdset_get")(caller=caller)
+            except Exception:
+                logger.log_trace()
+        # the call-type lock is checked here, it makes sure an account
+        # is not seeing e.g. the commands on a fellow account (which is why
+        # the no_superuser_bypass must be True)
+        local_obj_cmdsets = yield list(
+            chain.from_iterable(
+                lobj.cmdset.cmdset_stack
+                for lobj in local_objlist
+                if (
+                        lobj.cmdset.current
+                        and lobj.access(
+                    caller, access_type="call", no_superuser_bypass=True
+                )
+                )
+            )
+        )
+        for cset in local_obj_cmdsets:
+            # This is necessary for object sets, or we won't be able to
+            # separate the command sets from each other in a busy room. We
+            # only keep the setting if duplicates were set to False/True
+            # explicitly.
+            cset.old_duplicates = cset.duplicates
+            cset.duplicates = True if cset.duplicates is None else cset.duplicates
+
+        if current.no_exits:
+            local_obj_cmdsets = [
+                cmdset for cmdset in local_obj_cmdsets if cmdset.key != "ExitCmdSet"
+            ]
+
+        returnValue(local_obj_cmdsets)
+
+    @inlineCallbacks
+    def get_extra_cmdsets(self, caller, current, cmdsets):
+        """
+        Called by the CmdHandler to retrieve extra cmdsets from this object.
+
+        For DefaultObject, that's cmdsets from nearby Objects.
+        """
+        extra = list()
+        if not current.no_objs:
+            obj_cmdsets = yield self.get_location_cmdsets(caller, current, cmdsets)
+            extra.extend(obj_cmdsets)
+        returnValue(extra)
 
     def get_display_name(self, looker=None, **kwargs):
         """
@@ -631,14 +708,17 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # break circular import issues
         global _CMDHANDLER
         if not _CMDHANDLER:
-            from evennia.commands.cmdhandler import cmdhandler as _CMDHANDLER
+            from django.conf import settings
+            from evennia.utils.utils import class_from_module
+            _CMDHANDLER = class_from_module(settings.COMMAND_HANDLER)
 
         # nick replacement - we require full-word matching.
         # do text encoding conversion
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=True
         )
-        return _CMDHANDLER(self, raw_string, callertype="object", session=session, **kwargs)
+        handler = _CMDHANDLER(session or self, raw_string, **kwargs)
+        return handler.execute()
 
     def msg(self, text=None, from_obj=None, session=None, options=None, **kwargs):
         """

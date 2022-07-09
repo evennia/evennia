@@ -23,13 +23,12 @@ settings.INPUT_FUNC_MODULES.
 import importlib
 from codecs import lookup as codecs_lookup
 from django.conf import settings
-from evennia.commands.cmdhandler import cmdhandler
 from evennia.accounts.models import AccountDB
 from evennia.utils.logger import log_err
-from evennia.utils.utils import to_str
+from evennia.utils.utils import to_str, class_from_module
 
 BrowserSessionStore = importlib.import_module(settings.SESSION_ENGINE).SessionStore
-
+_CMD_HANDLER = None
 
 # always let "idle" work since we use this in the webclient
 _IDLE_COMMAND = settings.IDLE_COMMAND
@@ -100,7 +99,11 @@ def text(session, *args, **kwargs):
                 txt, categories=("inputline"), include_account=False
             )
     kwargs.pop("options", None)
-    cmdhandler(session, txt, callertype="session", session=session, **kwargs)
+    global _CMD_HANDLER
+    if not _CMD_HANDLER:
+        _CMD_HANDLER = class_from_module(settings.COMMAND_HANDLER)
+    handler = _CMD_HANDLER(session, txt, **kwargs)
+    handler.execute()
     session.update_session_counters()
 
 
