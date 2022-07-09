@@ -1011,7 +1011,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
         a.no_channels = True
         self.set_cmdsets(self.session, a)
         deferred = cmdhandler.get_and_merge_cmdsets(
-            self.session, self.session, None, None, "session", ""
+            [self.session], ""
         )
 
         def _callback(cmdset):
@@ -1026,9 +1026,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
         a = self.cmdset_a
         a.no_channels = True
         self.set_cmdsets(self.account, a)
-        deferred = cmdhandler.get_and_merge_cmdsets(
-            self.account, None, self.account, None, "account", ""
-        )
+        deferred = cmdhandler.get_and_merge_cmdsets([self.account], "")
         # get_and_merge_cmdsets converts  to lower-case internally.
 
         def _callback(cmdset):
@@ -1043,7 +1041,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
 
     def test_from_object(self):
         self.set_cmdsets(self.obj1, self.cmdset_a)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
+        deferred = cmdhandler.get_and_merge_cmdsets([self.obj1], "")
         # get_and_merge_cmdsets converts  to lower-case internally.
 
         def _callback(cmdset):

@@ -3015,9 +3015,7 @@ class CmdExamine(ObjManipCommand):
                 def _get_cmdset_callback(current_cmdset):
                     self.msg(self.format_output(obj, current_cmdset).strip())
 
-                get_and_merge_cmdsets(
-                    obj, session, account, objct, mergemode, self.raw_string
-                ).addCallback(_get_cmdset_callback)
+                get_and_merge_cmdsets([obj, session, account], self.raw_string).addCallback(_get_cmdset_callback)
 
             else:
                 # for objects without cmdsets we can proceed to examine immediately

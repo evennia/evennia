@@ -176,6 +176,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
     # Basically, for the `.duplicate` setting to survive throughout a
     # merge-stack, every cmdset in the stack must have `duplicates` set explicitly.
     duplicates = None
+    old_duplicates = None
 
     persistent = False
     key_mergetypes = {}

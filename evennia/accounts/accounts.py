@@ -12,6 +12,9 @@ instead for most things).
 """
 import re
 import time
+
+from twisted.internet.defer import inlineCallbacks, returnValue
+
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
@@ -189,8 +192,26 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
      - at_server_shutdown()
 
     """
+    cmd_objects_sort_priority = 50
 
     objects = AccountManager()
+
+    def get_cmd_objects(self):
+        """
+        An Account alone has no way to know which Session called a Command or which Puppet it might be associated with.
+        """
+        return {"account": self}
+
+    @inlineCallbacks
+    def get_extra_cmdsets(self, caller, current, cmdsets):
+        """
+        Called by the CmdHandler to retrieve extra cmdsets from this object.
+
+        Evennia doesn't have any by default for Accounts, but you can
+        overload and add some.
+        """
+        out = yield list()
+        return out
 
     # properties
     @lazy_property
@@ -962,7 +983,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         # break circular import issues
         global _CMDHANDLER
         if not _CMDHANDLER:
-            from evennia.commands.cmdhandler import cmdhandler as _CMDHANDLER
+            from django.conf import settings
+            from evennia.utils.utils import class_from_module
+            _CMDHANDLER = class_from_module(settings.COMMAND_HANDLER)
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=False
         )
@@ -971,7 +994,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             sessions = self.sessions.get()
             session = sessions[0] if sessions else None
 
-        return _CMDHANDLER(self, raw_string, callertype="account", session=session, **kwargs)
+        handler = _CMDHANDLER(session or self, raw_string, **kwargs)
+        return handler.execute()
 
     # channel receive hooks
 
