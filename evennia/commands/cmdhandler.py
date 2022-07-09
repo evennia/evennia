@@ -517,7 +517,7 @@ class CommandHandler:
                 err = _ERROR_RECURSION_LIMIT.format(
                     recursion_limit=_COMMAND_RECURSION_LIMIT,
                     raw_cmdname=self.raw_cmdname,
-                    cmdclass=self.cmd.__class__,
+                    cmdclass=cmd.__class__,
                 )
                 raise RuntimeError(err)
 
