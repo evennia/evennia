@@ -836,6 +836,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         use_destination=True,
         to_none=False,
         move_hooks=True,
+        move_type="move",
         **kwargs,
     ):
         """
@@ -857,6 +858,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             move_hooks (bool): If False, turn off the calling of move-related hooks
                 (at_pre/post_move etc) with quiet=True, this is as quiet a move
                 as can be done.
+            move_type (str): Will be used for generating the text tuple {"type": move_type},
+                and can be used for log filtering in hooks. Evennia has only a few
+                move_types for move_to to start with, like "teleport", "traverse",
+                "get", "give", and "drop".
 
         Keyword Args:
           Passed on to announce_move_to and announce_move_from hooks.
@@ -906,7 +911,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Before the move, call eventual pre-commands.
         if move_hooks:
             try:
-                if not self.at_pre_move(destination, **kwargs):
+                if not self.at_pre_move(destination, move_type=move_type, **kwargs):
                     return False
             except Exception as err:
                 logerr(errtxt.format(err="at_pre_move()"), err)
@@ -918,7 +923,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # Call hook on source location
         if move_hooks and source_location:
             try:
-                source_location.at_object_leave(self, destination, **kwargs)
+                source_location.at_object_leave(self, destination, move_type=move_type, **kwargs)
             except Exception as err:
                 logerr(errtxt.format(err="at_object_leave()"), err)
                 return False
@@ -926,7 +931,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not quiet:
             # tell the old room we are leaving
             try:
-                self.announce_move_from(destination, **kwargs)
+                self.announce_move_from(destination, move_type=move_type, **kwargs)
             except Exception as err:
                 logerr(errtxt.format(err="announce_move_from()"), err)
                 return False
@@ -941,7 +946,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not quiet:
             # Tell the new room we are there.
             try:
-                self.announce_move_to(source_location, **kwargs)
+                self.announce_move_to(source_location, move_type=move_type, **kwargs)
             except Exception as err:
                 logerr(errtxt.format(err="announce_move_to()"), err)
                 return False
@@ -950,7 +955,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # Perform eventual extra commands on the receiving location
             # (the object has already arrived at this point)
             try:
-                destination.at_object_receive(self, source_location, **kwargs)
+                destination.at_object_receive(self, source_location, move_type=move_type, **kwargs)
             except Exception as err:
                 logerr(errtxt.format(err="at_object_receive()"), err)
                 return False
@@ -959,7 +964,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         # (usually calling 'look')
         if move_hooks:
             try:
-                self.at_post_move(source_location, **kwargs)
+                self.at_post_move(source_location, move_type=move_type, **kwargs)
             except Exception as err:
                 logerr(errtxt.format(err="at_post_move"), err)
                 return False
@@ -1020,7 +1025,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                     # Famous last words: The account should never see this.
                     string = "This place should not exist ... contact an admin."
                     obj.msg(_(string))
-            obj.move_to(home)
+            obj.move_to(home, move_type="teleport")
 
     @classmethod
     def create(cls, key, account=None, **kwargs):
@@ -1472,13 +1477,14 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # hooks called when moving the object
 
-    def at_pre_move(self, destination, **kwargs):
+    def at_pre_move(self, destination, move_type="move", **kwargs):
         """
         Called just before starting to move this object to
         destination.
 
         Args:
             destination (Object): The object we are moving to
+            move_type (str): The type of move. "give", "traverse", etc.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -1496,7 +1502,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     # deprecated alias
     at_before_move = at_pre_move
 
-    def announce_move_from(self, destination, msg=None, mapping=None, **kwargs):
+    def announce_move_from(self, destination, msg=None, mapping=None, move_type="move", **kwargs):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -1506,6 +1512,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             destination (Object): The place we are going to.
             msg (str, optional): a replacement message.
             mapping (dict, optional): additional mapping objects.
+            move_type (str): The type of move. "give", "traverse", etc.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -1541,9 +1548,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        location.msg_contents(string, exclude=(self,), from_obj=self, mapping=mapping)
+        location.msg_contents((string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping)
 
-    def announce_move_to(self, source_location, msg=None, mapping=None, **kwargs):
+    def announce_move_to(self, source_location, msg=None, mapping=None, move_type="move", **kwargs):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
@@ -1552,6 +1559,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             source_location (Object): The place we came from
             msg (str, optional): the replacement message if location.
             mapping (dict, optional): additional mapping objects.
+            move_type (str): The type of move. "give", "traverse", etc.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -1605,7 +1613,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        destination.msg_contents(string, exclude=(self,), from_obj=self, mapping=mapping)
+        destination.msg_contents((string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping)
 
     def at_post_move(self, source_location, **kwargs):
         """
@@ -1624,20 +1632,21 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     # deprecated
     at_after_move = at_post_move
 
-    def at_object_leave(self, moved_obj, target_location, **kwargs):
+    def at_object_leave(self, moved_obj, target_location, move_type="move", **kwargs):
         """
         Called just before an object leaves from inside this object
 
         Args:
             moved_obj (Object): The object leaving
             target_location (Object): Where `moved_obj` is going.
+            move_type (str): The type of move. "give", "traverse", etc.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
         """
         pass
 
-    def at_object_receive(self, moved_obj, source_location, **kwargs):
+    def at_object_receive(self, moved_obj, source_location, move_type="move", **kwargs):
         """
         Called after an object has been moved into this object.
 
@@ -1645,6 +1654,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             moved_obj (Object): The object moved into this one
             source_location (Object): Where `moved_object` came from.
                 Note that this could be `None`.
+            move_type (str): The type of move. "give", "traverse", etc.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -2381,7 +2391,7 @@ class DefaultCharacter(DefaultObject):
         # add the default cmdset
         self.cmdset.add_default(settings.CMDSET_CHARACTER, persistent=True)
 
-    def at_post_move(self, source_location, **kwargs):
+    def at_post_move(self, source_location, move_type="move", **kwargs):
         """
         We make sure to look around after a move.
 
@@ -2859,7 +2869,7 @@ class DefaultExit(DefaultObject):
 
         """
         source_location = traversing_object.location
-        if traversing_object.move_to(target_location):
+        if traversing_object.move_to(target_location, move_type="traverse"):
             self.at_post_traverse(traversing_object, source_location)
         else:
             if self.db.err_traverse:

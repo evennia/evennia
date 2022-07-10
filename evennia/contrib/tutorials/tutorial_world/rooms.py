@@ -225,7 +225,7 @@ class CmdTutorialGiveUp(default_cmds.MuxCommand):
             )
             return
 
-        self.caller.move_to(outro_room)
+        self.caller.move_to(outro_room, move_type="teleport")
 
 
 class TutorialRoomCmdSet(CmdSet):
@@ -523,7 +523,7 @@ class CmdEast(Command):
             # Move to the east room.
             eexit = search_object(self.obj.db.east_exit)
             if eexit:
-                caller.move_to(eexit[0])
+                caller.move_to(eexit[0], move_type="traverse")
             else:
                 caller.msg("No east exit was found for this room. Contact an admin.")
             return
@@ -570,7 +570,7 @@ class CmdWest(Command):
             # Move to the west room.
             wexit = search_object(self.obj.db.west_exit)
             if wexit:
-                caller.move_to(wexit[0])
+                caller.move_to(wexit[0], move_type="traverse")
             else:
                 caller.msg("No west exit was found for this room. Contact an admin.")
             return
@@ -658,7 +658,7 @@ class CmdLookBridge(Command):
             fall_exit = search_object(self.obj.db.fall_exit)
             if fall_exit:
                 self.caller.msg("|r%s|n" % FALL_MESSAGE)
-                self.caller.move_to(fall_exit[0], quiet=True)
+                self.caller.move_to(fall_exit[0], quiet=True, move_type="fall")
                 # inform others on the bridge
                 self.obj.msg_contents(
                     "A plank gives way under %s's feet and "
@@ -1130,7 +1130,7 @@ class TeleportRoom(TutorialRoom):
         else:
             character.msg(self.db.failure_teleport_msg)
         # teleport quietly to the new place
-        character.move_to(results[0], quiet=True, move_hooks=False)
+        character.move_to(results[0], quiet=True, move_hooks=False, move_type="teleport")
         # we have to call this manually since we turn off move_hooks
         # - this is necessary to make the target dark room aware of an
         # already carried light.
