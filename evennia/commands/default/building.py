@@ -1071,7 +1071,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         exitname, backshort = self.directions[exitshort]
         backname = self.directions[backshort][0]
 
-        # if we recieved a typeclass for the exit, add it to the alias(short name)
+        # if we received a typeclass for the exit, add it to the alias(short name)
         if ":" in self.lhs:
             # limit to only the first : character
             exit_typeclass = ":" + self.lhs.split(":", 1)[-1]
@@ -1665,7 +1665,7 @@ class CmdSetAttribute(ObjManipCommand):
     def split_nested_attr(self, attr):
         """
         Yields tuples of (possible attr name, nested keys on that attr).
-        For performance, this is biased to the deepest match, but allows compatability
+        For performance, this is biased to the deepest match, but allows compatibility
         with older attrs that might have been named with `[]`'s.
 
         > list(split_nested_attr("nested['asdf'][0]"))
@@ -2219,11 +2219,13 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             old_typeclass_path = obj.typeclass_path
 
             if reset:
-                answer = yield("|yNote that this will reset the object back to its typeclass' default state, "
-                               "removing any custom locks/perms/attributes etc that may have been added "
-                               "by an explicit create_object call. Use `update` or type/force instead in order "
-                               "to keep such data. "
-                               "Continue [Y]/N?|n")
+                answer = yield (
+                    "|yNote that this will reset the object back to its typeclass' default state, "
+                    "removing any custom locks/perms/attributes etc that may have been added "
+                    "by an explicit create_object call. Use `update` or type/force instead in order "
+                    "to keep such data. "
+                    "Continue [Y]/N?|n"
+                )
                 if answer.upper() in ("N", "NO"):
                     caller.msg("Aborted.")
                     return
@@ -2732,7 +2734,7 @@ class CmdExamine(ObjManipCommand):
             return
 
         if ndb_attr and ndb_attr[0]:
-            return "\n  " + "  \n".join(
+            return "\n  " + "\n  ".join(
                 sorted(self.format_single_attribute(attr) for attr in ndb_attr)
             )
 
@@ -2830,7 +2832,7 @@ class CmdExamine(ObjManipCommand):
             objdata["Stored Cmdset(s)"] = self.format_stored_cmdsets(obj)
             objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
             objdata[
-                f"Commands vailable to {obj.key} (result of Merged Cmdset(s))"
+                f"Commands available to {obj.key} (result of Merged Cmdset(s))"
             ] = self.format_current_cmds(obj, current_cmdset)
         if self.object_type == "script":
             objdata["Description"] = self.format_script_desc(obj)
@@ -3473,7 +3475,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 caller.msg("\n".join(msgs))
                 if "delete" not in self.switches:
                     if script and script.pk:
-                            ScriptEvMore(caller, [script], session=self.session)
+                        ScriptEvMore(caller, [script], session=self.session)
                     else:
                         caller.msg("Script was deleted automatically.")
         else:
@@ -4029,7 +4031,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 )
                 return
             try:
-                # we homogenize the protoype first, to be more lenient with free-form
+                # we homogenize the prototype first, to be more lenient with free-form
                 protlib.validate_prototype(protlib.homogenize_prototype(prototype))
             except RuntimeError as err:
                 self.caller.msg(str(err))

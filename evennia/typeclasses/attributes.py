@@ -218,6 +218,7 @@ class AttributeProperty:
         """
         value = self._default
         try:
+<<<<<<< HEAD
             value = self.at_get(getattr(instance, self.attrhandler_name).get(
                 key=self._key,
                 default=self._default,
@@ -225,6 +226,17 @@ class AttributeProperty:
                 strattr=self._strattr,
                 raise_exception=self._autocreate,
             ), instance)
+=======
+            value = self.at_get(
+                getattr(instance, self.attrhandler_name).get(
+                    key=self._key,
+                    default=self._default,
+                    category=self._category,
+                    strattr=self._strattr,
+                    raise_exception=self._autocreate,
+                )
+            )
+>>>>>>> ce3992f999a164881462d8f878d71a47a8f946cc
         except AttributeError:
             if self._autocreate:
                 # attribute didn't exist and autocreate is set
