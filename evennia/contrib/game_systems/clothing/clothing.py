@@ -611,7 +611,7 @@ class CmdDrop(MuxCommand):
         if obj.db.worn:
             obj.remove(caller, quiet=True)
 
-        obj.move_to(caller.location, quiet=True)
+        obj.move_to(caller.location, quiet=True, move_type="drop")
         caller.msg("You drop %s." % (obj.name,))
         caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
         # Call the object script's at_drop() method.
@@ -664,10 +664,10 @@ class CmdGive(MuxCommand):
         # Remove clothes if they're given.
         if to_give.db.worn:
             to_give.remove(caller)
-        to_give.move_to(caller.location, quiet=True)
+        to_give.move_to(caller.location, quiet=True, move_type="remove")
         # give object
         caller.msg("You give %s to %s." % (to_give.key, target.key))
-        to_give.move_to(target, quiet=True)
+        to_give.move_to(target, quiet=True, move_type="give")
         target.msg("%s gives you %s." % (caller.key, to_give.key))
         # Call the object script's at_give() method.
         to_give.at_give(caller, target)

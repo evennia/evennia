@@ -160,7 +160,7 @@ class TestTutorialWorldRooms(BaseEvenniaCommandTest):
     def test_bridgeroom(self):
         room = create_object(tutrooms.BridgeRoom, key="bridgeroom")
         room.update_weather()
-        self.char1.move_to(room)
+        self.char1.move_to(room, move_type="teleport")
         self.call(
             tutrooms.CmdBridgeHelp(),
             "",
@@ -181,7 +181,7 @@ class TestTutorialWorldRooms(BaseEvenniaCommandTest):
 
     def test_darkroom(self):
         room = create_object(tutrooms.DarkRoom, key="darkroom")
-        self.char1.move_to(room)
+        self.char1.move_to(room, move_type="teleport")
         self.call(tutrooms.CmdDarkHelp(), "", "Can't help you until")
 
     def test_teleportroom(self):
