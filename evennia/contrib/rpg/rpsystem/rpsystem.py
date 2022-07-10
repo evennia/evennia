@@ -53,7 +53,7 @@ Add `RPSystemCmdSet` from this module to your CharacterCmdSet:
 
 # ...
 
-from evennia.contrib.rpg.rpsystem import RPSystemCmdSet  <---
+from evennia.contrib.rpg.rpsystem.rpsystem import RPSystemCmdSet  <---
 
 class CharacterCmdSet(default_cmds.CharacterCmdset):
     # ...
@@ -69,7 +69,7 @@ the typeclasses in this module:
 ```python
 # in mygame/typeclasses/characters.py
 
-from evennia.contrib.rpg import ContribRPCharacter
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter
 
 class Character(ContribRPCharacter):
     # ...
@@ -79,7 +79,7 @@ class Character(ContribRPCharacter):
 ```python
 # in mygame/typeclasses/objects.py
 
-from evennia.contrib.rpg import ContribRPObject
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject
 
 class Object(ContribRPObject):
     # ...
@@ -89,7 +89,7 @@ class Object(ContribRPObject):
 ```python
 # in mygame/typeclasses/rooms.py
 
-from evennia.contrib.rpg import ContribRPRoom
+from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom
 
 class Room(ContribRPRoom):
     # ...
@@ -125,7 +125,7 @@ Extra Installation Instructions:
 
 1. In typeclasses/character.py:
    Import the `ContribRPCharacter` class:
-       `from evennia.contrib.rpg.rpsystem import ContribRPCharacter`
+       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPCharacter`
    Inherit ContribRPCharacter:
        Change "class Character(DefaultCharacter):" to
        `class Character(ContribRPCharacter):`
@@ -133,13 +133,13 @@ Extra Installation Instructions:
        Add `super().at_object_creation()` as the top line.
 2. In `typeclasses/rooms.py`:
        Import the `ContribRPRoom` class:
-       `from evennia.contrib.rpg.rpsystem import ContribRPRoom`
+       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPRoom`
    Inherit `ContribRPRoom`:
        Change `class Room(DefaultRoom):` to
        `class Room(ContribRPRoom):`
 3. In `typeclasses/objects.py`
        Import the `ContribRPObject` class:
-       `from evennia.contrib.rpg.rpsystem import ContribRPObject`
+       `from evennia.contrib.rpg.rpsystem.rpsystem import ContribRPObject`
    Inherit `ContribRPObject`:
        Change `class Object(DefaultObject):` to
        `class Object(ContribRPObject):`
@@ -149,17 +149,14 @@ Extra Installation Instructions:
 
 """
 import re
-from re import escape as re_escape
-import itertools
+from string import punctuation
 from django.conf import settings
 from evennia.objects.objects import DefaultObject, DefaultCharacter
 from evennia.objects.models import ObjectDB
 from evennia.commands.command import Command
 from evennia.commands.cmdset import CmdSet
-from evennia.utils import ansi
+from evennia.utils import ansi, logger
 from evennia.utils.utils import lazy_property, make_iter, variable_from_module
-
-_REGEX_TUPLE_CACHE = {}
 
 _AT_SEARCH_RESULT = variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))
 # ------------------------------------------------------------
@@ -189,13 +186,13 @@ _EMOTE_MULTIMATCH_ERROR = """|RMultiple possibilities for {ref}:
 
 _RE_FLAGS = re.MULTILINE + re.IGNORECASE + re.UNICODE
 
-_RE_PREFIX = re.compile(r"^%s" % _PREFIX, re.UNICODE)
+_RE_PREFIX = re.compile(rf"^{_PREFIX}", re.UNICODE)
 
 # This regex will return groups (num, word), where num is an optional counter to
 # separate multimatches from one another and word is the first word in the
 # marker. So entering "/tall man" will return groups ("", "tall")
 # and "/2-tall man" will return groups ("2", "tall").
-_RE_OBJ_REF_START = re.compile(r"%s(?:([0-9]+)%s)*(\w+)" % (_PREFIX, _NUM_SEP), _RE_FLAGS)
+_RE_OBJ_REF_START = re.compile(rf"{_PREFIX}(?:([0-9]+){_NUM_SEP})*(\w+)", _RE_FLAGS)
 
 _RE_LEFT_BRACKETS = re.compile(r"\{+", _RE_FLAGS)
 _RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
@@ -239,97 +236,7 @@ class LanguageError(Exception):
     pass
 
 
-def _dummy_process(text, *args, **kwargs):
-    "Pass-through processor"
-    return text
-
-
 # emoting mechanisms
-
-
-def ordered_permutation_regex(sentence):
-    """
-    Builds a regex that matches 'ordered permutations' of a sentence's
-    words.
-
-    Args:
-        sentence (str): The sentence to build a match pattern to
-
-    Returns:
-        regex (re object): Compiled regex object represented the
-            possible ordered permutations of the sentence, from longest to
-            shortest.
-    Example:
-         The sdesc_regex for an sdesc of " very tall man" will
-         result in the following allowed permutations,
-         regex-matched in inverse order of length (case-insensitive):
-         "the very tall man", "the very tall", "very tall man",
-         "very tall", "the very", "tall man", "the", "very", "tall",
-         and "man".
-         We also add regex to make sure it also accepts num-specifiers,
-         like /2-tall.
-
-    """
-    # escape {#nnn} markers from sentence, replace with nnn
-    sentence = _RE_REF.sub(r"\1", sentence)
-    # escape {##nnn} markers, replace with nnn
-    sentence = _RE_REF_LANG.sub(r"\1", sentence)
-    # escape self-ref marker from sentence
-    sentence = _RE_SELF_REF.sub(r"", sentence)
-
-    # ordered permutation algorithm
-    words = sentence.split()
-    combinations = itertools.product((True, False), repeat=len(words))
-    solution = []
-    for combination in combinations:
-        comb = []
-        for iword, word in enumerate(words):
-            if combination[iword]:
-                comb.append(word)
-            elif comb:
-                break
-        if comb:
-            solution.append(
-                _PREFIX
-                + r"[0-9]*%s*%s(?=\W|$)+" % (_NUM_SEP, re_escape(" ".join(comb)).rstrip("\\"))
-            )
-
-    # combine into a match regex, first matching the longest down to the shortest components
-    regex = r"|".join(sorted(set(solution), key=lambda item: (-len(item), item)))
-    return regex
-
-
-def regex_tuple_from_key_alias(obj):
-    """
-    This will build a regex tuple for any object, not just from those
-    with sdesc/recog handlers. It's used as a legacy mechanism for
-    being able to mix this contrib with objects not using sdescs, but
-    note that creating the ordered permutation regex dynamically for
-    every object will add computational overhead.
-
-    Args:
-        obj (Object): This object's key and eventual aliases will
-            be used to build the tuple.
-
-    Returns:
-        regex_tuple (tuple): A tuple
-            (ordered_permutation_regex, obj, key/alias)
-
-
-    """
-    global _REGEX_TUPLE_CACHE
-    permutation_string = " ".join([obj.key] + obj.aliases.all())
-    cache_key = f"{obj.id} {permutation_string}"
-
-    if cache_key not in _REGEX_TUPLE_CACHE:
-        _REGEX_TUPLE_CACHE[cache_key] = (
-            re.compile(ordered_permutation_regex(permutation_string), _RE_FLAGS),
-            obj,
-            obj.key,
-        )
-    return _REGEX_TUPLE_CACHE[cache_key]
-
-
 def parse_language(speaker, emote):
     """
     Parse the emote for language. This is
@@ -375,9 +282,9 @@ def parse_language(speaker, emote):
         langname, saytext = say_match.groups()
         istart, iend = say_match.start(), say_match.end()
         # the key is simply the running match in the emote
-        key = "##%i" % imatch
+        key = f"##{imatch}"
         # replace say with ref markers in emote
-        emote = emote[:istart] + "{%s}" % key + emote[iend:]
+        emote = "{start}{{{key}}}{end}".format(start=emote[:istart], key=key, end=emote[iend:])
         mapping[key] = (langname, saytext)
 
     if errors:
@@ -430,24 +337,21 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         - says, "..." are
 
     """
-    # Load all candidate regex tuples [(regex, obj, sdesc/recog),...]
-    candidate_regexes = (
-        ([(_RE_SELF_REF, sender, sender.sdesc.get())] if hasattr(sender, "sdesc") else [])
-        + (
-            [sender.recog.get_regex_tuple(obj) for obj in candidates]
-            if hasattr(sender, "recog")
-            else []
-        )
-        + [obj.sdesc.get_regex_tuple() for obj in candidates if hasattr(obj, "sdesc")]
-        + [
-            regex_tuple_from_key_alias(obj)  # handle objects without sdescs
-            for obj in candidates
-            if not (hasattr(obj, "recog") and hasattr(obj, "sdesc"))
-        ]
-    )
-
-    # filter out non-found data
-    candidate_regexes = [tup for tup in candidate_regexes if tup]
+    # build a list of candidates with all possible referrable names
+    # include 'me' keyword for self-ref
+    candidate_map = [(sender, "me")]
+    for obj in candidates:
+        # check if sender has any recogs for obj and add
+        if hasattr(sender, "recog"):
+            if recog := sender.recog.get(obj):
+                candidate_map.append((obj, recog))
+        # check if obj has an sdesc and add
+        if hasattr(obj, "sdesc"):
+            candidate_map.append((obj, obj.sdesc.get()))
+        # if no sdesc, include key plus aliases instead
+        else:
+            candidate_map.append((obj, obj.key))
+        candidate_map.extend([(obj, alias) for alias in obj.aliases.all()])
 
     # escape mapping syntax on the form {#id} if it exists already in emote,
     # if so it is replaced with just "id".
@@ -468,18 +372,57 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
 
         # first see if there is a number given (e.g. 1-tall)
         num_identifier, _ = marker_match.groups("")  # return "" if no match, rather than None
-        istart0 = marker_match.start()
-        istart = istart0
+        match_index = marker_match.start()
+        # split the emote string at the reference marker, to process everything after it
+        head = string[:match_index]
+        tail = string[match_index + 1 :]
 
-        # loop over all candidate regexes and match against the string following the match
-        matches = ((reg.match(string[istart:]), obj, text) for reg, obj, text in candidate_regexes)
+        if search_mode:
+            # match the candidates against the whole search string after the marker
+            rquery = "".join(
+                [
+                    r"\b(" + re.escape(word.strip(punctuation)) + r").*"
+                    for word in iter(tail.split())
+                ]
+            )
+            matches = (
+                (re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map
+            )
+            # filter out any non-matching candidates
+            bestmatches = [(obj, match.group()) for match, obj, text in matches if match]
 
-        # score matches by how long part of the string was matched
-        matches = [(match.end() if match else -1, obj, text) for match, obj, text in matches]
-        maxscore = max(score for score, obj, text in matches)
+        else:
+            # to find the longest match, we start from the marker and lengthen the
+            # match query one word at a time.
+            word_list = []
+            bestmatches = []
+            # preserve punctuation when splitting
+            tail = re.split("(\W)", tail)
+            iend = 0
+            for i, item in enumerate(tail):
+                # don't add non-word characters to the search query
+                if not item.isalpha():
+                    continue
+                word_list.append(item)
+                rquery = "".join([r"\b(" + re.escape(word) + r").*" for word in word_list])
+                # match candidates against the current set of words
+                matches = (
+                    (re.search(rquery, text, _RE_FLAGS), obj, text) for obj, text in candidate_map
+                )
+                matches = [(obj, match.group()) for match, obj, text in matches if match]
+                if len(matches) == 0:
+                    # no matches at this length, keep previous iteration as best
+                    break
+                # since this is the longest match so far, set latest match set as best matches
+                bestmatches = matches
+                # save current index as end point of matched text
+                iend = i
 
-        # we have a valid maxscore, extract all matches with this value
-        bestmatches = [(obj, text) for score, obj, text in matches if maxscore == score != -1]
+            # save search string
+            matched_text = "".join(tail[1:iend])
+            # recombine remainder of emote back into a string
+            tail = "".join(tail[iend + 1 :])
+
         nmatches = len(bestmatches)
 
         if not nmatches:
@@ -488,12 +431,11 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             nmatches = 0
         elif nmatches == 1:
             # an exact match.
-            obj = bestmatches[0][0]
-            nmatches = 1
+            obj, match_str = bestmatches[0]
         elif all(bestmatches[0][0].id == obj.id for obj, text in bestmatches):
             # multi-match but all matches actually reference the same
             # obj (could happen with clashing recogs + sdescs)
-            obj = bestmatches[0][0]
+            obj, match_str = bestmatches[0]
             nmatches = 1
         else:
             # multi-match.
@@ -501,7 +443,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             inum = min(max(0, int(num_identifier) - 1), nmatches - 1) if num_identifier else None
             if inum is not None:
                 # A valid inum is given. Use this to separate data.
-                obj = bestmatches[inum][0]
+                obj, match_str = bestmatches[inum]
                 nmatches = 1
             else:
                 # no identifier given - a real multimatch.
@@ -519,35 +461,32 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
                 # case sensitive mode
                 # internal flags for the case used for the original /query
                 # - t for titled input (like /Name)
-                # - ^ for all upercase input (likle /NAME)
+                # - ^ for all upercase input (like /NAME)
                 # - v for lower-case input (like /name)
                 # - ~ for mixed case input (like /nAmE)
-                matchtext = marker_match.group()
-                if not _RE_SELF_REF.match(matchtext):
-                    # self-refs are kept as-is, others are parsed by case
-                    matchtext = marker_match.group().lstrip(_PREFIX)
-                    if matchtext.istitle():
-                        case = "t"
-                    elif matchtext.isupper():
-                        case = "^"
-                    elif matchtext.islower():
-                        case = "v"
+                matchtext = marker_match.group().lstrip(_PREFIX)
+                if matchtext.istitle():
+                    case = "t"
+                elif matchtext.isupper():
+                    case = "^"
+                elif matchtext.islower():
+                    case = "v"
 
-            key = "#%i%s" % (obj.id, case)
-            string = string[:istart0] + "{%s}" % key + string[istart + maxscore :]
+            key = f"#{obj.id}{case}"
+            # recombine emote with matched text replaced by ref
+            string = f"{head}{{{key}}}{tail}"
             mapping[key] = obj
 
         else:
             # multimatch error
             refname = marker_match.group()
             reflist = [
-                "%s%s%s (%s%s)"
-                % (
-                    inum + 1,
-                    _NUM_SEP,
-                    _RE_PREFIX.sub("", refname),
-                    text,
-                    " (%s)" % sender.key if sender == ob else "",
+                "{num}{sep}{name} ({text}{key})".format(
+                    num=inum + 1,
+                    sep=_NUM_SEP,
+                    name=_RE_PREFIX.sub("", refname),
+                    text=text,
+                    key=f" ({sender.key})" if sender == ob else "",
                 )
                 for inum, (ob, text) in enumerate(obj)
             ]
@@ -611,7 +550,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         sender.msg(str(err))
         return
 
-    skey = "#%i" % sender.id
+    skey = f"#{sender.id}"
 
     # we escape the object mappings since we'll do the language ones first
     # (the text could have nested object mappings).
@@ -619,66 +558,45 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
     # if anonymous_add is passed as a kwarg, collect and remove it from kwargs
     if "anonymous_add" in kwargs:
         anonymous_add = kwargs.pop("anonymous_add")
-    if anonymous_add and not any(1 for tag in obj_mapping if tag.startswith(skey)):
-        # no self-reference in the emote - add to the end
-        obj_mapping[skey] = sender
+    # make sure to catch all possible self-refs
+    self_refs = [f"{skey}{ref}" for ref in ("t", "^", "v", "~", "")]
+    if anonymous_add and not any(1 for tag in obj_mapping if tag in self_refs):
+        # no self-reference in the emote - add it
         if anonymous_add == "first":
-            possessive = "" if emote.startswith("'") else " "
-            emote = "%s%s%s" % ("{{%s}}" % skey, possessive, emote)
+            # add case flag for initial caps
+            skey += "t"
+            # don't put a space after the self-ref if it's a possessive emote
+            femote = "{key}{emote}" if emote.startswith("'") else "{key} {emote}"
         else:
-            emote = "%s [%s]" % (emote, "{{%s}}" % skey)
+            # add it to the end
+            femote = "{emote} [{key}]"
+        emote = femote.format(key="{{" + skey + "}}", emote=emote)
+        obj_mapping[skey] = sender
 
     # broadcast emote to everyone
     for receiver in receivers:
         # first handle the language mapping, which always produce different keys ##nn
-        receiver_lang_mapping = {}
-        try:
-            process_language = receiver.process_language
-        except AttributeError:
-            process_language = _dummy_process
-        for key, (langname, saytext) in language_mapping.items():
-            # color says
-            receiver_lang_mapping[key] = process_language(saytext, sender, langname)
+        if hasattr(receiver, "process_language") and callable(receiver.process_language):
+            receiver_lang_mapping = {
+                key: receiver.process_language(saytext, sender, langname)
+                for key, (langname, saytext) in language_mapping.items()
+            }
+        else:
+            receiver_lang_mapping = {
+                key: saytext for key, (langname, saytext) in language_mapping.items()
+            }
         # map the language {##num} markers. This will convert the escaped sdesc markers on
         # the form {{#num}} to {#num} markers ready to sdesc-map in the next step.
         sendemote = emote.format(**receiver_lang_mapping)
 
-        # handle sdesc mappings. we make a temporary copy that we can modify
-        try:
-            process_sdesc = receiver.process_sdesc
-        except AttributeError:
-            process_sdesc = _dummy_process
-
-        try:
-            process_recog = receiver.process_recog
-        except AttributeError:
-            process_recog = _dummy_process
-
-        try:
-            recog_get = receiver.recog.get
-            receiver_sdesc_mapping = dict(
-                (ref, process_recog(recog_get(obj), obj, ref=ref, **kwargs))
-                for ref, obj in obj_mapping.items()
+        # map the ref keys to sdescs
+        receiver_sdesc_mapping = dict(
+            (
+                ref,
+                obj.get_display_name(receiver, ref=ref, noid=True),
             )
-        except AttributeError:
-            receiver_sdesc_mapping = dict(
-                (
-                    ref,
-                    process_sdesc(obj.sdesc.get(), obj, ref=ref)
-                    if hasattr(obj, "sdesc")
-                    else process_sdesc(obj.key, obj, ref=ref),
-                )
-                for ref, obj in obj_mapping.items()
-            )
-        # make sure receiver always sees their real name
-        rkey_start = "#%i" % receiver.id
-        rkey_keep_case = rkey_start + "~"  # signifies keeping the case
-        for rkey in (key for key in receiver_sdesc_mapping if key.startswith(rkey_start)):
-            # we could have #%i^, #%it etc depending on input case - we want the
-            # self-reference to retain case.
-            receiver_sdesc_mapping[rkey] = process_sdesc(
-                receiver.key, receiver, ref=rkey_keep_case, **kwargs
-            )
+            for ref, obj in obj_mapping.items()
+        )
 
         # do the template replacement of the sdesc/recog {#num} markers
         receiver.msg(sendemote.format(**receiver_sdesc_mapping), from_obj=sender, **kwargs)
@@ -713,17 +631,13 @@ class SdescHandler:
         """
         self.obj = obj
         self.sdesc = ""
-        self.sdesc_regex = ""
         self._cache()
 
     def _cache(self):
         """
         Cache data from storage
-
         """
-        self.sdesc = self.obj.attributes.get("_sdesc", default="")
-        sdesc_regex = self.obj.attributes.get("_sdesc_regex", default="")
-        self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
+        self.sdesc = self.obj.attributes.get("_sdesc", default=self.obj.key)
 
     def add(self, sdesc, max_length=60):
         """
@@ -759,17 +673,15 @@ class SdescHandler:
 
         if len(cleaned_sdesc) > max_length:
             raise SdescError(
-                "Short desc can max be %i chars long (was %i chars)."
-                % (max_length, len(cleaned_sdesc))
+                "Short desc can max be {} chars long (was {} chars).".format(
+                    max_length, len(cleaned_sdesc)
+                )
             )
 
         # store to attributes
-        sdesc_regex = ordered_permutation_regex(cleaned_sdesc)
         self.obj.attributes.add("_sdesc", sdesc)
-        self.obj.attributes.add("_sdesc_regex", sdesc_regex)
         # local caching
         self.sdesc = sdesc
-        self.sdesc_regex = re.compile(sdesc_regex, _RE_FLAGS)
 
         return sdesc
 
@@ -780,16 +692,6 @@ class SdescHandler:
 
         """
         return self.sdesc or self.obj.key
-
-    def get_regex_tuple(self):
-        """
-        Return data for sdesc/recog handling
-
-        Returns:
-            tup (tuple): tuple (sdesc_regex, obj, sdesc)
-
-        """
-        return self.sdesc_regex, self.obj, self.sdesc
 
 
 class RecogHandler:
@@ -802,7 +704,6 @@ class RecogHandler:
 
         _recog_ref2recog
         _recog_obj2recog
-        _recog_obj2regex
 
     """
 
@@ -817,7 +718,6 @@ class RecogHandler:
         self.obj = obj
         # mappings
         self.ref2recog = {}
-        self.obj2regex = {}
         self.obj2recog = {}
         self._cache()
 
@@ -826,11 +726,7 @@ class RecogHandler:
         Load data to handler cache
         """
         self.ref2recog = self.obj.attributes.get("_recog_ref2recog", default={})
-        obj2regex = self.obj.attributes.get("_recog_obj2regex", default={})
         obj2recog = self.obj.attributes.get("_recog_obj2recog", default={})
-        self.obj2regex = dict(
-            (obj, re.compile(regex, _RE_FLAGS)) for obj, regex in obj2regex.items() if obj
-        )
         self.obj2recog = dict((obj, recog) for obj, recog in obj2recog.items() if obj)
 
     def add(self, obj, recog, max_length=60):
@@ -873,31 +769,29 @@ class RecogHandler:
 
         if len(cleaned_recog) > max_length:
             raise RecogError(
-                "Recog string cannot be longer than %i chars (was %i chars)"
-                % (max_length, len(cleaned_recog))
+                "Recog string cannot be longer than {} chars (was {} chars)".format(
+                    max_length, len(cleaned_recog)
+                )
             )
 
         # mapping #dbref:obj
-        key = "#%i" % obj.id
+        key = f"#{obj.id}"
         self.obj.attributes.get("_recog_ref2recog", default={})[key] = recog
         self.obj.attributes.get("_recog_obj2recog", default={})[obj] = recog
-        regex = ordered_permutation_regex(cleaned_recog)
-        self.obj.attributes.get("_recog_obj2regex", default={})[obj] = regex
         # local caching
         self.ref2recog[key] = recog
         self.obj2recog[obj] = recog
-        self.obj2regex[obj] = re.compile(regex, _RE_FLAGS)
         return recog
 
     def get(self, obj):
         """
-        Get recog replacement string, if one exists, otherwise
-        get sdesc and as a last resort, the object's key.
+        Get recog replacement string, if one exists.
 
         Args:
             obj (Object): The object, whose sdesc to replace
         Returns:
-            recog (str): The replacement string to use.
+            recog (str or None): The replacement string to use, or
+                None if there is no recog for this object.
 
         Notes:
             This method will respect a "enable_recog" lock set on
@@ -908,10 +802,10 @@ class RecogHandler:
             # check an eventual recog_masked lock on the object
             # to avoid revealing masked characters. If lock
             # does not exist, pass automatically.
-            return self.obj2recog.get(obj, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
+            return self.obj2recog.get(obj, None)
         else:
-            # recog_mask log not passed, disable recog
-            return obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
+            # recog_mask lock not passed, disable recog
+            return None
 
     def all(self):
         """
@@ -932,18 +826,8 @@ class RecogHandler:
         """
         if obj in self.obj2recog:
             del self.obj.db._recog_obj2recog[obj]
-            del self.obj.db._recog_obj2regex[obj]
-            del self.obj.db._recog_ref2recog["#%i" % obj.id]
+            del self.obj.db._recog_ref2recog[f"#{obj.id}"]
         self._cache()
-
-    def get_regex_tuple(self, obj):
-        """
-        Returns:
-            rec (tuple): Tuple (recog_regex, obj, recog)
-        """
-        if obj in self.obj2recog and obj.access(self.obj, "enable_recog", default=True):
-            return self.obj2regex[obj], obj, self.obj2regex[obj]
-        return None
 
 
 # ------------------------------------------------------------
@@ -994,8 +878,8 @@ class CmdEmote(RPCommand):  # replaces the main emote
             # we also include ourselves here.
             emote = self.args
             targets = self.caller.location.contents
-            if not emote.endswith((".", "?", "!")):  # If emote is not punctuated,
-                emote = "%s." % emote  # add a full-stop for good measure.
+            if not emote.endswith((".", "?", "!", '"')):  # If emote is not punctuated or speech,
+                emote += "."  # add a full-stop for good measure.
             send_emote(self.caller, targets, emote, anonymous_add="first")
 
 
@@ -1025,7 +909,6 @@ class CmdSay(RPCommand):  # replaces standard say
 
         # calling the speech modifying hook
         speech = caller.at_pre_say(self.args)
-        # preparing the speech with sdesc/speech parsing.
         targets = self.caller.location.contents
         send_emote(self.caller, targets, speech, anonymous_add=None)
 
@@ -1061,7 +944,7 @@ class CmdSdesc(RPCommand):  # set/look at own sdesc
             except AttributeError:
                 caller.msg(f"Cannot set sdesc on {caller.key}.")
                 return
-            caller.msg("%s's sdesc was set to '%s'." % (caller.key, sdesc))
+            caller.msg(f"{caller.key}'s sdesc was set to '{sdesc}'.")
 
 
 class CmdPose(RPCommand):  # set current pose and default pose
@@ -1121,8 +1004,8 @@ class CmdPose(RPCommand):  # set current pose and default pose
             caller.msg("Usage: pose <pose-text> OR pose obj = <pose-text>")
             return
 
-        if not pose.endswith("."):
-            pose = "%s." % pose
+        if not pose.endswith((".", "?", "!", '"')):
+            pose += "."
         if target:
             # affect something else
             target = caller.search(target)
@@ -1134,18 +1017,18 @@ class CmdPose(RPCommand):  # set current pose and default pose
         else:
             target = caller
 
+        target_name = target.sdesc.get() if hasattr(target, "sdesc") else target.key
         if not target.attributes.has("pose"):
-            caller.msg("%s cannot be posed." % target.key)
+            caller.msg(f"{target_name} cannot be posed.")
             return
 
-        target_name = target.sdesc.get() if hasattr(target, "sdesc") else target.key
         # set the pose
         if self.reset:
             pose = target.db.pose_default
             target.db.pose = pose
         elif self.default:
             target.db.pose_default = pose
-            caller.msg("Default pose is now '%s %s'." % (target_name, pose))
+            caller.msg(f"Default pose is now '{target_name} {pose}'.")
             return
         else:
             # set the pose. We do one-time ref->sdesc mapping here.
@@ -1157,12 +1040,12 @@ class CmdPose(RPCommand):  # set current pose and default pose
             pose = parsed.format(**mapping)
 
             if len(target_name) + len(pose) > 60:
-                caller.msg("Your pose '%s' is too long." % pose)
+                caller.msg(f"'{pose}' is too long.")
                 return
 
             target.db.pose = pose
 
-        caller.msg("Pose will read '%s %s'." % (target_name, pose))
+        caller.msg(f"Pose will read '{target_name} {pose}'.")
 
 
 class CmdRecog(RPCommand):  # assign personal alias to object in room
@@ -1241,12 +1124,12 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             caller.msg(_EMOTE_NOMATCH_ERROR.format(ref=sdesc))
         elif nmatches > 1:
             reflist = [
-                "{}{}{} ({}{})".format(
-                    inum + 1,
-                    _NUM_SEP,
-                    _RE_PREFIX.sub("", sdesc),
-                    caller.recog.get(obj),
-                    " (%s)" % caller.key if caller == obj else "",
+                "{num}{sep}{sdesc} ({recog}{key})".format(
+                    num=inum + 1,
+                    sep=_NUM_SEP,
+                    sdesc=_RE_PREFIX.sub("", sdesc),
+                    recog=caller.recog.get(obj) or "no recog",
+                    key=f" ({caller.key})" if caller == obj else "",
                 )
                 for inum, obj in enumerate(matches)
             ]
@@ -1262,7 +1145,11 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
             if forget_mode:
                 # remove existing recog
                 caller.recog.remove(obj)
-                caller.msg("%s will now know them only as '%s'." % (caller.key, obj.recog.get(obj)))
+                caller.msg(
+                    "You will now know them only as '{}'.".format(
+                        obj.get_display_name(caller, noid=True)
+                    )
+                )
             else:
                 # set recog
                 sdesc = obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key
@@ -1271,7 +1158,7 @@ class CmdRecog(RPCommand):  # assign personal alias to object in room
                 except RecogError as err:
                     caller.msg(err)
                     return
-                caller.msg("%s will now remember |w%s|n as |w%s|n." % (caller.key, sdesc, alias))
+                caller.msg("You will now remember |w{}|n as |w{}|n.".format(sdesc, alias))
 
 
 class CmdMask(RPCommand):
@@ -1302,14 +1189,14 @@ class CmdMask(RPCommand):
                 caller.msg("You are already wearing a mask.")
                 return
             sdesc = _RE_CHAREND.sub("", self.args)
-            sdesc = "%s |H[masked]|n" % sdesc
+            sdesc = f"{sdesc} |H[masked]|n"
             if len(sdesc) > 60:
                 caller.msg("Your masked sdesc is too long.")
                 return
             caller.db.unmasked_sdesc = caller.sdesc.get()
             caller.locks.add("enable_recog:false()")
             caller.sdesc.add(sdesc)
-            caller.msg("You wear a mask as '%s'." % sdesc)
+            caller.msg(f"You wear a mask as '{sdesc}'.")
         else:
             # unmask
             old_sdesc = caller.db.unmasked_sdesc
@@ -1319,7 +1206,7 @@ class CmdMask(RPCommand):
             del caller.db.unmasked_sdesc
             caller.locks.remove("enable_recog")
             caller.sdesc.add(old_sdesc)
-            caller.msg("You remove your mask and are again '%s'." % old_sdesc)
+            caller.msg(f"You remove your mask and are again '{old_sdesc}'.")
 
 
 class RPSystemCmdSet(CmdSet):
@@ -1347,6 +1234,10 @@ class ContribRPObject(DefaultObject):
     rp-heavy game. It implements the base functionality for poses.
     """
 
+    @lazy_property
+    def sdesc(self):
+        return SdescHandler(self)
+
     def at_object_creation(self):
         """
         Called at initial creation.
@@ -1356,6 +1247,10 @@ class ContribRPObject(DefaultObject):
         # emoting/recog data
         self.db.pose = ""
         self.db.pose_default = "is here."
+
+        # initializing sdesc
+        self.db._sdesc = ""
+        self.sdesc.add("Something")
 
     def search(
         self,
@@ -1529,6 +1424,21 @@ class ContribRPObject(DefaultObject):
             multimatch_string=multimatch_string,
         )
 
+    def get_posed_sdesc(self, sdesc, **kwargs):
+        """
+        Displays the object with its current pose string.
+
+        Returns:
+            pose (str): A string containing the object's sdesc and
+                current or default pose.
+        """
+
+        # get the current pose, or default if no pose is set
+        pose = self.db.pose or self.db.pose_default
+
+        # return formatted string, or sdesc as fallback
+        return f"{sdesc} {pose}" if pose else sdesc
+
     def get_display_name(self, looker, **kwargs):
         """
         Displays the name of the object in a viewer-aware manner.
@@ -1539,28 +1449,40 @@ class ContribRPObject(DefaultObject):
 
         Keyword Args:
             pose (bool): Include the pose (if available) in the return.
+            ref (str): The reference marker found in string to replace.
+                This is on the form #{num}{case}, like '#12^', where
+                the number is a processing location in the string and the
+                case symbol indicates the case of the original tag input
+                - `t` - input was Titled, like /Tall
+                - `^` - input was all uppercase, like /TALL
+                - `v` - input was all lowercase, like /tall
+                - `~` - input case should be kept, or was mixed-case
+            noid (bool): Don't show DBREF even if viewer has control access.
 
         Returns:
             name (str): A string of the sdesc containing the name of the object,
-            if this is defined.
-                including the DBREF if this user is privileged to control
-                said object.
-
-        Notes:
-            The RPObject version doesn't add color to its display.
+                if this is defined. By default, included the DBREF if this user
+                is privileged to control said object.
 
         """
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        ref = kwargs.get("ref", "~")
+
         if looker == self:
+            # always show your own key
             sdesc = self.key
         else:
             try:
-                recog = looker.recog.get(self)
+                # get the sdesc looker should see
+                sdesc = looker.get_sdesc(self, ref=ref)
             except AttributeError:
-                recog = None
-            sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
-        pose = " %s" % (self.db.pose or "") if kwargs.get("pose", False) else ""
-        return "%s%s%s" % (sdesc, idstr, pose)
+                # use own sdesc as a fallback
+                sdesc = self.sdesc.get()
+
+        # add dbref is looker has control access and `noid` is not set
+        if self.access(looker, access_type="control") and not kwargs.get("noid", False):
+            sdesc = f"{sdesc}(#{self.id})"
+
+        return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
     def return_appearance(self, looker):
         """
@@ -1569,6 +1491,10 @@ class ContribRPObject(DefaultObject):
 
         Args:
             looker (Object): Object doing the looking.
+
+        Returns:
+            string (str): A string containing the name, appearance and contents
+                of the object.
         """
         if not looker:
             return ""
@@ -1592,6 +1518,7 @@ class ContribRPObject(DefaultObject):
             string += "\n|wExits:|n " + ", ".join(exits)
         if users or things:
             string += "\n " + "\n ".join(users + things)
+
         return string
 
 
@@ -1608,11 +1535,6 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
     This is a character class that has poses, sdesc and recog.
     """
 
-    # Handlers
-    @lazy_property
-    def sdesc(self):
-        return SdescHandler(self)
-
     @lazy_property
     def recog(self):
         return RecogHandler(self)
@@ -1627,29 +1549,44 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         Keyword Args:
             pose (bool): Include the pose (if available) in the return.
+            ref (str): The reference marker found in string to replace.
+                This is on the form #{num}{case}, like '#12^', where
+                the number is a processing location in the string and the
+                case symbol indicates the case of the original tag input
+                - `t` - input was Titled, like /Tall
+                - `^` - input was all uppercase, like /TALL
+                - `v` - input was all lowercase, like /tall
+                - `~` - input case should be kept, or was mixed-case
+            noid (bool): Don't show DBREF even if viewer has control access.
 
         Returns:
             name (str): A string of the sdesc containing the name of the object,
-            if this is defined.
-                including the DBREF if this user is privileged to control
-                said object.
+                if this is defined. By default, included the DBREF if this user
+                is privileged to control said object.
 
         Notes:
-            The RPCharacter version of this method colors its display to make
+            The RPCharacter version adds additional processing to sdescs to make
             characters stand out from other objects.
 
         """
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        ref = kwargs.get("ref", "~")
+
         if looker == self:
-            sdesc = self.key
+            # process your key as recog since you recognize yourself
+            sdesc = self.process_recog(self.key, self)
         else:
             try:
-                recog = looker.recog.get(self)
+                # get the sdesc looker should see, with formatting
+                sdesc = looker.get_sdesc(self, process=True, ref=ref)
             except AttributeError:
-                recog = None
-            sdesc = recog or (hasattr(self, "sdesc") and self.sdesc.get()) or self.key
-        pose = " %s" % (self.db.pose or "is here.") if kwargs.get("pose", False) else ""
-        return "|c%s|n%s%s" % (sdesc, idstr, pose)
+                # use own sdesc as a fallback
+                sdesc = self.sdesc.get()
+
+        # add dbref is looker has control access and `noid` is not set
+        if self.access(looker, access_type="control") and not kwargs.get("noid", False):
+            sdesc = f"{sdesc}(#{self.id})"
+
+        return self.get_posed_sdesc(sdesc) if kwargs.get("pose", False) else sdesc
 
     def at_object_creation(self):
         """
@@ -1658,10 +1595,8 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
         super().at_object_creation()
 
         self.db._sdesc = ""
-        self.db._sdesc_regex = ""
 
         self.db._recog_ref2recog = {}
-        self.db._recog_obj2regex = {}
         self.db._recog_obj2recog = {}
 
         self.cmdset.add(RPSystemCmdSet, persistent=True)
@@ -1679,8 +1614,37 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
 
         """
         if kwargs.get("whisper"):
-            return f'/me whispers "{message}"'
-        return f'/me says, "{message}"'
+            return f'/Me whispers "{message}"'
+        return f'/Me says, "{message}"'
+
+    def get_sdesc(self, obj, process=False, **kwargs):
+        """
+        Single method to handle getting recogs with sdesc fallback in an
+        aware manner, to allow separate processing of recogs from sdescs.
+        Gets the sdesc or recog for obj from the view of self.
+
+        Args:
+            obj (Object): the object whose sdesc or recog is being gotten
+        Keyword Args:
+            process (bool): If True, the sdesc/recog is run through the
+                appropriate process method for self - .process_sdesc or
+                .process_recog
+        """
+        # always see own key
+        if obj == self:
+            recog = self.key
+            sdesc = self.key
+        else:
+            # first check if we have a recog for this object
+            recog = self.recog.get(obj)
+            # set sdesc to recog, using sdesc as a fallback, or the object's key if no sdesc
+            sdesc = recog or (hasattr(obj, "sdesc") and obj.sdesc.get()) or obj.key
+
+        if process:
+            # process the sdesc as a recog if a recog was found, else as an sdesc
+            sdesc = (self.process_recog if recog else self.process_sdesc)(sdesc, obj, **kwargs)
+
+        return sdesc
 
     def process_sdesc(self, sdesc, obj, **kwargs):
         """
@@ -1721,7 +1685,7 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             sdesc = sdesc.upper()
         elif "v" in ref:
             sdesc = sdesc.lower()
-        return "|b%s|n" % sdesc
+        return f"|b{sdesc}|n"
 
     def process_recog(self, recog, obj, **kwargs):
         """
@@ -1732,14 +1696,15 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
                 translated from the original sdesc at this point.
             obj (Object): The object the recog:ed string belongs to.
                 This is not used by default.
-        Kwargs:
-            ref (str): See process_sdesc.
 
         Returns:
             recog (str): The modified recog string.
 
         """
-        return self.process_sdesc(recog, obj, **kwargs)
+        if not recog:
+            return ""
+
+        return f"|m{recog}|n"
 
     def process_language(self, text, speaker, language, **kwargs):
         """
@@ -1762,4 +1727,4 @@ class ContribRPCharacter(DefaultCharacter, ContribRPObject):
             the evennia.contrib.rpg.rplanguage module.
 
         """
-        return "%s|w%s|n" % ("|W(%s)" % language if language else "", text)
+        return "{label}|w{text}|n".format(label=f"|W({language})" if language else "", text=text)

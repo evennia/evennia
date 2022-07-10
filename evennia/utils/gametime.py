@@ -67,7 +67,7 @@ class TimeScript(DefaultScript):
             callback(*args, **kwargs)
 
         seconds = real_seconds_until(**self.db.gametime)
-        self.restart(interval=seconds)
+        self.start(interval=seconds, force_restart=True)
 
 
 # Access functions

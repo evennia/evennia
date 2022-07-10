@@ -28,7 +28,7 @@ Possible keywords are:
 - `prototype_key` - the name of the prototype. This is required for db-prototypes,
   for module-prototypes, the global variable name of the dict is used instead
 - `prototype_parent` - string pointing to parent prototype if any. Prototype inherits
-  in a similar way as classes, with children overriding values in their partents.
+  in a similar way as classes, with children overriding values in their parents.
 - `key` - string, the main object identifier.
 - `typeclass` - string, if not set, will use `settings.BASE_OBJECT_TYPECLASS`.
 - `location` - this should be a valid object or #dbref.
@@ -42,7 +42,7 @@ Possible keywords are:
    of the shorter forms, defaults are used for the rest.
 - `tags` - Tags, as a list of tuples `(tag,)`, `(tag, category)` or `(tag, category, data)`.
 -  Any other keywords are interpreted as Attributes with no category or lock.
-   These will internally be added to `attrs` (eqivalent to `(attrname, value)`.
+   These will internally be added to `attrs` (equivalent to `(attrname, value)`.
 
 See the `spawn` command and `evennia.prototypes.spawner.spawn` for more info.
 

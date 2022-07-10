@@ -25,7 +25,7 @@ Evennia depends heavily on good documentation and we are always looking for
 extra eyes and hands to improve it. Even small things such as fixing typos are a
 great help!
 
-- Easiest is to just [report dicumentation issues][issues] as you find them. If
+- Easiest is to just [report documentation issues][issues] as you find them. If
   we don't know about them, we can't fix them!
 - If you want to help edit the docs directly, [check here](./Contributing-Docs.md)
   on how to do it.
@@ -83,7 +83,7 @@ like [Pastebin](https://pastebin.com/) and just supply the link.
 Evennia has a [contrib](Contribs/Contribs-Overview.md) directory which contains
 user-shared code organized by category. You can contribute anything that you
 think may be useful to another dev, also highly game-specific code. A contrib
-must always be added via a forked respository.
+must always be added via a forked repository.
 
 #### Guidelines for making a contrib
 
@@ -101,7 +101,7 @@ must always be added via a forked respository.
   documented and part of the installation instructions.
 - The contrib must be contained within a separate folder under one of the
   contrib categories (`game_systems`, `rpg`, `utils` etc). Ask if you are
-  unsuare which category to put your contrib under.
+  unsure which category to put your contrib under.
 - The folder (package) should be on the following form:
 
     ```

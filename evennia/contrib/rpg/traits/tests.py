@@ -321,7 +321,6 @@ class TestTraitStatic(_TraitHandlerBase):
         self.trait.mult = 0.75
         self.assertEqual(self._get_values(), (5, 1, 0.75, 4.5))
 
-
     def test_delete(self):
         """Deleting resets to default."""
         self.trait.mult = 2.0
@@ -362,7 +361,14 @@ class TestTraitCounter(_TraitHandlerBase):
 
     def _get_values(self):
         """Get (base, mod, mult, value, min, max)."""
-        return (self.trait.base, self.trait.mod, self.trait.mult, self.trait.value, self.trait.min, self.trait.max)
+        return (
+            self.trait.base,
+            self.trait.mod,
+            self.trait.mult,
+            self.trait.value,
+            self.trait.min,
+            self.trait.max,
+        )
 
     def test_init(self):
         self.assertEqual(
@@ -634,7 +640,14 @@ class TestTraitGauge(_TraitHandlerBase):
 
     def _get_values(self):
         """Get (base, mod, mult, value, min, max)."""
-        return (self.trait.base, self.trait.mod, self.trait.mult, self.trait.value, self.trait.min, self.trait.max)
+        return (
+            self.trait.base,
+            self.trait.mod,
+            self.trait.mult,
+            self.trait.value,
+            self.trait.min,
+            self.trait.max,
+        )
 
     def test_init(self):
         self.assertEqual(
