@@ -264,6 +264,7 @@ class AttributeProperty:
 
         Args:
             value (any): The value about to the stored in this Attribute.
+            obj (object): Object the attribute is attached to
 
         Returns:
             any: The value to store.
@@ -281,6 +282,7 @@ class AttributeProperty:
 
         Args:
             value (any): Value returned from the Attribute.
+            obj (object): Object the attribute is attached to
 
         Returns:
             any: The value to return to the caller.
