@@ -573,6 +573,7 @@ class CommandHandler:
         cmdset = yield get_and_merge_cmdsets(
             self.call_chain, self.raw_string
         )
+        self.cmdset = cmdset
         if not cmdset:
             # this is bad and shouldn't happen.
             raise NoCmdSets
@@ -682,7 +683,7 @@ class CommandHandler:
                 sysarg = exc.sysarg
 
                 if syscmd:
-                    ret = yield self._run_command(syscmd, syscmd.key, sysarg, self.unformatted_raw_string, cmdset)
+                    ret = yield self._run_command(syscmd, syscmd.key, sysarg, self.unformatted_raw_string, self.cmdset)
                     returnValue(ret)
                 elif sysarg:
                     # return system arg
