@@ -211,7 +211,7 @@ class AttributeProperty:
         """
         self._key = name
 
-    def __get__(self, instance):
+    def __get__(self, instance, owner):
         """
         Called when the attrkey is retrieved from the instance.
 
