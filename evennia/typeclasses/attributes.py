@@ -224,7 +224,7 @@ class AttributeProperty:
                 category=self._category,
                 strattr=self._strattr,
                 raise_exception=self._autocreate,
-            ))
+            ), instance)
         except AttributeError:
             if self._autocreate:
                 # attribute didn't exist and autocreate is set
@@ -274,7 +274,7 @@ class AttributeProperty:
         """
         return value
 
-    def at_get(self, value):
+    def at_get(self, value, obj):
         """
         The value returned from the Attribute is passed through this method. It can be used
         to react to the retrieval or modify the result in some way.
