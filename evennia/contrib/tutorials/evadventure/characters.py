@@ -19,7 +19,7 @@ class EquipmentHandler:
     """
     _Knave_ puts a lot of emphasis on the inventory. You have CON_DEFENSE inventory
     slots. Some things, like torches can fit multiple in one slot, other (like
-    big weapons) use more than one slot. The items carried and wielded has a big impact
+    big weapons and armor) use more than one slot. The items carried and wielded has a big impact
     on character customization - even magic requires carrying a runestone per spell.
 
     The inventory also doubles as a measure of negative effects. Getting soaked in mud
@@ -147,6 +147,43 @@ class EquipmentHandler:
             weapon = slots[WieldLocation.WEAPON_HAND]
         return weapon
 
+    def display_loadout(self):
+        """
+        Get a visual representation of your current loadout.
+
+        Returns:
+            str: The current loadout.
+
+        """
+        slots = self.slots
+        one_hand = None
+        weapon_str = "You are fighting with your bare fists"
+        shield_str = " and have no shield."
+        armor_str = "You wear no armor"
+        helmet_str = " and no helmet."
+
+        two_hands = slots[WieldLocation.TWO_HANDS]
+        if two_hands:
+            weapon_str = f"You wield {two_hands} with both hands"
+            shield_str = f" (you can't hold a shield at the same time)."
+        else:
+            one_hands = slots[WieldLocation.WEAPON_HAND]
+            if one_hands:
+                weapon_str = f"You are wielding {one_hands} in one hand."
+            shield = slots[WieldLocation.SHIELD_HAND]
+            if shield:
+                shield_str = f"You have {shield} in your off hand."
+
+        armor = slots[WieldLocation.BODY]
+        if armor:
+            armor_str = f"You are wearing {armor}"
+
+        helmet = slots[WieldLocation.BODY]
+        if helmet:
+            helmet_str = f" and {helmet} on your head."
+
+        return f"{weapon_str}{shield_str}\n{armor_str}{helmet_str}"
+
     def use(self, obj):
         """
         Make use of item - this makes use of the object's wield slot to decide where
@@ -241,6 +278,51 @@ class EquipmentHandler:
         if ret:
             self._save()
         return ret
+
+    def get_wieldable_objects_from_backpack(self):
+        """
+        Get all wieldable weapons (or spell runes) from backpack. This is useful in order to
+        have a list to select from when swapping your wielded loadout.
+
+        Returns:
+            list: A list of objects with a suitable `inventory_use_slot`. We don't check
+            quality, so this may include broken items (we may want to visually show them
+            in the list after all).
+
+        """
+        return [obj for obj in slots[WieldLocation.BACKPACK]
+                if obj.inventory_use_slot in (
+                    WieldLocation.WEAPON_HAND,
+                    WieldLocation.TWO_HANDS,
+                    WieldLocation.SHIELD_HAND)]
+
+    def get_wearable_objects_from_backpack(self):
+        """
+        Get all wearable items (armor or helmets) from backpack. This is useful in order to
+        have a list to select from when swapping your worn loadout.
+
+        Returns:
+            list: A list of objects with a suitable `inventory_use_slot`. We don't check
+            quality, so this may include broken items (we may want to visually show them
+            in the list after all).
+
+        """
+        return [obj for obj in slots[WieldLocation.BACKPACK]
+                if obj.inventory_use_slot in (
+                    WieldLocation.BODY,
+                    WieldLocation.HEAD
+                )]
+
+    def get_usable_objects_from_backpack(self):
+        """
+        Get all 'usable' items (like potions) from backpack. This is useful for getting a
+        list to select from.
+
+        Returns:
+            list: A list of objects that are usable.
+
+        """
+        return [obj for obj in slots[WieldLocation.BACKPACK] if obj.uses > 0]
 
 
 class LivingMixin:
