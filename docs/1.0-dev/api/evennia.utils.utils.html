@@ -247,7 +247,7 @@ Defaults to client’s default width.</p></li>
 
 <dl class="py function">
 <dt id="evennia.utils.utils.iter_to_str">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">', and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_str" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">','</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">', and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#iter_to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.iter_to_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
@@ -257,8 +257,8 @@ is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
 <li><p><strong>iterable</strong> (<em>any</em>) – Usually an iterable to print. Each element must be possible to
 present with a string. Note that if this is a generator, it will be
 consumed by this operation.</p></li>
-<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – If set, the last item separator will
-be replaced with this value.</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – The string to use as a separator for each item in the iterable.</p></li>
+<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – The last item separator will be replaced with this value.</p></li>
 <li><p><strong>addquote</strong> (<em>bool</em><em>, </em><em>optional</em>) – This will surround all outgoing
 values with double quotes.</p></li>
 </ul>
@@ -268,14 +268,17 @@ values with double quotes.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Default is to use ‘Oxford comma’, like 1, 2, 3, and 4. To remove, give
-<strong>endsep</strong> as just <strong>and</strong>.</p>
+<p>Default is to use ‘Oxford comma’, like 1, 2, 3, and 4.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
 <span class="go">&#39;1, 2, 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">&#39;1, 2 3&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">ensdep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
 <span class="go">&#39;1, 2 and 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;, and&#39;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+<span class="go">&#39;1; 2; 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">&#39;&quot;1&quot;, &quot;2&quot;, and &quot;3&quot;&#39;</span>
 </pre></div>
 </div>
@@ -283,7 +286,7 @@ values with double quotes.</p></li>
 
 <dl class="py function">
 <dt id="evennia.utils.utils.list_to_string">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">list_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">', and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.list_to_string" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">list_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">','</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">', and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.list_to_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
@@ -293,8 +296,8 @@ is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
 <li><p><strong>iterable</strong> (<em>any</em>) – Usually an iterable to print. Each element must be possible to
 present with a string. Note that if this is a generator, it will be
 consumed by this operation.</p></li>
-<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – If set, the last item separator will
-be replaced with this value.</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – The string to use as a separator for each item in the iterable.</p></li>
+<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – The last item separator will be replaced with this value.</p></li>
 <li><p><strong>addquote</strong> (<em>bool</em><em>, </em><em>optional</em>) – This will surround all outgoing
 values with double quotes.</p></li>
 </ul>
@@ -304,14 +307,17 @@ values with double quotes.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Default is to use ‘Oxford comma’, like 1, 2, 3, and 4. To remove, give
-<strong>endsep</strong> as just <strong>and</strong>.</p>
+<p>Default is to use ‘Oxford comma’, like 1, 2, 3, and 4.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
 <span class="go">&#39;1, 2, 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">&#39;1, 2 3&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">ensdep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
 <span class="go">&#39;1, 2 and 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;, and&#39;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+<span class="go">&#39;1; 2; 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">&#39;&quot;1&quot;, &quot;2&quot;, and &quot;3&quot;&#39;</span>
 </pre></div>
 </div>
@@ -319,7 +325,7 @@ values with double quotes.</p></li>
 
 <dl class="py function">
 <dt id="evennia.utils.utils.iter_to_string">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">', and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">iter_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">','</span></em>, <em class="sig-param"><span class="n">endsep</span><span class="o">=</span><span class="default_value">', and'</span></em>, <em class="sig-param"><span class="n">addquote</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.utils.utils.iter_to_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>This pretty-formats an iterable list as string output, adding an optional
 alternative separator to the second to last entry.  If <strong>addquote</strong>
 is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
@@ -329,8 +335,8 @@ is <strong>True</strong>, the outgoing strings will be surrounded by quotes.</p>
 <li><p><strong>iterable</strong> (<em>any</em>) – Usually an iterable to print. Each element must be possible to
 present with a string. Note that if this is a generator, it will be
 consumed by this operation.</p></li>
-<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – If set, the last item separator will
-be replaced with this value.</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – The string to use as a separator for each item in the iterable.</p></li>
+<li><p><strong>endsep</strong> (<em>str</em><em>, </em><em>optional</em>) – The last item separator will be replaced with this value.</p></li>
 <li><p><strong>addquote</strong> (<em>bool</em><em>, </em><em>optional</em>) – This will surround all outgoing
 values with double quotes.</p></li>
 </ul>
@@ -340,14 +346,17 @@ values with double quotes.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Default is to use ‘Oxford comma’, like 1, 2, 3, and 4. To remove, give
-<strong>endsep</strong> as just <strong>and</strong>.</p>
+<p>Default is to use ‘Oxford comma’, like 1, 2, 3, and 4.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
 <span class="go">&#39;1, 2, 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">&#39;1, 2 3&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">ensdep</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
 <span class="go">&#39;1, 2 and 3&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;, and&#39;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+<span class="go">&#39;1; 2; 3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_to_string</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">&#39;&quot;1&quot;, &quot;2&quot;, and &quot;3&quot;&#39;</span>
 </pre></div>
 </div>

@@ -404,7 +404,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="iter_to_str"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.iter_to_str">[docs]</a><span class="k">def</span> <span class="nf">iter_to_str</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;, and&quot;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="iter_to_str"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.iter_to_str">[docs]</a><span class="k">def</span> <span class="nf">iter_to_str</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="s2">&quot;, and&quot;</span><span class="p">,</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This pretty-formats an iterable list as string output, adding an optional</span>
 <span class="sd">    alternative separator to the second to last entry.  If `addquote`</span>
@@ -414,8 +414,8 @@
 <span class="sd">        iterable (any): Usually an iterable to print. Each element must be possible to</span>
 <span class="sd">            present with a string. Note that if this is a generator, it will be</span>
 <span class="sd">            consumed by this operation.</span>
-<span class="sd">        endsep (str, optional): If set, the last item separator will</span>
-<span class="sd">            be replaced with this value.</span>
+<span class="sd">        sep (str, optional): The string to use as a separator for each item in the iterable.</span>
+<span class="sd">        endsep (str, optional): The last item separator will be replaced with this value.</span>
 <span class="sd">        addquote (bool, optional): This will surround all outgoing</span>
 <span class="sd">            values with double quotes.</span>
 
@@ -423,17 +423,20 @@
 <span class="sd">        str: The list represented as a string.</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        Default is to use &#39;Oxford comma&#39;, like 1, 2, 3, and 4. To remove, give</span>
-<span class="sd">        `endsep` as just `and`.</span>
+<span class="sd">        Default is to use &#39;Oxford comma&#39;, like 1, 2, 3, and 4.</span>
 
 <span class="sd">    Examples:</span>
 
 <span class="sd">        ```python</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], endsep=&#39;&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], endsep=&#39;,&#39;)</span>
 <span class="sd">        &#39;1, 2, 3&#39;</span>
+<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], endsep=&#39;&#39;)</span>
+<span class="sd">        &#39;1, 2 3&#39;</span>
 <span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], ensdep=&#39;and&#39;)</span>
 <span class="sd">        &#39;1, 2 and 3&#39;</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], endsep=&#39;, and&#39;, addquote=True)</span>
+<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], sep=&#39;;&#39;, endsep=&#39;;&#39;)</span>
+<span class="sd">        &#39;1; 2; 3&#39;</span>
+<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], addquote=True)</span>
 <span class="sd">        &#39;&quot;1&quot;, &quot;2&quot;, and &quot;3&quot;&#39;</span>
 <span class="sd">        ```</span>
 
@@ -448,22 +451,19 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">iterable</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">endsep</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">endsep</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">sep</span><span class="p">):</span>
         <span class="c1"># oxford comma alternative</span>
         <span class="n">endsep</span> <span class="o">=</span> <span class="n">endsep</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">len_iter</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">endsep</span>
     <span class="k">elif</span> <span class="n">endsep</span><span class="p">:</span>
         <span class="c1"># normal space-separated end separator</span>
         <span class="n">endsep</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">endsep</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># no separator given - use comma</span>
-        <span class="n">endsep</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span>
 
     <span class="k">if</span> <span class="n">len_iter</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">iterable</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">elif</span> <span class="n">len_iter</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">endsep</span><span class="si">}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">endsep</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">iterable</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sep</span><span class="si">}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">endsep</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">iterable</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
 <span class="c1"># legacy aliases</span>

@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.base_systems.components.signals &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../components.html" accesskey="U">evennia.contrib.base_systems.components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.signals</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.base_systems.components.signals</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Components - ChrisLR 2022</span>
+
+<span class="sd">This file contains classes functions related to signals.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="as_listener"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.as_listener">[docs]</a><span class="k">def</span> <span class="nf">as_listener</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">signal_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator style function that marks a method to be connected as listener.</span>
+<span class="sd">    It will use the provided signal name and default to the decorated function name.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func (callable): The method to mark as listener</span>
+<span class="sd">        signal_name (str): The name of the signal to listen to, defaults to function name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">func</span> <span class="ow">and</span> <span class="n">signal_name</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="n">func</span><span class="o">.</span><span class="n">_listener_signal_name</span> <span class="o">=</span> <span class="n">signal_name</span>
+            <span class="k">return</span> <span class="n">func</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+    <span class="n">signal_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">func</span><span class="o">.</span><span class="n">_listener_signal_name</span> <span class="o">=</span> <span class="n">signal_name</span>
+    <span class="k">return</span> <span class="n">func</span></div>
+
+
+<div class="viewcode-block" id="as_responder"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.as_responder">[docs]</a><span class="k">def</span> <span class="nf">as_responder</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">signal_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator style function that marks a method to be connected as responder.</span>
+<span class="sd">    It will use the provided signal name and default to the decorated function name.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func (callable): The method to mark as responder</span>
+<span class="sd">        signal_name (str): The name of the signal to respond to, defaults to function name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">func</span> <span class="ow">and</span> <span class="n">signal_name</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="n">func</span><span class="o">.</span><span class="n">_responder_signal_name</span> <span class="o">=</span> <span class="n">signal_name</span>
+            <span class="k">return</span> <span class="n">func</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+    <span class="n">signal_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">func</span><span class="o">.</span><span class="n">_responder_signal_name</span> <span class="o">=</span> <span class="n">signal_name</span>
+    <span class="k">return</span> <span class="n">func</span></div>
+
+
+<div class="viewcode-block" id="SignalsHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler">[docs]</a><span class="k">class</span> <span class="nc">SignalsHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This object handles all about signals.</span>
+<span class="sd">    It holds the connected listeners and responders.</span>
+<span class="sd">    It allows triggering signals or querying responders.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SignalsHandler.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">responders</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_object_listeners_and_responders</span><span class="p">(</span><span class="n">host</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalsHandler.add_listener"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.add_listener">[docs]</a>    <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect a listener to a specific signal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            signal_name (str): The name of the signal to listen to</span>
+<span class="sd">            callback (callable): The callable that is called when the signal is triggered</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">signal_listeners</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">signal_name</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="n">callback</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">signal_listeners</span><span class="p">:</span>
+            <span class="n">signal_listeners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalsHandler.add_responder"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.add_responder">[docs]</a>    <span class="k">def</span> <span class="nf">add_responder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect a responder to a specific signal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            signal_name (str): The name of the signal to respond to</span>
+<span class="sd">            callback (callable): The callable that is called when the signal is queried</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">signal_responders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responders</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">signal_name</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="n">callback</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">signal_responders</span><span class="p">:</span>
+            <span class="n">signal_responders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalsHandler.remove_listener"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_listener">[docs]</a>    <span class="k">def</span> <span class="nf">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a listener for a specific signal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            signal_name (str): The name of the signal to disconnect from</span>
+<span class="sd">            callback (callable): The callable that was used to connect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">signal_listeners</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">signal_listeners</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">signal_listeners</span><span class="p">:</span>
+            <span class="n">signal_listeners</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalsHandler.remove_responder"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_responder">[docs]</a>    <span class="k">def</span> <span class="nf">remove_responder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a responder for a specific signal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            signal_name (str): The name of the signal to disconnect from</span>
+<span class="sd">            callback (callable): The callable that was used to connect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">signal_responders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responders</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">signal_responders</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">signal_responders</span><span class="p">:</span>
+            <span class="n">signal_responders</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalsHandler.trigger"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.trigger">[docs]</a>    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Triggers a specific signal with specified args and kwargs</span>
+<span class="sd">        This method does not return anything</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            signal_name (str): The name of the signal to trigger</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalsHandler.query"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.query">[docs]</a>    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aggregate_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Queries a specific signal with specified args and kwargs</span>
+<span class="sd">        This method will return the responses from its connected responders.</span>
+<span class="sd">        If an aggregate_func is specified, it is called with the responses</span>
+<span class="sd">        and its result is returned instead.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            signal_name (str): The name of the signal to trigger</span>
+<span class="sd">            default (any): The value to use when no responses are given</span>
+<span class="sd">                           It will be passed to aggregate_func if it is also given.</span>
+<span class="sd">            aggregate_func (callable): The function to process the results before returning.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: An iterable of the responses</span>
+<span class="sd">                  OR the aggregated result when aggregate_func is specified.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responders</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">default</span>
+            <span class="k">if</span> <span class="n">aggregate_func</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">aggregate_func</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">default</span>
+
+        <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">aggregate_func</span> <span class="ow">and</span> <span class="n">responses</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">aggregate_func</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">responses</span></div>
+
+<div class="viewcode-block" id="SignalsHandler.add_object_listeners_and_responders"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.add_object_listeners_and_responders">[docs]</a>    <span class="k">def</span> <span class="nf">add_object_listeners_and_responders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This connects the methods marked as listener or responder from an object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (object): The instance of an object to connect to this handler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">type_host</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">att_name</span><span class="p">,</span> <span class="n">att_obj</span> <span class="ow">in</span> <span class="n">type_host</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">listener_signal_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">att_obj</span><span class="p">,</span> <span class="s2">&quot;_listener_signal_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">listener_signal_name</span><span class="p">:</span>
+                <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">att_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">signal_name</span><span class="o">=</span><span class="n">listener_signal_name</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
+
+            <span class="n">responder_signal_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">att_obj</span><span class="p">,</span> <span class="s2">&quot;_responder_signal_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">responder_signal_name</span><span class="p">:</span>
+                <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">att_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_responder</span><span class="p">(</span><span class="n">signal_name</span><span class="o">=</span><span class="n">responder_signal_name</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalsHandler.remove_object_listeners_and_responders"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.components.signals.html#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_object_listeners_and_responders">[docs]</a>    <span class="k">def</span> <span class="nf">remove_object_listeners_and_responders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This disconnects the methods marked as listener or responder from an object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (object): The instance of an object to disconnect from this handler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">type_host</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">att_name</span><span class="p">,</span> <span class="n">att_obj</span> <span class="ow">in</span> <span class="n">type_host</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">listener_signal_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">att_obj</span><span class="p">,</span> <span class="s2">&quot;_listener_signal_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">listener_signal_name</span><span class="p">:</span>
+                <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">att_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="n">signal_name</span><span class="o">=</span><span class="n">listener_signal_name</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
+
+            <span class="n">responder_signal_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">att_obj</span><span class="p">,</span> <span class="s2">&quot;_responder_signal_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">responder_signal_name</span><span class="p">:</span>
+                <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">att_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_responder</span><span class="p">(</span><span class="n">signal_name</span><span class="o">=</span><span class="n">responder_signal_name</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="signals.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="../components.html" >evennia.contrib.base_systems.components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.signals</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

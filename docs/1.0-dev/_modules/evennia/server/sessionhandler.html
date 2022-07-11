@@ -311,7 +311,12 @@
                     <span class="n">rkwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_validate</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="p">{}]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">rkwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_validate</span><span class="p">(</span><span class="n">data</span><span class="p">)],</span> <span class="p">{}]</span>
-            <span class="n">rkwargs</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span>
+            <span class="n">rkwargs</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="c1"># make sure that any &quot;prompt&quot; message will be processed last</span>
+        <span class="c1"># by moving it to the end</span>
+        <span class="k">if</span> <span class="s2">&quot;prompt&quot;</span> <span class="ow">in</span> <span class="n">rkwargs</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="n">rkwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;prompt&quot;</span><span class="p">)</span>
+            <span class="n">rkwargs</span><span class="p">[</span><span class="s2">&quot;prompt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prompt</span>
         <span class="k">return</span> <span class="n">rkwargs</span></div></div>
 
 
