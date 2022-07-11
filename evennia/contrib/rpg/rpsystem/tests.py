@@ -97,6 +97,7 @@ recog02 = "Mr Receiver2"
 recog10 = "Mr Sender"
 emote = 'With a flair, /me looks at /first and /colliding sdesc-guy. She says "This is a test."'
 case_emote = "/Me looks at /first. Then, /me looks at /FIRST, /First and /Colliding twice."
+poss_emote = "/Me frowns at /first for trying to steal /me's test."
 
 
 class TestRPSystem(BaseEvenniaTest):
@@ -140,7 +141,7 @@ class TestRPSystem(BaseEvenniaTest):
             ),
         )
 
-    def parse_sdescs_and_recogs(self):
+    def test_parse_sdescs_and_recogs(self):
         speaker = self.speaker
         speaker.sdesc.add(sdesc0)
         self.receiver1.sdesc.add(sdesc1)
@@ -149,9 +150,9 @@ class TestRPSystem(BaseEvenniaTest):
         result = (
             'With a flair, {#9} looks at {#10} and {#11}. She says "This is a test."',
             {
-                "#11": "Another nice colliding sdesc-guy for tests",
-                "#10": "The first receiver of emotes.",
-                "#9": "A nice sender of emotes",
+                "#11": self.receiver2,
+                "#10": self.receiver1,
+                "#9": speaker,
             },
         )
         self.assertEqual(
@@ -161,6 +162,24 @@ class TestRPSystem(BaseEvenniaTest):
         self.speaker.recog.add(self.receiver1, recog01)
         self.assertEqual(
             rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote, case_sensitive=False),
+            result,
+        )
+
+    def test_possessive_selfref(self):
+        speaker = self.speaker
+        speaker.sdesc.add(sdesc0)
+        self.receiver1.sdesc.add(sdesc1)
+        self.receiver2.sdesc.add(sdesc2)
+        candidates = (self.receiver1, self.receiver2)
+        result = (
+            "{#9} frowns at {#10} for trying to steal {#9}'s test.",
+            {
+                "#10": self.receiver1,
+                "#9": speaker,
+            },
+        )
+        self.assertEqual(
+            rpsystem.parse_sdescs_and_recogs(speaker, candidates, poss_emote, case_sensitive=False),
             result,
         )
 
