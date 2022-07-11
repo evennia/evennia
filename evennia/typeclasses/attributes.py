@@ -218,15 +218,13 @@ class AttributeProperty:
         """
         value = self._default
         try:
-            value = self.at_get(
-                getattr(instance, self.attrhandler_name).get(
-                    key=self._key,
-                    default=self._default,
-                    category=self._category,
-                    strattr=self._strattr,
-                    raise_exception=self._autocreate,
-                )
-            )
+            value = self.at_get(getattr(instance, self.attrhandler_name).get(
+                key=self._key,
+                default=self._default,
+                category=self._category,
+                strattr=self._strattr,
+                raise_exception=self._autocreate,
+            ), instance)
         except AttributeError:
             if self._autocreate:
                 # attribute didn't exist and autocreate is set
@@ -243,7 +241,7 @@ class AttributeProperty:
         (
             getattr(instance, self.attrhandler_name).add(
                 self._key,
-                self.at_set(value),
+                self.at_set(value, instance),
                 category=self._category,
                 lockstring=self._lockstring,
                 strattr=self._strattr,
@@ -259,13 +257,14 @@ class AttributeProperty:
         """
         getattr(instance, self.attrhandler_name).remove(key=self._key, category=self._category)
 
-    def at_set(self, value):
+    def at_set(self, value, obj):
         """
         The value to set is passed through the method. It can be used to customize/validate
         the input in a custom child class.
 
         Args:
             value (any): The value about to the stored in this Attribute.
+            obj (object): Object the attribute is attached to
 
         Returns:
             any: The value to store.
@@ -276,13 +275,14 @@ class AttributeProperty:
         """
         return value
 
-    def at_get(self, value):
+    def at_get(self, value, obj):
         """
         The value returned from the Attribute is passed through this method. It can be used
         to react to the retrieval or modify the result in some way.
 
         Args:
             value (any): Value returned from the Attribute.
+            obj (object): Object the attribute is attached to
 
         Returns:
             any: The value to return to the caller.
