@@ -22,7 +22,7 @@ class Sword(DefaultObject):
 
 ```
 
-_Tags_ are short text lables one can 'hang' on objects in order to organize, group and quickly find out their properties. An Evennia entity can be tagged by any number of tags. They are more efficient than [Attributes](Attributes) since on the database-side, Tags are _shared_ between all objects with that particular tag. A tag does not carry a value in itself; it either sits on the entity 
+_Tags_ are short text lables one can 'hang' on objects in order to organize, group and quickly find out their properties. An Evennia entity can be tagged by any number of tags. They are more efficient than [Attributes](./Attributes.md) since on the database-side, Tags are _shared_ between all objects with that particular tag. A tag does not carry a value in itself; it either sits on the entity 
 
 Above, the tags inform us that the `Sword` is both sharp and can be wielded. If that's all they do, they could just be a normal Python flag. When tags become important is if there are a lot of objects with different combinations of tags. Maybe you have a magical spell that dulls _all_ sharp-edged objects in the castle - whether sword, dagger, spear or kitchen knife! You can then just grab all objects with the `has_sharp_edge` tag. 
 Another example would be a weather script affecting all rooms tagged as `outdoors` or finding all characters tagged with `belongs_to_fighter_guild`. 
