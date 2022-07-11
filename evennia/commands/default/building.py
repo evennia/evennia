@@ -1927,14 +1927,11 @@ class CmdSetAttribute(ObjManipCommand):
             if self.rhs is None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
-                    attrs = [attr.key for attr in obj.attributes.get(category=None)]
+                    attrs = [attr.key for attr in obj.attributes.get(category=None, return_obj=True)]
                 for attr in attrs:
                     if not self.check_attr(obj, attr, category):
                         continue
                     result.append(self.view_attr(obj, attr, category))
-                # we view it without parsing markup.
-                self.caller.msg("".join(result).strip(), options={"raw": True})
-                return
             else:
                 # deleting the attribute(s)
                 if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
@@ -1979,8 +1976,12 @@ class CmdSetAttribute(ObjManipCommand):
                 else:
                     value = _convert_from_string(self, value)
                 result.append(self.set_attr(obj, attr, value, category))
-        # send feedback
-        caller.msg("".join(result).strip("\n"))
+        # check if anything was done
+        if not result:
+            caller.msg("No valid attributes were found. Usage: set obj/attr[:category] = value. Use empty value to clear.")
+        else:
+            # send feedback
+            caller.msg("".join(result).strip("\n"))
 
 
 class CmdTypeclass(COMMAND_DEFAULT_CLASS):

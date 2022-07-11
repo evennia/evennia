@@ -367,8 +367,8 @@ obj.db.mydata = container  # will raise error!
 By adding two methods `__serialize_dbobjs__` and `__deserialize_dbobjs__` to the
 object you want to save, you can pre-serialize and post-deserialize all 'hidden'
 objects before Evennia's main serializer gets to work. Inside these methods, use Evennia's
-[evennia.utils.dbserialize.dbserialize](api:evennia.utils.dbserialize.dbserialize) and
-[dbunserialize](api:evennia.utils.dbserialize.dbunserialize) functions to safely
+[evennia.utils.dbserialize.dbserialize](evennia.utils.dbserialize.dbserialize) and
+[dbunserialize](evennia.utils.dbserialize.dbunserialize) functions to safely
 serialize the db-objects you want to store.
 
 ```{code-block} python
