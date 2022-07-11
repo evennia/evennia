@@ -146,13 +146,16 @@ class TestRPSystem(BaseEvenniaTest):
         speaker.sdesc.add(sdesc0)
         self.receiver1.sdesc.add(sdesc1)
         self.receiver2.sdesc.add(sdesc2)
+        id0 = f"#{speaker.id}"
+        id1 = f"#{self.receiver1.id}"
+        id2 = f"#{self.receiver2.id}"
         candidates = (self.receiver1, self.receiver2)
         result = (
-            'With a flair, {#9} looks at {#10} and {#11}. She says "This is a test."',
+            'With a flair, {'+id0+'} looks at {'+id1+'} and {'+id2+'}. She says "This is a test."',
             {
-                "#11": self.receiver2,
-                "#10": self.receiver1,
-                "#9": speaker,
+                id2: self.receiver2,
+                id1: self.receiver1,
+                id0: speaker,
             },
         )
         self.assertEqual(
@@ -170,12 +173,15 @@ class TestRPSystem(BaseEvenniaTest):
         speaker.sdesc.add(sdesc0)
         self.receiver1.sdesc.add(sdesc1)
         self.receiver2.sdesc.add(sdesc2)
+        id0 = f"#{speaker.id}"
+        id1 = f"#{self.receiver1.id}"
+        id2 = f"#{self.receiver2.id}"
         candidates = (self.receiver1, self.receiver2)
         result = (
-            "{#9} frowns at {#10} for trying to steal {#9}'s test.",
+            "{"+id0+"} frowns at {"+id1+"} for trying to steal {"+id0+"}'s test.",
             {
-                "#10": self.receiver1,
-                "#9": speaker,
+                id1: self.receiver1,
+                id0: speaker,
             },
         )
         self.assertEqual(
