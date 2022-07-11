@@ -388,7 +388,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     # first, find and replace any self-refs
     for self_match in list(_RE_SELF_REF.finditer(string)):
         matched = self_match.group()
-        case = _get_case_ref(matched.lstrip(_PREFIX)) if case_sensitive else "~"
+        case = _get_case_ref(matched.lstrip(_PREFIX)) if case_sensitive else ""
         key = f"#{sender.id}{case}"
         # replaced with ref
         string = string.replace(matched,f"{{{key}}}")
@@ -486,7 +486,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
         elif nmatches == 1:
             # a unique match - parse into intermediary representation
-            case = _get_case_ref(marker_match.group()) if case_sensitive else "~"
+            case = _get_case_ref(marker_match.group()) if case_sensitive else ""
             # recombine emote with matched text replaced by ref
             key = f"#{obj.id}{case}"
             string = f"{head}{{{key}}}{tail}"
