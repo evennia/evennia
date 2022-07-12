@@ -4,19 +4,17 @@ The base Command class.
 All commands in Evennia inherit from the 'Command' class in this module.
 
 """
-import re
-import math
 import inspect
+import math
+import re
 
 from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
-
 from evennia.locks.lockhandler import LockHandler
-from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
-from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString
-
+from evennia.utils.evtable import EvTable
+from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 

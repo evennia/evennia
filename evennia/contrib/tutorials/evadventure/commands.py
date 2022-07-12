@@ -1,11 +1,11 @@
 """
-EvAdventure commands and cmdsets.
-
+nextEvAdventure commands and cmdsets.
 
 """
 
 from evennia import Command, default_cmds
-from . combat_turnbased import join_combat
+
+from .combat_turnbased import CombatFailure, join_combat
 
 
 class EvAdventureCommand(Command):
@@ -17,6 +17,7 @@ class EvAdventureCommand(Command):
     where whitespace around the argument(s) are stripped.
 
     """
+
     def parse(self):
         self.args = self.args.strip()
 
@@ -38,6 +39,9 @@ class CmdAttackTurnBased(EvAdventureCommand):
 
     """
 
+    key = "attack"
+    aliases = ("hit",)
+
     def parse(self):
         super().parse()
         self.targets = [name.strip() for name in self.args.split(",")]
@@ -49,10 +53,15 @@ class CmdAttackTurnBased(EvAdventureCommand):
         target_objs = []
         for target in self.targets:
             target_obj = self.caller.search(target)
-            if target_obj:
+            if not target_obj:
                 # show a warning but don't abort
                 continue
             target_objs.append(target_obj)
 
         if target_objs:
-            join_combat(self.caller, *target_objs, session=self.session)
+            try:
+                join_combat(self.caller, *target_objs, session=self.session)
+            except CombatFailure as err:
+                self.caller.msg(f"|r{err}|n")
+        else:
+            self.caller.msg("|rFound noone to attack.|n")

@@ -13,7 +13,6 @@ from collections import defaultdict
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
-
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -22,15 +21,9 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import ansi, create, funcparser, logger, search
-from evennia.utils.utils import (
-    class_from_module,
-    is_iter,
-    lazy_property,
-    list_to_string,
-    make_iter,
-    to_str,
-    variable_from_module,
-)
+from evennia.utils.utils import (class_from_module, is_iter, lazy_property,
+                                 list_to_string, make_iter, to_str,
+                                 variable_from_module)
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE

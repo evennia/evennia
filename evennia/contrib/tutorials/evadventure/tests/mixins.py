@@ -19,8 +19,9 @@ class EvAdventureMixin:
     def setUp(self):
         super().setUp()
         self.location = create.create_object(EvAdventureRoom, key="testroom")
-        self.character = create.create_object(EvAdventureCharacter, key="testchar",
-                                              location=self.location)
+        self.character = create.create_object(
+            EvAdventureCharacter, key="testchar", location=self.location
+        )
         self.helmet = create.create_object(
             EvAdventureObject,
             key="helmet",
