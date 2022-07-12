@@ -1,10 +1,11 @@
-from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
-from evennia import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
-from evennia.typeclasses.attributes import AttributeProperty
-from evennia.typeclasses.tags import TagProperty, AliasProperty, PermissionProperty
+from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultObject
+from evennia.typeclasses.attributes import AttributeProperty
+from evennia.typeclasses.tags import (AliasProperty, PermissionProperty,
+                                      TagProperty)
 from evennia.utils import create
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 
 
 class DefaultObjectTest(BaseEvenniaTest):

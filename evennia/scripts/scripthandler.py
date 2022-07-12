@@ -126,7 +126,7 @@ class ScriptHandler(object):
         """
         return ScriptDB.objects.get_all_scripts_on_obj(self.obj, key=key)
 
-    def delete(self, key=None):
+    def remove(self, key=None):
         """
         Forcibly delete a script from this object.
 
@@ -149,7 +149,8 @@ class ScriptHandler(object):
             num += 1
         return num
 
-    # alias to delete
+    # legacy aliases to remove
+    delete = remove
     stop = delete
 
     def all(self):

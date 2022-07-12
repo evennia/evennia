@@ -10,7 +10,7 @@ Tags.
 from evennia.objects.objects import DefaultObject
 from evennia.typeclasses.attributes import AttributeProperty
 
-from .enums import WieldLocation, Ability
+from .enums import Ability, WieldLocation
 
 
 class EvAdventureObject(DefaultObject):
@@ -44,6 +44,7 @@ class EvAdventureObjectFiller(EvAdventureObject):
     meaning it's unusable.
 
     """
+
     quality = AttributeProperty(0)
 
 
@@ -53,6 +54,7 @@ class EvAdventureConsumable(EvAdventureObject):
     have a limited usage in this way.
 
     """
+
     inventory_use_slot = AttributeProperty(WieldLocation.BACKPACK)
     size = AttributeProperty(0.25)
     uses = AttributeProperty(1)
@@ -91,6 +93,7 @@ class EvAdventureRunestone(EvAdventureWeapon):
     they are quite powerful (and scales with caster level).
 
     """
+
     inventory_use_slot = AttributeProperty(WieldLocation.TWO_HANDS)
 
     attack_type = AttributeProperty(Ability.INT)

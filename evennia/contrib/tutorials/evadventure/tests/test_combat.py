@@ -16,6 +16,7 @@ class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
     Test the turn-based combat-handler implementation.
 
     """
+
     maxDiff = None
 
     @patch(
@@ -52,10 +53,7 @@ class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
 
         self.combathandler.register_action(self.combatant, action.key)
 
-        self.assertEqual(
-            self.combathandler.action_queue[self.combatant],
-            (action, (), {})
-        )
+        self.assertEqual(self.combathandler.action_queue[self.combatant], (action, (), {}))
 
         action.use = MagicMock()
 

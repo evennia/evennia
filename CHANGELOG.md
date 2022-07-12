@@ -172,6 +172,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   now return `None` instead of `.db.desc` if no sdesc is set; fallback in hook (inspectorCaracal)
 - Reworked text2html parser to avoid problems with stateful color tags (inspectorCaracal)
 - Simplified `EvMenu.options_formatter` hook to use `EvColumn` and f-strings (inspectorcaracal)
+- Allow `# CODE`, `# HEADER` etc as well as `#CODE`/`#HEADER` in batchcode
+  files - this works better with black linting.
 
 
 ## Evennia 0.9.5

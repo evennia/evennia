@@ -99,15 +99,16 @@ Choose who to block:
 
 """
 
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
+
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
+from evennia.utils import dbserialize, delay, evmenu, evtable
 from evennia.utils.utils import make_iter
-from evennia.utils import evtable, dbserialize, delay, evmenu
-from .enums import Ability
-from . import rules
 
+from . import rules
+from .enums import Ability
 
 COMBAT_HANDLER_KEY = "evadventure_turnbased_combathandler"
 COMBAT_HANDLER_INTERVAL = 60
@@ -242,7 +243,7 @@ class CombatActionAttack(CombatAction):
         # figure out disadvantage (gained by enemy stunts/actions)
         disadvantage = bool(self.combathandler.disadvantage_matrix[attacker].pop(defender, False))
 
-        is_hit, quality = rules.EvAdventureRollEngine.opposed_saving_throw(
+        is_hit, quality = rules.dice.opposed_saving_throw(
             attacker,
             defender,
             attack_type=attacker.weapon.attack_type,
@@ -295,9 +296,9 @@ class CombatActionStunt(CombatAction):
         # quality doesn't matter for stunts, they are either successful or not
 
         attacker = self.combatant
-        advantage, disadvantage = False
+        advantage, disadvantage = False, False
 
-        is_success, _ = rules.EvAdventureRollEngine.opposed_saving_throw(
+        is_success, _ = rules.dice.opposed_saving_throw(
             attacker,
             defender,
             attack_type=self.attack_type,
@@ -333,6 +334,7 @@ class CombatActionUseItem(CombatAction):
         combat_post_use
 
     """
+
     key = "Use Item"
     desc = "[U]se item"
     aliases = ("u", "item", "use item")
@@ -406,7 +408,7 @@ class CombatActionBlock(CombatAction):
         advantage = bool(self.advantage_matrix[combatant].pop(fleeing_target, False))
         disadvantage = bool(self.disadvantage_matrix[combatant].pop(fleeing_target, False))
 
-        is_success, _ = rules.EvAdventureRollEngine.opposed_saving_throw(
+        is_success, _ = rules.dice.opposed_saving_throw(
             combatant,
             fleeing_target,
             attack_type=self.attack_type,
@@ -427,12 +429,23 @@ class CombatActionSwapWieldedWeaponOrSpell(CombatAction):
     Swap Wielded weapon or spell.
 
     """
+
     key = "Swap weapon/rune/shield"
     desc = "Swap currently wielded weapon, shield or spell-rune."
-    aliases = ("s", "swap", "draw", "swap weapon", "draw weapon",
-               "swap rune", "draw rune", "swap spell", "draw spell")
-    help_text = ("Draw a new weapon or spell-rune from your inventory, "
-                 "replacing your current loadout")
+    aliases = (
+        "s",
+        "swap",
+        "draw",
+        "swap weapon",
+        "draw weapon",
+        "swap rune",
+        "draw rune",
+        "swap spell",
+        "draw spell",
+    )
+    help_text = (
+        "Draw a new weapon or spell-rune from your inventory, replacing your current loadout"
+    )
 
     next_menu_node = "node_select_wield_from_inventory"
 
@@ -448,6 +461,7 @@ class CombatActionUseItem(CombatAction):
     Use an item from inventory.
 
     """
+
     key = "Use an item from backpack"
     desc = "Use an item from your inventory."
     aliases = ("u", "use", "use item")
@@ -543,6 +557,29 @@ class EvAdventureCombatHandler(DefaultScript):
             self._end_turn()
             self._start_turn()
 
+    def _init_menu(self, combatant, session=None):
+        """
+        Make sure combatant is in the menu. This is safe to call on a combatant already in a menu.
+
+        """
+        if not combatant.ndb._evmenu:
+            # re-joining the menu is useful during testing
+            evmenu.EvMenu(
+                combatant,
+                {
+                    "node_wait_start": node_wait_start,
+                    "node_select_target": node_select_target,
+                    "node_select_action": node_select_action,
+                    "node_wait_turn": node_wait_turn,
+                },
+                startnode="node_wait_turn",
+                auto_quit=True,
+                persistent=True,
+                cmdset_mergetype="Union",
+                session=session,
+                combathandler=self,  # makes this available as combatant.ndb._evmenu.combathandler
+            )
+
     def _reset_menu(self):
         """
         Move menu to the action-selection node.
@@ -577,10 +614,12 @@ class EvAdventureCombatHandler(DefaultScript):
             # set -1 for unit tests
             warning_time = 15
             self._warn_time_task = delay(
-                self.interval - warning_time, self._warn_time, warning_time)
+                self.interval - warning_time, self._warn_time, warning_time
+            )
 
         for combatant in self.combatants:
             # cycle combat menu
+            self._init_menu(combatant)
             combatant.ndb._evmenu.goto("node_select_action", "")
 
     def _end_turn(self):
@@ -633,12 +672,12 @@ class EvAdventureCombatHandler(DefaultScript):
         for combatant in self.combatants:
             new_advantage_matrix[combatant] = {
                 target: set_at_turn
-                for target, set_at_turn in advantage_matrix.items()
+                for target, set_at_turn in advantage_matrix[combatant].items()
                 if set_at_turn > oldest_stunt_age
             }
             new_disadvantage_matrix[combatant] = {
                 target: set_at_turn
-                for target, set_at_turn in disadvantage_matrix.items()
+                for target, set_at_turn in disadvantage_matrix[combatant].items()
                 if set_at_turn > oldest_stunt_age
             }
 
@@ -676,23 +715,7 @@ class EvAdventureCombatHandler(DefaultScript):
                 action_class.key: action_class(self, combatant)
                 for action_class in self.default_action_classes + custom_action_classes
             }
-
-            # start evmenu (menu node definitions at the end of this module)
-
-            evmenu.EvMenu(
-                combatant,
-                {
-                    "node_wait_start": node_wait_start,
-                    "node_select_target": node_select_target,
-                    "node_select_action": node_select_action,
-                    "node_wait_turn": node_wait_turn,
-                },
-                startnode="node_wait_turn",
-                auto_quit=False,
-                persistent=True,
-                session=session,
-                combathandler=self  # makes this available as combatant.ndb._evmenu.combathandler
-            )
+            self._init_menu(combatant, session=session)
 
     def remove_combatant(self, combatant):
         """
@@ -823,9 +846,9 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         weapon_dmg_roll = attacker.weapon.damage_roll
 
-        dmg = rules.EvAdventureRollEngine.roll(weapon_dmg_roll)
+        dmg = rules.dice.roll(weapon_dmg_roll)
         if critical:
-            dmg += rules.EvAdventureRollEngine.roll(weapon_dmg_roll)
+            dmg += rules.dice.roll(weapon_dmg_roll)
 
         defender.hp -= dmg
 
@@ -834,7 +857,7 @@ class EvAdventureCombatHandler(DefaultScript):
 
         if defender.hp <= 0:
             # roll on death table. This may or may not kill you
-            rules.EvAdventureRollEngine.roll_death(self)
+            rules.dice.roll_death(self)
 
             # tell everyone
             self.msg(defender.defeat_message(attacker, dmg))
@@ -870,8 +893,7 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         # get the instantiated action for this combatant
         action = self.combatant_actions[combatant].get(
-            action_key,
-            CombatActionDoNothing(self, combatant)
+            action_key, CombatActionDoNothing(self, combatant)
         )
 
         # store the action in the queue
@@ -912,13 +934,13 @@ def _register_action(caller, raw_string, **kwargs):
     Register action with handler.
 
     """
-    action_key = kwargs.get["action_key"]
+    action_key = kwargs.pop("action_key")
     action_args = kwargs["action_args"]
     action_kwargs = kwargs["action_kwargs"]
-    action_target = kwargs.get("action_target")
-    combat_handler = caller._evmenu.combathandler
-    combat_handler.register_action(
-        caller, action_key, action_target, *action_args, **action_kwargs)
+    action_target = kwargs.pop("action_target", None)
+    combat_handler = caller.ndb._evmenu.combathandler
+    print("action_args", action_args, "action_kwargs", action_kwargs)
+    combat_handler.register_action(caller, action_key, action_target, *action_args, **action_kwargs)
 
     # move into waiting
     return "node_wait_turn"
@@ -930,41 +952,22 @@ def node_select_target(caller, raw_string, **kwargs):
     with all other actions.
 
     """
-    action_key = kwargs.get("action_key")
-    action_args = kwargs.get("action_args")
-    action_kwargs = kwargs.get("action_kwargs")
     combat = caller.ndb._evmenu.combathandler
     text = "Select target for |w{action_key}|n."
 
     # make the apply-self option always the first one, give it key 0
     kwargs["action_target"] = caller
-    options = [
-        {
-            "key": "0",
-            "desc": "(yourself)",
-            "goto": (_register_action, kwargs)
-        }
-    ]
+    options = [{"key": "0", "desc": "(yourself)", "goto": (_register_action, kwargs)}]
     # filter out ourselves and then make options for everyone else
     combatants = [combatant for combatant in combat.combatants if combatant is not caller]
-    for combatant in combatants:
-        # automatic menu numbering starts from 1
+    for inum, combatant in enumerate(combatants):
         kwargs["action_target"] = combatant
         options.append(
-            {
-                "desc": combatant.key,
-                "goto": (_register_action, kwargs)
-            }
+            {"key": str(inum + 1), "desc": combatant.key, "goto": (_register_action, kwargs)}
         )
 
     # add ability to cancel
-    options.append(
-        {
-            "key": "_default",
-            "desc": "(No input to Abort and go back)",
-            "goto": "node_select_action"
-        }
-    )
+    options.append({"key": "_default", "goto": "node_select_action"})
 
     return text, options
 
@@ -981,8 +984,10 @@ def node_select_wield_from_inventory(caller, raw_string, **kwargs):
     """
     combat = caller.ndb._evmenu.combathandler
     loadout = caller.inventory.display_loadout()
-    text = (f"{loadout}\nSelect weapon, spell or shield to draw. It will swap out "
-            "anything already in the same hand (you can't change armor or helmet in combat).")
+    text = (
+        f"{loadout}\nSelect weapon, spell or shield to draw. It will swap out "
+        "anything already in the same hand (you can't change armor or helmet in combat)."
+    )
 
     # get a list of all suitable weapons/spells/shields
     options = []
@@ -997,21 +1002,12 @@ def node_select_wield_from_inventory(caller, raw_string, **kwargs):
             )
         else:
             # normally working item
-            kwargs['action_args'] = (obj,)
-            options.append(
-                {
-                    "desc": str(obj),
-                    "goto": (_register_action, kwargs)
-                }
-            )
+            kwargs["action_args"] = (obj,)
+            options.append({"desc": str(obj), "goto": (_register_action, kwargs)})
 
     # add ability to cancel
     options.append(
-        {
-            "key": "_default",
-            "desc": "(No input to Abort and go back)",
-            "goto": "node_select_action"
-        }
+        {"key": "_default", "desc": "(No input to Abort and go back)", "goto": "node_select_action"}
     )
 
     return text, options
@@ -1038,21 +1034,12 @@ def node_select_use_item_from_inventory(caller, raw_string, **kwargs):
             )
         else:
             # normally working item
-            kwargs['action_args'] = (obj,)
-            options.append(
-                {
-                    "desc": str(obj),
-                    "goto": (_register_action, kwargs)
-                }
-            )
+            kwargs["action_args"] = (obj,)
+            options.append({"desc": str(obj), "goto": (_register_action, kwargs)})
 
     # add ability to cancel
     options.append(
-        {
-            "key": "_default",
-            "desc": "(No input to Abort and go back)",
-            "goto": "node_select_action"
-        }
+        {"key": "_default", "desc": "(No input to Abort and go back)", "goto": "node_select_action"}
     )
 
     return text, options
@@ -1063,8 +1050,8 @@ def _action_unavailable(caller, raw_string, **kwargs):
     Selecting an unavailable action.
 
     """
-    action_key = kwargs.get["action_key"]
-    caller.msg(f"Action '{action_key}' is currently not available.")
+    action_key = kwargs["action_key"]
+    caller.msg(f"|rAction |w{action_key}|r is currently not available.|n")
     # go back to previous node
     return
 
@@ -1093,12 +1080,7 @@ def node_select_action(caller, raw_string, **kwargs):
                 {
                     "key": key,
                     "desc": desc,
-                    "goto": (
-                        _action_unavailable,
-                        {
-                            "action_key": action.key
-                        }
-                    )
+                    "goto": (_action_unavailable, {"action_key": action.key}),
                 }
             )
         elif action.next_menu_node is None:
@@ -1113,7 +1095,7 @@ def node_select_action(caller, raw_string, **kwargs):
                         {
                             "action_key": action.key,
                             "action_args": (),
-                            "action_kwargs": kwargs,
+                            "action_kwargs": {},
                             "action_target": None,
                         },
                     ),
@@ -1130,7 +1112,8 @@ def node_select_action(caller, raw_string, **kwargs):
                         {
                             "action_key": action.key,
                             "action_args": (),
-                            "action_kwargs": kwargs,
+                            "action_kwargs": {},
+                            "action_target": None,
                         },
                     ),
                 }
@@ -1139,8 +1122,7 @@ def node_select_action(caller, raw_string, **kwargs):
         options.append(
             {
                 "key": "_default",
-                "desc": "(No input to Abort and go back)",
-                "goto": "node_select_action"
+                "goto": "node_select_action",
             }
         )
 
@@ -1160,7 +1142,7 @@ def node_wait_turn(caller, raw_string, **kwargs):
     options = {
         "key": "_default",
         "desc": "(next round will start automatically)",
-        "goto": "node_wait_turn"
+        "goto": "node_wait_turn",
     }
     return text, options
 
@@ -1177,7 +1159,7 @@ def node_wait_start(caller, raw_string, **kwargs):
     options = {
         "key": "_default",
         "desc": "(combat will start automatically)",
-        "goto": "node_wait_start"
+        "goto": "node_wait_start",
     }
     return text, options
 
@@ -1218,10 +1200,13 @@ def join_combat(caller, *targets, session=None):
         combathandler = location.scripts.add(EvAdventureCombatHandler, autostart=False)
         created = True
 
+    if not hasattr(caller, "hp"):
+        raise CombatFailure("You have no hp and so can't attack anyone.")
+
     # it's safe to add a combatant to the same combat more than once
     combathandler.add_combatant(caller, session=session)
     for target in targets:
-        combathandler.add_combatant(target, session=session)
+        combathandler.add_combatant(target)
 
     if created:
         combathandler.start_combat()

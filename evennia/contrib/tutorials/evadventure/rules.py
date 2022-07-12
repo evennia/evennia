@@ -23,14 +23,13 @@ This module presents several singletons to import
 
 """
 from random import randint
+
 from evennia.utils.evform import EvForm
 from evennia.utils.evtable import EvTable
-from .enums import Ability
-from .random_tables import (
-    character_generation as chargen_table,
-    death_and_dismemberment as death_table,
-)
 
+from .enums import Ability
+from .random_tables import character_generation as chargen_table
+from .random_tables import death_and_dismemberment as death_table
 
 # Basic rolls
 
