@@ -175,11 +175,11 @@ from django.conf import settings
 from evennia.utils import utils
 
 _ENCODINGS = settings.ENCODINGS
-_RE_INSERT = re.compile(r"^\#INSERT (.*)$", re.MULTILINE)
+_RE_INSERT = re.compile(r"^\#\s*?INSERT (.*)$", re.MULTILINE)
 _RE_CLEANBLOCK = re.compile(r"^\#.*?$|^\s*$", re.MULTILINE)
 _RE_CMD_SPLIT = re.compile(r"^\#.*?$", re.MULTILINE)
 _RE_CODE_OR_HEADER = re.compile(
-    r"((?:\A|^)#CODE|(?:/A|^)#HEADER|\A)(.*?)$(.*?)(?=^#CODE.*?$|^#HEADER.*?$|\Z)",
+    r"((?:\A|^)#\s*?CODE|(?:/A|^)#\s*?HEADER|\A)(.*?)$(.*?)(?=^#\s*?CODE.*?$|^#\s*?HEADER.*?$|\Z)",
     re.MULTILINE + re.DOTALL,
 )
 
@@ -366,16 +366,16 @@ class BatchCodeProcessor(object):
         headers = []
         codes = []
         for imatch, match in enumerate(list(_RE_CODE_OR_HEADER.finditer(text))):
-            mtype = match.group(1).strip()
+            mtype = match.group(1).strip().lstrip("#").strip()
             # we need to handle things differently at the start of the file
             if mtype:
                 istart, iend = match.span(3)
             else:
                 istart, iend = match.start(2), match.end(3)
             code = text[istart:iend]
-            if mtype == "#HEADER":
+            if mtype == "HEADER":
                 headers.append(code)
-            else:  # either #CODE or matching from start of file
+            else:  # either CODE or matching from start of file
                 codes.append(code)
 
         # join all headers together to one
