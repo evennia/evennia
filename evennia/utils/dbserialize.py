@@ -18,19 +18,20 @@ in-situ, e.g `obj.db.mynestedlist[3][5] = 3` would never be saved and
 be out of sync with the database.
 
 """
+from collections import OrderedDict, defaultdict, deque
+from collections.abc import MutableMapping, MutableSequence, MutableSet
 from functools import update_wrapper
-from collections import deque, OrderedDict, defaultdict
-from collections.abc import MutableSequence, MutableSet, MutableMapping
 
 try:
-    from pickle import dumps, loads, UnpicklingError
+    from pickle import UnpicklingError, dumps, loads
 except ImportError:
     from pickle import dumps, loads
-from django.core.exceptions import ObjectDoesNotExist
+
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import SafeString
-from evennia.utils.utils import uses_database, is_iter, to_bytes
 from evennia.utils import logger
+from evennia.utils.utils import is_iter, to_bytes, uses_database
 
 __all__ = ("to_pickle", "from_pickle", "do_pickle", "do_unpickle", "dbserialize", "dbunserialize")
 
@@ -786,6 +787,13 @@ def from_pickle(data, db_obj=None):
                 dat = _SaverList(_parent=parent)
                 dat._data.extend(process_tree(val, dat) for val in item)
                 return dat
+
+        if hasattr(item, "__deserialize_dbobjs__"):
+            try:
+                item.__deserialize_dbobjs__()
+            except (TypeError, UnpicklingError):
+                pass
+
         return item
 
     if db_obj:
