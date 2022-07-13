@@ -203,7 +203,7 @@ class CombatAction:
                 if available, should describe what the action does.
 
         """
-        return True if self.uses is None else self.uses < (self.max_uses or 0)
+        return True if self.max_uses is None else self.uses < (self.max_uses or 0)
 
     def pre_use(self, *args, **kwargs):
         pass
@@ -939,7 +939,6 @@ def _register_action(caller, raw_string, **kwargs):
     action_kwargs = kwargs["action_kwargs"]
     action_target = kwargs.pop("action_target", None)
     combat_handler = caller.ndb._evmenu.combathandler
-    print("action_args", action_args, "action_kwargs", action_kwargs)
     combat_handler.register_action(caller, action_key, action_target, *action_args, **action_kwargs)
 
     # move into waiting
@@ -953,7 +952,8 @@ def node_select_target(caller, raw_string, **kwargs):
 
     """
     combat = caller.ndb._evmenu.combathandler
-    text = "Select target for |w{action_key}|n."
+    action_key = kwargs["action_key"]
+    text = f"Select target for |w{action_key}|n."
 
     # make the apply-self option always the first one, give it key 0
     kwargs["action_target"] = caller
@@ -1078,7 +1078,7 @@ def node_select_action(caller, raw_string, **kwargs):
 
             options.append(
                 {
-                    "key": key,
+                    "key": (key,) + tuple(action.aliases),
                     "desc": desc,
                     "goto": (_action_unavailable, {"action_key": action.key}),
                 }
@@ -1088,7 +1088,7 @@ def node_select_action(caller, raw_string, **kwargs):
             # the action immediately
             options.append(
                 {
-                    "key": key,
+                    "key": (key,) + tuple(action.aliases),
                     "desc": desc,
                     "goto": (
                         _register_action,
@@ -1105,7 +1105,7 @@ def node_select_action(caller, raw_string, **kwargs):
             # action is available and next_menu_node is set to point to the next node we want
             options.append(
                 {
-                    "key": key,
+                    "key": (key,) + tuple(action.aliases),
                     "desc": desc,
                     "goto": (
                         action.next_menu_node,
