@@ -240,22 +240,31 @@ class SubAttributeProperty(AttributeProperty):
 class SubTagProperty(TagProperty):
     pass
 
+class CustomizedProperty(AttributeProperty):
+    def at_set(self, value, obj):
+        obj.settest = value
+        return value
+    
+    def at_get(self, value, obj):
+        return value + obj.awaretest
 
 class TestObjectPropertiesClass(DefaultObject):
     attr1 = AttributeProperty(default="attr1")
     attr2 = AttributeProperty(default="attr2", category="attrcategory")
     attr3 = AttributeProperty(default="attr3", autocreate=False)
     attr4 = SubAttributeProperty(default="attr4")
+    cusattr = CustomizedProperty(default=5)
     tag1 = TagProperty()
     tag2 = TagProperty(category="tagcategory")
     tag3 = SubTagProperty()
     testalias = AliasProperty()
     testperm = PermissionProperty()
+    awaretest = 5
+    settest = 0
 
     @property
     def base_property(self):
         self.property_initialized = True
-
 
 class TestProperties(EvenniaTestCase):
     """
@@ -264,7 +273,7 @@ class TestProperties(EvenniaTestCase):
     """
 
     def setUp(self):
-        self.obj = create.create_object(TestObjectPropertiesClass, key="testobj")
+        self.obj: TestObjectPropertiesClass = create.create_object(TestObjectPropertiesClass, key="testobj")
 
     def tearDown(self):
         self.obj.delete()
@@ -306,3 +315,30 @@ class TestProperties(EvenniaTestCase):
         # Verify that regular properties do not get fetched in init_evennia_properties,
         # only Attribute or TagProperties.
         self.assertFalse(hasattr(obj, "property_initialized"))
+
+    def test_object_awareness(self):
+        '''Test the "object-awareness" of customized AttributeProperty getter/setters'''
+        obj = self.obj
+
+        # attribute properties receive on obj ref in the getter/setter that can customize return
+        self.assertEqual(obj.cusattr, 10)
+        self.assertEqual(obj.settest, 5)
+        obj.awaretest = 10
+        self.assertEqual(obj.cusattr, 15)
+        obj.cusattr = 10
+        self.assertEqual(obj.cusattr, 20)
+        self.assertEqual(obj.settest, 10)
+
+        # attribute value mutates if you do += or similar (combined get-set)
+        obj.cusattr += 10
+        self.assertEqual(obj.attributes.get("cusattr"), 30)
+        self.assertEqual(obj.settest, 30)
+        self.assertEqual(obj.cusattr, 40)
+        obj.awaretest = 0
+        obj.cusattr += 20
+        self.assertEqual(obj.attributes.get("cusattr"), 50)
+        self.assertEqual(obj.settest, 50)
+        self.assertEqual(obj.cusattr, 50)
+        del obj.cusattr
+        self.assertEqual(obj.cusattr, 5)
+        self.assertEqual(obj.settest, 5)
