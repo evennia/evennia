@@ -179,8 +179,9 @@ class CombatAction:
         The `__serialize_dbobjs__` and `__deserialize_dbobjs__` methods form a required pair.
 
         """
-        self.combathandler = dbserialize.dbunserialize(self.combathandler)
-        self.combatant = dbserialize.dbunserialize(self.combatant)
+        if isinstance(self.combathandler, bytes):
+            self.combathandler = dbserialize.dbunserialize(self.combathandler)
+            self.combatant = dbserialize.dbunserialize(self.combatant)
 
     def get_help(self, *args, **kwargs):
         """
