@@ -513,7 +513,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     return string, mapping
 
 
-def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
+def send_emote(sender, receivers, emote, msg_type = "pose", anonymous_add="first", **kwargs):
     """
     Main access function for distribute an emote.
 
@@ -523,6 +523,9 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
             will also form the basis for which sdescs are
             'valid' to use in the emote.
         emote (str): The raw emote string as input by emoter.
+        msg_type (str): The type of emote this is. "say" or "pose"
+            for example. This is arbitrary and used for generating
+            extra data for .msg(text) tuple.
         anonymous_add (str or None, optional): If `sender` is not
             self-referencing in the emote, this will auto-add
             `sender`'s data to the emote. Possible values are
@@ -599,7 +602,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         )
 
         # do the template replacement of the sdesc/recog {#num} markers
-        receiver.msg(sendemote.format(**receiver_sdesc_mapping), from_obj=sender, **kwargs)
+        receiver.msg(text=(sendemote.format(**receiver_sdesc_mapping), {"type": msg_type}), from_obj=sender, **kwargs)
 
 
 # ------------------------------------------------------------
@@ -910,7 +913,7 @@ class CmdSay(RPCommand):  # replaces standard say
         # calling the speech modifying hook
         speech = caller.at_pre_say(self.args)
         targets = self.caller.location.contents
-        send_emote(self.caller, targets, speech, anonymous_add=None)
+        send_emote(self.caller, targets, speech, msg_type="say", anonymous_add=None)
 
 
 class CmdSdesc(RPCommand):  # set/look at own sdesc
