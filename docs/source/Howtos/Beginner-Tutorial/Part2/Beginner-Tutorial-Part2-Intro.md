@@ -31,7 +31,6 @@ and "what to think about" when creating a multiplayer online text game.
 
 Planning-Where-Do-I-Begin.md
 Game-Planning.md
-Planning-Some-Useful-Contribs.md
 Planning-The-Tutorial-Game.md
 ```
 
@@ -41,6 +40,5 @@ Planning-The-Tutorial-Game.md
 
 Planning-Where-Do-I-Begin.md
 Game-Planning.md
-Planning-Some-Useful-Contribs.md
 Planning-The-Tutorial-Game.md
 ```
