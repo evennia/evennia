@@ -235,12 +235,15 @@ one cannot access it via .db, the AttributeHandler or see it with <strong>examin
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.AttributeProperty.at_set">
-<code class="sig-name descname">at_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.at_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.at_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.at_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.at_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>The value to set is passed through the method. It can be used to customize/validate
 the input in a custom child class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>value</strong> (<em>any</em>) – The value about to the stored in this Attribute.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>any</em>) – The value about to the stored in this Attribute.</p></li>
+<li><p><strong>obj</strong> (<em>object</em>) – Object the attribute is attached to</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>any</em> – The value to store.</p>
@@ -253,12 +256,15 @@ the input in a custom child class.</p>
 
 <dl class="py method">
 <dt id="evennia.typeclasses.attributes.AttributeProperty.at_get">
-<code class="sig-name descname">at_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.at_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.at_get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/attributes.html#AttributeProperty.at_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.typeclasses.attributes.AttributeProperty.at_get" title="Permalink to this definition">¶</a></dt>
 <dd><p>The value returned from the Attribute is passed through this method. It can be used
 to react to the retrieval or modify the result in some way.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>value</strong> (<em>any</em>) – Value returned from the Attribute.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>any</em>) – Value returned from the Attribute.</p></li>
+<li><p><strong>obj</strong> (<em>object</em>) – Object the attribute is attached to</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>any</em> – The value to return to the caller.</p>

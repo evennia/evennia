@@ -260,15 +260,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_get</span><span class="p">(</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrhandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span>
-                    <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default</span><span class="p">,</span>
-                    <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span>
-                    <span class="n">strattr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_strattr</span><span class="p">,</span>
-                    <span class="n">raise_exception</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_autocreate</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">at_get</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrhandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span>
+                <span class="n">strattr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_strattr</span><span class="p">,</span>
+                <span class="n">raise_exception</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_autocreate</span><span class="p">,</span>
+            <span class="p">),</span> <span class="n">instance</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autocreate</span><span class="p">:</span>
                 <span class="c1"># attribute didn&#39;t exist and autocreate is set</span>
@@ -285,7 +283,7 @@
         <span class="p">(</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrhandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">at_set</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">at_set</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">instance</span><span class="p">),</span>
                 <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span>
                 <span class="n">lockstring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lockstring</span><span class="p">,</span>
                 <span class="n">strattr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_strattr</span><span class="p">,</span>
@@ -301,13 +299,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrhandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AttributeProperty.at_set"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.at_set">[docs]</a>    <span class="k">def</span> <span class="nf">at_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeProperty.at_set"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.at_set">[docs]</a>    <span class="k">def</span> <span class="nf">at_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The value to set is passed through the method. It can be used to customize/validate</span>
 <span class="sd">        the input in a custom child class.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            value (any): The value about to the stored in this Attribute.</span>
+<span class="sd">            obj (object): Object the attribute is attached to</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            any: The value to store.</span>
@@ -318,13 +317,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="AttributeProperty.at_get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="AttributeProperty.at_get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The value returned from the Attribute is passed through this method. It can be used</span>
 <span class="sd">        to react to the retrieval or modify the result in some way.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            value (any): Value returned from the Attribute.</span>
+<span class="sd">            obj (object): Object the attribute is attached to</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            any: The value to return to the caller.</span>

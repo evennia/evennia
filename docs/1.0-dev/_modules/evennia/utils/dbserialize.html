@@ -60,19 +60,20 @@
 <span class="sd">be out of sync with the database.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">MutableSet</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">update_wrapper</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">MutableSet</span><span class="p">,</span> <span class="n">MutableMapping</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="n">UnpicklingError</span>
+    <span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">UnpicklingError</span><span class="p">,</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">loads</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">loads</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+
 <span class="kn">from</span> <span class="nn">django.contrib.contenttypes.models</span> <span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
 <span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">SafeString</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">uses_database</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">to_bytes</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">uses_database</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;to_pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;from_pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;do_pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;do_unpickle&quot;</span><span class="p">,</span> <span class="s2">&quot;dbserialize&quot;</span><span class="p">,</span> <span class="s2">&quot;dbunserialize&quot;</span><span class="p">)</span>
 
@@ -828,6 +829,13 @@
                 <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverList</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
                 <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">dat</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__deserialize_dbobjs__&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">__deserialize_dbobjs__</span><span class="p">()</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">UnpicklingError</span><span class="p">):</span>
+                <span class="k">pass</span>
+
         <span class="k">return</span> <span class="n">item</span>
 
     <span class="k">if</span> <span class="n">db_obj</span><span class="p">:</span>
