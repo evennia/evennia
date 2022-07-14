@@ -104,7 +104,7 @@ from datetime import datetime
 
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
-from evennia.utils import dbserialize, delay, evmenu, evtable
+from evennia.utils import dbserialize, delay, evmenu, evtable, logger
 from evennia.utils.utils import make_iter
 
 from . import rules
@@ -119,6 +119,11 @@ class CombatFailure(RuntimeError):
     Some failure during actions.
 
     """
+
+
+# -----------------------------------------------------------------------------------
+#  Combat Actions
+# -----------------------------------------------------------------------------------
 
 
 class CombatAction:
@@ -141,8 +146,6 @@ class CombatAction:
     # use None to do nothing (jump directly to registering the action)
     next_menu_node = "node_select_target"
 
-    # action to echo to everyone.
-    post_action_text = "{combatant} performed an action."
     max_uses = None  # None for unlimited
     # in which order (highest first) to perform the action. If identical, use random order
     priority = 0
@@ -153,12 +156,15 @@ class CombatAction:
         self.uses = 0
 
     def msg(self, message, broadcast=False):
-        if broadcast:
-            # send to everyone in combat.
-            self.combathandler.msg(message)
-        else:
-            # send only to the combatant.
-            self.combatant.msg(message)
+        """
+        Convenience route to the combathandler msg-sender mechanism.
+
+        Args:
+            message (str): Message to send; use `$You()` and `$You(other.key)`
+                to refer to the combatant doing the action and other combatants,
+                respectively.
+        """
+        self.combathandler.msg(message, combatant=self.combatant, broadcast=broadcast)
 
     def __serialize_dbobjs__(self):
         """
@@ -207,14 +213,26 @@ class CombatAction:
         return True if self.max_uses is None else self.uses < (self.max_uses or 0)
 
     def pre_use(self, *args, **kwargs):
+        """
+        Called just before the main action.
+
+        """
+
         pass
 
     def use(self, *args, **kwargs):
+        """
+        Main activation of the action. This happens simultaneously to other actions.
+
+        """
         pass
 
     def post_use(self, *args, **kwargs):
-        self.uses += 1
-        self.combathandler.msg(self.post_action_text.format(**kwargs))
+        """
+        Called just after the action has been taken.
+
+        """
+        pass
 
 
 class CombatActionAttack(CombatAction):
@@ -237,27 +255,53 @@ class CombatActionAttack(CombatAction):
 
         """
         attacker = self.combatant
+        weapon = self.combatant.equipment.weapon
 
         # figure out advantage (gained by previous stunts)
         advantage = bool(self.combathandler.advantage_matrix[attacker].pop(defender, False))
-
         # figure out disadvantage (gained by enemy stunts/actions)
         disadvantage = bool(self.combathandler.disadvantage_matrix[attacker].pop(defender, False))
 
-        is_hit, quality = rules.dice.opposed_saving_throw(
+        is_hit, quality, txt = rules.dice.opposed_saving_throw(
             attacker,
             defender,
-            attack_type=attacker.weapon.attack_type,
-            defense_type=attacker.weapon.defense_type,
+            attack_type=weapon.attack_type,
+            defense_type=attacker.equipment.weapon.defense_type,
             advantage=advantage,
             disadvantage=disadvantage,
         )
+        self.msg(f"$You() $conj(attack) $You({defender.key}) with {weapon.key}: {txt}")
         if is_hit:
-            self.combathandler.resolve_damage(
-                attacker, defender, critical=quality == "critical success"
-            )
+            # enemy hit, calculate damage
+            weapon_dmg_roll = attacker.equipment.weapon.damage_roll
 
-            # TODO messaging here
+            dmg = rules.dice.roll(weapon_dmg_roll)
+
+            if quality is Ability.CRITICAL_SUCCESS:
+                dmg += rules.dice.roll(weapon_dmg_roll)
+                message = (
+                    f" $You() |ycritically|n $conj(hit) $You({defender.key}) for |r{dmg}|n damage!"
+                )
+            else:
+                message = f" $You() $conj(hit) $You({defender.key}) for |r{dmg}|n damage!"
+            self.msg(message)
+
+            defender.hp -= dmg
+
+            # call hook
+            defender.at_damage(dmg, attacker=attacker)
+
+            # note that we mustn't remove anyone from combat yet, because this is
+            # happening simultaneously. So checking of the final hp
+            # and rolling of death etc happens in the combathandler at the end of the turn.
+
+        else:
+            # a miss
+            message = f" $You() $conj(miss) $You({defender.key})."
+            if quality is Ability.CRITICAL_FAILURE:
+                attacker.equipment.weapon.quality -= 1
+                message += ".. it's a |rcritical miss!|n, damaging the weapon."
+            self.msg(message)
 
 
 class CombatActionStunt(CombatAction):
@@ -299,7 +343,7 @@ class CombatActionStunt(CombatAction):
         attacker = self.combatant
         advantage, disadvantage = False, False
 
-        is_success, _ = rules.dice.opposed_saving_throw(
+        is_success, _, txt = rules.dice.opposed_saving_throw(
             attacker,
             defender,
             attack_type=self.attack_type,
@@ -307,13 +351,13 @@ class CombatActionStunt(CombatAction):
             advantage=advantage,
             disadvantage=disadvantage,
         )
+        self.msg(f"$You() $conj(attempt) stunt on $You(defender.key). {txt}")
         if is_success:
             if advantage:
                 self.combathandler.gain_advantage(attacker, defender)
             else:
                 self.combathandler.gain_disadvantage(defender, attacker)
 
-            self.msg
             # only spend a use after being successful
             self.uses += 1
 
@@ -376,11 +420,14 @@ class CombatActionFlee(CombatAction):
         "Disengage from combat. Use successfully two times in a row to leave combat at the "
         "end of the second round. If someone Blocks you successfully, this counter is reset."
     )
-
     priority = -5  # checked last
 
     def use(self, *args, **kwargs):
         # it's safe to do this twice
+        self.msg(
+            "$You() retreats, and will leave combat next round unless someone successfully "
+            "blocks them."
+        )
         self.combathandler.flee(self.combatant)
 
 
@@ -409,7 +456,7 @@ class CombatActionBlock(CombatAction):
         advantage = bool(self.advantage_matrix[combatant].pop(fleeing_target, False))
         disadvantage = bool(self.disadvantage_matrix[combatant].pop(fleeing_target, False))
 
-        is_success, _ = rules.dice.opposed_saving_throw(
+        is_success, _, txt = rules.dice.opposed_saving_throw(
             combatant,
             fleeing_target,
             attack_type=self.attack_type,
@@ -417,12 +464,14 @@ class CombatActionBlock(CombatAction):
             advantage=advantage,
             disadvantage=disadvantage,
         )
+        self.msg(f"$You() tries to block the retreat of $You({fleeing_target.key}). {txt}")
 
         if is_success:
             # managed to stop the target from fleeing/disengaging
             self.combatant.unflee(fleeing_target)
+            self.msg("$You() blocks the retreat of $You({fleeing_target.key})")
         else:
-            pass  # they are getting away!
+            self.msg("$You({fleeing_target.key}) dodges away from you $You()!")
 
 
 class CombatActionSwapWieldedWeaponOrSpell(CombatAction):
@@ -450,8 +499,6 @@ class CombatActionSwapWieldedWeaponOrSpell(CombatAction):
 
     next_menu_node = "node_select_wield_from_inventory"
 
-    post_action_text = "{combatant} switches weapons."
-
     def use(self, combatant, item, *args, **kwargs):
         # this will make use of the item
         combatant.inventory.use(item)
@@ -470,10 +517,9 @@ class CombatActionUseItem(CombatAction):
 
     next_menu_node = "node_select_use_item_from_inventory"
 
-    post_action_text = "{combatant} used an item."
-
     def use(self, combatant, item, *args, **kwargs):
         item.use(combatant, *args, **kwargs)
+        self.msg("$You() $conj(use) an item.")
 
 
 class CombatActionDoNothing(CombatAction):
@@ -491,6 +537,14 @@ class CombatActionDoNothing(CombatAction):
     next_menu_node = "node_register_action"
 
     post_action_text = "{combatant} does nothing this turn."
+
+    def use(self, *args, **kwargs):
+        self.msg("$You() $conj(hesitate), accomplishing nothing.")
+
+
+# -----------------------------------------------------------------------------------
+#  Combat handler
+# -----------------------------------------------------------------------------------
 
 
 class EvAdventureCombatHandler(DefaultScript):
@@ -618,6 +672,8 @@ class EvAdventureCombatHandler(DefaultScript):
                 self.interval - warning_time, self._warn_time, warning_time
             )
 
+        self.msg(f"|y_______________________ start turn {self.turn} ___________________________|n")
+
         for combatant in self.combatants:
             # cycle combat menu
             self._init_menu(combatant)
@@ -628,10 +684,15 @@ class EvAdventureCombatHandler(DefaultScript):
         End of turn operations.
 
         1. Do all regular actions
+        2. Roll for any death events
         2. Remove combatants that disengaged successfully
         3. Timeout advantages/disadvantages
 
         """
+        self.msg(
+            f"|y__________________ turn resolution (turn {self.turn}) ____________________|n\n"
+        )
+
         # do all actions
         for combatant in self.combatants:
             # read the current action type selected by the player
@@ -639,7 +700,16 @@ class EvAdventureCombatHandler(DefaultScript):
                 combatant, (CombatActionDoNothing(self, combatant), (), {})
             )
             # perform the action on the CombatAction instance
-            action.use(*args, **kwargs)
+            try:
+                action.pre_use(*args, **kwargs)
+                action.use(*args, **kwargs)
+                action.post_use(*args, **kwargs)
+            except Exception as err:
+                combatant.msg(
+                    f"An error ({err}) occurred when performing this action.\n"
+                    "Please report the problem to an admin."
+                )
+                logger.log_trace()
 
         # handle disengaging combatants
 
@@ -647,14 +717,37 @@ class EvAdventureCombatHandler(DefaultScript):
 
         for combatant in self.combatants:
             # check disengaging combatants (these are combatants that managed
-            # to stay at disengaging distance for a turn)
+            # not get their escape blocked last turn
             if combatant in self.fleeing_combatants:
                 self.fleeing_combatants.remove(combatant)
+
+            if combatant.hp <= 0:
+                # characters roll on the death table here, npcs usually just die
+                combatant.at_defeat()
+
+                # tell everyone
+                self.msg(combatant.defeat_message(attacker, dmg), combatant=combatant)
+
+                if defender.hp > 0:
+                    # death roll didn't kill them - they are weakened, but with hp
+                    self.msg(
+                        "You are alive, but out of the fight. If you want to press your luck, "
+                        "you need to rejoin the combat.",
+                        combatant=combatant,
+                        broadcast=False,
+                    )
+                    defender.at_defeat()  # note - NPC monsters may still 'die' here
+                else:
+                    # outright killed
+                    defender.at_death()
+
+                # no matter the result, the combatant is out
+                to_remove.append(combatant)
 
         for combatant in to_remove:
             # for clarity, we remove here rather than modifying the combatant list
             # inside the previous loop
-            self.msg(f"{combatant.key} disengaged and left combat.")
+            self.msg(f"|y$You() $conj(are) out of combat.|n", combatant=combatant)
             self.remove_combatant(combatant)
 
         # refresh stunt timeouts (note - self.stunt_duration is the same for
@@ -788,7 +881,7 @@ class EvAdventureCombatHandler(DefaultScript):
             if comb is combatant:
                 continue
 
-            name = combatant.key
+            name = comb.key
             health = f"{comb.hurt_level}"
             fleeing = ""
             if comb in self.fleeing_combatants:
@@ -798,24 +891,37 @@ class EvAdventureCombatHandler(DefaultScript):
 
         return str(table)
 
-    def msg(self, message, targets=None):
+    def msg(self, message, combatant=None, broadcast=True):
         """
         Central place for sending messages to combatants. This allows
         for adding any combat-specific text-decoration in one place.
 
         Args:
             message (str): The message to send.
-            targets (Object or list, optional): Sends message only to
-                one or more particular combatants. If unset, send to
-                everyone in the combat.
+            combatant (Object): The 'You' in the message, if any.
+            broadcast (bool): If `False`, `combatant` must be included and
+                will be the only one to see the message. If `True`, send to
+                everyone in the location.
+
+        Notes:
+            If `combatant` is given, use `$You/you()` markup to create
+            a message that looks different depending on who sees it. Use
+            `$You(combatant_key)` to refer to other combatants.
 
         """
-        if targets:
-            for target in make_iter(targets):
-                target.msg(message)
-        else:
-            for target in self.combatants:
-                target.msg(message)
+        location = self.obj
+        location_objs = location.contents
+
+        exclude = []
+        if not broadcast and combatant:
+            exclude = [obj for obj in location_objs if obj is not combatant]
+
+        location.msg_contents(
+            message,
+            exclude=exclude,
+            from_obj=combatant,
+            mapping={locobj.key: locobj for locobj in location_objs},
+        )
 
     def gain_advantage(self, combatant, target):
         """
@@ -838,48 +944,6 @@ class EvAdventureCombatHandler(DefaultScript):
     def unflee(self, combatant):
         if combatant in self.fleeing_combatants:
             self.fleeing_combatants.remove(combatant)
-
-    def resolve_damage(self, attacker, defender, critical=False):
-        """
-        Apply damage to defender. On a critical hit, the damage die
-        is rolled twice.
-
-        """
-        weapon_dmg_roll = attacker.weapon.damage_roll
-
-        dmg = rules.dice.roll(weapon_dmg_roll)
-        if critical:
-            dmg += rules.dice.roll(weapon_dmg_roll)
-
-        defender.hp -= dmg
-
-        # call hook
-        defender.at_damage(dmg, attacker=attacker)
-
-        if defender.hp <= 0:
-            # roll on death table. This may or may not kill you
-            rules.dice.roll_death(self)
-
-            # tell everyone
-            self.msg(defender.defeat_message(attacker, dmg))
-
-            if defender.hp > 0:
-                # they are weakened, but with hp
-                self.msg(
-                    "You are alive, but out of the fight. If you want to press your luck, "
-                    "you need to rejoin the combat.",
-                    targets=defender,
-                )
-                defender.at_defeat()  # note - NPC monsters may still 'die' here
-            else:
-                # outright killed
-                defender.at_death()
-
-            # no matter the result, the combatant is out
-            self.remove_combatant(defender)
-        else:
-            # defender still alive
-            self.msg(defender)
 
     def register_action(self, combatant, action_key, *args, **kwargs):
         """
@@ -927,7 +991,9 @@ class EvAdventureCombatHandler(DefaultScript):
         return list(self.combatant_actions[combatant].values())
 
 
-# ------------ start combat menu definitions
+# -----------------------------------------------------------------------------------
+#  Combat Menu definitions
+# -----------------------------------------------------------------------------------
 
 
 def _register_action(caller, raw_string, **kwargs):
@@ -1165,7 +1231,9 @@ def node_wait_start(caller, raw_string, **kwargs):
     return text, options
 
 
-# -------------- end of combat menu definitions
+# -----------------------------------------------------------------------------------
+#  Access function
+# -----------------------------------------------------------------------------------
 
 
 def join_combat(caller, *targets, session=None):

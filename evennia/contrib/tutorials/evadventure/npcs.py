@@ -69,6 +69,14 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
         """
         self.hp = self.hp_max
 
+    def ai_combat_next_action(self):
+        """
+        The combat engine should ask this method in order to
+        get the next action the npc should perform in combat.
+
+        """
+        pass
+
 
 class EvAdventureShopKeeper(EvAdventureNPC):
     """
