@@ -233,7 +233,7 @@ class EquipmentHandler:
         # store new state
         self._save()
 
-    def store(self, obj):
+    def add(self, obj):
         """
         Put something in the backpack specifically (even if it could be wield/worn).
 
@@ -242,6 +242,13 @@ class EquipmentHandler:
         self.validate_slot_usage(obj)
         self.slots[WieldLocation.BACKPACK].append(obj)
         self._save()
+
+    def can_remove(self, leaving_object):
+        """
+        Called to check if the object can be removed.
+
+        """
+        return True  # TODO - some things may not be so easy, like mud
 
     def remove(self, obj_or_slot):
         """
@@ -423,7 +430,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
             bool: If move should be allowed or not.
 
         """
-        return self.equipment.has_space(moved_object)
+        return self.equipment.validate_slot_usage(moved_object)
 
     def at_object_receive(self, moved_object, source_location, **kwargs):
         """
@@ -444,7 +451,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         (need to unwield/remove them first).
 
         """
-        self.equipment.can_drop(leaving_object)
+        return self.equipment.can_remove(leaving_object)
 
     def at_object_leave(self, moved_object, destination, **kwargs):
         """
