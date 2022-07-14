@@ -21,9 +21,15 @@ from evennia.scripts.scripthandler import ScriptHandler
 from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import ansi, create, funcparser, logger, search
-from evennia.utils.utils import (class_from_module, is_iter, lazy_property,
-                                 list_to_string, make_iter, to_str,
-                                 variable_from_module)
+from evennia.utils.utils import (
+    class_from_module,
+    is_iter,
+    lazy_property,
+    list_to_string,
+    make_iter,
+    to_str,
+    variable_from_module,
+)
 
 _INFLECT = inflect.engine()
 _MULTISESSION_MODE = settings.MULTISESSION_MODE
@@ -714,7 +720,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         for obj in contents:
             func(obj, **kwargs)
 
-    def msg_contents(self, text=None, exclude=None, from_obj=None, mapping=None, **kwargs):
+    def msg_contents(
+        self,
+        text=None,
+        exclude=None,
+        from_obj=None,
+        mapping=None,
+        raise_funcparse_errors=False,
+        **kwargs,
+    ):
         """
         Emits a message to all objects inside this object.
 
@@ -738,6 +752,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 in the `text` string. If `<object>` doesn't have a `get_display_name`
                 method, it will be returned as a string. If not set, a key `you` will
                 be auto-added to point to `from_obj` if given, otherwise to `self`.
+            raise_funcparse_errors (bool, optional): If set, a failing `$func()` will
+                lead to an outright error. If unset (default), the failing `$func()`
+                will instead appear in output unparsed.
+
             **kwargs: Keyword arguments will be passed on to `obj.msg()` for all
                 messaged objects.
 
@@ -802,7 +820,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # actor-stance replacements
             inmessage = _MSG_CONTENTS_PARSER.parse(
                 inmessage,
-                raise_errors=True,
+                raise_errors=raise_funcparse_errors,
                 return_string=True,
                 caller=you,
                 receiver=receiver,

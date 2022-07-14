@@ -9,7 +9,7 @@ from evennia.utils.utils import int2str, lazy_property
 
 from . import rules
 from .enums import Ability, WieldLocation
-from .objects import EvAdventureObject
+from .objects import EvAdventureObject, WeaponEmptyHand
 
 
 class EquipmentError(TypeError):
@@ -134,7 +134,7 @@ class EquipmentHandler:
     @property
     def weapon(self):
         """
-        Conveniently get the currently active weapon.
+        Conveniently get the currently active weapon or rune stone.
 
         Returns:
             obj or None: The weapon. None if unarmored.
@@ -146,6 +146,8 @@ class EquipmentHandler:
         weapon = slots[WieldLocation.TWO_HANDS]
         if not weapon:
             weapon = slots[WieldLocation.WEAPON_HAND]
+        if not weapon:
+            weapon = WeaponEmptyHand()
         return weapon
 
     def display_loadout(self):
@@ -370,6 +372,13 @@ class LivingMixin:
         else:
             self.msg(f"|g{healer.key} heals you for {healed} health.|n")
 
+    def at_damage(self, damage, attacker=None):
+        """
+        Called when attacked and taking damage.
+
+        """
+        pass
+
 
 class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     """
@@ -400,23 +409,6 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     def equipment(self):
         """Allows to access equipment like char.equipment.worn"""
         return EquipmentHandler(self)
-
-    @property
-    def weapon(self):
-        """
-        Quick access to the character's currently wielded weapon.
-
-        """
-        self.equipment.weapon
-
-    @property
-    def armor(self):
-        """
-        Quick access to the character's current armor.
-        Will return the "Unarmored" armor level (11) if none other are found.
-
-        """
-        self.equipment.armor or 11
 
     def at_pre_object_receive(self, moved_object, source_location, **kwargs):
         """
@@ -467,21 +459,25 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         """
         self.equipment.remove(moved_object)
 
-    def at_damage(self, dmg, attacker=None):
+    def at_defeat(self):
         """
-        Called when receiving damage for whatever reason. This
-        is called *before* hp is evaluated for defeat/death.
+        This happens when character drops <= 0 HP. For Characters, this means rolling on
+        the death table.
 
         """
+        rules.dice.roll_death(self)
+        if hp <= 0:
+            # this means we rolled death on the table
+            self.handle_death()
+        else:
+            # still alive, but lost in some stats
+            self.location.msg_contents(
+                f"|y$You() $conj(stagger) back, weakened but still alive.|n", from_obj=self
+            )
 
     def defeat_message(self, attacker, dmg):
-        return f"After {attacker.key}'s attack, {self.key} collapses in a heap."
-
-    def at_defeat(self, attacker, dmg):
         """
-        At this point, character has been defeated but is not killed (their
-        hp >= 0 but they lost ability bonuses). Called after being defeated in combat or
-        other situation where health is lost below or equal to 0.
+        Sent out to everyone in the location by the combathandler.
 
         """
 
@@ -490,3 +486,6 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         Called when character dies.
 
         """
+        self.location.msg_contents(
+            f"|r$You() $conj(collapse) in a heap. No getting back from that.|n", from_obj=self
+        )

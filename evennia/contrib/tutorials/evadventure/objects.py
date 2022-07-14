@@ -85,6 +85,20 @@ class EvAdventureWeapon(EvAdventureObject):
     damage_roll = AttributeProperty("1d6")
 
 
+class WeaponEmptyHand:
+    """
+    This is used when you wield no weapons. We won't create any db-object for it.
+
+    """
+
+    key = "Empty Fists"
+    inventory_use_slot = WieldLocation.WEAPON_HAND
+    attack_type = Ability.STR
+    defense_type = Ability.ARMOR
+    damage_roll = "1d4"
+    quality = 100000  # let's assume fists are always available ...
+
+
 class EvAdventureRunestone(EvAdventureWeapon):
     """
     Base class for magic runestones. In _Knave_, every spell is represented by a rune stone

@@ -81,7 +81,7 @@ class EvAdventureRollEngine:
         if 0 < diesize > max_diesize:
             raise TypeError(f"Invalid die-size used (must be between 1 and {max_diesize} sides)")
 
-        # At this point we know we have valid input - roll and all dice together
+        # At this point we know we have valid input - roll and add dice together
         return sum(randint(1, diesize) for _ in range(number))
 
     def roll_with_advantage_or_disadvantage(self, advantage=False, disadvantage=False):
@@ -98,7 +98,7 @@ class EvAdventureRollEngine:
 
         """
         if not (advantage or disadvantage) or (advantage and disadvantage):
-            # normal roll
+            # normal roll, or advantage cancels disadvantage
             return self.roll("1d20")
         elif advantage:
             return max(self.roll("1d20"), self.roll("1d20"))
@@ -129,9 +129,10 @@ class EvAdventureRollEngine:
             modifier (int, optional): An additional +/- modifier to the roll.
 
         Returns:
-            tuple: (bool, str): If the save was passed or not. The second element is the
-                quality of the roll - None (normal), "critical fail" and "critical success".
-
+            tuple: A tuple `(bool, str, str)`. The bool indicates if the save was passed or not.
+                The second element is the quality of the roll - None (normal),
+                "critical fail" and "critical success". Last element is a text detailing
+                the roll, for display purposes.
         Notes:
             Advantage and disadvantage cancel each other out.
 
@@ -147,7 +148,25 @@ class EvAdventureRollEngine:
             quality = Ability.CRITICAL_SUCCESS
         else:
             quality = None
-        return (dice_roll + bonus + modifier) > target, quality
+        result = dice_roll + bonus + modifier > target
+
+        # determine text output
+        rolltxt = "d20 "
+        if advantage and disadvantage:
+            rolltxt = "d20 (advantage canceled by disadvantage)"
+        elif advantage:
+            rolltxt = "|g2d20|n (advantage: picking highest) "
+        elif disadvantage:
+            rolltxt = "|r2d20|n (disadvantage: picking lowest) "
+        bontxt = f"(+{bonus})"
+        modtxt = ""
+        if modifier:
+            modtxt = f" + {modifier}" if modifier > 0 else f" - {abs(modifier)}"
+        qualtxt = f" ({quality.value}!)" if quality else ""
+
+        txt = f"{dice_roll} + {bonus_type.value}{bontxt}{modtxt} -> |w{result}{qualtxt}|n"
+
+        return (dice_roll + bonus + modifier) > target, quality, txt
 
     def opposed_saving_throw(
         self,
@@ -174,14 +193,16 @@ class EvAdventureRollEngine:
             modifier (int): An additional +/- modifier to the roll.
 
         Returns:
-            tuple: (bool, str): If the attack succeed or not. The second element is the
-                quality of the roll - None (normal), "critical fail" and "critical success".
+            tuple: (bool, str, str): If the attack succeed or not. The second element is the
+                quality of the roll - None (normal), "critical fail" and "critical success". Last
+                element is a text that summarizes the details of the roll.
         Notes:
             Advantage and disadvantage cancel each other out.
 
         """
-        defender_defense = getattr(defender, defense_type.value, 1) + 10
-        return self.saving_throw(
+
+        defender_defense = getattr(defender, defense_type.value, 1)
+        result, quality, txt = self.saving_throw(
             attacker,
             bonus_type=attack_type,
             target=defender_defense,
@@ -189,6 +210,9 @@ class EvAdventureRollEngine:
             disadvantage=disadvantage,
             modifier=modifier,
         )
+        txt = f"Roll vs {defense_type.value}({defender_defense}):\n{txt}"
+
+        return result, quality, txt
 
     def roll_random_table(self, dieroll, table_choices):
         """
