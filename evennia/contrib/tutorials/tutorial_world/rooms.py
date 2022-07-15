@@ -259,7 +259,7 @@ class TutorialRoom(DefaultRoom):
         )
         self.cmdset.add_default(TutorialRoomCmdSet)
 
-    def at_object_receive(self, new_arrival, source_location):
+    def at_object_receive(self, new_arrival, source_location, move_type="move", **kwargs):
         """
         When an object enter a tutorial room we tell other objects in
         the room about it by trying to call a hook on them. The Mob object
@@ -451,7 +451,7 @@ class IntroRoom(TutorialRoom):
             "the account."
         )
 
-    def at_object_receive(self, character, source_location):
+    def at_object_receive(self, character, source_location, move_type="move", **kwargs):
         """
         Assign properties on characters
         """
@@ -770,7 +770,7 @@ class BridgeRoom(WeatherRoom):
             # send a message most of the time
             self.msg_contents("|w%s|n" % random.choice(BRIDGE_WEATHER))
 
-    def at_object_receive(self, character, source_location):
+    def at_object_receive(self, character, source_location, move_type="move", **kwargs):
         """
         This hook is called by the engine whenever the player is moved
         into this room.
@@ -796,7 +796,7 @@ class BridgeRoom(WeatherRoom):
                 character.db.tutorial_bridge_position = 0
             character.execute_cmd("look")
 
-    def at_object_leave(self, character, target_location):
+    def at_object_leave(self, character, target_location, move_type="move", **kwargs):
         """
         This is triggered when the player leaves the bridge room.
         """
@@ -1038,7 +1038,7 @@ class DarkRoom(TutorialRoom):
                     # put players in darkness
                     char.msg("The room is completely dark.")
 
-    def at_object_receive(self, obj, source_location):
+    def at_object_receive(self, obj, source_location, move_type="move", **kwargs):
         """
         Called when an object enters the room.
         """
@@ -1048,7 +1048,7 @@ class DarkRoom(TutorialRoom):
             # in case the new guy carries light with them
             self.check_light_state()
 
-    def at_object_leave(self, obj, target_location):
+    def at_object_leave(self, obj, target_location, move_type="move", **kwargs):
         """
         In case people leave with the light, we make sure to clear the
         DarkCmdSet if necessary.  This also works if they are
@@ -1103,7 +1103,7 @@ class TeleportRoom(TutorialRoom):
         self.db.failure_teleport_msg = "You fail!"
         self.db.failure_teleport_to = "dark cell"
 
-    def at_object_receive(self, character, source_location):
+    def at_object_receive(self, character, source_location, move_type="move", **kwargs):
         """
         This hook is called by the engine whenever the player is moved into
         this room.
@@ -1167,7 +1167,7 @@ class OutroRoom(TutorialRoom):
             "character."
         )
 
-    def at_object_receive(self, character, source_location):
+    def at_object_receive(self, character, source_location, move_type="move", **kwargs):
         """
         Do cleanup.
         """
@@ -1183,6 +1183,6 @@ class OutroRoom(TutorialRoom):
                     obj.delete()
             character.tags.clear(category="tutorial_world")
 
-    def at_object_leave(self, character, destination):
+    def at_object_leave(self, character, destination, move_type="move", **kwargs):
         if character.account:
             character.account.execute_cmd("unquell")

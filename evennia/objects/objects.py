@@ -1486,6 +1486,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Args:
             destination (Object): The object we are moving to
             move_type (str): The type of move. "give", "traverse", etc.
+                This is an arbitrary string provided to obj.move_to().
+                Useful for altering messages or altering logic depending
+                on the kind of movement.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -1622,7 +1625,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         destination.msg_contents((string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping)
 
-    def at_post_move(self, source_location, **kwargs):
+    def at_post_move(self, source_location, move_type="move", **kwargs):
         """
         Called after move has completed, regardless of quiet mode or
         not.  Allows changes to the object due to the location it is
@@ -1630,6 +1633,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Args:
             source_location (Object): Wwhere we came from. This may be `None`.
+            move_type (str): The type of move. "give", "traverse", etc.
+                This is an arbitrary string provided to obj.move_to().
+                Useful for altering messages or altering logic depending
+                on the kind of movement.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -1647,6 +1654,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             moved_obj (Object): The object leaving
             target_location (Object): Where `moved_obj` is going.
             move_type (str): The type of move. "give", "traverse", etc.
+                This is an arbitrary string provided to obj.move_to().
+                Useful for altering messages or altering logic depending
+                on the kind of movement.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
 
@@ -2668,9 +2678,9 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
 
         """
         if self.obj.destination:
-            return " (exit to %s)" % self.obj.destination.get_display_name(caller)
+            return " (exit to %s)" % self.obj.destination.get_display_name(caller, **kwargs)
         else:
-            return " (%s)" % self.obj.get_display_name(caller)
+            return " (%s)" % self.obj.get_display_name(caller, **kwargs)
 
 
 #
