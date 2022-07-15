@@ -538,7 +538,7 @@ class WildernessRoom(DefaultRoom):
             # This object wasn't in the wilderness yet. Let's add it.
             itemcoords[moved_obj] = self.coordinates
 
-    def at_object_leave(self, moved_obj, target_location):
+    def at_object_leave(self, moved_obj, target_location, move_type="move", **kwargs):
         """
         Called just before an object leaves from inside this object. This is a
         default Evennia hook.
