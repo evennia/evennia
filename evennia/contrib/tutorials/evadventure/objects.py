@@ -31,6 +31,54 @@ class EvAdventureObject(DefaultObject):
     quality = AttributeProperty(1)
     value = AttributeProperty(0)
 
+    help_text = AttributeProperty("")
+
+    def get_help(self):
+        """
+        Get help text for the item.
+
+        Returns:
+            str: The help text, by default taken from the `.help_text` property.
+
+        """
+        return self.help_text
+
+    def at_pre_use(self, user, *args, **kwargs):
+        """
+        Called before this item is used.
+
+        Args:
+            user (Object): The one using the item.
+            *args, **kwargs: Optional arguments.
+
+        Return:
+            bool: False to stop usage.
+
+        """
+        return self.uses > 0
+
+    def at_use(self, user, *args, **kwargs):
+        """
+        Called when this item is used.
+
+        Args:
+            user (Object): The one using the item.
+            *args, **kwargs: Optional arguments.
+
+        """
+        pass
+
+    def at_post_use(self, user, *args, **kwargs):
+        """
+        Called after this item was used.
+
+        Args:
+            user (Object): The one using the item.
+            *args, **kwargs: Optional arguments.
+
+        """
+        self.uses -= 1
+
 
 class EvAdventureObjectFiller(EvAdventureObject):
     """
@@ -59,7 +107,7 @@ class EvAdventureConsumable(EvAdventureObject):
     size = AttributeProperty(0.25)
     uses = AttributeProperty(1)
 
-    def use(self, user, *args, **kwargs):
+    def at_use(self, user, *args, **kwargs):
         """
         Consume a 'use' of this item. Once it reaches 0 uses, it should normally
         not be usable anymore and probably be deleted.
@@ -70,6 +118,20 @@ class EvAdventureConsumable(EvAdventureObject):
 
         """
         pass
+
+    def at_post_use(self, user, *args, **kwargs):
+        """
+        Called after this item was used.
+
+        Args:
+            user (Object): The one using the item.
+            *args, **kwargs: Optional arguments.
+
+        """
+        self.uses -= 1
+        if self.uses <= 0:
+            user.msg(f"{self.key} was used up.")
+            self.delete()
 
 
 class EvAdventureWeapon(EvAdventureObject):
@@ -97,6 +159,9 @@ class WeaponEmptyHand:
     defense_type = Ability.ARMOR
     damage_roll = "1d4"
     quality = 100000  # let's assume fists are always available ...
+
+    def __repr__(self):
+        return "<WeaponEmptyHand>"
 
 
 class EvAdventureRunestone(EvAdventureWeapon):

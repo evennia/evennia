@@ -119,13 +119,17 @@ class EquipmentHandler:
         method.
 
         Returns:
-            int: Armor from equipment.
+            int: Armor from equipment. Note that this is the +bonus of Armor, not the
+                'defense' (to get that one adds 10).
 
         """
         slots = self.slots
         return sum(
             (
-                getattr(slots[WieldLocation.BODY], "armor", 0),
+                # armor is listed using its defense, so we remove 10 from it
+                # (11 is base no-armor value in Knave)
+                getattr(slots[WieldLocation.BODY], "armor", 11) - 10,
+                # shields and helmets are listed by their bonus to armor
                 getattr(slots[WieldLocation.SHIELD_HAND], "armor", 0),
                 getattr(slots[WieldLocation.HEAD], "armor", 0),
             )
@@ -333,7 +337,8 @@ class EquipmentHandler:
             list: A list of objects that are usable.
 
         """
-        return [obj for obj in slots[WieldLocation.BACKPACK] if obj.uses > 0]
+        character = self.obj
+        return [obj for obj in slots[WieldLocation.BACKPACK] if obj.at_pre_use(character)]
 
 
 class LivingMixin:
@@ -386,6 +391,21 @@ class LivingMixin:
         """
         pass
 
+    def at_defeat(self):
+        """
+        Called when this living thing reaches HP 0.
+
+        """
+        # by default, defeat means death
+        self.at_death()
+
+    def at_death(self):
+        """
+        Called when this living thing dies.
+
+        """
+        pass
+
 
 class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     """
@@ -416,6 +436,14 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     def equipment(self):
         """Allows to access equipment like char.equipment.worn"""
         return EquipmentHandler(self)
+
+    @property
+    def weapon(self):
+        return self.equipment.weapon
+
+    @property
+    def armor(self):
+        return self.equipment.armor
 
     def at_pre_object_receive(self, moved_object, source_location, **kwargs):
         """
@@ -475,20 +503,14 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         rules.dice.roll_death(self)
         if hp <= 0:
             # this means we rolled death on the table
-            self.handle_death()
+            self.at_death()
         else:
             # still alive, but lost in some stats
             self.location.msg_contents(
                 f"|y$You() $conj(stagger) back, weakened but still alive.|n", from_obj=self
             )
 
-    def defeat_message(self, attacker, dmg):
-        """
-        Sent out to everyone in the location by the combathandler.
-
-        """
-
-    def handle_death(self):
+    def at_death(self):
         """
         Called when character dies.
 
