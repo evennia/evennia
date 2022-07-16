@@ -200,8 +200,9 @@ class EvAdventureRollEngine:
             Advantage and disadvantage cancel each other out.
 
         """
+        # what is stored on the character/npc is the bonus; we add 10 to get the defense target
+        defender_defense = getattr(defender, defense_type.value, 1) + 10
 
-        defender_defense = getattr(defender, defense_type.value, 1)
         result, quality, txt = self.saving_throw(
             attacker,
             bonus_type=attack_type,

@@ -30,7 +30,7 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
     """
 
     hit_dice = AttributeProperty(default=1)
-    armor = AttributeProperty(default=11)
+    armor = AttributeProperty(default=1)  # +10 to get armor defense
     morale = AttributeProperty(default=9)
     hp = AttributeProperty(default=8)
 
@@ -92,8 +92,15 @@ class EvAdventureQuestGiver(EvAdventureNPC):
     """
 
 
-class EvadventureMob(EvAdventureNPC):
+class EvAdventureMob(EvAdventureNPC):
     """
     Mob (mobile) NPC; this is usually an enemy.
 
     """
+
+    def at_defeat(self):
+        """
+        Mobs die right away when defeated, no death-table rolls.
+
+        """
+        self.at_death()

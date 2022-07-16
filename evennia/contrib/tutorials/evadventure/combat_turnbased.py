@@ -326,8 +326,7 @@ class CombatActionStunt(CombatAction):
         "actions. The effect needs to be used up within 5 turns."
     )
 
-    give_advantage = True
-    give_disadvantage = False
+    give_advantage = True  # if False, give_disadvantage
     max_uses = 1
     priority = -1
     attack_type = Ability.DEX
@@ -353,10 +352,19 @@ class CombatActionStunt(CombatAction):
         )
         self.msg(f"$You() $conj(attempt) stunt on $You(defender.key). {txt}")
         if is_success:
-            if advantage:
+            stunt_duration = self.combathandler.stunt_duration
+            if self.give_advantage:
                 self.combathandler.gain_advantage(attacker, defender)
+                self.msg(
+                    f"%You() $conj(gain) advantage against $You(defender.key! "
+                    f"You must use it within {stunt_duration} turns."
+                )
             else:
                 self.combathandler.gain_disadvantage(defender, attacker)
+                self.msg(
+                    f"%You(defender.key) $conj(suffer) disadvantage against $You(). "
+                    f"Lasts next attack, or until 3 turns passed."
+                )
 
             # only spend a use after being successful
             self.uses += 1
@@ -386,19 +394,53 @@ class CombatActionUseItem(CombatAction):
     help_text = "Use an item from your inventory."
 
     def get_help(self, item, *args):
-        return item.combat_get_help(*args)
-
-    def can_use(self, item, *args, **kwargs):
-        return item.combat_can_use(self.combatant, self.combathandler, *args, **kwargs)
+        return item.get_help(*args)
 
     def pre_use(self, item, *args, **kwargs):
-        item.combat_pre_use(self.combatant, *args, **kwargs)
+        """
+        We tie into the `item.at_pre_use` hook here, which returns False if
+        the item is not usable (that is, has .uses > 0).
+
+        """
+        if item.at_pre_use(self.combatant, *args, **kwargs):
+            item.at_use(self.combatant, *args, **kwargs)
 
     def use(self, item, target, *args, **kwargs):
-        item.combat_use(self.combatant, target, *args, **kwargs)
+        item.at_use(self.combatant, target, *args, **kwargs)
 
     def post_use(self, item, *args, **kwargs):
-        item.combat_post_use(self.combatant, *args, **kwargs)
+        item.at_post_use(self.combatant, *args, **kwargs)
+        self.msg("$You() $conj(use) an item.")
+
+
+class CombatActionSwapWieldedWeaponOrSpell(CombatAction):
+    """
+    Swap Wielded weapon or spell.
+
+    """
+
+    key = "Swap weapon/rune/shield"
+    desc = "Swap currently wielded weapon, shield or spell-rune."
+    aliases = (
+        "s",
+        "swap",
+        "draw",
+        "swap weapon",
+        "draw weapon",
+        "swap rune",
+        "draw rune",
+        "swap spell",
+        "draw spell",
+    )
+    help_text = (
+        "Draw a new weapon or spell-rune from your inventory, replacing your current loadout"
+    )
+
+    next_menu_node = "node_select_wield_from_inventory"
+
+    def use(self, _, item, *args, **kwargs):
+        # this will make use of the item
+        self.combatant.equipment.use(item)
 
 
 class CombatActionFlee(CombatAction):
@@ -451,13 +493,17 @@ class CombatActionBlock(CombatAction):
     attack_type = Ability.DEX
     defense_type = Ability.DEX
 
-    def use(self, combatant, fleeing_target, *args, **kwargs):
+    def use(self, fleeing_target, *args, **kwargs):
 
-        advantage = bool(self.advantage_matrix[combatant].pop(fleeing_target, False))
-        disadvantage = bool(self.disadvantage_matrix[combatant].pop(fleeing_target, False))
+        advantage = bool(
+            self.combathandler.advantage_matrix[self.combatant].pop(fleeing_target, False)
+        )
+        disadvantage = bool(
+            self.combathandler.disadvantage_matrix[self.combatant].pop(fleeing_target, False)
+        )
 
         is_success, _, txt = rules.dice.opposed_saving_throw(
-            combatant,
+            self.combatant,
             fleeing_target,
             attack_type=self.attack_type,
             defense_type=self.defense_type,
@@ -468,58 +514,10 @@ class CombatActionBlock(CombatAction):
 
         if is_success:
             # managed to stop the target from fleeing/disengaging
-            self.combatant.unflee(fleeing_target)
+            self.combathandler.unflee(fleeing_target)
             self.msg("$You() blocks the retreat of $You({fleeing_target.key})")
         else:
             self.msg("$You({fleeing_target.key}) dodges away from you $You()!")
-
-
-class CombatActionSwapWieldedWeaponOrSpell(CombatAction):
-    """
-    Swap Wielded weapon or spell.
-
-    """
-
-    key = "Swap weapon/rune/shield"
-    desc = "Swap currently wielded weapon, shield or spell-rune."
-    aliases = (
-        "s",
-        "swap",
-        "draw",
-        "swap weapon",
-        "draw weapon",
-        "swap rune",
-        "draw rune",
-        "swap spell",
-        "draw spell",
-    )
-    help_text = (
-        "Draw a new weapon or spell-rune from your inventory, replacing your current loadout"
-    )
-
-    next_menu_node = "node_select_wield_from_inventory"
-
-    def use(self, combatant, item, *args, **kwargs):
-        # this will make use of the item
-        combatant.inventory.use(item)
-
-
-class CombatActionUseItem(CombatAction):
-    """
-    Use an item from inventory.
-
-    """
-
-    key = "Use an item from backpack"
-    desc = "Use an item from your inventory."
-    aliases = ("u", "use", "use item")
-    help_text = "Choose an item from your inventory to use."
-
-    next_menu_node = "node_select_use_item_from_inventory"
-
-    def use(self, combatant, item, *args, **kwargs):
-        item.use(combatant, *args, **kwargs)
-        self.msg("$You() $conj(use) an item.")
 
 
 class CombatActionDoNothing(CombatAction):
@@ -635,19 +633,6 @@ class EvAdventureCombatHandler(DefaultScript):
                 combathandler=self,  # makes this available as combatant.ndb._evmenu.combathandler
             )
 
-    def _reset_menu(self):
-        """
-        Move menu to the action-selection node.
-
-        """
-
-    def _update_turn_stats(self, combatant, message):
-        """
-        Store combat messages to display at the end of turn.
-
-        """
-        self.turn_stats[combatant].append(message)
-
     def _warn_time(self, time_remaining):
         """
         Send a warning message when time is about to run out.
@@ -693,6 +678,9 @@ class EvAdventureCombatHandler(DefaultScript):
             f"|y__________________ turn resolution (turn {self.turn}) ____________________|n\n"
         )
 
+        # store those in the process of fleeing
+        already_fleeing = self.fleeing_combatants[:]
+
         # do all actions
         for combatant in self.combatants:
             # read the current action type selected by the player
@@ -710,39 +698,26 @@ class EvAdventureCombatHandler(DefaultScript):
                     "Please report the problem to an admin."
                 )
                 logger.log_trace()
+                raise
 
         # handle disengaging combatants
 
         to_remove = []
 
         for combatant in self.combatants:
-            # check disengaging combatants (these are combatants that managed
-            # not get their escape blocked last turn
-            if combatant in self.fleeing_combatants:
+            # see if fleeing characters managed to do two flee actions in a row.
+            if (combatant in self.fleeing_combatants) and (combatant in already_fleeing):
                 self.fleeing_combatants.remove(combatant)
+                to_remove.append(combatant)
 
             if combatant.hp <= 0:
+                # check characters that are beaten down.
                 # characters roll on the death table here, npcs usually just die
                 combatant.at_defeat()
-
-                # tell everyone
-                self.msg(combatant.defeat_message(attacker, dmg), combatant=combatant)
-
-                if defender.hp > 0:
-                    # death roll didn't kill them - they are weakened, but with hp
-                    self.msg(
-                        "You are alive, but out of the fight. If you want to press your luck, "
-                        "you need to rejoin the combat.",
-                        combatant=combatant,
-                        broadcast=False,
-                    )
-                    defender.at_defeat()  # note - NPC monsters may still 'die' here
-                else:
-                    # outright killed
-                    defender.at_death()
-
-                # no matter the result, the combatant is out
-                to_remove.append(combatant)
+                if combatant.hp <= 0:
+                    # if character still < 0 after at_defeat, it means they are dead.
+                    # force-remove from combat.
+                    to_remove.append(combatant)
 
         for combatant in to_remove:
             # for clarity, we remove here rather than modifying the combatant list
@@ -1050,7 +1025,7 @@ def node_select_wield_from_inventory(caller, raw_string, **kwargs):
 
     """
     combat = caller.ndb._evmenu.combathandler
-    loadout = caller.inventory.display_loadout()
+    loadout = caller.equipment.display_loadout()
     text = (
         f"{loadout}\nSelect weapon, spell or shield to draw. It will swap out "
         "anything already in the same hand (you can't change armor or helmet in combat)."
@@ -1058,7 +1033,7 @@ def node_select_wield_from_inventory(caller, raw_string, **kwargs):
 
     # get a list of all suitable weapons/spells/shields
     options = []
-    for obj in caller.inventory.get_wieldable_objects_from_backpack():
+    for obj in caller.equipment.get_wieldable_objects_from_backpack():
         if obj.quality <= 0:
             # object is broken
             options.append(
