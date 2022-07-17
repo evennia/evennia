@@ -164,7 +164,7 @@ class EvAdventureRollEngine:
             modtxt = f" + {modifier}" if modifier > 0 else f" - {abs(modifier)}"
         qualtxt = f" ({quality.value}!)" if quality else ""
 
-        txt = f"{dice_roll} + {bonus_type.value}{bontxt}{modtxt} -> |w{result}{qualtxt}|n"
+        txt = f"{rolltxt}={dice_roll} + {bonus_type.value}{bontxt}{modtxt} -> |w{result}{qualtxt}|n"
 
         return (dice_roll + bonus + modifier) > target, quality, txt
 
@@ -563,7 +563,7 @@ class EvAdventureImprovement:
 
         """
         character.xp += xp
-        next_level_xp = character.level * xp_per_level
+        next_level_xp = character.level * EvAdventureImprovement.xp_per_level
         return character.xp >= next_level_xp
 
     @staticmethod
@@ -583,18 +583,20 @@ class EvAdventureImprovement:
         roll_engine = EvAdventureRollEngine()
 
         character.level += 1
-        for ability in set(abilities[:amount_of_abilities_to_upgrades]):
+        for ability in set(abilities[: EvAdventureImprovement.amount_of_abilities_to_upgrades]):
             # limit to max amount allowed, each one unique
             try:
                 # set at most to the max bonus
                 current_bonus = getattr(character, ability)
-                setattr(character, ability, min(max_ability_bonus, current_bonus + 1))
+                setattr(
+                    character,
+                    ability,
+                    min(EvAdventureImprovement.max_ability_bonus, current_bonus + 1),
+                )
             except AttributeError:
                 pass
 
-        character.hp_max = max(
-            character.max_hp + 1, EvAdventureRollEngine.roll(f"{character.level}d8")
-        )
+        character.hp_max = max(character.max_hp + 1, roll_engine.roll(f"{character.level}d8"))
 
 
 # character sheet visualization
@@ -646,7 +648,7 @@ class EvAdventureCharacterSheet:
         equipment_table = EvTable(
             table=[equipment[i : i + 10] for i in range(0, len(equipment), 10)]
         )
-        form = EvForm({"FORMCHAR": "x", "TABLECHAR": "c", "SHEET": sheet})
+        form = EvForm({"FORMCHAR": "x", "TABLECHAR": "c", "SHEET": EvAdventureCharacterSheet.sheet})
         form.map(
             cells={
                 1: character.key,

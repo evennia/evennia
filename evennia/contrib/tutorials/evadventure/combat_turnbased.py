@@ -100,15 +100,13 @@ Choose who to block:
 """
 
 from collections import defaultdict
-from datetime import datetime
 
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils import dbserialize, delay, evmenu, evtable, logger
-from evennia.utils.utils import inherits_from, make_iter
+from evennia.utils.utils import inherits_from
 
 from . import rules
-from .characters import EvAdventureCharacter
 from .enums import Ability
 from .npcs import EvAdventureNPC
 
@@ -135,7 +133,8 @@ class CombatAction:
     Note:
         We want to store initialized version of this objects in the CombatHandler (in order to track
         usages, time limits etc), so we need to make sure we can serialize it into an Attribute. See
-        `Attribute` documentation for more about `__serialize_dbobjs__` and `__deserialize_dbobjs__`.
+        `Attribute` documentation for more about `__serialize_dbobjs__` and
+        `__deserialize_dbobjs__`.
 
     """
 
@@ -366,8 +365,8 @@ class CombatActionStunt(CombatAction):
             else:
                 self.combathandler.gain_disadvantage(defender, attacker)
                 self.msg(
-                    f"%You(defender.key) $conj(suffer) disadvantage against $You(). "
-                    f"Lasts next attack, or until 3 turns passed."
+                    f"$You({defender.key}) $conj(suffer) disadvantage against $You(). "
+                    "Lasts next attack, or until 3 turns passed."
                 )
 
             # only spend a use after being successful
@@ -735,7 +734,7 @@ class EvAdventureCombatHandler(DefaultScript):
 
         for combatant in to_flee:
             # combatant leaving combat by fleeing
-            self.msg(f"|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
+            self.msg("|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
             self.remove_combatant(combatant)
 
         for combatant in to_defeat:
@@ -932,7 +931,7 @@ class EvAdventureCombatHandler(DefaultScript):
             targets = [target for target in combatants if inherits_from(target, EvAdventureNPC)]
 
         if extra:
-            targets = list(set(target + extra))
+            targets = list(set(targets + extra))
 
         return targets
 
@@ -1120,6 +1119,7 @@ def node_confirm_register_action(caller, raw_string, **kwargs):
         },
         {"key": ("Abort/Cancel", "abort", "cancel", "a", "no", "n"), "goto": "node_select_action"},
     )
+    return text, options
 
 
 def _select_target_helper(caller, raw_string, targets, **kwargs):
@@ -1127,9 +1127,7 @@ def _select_target_helper(caller, raw_string, targets, **kwargs):
     Helper to select among only friendly or enemy targets (given by the calling node).
 
     """
-    combat = caller.ndb._evmenu.combathandler
     action_key = kwargs["action_key"]
-    friendly_target = kwargs.get("target_friendly", False)
     text = f"Select target for |w{action_key}|n."
 
     # make the apply-self option always the first one, give it key 0
@@ -1154,6 +1152,7 @@ def node_select_enemy_target(caller, raw_string, **kwargs):
     with all other actions.
 
     """
+    combat = caller.ndb._evmenu.combathandler
     targets = combat.get_enemy_targets(caller)
     return _select_target_helper(caller, raw_string, targets, **kwargs)
 
@@ -1163,6 +1162,7 @@ def node_select_friendly_target(caller, raw_string, **kwargs):
     Menu node for selecting a friendly target among combatants (including oneself).
 
     """
+    combat = caller.ndb._evmenu.combathandler
     targets = combat.get_friendly_targets(caller)
     return _select_target_helper(caller, raw_string, targets, **kwargs)
 
@@ -1177,7 +1177,6 @@ def node_select_wield_from_inventory(caller, raw_string, **kwargs):
     Menu node allowing for wielding item(s) from inventory.
 
     """
-    combat = caller.ndb._evmenu.combathandler
     loadout = caller.equipment.display_loadout()
     text = (
         f"{loadout}\nSelect weapon, spell or shield to draw. It will swap out "
@@ -1191,7 +1190,7 @@ def node_select_wield_from_inventory(caller, raw_string, **kwargs):
             # object is broken
             options.append(
                 {
-                    "desc": f"|Rstr(obj)|n",
+                    "desc": "|Rstr(obj)|n",
                     "goto": _item_broken,
                 }
             )
@@ -1213,7 +1212,6 @@ def node_select_use_item_from_inventory(caller, raw_string, **kwargs):
     Menu item allowing for using usable items (like potions) from inventory.
 
     """
-    combat = caller.ndb._evmenu.combathandler
     text = "Select an item to use."
 
     # get a list of all suitable weapons/spells/shields
@@ -1223,7 +1221,7 @@ def node_select_use_item_from_inventory(caller, raw_string, **kwargs):
             # object is broken
             options.append(
                 {
-                    "desc": f"|Rstr(obj)|n",
+                    "desc": "|Rstr(obj)|n",
                     "goto": _item_broken,
                 }
             )

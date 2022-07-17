@@ -27,26 +27,99 @@ class EvAdventureQuest:
             The last step is always the end of the quest. It is possible to abort the quest before
     it ends - it then pauses after the last completed step.
 
-    each step is represented by two methods on this object:
-    check_<name> and complete_<name>
+    Each step is represented by three methods on this object:
+    `check_<stepname>` and `complete_<stepname>`. `help_<stepname>` is used to get
+    a guide/reminder on what you are supposed to do.
 
     """
 
     # name + category must be globally unique. They are
     # queried as name:category or just name, if category is empty.
-    name = ""
-    category = ""
-    # example: steps = ["start", "step1", "step2", "end"]
-    steps = []
+    key = "basequest"
+    desc = "This is the base quest. It will just step through its steps immediately."
+    start_step = "start"
 
-    def __init__(self):
-        step = 0
+    # help entries for quests
+    help_start = "You need to start first"
+    help_end = "You need to end the quest"
 
-    def check():
-        pass
+    def __init__(self, questhandler, start_step="start"):
+        if " " in self.key:
+            raise TypeError("The Quest name must not have spaces in it.")
 
-    def progress(self, quester, *args, **kwargs):
-        """ """
+        self.questhandler = questhandler
+        self.current_step = start_step
+
+    @property
+    def quester(self):
+        return self.questhandler.obj
+
+    def end_quest(self):
+        """
+        Call this to end the quest.
+
+        """
+        self.current_step
+
+    def progress(self):
+        """
+        This is called whenever the environment expects a quest may be complete.
+        This will determine which quest-step we are on, run check_<stepname>, and if it
+        succeeds, continue with complete_<stepname>
+
+        """
+        if getattr(self, f"check_{self.current_step}")():
+            getattr(self, f"complete_{self.current_step}")()
+
+    def help(self):
+        """
+        This is used to get help (or a reminder) of what needs to be done to complete the current
+        quest-step.
+
+        Returns:
+            str: The help text for the current step.
+
+        """
+        help_resource = (
+            getattr(self, f"help_{self.current_step}", None)
+            or "You need to {self.current_step} ..."
+        )
+        if callable(help_resource):
+            # the help_<current_step> can be a method to call
+            return help_resource()
+        else:
+            # normally it's just a string
+            return str(help_resource)
+
+    # step methods
+
+    def check_start(self):
+        """
+        Check if the starting conditions are met.
+
+        Returns:
+            bool: If this step is complete or not. If complete, the `complete_start`
+            method will fire.
+
+        """
+        return True
+
+    def complete_start(self):
+        """
+        Completed start. This should change `.current_step` to the next step to complete
+        and call `self.progress()` just in case the next step is already completed too.
+
+        """
+        self.quester.msg("Completed the first step of the quest.")
+        self.current_step = "end"
+        self.progress()
+
+    def check_end(self):
+        return True
+
+    def complete_end(self):
+        self.quester.msg("Quest complete!")
+        self.end_quest()
 
 
 class EvAdventureQuestHandler:
@@ -63,46 +136,54 @@ class EvAdventureQuestHandler:
 
     """
 
-    quest_storage_attribute = "_quests"
+    quest_storage_attribute_key = "_quests"
     quest_storage_attribute_category = "evadventure"
 
     def __init__(self, obj):
         self.obj = obj
-        self.storage = obj.attributes.get(
-            self.quest_storage_attribute, category=self.quest_storage_attribute_category, default={}
+        self._load()
+
+    def _load(self):
+        self.storage = self.obj.attributes.get(
+            self.quest_storage_attribute_key,
+            category=self.quest_storage_attribute_category,
+            default={},
         )
 
-    def quest_storage_key(self, name, category):
-        return f"{name}:{category}"
+    def _save(self):
+        self.obj.attributes.add(
+            self.quest_storage_attribute_key,
+            self.storage,
+            category=self.quest_storage_attribute_category,
+        )
 
-    def has(self, quest_name, quest_category=""):
+    def has(self, quest_key):
         """
         Check if a given quest is registered with the Character.
 
         Args:
-            quest_name (str): The name of the quest to check for.
+            quest_key (str): The name of the quest to check for.
             quest_category (str, optional): Quest category, if any.
 
         Returns:
             bool: If the character is following this quest or not.
 
         """
-        return bool(self.get(quest_name, quest_category))
+        return bool(self.storage.get(quest_key))
 
-    def get(self, quest_name, quest_category=""):
+    def get(self, quest_key):
         """
         Get the quest stored on character, if any.
 
         Args:
-            quest_name (str): The name of the quest to check for.
-            quest_category (str, optional): Quest category, if any.
+            quest_key (str): The name of the quest to check for.
 
         Returns:
             EvAdventureQuest or None: The quest stored, or None if
                 Character is not on this quest.
 
         """
-        return self.storage.get(self.quest_key(quest_storage_name, quest_category))
+        return self.storage.get(quest_key)
 
     def add(self, quest, autostart=True):
         """
@@ -114,3 +195,48 @@ class EvAdventureQuestHandler:
                 start immediately.
 
         """
+        self.storage[quest.key] = quest
+        self._save()
+
+    def remove(self, quest_key):
+        """
+        Remove a quest.
+
+        Args:
+            quest_key (str): The quest to remove.
+
+        """
+        self.storage.pop(quest_key, None)
+        self._save()
+
+    def help(self, quest_key=None):
+        """
+        Get help text for a quest or for all quests. The help text is
+        a combination of the description of the quest and the help-text
+        of the current step.
+
+        """
+        help_text = []
+        if quest_key in self.storage:
+            quests = [self.storage[quest_key]]
+
+        for quest in quests:
+            help_text.append(f"|c{quest.key}|n\n {quest.desc}\n\n - {quest.help}")
+        return "---".join(help_text)
+
+    def progress(self, quest_key=None):
+        """
+        Check progress of a given quest or all quests.
+
+        Args:
+            quest_key (str, optional): If given, check the progress of this quest (if we have it),
+                otherwise check progress on all quests.
+
+        """
+        if quest_key in self.storage:
+            quests = [self.storage[quest_key]]
+        else:
+            quests = self.storage.values()
+
+        for quest in quests:
+            quest.progress()

@@ -3,13 +3,13 @@ Base Character and NPCs.
 
 """
 
-from evennia.objects.objects import DefaultCharacter, DefaultObject
+from evennia.objects.objects import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
-from evennia.utils.utils import int2str, lazy_property
+from evennia.utils.utils import lazy_property
 
 from . import rules
 from .enums import Ability, WieldLocation
-from .objects import EvAdventureObject, WeaponEmptyHand
+from .objects import WeaponEmptyHand
 
 
 class EquipmentError(TypeError):
@@ -163,7 +163,6 @@ class EquipmentHandler:
 
         """
         slots = self.slots
-        one_hand = None
         weapon_str = "You are fighting with your bare fists"
         shield_str = " and have no shield."
         armor_str = "You wear no armor"
@@ -172,7 +171,7 @@ class EquipmentHandler:
         two_hands = slots[WieldLocation.TWO_HANDS]
         if two_hands:
             weapon_str = f"You wield {two_hands} with both hands"
-            shield_str = f" (you can't hold a shield at the same time)."
+            shield_str = " (you can't hold a shield at the same time)."
         else:
             one_hands = slots[WieldLocation.WEAPON_HAND]
             if one_hands:
@@ -306,7 +305,7 @@ class EquipmentHandler:
         """
         return [
             obj
-            for obj in slots[WieldLocation.BACKPACK]
+            for obj in self.slots[WieldLocation.BACKPACK]
             if obj.inventory_use_slot
             in (WieldLocation.WEAPON_HAND, WieldLocation.TWO_HANDS, WieldLocation.SHIELD_HAND)
         ]
@@ -324,7 +323,7 @@ class EquipmentHandler:
         """
         return [
             obj
-            for obj in slots[WieldLocation.BACKPACK]
+            for obj in self.slots[WieldLocation.BACKPACK]
             if obj.inventory_use_slot in (WieldLocation.BODY, WieldLocation.HEAD)
         ]
 
@@ -338,7 +337,7 @@ class EquipmentHandler:
 
         """
         character = self.obj
-        return [obj for obj in slots[WieldLocation.BACKPACK] if obj.at_pre_use(character)]
+        return [obj for obj in self.slots[WieldLocation.BACKPACK] if obj.at_pre_use(character)]
 
 
 class LivingMixin:
@@ -549,7 +548,8 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         if self.hp > 0:
             # still alive, but lost some stats
             self.location.msg_contents(
-                f"|y$You() $conj(stagger) back and fall to the ground - alive, but unable to move.|n",
+                "|y$You() $conj(stagger) back and fall to the ground - alive, "
+                "but unable to move.|n",
                 from_obj=self,
             )
 
@@ -559,6 +559,6 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 
         """
         self.location.msg_contents(
-            f"|r$You() $conj(collapse) in a heap.\nDeath embraces you ...|n",
+            "|r$You() $conj(collapse) in a heap.\nDeath embraces you ...|n",
             from_obj=self,
         )

@@ -5,7 +5,7 @@ EvAdventure rooms.
 
 """
 
-from evennia import AttributeProperty, DefaultRoom
+from evennia import DefaultRoom
 
 
 class EvAdventureRoom(DefaultRoom):
