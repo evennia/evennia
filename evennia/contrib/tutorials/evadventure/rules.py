@@ -327,7 +327,7 @@ class EvAdventureRollEngine:
 
         result = self.roll_random_table("1d8", death_table)
         if result == "dead":
-            character.handle_death()
+            character.at_death()
         else:
             # survives with degraded abilities (1d4 roll)
             abi = self.death_map[result]
@@ -339,7 +339,7 @@ class EvAdventureRollEngine:
 
             if current_abi < -10:
                 # can't lose more - die
-                character.handle_death()
+                character.at_death()
             else:
                 # refresh health, but get permanent ability loss
                 new_hp = max(character.hp_max, self.roll("1d4"))

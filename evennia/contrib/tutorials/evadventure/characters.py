@@ -347,6 +347,8 @@ class LivingMixin:
 
     """
 
+    is_pc = False
+
     @property
     def hurt_level(self):
         """
@@ -406,6 +408,46 @@ class LivingMixin:
         """
         pass
 
+    def get_loot(self, looter):
+        """
+        Called when being looted (after defeat).
+
+        Args:
+            looter (Object): The one doing the looting.
+
+        """
+        max_steal = rules.dice.roll("1d10")
+        owned = self.coin
+        stolen = max(max_steal, owned)
+        self.coin -= stolen
+        looter.coin += stolen
+
+        self.location.msg_contents(
+            f"$You(looter) loots $You() for {stolen} coins!",
+            from_obj=self,
+            mapping={"looter": looter},
+        )
+
+    def pre_loot(self, defeated_enemy):
+        """
+        Called just before looting an enemy.
+
+        Args:
+            defeated_enemy (Object): The enemy soon to loot.
+
+        """
+        pass
+
+    def post_loot(self, defeated_enemy):
+        """
+        Called just after having looted an enemy.
+
+        Args:
+            defeated_enemy (Object): The enemy just looted.
+
+        """
+        pass
+
 
 class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     """
@@ -413,6 +455,8 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     monsters and NPCS.
 
     """
+
+    is_pc = True
 
     # these are the ability bonuses. Defense is always 10 higher
     strength = AttributeProperty(default=1)
@@ -429,6 +473,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     hp_max = AttributeProperty(default=4)
     level = AttributeProperty(default=1)
     xp = AttributeProperty(default=0)
+    coins = AttributeProperty(default=0)  # copper coins
 
     morale = AttributeProperty(default=9)  # only used for NPC/monster morale checks
 
@@ -501,13 +546,11 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 
         """
         rules.dice.roll_death(self)
-        if hp <= 0:
-            # this means we rolled death on the table
-            self.at_death()
-        else:
-            # still alive, but lost in some stats
+        if self.hp > 0:
+            # still alive, but lost some stats
             self.location.msg_contents(
-                f"|y$You() $conj(stagger) back, weakened but still alive.|n", from_obj=self
+                f"|y$You() $conj(stagger) back and fall to the ground - alive, but unable to move.|n",
+                from_obj=self,
             )
 
     def at_death(self):
@@ -516,5 +559,6 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 
         """
         self.location.msg_contents(
-            f"|r$You() $conj(collapse) in a heap. No getting back from that.|n", from_obj=self
+            f"|r$You() $conj(collapse) in a heap.\nDeath embraces you ...|n",
+            from_obj=self,
         )

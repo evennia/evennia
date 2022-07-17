@@ -43,9 +43,14 @@ class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
     )
     def setUp(self):
         super().setUp()
+        self.location.allow_combat = True
+        self.location.allow_death = True
         self.combatant = self.character
         self.target = create.create_object(
-            EvAdventureMob, key="testmonster", location=self.location
+            EvAdventureMob,
+            key="testmonster",
+            location=self.location,
+            attributes=(("is_idle", True),),
         )
 
         # this already starts turn 1
@@ -56,10 +61,10 @@ class EvAdventureTurnbasedCombatHandlerTest(EvAdventureMixin, BaseEvenniaTest):
         self.target.delete()
 
     def test_remove_combatant(self):
-        self.assertTrue(bool(self.combatant.db.turnbased_combathandler))
+        self.assertTrue(bool(self.combatant.db.combathandler))
         self.combathandler.remove_combatant(self.combatant)
         self.assertFalse(self.combatant in self.combathandler.combatants)
-        self.assertFalse(bool(self.combatant.db.turnbased_combathandler))
+        self.assertFalse(bool(self.combatant.db.combathandler))
 
     def test_start_turn(self):
         self.combathandler._start_turn()
@@ -150,9 +155,13 @@ class EvAdventureTurnbasedCombatActionTest(EvAdventureMixin, BaseEvenniaTest):
     )
     def setUp(self):
         super().setUp()
+        self.location.allow_combat = True
+        self.location.allow_death = True
         self.combatant = self.character
         self.combatant2 = create.create_object(EvAdventureCharacter, key="testcharacter2")
-        self.target = create.create_object(EvAdventureMob, key="testmonster")
+        self.target = create.create_object(
+            EvAdventureMob, key="testmonster", attributes=(("is_idle", True),)
+        )
         self.target.hp = 4
 
         # this already starts turn 1
@@ -186,6 +195,7 @@ class EvAdventureTurnbasedCombatActionTest(EvAdventureMixin, BaseEvenniaTest):
         mock_randint.return_value = 11  # 11 + 1 str will hit beat armor 11
         self._run_action(combat_turnbased.CombatActionAttack, self.target)
         self.assertEqual(self.target.hp, -7)
+        self.assertTrue(self.target not in self.combathandler.combatants)
 
     @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
     def test_stunt_fail(self, mock_randint):

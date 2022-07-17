@@ -47,6 +47,10 @@ class Ability(Enum):
     CRITICAL_FAILURE = "critical_failure"
     CRITICAL_SUCCESS = "critical_success"
 
+    ALLEGIANCE_HOSTILE = "hostile"
+    ALLEGIANCE_NEUTRAL = "neutral"
+    ALLEGIANCE_FRIENDLY = "friendly"
+
 
 class WieldLocation(Enum):
     """
