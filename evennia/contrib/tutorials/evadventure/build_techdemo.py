@@ -28,6 +28,7 @@ from evennia.contrib.tutorials.evadventure.objects import (
     EvAdventureObject,
     EvAdventureObjectFiller,
     EvAdventureRunestone,
+    EvAdventureWeapon,
 )
 from evennia.contrib.tutorials.evadventure.rooms import EvAdventureRoom
 
@@ -65,10 +66,6 @@ create_object(
 # with a static enemy
 
 combat_room = create_object(EvAdventureRoom, key="Combat Arena", aliases=("evtechdemo#01",))
-combat_room_enemy = create_object(
-    npcs.EvadventureMob, key="Training Dummy", aliases=("dummy",), location=combat_room
-)
-
 # link to/back to hub
 hub_room = search_object("evtechdemo#00")[0]
 create_object(
@@ -81,3 +78,9 @@ create_object(
     location=combat_room,
     destination=hub_room,
 )
+# create training dummy with a stick
+combat_room_enemy = create_object(
+    npcs.EvAdventureMob, key="Training Dummy", aliases=("dummy",), location=combat_room
+)
+weapon_stick = create_object(EvAdventureWeapon, key="stick", attributes=(("damage_roll", "1d2"),))
+combat_room_enemy.weapon = weapon_stick

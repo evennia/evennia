@@ -105,10 +105,12 @@ from datetime import datetime
 from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils import dbserialize, delay, evmenu, evtable, logger
-from evennia.utils.utils import make_iter
+from evennia.utils.utils import inherits_from, make_iter
 
 from . import rules
+from .characters import EvAdventureCharacter
 from .enums import Ability
+from .npcs import EvAdventureNPC
 
 COMBAT_HANDLER_KEY = "evadventure_turnbased_combathandler"
 COMBAT_HANDLER_INTERVAL = 60
@@ -144,7 +146,7 @@ class CombatAction:
 
     # the next combat menu node to go to - this ties the combat action into the UI
     # use None to do nothing (jump directly to registering the action)
-    next_menu_node = "node_select_target"
+    next_menu_node = "node_select_action"
 
     max_uses = None  # None for unlimited
     # in which order (highest first) to perform the action. If identical, use random order
@@ -246,6 +248,7 @@ class CombatActionAttack(CombatAction):
     desc = "[A]ttack/[C]ast spell at <target>"
     aliases = ("a", "c", "attack", "cast")
     help_text = "Make an attack using your currently equipped weapon/spell rune"
+    next_menu_node = "node_select_enemy_target"
 
     priority = 1
 
@@ -255,7 +258,7 @@ class CombatActionAttack(CombatAction):
 
         """
         attacker = self.combatant
-        weapon = self.combatant.equipment.weapon
+        weapon = self.combatant.weapon
 
         # figure out advantage (gained by previous stunts)
         advantage = bool(self.combathandler.advantage_matrix[attacker].pop(defender, False))
@@ -266,14 +269,14 @@ class CombatActionAttack(CombatAction):
             attacker,
             defender,
             attack_type=weapon.attack_type,
-            defense_type=attacker.equipment.weapon.defense_type,
+            defense_type=attacker.weapon.defense_type,
             advantage=advantage,
             disadvantage=disadvantage,
         )
         self.msg(f"$You() $conj(attack) $You({defender.key}) with {weapon.key}: {txt}")
         if is_hit:
             # enemy hit, calculate damage
-            weapon_dmg_roll = attacker.equipment.weapon.damage_roll
+            weapon_dmg_roll = attacker.weapon.damage_roll
 
             dmg = rules.dice.roll(weapon_dmg_roll)
 
@@ -299,7 +302,7 @@ class CombatActionAttack(CombatAction):
             # a miss
             message = f" $You() $conj(miss) $You({defender.key})."
             if quality is Ability.CRITICAL_FAILURE:
-                attacker.equipment.weapon.quality -= 1
+                attacker.weapon.quality -= 1
                 message += ".. it's a |rcritical miss!|n, damaging the weapon."
             self.msg(message)
 
@@ -325,6 +328,7 @@ class CombatActionStunt(CombatAction):
         "A stunt does not cause damage but grants/gives advantage/disadvantage to future "
         "actions. The effect needs to be used up within 5 turns."
     )
+    next_menu_node = "node_select_enemy_target"
 
     give_advantage = True  # if False, give_disadvantage
     max_uses = 1
@@ -392,6 +396,7 @@ class CombatActionUseItem(CombatAction):
     desc = "[U]se item"
     aliases = ("u", "item", "use item")
     help_text = "Use an item from your inventory."
+    next_menu_node = "node_select_friendly_target"
 
     def get_help(self, item, *args):
         return item.get_help(*args)
@@ -456,7 +461,7 @@ class CombatActionFlee(CombatAction):
     aliases = ("d", "disengage", "flee")
 
     # this only affects us
-    next_menu_node = "node_register_action"
+    next_menu_node = "node_confirm_register_action"
 
     help_text = (
         "Disengage from combat. Use successfully two times in a row to leave combat at the "
@@ -487,6 +492,7 @@ class CombatActionBlock(CombatAction):
         "Move to block a target from fleeing combat. If you succeed "
         "in a DEX vs DEX challenge, they don't get away."
     )
+    next_menu_node = "node_select_enemy_target"
 
     priority = -1  # must be checked BEFORE the flee action of the target!
 
@@ -532,7 +538,7 @@ class CombatActionDoNothing(CombatAction):
     help_text = "Hold you position, doing nothing."
 
     # affects noone else
-    next_menu_node = "node_register_action"
+    next_menu_node = "node_confirm_register_action"
 
     post_action_text = "{combatant} does nothing this turn."
 
@@ -587,6 +593,7 @@ class EvAdventureCombatHandler(DefaultScript):
     disadvantage_matrix = AttributeProperty(defaultdict(dict))
 
     fleeing_combatants = AttributeProperty(list())
+    defeated_combatants = AttributeProperty(list())
 
     _warn_time_task = None
 
@@ -621,8 +628,10 @@ class EvAdventureCombatHandler(DefaultScript):
                 combatant,
                 {
                     "node_wait_start": node_wait_start,
-                    "node_select_target": node_select_target,
+                    "node_select_enemy_target": node_select_enemy_target,
+                    "node_select_friendly_target": node_select_friendly_target,
                     "node_select_action": node_select_action,
+                    "node_select_wield_from_inventory": node_select_wield_from_inventory,
                     "node_wait_turn": node_wait_turn,
                 },
                 startnode="node_wait_turn",
@@ -660,18 +669,24 @@ class EvAdventureCombatHandler(DefaultScript):
         self.msg(f"|y_______________________ start turn {self.turn} ___________________________|n")
 
         for combatant in self.combatants:
-            # cycle combat menu
-            self._init_menu(combatant)
-            combatant.ndb._evmenu.goto("node_select_action", "")
+            if hasattr(combatant, "ai_combat_next_action"):
+                # NPC needs to get a decision from the AI
+                next_action_key, args, kwargs = combatant.ai_combat_next_action(self)
+                self.register_action(combatant, next_action_key, *args, **kwargs)
+            else:
+                # cycle combat menu for PC
+                self._init_menu(combatant)
+                combatant.ndb._evmenu.goto("node_select_action", "")
 
     def _end_turn(self):
         """
         End of turn operations.
 
         1. Do all regular actions
-        2. Roll for any death events
-        2. Remove combatants that disengaged successfully
-        3. Timeout advantages/disadvantages
+        2. Check if fleeing combatants got away - remove them from combat
+        3. Check if anyone has hp <= - defeated
+        4. Check if any one side is alone on the battlefield - they loot the defeated
+        5. If combat is still on, update stunt timers
 
         """
         self.msg(
@@ -702,28 +717,65 @@ class EvAdventureCombatHandler(DefaultScript):
 
         # handle disengaging combatants
 
-        to_remove = []
+        to_flee = []
+        to_defeat = []
 
         for combatant in self.combatants:
             # see if fleeing characters managed to do two flee actions in a row.
             if (combatant in self.fleeing_combatants) and (combatant in already_fleeing):
                 self.fleeing_combatants.remove(combatant)
-                to_remove.append(combatant)
+                to_flee.append(combatant)
 
             if combatant.hp <= 0:
                 # check characters that are beaten down.
-                # characters roll on the death table here, npcs usually just die
+                # characters roll on the death table here; but even if they survive, they
+                # count as defeated (unconcious) for this combat.
                 combatant.at_defeat()
-                if combatant.hp <= 0:
-                    # if character still < 0 after at_defeat, it means they are dead.
-                    # force-remove from combat.
-                    to_remove.append(combatant)
+                to_defeat.append(combatant)
 
-        for combatant in to_remove:
-            # for clarity, we remove here rather than modifying the combatant list
-            # inside the previous loop
-            self.msg(f"|y$You() $conj(are) out of combat.|n", combatant=combatant)
+        for combatant in to_flee:
+            # combatant leaving combat by fleeing
+            self.msg(f"|y$You() successfully $conj(flee) from combat.|n", combatant=combatant)
             self.remove_combatant(combatant)
+
+        for combatant in to_defeat:
+            # combatants leaving combat by being defeated
+            self.msg("|r$You() $conj(fall) to the ground, defeated.|n", combatant=combatant)
+            self.combatants.remove(combatant)
+            self.defeated_combatants.append(combatant)
+
+        # check if only one side remains, divide into allies and enemies based on the first
+        # combatant,then check if either team is empty.
+        if not self.combatants:
+            # everyone's defeated at the same time. This is a tie where everyone loses and
+            # no looting happens.
+            self.msg("|yEveryone takes everyone else out. Today, noone wins.|n")
+            self.stop_combat()
+            return
+        else:
+            combatant = self.combatants[0]
+            allies = self.get_friendly_targets(combatant)  # will always contain at least combatant
+            enemies = self.get_enemy_targets(combatant)
+
+            if not enemies:
+                # no enemies left - allies to combatant won!
+                defeated_enemies = self.get_enemy_targets(
+                    combatant, all_combatants=self.defeated_combatants
+                )
+
+                # all surviving allies loot the fallen enemies
+                for ally in allies:
+                    for enemy in defeated_enemies:
+                        try:
+                            ally.pre_loot(enemy)
+                            enemy.get_loot(ally)
+                            ally.post_loot(enemy)
+                        except Exception:
+                            logger.log_trace()
+                self.stop_combat()
+                return
+
+        # if we get here, combat is still on
 
         # refresh stunt timeouts (note - self.stunt_duration is the same for
         # all stunts; # for more complex use we could store the action and let action have a
@@ -753,10 +805,6 @@ class EvAdventureCombatHandler(DefaultScript):
         self.advantage_matrix = new_advantage_matrix
         self.disadvantage_matrix = new_disadvantage_matrix
 
-        if len(self.combatants) == 1:
-            # only one combatant left - abort combat
-            self.stop_combat()
-
     def add_combatant(self, combatant, session=None):
         """
         Add combatant to battle.
@@ -775,7 +823,7 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         if combatant not in self.combatants:
             self.combatants.append(combatant)
-            combatant.db.turnbased_combathandler = self
+            combatant.db.combathandler = self
 
             # allow custom character actions (not used by default)
             custom_action_classes = combatant.db.custom_combat_actions or []
@@ -798,7 +846,7 @@ class EvAdventureCombatHandler(DefaultScript):
             self.combatants.remove(combatant)
             self.combatant_actions.pop(combatant, None)
             combatant.ndb._evmenu.close_menu()
-            del combatant.db.turnbased_combathandler
+            del combatant.db.combathandler
 
     def start_combat(self):
         """
@@ -820,6 +868,73 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         for combatant in self.combatants:
             self.remove_combatant(combatant)
+
+    def get_enemy_targets(self, combatant, excluded=None, all_combatants=None):
+        """
+        Get all valid targets the given combatant can target for an attack. This does not apply for
+        'friendly' targeting (like wanting to cast a heal on someone). We assume there are two types
+        of combatants - PCs (player-controlled characters and NPCs (AI-controlled). Here, we assume
+        npcs can never attack one another (or themselves)
+
+        For PCs to be able to target each other, the `allow_pvp`
+        Attribute flag must be set on the current `Room`.
+
+        Args:
+            combatant (Object): The combatant looking for targets.
+            excluded (list, optional): If given, these are not valid targets - this can be used to
+                avoid friendly NPCs.
+            all_combatants (list, optional): If given, use this list to get all combatants, instead
+                of using `self.combatants`.
+
+        """
+        is_pc = not inherits_from(combatant, EvAdventureNPC)
+        allow_pvp = self.obj.allow_pvp
+        targets = []
+        combatants = all_combatants or self.combatants
+
+        if is_pc:
+            if allow_pvp:
+                # PCs may target everyone, including other PCs
+                targets = combatants
+            else:
+                # PCs may only attack NPCs
+                targets = [target for target in combatants if inherits_from(target, EvAdventureNPC)]
+
+        else:
+            # NPCs may only attack PCs, not each other
+            targets = [target for target in combatants if not inherits_from(target, EvAdventureNPC)]
+
+        if excluded:
+            targets = [target for target in targets if target not in excluded]
+
+        return targets
+
+    def get_friendly_targets(self, combatant, extra=None, all_combatants=None):
+        """
+        Get a list of all 'friendly' or neutral targets a combatant may target, including
+        themselves.
+
+        Args:
+            combatant (Object): The combatant looking for targets.
+            extra (list, optional): If given, these are additional targets that can be
+                considered target for allied effects (could be used for a friendly NPC).
+            all_combatants (list, optional): If given, use this list to get all combatants, instead
+                of using `self.combatants`.
+
+        """
+        is_pc = not inherits_from(combatant, EvAdventureNPC)
+        combatants = all_combatants or self.combatants
+        if is_pc:
+            # can target other PCs
+            targets = [target for target in combatants if not inherits_from(target, EvAdventureNPC)]
+        else:
+            # can target other NPCs
+            targets = [target for target in combatants if inherits_from(target, EvAdventureNPC)]
+
+        if extra:
+            targets = list(set(target + extra))
+
+        return targets
 
     def get_combat_summary(self, combatant):
         """
@@ -973,7 +1088,7 @@ class EvAdventureCombatHandler(DefaultScript):
 
 def _register_action(caller, raw_string, **kwargs):
     """
-    Register action with handler.
+    Actually register action with handler.
 
     """
     action_key = kwargs.pop("action_key")
@@ -987,22 +1102,41 @@ def _register_action(caller, raw_string, **kwargs):
     return "node_wait_turn"
 
 
-def node_select_target(caller, raw_string, **kwargs):
+def node_confirm_register_action(caller, raw_string, **kwargs):
     """
-    Menu node allowing for selecting a target among all combatants. This combines
-    with all other actions.
+    Node where one can confirm registering the action or change one's mind.
+
+    """
+    action_key = kwargs["action_key"]
+    action_target = kwargs.get("action_target", None) or ""
+    if action_target:
+        action_target = f", targeting {action_target.key}"
+
+    text = f"You will {action_key}{action_target}. Confirm? [Y]/n"
+    options = (
+        {
+            "key": "_default",
+            "goto": (_register_action, kwargs),
+        },
+        {"key": ("Abort/Cancel", "abort", "cancel", "a", "no", "n"), "goto": "node_select_action"},
+    )
+
+
+def _select_target_helper(caller, raw_string, targets, **kwargs):
+    """
+    Helper to select among only friendly or enemy targets (given by the calling node).
 
     """
     combat = caller.ndb._evmenu.combathandler
     action_key = kwargs["action_key"]
+    friendly_target = kwargs.get("target_friendly", False)
     text = f"Select target for |w{action_key}|n."
 
     # make the apply-self option always the first one, give it key 0
     kwargs["action_target"] = caller
     options = [{"key": "0", "desc": "(yourself)", "goto": (_register_action, kwargs)}]
     # filter out ourselves and then make options for everyone else
-    combatants = [combatant for combatant in combat.combatants if combatant is not caller]
-    for inum, combatant in enumerate(combatants):
+    for inum, combatant in enumerate(targets):
         kwargs["action_target"] = combatant
         options.append(
             {"key": str(inum + 1), "desc": combatant.key, "goto": (_register_action, kwargs)}
@@ -1012,6 +1146,25 @@ def node_select_target(caller, raw_string, **kwargs):
     options.append({"key": "_default", "goto": "node_select_action"})
 
     return text, options
+
+
+def node_select_enemy_target(caller, raw_string, **kwargs):
+    """
+    Menu node allowing for selecting an enemy target among all combatants. This combines
+    with all other actions.
+
+    """
+    targets = combat.get_enemy_targets(caller)
+    return _select_target_helper(caller, raw_string, targets, **kwargs)
+
+
+def node_select_friendly_target(caller, raw_string, **kwargs):
+    """
+    Menu node for selecting a friendly target among combatants (including oneself).
+
+    """
+    targets = combat.get_friendly_targets(caller)
+    return _select_target_helper(caller, raw_string, targets, **kwargs)
 
 
 def _item_broken(caller, raw_string, **kwargs):
@@ -1080,9 +1233,7 @@ def node_select_use_item_from_inventory(caller, raw_string, **kwargs):
             options.append({"desc": str(obj), "goto": (_register_action, kwargs)})
 
     # add ability to cancel
-    options.append(
-        {"key": "_default", "desc": "(No input to Abort and go back)", "goto": "node_select_action"}
-    )
+    options.append({"key": "_default", "goto": "node_select_action"})
 
     return text, options
 
@@ -1235,6 +1386,9 @@ def join_combat(caller, *targets, session=None):
     location = caller.location
     if not location:
         raise CombatFailure("Must have a location to start combat.")
+
+    if not getattr(location, "allow_combat", False):
+        raise CombatFailure("This is not the time and place for picking a fight.")
 
     if not targets:
         raise CombatFailure("Must have an opponent to start combat.")

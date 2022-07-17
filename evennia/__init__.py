@@ -48,6 +48,10 @@ ScriptDB = None
 ChannelDB = None
 Msg = None
 
+# Properties
+AttributeProperty = None
+TagProperty = None
+
 # commands
 Command = None
 CmdSet = None
@@ -106,7 +110,7 @@ def _create_version():
     Helper function for building the version string
     """
     import os
-    from subprocess import check_output, CalledProcessError, STDOUT
+    from subprocess import STDOUT, CalledProcessError, check_output
 
     version = "Unknown"
     root = os.path.dirname(os.path.abspath(__file__))
@@ -153,70 +157,63 @@ def _init():
     global GLOBAL_SCRIPTS, OPTION_CLASSES
     global EvMenu, EvTable, EvForm, EvMore, EvEditor
     global ANSIString
+    global AttributeProperty, TagProperty
 
     # Parent typeclasses
-    from .accounts.accounts import DefaultAccount
-    from .accounts.accounts import DefaultGuest
-    from .objects.objects import DefaultObject
-    from .objects.objects import DefaultCharacter
-    from .objects.objects import DefaultRoom
-    from .objects.objects import DefaultExit
-    from .comms.comms import DefaultChannel
-    from .scripts.scripts import DefaultScript
-
-    # Database models
-    from .objects.models import ObjectDB
-    from .accounts.models import AccountDB
-    from .scripts.models import ScriptDB
-    from .comms.models import ChannelDB
-    from .comms.models import Msg
-
-    # commands
-    from .commands.command import Command, InterruptCommand
-    from .commands.cmdset import CmdSet
-
-    # search functions
-    from .utils.search import search_object
-    from .utils.search import search_script
-    from .utils.search import search_account
-    from .utils.search import search_message
-    from .utils.search import search_channel
-    from .utils.search import search_help
-    from .utils.search import search_tag
-
-    # create functions
-    from .utils.create import create_object
-    from .utils.create import create_script
-    from .utils.create import create_account
-    from .utils.create import create_channel
-    from .utils.create import create_message
-    from .utils.create import create_help_entry
-
     # utilities
     from django.conf import settings
-    from .locks import lockfuncs
-    from .utils import logger
-    from .utils import gametime
-    from .utils import ansi
-    from .prototypes.spawner import spawn
-    from . import contrib
-    from .utils.evmenu import EvMenu
-    from .utils.evtable import EvTable
-    from .utils.evmore import EvMore
-    from .utils.evform import EvForm
-    from .utils.eveditor import EvEditor
-    from .utils.ansi import ANSIString
-    from .server import signals
 
-    # handlers
-    from .scripts.tickerhandler import TICKER_HANDLER
-    from .scripts.taskhandler import TASK_HANDLER
-    from .server.sessionhandler import SESSION_HANDLER
+    from . import contrib
+    from .accounts.accounts import DefaultAccount, DefaultGuest
+    from .accounts.models import AccountDB
+    from .commands.cmdset import CmdSet
+    from .commands.command import Command, InterruptCommand
+    from .comms.comms import DefaultChannel
+    from .comms.models import ChannelDB, Msg
+    from .locks import lockfuncs
+    from .objects.models import ObjectDB
+    from .objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
+    from .prototypes.spawner import spawn
+    from .scripts.models import ScriptDB
     from .scripts.monitorhandler import MONITOR_HANDLER
+    from .scripts.scripts import DefaultScript
+    from .scripts.taskhandler import TASK_HANDLER
+    from .scripts.tickerhandler import TICKER_HANDLER
+    from .server import signals
+    from .server.sessionhandler import SESSION_HANDLER
+    from .typeclasses.attributes import AttributeProperty
+    from .typeclasses.tags import TagProperty
+    from .utils import ansi, gametime, logger
+    from .utils.ansi import ANSIString
 
     # containers
-    from .utils.containers import GLOBAL_SCRIPTS
-    from .utils.containers import OPTION_CLASSES
+    from .utils.containers import GLOBAL_SCRIPTS, OPTION_CLASSES
+
+    # create functions
+    from .utils.create import (
+        create_account,
+        create_channel,
+        create_help_entry,
+        create_message,
+        create_object,
+        create_script,
+    )
+    from .utils.eveditor import EvEditor
+    from .utils.evform import EvForm
+    from .utils.evmenu import EvMenu
+    from .utils.evmore import EvMore
+    from .utils.evtable import EvTable
+
+    # search functions
+    from .utils.search import (
+        search_account,
+        search_channel,
+        search_help,
+        search_message,
+        search_object,
+        search_script,
+        search_tag,
+    )
 
     # API containers
 
@@ -252,11 +249,11 @@ def _init():
 
         """
 
-        from .help.models import HelpEntry
         from .accounts.models import AccountDB
-        from .scripts.models import ScriptDB
-        from .comms.models import Msg, ChannelDB
+        from .comms.models import ChannelDB, Msg
+        from .help.models import HelpEntry
         from .objects.models import ObjectDB
+        from .scripts.models import ScriptDB
         from .server.models import ServerConfig
         from .typeclasses.attributes import Attribute
         from .typeclasses.tags import Tag
@@ -288,11 +285,11 @@ def _init():
 
         """
 
-        from .commands.default.cmdset_character import CharacterCmdSet
         from .commands.default.cmdset_account import AccountCmdSet
-        from .commands.default.cmdset_unloggedin import UnloggedinCmdSet
+        from .commands.default.cmdset_character import CharacterCmdSet
         from .commands.default.cmdset_session import SessionCmdSet
-        from .commands.default.muxcommand import MuxCommand, MuxAccountCommand
+        from .commands.default.cmdset_unloggedin import UnloggedinCmdSet
+        from .commands.default.muxcommand import MuxAccountCommand, MuxCommand
 
         def __init__(self):
             "populate the object with commands"
@@ -305,12 +302,12 @@ def _init():
                 self.__dict__.update(dict([(c.__name__, c) for c in cmdlist]))
 
             from .commands.default import (
+                account,
                 admin,
                 batchprocess,
                 building,
                 comms,
                 general,
-                account,
                 help,
                 system,
                 unloggedin,
