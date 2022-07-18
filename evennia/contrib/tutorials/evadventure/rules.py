@@ -164,7 +164,11 @@ class EvAdventureRollEngine:
             modtxt = f" + {modifier}" if modifier > 0 else f" - {abs(modifier)}"
         qualtxt = f" ({quality.value}!)" if quality else ""
 
-        txt = f"{rolltxt}={dice_roll} + {bonus_type.value}{bontxt}{modtxt} -> |w{result}{qualtxt}|n"
+        txt = (
+            f"rolled {dice_roll} on {rolltxt} "
+            f"+ {bonus_type.value}{bontxt}{modtxt} vs "
+            f"{target} -> |w{result}{qualtxt}|n"
+        )
 
         return (dice_roll + bonus + modifier) > target, quality, txt
 

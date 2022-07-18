@@ -8,8 +8,9 @@ from evennia import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
 
 from .characters import LivingMixin
-from .enums import Ability
+from .enums import Ability, WieldLocation
 from .objects import WeaponEmptyHand
+from .rules import dice
 
 
 class EvAdventureNPC(LivingMixin, DefaultCharacter):
@@ -114,6 +115,9 @@ class EvAdventureMob(EvAdventureNPC):
 
     """
 
+    # chance (%) that this enemy will loot you when defeating you
+    loot_chance = AttributeProperty(75)
+
     def ai_combat_next_action(self, combathandler):
         """
         Called to get the next action in combat.
@@ -150,3 +154,55 @@ class EvAdventureMob(EvAdventureNPC):
 
         """
         self.at_death()
+
+    def at_loot(self, looted):
+        """
+        Called when mob gets to loot a PC.
+
+        """
+        if dice.roll("1d100") > self.loot_chance:
+            # don't loot
+            return
+
+        if looted.coins:
+            # looter prefer coins
+            loot = dice.roll("1d20")
+            if looted.coins < loot:
+                self.location.msg_location(
+                    "$You(looter) loots $You() for all coin!",
+                    from_obj=looted,
+                    mapping={"looter": self},
+                )
+            else:
+                self.location.msg_location(
+                    "$You(looter) loots $You() for |y{loot}|n coins!",
+                    from_obj=looted,
+                    mapping={"looter": self},
+                )
+        elif hasattr(looted, "equipment"):
+            # go through backpack, first usable, then wieldable, wearable items
+            # and finally stuff wielded
+            stealable = looted.equipment.get_usable_objects_from_backpack()
+            if not stealable:
+                stealable = looted.equipment.get_wieldable_objects_from_backpack()
+            if not stealable:
+                stealable = looted.equipment.get_wearable_objects_from_backpack()
+            if not stealable:
+                stealable = [looted.equipment.slots[WieldLocation.SHIELD_HAND]]
+            if not stealable:
+                stealable = [looted.equipment.slots[WieldLocation.HEAD]]
+            if not stealable:
+                stealable = [looted.equipment.slots[WieldLocation.ARMOR]]
+            if not stealable:
+                stealable = [looted.equipment.slots[WieldLocation.WEAPON_HAND]]
+            if not stealable:
+                stealable = [looted.equipment.slots[WieldLocation.TWO_HANDS]]
+
+            stolen = looted.equipment.remove(choice(stealable))
+            stolen.location = self
+
+            self.location.msg_location(
+                "$You(looter) steals {stolen.key} from $You()!",
+                from_obj=looted,
+                mapping={"looter": self},
+            )
