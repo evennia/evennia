@@ -532,7 +532,7 @@ class EvAdventureCharacterGeneration:
 
         for item in self.backpack:
             # TODO create here
-            character.equipment.store(item)
+            character.equipment.add(item)
 
 
 # character improvement
