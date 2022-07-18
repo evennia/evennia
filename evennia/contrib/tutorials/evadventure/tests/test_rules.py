@@ -3,15 +3,14 @@ Test the rules and chargen.
 
 """
 
-from unittest.mock import patch, MagicMock, call
-from parameterized import parameterized
-from evennia.utils.test_resources import BaseEvenniaTest
+from unittest.mock import MagicMock, call, patch
 
+from anything import Something
+from evennia.utils.test_resources import BaseEvenniaTest
+from parameterized import parameterized
+
+from .. import characters, enums, equipment, random_tables, rules
 from .mixins import EvAdventureMixin
-from .. import rules
-from .. import enums
-from .. import random_tables
-from .. import characters
 
 
 class EvAdventureRollEngineTest(BaseEvenniaTest):
@@ -86,23 +85,24 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
         character.dexterity = 1
 
         self.assertEqual(
-            self.roll_engine.saving_throw(character, bonus_type=enums.Ability.STR), (False, None)
+            self.roll_engine.saving_throw(character, bonus_type=enums.Ability.STR),
+            (False, None, Something),
         )
         self.assertEqual(
             self.roll_engine.saving_throw(character, bonus_type=enums.Ability.DEX, modifier=1),
-            (False, None),
+            (False, None, Something),
         )
         self.assertEqual(
             self.roll_engine.saving_throw(
                 character, advantage=True, bonus_type=enums.Ability.DEX, modifier=6
             ),
-            (False, None),
+            (False, None, Something),
         )
         self.assertEqual(
             self.roll_engine.saving_throw(
                 character, disadvantage=True, bonus_type=enums.Ability.DEX, modifier=7
             ),
-            (True, None),
+            (True, None, Something),
         )
 
         mock_randint.return_value = 1
@@ -110,7 +110,7 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
             self.roll_engine.saving_throw(
                 character, disadvantage=True, bonus_type=enums.Ability.STR, modifier=2
             ),
-            (False, enums.Ability.CRITICAL_FAILURE),
+            (False, enums.Ability.CRITICAL_FAILURE, Something),
         )
 
         mock_randint.return_value = 20
@@ -118,7 +118,7 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
             self.roll_engine.saving_throw(
                 character, disadvantage=True, bonus_type=enums.Ability.STR, modifier=2
             ),
-            (True, enums.Ability.CRITICAL_SUCCESS),
+            (True, enums.Ability.CRITICAL_SUCCESS, Something),
         )
 
     @patch("evennia.contrib.tutorials.evadventure.rules.randint")
@@ -133,7 +133,7 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
             self.roll_engine.opposed_saving_throw(
                 attacker, defender, attack_type=enums.Ability.STR, defense_type=enums.Ability.ARMOR
             ),
-            (False, None),
+            (False, None, Something),
         )
         self.assertEqual(
             self.roll_engine.opposed_saving_throw(
@@ -143,7 +143,7 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
                 defense_type=enums.Ability.ARMOR,
                 modifier=2,
             ),
-            (True, None),
+            (True, None, Something),
         )
 
     @patch("evennia.contrib.tutorials.evadventure.rules.randint")
@@ -224,7 +224,7 @@ class EvAdventureRollEngineTest(BaseEvenniaTest):
         # death
         mock_randint.return_value = 1
         self.roll_engine.roll_death(character)
-        character.handle_death.assert_called()
+        character.at_death.assert_called()
         # strength loss
         mock_randint.return_value = 3
         self.roll_engine.roll_death(character)
@@ -310,7 +310,7 @@ class EvAdventureCharacterGenerationTest(BaseEvenniaTest):
         self.assertTrue(character.db.desc.startswith("Herbalist"))
         self.assertEqual(character.armor, "gambeson")
 
-        character.equipment.store.assert_called()
+        character.equipment.add.assert_called()
 
 
 class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
@@ -350,7 +350,7 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
         if is_ok:
             self.assertTrue(self.character.equipment.validate_slot_usage(obj))
         else:
-            with self.assertRaises(characters.EquipmentError):
+            with self.assertRaises(equipment.EquipmentError):
                 self.character.equipment.validate_slot_usage(obj)
 
     @parameterized.expand(
@@ -375,8 +375,8 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
         else:
             self.assertEqual(self.character.equipment.slots[where], obj)
 
-    def test_store(self):
-        self.character.equipment.store(self.weapon)
+    def test_add(self):
+        self.character.equipment.add(self.weapon)
         self.assertEqual(self.character.equipment.slots[enums.WieldLocation.WEAPON_HAND], None)
         self.assertTrue(self.weapon in self.character.equipment.slots[enums.WieldLocation.BACKPACK])
 
@@ -408,7 +408,7 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
     def test_remove__with_obj(self):
         self.character.equipment.use(self.shield)
         self.character.equipment.use(self.item)
-        self.character.equipment.store(self.weapon)
+        self.character.equipment.add(self.weapon)
 
         self.assertEqual(
             self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield
@@ -428,7 +428,7 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
     def test_remove__with_slot(self):
         self.character.equipment.use(self.shield)
         self.character.equipment.use(self.item)
-        self.character.equipment.store(self.helmet)
+        self.character.equipment.add(self.helmet)
 
         self.assertEqual(
             self.character.equipment.slots[enums.WieldLocation.SHIELD_HAND], self.shield
@@ -449,11 +449,11 @@ class EvAdventureEquipmentTest(EvAdventureMixin, BaseEvenniaTest):
 
     def test_properties(self):
         self.character.equipment.use(self.armor)
-        self.assertEqual(self.character.equipment.armor, 11)
+        self.assertEqual(self.character.equipment.armor, 1)
         self.character.equipment.use(self.shield)
-        self.assertEqual(self.character.equipment.armor, 12)
+        self.assertEqual(self.character.equipment.armor, 2)
         self.character.equipment.use(self.helmet)
-        self.assertEqual(self.character.equipment.armor, 13)
+        self.assertEqual(self.character.equipment.armor, 3)
 
         self.character.equipment.use(self.weapon)
         self.assertEqual(self.character.equipment.weapon, self.weapon)
