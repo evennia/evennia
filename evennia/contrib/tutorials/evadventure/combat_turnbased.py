@@ -111,7 +111,7 @@ from .enums import Ability
 from .npcs import EvAdventureNPC
 
 COMBAT_HANDLER_KEY = "evadventure_turnbased_combathandler"
-COMBAT_HANDLER_INTERVAL = 60
+COMBAT_HANDLER_INTERVAL = 30
 
 
 class CombatFailure(RuntimeError):
@@ -156,7 +156,7 @@ class CombatAction:
         self.combatant = combatant
         self.uses = 0
 
-    def msg(self, message, broadcast=False):
+    def msg(self, message, broadcast=True):
         """
         Convenience route to the combathandler msg-sender mechanism.
 
@@ -520,9 +520,9 @@ class CombatActionBlock(CombatAction):
         if is_success:
             # managed to stop the target from fleeing/disengaging
             self.combathandler.unflee(fleeing_target)
-            self.msg("$You() blocks the retreat of $You({fleeing_target.key})")
+            self.msg(f"$You() $conj(block) the retreat of $You({fleeing_target.key})")
         else:
-            self.msg("$You({fleeing_target.key}) dodges away from you $You()!")
+            self.msg(f"$You({fleeing_target.key}) dodges away from you $You()!")
 
 
 class CombatActionDoNothing(CombatAction):
@@ -660,7 +660,7 @@ class EvAdventureCombatHandler(DefaultScript):
         # start a timer to echo a warning to everyone 15 seconds before end of round
         if self.interval >= 0:
             # set -1 for unit tests
-            warning_time = 15
+            warning_time = 10
             self._warn_time_task = delay(
                 self.interval - warning_time, self._warn_time, warning_time
             )
@@ -766,9 +766,9 @@ class EvAdventureCombatHandler(DefaultScript):
                 for ally in allies:
                     for enemy in defeated_enemies:
                         try:
-                            ally.pre_loot(enemy)
-                            enemy.get_loot(ally)
-                            ally.post_loot(enemy)
+                            if ally.pre_loot(enemy):
+                                enemy.get_loot(ally)
+                                ally.post_loot(enemy)
                         except Exception:
                             logger.log_trace()
                 self.stop_combat()
@@ -844,7 +844,8 @@ class EvAdventureCombatHandler(DefaultScript):
         if combatant in self.combatants:
             self.combatants.remove(combatant)
             self.combatant_actions.pop(combatant, None)
-            combatant.ndb._evmenu.close_menu()
+            if combatant.ndb._evmenu:
+                combatant.ndb._evmenu.close_menu()
             del combatant.db.combathandler
 
     def start_combat(self):
@@ -867,6 +868,7 @@ class EvAdventureCombatHandler(DefaultScript):
         """
         for combatant in self.combatants:
             self.remove_combatant(combatant)
+        self.delete()
 
     def get_enemy_targets(self, combatant, excluded=None, all_combatants=None):
         """
@@ -1131,8 +1133,10 @@ def _select_target_helper(caller, raw_string, targets, **kwargs):
     text = f"Select target for |w{action_key}|n."
 
     # make the apply-self option always the first one, give it key 0
-    kwargs["action_target"] = caller
-    options = [{"key": "0", "desc": "(yourself)", "goto": (_register_action, kwargs)}]
+    if caller in targets:
+        targets.remove(caller)
+        kwargs["action_target"] = caller
+        options = [{"key": "0", "desc": "(yourself)", "goto": (_register_action, kwargs)}]
     # filter out ourselves and then make options for everyone else
     for inum, combatant in enumerate(targets):
         kwargs["action_target"] = combatant
@@ -1385,6 +1389,9 @@ def join_combat(caller, *targets, session=None):
     if not location:
         raise CombatFailure("Must have a location to start combat.")
 
+    if caller.hp <= 0:
+        raise CombatFailure("You can't start a fight in your current condition!")
+
     if not getattr(location, "allow_combat", False):
         raise CombatFailure("This is not the time and place for picking a fight.")
 
@@ -1402,6 +1409,9 @@ def join_combat(caller, *targets, session=None):
     # it's safe to add a combatant to the same combat more than once
     combathandler.add_combatant(caller, session=session)
     for target in targets:
+        if target.hp <= 0:
+            caller.msg(f"{target.get_display_name(caller)} is already out of it.")
+            continue
         combathandler.add_combatant(target)
 
     if created:

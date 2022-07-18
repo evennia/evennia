@@ -38,6 +38,7 @@ class EvAdventureQuest:
     key = "basequest"
     desc = "This is the base quest. It will just step through its steps immediately."
     start_step = "start"
+    end_text = "This quest is completed!"
 
     # help entries for quests
     help_start = "You need to start first"
@@ -49,6 +50,7 @@ class EvAdventureQuest:
 
         self.questhandler = questhandler
         self.current_step = start_step
+        self.completed = False
 
     @property
     def quester(self):
@@ -59,17 +61,20 @@ class EvAdventureQuest:
         Call this to end the quest.
 
         """
-        self.current_step
+        self.completed = True
 
-    def progress(self):
+    def progress(self, *args, **kwargs):
         """
         This is called whenever the environment expects a quest may be complete.
         This will determine which quest-step we are on, run check_<stepname>, and if it
-        succeeds, continue with complete_<stepname>
+        succeeds, continue with complete_<stepname>.
+
+        Args:
+            *args, **kwargs: Will be passed into the check/complete methods.
 
         """
-        if getattr(self, f"check_{self.current_step}")():
-            getattr(self, f"complete_{self.current_step}")()
+        if getattr(self, f"check_{self.current_step}")(*args, **kwargs):
+            getattr(self, f"complete_{self.current_step}")(*args, **kwargs)
 
     def help(self):
         """
@@ -93,7 +98,7 @@ class EvAdventureQuest:
 
     # step methods
 
-    def check_start(self):
+    def check_start(self, *args, **kwargs):
         """
         Check if the starting conditions are met.
 
@@ -104,7 +109,7 @@ class EvAdventureQuest:
         """
         return True
 
-    def complete_start(self):
+    def complete_start(self, *args, **kwargs):
         """
         Completed start. This should change `.current_step` to the next step to complete
         and call `self.progress()` just in case the next step is already completed too.
@@ -114,10 +119,10 @@ class EvAdventureQuest:
         self.current_step = "end"
         self.progress()
 
-    def check_end(self):
+    def check_end(self, *args, **kwargs):
         return True
 
-    def complete_end(self):
+    def complete_end(self, *args, **kwargs):
         self.quester.msg("Quest complete!")
         self.end_quest()
 

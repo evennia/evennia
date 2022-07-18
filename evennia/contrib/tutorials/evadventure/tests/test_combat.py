@@ -195,7 +195,8 @@ class EvAdventureTurnbasedCombatActionTest(EvAdventureMixin, BaseEvenniaTest):
         mock_randint.return_value = 11  # 11 + 1 str will hit beat armor 11
         self._run_action(combat_turnbased.CombatActionAttack, self.target)
         self.assertEqual(self.target.hp, -7)
-        self.assertTrue(self.target not in self.combathandler.combatants)
+        # after this the combat is over
+        self.assertIsNone(self.combathandler.pk)
 
     @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
     def test_stunt_fail(self, mock_randint):
@@ -293,7 +294,7 @@ class EvAdventureTurnbasedCombatActionTest(EvAdventureMixin, BaseEvenniaTest):
 
         # second flee should remove combatant
         self._run_action(combat_turnbased.CombatActionFlee, None)
-        self.assertTrue(self.combatant not in self.combathandler.combatants)
+        self.assertIsNone(self.combathandler.pk)
 
     @patch("evennia.contrib.tutorials.evadventure.combat_turnbased.rules.randint")
     def test_flee__blocked(self, mock_randint):

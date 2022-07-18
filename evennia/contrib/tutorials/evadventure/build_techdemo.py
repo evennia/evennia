@@ -30,7 +30,7 @@ from evennia.contrib.tutorials.evadventure.objects import (
     EvAdventureRunestone,
     EvAdventureWeapon,
 )
-from evennia.contrib.tutorials.evadventure.rooms import EvAdventureRoom
+from evennia.contrib.tutorials.evadventure.rooms import EvAdventurePvPRoom, EvAdventureRoom
 
 # CODE
 
@@ -65,7 +65,7 @@ create_object(
 # A combat room evtechdemo#01
 # with a static enemy
 
-combat_room = create_object(EvAdventureRoom, key="Combat Arena", aliases=("evtechdemo#01",))
+combat_room = create_object(EvAdventurePvPRoom, key="Combat Arena", aliases=("evtechdemo#01",))
 # link to/back to hub
 hub_room = search_object("evtechdemo#00")[0]
 create_object(
