@@ -644,7 +644,15 @@ def to_pickle(data):
                 # classmethods) and instances
                 pass
 
-        if hasattr(item, "__iter__"):
+        if hasattr(item, "items"):
+            # we try to conserve the iterable class, if not convert to dict
+            try:
+                return item.__class__(
+                    (process_item(key), process_item(val)) for key, val in item.items()
+                )
+            except (AttributeError, TypeError):
+                return {process_item(key): process_item(val) for key, val in item.items()}
+        elif hasattr(item, "__iter__"):
             # we try to conserve the iterable class, if not convert to list
             try:
                 return item.__class__([process_item(val) for val in item])
@@ -712,6 +720,14 @@ def from_pickle(data, db_obj=None):
             return OrderedDict((process_item(key), process_item(val)) for key, val in item.items())
         elif dtype == deque:
             return deque(process_item(val) for val in item)
+        elif hasattr(item, "items"):
+            # we try to conserve the iterable class, if not convert to dict
+            try:
+                return item.__class__(
+                    (process_item(key), process_item(val)) for key, val in item.items()
+                )
+            except (AttributeError, TypeError):
+                return {process_item(key): process_item(val) for key, val in item.items()}
         elif hasattr(item, "__iter__"):
             try:
                 # we try to conserve the iterable class if
@@ -778,6 +794,18 @@ def from_pickle(data, db_obj=None):
             dat = _SaverDeque(_parent=parent)
             dat._data.extend(process_item(val) for val in item)
             return dat
+        elif hasattr(item, "items"):
+            # we try to conserve the iterable class, if not convert to dict
+            try:
+                return item.__class__(
+                    (process_item(key), process_tree(val, parent)) for key, val in item.items()
+                )
+            except (AttributeError, TypeError):
+                dat = _SaverDict(_parent=parent)
+                dat._data.update(
+                    (process_item(key), process_tree(val, dat)) for key, val in item.items()
+                )
+                return dat
         elif hasattr(item, "__iter__"):
             try:
                 # we try to conserve the iterable class if it
