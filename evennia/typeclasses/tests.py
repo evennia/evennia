@@ -3,8 +3,8 @@ Unit tests for typeclass base system
 
 """
 from django.test import override_settings
-from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 from evennia.typeclasses import attributes
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 from mock import patch
 from parameterized import parameterized
 
@@ -13,12 +13,24 @@ from parameterized import parameterized
 # ------------------------------------------------------------
 
 
+class DictSubclass(dict):
+    pass
+
+
 class TestAttributes(BaseEvenniaTest):
     def test_attrhandler(self):
         key = "testattr"
         value = "test attr value "
         self.obj1.attributes.add(key, value)
         self.assertEqual(self.obj1.attributes.get(key), value)
+        self.obj1.db.testattr = value
+        self.assertEqual(self.obj1.db.testattr, value)
+
+        value = DictSubclass({"fo": "foo", "bar": "bar"})
+        self.obj1.db.testattr = value
+        self.assertEqual(self.obj1.db.testattr, value)
+
+        value = DictSubclass({"fo": "foo", "bar": "bar", "obj": self.obj2})
         self.obj1.db.testattr = value
         self.assertEqual(self.obj1.db.testattr, value)
 
@@ -33,6 +45,16 @@ class TestAttributes(BaseEvenniaTest):
         self.assertEqual(self.obj1.attributes.get(key), value)
         self.obj1.db.testattr = value
         self.assertEqual(self.obj1.db.testattr, value)
+        self.assertFalse(self.obj1.attributes.backend._cache)
+
+        value = DictSubclass({"fo": "foo", "bar": "bar"})
+        self.obj1.db.dict_subclass = value
+        self.assertEqual(self.obj1.db.dict_subclass, value)
+        self.assertFalse(self.obj1.attributes.backend._cache)
+
+        value = DictSubclass({"fo": "foo", "bar": "bar", "obj": self.obj2})
+        self.obj1.db.dict_subclass = value
+        self.assertEqual(self.obj1.db.dict_subclass, value)
         self.assertFalse(self.obj1.attributes.backend._cache)
 
     def test_weird_text_save(self):
