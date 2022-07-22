@@ -3,6 +3,7 @@ Tests for dbserialize module
 """
 
 from collections import defaultdict, deque
+from pickle import PicklingError
 
 from django.test import TestCase
 from evennia.objects.objects import DefaultObject
@@ -130,7 +131,8 @@ class _ValidContainer(_InvalidContainer):
         self.hidden_obj = dbserialize.dbserialize(self.hidden_obj)
 
     def __deserialize_dbobjs__(self):
-        self.hidden_obj = dbserialize.dbunserialize(self.hidden_obj)
+        if isinstance(self.hidden_obj, bytes):
+            self.hidden_obj = dbserialize.dbunserialize(self.hidden_obj)
 
 
 class DbObjWrappers(TestCase):
@@ -147,7 +149,7 @@ class DbObjWrappers(TestCase):
         self.dbobj2.save()
 
     def test_dbobj_hidden_obj__fail(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises((TypeError, PicklingError)):
             self.dbobj1.db.testarg = _InvalidContainer(self.dbobj1)
 
     def test_consecutive_fetch(self):

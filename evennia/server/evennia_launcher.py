@@ -96,10 +96,7 @@ TWISTED_MIN = "20.3.0"
 DJANGO_MIN = "4.0.2"
 DJANGO_LT = "4.1"
 
-try:
-    sys.path[1] = EVENNIA_ROOT
-except IndexError:
-    sys.path.append(EVENNIA_ROOT)
+sys.path.insert(1, EVENNIA_ROOT)
 
 # ------------------------------------------------------------
 #

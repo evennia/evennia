@@ -1,0 +1,18 @@
+---
+name: pypy-test-suite
+
+on:
+  # Will run everyday at 7:27 UTC on the last commit on default branch
+  # see:
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+  schedule:
+    - cron: '27 7 * * *'
+
+jobs:
+  build:
+    uses: ./.github/workflows/github_action_base_workflow.yml
+    with:
+      # To workaround github reusable workflows inputs limitations this needs to be a JSON string,
+      # it will be parsed later in reusable workflow itself.
+      python-matrix: '["pypy-3.9"]'
+    secrets: inherit

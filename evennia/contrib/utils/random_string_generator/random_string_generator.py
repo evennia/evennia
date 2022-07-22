@@ -192,7 +192,7 @@ class RandomStringGenerator:
         # `tree` contains a list of elements in the regular expression
         for element in tree:
             # `element` is also a list, the first element is a string
-            name = str(element[0]).lower()
+            name = element[0].name.lower()
             desc = {"min": 1, "max": 1}
 
             # If `.`, break here
@@ -221,7 +221,7 @@ class RandomStringGenerator:
 
     def _find_literal(self, element):
         """Find the literal corresponding to a piece of regular expression."""
-        name = str(element[0]).lower()
+        name = element[0].name.lower()
         chars = []
         if name == "literal":
             chars.append(chr(element[1]))
