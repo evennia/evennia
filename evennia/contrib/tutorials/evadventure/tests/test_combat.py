@@ -5,7 +5,6 @@ Test EvAdventure combat.
 
 from unittest.mock import MagicMock, patch
 
-from anything import Something
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest
 
@@ -13,13 +12,7 @@ from .. import combat_turnbased
 from ..characters import EvAdventureCharacter
 from ..enums import WieldLocation
 from ..npcs import EvAdventureMob
-from ..objects import (
-    EvAdventureConsumable,
-    EvAdventureRunestone,
-    EvAdventureWeapon,
-    WeaponEmptyHand,
-)
-from ..rooms import EvAdventureRoom
+from ..objects import EvAdventureConsumable, EvAdventureRunestone, EvAdventureWeapon
 from .mixins import EvAdventureMixin
 
 
