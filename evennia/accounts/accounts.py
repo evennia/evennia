@@ -12,32 +12,32 @@ instead for most things).
 """
 import re
 import time
+from random import getrandbits
+
 from django.conf import settings
 from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
-from evennia.typeclasses.models import TypeclassBase
+from django.utils.translation import gettext as _
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
-from evennia.objects.models import ObjectDB
+from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.comms.models import ChannelDB
+from evennia.objects.models import ObjectDB
+from evennia.scripts.scripthandler import ScriptHandler
 from evennia.server.models import ServerConfig
-from evennia.server.throttle import Throttle
-from evennia.utils import class_from_module, create, logger
-from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter, variable_from_module
 from evennia.server.signals import (
     SIGNAL_ACCOUNT_POST_CREATE,
     SIGNAL_OBJECT_POST_PUPPET,
     SIGNAL_OBJECT_POST_UNPUPPET,
 )
-from evennia.typeclasses.attributes import NickHandler, ModelAttributeBackend
-from evennia.scripts.scripthandler import ScriptHandler
-from evennia.commands.cmdsethandler import CmdSetHandler
+from evennia.server.throttle import Throttle
+from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
+from evennia.typeclasses.models import TypeclassBase
+from evennia.utils import class_from_module, create, logger
 from evennia.utils.optionhandler import OptionHandler
-
-from django.utils.translation import gettext as _
-from random import getrandbits
+from evennia.utils.utils import is_iter, lazy_property, make_iter, to_str, variable_from_module
 
 __all__ = ("DefaultAccount", "DefaultGuest")
 
@@ -236,6 +236,22 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             logger.log_err(e)
 
         return objs
+
+    def uses_screenreader(self, session=None):
+        """
+        Shortcut to determine if a session uses a screenreader. If no session given,
+        will return true if any of the sessions use a screenreader.
+
+        Args:
+            session (Session, optional): The session to check for screen reader.
+
+        """
+        if session:
+            return bool(session.protocol_flags.get("SCREENREADER", False))
+        else:
+            return any(
+                session.protocol_flags.get("SCREENREADER") for session in self.sessions.all()
+            )
 
     def get_display_name(self, looker, **kwargs):
         """

@@ -10,7 +10,6 @@ from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils.utils import inherits_from
 
 from .. import dungeon
-from ..rooms import EvAdventureDungeonRoom
 from .mixins import EvAdventureMixin
 
 
@@ -33,7 +32,7 @@ class TestDungeon(EvAdventureMixin, BaseEvenniaTest):
         self.start_room = create_object(droomclass, key="bottom of well")
 
         self.assertEqual(
-            self.start_room.scripts.get("evadventure_startroom_resetter")[0].interval, -1
+            self.start_room.scripts.get("evadventure_dungeon_startroom_resetter")[0].interval, -1
         )
         self.start_north = create_object(
             dungeon.EvAdventureDungeonStartRoomExit,
@@ -71,7 +70,7 @@ class TestDungeon(EvAdventureMixin, BaseEvenniaTest):
         # first go north, this should generate a new room
         new_room_north = self._move_character("north")
         self.assertNotEqual(self.start_room, new_room_north)
-        self.assertTrue(inherits_from(new_room_north, EvAdventureDungeonRoom))
+        self.assertTrue(inherits_from(new_room_north, dungeon.EvAdventureDungeonRoom))
 
         # check if Orchestrator was created
         orchestrator = new_room_north.db.dungeon_orchestrator
