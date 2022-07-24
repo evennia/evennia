@@ -386,22 +386,22 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
     Examples:
 
         ```python
-        >>> list_to_string([1,2,3], endsep=',')
+        >>> iter_to_string([1,2,3], endsep=',')
         '1, 2, 3'
-        >>> list_to_string([1,2,3], endsep='')
+        >>> iter_to_string([1,2,3], endsep='')
         '1, 2 3'
-        >>> list_to_string([1,2,3], ensdep='and')
+        >>> iter_to_string([1,2,3], ensdep='and')
         '1, 2 and 3'
-        >>> list_to_string([1,2,3], sep=';', endsep=';')
+        >>> iter_to_string([1,2,3], sep=';', endsep=';')
         '1; 2; 3'
-        >>> list_to_string([1,2,3], addquote=True)
+        >>> iter_to_string([1,2,3], addquote=True)
         '"1", "2", and "3"'
         ```
 
     """
+    iterable = list(make_iter(iterable))
     if not iterable:
         return ""
-    iterable = list(make_iter(iterable))
     len_iter = len(iterable)
 
     if addquote:

@@ -24,8 +24,8 @@ from evennia.utils import ansi, create, funcparser, logger, search
 from evennia.utils.utils import (
     class_from_module,
     is_iter,
+    iter_to_str,
     lazy_property,
-    list_to_string,
     make_iter,
     to_str,
     variable_from_module,
@@ -1194,19 +1194,18 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Args:
             looker (TypedObject): The object or account that is looking
-                at/getting inforamtion for this object.
+                at/getting inforamtion for this object. If not given, `.name` will be
+                returned, which can in turn be used to display colored data.
 
         Returns:
-            name (str): A string containing the name of the object,
-                including the DBREF if this user is privileged to control
-                said object.
+            str: A name to display for this object. This can contain color codes and may
+                be customized based on `looker`. By default this contains the `.key` of the object,
+                followed by the DBREF if this user is privileged to control said object.
 
         Notes:
-            This function could be extended to change how object names
-            appear to users in character, but be wary. This function
-            does not change an object's keys or aliases when
-            searching, and is expected to produce something useful for
-            builders.
+            This function could be extended to change how object names appear to users in character,
+            but be wary. This function does not change an object's keys or aliases when searching,
+            and is expected to produce something useful for builders.
 
         """
         if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
@@ -1224,11 +1223,17 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         Args:
             count (int): Number of objects of this type
             looker (Object): Onlooker. Not used by default.
+
         Keyword Args:
             key (str): Optional key to pluralize, if given, use this instead of the object's key.
+
         Returns:
-            singular (str): The singular form to display.
-            plural (str): The determined plural form of the key, including the count.
+            tuple: This is a tuple `(str, str)` with the singular and plural forms of the key
+                including the count.
+
+        Examples:
+            ::
+                obj.get_numbered_name(3, looker, key="foo") -> ("a foo", "three foos")
 
         """
         plural_category = "plural_key"
@@ -1292,7 +1297,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
 
         exits = _filter_visible(self.contents_get(content_type="exit"))
-        exit_names = list_to_string(exi.get_display_name(looker, **kwargs) for exi in exits)
+        exit_names = iter_to_str(exi.get_display_name(looker, **kwargs) for exi in exits)
 
         return f"|wExits:|n {exit_names}" if exit_names else ""
 
@@ -1312,7 +1317,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
 
         characters = _filter_visible(self.contents_get(content_type="character"))
-        character_names = list_to_string(
+        character_names = iter_to_str(
             char.get_display_name(looker, **kwargs) for char in characters
         )
 
@@ -1346,7 +1351,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             thing = thinglist[0]
             singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
             thing_names.append(singular if nthings == 1 else plural)
-        thing_names = list_to_string(thing_names)
+        thing_names = iter_to_str(thing_names)
         return f"\n|wYou see:|n {thing_names}" if thing_names else ""
 
     def get_display_footer(self, looker, **kwargs):
