@@ -267,7 +267,7 @@
             <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">outro_room</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">outro_room</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;teleport&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TutorialRoomCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoomCmdSet">[docs]</a><span class="k">class</span> <span class="nc">TutorialRoomCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
@@ -301,7 +301,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">TutorialRoomCmdSet</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TutorialRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_arrival</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="TutorialRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_arrival</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        When an object enter a tutorial room we tell other objects in</span>
 <span class="sd">        the room about it by trying to call a hook on them. The Mob object</span>
@@ -493,7 +493,7 @@
             <span class="s2">&quot;the account.&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntroRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="IntroRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign properties on characters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -565,7 +565,7 @@
             <span class="c1"># Move to the east room.</span>
             <span class="n">eexit</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">east_exit</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eexit</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">eexit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">eexit</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;traverse&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No east exit was found for this room. Contact an admin.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -612,7 +612,7 @@
             <span class="c1"># Move to the west room.</span>
             <span class="n">wexit</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">west_exit</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">wexit</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">wexit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">wexit</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;traverse&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No west exit was found for this room. Contact an admin.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -700,7 +700,7 @@
             <span class="n">fall_exit</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">fall_exit</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fall_exit</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">FALL_MESSAGE</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">fall_exit</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">fall_exit</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;fall&quot;</span><span class="p">)</span>
                 <span class="c1"># inform others on the bridge</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
                     <span class="s2">&quot;A plank gives way under </span><span class="si">%s</span><span class="s2">&#39;s feet and &quot;</span>
@@ -812,7 +812,7 @@
             <span class="c1"># send a message most of the time</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;|w</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">BRIDGE_WEATHER</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="BridgeRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="BridgeRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called by the engine whenever the player is moved</span>
 <span class="sd">        into this room.</span>
@@ -838,7 +838,7 @@
                 <span class="n">character</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tutorial_bridge_position</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">character</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BridgeRoom.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
+<div class="viewcode-block" id="BridgeRoom.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is triggered when the player leaves the bridge room.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1080,7 +1080,7 @@
                     <span class="c1"># put players in darkness</span>
                     <span class="n">char</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The room is completely dark.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DarkRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="DarkRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when an object enters the room.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1090,7 +1090,7 @@
             <span class="c1"># in case the new guy carries light with them</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_light_state</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DarkRoom.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">):</span>
+<div class="viewcode-block" id="DarkRoom.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In case people leave with the light, we make sure to clear the</span>
 <span class="sd">        DarkCmdSet if necessary.  This also works if they are</span>
@@ -1145,7 +1145,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">failure_teleport_msg</span> <span class="o">=</span> <span class="s2">&quot;You fail!&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">failure_teleport_to</span> <span class="o">=</span> <span class="s2">&quot;dark cell&quot;</span></div>
 
-<div class="viewcode-block" id="TeleportRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="TeleportRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This hook is called by the engine whenever the player is moved into</span>
 <span class="sd">        this room.</span>
@@ -1172,7 +1172,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">failure_teleport_msg</span><span class="p">)</span>
         <span class="c1"># teleport quietly to the new place</span>
-        <span class="n">character</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_hooks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">character</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_hooks</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;teleport&quot;</span><span class="p">)</span>
         <span class="c1"># we have to call this manually since we turn off move_hooks</span>
         <span class="c1"># - this is necessary to make the target dark room aware of an</span>
         <span class="c1"># already carried light.</span>
@@ -1209,7 +1209,7 @@
             <span class="s2">&quot;character.&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="OutroRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">):</span>
+<div class="viewcode-block" id="OutroRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do cleanup.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1225,7 +1225,7 @@
                     <span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="n">character</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;tutorial_world&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OutroRoom.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="OutroRoom.at_object_leave"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_leave">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
             <span class="n">character</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="s2">&quot;unquell&quot;</span><span class="p">)</span></div></div>
 </pre></div>

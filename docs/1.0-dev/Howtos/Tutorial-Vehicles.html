@@ -123,7 +123,7 @@ available to whomever is either inside it or in the same room as the train.</p>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You board the train.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;board&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">CmdLeaveTrain</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -144,7 +144,7 @@ available to whomever is either inside it or in the same room as the train.</p>
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">location</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;disembark&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">CmdSetTrain</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>

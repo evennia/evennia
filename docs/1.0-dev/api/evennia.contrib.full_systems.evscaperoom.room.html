@@ -194,14 +194,14 @@ tagcategory.</p></li>
 
 <dl class="py method">
 <dt id="evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_receive">
-<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">moved_obj</span></em>, <em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/full_systems/evscaperoom/room.html#EvscapeRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">moved_obj</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/full_systems/evscaperoom/room.html#EvscapeRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when an object arrives in the room. This can be used to
 sum up the situation, set tags etc.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_leave">
-<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">moved_obj</span></em>, <em class="sig-param"><span class="n">target_location</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/full_systems/evscaperoom/room.html#EvscapeRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">moved_obj</span></em>, <em class="sig-param"><span class="n">target_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/full_systems/evscaperoom/room.html#EvscapeRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.room.EvscapeRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when an object leaves the room; if this is a Character we need
 to clean them up and move them to the menu state.</p>
 </dd></dl>

@@ -199,7 +199,7 @@ code except for adding in the details.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'ls']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['ls', 'l']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -214,7 +214,7 @@ code except for adding in the details.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l ls', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' l ls', 'tags': '', 'text': '\n    looks at the room and on details\n\n    Usage:\n        look &lt;obj&gt;\n        look &lt;room detail&gt;\n        look *&lt;account&gt;\n\n    Observes your location, details at your location or objects\n    in your vicinity.\n\n    Tutorial: This is a child of the default Look command, that also\n    allows us to look at &quot;details&quot; in the room.  These details are\n    things to examine and offers some extra description without\n    actually having to be actual database objects. It uses the\n    return_detail() hook on TutorialRooms for this.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'ls l', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' ls l', 'tags': '', 'text': '\n    looks at the room and on details\n\n    Usage:\n        look &lt;obj&gt;\n        look &lt;room detail&gt;\n        look *&lt;account&gt;\n\n    Observes your location, details at your location or objects\n    in your vicinity.\n\n    Tutorial: This is a child of the default Look command, that also\n    allows us to look at &quot;details&quot; in the room.  These details are\n    things to examine and offers some extra description without\n    actually having to be actual database objects. It uses the\n    return_detail() hook on TutorialRooms for this.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -304,7 +304,7 @@ It defines a cmdset on itself for reading tutorial info about the location.</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.at_object_receive">
-<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_arrival</span></em>, <em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#TutorialRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_arrival</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#TutorialRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>When an object enter a tutorial room we tell other objects in
 the room about it by trying to call a hook on them. The Mob object
 uses this to cheaply get notified of enemies without having
@@ -550,7 +550,7 @@ self.add().</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.at_object_receive">
-<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#IntroRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#IntroRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assign properties on characters</p>
 </dd></dl>
 
@@ -767,7 +767,7 @@ if they fall off the bridge.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['?', 'h']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['h', '?']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -793,7 +793,7 @@ if they fall off the bridge.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '? h', 'category': 'tutorial world', 'key': 'help', 'no_prefix': ' ? h', 'tags': '', 'text': '\n    Overwritten help command while on the bridge.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'h ?', 'category': 'tutorial world', 'key': 'help', 'no_prefix': ' h ?', 'tags': '', 'text': '\n    Overwritten help command while on the bridge.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -866,14 +866,14 @@ over the bridge a little more interesting.</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_receive">
-<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#BridgeRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#BridgeRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>This hook is called by the engine whenever the player is moved
 into this room.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_leave">
-<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">target_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#BridgeRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">target_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#BridgeRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is triggered when the player leaves the bridge room.</p>
 </dd></dl>
 
@@ -919,7 +919,7 @@ to find something.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['l', 'fiddle', 'feel', 'feel around', 'search']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['feel', 'feel around', 'search', 'l', 'fiddle']</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -947,7 +947,7 @@ random chance of eventually finding a light source.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'l fiddle feel feel around search', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' l fiddle feel feel around search', 'tags': '', 'text': '\n    Look around in darkness\n\n    Usage:\n      look\n\n    Look around in the darkness, trying\n    to find something.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'feel feel around search l fiddle', 'category': 'tutorialworld', 'key': 'look', 'no_prefix': ' feel feel around search l fiddle', 'tags': '', 'text': '\n    Look around in darkness\n\n    Usage:\n      look\n\n    Look around in the darkness, trying\n    to find something.\n    '}</em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1120,13 +1120,13 @@ the room and also by the Light sources when they turn on.</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_receive">
-<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#DarkRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#DarkRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when an object enters the room.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_leave">
-<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">target_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#DarkRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">target_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#DarkRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
 <dd><p>In case people leave with the light, we make sure to clear the
 DarkCmdSet if necessary.  This also works if they are
 teleported away.</p>
@@ -1178,7 +1178,7 @@ failure_teleport_msg - message to echo while teleporting to failure</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.at_object_receive">
-<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#TeleportRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#TeleportRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>This hook is called by the engine whenever the player is moved into
 this room.</p>
 </dd></dl>
@@ -1222,19 +1222,23 @@ character of tutorial-related attributes.</p>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_receive">
-<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">source_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#OutroRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_receive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">source_location</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#OutroRoom.at_object_receive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_receive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do cleanup.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_leave">
-<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">destination</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#OutroRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_object_leave</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">character</span></em>, <em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="n">move_type</span><span class="o">=</span><span class="default_value">'move'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/rooms.html#OutroRoom.at_object_leave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_leave" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just before an object leaves from inside this object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>moved_obj</strong> (<em>Object</em>) – The object leaving</p></li>
 <li><p><strong>target_location</strong> (<em>Object</em>) – Where <strong>moved_obj</strong> is going.</p></li>
+<li><p><strong>move_type</strong> (<em>str</em>) – The type of move. “give”, “traverse”, etc.
+This is an arbitrary string provided to obj.move_to().
+Useful for altering messages or altering logic depending
+on the kind of movement.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>

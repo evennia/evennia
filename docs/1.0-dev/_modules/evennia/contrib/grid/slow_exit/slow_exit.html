@@ -124,7 +124,7 @@
         <span class="k">def</span> <span class="nf">move_callback</span><span class="p">():</span>
             <span class="s2">&quot;This callback will be called by utils.delay after move_delay seconds.&quot;</span>
             <span class="n">source_location</span> <span class="o">=</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">location</span>
-            <span class="k">if</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target_location</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;traverse&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">at_post_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">err_traverse</span><span class="p">:</span>
