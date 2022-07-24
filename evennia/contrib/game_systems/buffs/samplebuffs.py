@@ -131,7 +131,7 @@ class StatBuff(BaseBuff):
     def __init__(self, handler, buffkey, cache={}) -> None:
         super().__init__(handler, buffkey, cache)
         # Finds our "modgen" cache value, which we pass on application
-        modgen = list(self.cache["modgen"])
+        modgen = list(self.cache.get("modgen"))
         if modgen:
             self.mods = [Mod(*modgen)]
         msg = ""

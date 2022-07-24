@@ -130,6 +130,10 @@ class TestBuffsAndHandler(EvenniaTest):
         # remove
         handler.remove("tmb")
         self.assertFalse(self.testobj.db.buffs.get("tmb"))
+        # remove stacks
+        handler.add(_TestModBuff, stacks=3)
+        handler.remove("tmb", stacks=3)
+        self.assertFalse(self.testobj.db.buffs.get("tmb"))
         # remove by type
         handler.add(_TestModBuff)
         handler.remove_by_type(_TestModBuff)
@@ -149,7 +153,7 @@ class TestBuffsAndHandler(EvenniaTest):
         # remove all
         handler.add(_TestModBuff)
         handler.clear()
-        self.assertFalse(self.testobj.db.buffs.get("tmb"))
+        self.assertFalse(self.testobj.buffs.all)
 
     def test_getters(self):
         """tests all built-in getters"""
@@ -172,8 +176,6 @@ class TestBuffsAndHandler(EvenniaTest):
         self.assertTrue("tmb" in handler.get_by_source(self.obj2))
         self.assertFalse("ttb" in handler.get_by_source(self.obj2))
         # cachevalue getter
-        self.assertFalse(handler.get("tmb").cache.get("ttbcache"))
-        self.assertFalse(handler.get("ttb").cache.get("testfalse"))
         self.assertFalse("tmb" in handler.get_by_cachevalue("ttbcache"))
         self.assertTrue("ttb" in handler.get_by_cachevalue("ttbcache"))
         self.assertTrue("ttb" in handler.get_by_cachevalue("ttbcache", True))
