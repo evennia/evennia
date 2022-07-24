@@ -571,7 +571,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         if isinstance(cmd, str):
-            cmd = next((cmd for cmd in self.commands if cmd.key == cmd), None)
+            cmd = next((_cmd for _cmd in self.commands if _cmd.key == cmd), None)
             if cmd is None:
                 return None
 
@@ -599,7 +599,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         if isinstance(cmd, str):
-            cmd = next((cmd for cmd in self.commands if cmd.key == cmd), None)
+            cmd = next((_cmd for _cmd in self.commands if _cmd.key == cmd), None)
             if cmd is None:
                 return None
 
