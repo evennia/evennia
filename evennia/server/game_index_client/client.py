@@ -4,7 +4,6 @@ The client for sending data to the Evennia Game Index
 """
 import urllib.request, urllib.parse, urllib.error
 import platform
-import warnings
 
 import django
 from django.conf import settings

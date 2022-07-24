@@ -269,7 +269,12 @@ class SessionHandler(dict):
                     rkwargs[key] = [_validate(data), {}]
             else:
                 rkwargs[key] = [[_validate(data)], {}]
-            rkwargs[key][1]["options"] = options
+            rkwargs[key][1]["options"] = dict(options)
+        # make sure that any "prompt" message will be processed last
+        # by moving it to the end
+        if "prompt" in rkwargs:
+            prompt = rkwargs.pop("prompt")
+            rkwargs["prompt"] = prompt
         return rkwargs
 
 
@@ -683,7 +688,7 @@ class ServerSessionHandler(SessionHandler):
         Get a unique list of connected and logged-in Accounts.
 
         Returns:
-            accounts (list): All conected Accounts (which may be fewer than the
+            accounts (list): All connected Accounts (which may be fewer than the
                 amount of Sessions due to multi-playing).
 
         """

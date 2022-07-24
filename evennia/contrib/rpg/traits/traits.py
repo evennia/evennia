@@ -1148,7 +1148,7 @@ class Trait:
 
 class StaticTrait(Trait):
     """
-    Static Trait. This is a single value with a modifier, 
+    Static Trait. This is a single value with a modifier,
     multiplier, and no concept of a 'current' value or min/max etc.
 
     value = (base + mod) * mult
@@ -1161,7 +1161,9 @@ class StaticTrait(Trait):
 
     def __str__(self):
         status = "{value:11}".format(value=self.value)
-        return "{name:12} {status} ({mod:+3}) (* {mult:.2f})".format(name=self.name, status=status, mod=self.mod, mult=self.mult)
+        return "{name:12} {status} ({mod:+3}) (* {mult:.2f})".format(
+            name=self.name, status=status, mod=self.mod, mult=self.mult
+        )
 
     # Helpers
     @property
@@ -1189,7 +1191,7 @@ class StaticTrait(Trait):
     def mult(self):
         """The trait's multiplier."""
         return self._data["mult"]
-    
+
     @mult.setter
     def mult(self, amount):
         if type(amount) in (int, float):
@@ -1322,16 +1324,16 @@ class CounterTrait(Trait):
             now = time()
             tdiff = now - self._data["last_update"]
             current += rate * tdiff
-            value = (current + self.mod)
+            value = current + self.mod
 
             # we must make sure so we don't overstep our bounds
             # even if .mod is included
 
             if self._passed_ratetarget(value):
-                current = (self._data["ratetarget"] - self.mod)
+                current = self._data["ratetarget"] - self.mod
                 self._stop_timer()
             elif not self._within_boundaries(value):
-                current = (self._enforce_boundaries(value) - self.mod)
+                current = self._enforce_boundaries(value) - self.mod
                 self._stop_timer()
             else:
                 self._data["last_update"] = now
@@ -1378,7 +1380,7 @@ class CounterTrait(Trait):
     @property
     def mult(self):
         return self._data["mult"]
-    
+
     @mult.setter
     def mult(self, amount):
         if type(amount) in (int, float):
@@ -1571,7 +1573,9 @@ class GaugeTrait(CounterTrait):
 
     def __str__(self):
         status = "{value:4} / {base:4}".format(value=self.value, base=self.base)
-        return "{name:12} {status} ({mod:+3}) (* {mult:.2f})".format(name=self.name, status=status, mod=self.mod, mult=self.mult)
+        return "{name:12} {status} ({mod:+3}) (* {mult:.2f})".format(
+            name=self.name, status=status, mod=self.mod, mult=self.mult
+        )
 
     @property
     def base(self):
@@ -1596,11 +1600,11 @@ class GaugeTrait(CounterTrait):
             if value + self.base < self.min:
                 value = self.min - self.base
             self._data["mod"] = value
-    
+
     @property
     def mult(self):
         return self._data["mult"]
-    
+
     @mult.setter
     def mult(self, amount):
         if type(amount) in (int, float):
@@ -1621,7 +1625,7 @@ class GaugeTrait(CounterTrait):
         if value is None:
             self._data["min"] = self.default_keys["min"]
         elif type(value) in (int, float):
-            self._data["min"] = min(value,  (self.base + self.mod) * self.mult)
+            self._data["min"] = min(value, (self.base + self.mod) * self.mult)
 
     @property
     def max(self):
@@ -1644,7 +1648,7 @@ class GaugeTrait(CounterTrait):
     def current(self):
         """The `current` value of the gauge."""
         return self._update_current(
-            self._enforce_boundaries(self._data.get("current",  (self.base + self.mod) * self.mult))
+            self._enforce_boundaries(self._data.get("current", (self.base + self.mod) * self.mult))
         )
 
     @current.setter
@@ -1655,7 +1659,7 @@ class GaugeTrait(CounterTrait):
     @current.deleter
     def current(self):
         "Resets current back to 'full'"
-        self._data["current"] =  (self.base + self.mod) * self.mult
+        self._data["current"] = (self.base + self.mod) * self.mult
 
     @property
     def value(self):

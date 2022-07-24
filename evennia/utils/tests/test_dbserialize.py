@@ -2,10 +2,11 @@
 Tests for dbserialize module
 """
 
-from collections import deque
+from collections import defaultdict, deque
+
 from django.test import TestCase
-from evennia.utils import dbserialize
 from evennia.objects.objects import DefaultObject
+from evennia.utils import dbserialize
 from parameterized import parameterized
 
 
@@ -15,9 +16,7 @@ class TestDbSerialize(TestCase):
     """
 
     def setUp(self):
-        self.obj = DefaultObject(
-            db_key="Tester",
-        )
+        self.obj = DefaultObject(db_key="Tester")
         self.obj.save()
 
     def test_constants(self):
@@ -62,10 +61,12 @@ class TestDbSerialize(TestCase):
         self.obj.db.test.sort(key=lambda d: str(d))
         self.assertEqual(self.obj.db.test, [{0: 1}, {1: 0}])
 
-    def test_dict(self):
+    def test_saverdict(self):
         self.obj.db.test = {"a": True}
         self.obj.db.test.update({"b": False})
         self.assertEqual(self.obj.db.test, {"a": True, "b": False})
+        self.obj.db.test |= {"c": 5}
+        self.assertEqual(self.obj.db.test, {"a": True, "b": False, "c": 5})
 
     @parameterized.expand(
         [
@@ -88,27 +89,119 @@ class TestDbSerialize(TestCase):
             self.assertIsInstance(value, base_type)
             self.assertNotIsInstance(value, saver_type)
             self.assertEqual(value, default_value)
-        self.obj.db.test = {'a': True}
-        self.obj.db.test.update({'b': False})
-        self.assertEqual(self.obj.db.test, {'a': True, 'b': False})
+        self.obj.db.test = {"a": True}
+        self.obj.db.test.update({"b": False})
+        self.assertEqual(self.obj.db.test, {"a": True, "b": False})
 
     def test_defaultdict(self):
-        from collections import defaultdict
         # baseline behavior for a defaultdict
         _dd = defaultdict(list)
-        _dd['a']
-        self.assertEqual(_dd, {'a': []})
+        _dd["a"]
+        self.assertEqual(_dd, {"a": []})
 
         # behavior after defaultdict is set as attribute
 
         dd = defaultdict(list)
         self.obj.db.test = dd
-        self.obj.db.test['a']
-        self.assertEqual(self.obj.db.test, {'a': []})
+        self.obj.db.test["a"]
+        self.assertEqual(self.obj.db.test, {"a": []})
 
-        self.obj.db.test['a'].append(1)
-        self.assertEqual(self.obj.db.test, {'a': [1]})
-        self.obj.db.test['a'].append(2)
-        self.assertEqual(self.obj.db.test, {'a': [1, 2]})
-        self.obj.db.test['a'].append(3)
-        self.assertEqual(self.obj.db.test, {'a': [1, 2, 3]})
+        self.obj.db.test["a"].append(1)
+        self.assertEqual(self.obj.db.test, {"a": [1]})
+        self.obj.db.test["a"].append(2)
+        self.assertEqual(self.obj.db.test, {"a": [1, 2]})
+        self.obj.db.test["a"].append(3)
+        self.assertEqual(self.obj.db.test, {"a": [1, 2, 3]})
+        self.obj.db.test |= {"b": [5, 6]}
+        self.assertEqual(self.obj.db.test, {"a": [1, 2, 3], "b": [5, 6]})
+
+
+class _InvalidContainer:
+    """Container not saveable in Attribute (if obj is dbobj, it 'hides' it)"""
+
+    def __init__(self, obj):
+        self.hidden_obj = obj
+
+
+class _ValidContainer(_InvalidContainer):
+    """Container possible to save in Attribute (handles hidden dbobj explicitly)"""
+
+    def __serialize_dbobjs__(self):
+        self.hidden_obj = dbserialize.dbserialize(self.hidden_obj)
+
+    def __deserialize_dbobjs__(self):
+        self.hidden_obj = dbserialize.dbunserialize(self.hidden_obj)
+
+
+class DbObjWrappers(TestCase):
+    """
+    Test the `__serialize_dbobjs__` and `__deserialize_dbobjs__` methods.
+
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.dbobj1 = DefaultObject(db_key="Tester1")
+        self.dbobj1.save()
+        self.dbobj2 = DefaultObject(db_key="Tester2")
+        self.dbobj2.save()
+
+    def test_dbobj_hidden_obj__fail(self):
+        with self.assertRaises(TypeError):
+            self.dbobj1.db.testarg = _InvalidContainer(self.dbobj1)
+
+    def test_consecutive_fetch(self):
+        con = _ValidContainer(self.dbobj2)
+        self.dbobj1.db.testarg = con
+        attrobj = self.dbobj1.attributes.get("testarg", return_obj=True)
+
+        self.assertEqual(attrobj.value, con)
+        self.assertEqual(attrobj.value, con)
+        self.assertEqual(attrobj.value.hidden_obj, self.dbobj2)
+
+    def test_dbobj_hidden_obj__success(self):
+        con = _ValidContainer(self.dbobj2)
+        self.dbobj1.db.testarg = con
+
+        # accessing the same data multiple times
+        res1 = self.dbobj1.db.testarg
+        res2 = self.dbobj1.db.testarg
+        res3 = self.dbobj1.db.testarg
+
+        self.assertEqual(res1, res2)
+        self.assertEqual(res1, res3)
+        self.assertEqual(res1, con)
+        self.assertEqual(res2, con)
+        self.assertEqual(res1.hidden_obj, self.dbobj2)
+        self.assertEqual(res2.hidden_obj, self.dbobj2)
+        self.assertEqual(res3.hidden_obj, self.dbobj2)
+
+    def test_dbobj_hidden_dict(self):
+        con1 = _ValidContainer(self.dbobj2)
+        con2 = _ValidContainer(self.dbobj2)
+
+        self.dbobj1.db.dict = {}
+
+        self.dbobj1.db.dict["key1"] = con1
+        self.dbobj1.db.dict["key2"] = con2
+
+        self.assertEqual(self.dbobj1.db.dict["key1"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dict["key1"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dict["key2"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dict["key2"].hidden_obj, self.dbobj2)
+
+    def test_dbobj_hidden_defaultdict(self):
+
+        con1 = _ValidContainer(self.dbobj2)
+        con2 = _ValidContainer(self.dbobj2)
+
+        self.dbobj1.db.dfdict = defaultdict(dict)
+
+        self.dbobj1.db.dfdict["key"]["con1"] = con1
+        self.dbobj1.db.dfdict["key"]["con2"] = con2
+
+        self.assertEqual(self.dbobj1.db.dfdict["key"]["con1"].hidden_obj, self.dbobj2)
+
+        self.assertEqual(self.dbobj1.db.dfdict["key"]["con1"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dfdict["key"]["con2"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dfdict["key"]["con2"].hidden_obj, self.dbobj2)

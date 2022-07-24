@@ -26,7 +26,7 @@ class DBField(AttributeProperty):
         db_fields = getattr(owner, "_db_fields", None)
         if db_fields is None:
             db_fields = {}
-            setattr(owner, '_db_fields', db_fields)
+            setattr(owner, "_db_fields", db_fields)
         db_fields[name] = self
 
 
@@ -50,7 +50,7 @@ class NDBField(NAttributeProperty):
         ndb_fields = getattr(owner, "_ndb_fields", None)
         if ndb_fields is None:
             ndb_fields = {}
-            setattr(owner, '_ndb_fields', ndb_fields)
+            setattr(owner, "_ndb_fields", ndb_fields)
         ndb_fields[name] = self
 
 
@@ -64,6 +64,7 @@ class TagField:
     Default value of a tag is added when the component is registered.
     Tags are removed if the component itself is removed.
     """
+
     def __init__(self, default=None, enforce_single=False):
         self._category_key = None
         self._default = default
@@ -78,7 +79,7 @@ class TagField:
         tag_fields = getattr(owner, "_tag_fields", None)
         if tag_fields is None:
             tag_fields = {}
-            setattr(owner, '_tag_fields', tag_fields)
+            setattr(owner, "_tag_fields", tag_fields)
         tag_fields[name] = self
 
     def __get__(self, instance, owner):

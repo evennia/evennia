@@ -49,7 +49,7 @@ class CmdHome(COMMAND_DEFAULT_CLASS):
             caller.msg("You are already home!")
         else:
             caller.msg("There's no place like home ...")
-            caller.move_to(home)
+            caller.move_to(home, move_type="teleport")
 
 
 class CmdLook(COMMAND_DEFAULT_CLASS):
@@ -434,7 +434,7 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
         if not obj.at_pre_get(caller):
             return
 
-        success = obj.move_to(caller, quiet=True)
+        success = obj.move_to(caller, quiet=True, move_type="get")
         if not success:
             caller.msg("This can't be picked up.")
         else:
@@ -484,7 +484,7 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
         if not obj.at_pre_drop(caller):
             return
 
-        success = obj.move_to(caller.location, quiet=True)
+        success = obj.move_to(caller.location, quiet=True, move_type="drop")
         if not success:
             caller.msg("This couldn't be dropped.")
         else:
@@ -538,7 +538,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
             return
 
         # give object
-        success = to_give.move_to(target, quiet=True)
+        success = to_give.move_to(target, quiet=True, move_type="get")
         if not success:
             caller.msg("This could not be given.")
         else:
