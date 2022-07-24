@@ -1,4 +1,5 @@
-"""Buffs - Tegiminis 2022
+"""
+Buffs - Tegiminis 2022
 
 A buff is a timed object, attached to a game entity, that modifies values, triggers 
 code, or both. It is a common design pattern in RPGs, particularly action games.
