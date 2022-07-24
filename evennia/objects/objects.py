@@ -314,68 +314,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
     # main methods
 
-    def get_display_name(self, looker=None, **kwargs):
-        """
-        Displays the name of the object in a viewer-aware manner.
-
-        Args:
-            looker (TypedObject): The object or account that is looking
-                at/getting inforamtion for this object.
-
-        Returns:
-            name (str): A string containing the name of the object,
-                including the DBREF if this user is privileged to control
-                said object.
-
-        Notes:
-            This function could be extended to change how object names
-            appear to users in character, but be wary. This function
-            does not change an object's keys or aliases when
-            searching, and is expected to produce something useful for
-            builders.
-
-        """
-        if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
-            return "{}(#{})".format(self.name, self.id)
-        return self.name
-
-    def get_numbered_name(self, count, looker, **kwargs):
-        """
-        Return the numbered (singular, plural) forms of this object's key. This is by default called
-        by return_appearance and is used for grouping multiple same-named of this object. Note that
-        this will be called on *every* member of a group even though the plural name will be only
-        shown once. Also the singular display version, such as 'an apple', 'a tree' is determined
-        from this method.
-
-        Args:
-            count (int): Number of objects of this type
-            looker (Object): Onlooker. Not used by default.
-        Keyword Args:
-            key (str): Optional key to pluralize, if given, use this instead of the object's key.
-        Returns:
-            singular (str): The singular form to display.
-            plural (str): The determined plural form of the key, including the count.
-
-        """
-        plural_category = "plural_key"
-        key = kwargs.get("key", self.key)
-        key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
-        try:
-            plural = _INFLECT.plural(key, count)
-            plural = "{} {}".format(_INFLECT.number_to_words(count, threshold=12), plural)
-        except IndexError:
-            # this is raised by inflect if the input is not a proper noun
-            plural = key
-        singular = _INFLECT.an(key)
-        if not self.aliases.get(plural, category=plural_category):
-            # we need to wipe any old plurals/an/a in case key changed in the interrim
-            self.aliases.clear(category=plural_category)
-            self.aliases.add(plural, category=plural_category)
-            # save the singular form as an alias here too so we can display "an egg" and also
-            # look at 'an egg'.
-            self.aliases.add(singular, category=plural_category)
-        return singular, plural
-
     def search(
         self,
         searchdata,
@@ -1248,6 +1186,225 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         self.at_access(result, accessing_obj, access_type, **kwargs)
         return result
 
+    # name and return_apperance hooks
+
+    def get_display_name(self, looker=None, **kwargs):
+        """
+        Displays the name of the object in a viewer-aware manner.
+
+        Args:
+            looker (TypedObject): The object or account that is looking
+                at/getting inforamtion for this object.
+
+        Returns:
+            name (str): A string containing the name of the object,
+                including the DBREF if this user is privileged to control
+                said object.
+
+        Notes:
+            This function could be extended to change how object names
+            appear to users in character, but be wary. This function
+            does not change an object's keys or aliases when
+            searching, and is expected to produce something useful for
+            builders.
+
+        """
+        if looker and self.locks.check_lockstring(looker, "perm(Builder)"):
+            return "{}(#{})".format(self.name, self.id)
+        return self.name
+
+    def get_numbered_name(self, count, looker, **kwargs):
+        """
+        Return the numbered (singular, plural) forms of this object's key. This is by default called
+        by return_appearance and is used for grouping multiple same-named of this object. Note that
+        this will be called on *every* member of a group even though the plural name will be only
+        shown once. Also the singular display version, such as 'an apple', 'a tree' is determined
+        from this method.
+
+        Args:
+            count (int): Number of objects of this type
+            looker (Object): Onlooker. Not used by default.
+        Keyword Args:
+            key (str): Optional key to pluralize, if given, use this instead of the object's key.
+        Returns:
+            singular (str): The singular form to display.
+            plural (str): The determined plural form of the key, including the count.
+
+        """
+        plural_category = "plural_key"
+        key = kwargs.get("key", self.key)
+        key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
+        try:
+            plural = _INFLECT.plural(key, count)
+            plural = "{} {}".format(_INFLECT.number_to_words(count, threshold=12), plural)
+        except IndexError:
+            # this is raised by inflect if the input is not a proper noun
+            plural = key
+        singular = _INFLECT.an(key)
+        if not self.aliases.get(plural, category=plural_category):
+            # we need to wipe any old plurals/an/a in case key changed in the interrim
+            self.aliases.clear(category=plural_category)
+            self.aliases.add(plural, category=plural_category)
+            # save the singular form as an alias here too so we can display "an egg" and also
+            # look at 'an egg'.
+            self.aliases.add(singular, category=plural_category)
+        return singular, plural
+
+    def get_display_header(self, looker, **kwargs):
+        """
+        Get the 'header' component of the object description. Called by `return_appearance`.
+
+        Args:
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The header display string.
+
+        """
+        return ""
+
+    def get_display_desc(self, looker, **kwargs):
+        """
+        Get the 'desc' component of the object description. Called by `return_appearance`.
+
+        Args:
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The desc display string..
+
+        """
+        return self.db.desc or "You see nothing special."
+
+    def get_display_exits(self, looker, **kwargs):
+        """
+        Get the 'exits' component of the object description. Called by `return_appearance`.
+
+        Args:
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The exits display data.
+
+        """
+
+        def _filter_visible(obj_list):
+            return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
+
+        exits = _filter_visible(self.contents_get(content_type="exit"))
+        exit_names = list_to_string(exi.get_display_name(looker, **kwargs) for exi in exits)
+
+        return f"|wExits:|n {exit_names}" if exit_names else ""
+
+    def get_display_characters(self, looker, **kwargs):
+        """
+        Get the 'characters' component of the object description. Called by `return_appearance`.
+
+        Args:
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The character display data.
+
+        """
+
+        def _filter_visible(obj_list):
+            return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
+
+        characters = _filter_visible(self.contents_get(content_type="character"))
+        character_names = list_to_string(
+            char.get_display_name(looker, **kwargs) for char in characters
+        )
+
+        return f"\n|wCharacters:|n {character_names}" if character_names else ""
+
+    def get_display_things(self, looker, **kwargs):
+        """
+        Get the 'things' component of the object description. Called by `return_appearance`.
+
+        Args:
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The things display data.
+
+        """
+
+        def _filter_visible(obj_list):
+            return (obj for obj in obj_list if obj != looker and obj.access(looker, "view"))
+
+        # sort and handle same-named things
+        things = _filter_visible(self.contents_get(content_type="object"))
+
+        grouped_things = defaultdict(list)
+        for thing in things:
+            grouped_things[thing.get_display_name(looker, **kwargs)].append(thing)
+
+        thing_names = []
+        for thingname, thinglist in sorted(grouped_things.items()):
+            nthings = len(thinglist)
+            thing = thinglist[0]
+            singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
+            thing_names.append(singular if nthings == 1 else plural)
+        thing_names = list_to_string(thing_names)
+        return f"\n|wYou see:|n {thing_names}" if thing_names else ""
+
+    def get_display_footer(self, looker, **kwargs):
+        """
+        Get the 'footer' component of the object description. Called by `return_appearance`.
+
+        Args:
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The footer display string.
+
+        """
+        return ""
+
+    def return_appearance(self, looker, **kwargs):
+        """
+        Main callback used by 'look' for the object to describe itself.
+        This formats a description. By default, this looks for the `appearance_template`
+        string set on this class and populates it with formatting keys
+            'name', 'desc', 'exits', 'characters', 'things' as well as
+            (currently empty) 'header'/'footer'. Each of these values are
+            retrieved by a matching method `.get_display_*`, such as `get_display_name`,
+            `get_display_footer` etc.
+
+        Args:
+            looker (Object): Object doing the looking. Passed into all helper methods.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call. This is passed into all helper methods.
+
+        Returns:
+            str: The description of this entity. By default this includes
+                the entity's name, description and any contents inside it.
+
+        Notes:
+            To simply change the layout of how the object displays itself (like
+            adding some line decorations or change colors of different sections),
+            you can simply edit `.appearance_template`. You only need to override
+            this method (and/or its helpers) if you want to change what is passed
+            into the template or want the most control over output.
+
+        """
+
+        if not looker:
+            return ""
+
+        # populate the appearance_template string. It's a good idea to strip it and
+        # let the client add any extra spaces instead.
+        return self.appearance_template.format(
+            name=self.get_display_name(looker, **kwargs),
+            desc=self.get_display_desc(looker, **kwargs),
+            header=self.get_display_header(looker, **kwargs),
+            footer=self.get_display_footer(looker, **kwargs),
+            exits=self.get_display_exits(looker, **kwargs),
+            characters=self.get_display_characters(looker, **kwargs),
+            things=self.get_display_things(looker, **kwargs),
+        ).strip()
+
     #
     # Hook methods
     #
@@ -1624,7 +1781,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        location.msg_contents((string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping)
+        location.msg_contents(
+            (string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping
+        )
 
     def announce_move_to(self, source_location, msg=None, mapping=None, move_type="move", **kwargs):
         """
@@ -1692,7 +1851,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        destination.msg_contents((string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping)
+        destination.msg_contents(
+            (string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping
+        )
 
     def at_post_move(self, source_location, move_type="move", **kwargs):
         """
@@ -1856,131 +2017,6 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         pass
-
-    # hooks called by the default cmdset.
-
-    def get_visible_contents(self, looker, **kwargs):
-        """
-        Get all contents of this object that a looker can see (whatever that means, by default it
-        checks the 'view' lock), grouped by type. Helper method to return_appearance.
-
-        Args:
-            looker (Object): The entity looking.
-            **kwargs (any): Passed from `return_appearance`. Unused by default.
-
-        Returns:
-            dict: A dict of lists categorized by type. Byt default this
-                contains 'exits', 'characters' and 'things'. The elements of these
-                lists are the actual objects.
-
-        """
-
-        def filter_visible(obj_list):
-            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
-
-        return {
-            "exits": filter_visible(self.contents_get(content_type="exit")),
-            "characters": filter_visible(self.contents_get(content_type="character")),
-            "things": filter_visible(self.contents_get(content_type="object")),
-        }
-
-    def get_content_names(self, looker, **kwargs):
-        """
-        Get the proper names for all contents of this object. Helper method
-        for return_appearance.
-
-        Args:
-            looker (Object): The entity looking.
-            **kwargs (any): Passed from `return_appearance`. Passed into
-                `get_display_name` for each found entity.
-
-        Returns:
-            dict: A dict of lists categorized by type. Byt default this
-                contains 'exits', 'characters' and 'things'. The elements
-                of these lists are strings - names of the objects that
-                can depend on the looker and also be grouped in the case
-                of multiple same-named things etc.
-
-        Notes:
-            This method shouldn't add extra coloring to the names beyond what is
-            already given by the .get_display_name() (and the .name field) already.
-            Per-type coloring can be applied in `return_apperance`.
-
-        """
-        # a mapping {'exits': [...], 'characters': [...], 'things': [...]}
-        contents_map = self.get_visible_contents(looker, **kwargs)
-
-        character_names = [
-            char.get_display_name(looker, **kwargs) for char in contents_map["characters"]
-        ]
-        exit_names = [exi.get_display_name(looker, **kwargs) for exi in contents_map["exits"]]
-
-        # group all same-named things under one name
-        things = defaultdict(list)
-        for thing in contents_map["things"]:
-            things[thing.get_display_name(looker, **kwargs)].append(thing)
-
-        # pluralize same-named things
-        thing_names = []
-        for thingname, thinglist in sorted(things.items()):
-            nthings = len(thinglist)
-            thing = thinglist[0]
-            singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
-            thing_names.append(singular if nthings == 1 else plural)
-
-        return {"exits": exit_names, "characters": character_names, "things": thing_names}
-
-    def return_appearance(self, looker, **kwargs):
-        """
-        Main callback used by 'look' for the object to describe itself.
-        This formats a description. By default, this looks for the `appearance_template`
-        string set on this class and populates it with formatting keys
-            'name', 'desc', 'exits', 'characters', 'things' as well as
-            (currently empty) 'header'/'footer'.
-
-        Args:
-            looker (Object): Object doing the looking.
-            **kwargs (dict): Arbitrary, optional arguments for users
-                overriding the call. This is passed into the helper
-                methods and into `get_display_name` calls.
-
-        Returns:
-            str: The description of this entity. By default this includes
-                the entity's name, description and any contents inside it.
-
-        Notes:
-            To simply change the layout of how the object displays itself (like
-            adding some line decorations or change colors of different sections),
-            you can simply edit `.appearance_template`. You only need to override
-            this method (and/or its helpers) if you want to change what is passed
-            into the template or want the most control over output.
-
-        """
-
-        if not looker:
-            return ""
-
-        # ourselves
-        name = self.get_display_name(looker, **kwargs)
-        desc = self.db.desc or "You see nothing special."
-
-        # contents
-        content_names_map = self.get_content_names(looker, **kwargs)
-        exits = list_to_string(content_names_map["exits"])
-        characters = list_to_string(content_names_map["characters"])
-        things = list_to_string(content_names_map["things"])
-
-        # populate the appearance_template string. It's a good idea to strip it and
-        # let the client add any extra spaces instead.
-        return self.appearance_template.format(
-            header="",
-            name=name,
-            desc=desc,
-            exits=f"|wExits:|n {exits}" if exits else "",
-            characters=f"\n|wCharacters:|n {characters}" if characters else "",
-            things=f"\n|wYou see:|n {things}" if things else "",
-            footer="",
-        ).strip()
 
     def at_look(self, target, **kwargs):
         """
