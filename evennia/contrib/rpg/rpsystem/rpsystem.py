@@ -202,7 +202,7 @@ _RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
 _RE_REF = re.compile(r"\{+\#([0-9]+[\^\~tv]{0,1})\}+")
 
 # This regex is used to quickly reference one self in an emote.
-_RE_SELF_REF = re.compile(r"/me|@", _RE_FLAGS)
+_RE_SELF_REF = re.compile(r"(/me|@)(?=\W+)", _RE_FLAGS)
 
 # regex for non-alphanumberic end of a string
 _RE_CHAREND = re.compile(r"\W+$", _RE_FLAGS)
@@ -235,6 +235,26 @@ class RecogError(Exception):
 class LanguageError(Exception):
     pass
 
+def _get_case_ref(string):
+    """
+    Helper function which parses capitalization and
+    returns the appropriate case-ref character for emotes.
+    """
+    # default to retaining the original case
+    case = "~"
+    # internal flags for the case used for the original /query
+    # - t for titled input (like /Name)
+    # - ^ for all upercase input (like /NAME)
+    # - v for lower-case input (like /name)
+    # - ~ for mixed case input (like /nAmE)
+    if string.istitle():
+        case = "t"
+    elif string.isupper():
+        case = "^"
+    elif string.islower():
+        case = "v"
+
+    return case
 
 # emoting mechanisms
 def parse_language(speaker, emote):
@@ -339,7 +359,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     """
     # build a list of candidates with all possible referrable names
     # include 'me' keyword for self-ref
-    candidate_map = [(sender, "me")]
+    candidate_map = []
     for obj in candidates:
         # check if sender has any recogs for obj and add
         if hasattr(sender, "recog"):
@@ -365,6 +385,15 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     errors = []
     obj = None
     nmatches = 0
+    # first, find and replace any self-refs
+    for self_match in list(_RE_SELF_REF.finditer(string)):
+        matched = self_match.group()
+        case = _get_case_ref(matched.lstrip(_PREFIX)) if case_sensitive else ""
+        key = f"#{sender.id}{case}"
+        # replaced with ref
+        string = _RE_SELF_REF.sub(f"{{{key}}}", string, count=1)
+        mapping[key] = sender
+
     for marker_match in reversed(list(_RE_OBJ_REF_START.finditer(string))):
         # we scan backwards so we can replace in-situ without messing
         # up later occurrences. Given a marker match, query from
@@ -456,24 +485,9 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
         elif nmatches == 1:
             # a unique match - parse into intermediary representation
-            case = "~"  # retain original case of sdesc
-            if case_sensitive:
-                # case sensitive mode
-                # internal flags for the case used for the original /query
-                # - t for titled input (like /Name)
-                # - ^ for all upercase input (like /NAME)
-                # - v for lower-case input (like /name)
-                # - ~ for mixed case input (like /nAmE)
-                matchtext = marker_match.group().lstrip(_PREFIX)
-                if matchtext.istitle():
-                    case = "t"
-                elif matchtext.isupper():
-                    case = "^"
-                elif matchtext.islower():
-                    case = "v"
-
-            key = f"#{obj.id}{case}"
+            case = _get_case_ref(marker_match.group()) if case_sensitive else ""
             # recombine emote with matched text replaced by ref
+            key = f"#{obj.id}{case}"
             string = f"{head}{{{key}}}{tail}"
             mapping[key] = obj
 
