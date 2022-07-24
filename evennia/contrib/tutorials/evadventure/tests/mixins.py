@@ -4,10 +4,17 @@ Helpers for testing evadventure modules.
 """
 
 from evennia.utils import create
-from ..characters import EvAdventureCharacter
-from ..objects import EvAdventureObject
-from ..rooms import EvAdventureRoom
+
 from .. import enums
+from ..characters import EvAdventureCharacter
+from ..objects import (
+    EvAdventureArmor,
+    EvAdventureHelmet,
+    EvAdventureObject,
+    EvAdventureShield,
+    EvAdventureWeapon,
+)
+from ..rooms import EvAdventureRoom
 
 
 class EvAdventureMixin:
@@ -23,27 +30,27 @@ class EvAdventureMixin:
             EvAdventureCharacter, key="testchar", location=self.location
         )
         self.helmet = create.create_object(
-            EvAdventureObject,
+            EvAdventureHelmet,
             key="helmet",
             attributes=[("inventory_use_slot", enums.WieldLocation.HEAD), ("armor", 1)],
         )
         self.shield = create.create_object(
-            EvAdventureObject,
+            EvAdventureShield,
             key="shield",
             attributes=[("inventory_use_slot", enums.WieldLocation.SHIELD_HAND), ("armor", 1)],
         )
         self.armor = create.create_object(
-            EvAdventureObject,
+            EvAdventureArmor,
             key="armor",
             attributes=[("inventory_use_slot", enums.WieldLocation.BODY), ("armor", 11)],
         )
         self.weapon = create.create_object(
-            EvAdventureObject,
+            EvAdventureWeapon,
             key="weapon",
             attributes=[("inventory_use_slot", enums.WieldLocation.WEAPON_HAND)],
         )
         self.big_weapon = create.create_object(
-            EvAdventureObject,
+            EvAdventureWeapon,
             key="big_weapon",
             attributes=[("inventory_use_slot", enums.WieldLocation.TWO_HANDS)],
         )
