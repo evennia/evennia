@@ -170,6 +170,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Simplified `EvMenu.options_formatter` hook to use `EvColumn` and f-strings (inspectorcaracal)
 - Added `move_type` str kwarg to `move_to()` calls, optionally identifying the type of
   move being done ('teleport', 'disembark', 'give' etc). (volund)
+- Made RPSystem contrib msg calls pass `pose` or `say` as msg-`type` for use in
+  e.g. webclient pane filtering where desired. (volund)
 
 
 ## Evennia 0.9.5
