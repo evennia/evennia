@@ -82,7 +82,7 @@ class SlowExit(DefaultExit):
         def move_callback():
             "This callback will be called by utils.delay after move_delay seconds."
             source_location = traversing_object.location
-            if traversing_object.move_to(target_location):
+            if traversing_object.move_to(target_location, move_type="traverse"):
                 self.at_post_traverse(traversing_object, source_location)
             else:
                 if self.db.err_traverse:

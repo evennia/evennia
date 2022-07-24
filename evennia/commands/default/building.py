@@ -603,7 +603,7 @@ class CmdCreate(ObjManipCommand):
             if "drop" in self.switches:
                 if caller.location:
                     obj.home = caller.location
-                    obj.move_to(caller.location, quiet=True)
+                    obj.move_to(caller.location, quiet=True, move_type="drop")
         if string:
             caller.msg(string)
 
@@ -993,7 +993,7 @@ class CmdDig(ObjManipCommand):
                 )
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
         if new_room and "teleport" in self.switches:
-            caller.move_to(new_room)
+            caller.move_to(new_room, move_type="teleport")
 
 
 class CmdTunnel(COMMAND_DEFAULT_CLASS):
@@ -3709,6 +3709,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             quiet="quiet" in self.switches,
             emit_to_obj=caller,
             use_destination="intoexit" not in self.switches,
+            move_type="teleport"
         ):
 
             if obj_to_teleport == caller:

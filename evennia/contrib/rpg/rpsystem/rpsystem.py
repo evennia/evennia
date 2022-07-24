@@ -202,7 +202,7 @@ _RE_RIGHT_BRACKETS = re.compile(r"\}+", _RE_FLAGS)
 _RE_REF = re.compile(r"\{+\#([0-9]+[\^\~tv]{0,1})\}+")
 
 # This regex is used to quickly reference one self in an emote.
-_RE_SELF_REF = re.compile(r"/me|@", _RE_FLAGS)
+_RE_SELF_REF = re.compile(r"(/me|@)(?=\W+)", _RE_FLAGS)
 
 # regex for non-alphanumberic end of a string
 _RE_CHAREND = re.compile(r"\W+$", _RE_FLAGS)
@@ -212,6 +212,7 @@ _RE_REF_LANG = re.compile(r"\{+\##([0-9]+)\}+")
 # language says in the emote are on the form "..." or langname"..." (no spaces).
 # this regex returns in groups (langname, say), where langname can be empty.
 _RE_LANGUAGE = re.compile(r"(?:\((\w+)\))*(\".+?\")")
+
 
 # the emote parser works in two steps:
 #  1) convert the incoming emote into an intermediary
@@ -235,6 +236,26 @@ class RecogError(Exception):
 class LanguageError(Exception):
     pass
 
+def _get_case_ref(string):
+    """
+    Helper function which parses capitalization and
+    returns the appropriate case-ref character for emotes.
+    """
+    # default to retaining the original case
+    case = "~"
+    # internal flags for the case used for the original /query
+    # - t for titled input (like /Name)
+    # - ^ for all upercase input (like /NAME)
+    # - v for lower-case input (like /name)
+    # - ~ for mixed case input (like /nAmE)
+    if string.istitle():
+        case = "t"
+    elif string.isupper():
+        case = "^"
+    elif string.islower():
+        case = "v"
+
+    return case
 
 # emoting mechanisms
 def parse_language(speaker, emote):
@@ -339,7 +360,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     """
     # build a list of candidates with all possible referrable names
     # include 'me' keyword for self-ref
-    candidate_map = [(sender, "me")]
+    candidate_map = []
     for obj in candidates:
         # check if sender has any recogs for obj and add
         if hasattr(sender, "recog"):
@@ -365,6 +386,15 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     errors = []
     obj = None
     nmatches = 0
+    # first, find and replace any self-refs
+    for self_match in list(_RE_SELF_REF.finditer(string)):
+        matched = self_match.group()
+        case = _get_case_ref(matched.lstrip(_PREFIX)) if case_sensitive else ""
+        key = f"#{sender.id}{case}"
+        # replaced with ref
+        string = _RE_SELF_REF.sub(f"{{{key}}}", string, count=1)
+        mapping[key] = sender
+
     for marker_match in reversed(list(_RE_OBJ_REF_START.finditer(string))):
         # we scan backwards so we can replace in-situ without messing
         # up later occurrences. Given a marker match, query from
@@ -375,7 +405,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         match_index = marker_match.start()
         # split the emote string at the reference marker, to process everything after it
         head = string[:match_index]
-        tail = string[match_index + 1 :]
+        tail = string[match_index + 1:]
 
         if search_mode:
             # match the candidates against the whole search string after the marker
@@ -421,7 +451,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             # save search string
             matched_text = "".join(tail[1:iend])
             # recombine remainder of emote back into a string
-            tail = "".join(tail[iend + 1 :])
+            tail = "".join(tail[iend + 1:])
 
         nmatches = len(bestmatches)
 
@@ -456,24 +486,9 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             errors.append(_EMOTE_NOMATCH_ERROR.format(ref=marker_match.group()))
         elif nmatches == 1:
             # a unique match - parse into intermediary representation
-            case = "~"  # retain original case of sdesc
-            if case_sensitive:
-                # case sensitive mode
-                # internal flags for the case used for the original /query
-                # - t for titled input (like /Name)
-                # - ^ for all upercase input (like /NAME)
-                # - v for lower-case input (like /name)
-                # - ~ for mixed case input (like /nAmE)
-                matchtext = marker_match.group().lstrip(_PREFIX)
-                if matchtext.istitle():
-                    case = "t"
-                elif matchtext.isupper():
-                    case = "^"
-                elif matchtext.islower():
-                    case = "v"
-
-            key = f"#{obj.id}{case}"
+            case = _get_case_ref(marker_match.group()) if case_sensitive else ""
             # recombine emote with matched text replaced by ref
+            key = f"#{obj.id}{case}"
             string = f"{head}{{{key}}}{tail}"
             mapping[key] = obj
 
@@ -513,7 +528,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
     return string, mapping
 
 
-def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
+def send_emote(sender, receivers, emote, msg_type="pose", anonymous_add="first", **kwargs):
     """
     Main access function for distribute an emote.
 
@@ -523,6 +538,9 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
             will also form the basis for which sdescs are
             'valid' to use in the emote.
         emote (str): The raw emote string as input by emoter.
+        msg_type (str): The type of emote this is. "say" or "pose"
+            for example. This is arbitrary and used for generating
+            extra data for .msg(text) tuple.
         anonymous_add (str or None, optional): If `sender` is not
             self-referencing in the emote, this will auto-add
             `sender`'s data to the emote. Possible values are
@@ -599,7 +617,7 @@ def send_emote(sender, receivers, emote, anonymous_add="first", **kwargs):
         )
 
         # do the template replacement of the sdesc/recog {#num} markers
-        receiver.msg(sendemote.format(**receiver_sdesc_mapping), from_obj=sender, **kwargs)
+        receiver.msg(text=(sendemote.format(**receiver_sdesc_mapping), {"type": msg_type}), from_obj=sender, **kwargs)
 
 
 # ------------------------------------------------------------
@@ -910,7 +928,7 @@ class CmdSay(RPCommand):  # replaces standard say
         # calling the speech modifying hook
         speech = caller.at_pre_say(self.args)
         targets = self.caller.location.contents
-        send_emote(self.caller, targets, speech, anonymous_add=None)
+        send_emote(self.caller, targets, speech, msg_type="say", anonymous_add=None)
 
 
 class CmdSdesc(RPCommand):  # set/look at own sdesc
@@ -1253,19 +1271,19 @@ class ContribRPObject(DefaultObject):
         self.sdesc.add("Something")
 
     def search(
-        self,
-        searchdata,
-        global_search=False,
-        use_nicks=True,
-        typeclass=None,
-        location=None,
-        attribute_name=None,
-        quiet=False,
-        exact=False,
-        candidates=None,
-        nofound_string=None,
-        multimatch_string=None,
-        use_dbref=None,
+            self,
+            searchdata,
+            global_search=False,
+            use_nicks=True,
+            typeclass=None,
+            location=None,
+            attribute_name=None,
+            quiet=False,
+            exact=False,
+            candidates=None,
+            nofound_string=None,
+            multimatch_string=None,
+            use_dbref=None,
     ):
         """
         Returns an Object matching a search string/condition, taking
@@ -1349,10 +1367,10 @@ class ContribRPObject(DefaultObject):
             )
 
         if global_search or (
-            is_string
-            and searchdata.startswith("#")
-            and len(searchdata) > 1
-            and searchdata[1:].isdigit()
+                is_string
+                and searchdata.startswith("#")
+                and len(searchdata) > 1
+                and searchdata[1:].isdigit()
         ):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs
