@@ -75,7 +75,12 @@ class EvAdventureDungeonExit(DefaultExit):
 
     """
 
-    dungeon_orchestrator = AttributeProperty(None, autocreate=False)
+    def at_object_creation(self):
+        """
+        We want to block progressing forward unless the room is clear.
+
+        """
+        self.locks.add("traverse:not tag(not_clear, dungeon_room)")
 
     def at_traverse(self, traversing_object, target_location, **kwargs):
         """
@@ -84,7 +89,9 @@ class EvAdventureDungeonExit(DefaultExit):
 
         """
         if target_location == self.location:
-            self.destination = target_location = self.dungeon_orchestrator.new_room(self)
+            self.destination = target_location = self.location.db.dungeon_orchestrator.new_room(
+                self
+            )
         super().at_traverse(traversing_object, target_location, **kwargs)
 
 
@@ -129,14 +136,16 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
         )
         self.unvisited_exits.append(out_exit.id)
 
-    def _generate_room(self, depth, coords):
+    def _generate_dungeon_room(self, depth, coords):
         # TODO - determine what type of room to create here based on location and depth
         room_typeclass = EvAdventureDungeonRoom
         new_room = create.create_object(
             room_typeclass,
             key="Dungeon room",
-            tags=((self.key, "dungeon_room"),),
-            attributes=(("xy_coord", coords, "dungeon_xygrid"),),
+            attributes=(
+                ("xy_coords", coords, "dungeon_xygrid"),
+                ("dungeon_orchestrator", self),
+            ),
         )
         return new_room
 
@@ -170,7 +179,7 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
         # depth achieved.
         depth = int(sqrt(new_x**2 + new_y**2))
 
-        new_room = self._generate_room(depth, (new_x, new_y))
+        new_room = self._generate_dungeon_room(depth, (new_x, new_y))
 
         self.xy_grid[(new_x, new_y)] = new_room
 
@@ -182,7 +191,14 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
             aliases=_EXIT_ALIASES.get(back_exit_key, ()),
             location=new_room,
             destination=from_exit.location,
-            attributes=(("desc", "A dark passage."),),
+            attributes=(
+                (
+                    "desc",
+                    "A dark passage.",
+                ),
+            ),
+            # we default to allowing back-tracking (also used for fleeing)
+            locks=("traverse: true()",),
         )
 
         # figure out what other exits should be here, if any
@@ -205,8 +221,8 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
                     direction = available_directions.pop(0)
                     dx, dy = _EXIT_GRID_SHIFT[direction]
                     target_coord = (new_x + dx, new_y + dy)
-                    if target_coord not in self.xy_grid:
-                        # no room there - make an exit to it
+                    if target_coord not in self.xy_grid and target_coord != (0, 0):
+                        # no room there (and not back to start room) - make an exit to it
                         self.create_out_exit(new_room, direction)
                         # we create this to avoid other rooms linking here, but don't create the
                         # room yet
@@ -214,6 +230,8 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
                         break
 
         self.highest_depth = max(self.highest_depth, depth)
+
+        return new_room
 
 
 # --------------------------------------------------
@@ -232,16 +250,11 @@ class EvAdventureStartRoomExit(DefaultExit):
 
     """
 
-    # we store the orchestrator like this since we don't want to actually manipulate it,
-    # but only use the reference to know when to create a new room
-    dungeon_orchestrator = AttributeProperty(None, autocreate=False)
-
     def reset_exit(self):
         """
         Flush the exit, so next traversal creates a new dungeon branch.
 
         """
-        self.dungeon_orchestrator = None
         self.destination = self.location
 
     def at_traverse(self, traversing_object, target_location, **kwargs):
@@ -249,12 +262,13 @@ class EvAdventureStartRoomExit(DefaultExit):
         When traversing create a new orchestrator if one is not already assigned.
 
         """
-        if target_location == self.location or self.dungeon_orchestrator is None:
-            self.dungeon_orchestrator = create.create_script(
+        if target_location == self.location:
+            # make a global orchestrator script for this dungeon branch
+            dungeon_orchestrator = create.create_script(
                 EvAdventureDungeonOrchestrator,
                 key=f"dungeon_orchestrator_{self.key}_{datetime.utcnow()}",
             )
-            self.destination = target_location = self.dungeon_orchestrator.new_room(self)
+            self.destination = target_location = dungeon_orchestrator.new_room(self)
 
         super().at_traverse(traversing_object, target_location, **kwargs)
 
