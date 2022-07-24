@@ -2,6 +2,7 @@
 Unit tests for typeclass base system
 
 """
+
 from django.test import override_settings
 from evennia.typeclasses import attributes
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
@@ -26,13 +27,24 @@ class TestAttributes(BaseEvenniaTest):
         self.obj1.db.testattr = value
         self.assertEqual(self.obj1.db.testattr, value)
 
+        # "plain" subclasses
         value = DictSubclass({"fo": "foo", "bar": "bar"})
         self.obj1.db.testattr = value
         self.assertEqual(self.obj1.db.testattr, value)
 
-        value = DictSubclass({"fo": "foo", "bar": "bar", "obj": self.obj2})
-        self.obj1.db.testattr = value
+        self.obj1.db.testattr["fo"] = "foo2"
+        value.update({"fo": "foo2"})
         self.assertEqual(self.obj1.db.testattr, value)
+        self.assertEqual(self.obj1.attributes.get("testattr"), value)
+
+        # nested subclasses
+        value = DictSubclass({"nested": True, "deep": DictSubclass({"fo": "foo", "bar": "bar"})})
+        self.obj1.db.testattr = value
+
+        self.obj1.db.testattr["deep"]["fo"] = "nemo"
+        value["deep"].update({"fo": "nemo"})
+        self.assertEqual(self.obj1.db.testattr, value)
+        self.assertEqual(self.obj1.attributes.get("testattr"), value)
 
     @override_settings(TYPECLASS_AGGRESSIVE_CACHE=False)
     @patch("evennia.typeclasses.attributes._TYPECLASS_AGGRESSIVE_CACHE", False)
@@ -47,14 +59,25 @@ class TestAttributes(BaseEvenniaTest):
         self.assertEqual(self.obj1.db.testattr, value)
         self.assertFalse(self.obj1.attributes.backend._cache)
 
+        # "plain" subclasses
         value = DictSubclass({"fo": "foo", "bar": "bar"})
-        self.obj1.db.dict_subclass = value
-        self.assertEqual(self.obj1.db.dict_subclass, value)
+        self.obj1.db.testattr = value
+        self.assertEqual(self.obj1.db.testattr, value)
+
+        self.obj1.db.testattr["fo"] = "foo2"
+        value.update({"fo": "foo2"})
+        self.assertEqual(self.obj1.db.testattr, value)
+        self.assertEqual(self.obj1.attributes.get("testattr"), value)
         self.assertFalse(self.obj1.attributes.backend._cache)
 
-        value = DictSubclass({"fo": "foo", "bar": "bar", "obj": self.obj2})
-        self.obj1.db.dict_subclass = value
-        self.assertEqual(self.obj1.db.dict_subclass, value)
+        # nested subclasses
+        value = DictSubclass({"nested": True, "deep": DictSubclass({"fo": "foo", "bar": "bar"})})
+        self.obj1.db.testattr = value
+
+        self.obj1.db.testattr["deep"]["fo"] = "nemo"
+        value["deep"].update({"fo": "nemo"})
+        self.assertEqual(self.obj1.db.testattr, value)
+        self.assertEqual(self.obj1.attributes.get("testattr"), value)
         self.assertFalse(self.obj1.attributes.backend._cache)
 
     def test_weird_text_save(self):
