@@ -1367,6 +1367,20 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         return ""
 
+    def format_appearance(self, appearance, looker, **kwargs):
+        """
+        Final processing of the entire appearance string. Called by `return_appearance`.
+
+        Args:
+            appearance (str): The compiled appearance string.
+            looker (Object): Object doing the looking.
+            **kwargs: Arbitrary data for use when overriding.
+        Returns:
+            str: The final formatted output.
+
+        """
+        return appearance.strip()
+
     def return_appearance(self, looker, **kwargs):
         """
         Main callback used by 'look' for the object to describe itself.
@@ -1398,17 +1412,20 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if not looker:
             return ""
 
-        # populate the appearance_template string. It's a good idea to strip it and
-        # let the client add any extra spaces instead.
-        return self.appearance_template.format(
-            name=self.get_display_name(looker, **kwargs),
-            desc=self.get_display_desc(looker, **kwargs),
-            header=self.get_display_header(looker, **kwargs),
-            footer=self.get_display_footer(looker, **kwargs),
-            exits=self.get_display_exits(looker, **kwargs),
-            characters=self.get_display_characters(looker, **kwargs),
-            things=self.get_display_things(looker, **kwargs),
-        ).strip()
+        # populate the appearance_template string.
+        return self.format_appearance(
+            self.appearance_template.format(
+                name=self.get_display_name(looker, **kwargs),
+                desc=self.get_display_desc(looker, **kwargs),
+                header=self.get_display_header(looker, **kwargs),
+                footer=self.get_display_footer(looker, **kwargs),
+                exits=self.get_display_exits(looker, **kwargs),
+                characters=self.get_display_characters(looker, **kwargs),
+                things=self.get_display_things(looker, **kwargs),
+            ),
+            looker,
+            **kwargs,
+        )
 
     #
     # Hook methods
