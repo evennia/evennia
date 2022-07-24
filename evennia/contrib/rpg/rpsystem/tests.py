@@ -222,17 +222,17 @@ class TestRPSystem(BaseEvenniaTest):
         receiver2.msg = lambda text, **kwargs: setattr(self, "out2", text)
         rpsystem.send_emote(speaker, receivers, emote, case_sensitive=False)
         self.assertEqual(
-            self.out0,
+            self.out0[0],
             "With a flair, |mSender|n looks at |bThe first receiver of emotes.|n "
             'and |bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n',
         )
         self.assertEqual(
-            self.out1,
+            self.out1[0],
             "With a flair, |bA nice sender of emotes|n looks at |mReceiver1|n and "
             '|bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n',
         )
         self.assertEqual(
-            self.out2,
+            self.out2[0],
             "With a flair, |bA nice sender of emotes|n looks at |bThe first "
             'receiver of emotes.|n and |mReceiver2|n. She says |w"This is a test."|n',
         )
@@ -251,19 +251,19 @@ class TestRPSystem(BaseEvenniaTest):
         receiver2.msg = lambda text, **kwargs: setattr(self, "out2", text)
         rpsystem.send_emote(speaker, receivers, case_emote)
         self.assertEqual(
-            self.out0,
+            self.out0[0],
             "|mSender|n looks at |bthe first receiver of emotes.|n. Then, |mSender|n "
             "looks at |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n "
             "and |bAnother nice colliding sdesc-guy for tests|n twice.",
         )
         self.assertEqual(
-            self.out1,
+            self.out1[0],
             "|bA nice sender of emotes|n looks at |mReceiver1|n. Then, "
             "|ba nice sender of emotes|n looks at |mReceiver1|n, |mReceiver1|n "
             "and |bAnother nice colliding sdesc-guy for tests|n twice.",
         )
         self.assertEqual(
-            self.out2,
+            self.out2[0],
             "|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n. "
             "Then, |ba nice sender of emotes|n looks at |bTHE FIRST RECEIVER OF EMOTES.|n, "
             "|bThe first receiver of emotes.|n and |mReceiver2|n twice.",
