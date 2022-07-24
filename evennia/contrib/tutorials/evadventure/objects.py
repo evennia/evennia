@@ -3,14 +3,26 @@ All items in the game inherit from a base object. The properties (what you can d
 with an object, such as wear, wield, eat, drink, kill etc) are all controlled by
 Tags.
 
+Every object has one of a few `obj_type`-category tags:
+- weapon
+- armor
+- shield
+- helmet
+- consumable  (potions, torches etc)
+- magic (runestones, magic items)
+- quest (quest-items)
+- treasure  (valuable to sell)
 
+It's possible for an item to have more than one tag, such as a golden helmet (helmet+treasure) or
+rune sword (weapon+quest).
 
 """
 
+from evennia import AttributeProperty, TagProperty
 from evennia.objects.objects import DefaultObject
-from evennia.typeclasses.attributes import AttributeProperty
+from evennia.utils.utils import make_iter
 
-from .enums import Ability, WieldLocation
+from .enums import Ability, ObjType, WieldLocation
 
 
 class EvAdventureObject(DefaultObject):
@@ -23,15 +35,23 @@ class EvAdventureObject(DefaultObject):
     inventory_use_slot = AttributeProperty(WieldLocation.BACKPACK)
     # how many inventory slots it uses (can be a fraction)
     size = AttributeProperty(1)
-    armor = AttributeProperty(0)
-    # items that are usable (like potions) have a value larger than 0. Wieldable items
-    # like weapons, armor etc are not 'usable' in this respect.
-    uses = AttributeProperty(0)
-    # when 0, item is destroyed and is unusable
-    quality = AttributeProperty(1)
     value = AttributeProperty(0)
 
-    help_text = AttributeProperty("")
+    # can also be an iterable, for adding multiple obj-type tags
+    obj_type = ObjType.TREASURE.value
+
+    def at_object_creation(self):
+        for obj_type in make_iter(self.obj_type):
+            self.tags.add(obj_type, category="obj_type")
+
+    def has_obj_type(self, objtype):
+        """
+        Check if object is of a particular type.
+
+        typeobj_enum (enum.ObjType): A type to check, like enums.TypeObj.TREASURE.
+
+        """
+        return objtype.value in make_iter(self.obj_type)
 
     def get_help(self):
         """
@@ -93,7 +113,28 @@ class EvAdventureObjectFiller(EvAdventureObject):
 
     """
 
+    obj_type = ObjType.QUEST.value  # can't be sold
     quality = AttributeProperty(0)
+
+
+class EvAdventureQuest(EvAdventureObject):
+    """
+    A quest object. These cannot be sold and only be used for quest resolution.
+
+    """
+
+    obj_type = ObjType.QUEST.value
+    value = AttributeProperty(0)
+
+
+class EvAdventureTreasure(EvAdventureObject):
+    """
+    A 'treasure' is mainly useful to sell for coin.
+
+    """
+
+    obj_type = ObjType.TREASURE.value
+    value = AttributeProperty(100)
 
 
 class EvAdventureConsumable(EvAdventureObject):
@@ -103,7 +144,7 @@ class EvAdventureConsumable(EvAdventureObject):
 
     """
 
-    inventory_use_slot = AttributeProperty(WieldLocation.BACKPACK)
+    obj_type = ObjType.CONSUMABLE.value
     size = AttributeProperty(0.25)
     uses = AttributeProperty(1)
 
@@ -134,25 +175,13 @@ class EvAdventureConsumable(EvAdventureObject):
             self.delete()
 
 
-class EvAdventureWeapon(EvAdventureObject):
-    """
-    Base weapon class for all EvAdventure weapons.
-
-    """
-
-    inventory_use_slot = AttributeProperty(WieldLocation.WEAPON_HAND)
-
-    attack_type = AttributeProperty(Ability.STR)
-    defense_type = AttributeProperty(Ability.ARMOR)
-    damage_roll = AttributeProperty("1d6")
-
-
 class WeaponEmptyHand:
     """
-    This is used when you wield no weapons. We won't create any db-object for it.
+    This is a dummy-class loaded when you wield no weapons. We won't create any db-object for it.
 
     """
 
+    obj_type = ObjType.WEAPON.value
     key = "Empty Fists"
     inventory_use_slot = WieldLocation.WEAPON_HAND
     attack_type = Ability.STR
@@ -164,6 +193,23 @@ class WeaponEmptyHand:
         return "<WeaponEmptyHand>"
 
 
+class EvAdventureWeapon(EvAdventureObject):
+    """
+    Base weapon class for all EvAdventure weapons.
+
+    """
+
+    obj_type = ObjType.WEAPON.value
+    inventory_use_slot = AttributeProperty(WieldLocation.WEAPON_HAND)
+    quality = AttributeProperty(3)
+
+    # what ability used to attack with this weapon
+    attack_type = AttributeProperty(Ability.STR)
+    # what defense stat of the enemy it must defeat
+    defense_type = AttributeProperty(Ability.ARMOR)
+    damage_roll = AttributeProperty("1d6")
+
+
 class EvAdventureRunestone(EvAdventureWeapon):
     """
     Base class for magic runestones. In _Knave_, every spell is represented by a rune stone
@@ -173,8 +219,44 @@ class EvAdventureRunestone(EvAdventureWeapon):
 
     """
 
+    obj_type = (ObjType.WEAPON.value, ObjType.MAGIC.value)
     inventory_use_slot = AttributeProperty(WieldLocation.TWO_HANDS)
+    quality = AttributeProperty(3)
 
     attack_type = AttributeProperty(Ability.INT)
-    defense_type = AttributeProperty(Ability.CON)
+    defense_type = AttributeProperty(Ability.DEX)
     damage_roll = AttributeProperty("1d8")
+
+
+class EvAdventureArmor(EvAdventureObject):
+    """
+    Base class for all wearable Armors.
+
+    """
+
+    obj_type = ObjType.ARMOR.value
+    inventory_use_slot = AttributeProperty(WieldLocation.BODY)
+    armor = AttributeProperty(11)
+    quality = AttributeProperty(3)
+
+
+class EvAdventureShield(EvAdventureArmor):
+    """
+    Base class for all Shields.
+
+    """
+
+    obj_type = ObjType.SHIELD.value
+    inventory_use_slot = AttributeProperty(WieldLocation.SHIELD_HAND)
+    armor = AttributeProperty(1)
+
+
+class EvAdventureHelmet(EvAdventureArmor):
+    """
+    Base class for all Helmets.
+
+    """
+
+    obj_type = ObjType.HELMET.value
+    inventory_use_slot = AttributeProperty(WieldLocation.HEAD)
+    armor = AttributeProperty(1)

@@ -69,3 +69,20 @@ class WieldLocation(Enum):
     # combat-related
     OPTIMAL_DISTANCE = "optimal_distance"
     SUBOPTIMAL_DISTANCE = "suboptimal_distance"
+
+
+class ObjType(Enum):
+    """
+    Object types
+
+    """
+
+    WEAPON = "weapon"
+    ARMOR = "armor"
+    SHIELD = "shield"
+    HELMET = "helmet"
+    CONSUMABLE = "consumable"
+    GEAR = "gear"
+    MAGIC = "magic"
+    QUEST = "quest"
+    TREASURE = "treasure"
