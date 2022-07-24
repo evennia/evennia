@@ -19,8 +19,10 @@ from datetime import datetime
 from math import sqrt
 from random import randint, random, shuffle
 
-from evennia import AttributeProperty, DefaultExit, DefaultScript
-from evennia.utils import create
+from evennia.objects.objects import DefaultExit
+from evennia.scripts.scripts import DefaultScript
+from evennia.typeclasses.attributes import AttributeProperty
+from evennia.utils import create, search
 from evennia.utils.utils import inherits_from
 
 from .rooms import EvAdventureDungeonRoom
@@ -81,7 +83,7 @@ class EvAdventureDungeonExit(DefaultExit):
         target was not yet created.
 
         """
-        if not target_location:
+        if target_location == self.location:
             self.destination = target_location = self.dungeon_orchestrator.new_room(self)
         super().at_traverse(traversing_object, target_location, **kwargs)
 
@@ -99,10 +101,10 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
     max_new_exits_per_room = 3
 
     rooms = AttributeProperty(list())
-    n_unvisited_exits = AttributeProperty(list())
+    unvisited_exits = AttributeProperty(list())
     highest_depth = AttributeProperty(0)
 
-    # (x,y): room
+    # (x,y): room coordinates used up by orchestrator
     xy_grid = AttributeProperty(dict())
 
     def register_exit_traversed(self, exit):
@@ -119,8 +121,11 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
         Create outgoing exit from a room. The target room is not yet created.
 
         """
-        out_exit, _ = EvAdventureDungeonExit.create(
-            key=exit_direction, location=location, aliases=_EXIT_ALIASES[exit_direction]
+        out_exit = create.create_object(
+            EvAdventureDungeonExit,
+            key=exit_direction,
+            location=location,
+            aliases=_EXIT_ALIASES[exit_direction],
         )
         self.unvisited_exits.append(out_exit.id)
 
@@ -130,20 +135,33 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
         new_room = create.create_object(
             room_typeclass,
             key="Dungeon room",
-            tags=((self.key,),),
+            tags=((self.key, "dungeon_room"),),
             attributes=(("xy_coord", coords, "dungeon_xygrid"),),
         )
         return new_room
+
+    def delete(self):
+        """
+        Clean up the entire dungeon along with the orchestrator.
+
+        """
+        rooms = search.search_object_by_tag(self.key, category="dungeon_room")
+        for room in rooms:
+            room.delete()
+        super().delete()
 
     def new_room(self, from_exit):
         """
         Create a new Dungeon room leading from the provided exit.
 
+        Args:
+            from_exit (Exit): The exit leading to this new room.
+
         """
         # figure out coordinate of old room and figure out what coord the
         # new one would get
         source_location = from_exit.location
-        x, y = source_location.get("xy_coord", category="dungeon_xygrid", default=(0, 0))
+        x, y = source_location.attributes.get("xy_coord", category="dungeon_xygrid", default=(0, 0))
         dx, dy = _EXIT_GRID_SHIFT.get(from_exit.key, (1, 0))
         new_x, new_y = (x + dx, y + dy)
 
@@ -157,8 +175,9 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
         self.xy_grid[(new_x, new_y)] = new_room
 
         # always make a return exit back to where we came from
-        back_exit_key = (_EXIT_REVERSE_MAPPING.get(from_exit.key, "back"),)
-        EvAdventureDungeonExit(
+        back_exit_key = _EXIT_REVERSE_MAPPING.get(from_exit.key, "back")
+        create.create_object(
+            EvAdventureDungeonExit,
             key=back_exit_key,
             aliases=_EXIT_ALIASES.get(back_exit_key, ()),
             location=new_room,
@@ -168,14 +187,14 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
 
         # figure out what other exits should be here, if any
         n_unexplored = len(self.unvisited_exits)
-        if n_unexplored >= self.max_unexplored_exits:
-            # no more exits to open - this is a dead end.
-            return
-        else:
-            n_exits = randint(1, min(self.max_new_exits_per_room, n_unexplored))
-            back_exit = from_exit.key
+
+        if n_unexplored < self.max_unexplored_exits:
+            # we have a budget of unexplored exits to open
+            n_exits = min(self.max_new_exits_per_room, self.max_unexplored_exits)
+            if n_exits > 1:
+                n_exits = randint(1, n_exits)
             available_directions = [
-                direction for direction in _EXIT_ALIASES if direction != back_exit
+                direction for direction in _EXIT_ALIASES if direction != back_exit_key
             ]
             # randomize order of exits
             shuffle(available_directions)
@@ -184,11 +203,14 @@ class EvAdventureDungeonOrchestrator(DefaultScript):
                     # get a random direction and check so there isn't a room already
                     # created in that direction
                     direction = available_directions.pop(0)
-                    dx, dy = _EXIT_GRID_SHIFT(direction)
+                    dx, dy = _EXIT_GRID_SHIFT[direction]
                     target_coord = (new_x + dx, new_y + dy)
                     if target_coord not in self.xy_grid:
                         # no room there - make an exit to it
                         self.create_out_exit(new_room, direction)
+                        # we create this to avoid other rooms linking here, but don't create the
+                        # room yet
+                        self.xy_grid[target_coord] = None
                         break
 
         self.highest_depth = max(self.highest_depth, depth)
@@ -204,8 +226,14 @@ class EvAdventureStartRoomExit(DefaultExit):
     Traversing this exit will either lead to an existing dungeon branch or create
     a new one.
 
+    Since exits need to have a destination, we start out having them loop back to
+    the same location and change this whenever someone actually traverse them. The
+    act of passing through creates a room on the other side.
+
     """
 
+    # we store the orchestrator like this since we don't want to actually manipulate it,
+    # but only use the reference to know when to create a new room
     dungeon_orchestrator = AttributeProperty(None, autocreate=False)
 
     def reset_exit(self):
@@ -213,18 +241,20 @@ class EvAdventureStartRoomExit(DefaultExit):
         Flush the exit, so next traversal creates a new dungeon branch.
 
         """
-        self.dungeon_orchestrator = self.destination = None
+        self.dungeon_orchestrator = None
+        self.destination = self.location
 
     def at_traverse(self, traversing_object, target_location, **kwargs):
         """
         When traversing create a new orchestrator if one is not already assigned.
 
         """
-        if target_location is None or self.dungeon_orchestrator is None:
-            self.dungeon_orchestrator, _ = EvAdventureDungeonOrchestrator.create(
-                f"dungeon_orchestrator_{datetime.utcnow()}",
+        if target_location == self.location or self.dungeon_orchestrator is None:
+            self.dungeon_orchestrator = create.create_script(
+                EvAdventureDungeonOrchestrator,
+                key=f"dungeon_orchestrator_{self.key}_{datetime.utcnow()}",
             )
-            target_location = self.destination = self.dungeon_orchestrator.new_room(self)
+            self.destination = target_location = self.dungeon_orchestrator.new_room(self)
 
         super().at_traverse(traversing_object, target_location, **kwargs)
 
@@ -234,6 +264,9 @@ class EvAdventureStartRoomResetter(DefaultScript):
     Simple ticker-script. Introduces a chance of the room's exits cycling every interval.
 
     """
+
+    def at_script_creation(self):
+        self.key = "evadventure_startroom_resetter"
 
     def at_repeat(self):
         """
@@ -259,4 +292,8 @@ class EvAdventureDungeonRoomStart(EvAdventureDungeonRoom):
     recycle_time = 5 * 60  # seconds
 
     def at_object_creation(self):
-        self.scripts.add(EvAdventureStartRoomResetter, interval=self.recycle_time, autostart=True)
+        # want to set the script interval on creation time, so we use create_script with obj=self
+        # instead of self.scripts.add() here
+        create.create_script(
+            EvAdventureStartRoomResetter, obj=self, interval=self.recycle_time, autostart=True
+        )
