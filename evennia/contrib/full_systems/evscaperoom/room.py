@@ -185,7 +185,7 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
 
     # Evennia hooks
 
-    def at_object_receive(self, moved_obj, source_location):
+    def at_object_receive(self, moved_obj, source_location, move_type="move", **kwargs):
         """
         Called when an object arrives in the room. This can be used to
         sum up the situation, set tags etc.
@@ -195,7 +195,7 @@ class EvscapeRoom(EvscaperoomObject, DefaultRoom):
             self.log(f"JOIN: {moved_obj} joined room")
             self.state.character_enters(moved_obj)
 
-    def at_object_leave(self, moved_obj, target_location, **kwargs):
+    def at_object_leave(self, moved_obj, target_location, move_type="move", **kwargs):
         """
         Called when an object leaves the room; if this is a Character we need
         to clean them up and move them to the menu state.

@@ -96,7 +96,6 @@ DEFAULT_SETTING_RESETS = dict(
         "evennia.game_template.server.conf.prototypefuncs",
     ],
     BASE_GUEST_TYPECLASS="evennia.accounts.accounts.DefaultGuest",
-
     # a special setting boolean _TEST_ENVIRONMENT is set by the test runner
     # while the test suite is running.
 )

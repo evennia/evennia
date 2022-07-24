@@ -15,9 +15,11 @@ def as_listener(func=None, signal_name=None):
         signal_name (str): The name of the signal to listen to, defaults to function name.
     """
     if not func and signal_name:
+
         def wrapper(func):
             func._listener_signal_name = signal_name
             return func
+
         return wrapper
 
     signal_name = func.__name__
@@ -35,9 +37,11 @@ def as_responder(func=None, signal_name=None):
         signal_name (str): The name of the signal to respond to, defaults to function name.
     """
     if not func and signal_name:
+
         def wrapper(func):
             func._responder_signal_name = signal_name
             return func
+
         return wrapper
 
     signal_name = func.__name__
@@ -177,12 +181,12 @@ class SignalsHandler(object):
         """
         type_host = type(obj)
         for att_name, att_obj in type_host.__dict__.items():
-            listener_signal_name = getattr(att_obj, '_listener_signal_name', None)
+            listener_signal_name = getattr(att_obj, "_listener_signal_name", None)
             if listener_signal_name:
                 callback = getattr(obj, att_name)
                 self.add_listener(signal_name=listener_signal_name, callback=callback)
 
-            responder_signal_name = getattr(att_obj, '_responder_signal_name', None)
+            responder_signal_name = getattr(att_obj, "_responder_signal_name", None)
             if responder_signal_name:
                 callback = getattr(obj, att_name)
                 self.add_responder(signal_name=responder_signal_name, callback=callback)
@@ -196,12 +200,12 @@ class SignalsHandler(object):
         """
         type_host = type(obj)
         for att_name, att_obj in type_host.__dict__.items():
-            listener_signal_name = getattr(att_obj, '_listener_signal_name', None)
+            listener_signal_name = getattr(att_obj, "_listener_signal_name", None)
             if listener_signal_name:
                 callback = getattr(obj, att_name)
                 self.remove_listener(signal_name=listener_signal_name, callback=callback)
 
-            responder_signal_name = getattr(att_obj, '_responder_signal_name', None)
+            responder_signal_name = getattr(att_obj, "_responder_signal_name", None)
             if responder_signal_name:
                 callback = getattr(obj, att_name)
                 self.remove_responder(signal_name=responder_signal_name, callback=callback)

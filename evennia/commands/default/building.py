@@ -603,7 +603,7 @@ class CmdCreate(ObjManipCommand):
             if "drop" in self.switches:
                 if caller.location:
                     obj.home = caller.location
-                    obj.move_to(caller.location, quiet=True)
+                    obj.move_to(caller.location, quiet=True, move_type="drop")
         if string:
             caller.msg(string)
 
@@ -993,7 +993,7 @@ class CmdDig(ObjManipCommand):
                 )
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
         if new_room and "teleport" in self.switches:
-            caller.move_to(new_room)
+            caller.move_to(new_room, move_type="teleport")
 
 
 class CmdTunnel(COMMAND_DEFAULT_CLASS):
@@ -1071,7 +1071,7 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
         exitname, backshort = self.directions[exitshort]
         backname = self.directions[backshort][0]
 
-        # if we recieved a typeclass for the exit, add it to the alias(short name)
+        # if we received a typeclass for the exit, add it to the alias(short name)
         if ":" in self.lhs:
             # limit to only the first : character
             exit_typeclass = ":" + self.lhs.split(":", 1)[-1]
@@ -1665,7 +1665,7 @@ class CmdSetAttribute(ObjManipCommand):
     def split_nested_attr(self, attr):
         """
         Yields tuples of (possible attr name, nested keys on that attr).
-        For performance, this is biased to the deepest match, but allows compatability
+        For performance, this is biased to the deepest match, but allows compatibility
         with older attrs that might have been named with `[]`'s.
 
         > list(split_nested_attr("nested['asdf'][0]"))
@@ -1927,14 +1927,11 @@ class CmdSetAttribute(ObjManipCommand):
             if self.rhs is None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
-                    attrs = [attr.key for attr in obj.attributes.get(category=None)]
+                    attrs = [attr.key for attr in obj.attributes.get(category=None, return_obj=True)]
                 for attr in attrs:
                     if not self.check_attr(obj, attr, category):
                         continue
                     result.append(self.view_attr(obj, attr, category))
-                # we view it without parsing markup.
-                self.caller.msg("".join(result).strip(), options={"raw": True})
-                return
             else:
                 # deleting the attribute(s)
                 if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
@@ -1979,8 +1976,12 @@ class CmdSetAttribute(ObjManipCommand):
                 else:
                     value = _convert_from_string(self, value)
                 result.append(self.set_attr(obj, attr, value, category))
-        # send feedback
-        caller.msg("".join(result).strip("\n"))
+        # check if anything was done
+        if not result:
+            caller.msg("No valid attributes were found. Usage: set obj/attr[:category] = value. Use empty value to clear.")
+        else:
+            # send feedback
+            caller.msg("".join(result).strip("\n"))
 
 
 class CmdTypeclass(COMMAND_DEFAULT_CLASS):
@@ -2219,11 +2220,13 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             old_typeclass_path = obj.typeclass_path
 
             if reset:
-                answer = yield("|yNote that this will reset the object back to its typeclass' default state, "
-                               "removing any custom locks/perms/attributes etc that may have been added "
-                               "by an explicit create_object call. Use `update` or type/force instead in order "
-                               "to keep such data. "
-                               "Continue [Y]/N?|n")
+                answer = yield (
+                    "|yNote that this will reset the object back to its typeclass' default state, "
+                    "removing any custom locks/perms/attributes etc that may have been added "
+                    "by an explicit create_object call. Use `update` or type/force instead in order "
+                    "to keep such data. "
+                    "Continue [Y]/N?|n"
+                )
                 if answer.upper() in ("N", "NO"):
                     caller.msg("Aborted.")
                     return
@@ -2732,7 +2735,7 @@ class CmdExamine(ObjManipCommand):
             return
 
         if ndb_attr and ndb_attr[0]:
-            return "\n  " + "  \n".join(
+            return "\n  " + "\n  ".join(
                 sorted(self.format_single_attribute(attr) for attr in ndb_attr)
             )
 
@@ -2830,7 +2833,7 @@ class CmdExamine(ObjManipCommand):
             objdata["Stored Cmdset(s)"] = self.format_stored_cmdsets(obj)
             objdata["Merged Cmdset(s)"] = self.format_merged_cmdsets(obj, current_cmdset)
             objdata[
-                f"Commands vailable to {obj.key} (result of Merged Cmdset(s))"
+                f"Commands available to {obj.key} (result of Merged Cmdset(s))"
             ] = self.format_current_cmds(obj, current_cmdset)
         if self.object_type == "script":
             objdata["Description"] = self.format_script_desc(obj)
@@ -3473,7 +3476,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
                 caller.msg("\n".join(msgs))
                 if "delete" not in self.switches:
                     if script and script.pk:
-                            ScriptEvMore(caller, [script], session=self.session)
+                        ScriptEvMore(caller, [script], session=self.session)
                     else:
                         caller.msg("Script was deleted automatically.")
         else:
@@ -3706,6 +3709,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             quiet="quiet" in self.switches,
             emit_to_obj=caller,
             use_destination="intoexit" not in self.switches,
+            move_type="teleport"
         ):
 
             if obj_to_teleport == caller:
@@ -4029,7 +4033,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                 )
                 return
             try:
-                # we homogenize the protoype first, to be more lenient with free-form
+                # we homogenize the prototype first, to be more lenient with free-form
                 protlib.validate_prototype(protlib.homogenize_prototype(prototype))
             except RuntimeError as err:
                 self.caller.msg(str(err))

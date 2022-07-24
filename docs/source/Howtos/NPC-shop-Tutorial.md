@@ -130,7 +130,7 @@ def menunode_inspect_and_buy(caller, raw_string):
         if wealth >= value:
             rtext = f"You pay {value} gold and purchase {ware.key}!"
             caller.db.gold -= value
-            ware.move_to(caller, quiet=True)
+            ware.move_to(caller, quiet=True, move_type="buy")
         else:
             rtext = f"You cannot afford {value} gold for {ware.key}!"
         caller.msg(rtext)

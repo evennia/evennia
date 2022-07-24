@@ -362,7 +362,7 @@ def columnize(string, columns=2, spacing=4, align="l", width=None):
     return "\n".join(rows)
 
 
-def iter_to_str(iterable, endsep=", and", addquote=False):
+def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
     """
     This pretty-formats an iterable list as string output, adding an optional
     alternative separator to the second to last entry.  If `addquote`
@@ -372,8 +372,8 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
         iterable (any): Usually an iterable to print. Each element must be possible to
             present with a string. Note that if this is a generator, it will be
             consumed by this operation.
-        endsep (str, optional): If set, the last item separator will
-            be replaced with this value.
+        sep (str, optional): The string to use as a separator for each item in the iterable.
+        endsep (str, optional): The last item separator will be replaced with this value.
         addquote (bool, optional): This will surround all outgoing
             values with double quotes.
 
@@ -381,17 +381,20 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
         str: The list represented as a string.
 
     Notes:
-        Default is to use 'Oxford comma', like 1, 2, 3, and 4. To remove, give
-        `endsep` as just `and`.
+        Default is to use 'Oxford comma', like 1, 2, 3, and 4.
 
     Examples:
 
         ```python
-        >>> list_to_string([1,2,3], endsep='')
+        >>> list_to_string([1,2,3], endsep=',')
         '1, 2, 3'
+        >>> list_to_string([1,2,3], endsep='')
+        '1, 2 3'
         >>> list_to_string([1,2,3], ensdep='and')
         '1, 2 and 3'
-        >>> list_to_string([1,2,3], endsep=', and', addquote=True)
+        >>> list_to_string([1,2,3], sep=';', endsep=';')
+        '1; 2; 3'
+        >>> list_to_string([1,2,3], addquote=True)
         '"1", "2", and "3"'
         ```
 
@@ -406,22 +409,19 @@ def iter_to_str(iterable, endsep=", and", addquote=False):
     else:
         iterable = tuple(str(val) for val in iterable)
 
-    if endsep.startswith(","):
+    if endsep.startswith(sep):
         # oxford comma alternative
         endsep = endsep[1:] if len_iter < 3 else endsep
     elif endsep:
         # normal space-separated end separator
         endsep = " " + str(endsep).strip()
-    else:
-        # no separator given - use comma
-        endsep = ","
 
     if len_iter == 1:
         return str(iterable[0])
     elif len_iter == 2:
         return f"{endsep} ".join(str(v) for v in iterable)
     else:
-        return ", ".join(str(v) for v in iterable[:-1]) + f"{endsep} {iterable[-1]}"
+        return f"{sep} ".join(str(v) for v in iterable[:-1]) + f"{endsep} {iterable[-1]}"
 
 
 # legacy aliases
@@ -819,7 +819,7 @@ def latinify(string, default="?", pure_ascii=False):
     This is used as a last resort when normal encoding does not work.
 
     Arguments:
-        string (str): A string to convert to 'safe characters' convertable
+        string (str): A string to convert to 'safe characters' convertible
             to an latin-1 bytestring later.
         default (str, optional): Characters resisting mapping will be replaced
             with this character or string. The intent is to apply an encode operation
@@ -1078,7 +1078,7 @@ def delay(timedelay, callback, *args, **kwargs):
         Keep in mind that persistent tasks arguments and callback should not
         use memory references.
         If persistent is set to True the delay function will return an int
-        which is the task's id itended for use with TASK_HANDLER's do_task
+        which is the task's id intended for use with TASK_HANDLER's do_task
         and remove methods.
         All persistent tasks whose time delays have passed will be called on server startup.
 
@@ -1531,12 +1531,12 @@ def class_from_module(path, defaultpaths=None, fallback=None):
         defaultpaths (iterable, optional): If a direct import from `path` fails,
             try subsequent imports by prepending those paths to `path`.
         fallback (str): If all other attempts fail, use this path as a fallback.
-            This is intended as a last-resport. In the example of Evennia
+            This is intended as a last-resort. In the example of Evennia
             loading, this would be a path to a default parent class in the
             evennia repo itself.
 
     Returns:
-        class (Class): An uninstatiated class recovered from path.
+        class (Class): An uninstantiated class recovered from path.
 
     Raises:
         ImportError: If all loading failed.
@@ -1675,7 +1675,7 @@ def string_partial_matching(alternatives, inp, ret_index=True):
     Matching is made from the start of each subword in each
     alternative. Case is not important. So e.g. "bi sh sw" or just
     "big" or "shiny" or "sw" will match "Big shiny sword". Scoring is
-    done to allow to separate by most common demoninator. You will get
+    done to allow to separate by most common denominator. You will get
     multiple matches returned if appropriate.
 
     Args:
@@ -1749,7 +1749,7 @@ def format_table(table, extra_space=1):
 
         ftable = format_table([[1,2,3], [4,5,6]])
         string = ""
-        for ir, row in enumarate(ftable):
+        for ir, row in enumerate(ftable):
             if ir == 0:
                 # make first row white
                 string += "\\n|w" + "".join(row) + "|n"
@@ -2694,6 +2694,7 @@ def copy_word_case(base_word, new_word):
             )
             + excess
         )
+
 
 def run_in_main_thread(function_or_method, *args, **kwargs):
     """

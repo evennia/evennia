@@ -274,12 +274,13 @@ import inspect
 
 from ast import literal_eval
 from fnmatch import fnmatch
+from math import ceil
 
 from inspect import isfunction, getargspec
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.utils import logger
-from evennia.utils.evtable import EvTable
+from evennia.utils.evtable import EvTable, EvColumn
 from evennia.utils.ansi import strip_ansi
 from evennia.utils.utils import mod_import, make_iter, pad, to_str, m_len, is_iter, dedent, crop
 from evennia.commands import cmdhandler
@@ -1210,7 +1211,6 @@ class EvMenu:
         Args:
             optionlist (list): List of (key, description) tuples for every
                 option related to this node.
-            caller (Object, Account or None, optional): The caller of the node.
 
         Returns:
             options (str): The formatted option display.
@@ -1229,7 +1229,7 @@ class EvMenu:
         table = []
         for key, desc in optionlist:
             if key or desc:
-                desc_string = ": %s" % desc if desc else ""
+                desc_string = f": {desc}" if desc else ""
                 table_width_max = max(
                     table_width_max,
                     max(m_len(p) for p in key.split("\n"))
@@ -1239,42 +1239,31 @@ class EvMenu:
                 raw_key = strip_ansi(key)
                 if raw_key != key:
                     # already decorations in key definition
-                    table.append(" |lc%s|lt%s|le%s" % (raw_key, key, desc_string))
+                    table.append(f" |lc{raw_key}|lt{key}|le{desc_string}")
                 else:
                     # add a default white color to key
-                    table.append(" |lc%s|lt|w%s|n|le%s" % (raw_key, raw_key, desc_string))
-        ncols = _MAX_TEXT_WIDTH // table_width_max  # number of ncols
+                    table.append(f" |lc{raw_key}|lt|w{key}|n|le{desc_string}")
+        ncols = _MAX_TEXT_WIDTH // table_width_max  # number of columns
 
         if ncols < 0:
-            # no visible option at all
+            # no visible options at all
             return ""
 
-        ncols = ncols + 1 if ncols == 0 else ncols
-        # get the amount of rows needed (start with 4 rows)
-        nrows = 4
-        while nrows * ncols < nlist:
-            nrows += 1
-        ncols = nlist // nrows  # number of full columns
-        nlastcol = nlist % nrows  # number of elements in last column
+        ncols = 1 if ncols == 0 else ncols
 
-        # get the final column count
-        ncols = ncols + 1 if nlastcol > 0 else ncols
-        if ncols > 1:
-            # only extend if longer than one column
-            table.extend([" " for i in range(nrows - nlastcol)])
+        # minimum number of rows in a column
+        min_rows = 4
 
-        # build the actual table grid
-        table = [table[icol * nrows : (icol * nrows) + nrows] for icol in range(0, ncols)]
+        # split the items into columns
+        split = max(min_rows, ceil(len(table) / ncols))
+        max_end = len(table)
+        cols_list = []
+        for icol in range(ncols):
+            start = icol * split
+            end = min(start + split, max_end)
+            cols_list.append(EvColumn(*table[start:end]))
 
-        # adjust the width of each column
-        for icol in range(len(table)):
-            col_width = (
-                max(max(m_len(p) for p in part.split("\n")) for part in table[icol]) + colsep
-            )
-            table[icol] = [pad(part, width=col_width + colsep, align="l") for part in table[icol]]
-
-        # format the table into columns
-        return str(EvTable(table=table, border="none"))
+        return str(EvTable(table=cols_list, border="none"))
 
     def node_formatter(self, nodetext, optionstext):
         """

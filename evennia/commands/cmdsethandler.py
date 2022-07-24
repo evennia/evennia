@@ -450,9 +450,7 @@ class CmdSetHandler(object):
 
         """
         if "permanent" in kwargs:
-            logger.log_dep(
-                "obj.cmdset.add() kwarg 'permanent' has changed name to 'persistent'."
-            )
+            logger.log_dep("obj.cmdset.add() kwarg 'permanent' has changed name to 'persistent'.")
             persistent = kwargs["permanent"] if persistent is False else persistent
 
         if not (isinstance(cmdset, str) or utils.inherits_from(cmdset, CmdSet)):

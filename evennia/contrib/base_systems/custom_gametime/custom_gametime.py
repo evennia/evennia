@@ -328,4 +328,4 @@ class GametimeScript(DefaultScript):
             callback()
 
         seconds = real_seconds_until(**self.db.gametime)
-        self.restart(interval=seconds)
+        self.start(interval=seconds, force_restart=True)

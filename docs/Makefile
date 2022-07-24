@@ -152,6 +152,8 @@ mv-local:
 	@echo "Documentation built (multiversion + autodocs)."
 	@echo "To see result, open evennia/docs/build/html/<version>/index.html in a browser."
 
+# note - don't run deploy/release manually, the result will clash with the
+# result of the github actions! 
 deploy:
 	make _multiversion-deploy
 	@echo "Documentation deployed."

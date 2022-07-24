@@ -149,7 +149,7 @@ An "emitter" object must have a function
         //   kwargs (obj): keyword-args to listener
         //
         emit: function (cmdname, args, kwargs) {
-            if (kwargs.cmdid) {
+            if (kwargs.cmdid && (kwargs.cmdid in cmdmap)) {
                 cmdmap[kwargs.cmdid].apply(this, [args, kwargs]);
                 delete cmdmap[kwargs.cmdid];
             }

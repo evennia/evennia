@@ -162,6 +162,16 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   way to override features on all ObjectDB-inheriting objects easily.
 - Add `TagProperty`, `AliasProperty` and `PermissionProperty` to assign these
   data in a similar way to django fields.
+- The db pickle-serializer now checks for methods `__serialize_dbobjs__` and `__deserialize_dbobjs__`
+  to allow custom packing/unpacking of nested dbobjs, to allow storing in Attribute.
+- Optimizations to rpsystem contrib performance. Breaking change: `.get_sdesc()` will
+  now return `None` instead of `.db.desc` if no sdesc is set; fallback in hook (inspectorCaracal)
+- Reworked text2html parser to avoid problems with stateful color tags (inspectorCaracal)
+- Simplified `EvMenu.options_formatter` hook to use `EvColumn` and f-strings (inspectorcaracal)
+- Added `move_type` str kwarg to `move_to()` calls, optionally identifying the type of
+  move being done ('teleport', 'disembark', 'give' etc). (volund)
+- Made RPSystem contrib msg calls pass `pose` or `say` as msg-`type` for use in
+  e.g. webclient pane filtering where desired. (volund)
 
 
 ## Evennia 0.9.5
