@@ -189,7 +189,7 @@ class EventCharacter(DefaultCharacter):
         """Return the CallbackHandler."""
         return CallbackHandler(self)
 
-    def announce_move_from(self, destination, msg=None, mapping=None):
+    def announce_move_from(self, destination, msg=None, move_type="move", mapping=None, **kwargs):
         """
         Called if the move is to be announced. This is
         called while we are still standing in the old
@@ -234,9 +234,9 @@ class EventCharacter(DefaultCharacter):
         if not string:
             return
 
-        super().announce_move_from(destination, msg=string, mapping=mapping)
+        super().announce_move_from(destination, msg=string, move_type=move_type, mapping=mapping, **kwargs)
 
-    def announce_move_to(self, source_location, msg=None, mapping=None):
+    def announce_move_to(self, source_location, msg=None, move_type="move", mapping=None, **kwargs):
         """
         Called after the move if the move was not quiet. At this point
         we are standing in the new location.
@@ -292,9 +292,9 @@ class EventCharacter(DefaultCharacter):
         if not string:
             return
 
-        super().announce_move_to(source_location, msg=string, mapping=mapping)
+        super().announce_move_to(source_location, msg=string, move_type=move_type, mapping=mapping, **kwargs)
 
-    def at_pre_move(self, destination):
+    def at_pre_move(self, destination, move_type="move", **kwargs):
         """
         Called just before starting to move this object to
         destination.
@@ -334,7 +334,7 @@ class EventCharacter(DefaultCharacter):
 
         return True
 
-    def at_post_move(self, source_location):
+    def at_post_move(self, source_location, move_type="move", **kwargs):
         """
         Called after move has completed, regardless of quiet mode or
         not.  Allows changes to the object due to the location it is
@@ -644,7 +644,7 @@ class EventExit(DefaultExit):
         """Return the CallbackHandler."""
         return CallbackHandler(self)
 
-    def at_traverse(self, traversing_object, target_location):
+    def at_traverse(self, traversing_object, target_location, **kwargs):
         """
         This hook is responsible for handling the actual traversal,
         normally by calling
@@ -665,7 +665,7 @@ class EventExit(DefaultExit):
             if not allow:
                 return
 
-        super().at_traverse(traversing_object, target_location)
+        super().at_traverse(traversing_object, target_location, **kwargs)
 
         # After traversing
         if is_character:
@@ -732,7 +732,7 @@ class EventObject(DefaultObject):
         """Return the CallbackHandler."""
         return CallbackHandler(self)
 
-    def at_get(self, getter):
+    def at_get(self, getter, **kwargs):
         """
         Called by the default `get` command when this object has been
         picked up.
@@ -745,10 +745,10 @@ class EventObject(DefaultObject):
             permissions for that.
 
         """
-        super().at_get(getter)
+        super().at_get(getter, **kwargs)
         self.callbacks.call("get", getter, self)
 
-    def at_drop(self, dropper):
+    def at_drop(self, dropper, **kwargs):
         """
         Called by the default `drop` command when this object has been
         dropped.
@@ -761,7 +761,7 @@ class EventObject(DefaultObject):
             permissions from that.
 
         """
-        super().at_drop(dropper)
+        super().at_drop(dropper, **kwargs)
         self.callbacks.call("drop", dropper, self)
 
 
