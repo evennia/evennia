@@ -15,6 +15,7 @@ a certain object type.
 
 
 from ast import literal_eval
+
 from django.conf import settings
 from evennia.utils import utils
 
@@ -466,12 +467,41 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
     category.
     If accessing_obj has the ".obj" property (such as is the case for
     a command), then accessing_obj.obj is used instead.
+
     """
     if hasattr(accessing_obj, "obj"):
         accessing_obj = accessing_obj.obj
     tagkey = args[0] if args else None
     category = args[1] if len(args) > 1 else None
     return bool(accessing_obj.tags.get(tagkey, category=category))
+
+
+def objtag(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+        objtag(tagkey)
+        objtag(tagkey, category):
+
+    Only true if `accessed_obj` has the given tag and optional category.
+
+    """
+    return tag(accessed_obj, None, *args, **kwargs)
+
+
+def objloctag(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+        objloctag(tagkey)
+        objloctag(tagkey, category):
+
+    Only true if `accessed_obj.location` has the given tag and optional category.
+    If obj has no location, this lockfunc fails.
+
+    """
+    try:
+        return tag(accessed_obj.location, None, *args, **kwargs)
+    except AttributeError:
+        return False
 
 
 def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):

@@ -27,7 +27,7 @@ class TestDungeon(EvAdventureMixin, BaseEvenniaTest):
 
         """
         super().setUp()
-        droomclass = dungeon.EvAdventureDungeonRoomStart
+        droomclass = dungeon.EvAdventureDungeonStartRoom
         droomclass.recycle_time = 0  # disable the tick
 
         self.start_room = create_object(droomclass, key="bottom of well")
@@ -36,14 +36,14 @@ class TestDungeon(EvAdventureMixin, BaseEvenniaTest):
             self.start_room.scripts.get("evadventure_startroom_resetter")[0].interval, -1
         )
         self.start_north = create_object(
-            dungeon.EvAdventureStartRoomExit,
+            dungeon.EvAdventureDungeonStartRoomExit,
             key="north",
             location=self.start_room,
             destination=self.start_room,
         )
         self.start_north
         self.start_south = create_object(
-            dungeon.EvAdventureStartRoomExit,
+            dungeon.EvAdventureDungeonStartRoomExit,
             key="south",
             location=self.start_room,
             destination=self.start_room,
