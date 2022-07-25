@@ -46,8 +46,8 @@ _SA = object.__setattr__
 # a file with a flag telling the server to restart after shutdown or not.
 SERVER_RESTART = os.path.join(settings.GAME_DIR, "server", "server.restart")
 
-# module containing hook methods called during start_stop
-SERVER_STARTSTOP_MODULE = mod_import(settings.AT_SERVER_STARTSTOP_MODULE)
+# modules containing hook methods called during start_stop
+SERVER_STARTSTOP_MODULES = [mod_import(m) for m in make_iter(settings.AT_SERVER_STARTSTOP_MODULE) if isinstance(m, str)]
 
 # modules containing plugin services
 SERVER_SERVICES_PLUGIN_MODULES = make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)
@@ -413,6 +413,8 @@ class Evennia:
             for typeclass_db in TypedObject.__subclasses__()
         ]
 
+        self.at_server_init()
+
         # call correct server hook based on start file value
         if mode == "reload":
             logger.log_msg("Server successfully reloaded.")
@@ -525,14 +527,23 @@ class Evennia:
 
     # server start/stop hooks
 
+    def at_server_init(self):
+        """
+        This is called first when the server is starting, before any other hooks, regardless of how it's starting.
+        """
+        for m in SERVER_STARTSTOP_MODULES:
+            if hasattr(m, "at_server_init"):
+                m.at_server_init()
+
     def at_server_start(self):
         """
         This is called every time the server starts up, regardless of
         how it was shut down.
 
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_start()
+        for m in SERVER_STARTSTOP_MODULES:
+            if hasattr(m, "at_server_start"):
+                m.at_server_start()
 
     def at_server_stop(self):
         """
@@ -540,16 +551,18 @@ class Evennia:
         of it is fore a reload, reset or shutdown.
 
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_stop()
+        for m in SERVER_STARTSTOP_MODULES:
+            if hasattr(m, "at_server_stop"):
+                m.at_server_stop()
 
     def at_server_reload_start(self):
         """
         This is called only when server starts back up after a reload.
 
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_reload_start()
+        for m in SERVER_STARTSTOP_MODULES:
+            if hasattr(m, "at_server_reload_start"):
+                m.at_server_reload_start()
 
     def at_post_portal_sync(self, mode):
         """
@@ -589,8 +602,9 @@ class Evennia:
         This is called only time the server stops before a reload.
 
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_reload_stop()
+        for m in SERVER_STARTSTOP_MODULES:
+            if hasattr(m, "at_server_reload_stop"):
+                m.at_server_reload_stop()
 
     def at_server_cold_start(self):
         """
@@ -618,16 +632,18 @@ class Evennia:
                     if character:
                         character.delete()
                 guest.delete()
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_cold_start()
+        for m in SERVER_STARTSTOP_MODULES:
+            if hasattr(m, "at_server_cold_start"):
+                m.at_server_cold_start()
 
     def at_server_cold_stop(self):
         """
         This is called only when the server goes down due to a shutdown or reset.
 
         """
-        if SERVER_STARTSTOP_MODULE:
-            SERVER_STARTSTOP_MODULE.at_server_cold_stop()
+        for m in SERVER_STARTSTOP_MODULES:
+            if hasattr(m, "at_server_cold_stop"):
+                m.at_server_cold_stop()
 
 
 # ------------------------------------------------------------
