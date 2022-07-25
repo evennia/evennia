@@ -86,7 +86,6 @@ class TestGametime(TestCase):
 
     def test_schedule(self):
         callback = Mock()
-        del callback.items
         script = gametime.schedule(callback, day=19)
         self.timescripts.append(script)
         self.assertIsInstance(script, gametime.TimeScript)
@@ -95,7 +94,6 @@ class TestGametime(TestCase):
 
     def test_repeat_schedule(self):
         callback = Mock()
-        del callback.items
         script = gametime.schedule(callback, repeat=True, min=32)
         self.timescripts.append(script)
         self.assertIsInstance(script, gametime.TimeScript)
