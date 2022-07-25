@@ -389,6 +389,8 @@ AT_INITIAL_SETUP_HOOK_MODULE = "server.conf.at_initial_setup"
 # Module containing your custom at_server_start(), at_server_reload() and
 # at_server_stop() methods. These methods will be called every time
 # the server starts, reloads and resets/stops respectively.
+# Now supports a list of python paths or a single string.
+# If it's a list, each module's hooks will be called by list order.
 AT_SERVER_STARTSTOP_MODULE = "server.conf.at_server_startstop"
 # List of one or more module paths to modules containing a function start_
 # plugin_services(application). This module will be called with the main
