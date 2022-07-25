@@ -33,6 +33,7 @@ jobs:
         postgresql db: 'evennia'
         postgresql user: 'evennia'
         postgresql password: 'password'
+
     - name: Set up MySQL server
       uses: mirromutth/mysql-action@v1.1
       if: ${{ matrix.TESTING_DB == 'mysql'}}
@@ -46,16 +47,48 @@ jobs:
         mysql database: 'evennia'
         mysql user: 'evennia'
         mysql password: 'password'
+        mysql root password: root_password
 
-    # wait for db to activage, get logs from their start
-    - name: Wait / sleep
-      uses: jakejarvis/wait-action@v0.1.0
-      if: ${{ matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql' }}
-      with:
-        time: '10s'
+    # wait for db to activate
+    - name: wait for db to activate
+      if: matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql'
+      run: |
+
+        if [ ${{ matrix.TESTING_DB }} = mysql ]
+        then
+          while ! mysqladmin ping -h 127.0.0.1 -u root -proot_password -s >/dev/null 2>&1
+          do
+            sleep 1
+            echo -n .
+          done
+          echo
+        else
+          while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
+          do
+            sleep 1
+            echo -n .
+          done
+          echo
+        fi
+
+    - name: mysql privileges
+      if: matrix.TESTING_DB == 'mysql'
+      run: |
+
+        cat <<EOF | mysql -u root -proot_password -h 127.0.0.1 mysql
+          create user 'evennia'@'%' identified by 'password';
+          grant all on \`evennia%\`.* to 'evennia'@'%';
+          grant process on *.* to 'evennia'@'%';
+          flush privileges
+        EOF
+
+    # get logs from db start
     - name: Database container logs
+      if: matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql'
       uses: jwalton/gh-docker-logs@v1.0.0
+
     - name: Check running containers
+      if: matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql'
       run: docker ps -a
 
     - name: Set up Python ${{ matrix.python-version }}
@@ -71,6 +104,7 @@ jobs:
         pip install mysqlclient
         pip install coveralls
         pip install codacy-coverage
+        pip install tblib
         pip install -e .
 
     - name: Install extra dependencies
@@ -87,7 +121,15 @@ jobs:
     - name: Run test suite
       run: |
         cd testing_mygame
-        coverage run --source=../evennia --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service ../bin/unix/evennia test --settings=settings --keepdb evennia
+        coverage run \
+          --source=../evennia \
+          --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
+          ../bin/unix/evennia test \
+            --settings=settings \
+            --keepdb \
+            --parallel auto \
+            --timing \
+            evennia
         coverage xml
 
     # we only want to run coverall/codacy once, so we only do it for one of the matrix combinations
@@ -109,7 +151,7 @@ jobs:
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
         coverage-reports: ./testing_mygame/coverage.xml
-        
+
     # docker setup and push
     -
       name: Set up QEMU
