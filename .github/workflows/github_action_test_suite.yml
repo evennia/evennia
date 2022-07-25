@@ -127,7 +127,7 @@ jobs:
           ../bin/unix/evennia test \
             --settings=settings \
             --keepdb \
-            --parallel auto \
+            --parallel 4 \
             --timing \
             evennia
         coverage xml
