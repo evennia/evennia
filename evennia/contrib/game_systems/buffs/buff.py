@@ -447,7 +447,8 @@ class BuffHandler(object):
             if source:
                 mix = str(source.dbref).replace("#", "")
             elif not (buff.unique or buff.refresh) or not source:
-                mix = str(random() * 10000)
+                mix = "_ufrf" + str(int((random() * 999999) * 100000))
+
             buffkey = buff.key if buff.unique is True else buff.key + mix
 
         # Rules for applying over an existing buff
