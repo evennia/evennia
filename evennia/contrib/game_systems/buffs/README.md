@@ -22,7 +22,7 @@ def buffs(self) -> BuffHandler:
     return BuffHandler(self)
 ```
 
-You may then call the handler to add or manipulate buffs like so: `object.buffs. See **Using the Handler**.
+You may then call the handler to add or manipulate buffs like so: `object.buffs`. See **Using the Handler**.
 
 ### Customization
 
