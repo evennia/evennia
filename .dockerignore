@@ -1,0 +1,14 @@
+# ignore everything except what we know we want to include
+*
+
+# required to install
+!requirements.txt
+!requirements_extra.txt
+!setup.py
+
+# scripts + runtime library
+!bin
+!evennia
+
+# needed?
+!docs

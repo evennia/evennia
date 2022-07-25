@@ -12,7 +12,72 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  build:
+
+  docker-publish:
+    runs-on: ubuntu-latest
+    needs:
+      - docker-test
+      - test
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push for master
+        if: github.ref == 'refs/heads/master'
+        uses: docker/build-push-action@v2
+        with:
+          tags: evennia/evennia:latest
+          build_args: BASE_VERSION=3.9
+
+      - name: Build and push for develop
+        if: github.ref == 'refs/heads/develop'
+        uses: docker/build-push-action@v2
+        with:
+          tags: evennia/evennia:develop
+          build_args: BASE_VERSION=3.10
+
+
+  docker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        if: github.base_ref == 'master' || github.base_ref == 'develop'
+        uses: docker/setup-buildx-action@v2
+
+      - name: test for master
+        if: github.base_ref == 'master'
+        id: docker_build_master
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          target: test
+          build_args: BASE_VERSION=3.9
+
+      - name: test for develop
+        if: github.base_ref == 'develop'
+        id: docker_build_develop
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          target: test
+          build_args: BASE_VERSION=3.10
+
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -167,36 +232,3 @@ jobs:
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
         coverage-reports: ./testing_mygame/coverage.xml
-
-    # docker setup and push
-    -
-      name: Set up QEMU
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
-      uses: docker/setup-qemu-action@v1
-    -
-      name: Set up Docker Buildx
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
-      uses: docker/setup-buildx-action@v1
-    -
-      name: Login to DockerHub
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    -
-      name: Build and push for master
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.9' && github.ref == 'refs/heads/master'
-      id: docker_build_master
-      uses: docker/build-push-action@v2
-      with:
-        push: true
-        tags: evennia/evennia:latest
-    -
-      name: Build and push for develop
-      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && github.ref == 'refs/heads/develop'
-      id: docker_build_develop
-      uses: docker/build-push-action@v2
-      with:
-        push: true
-        tags: evennia/evennia:develop
