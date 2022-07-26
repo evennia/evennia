@@ -980,7 +980,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         # break circular import issues
         global _CMDHANDLER
         if not _CMDHANDLER:
-            from evennia.commands.cmdhandler import cmdhandler as _CMDHANDLER
+            from django.conf import settings
+            from evennia.utils.utils import class_from_module
+            _CMDHANDLER = class_from_module(settings.COMMAND_HANDLER)
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=False
         )
@@ -989,7 +991,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             sessions = self.sessions.get()
             session = sessions[0] if sessions else None
 
-        return _CMDHANDLER(self, raw_string, callertype="account", session=session, **kwargs)
+        handler = _CMDHANDLER(session or self, raw_string, **kwargs)
+        return handler.execute()
 
     # channel receive hooks
 
