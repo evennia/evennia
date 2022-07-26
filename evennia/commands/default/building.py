@@ -3015,7 +3015,8 @@ class CmdExamine(ObjManipCommand):
                 def _get_cmdset_callback(current_cmdset):
                     self.msg(self.format_output(obj, current_cmdset).strip())
 
-                get_and_merge_cmdsets([obj, session, account], self.raw_string).addCallback(_get_cmdset_callback)
+                call_chain = sorted([o for o in [obj, session, account] if o], key=lambda x: x.cmd_objects_sort_priority)
+                get_and_merge_cmdsets(call_chain, "object", self.raw_string).addCallback(_get_cmdset_callback)
 
             else:
                 # for objects without cmdsets we can proceed to examine immediately

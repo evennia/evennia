@@ -966,26 +966,21 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         but only when the account object itself is supposed to execute the
         command. It takes account nicks into account, but not nicks of
         eventual puppets.
-
         Args:
             raw_string (str): Raw command input coming from the command line.
             session (Session, optional): The session to be responsible
                 for the command-send
-
         Keyword Args:
             kwargs (any): Other keyword arguments will be added to the
                 found command object instance as variables before it
                 executes. This is unused by default Evennia but may be
                 used to set flags and change operating parameters for
                 commands at run-time.
-
         """
         # break circular import issues
         global _CMDHANDLER
         if not _CMDHANDLER:
-            from django.conf import settings
-            from evennia.utils.utils import class_from_module
-            _CMDHANDLER = class_from_module(settings.COMMAND_HANDLER)
+            from evennia.commands.cmdhandler import cmdhandler as _CMDHANDLER
         raw_string = self.nicks.nickreplace(
             raw_string, categories=("inputline", "channel"), include_account=False
         )
@@ -994,8 +989,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             sessions = self.sessions.get()
             session = sessions[0] if sessions else None
 
-        handler = _CMDHANDLER(session or self, raw_string, **kwargs)
-        return handler.execute()
+        return _CMDHANDLER(self, raw_string, callertype="account", session=session, **kwargs)
 
     # channel receive hooks
 

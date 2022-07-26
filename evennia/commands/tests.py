@@ -1011,7 +1011,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
         a.no_channels = True
         self.set_cmdsets(self.session, a)
         deferred = cmdhandler.get_and_merge_cmdsets(
-            [self.session], ""
+            [self.session], "session", ""
         )
 
         def _callback(cmdset):
@@ -1026,7 +1026,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
         a = self.cmdset_a
         a.no_channels = True
         self.set_cmdsets(self.account, a)
-        deferred = cmdhandler.get_and_merge_cmdsets([self.account], "")
+        deferred = cmdhandler.get_and_merge_cmdsets([self.account], "account", "")
         # get_and_merge_cmdsets converts  to lower-case internally.
 
         def _callback(cmdset):
@@ -1041,7 +1041,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
 
     def test_from_object(self):
         self.set_cmdsets(self.obj1, self.cmdset_a)
-        deferred = cmdhandler.get_and_merge_cmdsets([self.obj1], "")
+        deferred = cmdhandler.get_and_merge_cmdsets([self.obj1], "object", "")
         # get_and_merge_cmdsets converts  to lower-case internally.
 
         def _callback(cmdset):
@@ -1058,7 +1058,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
         a.no_channels = True
         self.set_cmdsets(self.obj1, a, b, c, d)
 
-        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
+        deferred = cmdhandler.get_and_merge_cmdsets([self.obj1], "object", "")
 
         def _callback(cmdset):
             self.assertTrue(cmdset.no_exits)
@@ -1075,7 +1075,7 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
         b.duplicates = True
         d.duplicates = True
         self.set_cmdsets(self.obj1, a, b, c, d)
-        deferred = cmdhandler.get_and_merge_cmdsets(self.obj1, None, None, self.obj1, "object", "")
+        deferred = cmdhandler.get_and_merge_cmdsets([self.obj1], "object", "")
 
         def _callback(cmdset):
             self.assertEqual(len(cmdset.commands), 9)
