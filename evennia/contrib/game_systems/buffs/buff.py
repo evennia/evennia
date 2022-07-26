@@ -459,6 +459,9 @@ class BuffHandler(object):
                 b["stacks"] = min(existing["stacks"] + stacks, buff.maxstacks)
             elif buff.maxstacks < 1:
                 b["stacks"] = existing["stacks"] + stacks
+            # refresh rule for uniques
+            if not buff.refresh:
+                b["duration"] = existing["duration"]
             # Carrying over old arbitrary cache values
             cur_cache = {k: v for k, v in existing.items() if k not in b.keys()}
             b.update(cur_cache)
