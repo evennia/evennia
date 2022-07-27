@@ -337,46 +337,63 @@ class BuffHandler(object):
     @property
     def traits(self):
         """All buffs on this handler that modify a stat."""
-        _t = {k: buff for k, buff in self.get_all().items() if buff.mods}
+        _t = None
+        _cache = self.all
+        if _cache:
+            _t = {k: buff for k, buff in _cache.items() if buff.mods}
         return _t
 
     @property
     def effects(self):
         """All buffs on this handler that trigger off an event."""
-        _e = {k: buff for k, buff in self.get_all().items() if buff.triggers}
+        _e = None
+        _cache = self.all
+        if _cache:
+            _e = {k: buff for k, buff in _cache.items() if buff.triggers}
         return _e
 
     @property
     def playtime(self):
         """All buffs on this handler that only count down during active playtime."""
-        _pt = {k: buff for k, buff in self.get_all().items() if buff.playtime}
+        _pt = None
+        _cache = self.all
+        if _cache:
+            _pt = {k: buff for k, buff in _cache.items() if buff.playtime}
         return _pt
 
     @property
     def paused(self):
         """All buffs on this handler that are paused."""
-        _p = {k: buff for k, buff in self.get_all().items() if buff.paused}
+        _p = None
+        _cache = self.all
+        if _cache:
+            _p = {k: buff for k, buff in _cache.items() if buff.paused}
         return _p
 
     @property
     def expired(self):
         """All buffs on this handler that have expired (no duration or no stacks)."""
+        _e = None
         _cache = self.all
-        _e = {
-            k: buff
-            for k, buff in _cache.items()
-            if not buff.paused
-            if buff.duration > -1
-            if buff.duration < time.time() - buff.start
-        }
-        _nostacks = {k: buff for k, buff in _cache.items() if buff.stacks <= 0}
-        _e.update(_nostacks)
+        if _cache:
+            _e = {
+                k: buff
+                for k, buff in _cache.items()
+                if not buff.paused
+                if buff.duration > -1
+                if buff.duration < time.time() - buff.start
+            }
+            _nostacks = {k: buff for k, buff in _cache.items() if buff.stacks <= 0}
+            _e.update(_nostacks)
         return _e
 
     @property
     def visible(self):
         """All buffs on this handler that are visible."""
-        _v = {k: buff for k, buff in self.get_all().items() if buff.visible}
+        _v = None
+        _cache = self.all
+        if _cache:
+            _v = {k: buff for k, buff in _cache.items() if buff.visible}
         return _v
 
     @property
@@ -732,6 +749,26 @@ class BuffHandler(object):
 
     # endregion
 
+    def has(self, buff=None) -> bool:
+        """Checks if the specified buff type or key exists on the handler.
+
+        Args:
+            buff:   The buff to search for. This can be a string (the key) or a class reference (the buff type)
+
+        Returns a bool. If no buff and no key is specified, returns False."""
+        if not (isinstance(buff, type) or isinstance(buff, str)):
+            raise TypeError
+
+        if isinstance(buff, str):
+            for k in self.buffcache.keys():
+                if k == buff:
+                    return True
+        if isinstance(buff, type):
+            for b in self.buffcache.values():
+                if b.get("ref") == buff:
+                    return True
+        return False
+
     def check(self, value: float, stat: str, loud=True, context=None, trigger=False):
         """Finds all buffs and perks related to a stat and applies their effects.
 
@@ -811,7 +848,7 @@ class BuffHandler(object):
         """
         if key in self.buffcache.keys():
             # Mark the buff as paused
-            buff = dict(self.buffcache[key])
+            buff = dict(self.buffcache.get(key))
             if buff["paused"]:
                 return
             if not context:
@@ -849,7 +886,7 @@ class BuffHandler(object):
             context:    (optional) A dictionary you wish to pass to the at_unpause method as kwargs"""
         if key in self.buffcache.keys():
             # Mark the buff as unpaused
-            buff = dict(self.buffcache[key])
+            buff = dict(self.buffcache.get(key))
             if not buff["paused"]:
                 return
             if not context:
@@ -884,12 +921,15 @@ class BuffHandler(object):
             value:  The value you want the new duration to be"""
         if key in self.buffcache.keys():
             self.buffcache[key]["duration"] = value
+        return
 
     def view(self) -> dict:
         """Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind."""
         self.cleanup()
-        _flavor = {k: (buff.name, buff.flavor) for k, buff in self.visible}
-
+        _cache = self.visible
+        if not _cache:
+            return None
+        _flavor = {k: (buff.name, buff.flavor) for k, buff in _cache.items()}
         return _flavor
 
     def cleanup(self):
@@ -912,6 +952,8 @@ class BuffHandler(object):
         if sender != self.owner:
             return
         buffs = self.playtime
+        if not buffs:
+            return
         for buff in buffs.values():
             buff.pause()
 
@@ -920,6 +962,8 @@ class BuffHandler(object):
         if sender != self.owner:
             return
         buffs = self.playtime
+        if not buffs:
+            return
         for buff in buffs.values():
             buff.unpause()
         pass
