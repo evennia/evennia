@@ -12,6 +12,10 @@ Fantasy names are generated from basic phonetic rules, using CVC syllable syntax
 Both real-world and fantasy name generation can be extended to include additional
 information via your game's `settings.py`
 
+## Installation
+
+This is a stand-alone utility. Just import this module (`from evennia.contrib.utils import name_generator`) and use its functions wherever you like.
+
 ## Usage
 
 Import the module where you need it with the following:
@@ -20,14 +24,44 @@ from evennia.contrib.utils.name_generator import namegen
 ```
 
 By default, all of the functions will return a string with one generated name.
-If you specify more than one, or pass `return_list=True` as a keyword argument,
-the returned value will be a list of strings.
+If you specify more than one, or pass `return_list=True` as a keyword argument, the returned value will be a list of strings.
 
 The module is especially useful for naming newly-created NPCs, like so:
 ```py
 npc_name = namegen.full_name()
 npc_obj = create_object(key=npc_name, typeclass="typeclasses.characters.NPC")
 ```
+
+## Available Settings
+
+These settings can all be defined in your game's `server/conf/settings.py` file.
+
+- `NAMEGEN_FIRST_NAMES` adds a new list of first (personal) names.
+- `NAMEGEN_LAST_NAMES` adds a new list of last (family) names.
+- `NAMEGEN_REPLACE_LISTS` - set to `True` if you want to use only the names defined in your settings.
+- `NAMEGEN_FANTASY_RULES` lets you add new phonetic rules for generating entirely made-up names. See the section "Custom Fantasy Name style rules" for details on how this should look.
+
+Examples:
+```py
+NAMEGEN_FIRST_NAMES = [
+		("Evennia", 'mf'),
+		("Green Tea", 'f'),
+	]
+
+NAMEGEN_LAST_NAMES = [ "Beeblebrox", "Son of Odin" ]
+
+NAMEGEN_FANTASY_RULES = {
+  "example_style": {
+			"syllable": "(C)VC",
+			"consonants": [ 'z','z','ph','sh','r','n' ],
+			"start": ['m'],
+			"end": ['x','n'],
+			"vowels": [ "e","e","e","a","i","i","u","o", ],
+			"length": (2,4),
+	}
+}
+```
+
 
 ## Generating Real Names
 
@@ -84,8 +118,7 @@ NAMEGEN_FIRST_NAMES = [
 NAMEGEN_LAST_NAMES = [ "Beeblebrox", "Son of Odin" ]
 ```
 
-If you want to replace all of the built-in name lists with your own, set
-`NAMEGEN_REPLACE_LISTS = True`
+Set `NAMEGEN_REPLACE_LISTS = True` if you want your custom lists above to entirely replace the built-in lists rather than extend them.
 
 ## Generating Fantasy Names
 
@@ -123,19 +156,23 @@ NAMEGEN_FANTASY_RULES = {
 }
 ```
 
-Then you could generate names following that ruleset with
-`namegen.fantasy_name(style="example_style")`.
+Then you could generate names following that ruleset with `namegen.fantasy_name(style="example_style")`.
+
+The keys `syllable`, `consonants`, `vowels`, and `length` must be present, and `length` must be the minimum and maximum syllable counts. `start` and `end` are optional.
+
 
 #### syllable
 The "syllable" field defines the structure of each syllable. C is consonant, V is vowel,
-and parentheses mean it's optional. So, the example "(C)VC" means that every syllable
+and parentheses mean it's optional. So, the example `(C)VC` means that every syllable
 will always have a vowel followed by a consonant, and will *sometimes* have another
-consonant at the beginning.
+consonant at the beginning. e.g. `en`, `bak`
 
 *Note:* While it's not standard, the contrib lets you nest parentheses, with each layer
 being less likely to show up. Additionally, any other characters put into the syllable
-structure - e.g. an apostrophe - will be read and inserted as written. Check out the
-"alien" style rules in the module for an example of both.
+structure - e.g. an apostrophe - will be read and inserted as written. The
+"alien" style rules in the module gives an example of both: the syllable structure is `C(C(V))(')(C)`
+which results in syllables such as `khq`, `xho'q`, and `q'` with a much lower frequency of vowels than
+`C(C)(V)(')(C)` would have given.
 
 #### consonants
 A simple list of consonant phonemes that can be chosen from. Multi-character strings are
