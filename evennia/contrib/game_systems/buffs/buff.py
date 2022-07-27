@@ -337,63 +337,51 @@ class BuffHandler(object):
     @property
     def traits(self):
         """All buffs on this handler that modify a stat."""
-        _t = None
         _cache = self.all
-        if _cache:
-            _t = {k: buff for k, buff in _cache.items() if buff.mods}
+        _t = {k: buff for k, buff in _cache.items() if buff.mods}
         return _t
 
     @property
     def effects(self):
         """All buffs on this handler that trigger off an event."""
-        _e = None
         _cache = self.all
-        if _cache:
-            _e = {k: buff for k, buff in _cache.items() if buff.triggers}
+        _e = {k: buff for k, buff in _cache.items() if buff.triggers}
         return _e
 
     @property
     def playtime(self):
         """All buffs on this handler that only count down during active playtime."""
-        _pt = None
         _cache = self.all
-        if _cache:
-            _pt = {k: buff for k, buff in _cache.items() if buff.playtime}
+        _pt = {k: buff for k, buff in _cache.items() if buff.playtime}
         return _pt
 
     @property
     def paused(self):
         """All buffs on this handler that are paused."""
-        _p = None
         _cache = self.all
-        if _cache:
-            _p = {k: buff for k, buff in _cache.items() if buff.paused}
+        _p = {k: buff for k, buff in _cache.items() if buff.paused}
         return _p
 
     @property
     def expired(self):
         """All buffs on this handler that have expired (no duration or no stacks)."""
-        _e = None
         _cache = self.all
-        if _cache:
-            _e = {
-                k: buff
-                for k, buff in _cache.items()
-                if not buff.paused
-                if buff.duration > -1
-                if buff.duration < time.time() - buff.start
-            }
-            _nostacks = {k: buff for k, buff in _cache.items() if buff.stacks <= 0}
-            _e.update(_nostacks)
+        _e = {
+            k: buff
+            for k, buff in _cache.items()
+            if not buff.paused
+            if buff.duration > -1
+            if buff.duration < time.time() - buff.start
+        }
+        _nostacks = {k: buff for k, buff in _cache.items() if buff.stacks <= 0}
+        _e.update(_nostacks)
         return _e
 
     @property
     def visible(self):
         """All buffs on this handler that are visible."""
-        _v = None
         _cache = self.all
-        if _cache:
-            _v = {k: buff for k, buff in _cache.items() if buff.visible}
+        _v = {k: buff for k, buff in _cache.items() if buff.visible}
         return _v
 
     @property
@@ -516,7 +504,7 @@ class BuffHandler(object):
         if not context:
             context = {}
         if key not in self.buffcache:
-            return None
+            return
 
         buff: BaseBuff = self.buffcache[key]
         instance: BaseBuff = buff["ref"](self, key, buff)
@@ -555,7 +543,7 @@ class BuffHandler(object):
         """
         _remove = self.get_by_type(bufftype)
         if not _remove:
-            return None
+            return
         self._remove_via_dict(_remove, loud, dispel, expire, context)
 
     def remove_by_stat(
@@ -577,7 +565,7 @@ class BuffHandler(object):
         """
         _remove = self.get_by_stat(stat)
         if not _remove:
-            return None
+            return
         self._remove_via_dict(_remove, loud, dispel, expire, context)
 
     def remove_by_trigger(
@@ -599,7 +587,7 @@ class BuffHandler(object):
         """
         _remove = self.get_by_trigger(trigger)
         if not _remove:
-            return None
+            return
         self._remove_via_dict(_remove, loud, dispel, expire, context)
 
     def remove_by_source(
@@ -621,7 +609,7 @@ class BuffHandler(object):
         """
         _remove = self.get_by_source(source)
         if not _remove:
-            return None
+            return
         self._remove_via_dict(_remove, loud, dispel, expire, context)
 
     def remove_by_cachevalue(
@@ -645,7 +633,7 @@ class BuffHandler(object):
         """
         _remove = self.get_by_cachevalue(key, value)
         if not _remove:
-            return None
+            return
         self._remove_via_dict(_remove, loud, dispel, expire, context)
 
     def clear(self, loud=True, dispel=False, expire=False, context=None):
@@ -671,7 +659,7 @@ class BuffHandler(object):
         """Returns a dictionary of instanced buffs (all of them) on this handler in the format {buffkey: instance}"""
         _cache = dict(self.buffcache)
         if not _cache:
-            return None
+            return {}
         return {k: buff["ref"](self, k, buff) for k, buff in _cache.items()}
 
     def get_by_type(self, buff: BaseBuff, to_filter=None):
@@ -683,8 +671,6 @@ class BuffHandler(object):
 
         Returns a dictionary of instanced buffs of the specified type in the format {buffkey: instance}."""
         _cache = self.get_all() if not to_filter else to_filter
-        if not _cache:
-            return None
         return {k: _buff for k, _buff in _cache.items() if isinstance(_buff, buff)}
 
     def get_by_stat(self, stat: str, to_filter=None):
@@ -696,8 +682,6 @@ class BuffHandler(object):
 
         Returns a dictionary of instanced buffs which modify the specified stat in the format {buffkey: instance}."""
         _cache = self.traits if not to_filter else to_filter
-        if not _cache:
-            return None
         buffs = {k: buff for k, buff in _cache.items() for m in buff.mods if m.stat == stat}
         return buffs
 
@@ -710,8 +694,6 @@ class BuffHandler(object):
 
         Returns a dictionary of instanced buffs which fire off the designated trigger, in the format {buffkey: instance}."""
         _cache = self.effects if not to_filter else to_filter
-        if not _cache:
-            return None
         buffs = {k: buff for k, buff in _cache.items() if trigger in buff.triggers}
         return buffs
 
@@ -724,8 +706,6 @@ class BuffHandler(object):
 
         Returns a dictionary of instanced buffs which came from the provided source, in the format {buffkey: instance}."""
         _cache = self.all if not to_filter else to_filter
-        if not _cache:
-            return None
         buffs = {k: buff for k, buff in _cache.items() if buff.source == source}
         return buffs
 
@@ -739,8 +719,6 @@ class BuffHandler(object):
 
         Returns a dictionary of instanced buffs with cache values matching the specified value, in the format {buffkey: instance}."""
         _cache = self.all if not to_filter else to_filter
-        if not _cache:
-            return None
         if not value:
             buffs = {k: buff for k, buff in _cache.items() if buff.cache.get(key)}
         elif value:
@@ -822,7 +800,7 @@ class BuffHandler(object):
         self.cleanup()
         _effects = self.get_by_trigger(trigger)
         if not _effects:
-            return None
+            return
         if not context:
             context = {}
 
@@ -927,8 +905,6 @@ class BuffHandler(object):
         """Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind."""
         self.cleanup()
         _cache = self.visible
-        if not _cache:
-            return None
         _flavor = {k: (buff.name, buff.flavor) for k, buff in _cache.items()}
         return _flavor
 
