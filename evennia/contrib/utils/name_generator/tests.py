@@ -6,6 +6,26 @@ Tests for the Random Name Generator
 from evennia.utils.test_resources import BaseEvenniaTest
 from . import namegen
 
+_INVALID_STYLES = {
+    "missing_keys": {
+        "consonants": ['c','d'],
+        "length": (1,2),
+    },
+    "invalid_vowels": {
+        "syllable": "CVC",
+        "consonants": ['c','d'],
+        "vowels": "aeiou",
+        "length": (1,2),
+    },
+    "invalid_length": {
+        "syllable": "CVC",
+        "consonants": ['c','d'],
+        "vowels": ['a','e'],
+        "length": 2,
+    },
+}
+
+namegen._FANTASY_NAME_STRUCTURES |= _INVALID_STYLES
 
 class TestNameGenerator(BaseEvenniaTest):
     def test_fantasy_name(self):
@@ -38,7 +58,19 @@ class TestNameGenerator(BaseEvenniaTest):
         
         with self.assertRaises(ValueError):
             namegen.fantasy_name(style="dummy")
-        
+    
+    def test_structure_validation(self):
+        """
+        Verify that validation raises the correct errors for invalid inputs.
+        """
+        with self.assertRaises(KeyError):
+          namegen.fantasy_name(style="missing_keys")
+
+        with self.assertRaises(TypeError):
+          namegen.fantasy_name(style="invalid_vowels")
+
+        with self.assertRaises(ValueError):
+          namegen.fantasy_name(style="invalid_length")
 
     def test_first_name(self):
         """
