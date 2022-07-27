@@ -128,14 +128,79 @@ put a dictionary of custom name rules into `settings.py`
 
 Generating a fantasy name takes the ruleset key as the "style" keyword, and can
 return either a single name or multiple names. By default, it will return a
-single name in the built-in "harsh" style.
+single name in the built-in "harsh" style. The contrib also comes with "fluid" and "alien" styles.
 
 ```py
 >>> namegen.fantasy_name()
 'Vhon'
+>>> namegen.fantasy_name(num=3, style="harsh")
+['Kha', 'Kizdhu', 'Godögäk']
 >>> namegen.fantasy_name(num=3, style="fluid")
 ['Aewalisash', 'Ayi', 'Iaa']
+>>> namegen.fantasy_name(num=5, style="alien")
+["Qz'vko'", "Xv'w'hk'hxyxyz", "Wxqv'hv'k", "Wh'k", "Xbx'qk'vz"]
 ```
+
+### Multi-Word Fantasy Names
+
+The `fantasy_name` function will only generate one name-word at a time, so for multi-word names
+you'll need to combine pieces together. Depending on what kind of end result you want, there are
+several approaches.
+
+
+#### The simple approach
+
+If all you need is for it to have multiple parts, you can generate multiple names at once and `join` them.
+
+```py
+>>> name = " ".join(namegen.fantasy_name(num=2)
+>>> print(name)
+Dezhvözh Khäk
+```
+
+If you want a little more variation between first/last names, you can also generate names for
+different styles and then combine them.
+
+```py
+>>> name = "{first} {last}".format( first=namegen.fantasy_name(style="fluid"), last=namegen.fantasy_name(style="harsh") )
+>>> print(name)
+Ofasa Käkudhu
+```
+
+#### "Nakku Silversmith"
+
+One common fantasy name practice is profession- or title-based surnames. To achieve this effect,
+you can use the `last_name` function with a custom list of last names and combine it with your generated
+fantasy name.
+
+Example:
+```py
+NAMEGEN_LAST_NAMES = [ "Silversmith", "the Traveller", "Destroyer of Worlds" ]
+NAMEGEN_REPLACE_LISTS = True
+
+>>> name = "{first} {last}".format( first=namegen.fantasy_name(), last=namegen.last_name() )
+>>> print(name)
+Tözhkheko the Traveller
+```
+
+#### Elarion d'Yrinea, Thror Obinson
+
+Another common flavor of fantasy names is to use a surname suffix or prefix. For that, you'll
+need to add in the extra bit yourself.
+
+Examples:
+```py
+>>> names = namegen.fantasy_name(num=2)
+>>> name = f"{names[0]} za'{names[1]}"
+>>> print(name)
+Tithe za'Dhudozkok
+
+>>> names = namegen.fantasy_name(num=2)
+>>> name = f"{names[0]} {names[1]}son"
+>>> print(name)
+Kön Ködhöddoson
+```
+
 
 ### Custom Fantasy Name style rules
 
@@ -187,12 +252,16 @@ a consonant. You can add on additional consonants which can only occur at the be
 or end of a syllable, or you can add extra copies of already-defined consonants to
 increase the frequency of them at the start/end of syllables.
 
+For example, in the `example_style` above, we have a `start` of m, and `end` of x and n.
+Taken with the rest of the consonants/vowels, this means you can have the syllables of `mez`
+but not `zem`, and you can have `phex` or `phen` but not `xeph` or `neph`.
+
 They can be left out of custom rulesets entirely.
 
 #### vowels
-Works exactly like consonants, but is instead used for the vowel selection. Single-
-or multi-character strings are equally fine, and you can increase the frequency of
-any given vowel by putting it into the list multiple times.
+Vowels is a simple list of vowel phonemes - exactly like consonants, but instead used for the
+vowel selection. Single-or multi-character strings are equally fine. It uses the same naive weighting system
+as consonants - you can increase the frequency of any given vowel by putting it into the list multiple times.
 
 #### length
 A tuple with the minimum and maximum number of syllables a name can have.

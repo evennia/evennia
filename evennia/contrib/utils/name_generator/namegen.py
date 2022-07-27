@@ -71,8 +71,6 @@ import re
 from os import path
 from django.conf import settings
 
-from evennia.utils.utils import is_iter
-
 # Load name data from Behind the Name lists
 dirpath = path.dirname(path.abspath(__file__))
 _FIRSTNAME_LIST = []
@@ -157,9 +155,9 @@ def fantasy_name(num=1, style="harsh", return_list=False):
         if len(set):
             raise KeyError(f"Style dictionary {style_name} is missing required keys: {' '.join(missing_keys)}")
         
-        if not (is_iter(style_dict['consonants']) and is_iter(style_dict['vowels'])):
-            raise ValueError(f"'consonants' and 'vowels' keys for style {style_name} must have iterable values.")
-      
+        if not (type(style_dict['consonants']) is list and type(style_dict['vowels']) is list):
+            raise TypeError(f"'consonants' and 'vowels' for style {style_name} must be lists.")
+
         if not (is_iter(style_dict['length']) and len(style_dict['length']) == 2):
             raise ValueError(f"'length' key for {style_name} must have a minimum and maximum number of syllables.")
       
