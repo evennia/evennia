@@ -221,6 +221,7 @@ class Command(metaclass=CommandMeta):
         """
         if kwargs:
             _init_command(self, **kwargs)
+        self._optimize()
 
     @lazy_property
     def lockhandler(self):
@@ -297,9 +298,14 @@ class Command(metaclass=CommandMeta):
         Optimize the key and aliases for lookups.
         """
         # optimization - a set is much faster to match against than a list
-        self._matchset = set([self.key] + self.aliases)
+        matches = [self.key.lower()]
+        matches.extend(x.lower() for x in self.aliases)
+
+        self._matchset = set(matches)
         # optimization for looping over keys+aliases
         self._keyaliases = tuple(self._matchset)
+
+        self._noprefix_aliases = {x.lstrip(CMD_IGNORE_PREFIXES): x for x in matches}
 
     def set_key(self, new_key):
         """
@@ -336,7 +342,7 @@ class Command(metaclass=CommandMeta):
         self.aliases = list(set(alias for alias in aliases if alias != self.key))
         self._optimize()
 
-    def match(self, cmdname):
+    def match(self, cmdname, include_prefixes=True):
         """
         This is called by the system when searching the available commands,
         in order to determine if this is the one we wanted. cmdname was
@@ -345,11 +351,23 @@ class Command(metaclass=CommandMeta):
         Args:
             cmdname (str): Always lowercase when reaching this point.
 
+        Kwargs:
+            include_prefixes (bool): If false, will compare against the _noprefix
+                variants of commandnames.
+
         Returns:
             result (bool): Match result.
 
         """
-        return cmdname in self._matchset
+        if include_prefixes:
+            for cmd_key in self._keyaliases:
+                if cmdname.startswith(cmd_key) and (not self.arg_regex or self.arg_regex.match(cmdname[len(cmd_key) :])):
+                    return cmd_key, cmd_key
+        else:
+            for k, v in self._noprefix_aliases.items():
+                if cmdname.startswith(k) and (not self.arg_regex or self.arg_regex.match(cmdname[len(k) :])):
+                    return k, v
+        return None, None
 
     def access(self, srcobj, access_type="cmd", default=False):
         """
