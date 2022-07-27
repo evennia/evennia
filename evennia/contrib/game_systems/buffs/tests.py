@@ -127,6 +127,10 @@ class TestBuffsAndHandler(EvenniaTest):
         self.assertEqual(self.testobj.db.buffs["tmb"]["ref"], _TestModBuff)
         self.assertTrue(self.testobj.db.buffs["tmb"].get("cachetest"))
         self.assertFalse(self.testobj.db.buffs["ttb"].get("cachetest"))
+        # has
+        self.assertTrue(handler.has(_TestModBuff))
+        self.assertTrue(handler.has("tmb"))
+        self.assertFalse(handler.has(_EmptyBuff))
         # remove
         handler.remove("tmb")
         self.assertFalse(self.testobj.db.buffs.get("tmb"))
