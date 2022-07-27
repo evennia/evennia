@@ -71,6 +71,8 @@ import re
 from os import path
 from django.conf import settings
 
+from evennia.utils.utils import is_iter
+
 # Load name data from Behind the Name lists
 dirpath = path.dirname(path.abspath(__file__))
 _FIRSTNAME_LIST = []
@@ -152,7 +154,7 @@ def fantasy_name(num=1, style="harsh", return_list=False):
           
         keys = set(style_dict.keys())
         missing_keys = _REQUIRED_KEYS - keys
-        if len(set):
+        if len(missing_keys):
             raise KeyError(f"Style dictionary {style_name} is missing required keys: {' '.join(missing_keys)}")
         
         if not (type(style_dict['consonants']) is list and type(style_dict['vowels']) is list):
@@ -181,13 +183,13 @@ def fantasy_name(num=1, style="harsh", return_list=False):
             weight = weight*2
         else:
             if key == "C":
-                type = "consonants"
+                sound_type = "consonants"
             elif key == "V":
-                type = "vowels"
+                sound_type = "vowels"
             else:
-                type = key
+                sound_type = key
             # append the sound type and weight
-            syllable.append( (type, int(weight)) )
+            syllable.append( (sound_type, int(weight)) )
     
     name_list = []
     
@@ -254,7 +256,7 @@ def first_name(num=1, gender=None, return_list=False, ):
         # filter the options by gender
         name_options = [ name_data[0] for name_data in _FIRSTNAME_LIST if all([gender_key in gender for gender_key in name_data[1]])]
         if not len(name_options):
-            raise KeyError(f"Invalid gender key '{gender}'.")
+            raise ValueError(f"Invalid gender '{gender}'.")
     else:
         name_options = [ name_data[0] for name_data in _FIRSTNAME_LIST ]
     

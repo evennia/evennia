@@ -4,7 +4,7 @@ Tests for the Random Name Generator
 """
 
 from evennia.utils.test_resources import BaseEvenniaTest
-from . import namegen
+from evennia.contrib.utils.name_generator import namegen
 
 _INVALID_STYLES = {
     "missing_keys": {
@@ -85,8 +85,8 @@ class TestNameGenerator(BaseEvenniaTest):
         self.assertEqual(type(single_name), str)
 
         three_names = namegen.first_name(num=3)
-        self.assertEqual(type(single_name), list)
-        self.assertEqual(len(single_name), 3)
+        self.assertEqual(type(three_names), list)
+        self.assertEqual(len(three_names), 3)
 
         gendered_name = namegen.first_name(gender='f')
         self.assertEqual(type(gendered_name), str)
@@ -101,27 +101,27 @@ class TestNameGenerator(BaseEvenniaTest):
         with self.assertRaises(ValueError):
             namegen.first_name(num=-1)
 
-    def test_family_name(self):
+    def test_last_name(self):
         """
         Verify output types and lengths.
         
-        family_name()       - str
-        family_name(num=3)  - list of length 3
-        family_name(return_list=True) - list of length 1
+        last_name()       - str
+        last_name(num=3)  - list of length 3
+        last_name(return_list=True) - list of length 1
         """
-        single_name = namegen.family_name()
+        single_name = namegen.last_name()
         self.assertEqual(type(single_name), str)
 
-        three_names = namegen.family_name(num=3)
-        self.assertEqual(type(single_name), list)
-        self.assertEqual(len(single_name), 3)
+        three_names = namegen.last_name(num=3)
+        self.assertEqual(type(three_names), list)
+        self.assertEqual(len(three_names), 3)
 
-        single_list = namegen.family_name(return_list=True)
+        single_list = namegen.last_name(return_list=True)
         self.assertEqual(type(single_list), list)
         self.assertEqual(len(single_list), 1)
 
         with self.assertRaises(ValueError):
-            namegen.family_name(num=-1)
+            namegen.last_name(num=-1)
 
     def test_full_name(self):
         """
@@ -136,8 +136,8 @@ class TestNameGenerator(BaseEvenniaTest):
         self.assertEqual(type(single_name), str)
 
         three_names = namegen.full_name(num=3)
-        self.assertEqual(type(single_name), list)
-        self.assertEqual(len(single_name), 3)
+        self.assertEqual(type(three_names), list)
+        self.assertEqual(len(three_names), 3)
 
         gendered_name = namegen.full_name(gender='f')
         self.assertEqual(type(gendered_name), str)

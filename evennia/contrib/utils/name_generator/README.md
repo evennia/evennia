@@ -66,13 +66,15 @@ NAMEGEN_FANTASY_RULES = {
 ## Generating Real Names
 
 The contrib offers three functions for generating random real-world names:
-`first_name()`, `family_name()`, and `full_name()`. If you want more than one name
+`first_name()`, `last_name()`, and `full_name()`. If you want more than one name
 generated at once, you can use the `num` keyword argument to specify how many.
 
 Example:
 ```
 >>> namegen.first_name(num=5)
 ['Genesis', 'Tali', 'Budur', 'Dominykas', 'Kamau']
+>>> namegen.first_name(gender='m')
+'Blanchard'
 ```
 
 The `first_name` function also takes a `gender` keyword argument to filter names
@@ -153,18 +155,20 @@ several approaches.
 If all you need is for it to have multiple parts, you can generate multiple names at once and `join` them.
 
 ```py
->>> name = " ".join(namegen.fantasy_name(num=2)
->>> print(name)
-Dezhvözh Khäk
+>>> name = " ".join(namegen.fantasy_name(num=2))
+>>> name
+'Dezhvözh Khäk'
 ```
 
 If you want a little more variation between first/last names, you can also generate names for
 different styles and then combine them.
 
 ```py
->>> name = "{first} {last}".format( first=namegen.fantasy_name(style="fluid"), last=namegen.fantasy_name(style="harsh") )
->>> print(name)
-Ofasa Käkudhu
+>>> first = namegen.fantasy_name(style="fluid")
+>>> last = namegen.fantasy_name(style="harsh")
+>>> name = f"{first} {last}"
+>>> name
+'Ofasa Käkudhu'
 ```
 
 #### "Nakku Silversmith"
@@ -178,9 +182,11 @@ Example:
 NAMEGEN_LAST_NAMES = [ "Silversmith", "the Traveller", "Destroyer of Worlds" ]
 NAMEGEN_REPLACE_LISTS = True
 
->>> name = "{first} {last}".format( first=namegen.fantasy_name(), last=namegen.last_name() )
->>> print(name)
-Tözhkheko the Traveller
+>>> first = namegen.fantasy_name()
+>>> last = namegen.last_name()
+>>> name = f"{first} {last}"
+>>> name
+'Tözhkheko the Traveller'
 ```
 
 #### Elarion d'Yrinea, Thror Obinson
@@ -192,13 +198,13 @@ Examples:
 ```py
 >>> names = namegen.fantasy_name(num=2)
 >>> name = f"{names[0]} za'{names[1]}"
->>> print(name)
-Tithe za'Dhudozkok
+>>> name
+"Tithe za'Dhudozkok"
 
 >>> names = namegen.fantasy_name(num=2)
 >>> name = f"{names[0]} {names[1]}son"
->>> print(name)
-Kön Ködhöddoson
+>>> name
+'Kön Ködhöddoson'
 ```
 
 
