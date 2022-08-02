@@ -243,6 +243,9 @@ class _SaverMutable(object):
     def __or__(self, other):
         return self._data | other
 
+    def __ror__(self, other):
+        return self._data | other
+
     @_save
     def __setitem__(self, key, value):
         self._data.__setitem__(key, self._convert_mutables(value))
@@ -263,7 +266,7 @@ class _SaverList(_SaverMutable, MutableSequence):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._data = list()
+        self._data = kwargs.pop("_class", list)()
 
     @_save
     def __iadd__(self, otherlist):
@@ -307,7 +310,7 @@ class _SaverDict(_SaverMutable, MutableMapping):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._data = dict()
+        self._data = kwargs.pop("_class", dict)()
 
     def has_key(self, key):
         return key in self._data
@@ -645,11 +648,20 @@ def to_pickle(data):
                 pass
 
         if hasattr(item, "__iter__"):
-            # we try to conserve the iterable class, if not convert to list
             try:
-                return item.__class__([process_item(val) for val in item])
-            except (AttributeError, TypeError):
-                return [process_item(val) for val in item]
+                # we try to conserve the iterable class, if not convert to dict
+                try:
+                    return item.__class__(
+                        (process_item(key), process_item(val)) for key, val in item.items()
+                    )
+                except (AttributeError, TypeError):
+                    return {process_item(key): process_item(val) for key, val in item.items()}
+            except Exception:
+                # we try to conserve the iterable class, if not convert to list
+                try:
+                    return item.__class__([process_item(val) for val in item])
+                except (AttributeError, TypeError):
+                    return [process_item(val) for val in item]
         elif hasattr(item, "sessid") and hasattr(item, "conn_time"):
             return pack_session(item)
         try:
@@ -714,11 +726,20 @@ def from_pickle(data, db_obj=None):
             return deque(process_item(val) for val in item)
         elif hasattr(item, "__iter__"):
             try:
-                # we try to conserve the iterable class if
-                # it accepts an iterator
-                return item.__class__(process_item(val) for val in item)
-            except (AttributeError, TypeError):
-                return [process_item(val) for val in item]
+                # we try to conserve the iterable class, if not convert to dict
+                try:
+                    return item.__class__(
+                        (process_item(key), process_item(val)) for key, val in item.items()
+                    )
+                except (AttributeError, TypeError):
+                    return {process_item(key): process_item(val) for key, val in item.items()}
+            except Exception:
+                try:
+                    # we try to conserve the iterable class if
+                    # it accepts an iterator
+                    return item.__class__(process_item(val) for val in item)
+                except (AttributeError, TypeError):
+                    return [process_item(val) for val in item]
 
         if hasattr(item, "__deserialize_dbobjs__"):
             # this allows the object to custom-deserialize any embedded dbobjs
@@ -780,13 +801,30 @@ def from_pickle(data, db_obj=None):
             return dat
         elif hasattr(item, "__iter__"):
             try:
-                # we try to conserve the iterable class if it
-                # accepts an iterator
-                return item.__class__(process_tree(val, parent) for val in item)
-            except (AttributeError, TypeError):
-                dat = _SaverList(_parent=parent)
-                dat._data.extend(process_tree(val, dat) for val in item)
-                return dat
+                # we try to conserve the iterable class, if not convert to dict
+                try:
+                    dat = _SaverDict(_parent=parent, _class=item.__class__)
+                    dat._data.update(
+                        (process_item(key), process_tree(val, dat)) for key, val in item.items()
+                    )
+                    return dat
+                except (AttributeError, TypeError):
+                    dat = _SaverDict(_parent=parent)
+                    dat._data.update(
+                        (process_item(key), process_tree(val, dat)) for key, val in item.items()
+                    )
+                    return dat
+            except Exception:
+                try:
+                    # we try to conserve the iterable class if it
+                    # accepts an iterator
+                    dat = _SaverList(_parent=parent, _class=item.__class__)
+                    dat._data.extend(process_tree(val, dat) for val in item)
+                    return dat
+                except (AttributeError, TypeError):
+                    dat = _SaverList(_parent=parent)
+                    dat._data.extend(process_tree(val, dat) for val in item)
+                    return dat
 
         if hasattr(item, "__deserialize_dbobjs__"):
             try:
@@ -800,7 +838,9 @@ def from_pickle(data, db_obj=None):
         # convert lists, dicts and sets to their Saved* counterparts. It
         # is only relevant if the "root" is an iterable of the right type.
         dtype = type(data)
-        if dtype == list:
+        if dtype in (str, int, float, bool, bytes, SafeString, tuple):
+            return process_item(data)
+        elif dtype == list:
             dat = _SaverList(_db_obj=db_obj)
             dat._data.extend(process_tree(val, dat) for val in data)
             return dat
@@ -830,6 +870,34 @@ def from_pickle(data, db_obj=None):
             dat = _SaverDeque(_db_obj=db_obj)
             dat._data.extend(process_item(val) for val in data)
             return dat
+        elif hasattr(data, "__iter__"):
+            try:
+                # we try to conserve the iterable class, if not convert to dict
+                try:
+                    dat = _SaverDict(_db_obj=db_obj, _class=data.__class__)
+                    dat._data.update(
+                        (process_item(key), process_tree(val, dat)) for key, val in data.items()
+                    )
+                    return dat
+                except (AttributeError, TypeError):
+                    dat = _SaverDict(_db_obj=db_obj)
+                    dat._data.update(
+                        (process_item(key), process_tree(val, dat)) for key, val in data.items()
+                    )
+                    return dat
+            except Exception:
+                try:
+                    # we try to conserve the iterable class if it
+                    # accepts an iterator
+                    dat = _SaverList(_db_obj=db_obj, _class=data.__class__)
+                    dat._data.extend(process_tree(val, dat) for val in data)
+                    return dat
+
+                except (AttributeError, TypeError):
+                    dat = _SaverList(_db_obj=db_obj)
+                    dat._data.extend(process_tree(val, dat) for val in data)
+                    return dat
+
     return process_item(data)
 
 
