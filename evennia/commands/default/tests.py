@@ -957,6 +957,39 @@ class TestBuilding(BaseEvenniaCommandTest):
             "{'one': 99, 'three': 3, '+': 42, '+1': 33}",
         )
 
+        # dict - case sensitive keys
+
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test_case = {'FooBar': 1}",
+            "Created attribute Obj/test_case [category:None] = {'FooBar': 1}",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test_case['FooBar'] = 2",
+            "Modified attribute Obj/test_case [category:None] = {'FooBar': 2}",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test_case",
+            "Attribute Obj/test_case [category:None] = {'FooBar': 2}",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test_case['FooBar'] = {'BarBaz': 1}",
+            "Modified attribute Obj/test_case [category:None] = {'FooBar': {'BarBaz': 1}}",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test_case['FooBar']['BarBaz'] = 2",
+            "Modified attribute Obj/test_case [category:None] = {'FooBar': {'BarBaz': 2}}",
+        )
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test_case",
+            "Attribute Obj/test_case [category:None] = {'FooBar': {'BarBaz': 2}}",
+        )
+
         # tuple
         self.call(
             building.CmdSetAttribute(),

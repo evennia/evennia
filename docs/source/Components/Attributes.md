@@ -325,14 +325,15 @@ values into a string representation before storing it to the database. This is d
 
 ### Storing single objects
 
-With a single object, we mean anything that is *not iterable*, like numbers, strings or custom class
-instances without the `__iter__` method.
+With a single object, we mean anything that is *not iterable*, like numbers,
+strings or custom class instances without the `__iter__` method.
 
 * You can generally store any non-iterable Python entity that can be _pickled_.
-* Single database objects/typeclasses can be stored, despite them normally not being possible
-  to pickle. Evennia will convert them to an internal representation using theihr classname,
-  database-id and creation-date with a microsecond precision. When retrieving, the object
-  instance will be re-fetched from the database using this information.
+* Single database objects/typeclasses can be stored, despite them normally not
+  being possible to pickle. Evennia will convert them to an internal
+  representation using theihr classname, database-id and creation-date with a
+  microsecond precision. When retrieving, the object instance will be re-fetched
+  from the database using this information.
 * If you 'hide' a db-obj as a property on a custom class, Evennia will not be
   able to find it to serialize it. For that you need to help it out (see below).
 
@@ -367,8 +368,8 @@ obj.db.mydata = container  # will raise error!
 By adding two methods `__serialize_dbobjs__` and `__deserialize_dbobjs__` to the
 object you want to save, you can pre-serialize and post-deserialize all 'hidden'
 objects before Evennia's main serializer gets to work. Inside these methods, use Evennia's
-[evennia.utils.dbserialize.dbserialize](api:evennia.utils.dbserialize.dbserialize) and
-[dbunserialize](api:evennia.utils.dbserialize.dbunserialize) functions to safely
+[evennia.utils.dbserialize.dbserialize](evennia.utils.dbserialize.dbserialize) and
+[dbunserialize](evennia.utils.dbserialize.dbunserialize) functions to safely
 serialize the db-objects you want to store.
 
 ```{code-block} python
@@ -389,12 +390,22 @@ class Container:
     def __deserialize_dbobjs__(self):
         """This is called after deserialization and allows you to
         restore the 'hidden' dbobjs you serialized before"""
-        self.mydbobj = dbserialize.dbunserialize(self.mydbobj)
+        if isinstance(self.mydbobj, bytes):
+            # make sure to check if it's bytes before trying dbunserialize
+            self.mydbobj = dbserialize.dbunserialize(self.mydbobj)
 
 # let's assume myobj is a db-object
 container = Container(myobj)
 obj.db.mydata = container  # will now work fine!
 ```
+
+> Note the extra check in `__deserialize_dbobjs__` to make sure the thing you
+> are deserializing is a `bytes` object. This is needed because the Attribute's
+> cache reruns deserializations in some situations when the data was already
+> once deserialized. If you see errors in the log saying
+> `Could not unpickle data for storage: ...`, the reason is
+> likely that you forgot to add this check.
+
 
 ### Storing multiple objects
 
