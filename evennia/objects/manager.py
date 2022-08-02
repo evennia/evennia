@@ -324,7 +324,7 @@ class ObjectDBManager(TypedObjectManager):
             search_candidates = (
                 self.filter(
                     type_restriction
-                    & (Q(db_key__istartswith=ostring) | Q(db_tags__db_key__istartswith=ostring))
+                    & (Q(db_key__icontains=ostring) | Q(db_tags__db_key__icontains=ostring))
                 )
                 .distinct()
                 .order_by("id")
