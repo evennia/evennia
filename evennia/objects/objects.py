@@ -13,7 +13,6 @@ from collections import defaultdict
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
-
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -866,7 +865,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Keyword Args:
           Passed on to announce_move_to and announce_move_from hooks.
-          Exits will set the "exit" kwarg to themselves.
+          Exits will set the "exit_obj" kwarg to themselves.
 
         Returns:
             result (bool): True/False depending on if there were problems with the move.
@@ -1556,7 +1555,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        location.msg_contents((string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping)
+        location.msg_contents(
+            (string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping
+        )
 
     def announce_move_to(self, source_location, msg=None, mapping=None, move_type="move", **kwargs):
         """
@@ -1624,7 +1625,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             }
         )
 
-        destination.msg_contents((string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping)
+        destination.msg_contents(
+            (string, {"type": move_type}), exclude=(self,), from_obj=self, mapping=mapping
+        )
 
     def at_post_move(self, source_location, move_type="move", **kwargs):
         """
@@ -2890,7 +2893,7 @@ class DefaultExit(DefaultObject):
 
         """
         source_location = traversing_object.location
-        if traversing_object.move_to(target_location, move_type="traverse", exit=self):
+        if traversing_object.move_to(target_location, move_type="traverse", exit_obj=self):
             self.at_post_traverse(traversing_object, source_location)
         else:
             if self.db.err_traverse:
