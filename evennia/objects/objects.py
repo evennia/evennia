@@ -865,6 +865,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         Keyword Args:
           Passed on to announce_move_to and announce_move_from hooks.
+          Exits will set the "exit_obj" kwarg to themselves.
 
         Returns:
             result (bool): True/False depending on if there were problems with the move.
@@ -2892,7 +2893,7 @@ class DefaultExit(DefaultObject):
 
         """
         source_location = traversing_object.location
-        if traversing_object.move_to(target_location, move_type="traverse"):
+        if traversing_object.move_to(target_location, move_type="traverse", exit_obj=self):
             self.at_post_traverse(traversing_object, source_location)
         else:
             if self.db.err_traverse:
