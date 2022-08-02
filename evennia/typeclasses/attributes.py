@@ -202,6 +202,21 @@ class AttributeProperty:
         self._lockstring = lockstring
         self._autocreate = autocreate
         self._key = ""
+        
+    @property
+    def _default(self):
+        """
+        Tries returning a new instance of default if callable.
+        
+        """
+        try:
+            return self.__default()
+        except:
+            return self.__default
+            
+    @_default.setter
+    def _default(self, value):
+        self.__default = value
 
     def __set_name__(self, cls, name):
         """
