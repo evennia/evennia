@@ -181,6 +181,9 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   to better match how search works elsewhere (volund)
 - The `.at_traverse` hook now receives a `exit_obj` kwarg, linking back to the
   exit triggering the hook (volund)
+- Contrib `buffs` for managing temporary and permanent RPG status buffs effects (tegiminis)
+- New `at_server_init()` hook called before all other startup hooks for all
+  startup modes. Used for more generic overriding (volund)
 
 
 ## Evennia 0.9.5
