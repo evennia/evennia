@@ -27,6 +27,7 @@ Set theory.
 
 """
 from weakref import WeakKeyDictionary
+
 from django.utils.translation import gettext as _
 from evennia.utils.utils import inherits_from, is_iter
 
@@ -571,9 +572,13 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         if isinstance(cmd, str):
-            cmd = next((_cmd for _cmd in self.commands if _cmd.key == cmd), None)
-            if cmd is None:
-                return None
+            _cmd = next((_cmd for _cmd in self.commands if _cmd.key == cmd), None)
+            if _cmd is None:
+                if not cmd.startswith("__"):
+                    # if a syscommand, keep the original string and instantiate on it
+                    return None
+            else:
+                cmd = _cmd
 
         cmd = self._instantiate(cmd)
         if cmd.key.startswith("__"):
@@ -599,9 +604,13 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         if isinstance(cmd, str):
-            cmd = next((_cmd for _cmd in self.commands if _cmd.key == cmd), None)
-            if cmd is None:
-                return None
+            _cmd = next((_cmd for _cmd in self.commands if _cmd.key == cmd), None)
+            if _cmd is None:
+                if not cmd.startswith("__"):
+                    # if a syscommand, keep the original string and instantiate on it
+                    return None
+            else:
+                cmd = _cmd
 
         cmd = self._instantiate(cmd)
         for thiscmd in self.commands:
