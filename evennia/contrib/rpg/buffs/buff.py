@@ -294,7 +294,7 @@ class Mod:
         self.perstack = perstack
 
 
-class BuffHandler(object):
+class BuffHandler:
 
     ownerref = None
     dbkey = "buffs"
@@ -734,6 +734,8 @@ class BuffHandler(object):
             buff:   The buff to search for. This can be a string (the key) or a class reference (the buff type)
 
         Returns a bool. If no buff and no key is specified, returns False."""
+        if not buff:
+            return False
         if not (isinstance(buff, type) or isinstance(buff, str)):
             raise TypeError
 
