@@ -35,6 +35,8 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 _FUNCPARSER = None
 _ATTRFUNCPARSER = None
 
+_KEY_REGEX = re.compile(r"(?P<attr>.*?)(?P<key>(\[.*\]\ *)+)?$")
+
 # limit symbol import for API
 __all__ = (
     "ObjManipCommand",
@@ -126,7 +128,28 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
                     aliases = [alias.strip() for alias in aliases.split(";") if alias.strip()]
                 if "/" in objdef:
                     objdef, attrs = [part.strip() for part in objdef.split("/", 1)]
-                    attrs = [part.strip().lower() for part in attrs.split("/") if part.strip()]
+                    _attrs = []
+
+                    # Should an attribute key is specified, ie. we're working
+                    # on a dict, what we want is to lowercase attribute name
+                    # as usual but to preserve dict key case as one would
+                    # expect:
+                    #
+                    # set box/MyAttr = {'FooBar': 1}
+                    # Created attribute box/myattr [category:None] = {'FooBar': 1}
+                    # set box/MyAttr['FooBar'] = 2
+                    # Modified attribute box/myattr [category:None] = {'FooBar': 2}
+                    for match in (
+                        match
+                        for part in map(str.strip, attrs.split("/"))
+                        if part and (match := _KEY_REGEX.match(part.strip()))
+                    ):
+                        attr = match.group("attr").lower()
+                        # reappend untouched key, if present
+                        if match.group("key"):
+                            attr += match.group("key")
+                        _attrs.append(attr)
+                    attrs = _attrs
                 # store data
                 obj_defs[iside].append({"name": objdef, "option": option, "aliases": aliases})
                 obj_attrs[iside].append({"name": objdef, "attrs": attrs})
@@ -603,7 +626,7 @@ class CmdCreate(ObjManipCommand):
             if "drop" in self.switches:
                 if caller.location:
                     obj.home = caller.location
-                    obj.move_to(caller.location, quiet=True)
+                    obj.move_to(caller.location, quiet=True, move_type="drop")
         if string:
             caller.msg(string)
 
@@ -993,7 +1016,7 @@ class CmdDig(ObjManipCommand):
                 )
         caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
         if new_room and "teleport" in self.switches:
-            caller.move_to(new_room)
+            caller.move_to(new_room, move_type="teleport")
 
 
 class CmdTunnel(COMMAND_DEFAULT_CLASS):
@@ -1927,14 +1950,11 @@ class CmdSetAttribute(ObjManipCommand):
             if self.rhs is None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
-                    attrs = [attr.key for attr in obj.attributes.get(category=None)]
+                    attrs = [attr.key for attr in obj.attributes.get(category=None, return_obj=True, return_list=True)]
                 for attr in attrs:
                     if not self.check_attr(obj, attr, category):
                         continue
                     result.append(self.view_attr(obj, attr, category))
-                # we view it without parsing markup.
-                self.caller.msg("".join(result).strip(), options={"raw": True})
-                return
             else:
                 # deleting the attribute(s)
                 if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
@@ -1979,8 +1999,12 @@ class CmdSetAttribute(ObjManipCommand):
                 else:
                     value = _convert_from_string(self, value)
                 result.append(self.set_attr(obj, attr, value, category))
-        # send feedback
-        caller.msg("".join(result).strip("\n"))
+        # check if anything was done
+        if not result:
+            caller.msg("No valid attributes were found. Usage: set obj/attr[:category] = value. Use empty value to clear.")
+        else:
+            # send feedback
+            caller.msg("".join(result).strip("\n"))
 
 
 class CmdTypeclass(COMMAND_DEFAULT_CLASS):
@@ -3708,6 +3732,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             quiet="quiet" in self.switches,
             emit_to_obj=caller,
             use_destination="intoexit" not in self.switches,
+            move_type="teleport"
         ):
 
             if obj_to_teleport == caller:

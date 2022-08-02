@@ -86,7 +86,7 @@ class CmdEnterTrain(Command):
     def func(self):
         train = self.obj
         self.caller.msg("You board the train.")
-        self.caller.move_to(train)
+        self.caller.move_to(train, move_type="board")
 
 
 class CmdLeaveTrain(Command):
@@ -107,7 +107,7 @@ class CmdLeaveTrain(Command):
     def func(self):
         train = self.obj
         parent = train.location
-        self.caller.move_to(parent)
+        self.caller.move_to(parent, move_type="disembark")
 
 
 class CmdSetTrain(CmdSet):

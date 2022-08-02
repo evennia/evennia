@@ -97,6 +97,7 @@ recog02 = "Mr Receiver2"
 recog10 = "Mr Sender"
 emote = 'With a flair, /me looks at /first and /colliding sdesc-guy. She says "This is a test."'
 case_emote = "/Me looks at /first. Then, /me looks at /FIRST, /First and /Colliding twice."
+poss_emote = "/Me frowns at /first for trying to steal /me's test."
 
 
 class TestRPSystem(BaseEvenniaTest):
@@ -140,18 +141,21 @@ class TestRPSystem(BaseEvenniaTest):
             ),
         )
 
-    def parse_sdescs_and_recogs(self):
+    def test_parse_sdescs_and_recogs(self):
         speaker = self.speaker
         speaker.sdesc.add(sdesc0)
         self.receiver1.sdesc.add(sdesc1)
         self.receiver2.sdesc.add(sdesc2)
+        id0 = f"#{speaker.id}"
+        id1 = f"#{self.receiver1.id}"
+        id2 = f"#{self.receiver2.id}"
         candidates = (self.receiver1, self.receiver2)
         result = (
-            'With a flair, {#9} looks at {#10} and {#11}. She says "This is a test."',
+            'With a flair, {'+id0+'} looks at {'+id1+'} and {'+id2+'}. She says "This is a test."',
             {
-                "#11": "Another nice colliding sdesc-guy for tests",
-                "#10": "The first receiver of emotes.",
-                "#9": "A nice sender of emotes",
+                id2: self.receiver2,
+                id1: self.receiver1,
+                id0: speaker,
             },
         )
         self.assertEqual(
@@ -161,6 +165,27 @@ class TestRPSystem(BaseEvenniaTest):
         self.speaker.recog.add(self.receiver1, recog01)
         self.assertEqual(
             rpsystem.parse_sdescs_and_recogs(speaker, candidates, emote, case_sensitive=False),
+            result,
+        )
+
+    def test_possessive_selfref(self):
+        speaker = self.speaker
+        speaker.sdesc.add(sdesc0)
+        self.receiver1.sdesc.add(sdesc1)
+        self.receiver2.sdesc.add(sdesc2)
+        id0 = f"#{speaker.id}"
+        id1 = f"#{self.receiver1.id}"
+        id2 = f"#{self.receiver2.id}"
+        candidates = (self.receiver1, self.receiver2)
+        result = (
+            "{"+id0+"} frowns at {"+id1+"} for trying to steal {"+id0+"}'s test.",
+            {
+                id1: self.receiver1,
+                id0: speaker,
+            },
+        )
+        self.assertEqual(
+            rpsystem.parse_sdescs_and_recogs(speaker, candidates, poss_emote, case_sensitive=False),
             result,
         )
 
@@ -197,17 +222,17 @@ class TestRPSystem(BaseEvenniaTest):
         receiver2.msg = lambda text, **kwargs: setattr(self, "out2", text)
         rpsystem.send_emote(speaker, receivers, emote, case_sensitive=False)
         self.assertEqual(
-            self.out0,
+            self.out0[0],
             "With a flair, |mSender|n looks at |bThe first receiver of emotes.|n "
             'and |bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n',
         )
         self.assertEqual(
-            self.out1,
+            self.out1[0],
             "With a flair, |bA nice sender of emotes|n looks at |mReceiver1|n and "
             '|bAnother nice colliding sdesc-guy for tests|n. She says |w"This is a test."|n',
         )
         self.assertEqual(
-            self.out2,
+            self.out2[0],
             "With a flair, |bA nice sender of emotes|n looks at |bThe first "
             'receiver of emotes.|n and |mReceiver2|n. She says |w"This is a test."|n',
         )
@@ -226,19 +251,19 @@ class TestRPSystem(BaseEvenniaTest):
         receiver2.msg = lambda text, **kwargs: setattr(self, "out2", text)
         rpsystem.send_emote(speaker, receivers, case_emote)
         self.assertEqual(
-            self.out0,
+            self.out0[0],
             "|mSender|n looks at |bthe first receiver of emotes.|n. Then, |mSender|n "
             "looks at |bTHE FIRST RECEIVER OF EMOTES.|n, |bThe first receiver of emotes.|n "
             "and |bAnother nice colliding sdesc-guy for tests|n twice.",
         )
         self.assertEqual(
-            self.out1,
+            self.out1[0],
             "|bA nice sender of emotes|n looks at |mReceiver1|n. Then, "
             "|ba nice sender of emotes|n looks at |mReceiver1|n, |mReceiver1|n "
             "and |bAnother nice colliding sdesc-guy for tests|n twice.",
         )
         self.assertEqual(
-            self.out2,
+            self.out2[0],
             "|bA nice sender of emotes|n looks at |bthe first receiver of emotes.|n. "
             "Then, |ba nice sender of emotes|n looks at |bTHE FIRST RECEIVER OF EMOTES.|n, "
             "|bThe first receiver of emotes.|n and |mReceiver2|n twice.",

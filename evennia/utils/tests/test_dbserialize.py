@@ -2,10 +2,11 @@
 Tests for dbserialize module
 """
 
-from collections import deque
+from collections import defaultdict, deque
+
 from django.test import TestCase
-from evennia.utils import dbserialize
 from evennia.objects.objects import DefaultObject
+from evennia.utils import dbserialize
 from parameterized import parameterized
 
 
@@ -93,8 +94,6 @@ class TestDbSerialize(TestCase):
         self.assertEqual(self.obj.db.test, {"a": True, "b": False})
 
     def test_defaultdict(self):
-        from collections import defaultdict
-
         # baseline behavior for a defaultdict
         _dd = defaultdict(list)
         _dd["a"]
@@ -164,12 +163,45 @@ class DbObjWrappers(TestCase):
         con = _ValidContainer(self.dbobj2)
         self.dbobj1.db.testarg = con
 
-        # accessing the same data twice
+        # accessing the same data multiple times
         res1 = self.dbobj1.db.testarg
         res2 = self.dbobj1.db.testarg
+        res3 = self.dbobj1.db.testarg
 
         self.assertEqual(res1, res2)
+        self.assertEqual(res1, res3)
         self.assertEqual(res1, con)
         self.assertEqual(res2, con)
         self.assertEqual(res1.hidden_obj, self.dbobj2)
         self.assertEqual(res2.hidden_obj, self.dbobj2)
+        self.assertEqual(res3.hidden_obj, self.dbobj2)
+
+    def test_dbobj_hidden_dict(self):
+        con1 = _ValidContainer(self.dbobj2)
+        con2 = _ValidContainer(self.dbobj2)
+
+        self.dbobj1.db.dict = {}
+
+        self.dbobj1.db.dict["key1"] = con1
+        self.dbobj1.db.dict["key2"] = con2
+
+        self.assertEqual(self.dbobj1.db.dict["key1"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dict["key1"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dict["key2"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dict["key2"].hidden_obj, self.dbobj2)
+
+    def test_dbobj_hidden_defaultdict(self):
+
+        con1 = _ValidContainer(self.dbobj2)
+        con2 = _ValidContainer(self.dbobj2)
+
+        self.dbobj1.db.dfdict = defaultdict(dict)
+
+        self.dbobj1.db.dfdict["key"]["con1"] = con1
+        self.dbobj1.db.dfdict["key"]["con2"] = con2
+
+        self.assertEqual(self.dbobj1.db.dfdict["key"]["con1"].hidden_obj, self.dbobj2)
+
+        self.assertEqual(self.dbobj1.db.dfdict["key"]["con1"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dfdict["key"]["con2"].hidden_obj, self.dbobj2)
+        self.assertEqual(self.dbobj1.db.dfdict["key"]["con2"].hidden_obj, self.dbobj2)
