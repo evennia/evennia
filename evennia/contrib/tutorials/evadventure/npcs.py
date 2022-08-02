@@ -220,6 +220,7 @@ class EvAdventureShopKeeper(EvAdventureTalkativeNPC):
     upsell_factor = AttributePropert(1.0, autocreate=False)
     # how much of the raw cost the shopkeep is willing to pay when buying from character
     miser_factor = Attribute(0.5, autocreate=False)
+    # prototypes of common wares
     common_ware_prototypes = AttributeProperty([], autocreate=False)
 
     def at_damage(self, damage, attacker=None):
