@@ -269,24 +269,23 @@ they will be tested in sequence.
 
 """
 
-import re
 import inspect
-
+import re
 from ast import literal_eval
 from fnmatch import fnmatch
+from inspect import getargspec, isfunction
 from math import ceil
 
-from inspect import isfunction, getargspec
 from django.conf import settings
-from evennia import Command, CmdSet
-from evennia.utils import logger
-from evennia.utils.evtable import EvTable, EvColumn
-from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import mod_import, make_iter, pad, to_str, m_len, is_iter, dedent, crop
-from evennia.commands import cmdhandler
 
 # i18n
 from django.utils.translation import gettext as _
+from evennia import CmdSet, Command
+from evennia.commands import cmdhandler
+from evennia.utils import logger
+from evennia.utils.ansi import strip_ansi
+from evennia.utils.evtable import EvColumn, EvTable
+from evennia.utils.utils import crop, dedent, is_iter, m_len, make_iter, mod_import, pad, to_str
 
 # read from protocol NAWS later?
 _MAX_TEXT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
@@ -1394,9 +1393,9 @@ def list_node(option_generator, select=None, pagesize=10):
                     # we assume a string was given, we inject the result into the kwargs
                     # to pass on to the next node
                     kwargs["selection"] = selection
-                    return str(select)
+                    return str(select), kwargs
             # this means the previous node will be re-run with these same kwargs
-            return None
+            return None, kwargs
 
         def _list_node(caller, raw_string, **kwargs):
 

@@ -55,7 +55,7 @@ class EquipmentHandler:
         """
         self.obj.attributes.add(self.save_attribute, self.slots, category="inventory")
 
-    def _count_slots(self):
+    def count_slots(self):
         """
         Count slot usage. This is fetched from the .size Attribute of the
         object. The size can also be partial slots.
@@ -94,7 +94,7 @@ class EquipmentHandler:
         """
         size = getattr(obj, "size", 0)
         max_slots = self.max_slots
-        current_slot_usage = self._count_slots()
+        current_slot_usage = self.count_slots()
         if current_slot_usage + size > max_slots:
             slots_left = max_slots - current_slot_usage
             raise EquipmentError(
@@ -103,6 +103,26 @@ class EquipmentHandler:
                 f"$pluralize(slot, {size}))."
             )
         return True
+
+    def all(self):
+        """
+        Get all objects in inventory, regardless of location.
+
+        Returns:
+            list: A flat list of item tuples `[(item, WieldLocation),...]`
+            starting with the wielded ones, backpack content last.
+
+        """
+        slots = self.slots
+        lst = [
+            (slots[WieldLocation.WEAPON_HAND], WieldLocation.WEAPON_HAND),
+            (slots[WieldLocation.SHIELD_HAND], WieldLocation.SHIELD_HAND),
+            (slots[WieldLocation.TWO_HANDS], WieldLocation.TWO_HANDS),
+            (slots[WieldLocation.BODY], WieldLocation.BODY),
+            (slots[WieldLocation.HEAD], WieldLocation.HEAD),
+        ] + [(item, WieldLocation.BACKPACK) for item in slots[WieldLocation.BACKPACK]]
+        # remove any None-results from empty slots
+        return [tup for tup in lst if item[0]]
 
     @property
     def armor(self):
@@ -333,3 +353,22 @@ class EquipmentHandler:
         """
         character = self.obj
         return [obj for obj in self.slots[WieldLocation.BACKPACK] if obj.at_pre_use(character)]
+
+    def get_obj_stats(self, obj):
+        """
+        Get a string of stats about the object.
+
+        """
+        objmap = dict(self.all())
+        carried = objmap.get(obj)
+        carried = f"Worn: [{carried.value}]" if carried else ""
+
+        return f"""
+|c{self.key}|n  Value: |y{self.value}|n coins {carried}
+
+{self.desc}
+
+Slots: |w{self.size}|n Used from: |w{self.use_slot.value}|n
+Quality: |w{self.quality}|n Uses: |wself.uses|n
+Attacks using: |w{self.attack_type.value}|n against |w{self.defense_type.value}|n
+Damage roll: |w{self.damage_roll}"""
