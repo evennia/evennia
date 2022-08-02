@@ -217,9 +217,9 @@ class EvAdventureShopKeeper(EvAdventureTalkativeNPC):
     """
 
     # how much extra the shopkeeper adds on top of the item cost
-    upsell_factor = AttributePropert(1.0, autocreate=False)
+    upsell_factor = AttributeProperty(1.0, autocreate=False)
     # how much of the raw cost the shopkeep is willing to pay when buying from character
-    miser_factor = Attribute(0.5, autocreate=False)
+    miser_factor = AttributeProperty(0.5, autocreate=False)
     # prototypes of common wares
     common_ware_prototypes = AttributeProperty([], autocreate=False)
 
@@ -241,7 +241,7 @@ class EvAdventureMob(EvAdventureNPC):
     """
 
     # chance (%) that this enemy will loot you when defeating you
-    loot_chance = AttributeProperty(75)
+    loot_chance = AttributeProperty(75, autocreate=False)
 
     def ai_combat_next_action(self, combathandler):
         """

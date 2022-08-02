@@ -1,5 +1,15 @@
 """
-nextEvAdventure commands and cmdsets.
+EvAdventure commands and cmdsets. We don't need that many stand-alone new
+commands since a lot of functionality is managed in menus. These commands
+are in additional to normal Evennia commands and should be added
+to the CharacterCmdSet
+
+New commands:
+    attack/hit <target>[,...]
+    inventory
+    wield/wear <item>
+    unwield/remove <item>
+    give <item> to <target>
 
 """
 
@@ -65,3 +75,30 @@ class CmdAttackTurnBased(EvAdventureCommand):
                 self.caller.msg(f"|r{err}|n")
         else:
             self.caller.msg("|rFound noone to attack.|n")
+
+
+class CmdInventory(EvAdventureCommand):
+    """
+    View your inventory
+
+    Usage:
+      inventory
+
+    """
+
+    key = "inventory"
+    aliases = ("i", "inv")
+
+    def func(self):
+        self.caller.msg(self.caller.equipment.display_loadout())
+
+
+class CmdWield(EvAdventureCommand):
+    """
+    Wield a weapon/shield or wear armor.
+
+    Usage:
+      wield <item>
+      wear <item>
+
+    """
