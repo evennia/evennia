@@ -653,7 +653,7 @@ def to_pickle(data):
                     )
                 except (AttributeError, TypeError):
                     return {process_item(key): process_item(val) for key, val in item.items()}
-            except:
+            except Exception:
                 # we try to conserve the iterable class, if not convert to list
                 try:
                     return item.__class__([process_item(val) for val in item])
@@ -730,7 +730,7 @@ def from_pickle(data, db_obj=None):
                     )
                 except (AttributeError, TypeError):
                     return {process_item(key): process_item(val) for key, val in item.items()}
-            except:
+            except Exception:
                 try:
                     # we try to conserve the iterable class if
                     # it accepts an iterator
@@ -811,7 +811,7 @@ def from_pickle(data, db_obj=None):
                         (process_item(key), process_tree(val, dat)) for key, val in item.items()
                     )
                     return dat
-            except:
+            except Exception:
                 try:
                     # we try to conserve the iterable class if it
                     # accepts an iterator
@@ -882,7 +882,7 @@ def from_pickle(data, db_obj=None):
                         (process_item(key), process_tree(val, dat)) for key, val in data.items()
                     )
                     return dat
-            except:
+            except Exception:
                 try:
                     # we try to conserve the iterable class if it
                     # accepts an iterator
