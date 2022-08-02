@@ -874,14 +874,14 @@ class CmdSetHelp(CmdHelp):
                 if isinstance(match, HelpCategory):
                     warning = (
                         f"'{querystr}' matches (or partially matches) the name of "
-                        "help-category '{match.key}'. If you continue, your help entry will "
+                        f"help-category '{match.key}'. If you continue, your help entry will "
                         "take precedence and the category (or part of its name) *may* not "
                         "be usable for grouping help entries anymore."
                     )
                 elif inherits_from(match, "evennia.commands.command.Command"):
                     warning = (
                         f"'{querystr}' matches (or partially matches) the key/alias of "
-                        "Command '{match.key}'. Command-help take precedence over other "
+                        f"Command '{match.key}'. Command-help take precedence over other "
                         "help entries so your help *may* be impossible to reach for those "
                         "with access to that command."
                     )
