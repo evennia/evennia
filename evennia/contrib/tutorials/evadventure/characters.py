@@ -62,7 +62,7 @@ class LivingMixin:
         Called when attacked and taking damage.
 
         """
-        pass
+        self.hp -= damage
 
     def at_defeat(self):
         """
