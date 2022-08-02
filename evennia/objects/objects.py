@@ -2850,8 +2850,8 @@ class DefaultExit(DefaultObject):
             )
         )
 
-        # an exit should have a destination (this is replaced at creation time)
-        if self.location:
+        # an exit should have a destination - try to make sure it does
+        if self.location and not self.destination:
             self.destination = self.location
 
     def at_cmdset_get(self, **kwargs):
