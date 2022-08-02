@@ -179,6 +179,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Enable proper serialization of dict subclasses in Attributes (aogier)
 - `object.search` fuzzy-matching now uses `icontains` instead of `istartswith`
   to better match how search works elsewhere (volund)
+- The `.at_traverse` hook now receives a `exit_obj` kwarg, linking back to the
+  exit triggering the hook (volund)
 
 
 ## Evennia 0.9.5
