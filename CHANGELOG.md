@@ -177,6 +177,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - New contrib `name_generator` for building random real-world based or fantasy-names
   based on phonetic rules.
 - Enable proper serialization of dict subclasses in Attributes (aogier)
+- `object.search` fuzzy-matching now uses `icontains` instead of `istartswith`
+  to better match how search works elsewhere (volund)
 
 
 ## Evennia 0.9.5
