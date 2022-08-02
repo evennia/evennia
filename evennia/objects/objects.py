@@ -2419,8 +2419,8 @@ class DefaultCharacter(DefaultObject):
             All other kwargs will be passed into the create_object call.
 
         Returns:
-            character (Object): A newly created Character of the given typeclass.
-            errors (list): A list of errors in string form, if any.
+            tuple: `(new_character, errors)`. On error, the `new_character` is `None` and
+            `errors` is a `list` of error strings (an empty list otherwise).
 
         """
         errors = []

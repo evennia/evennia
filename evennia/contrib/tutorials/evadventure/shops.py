@@ -23,14 +23,37 @@ A shop is run by an NPC. It can provide one or more of several possible services
 All shops are menu-driven. One starts talking to the npc and will then end up in their shop
 interface.
 
+
+This is a series of menu nodes meant to be added as a mapping via
+`EvAdventureShopKeeper.create(menudata={},...)`.
+
+To make this pluggable, the shopkeeper start page will analyze the available nodes
+and auto-add options to all nodes in the three named `node_start_*`. The last part of the
+node name will be the name of the option capitalized, with underscores replaced by spaces, so
+`node_start_sell_items` will become a top-level option `Sell items`.
+
+
+
 """
 
+from random import choice
+
 from evennia.utils.evmenu import EvMenu
+from evennia.utils.utils import make_iter
+
+from .npcs import EvAdventureShopKeeper
+
+# shop menu nodes to use for building a Shopkeeper npc
 
 
-def start_npc_menu(caller, shopkeeper, **kwargs):
+def node_start_buy(caller, raw_string, **kwargs):
     """
-    Access function - start the NPC interaction/shop interface.
+    Menu node for the caller to buy items from the shopkeep. This assumes `**kwargs` contains
+    a kwarg `npc` referencing the npc/shopkeep being talked to.
 
+    Items available to sell are a combination of items in the shopkeep's inventory and prototypes
+    the list of `prototypes` stored in the Shopkeep's "common_ware_prototypes` Attribute. In the
+    latter case, the properties will be extracted from the prototype when inspecting it (object will
+    only spawn when bought).
 
     """

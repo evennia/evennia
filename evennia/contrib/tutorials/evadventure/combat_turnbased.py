@@ -288,8 +288,6 @@ class CombatActionAttack(CombatAction):
                 message = f" $You() $conj(hit) $You({defender.key}) for |r{dmg}|n damage!"
             self.msg(message)
 
-            defender.hp -= dmg
-
             # call hook
             defender.at_damage(dmg, attacker=attacker)
 
