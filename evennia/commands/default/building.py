@@ -1927,7 +1927,7 @@ class CmdSetAttribute(ObjManipCommand):
             if self.rhs is None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
-                    attrs = [attr.key for attr in obj.attributes.get(category=None, return_obj=True)]
+                    attrs = [attr.key for attr in obj.attributes.get(category=None, return_obj=True, return_list=True)]
                 for attr in attrs:
                     if not self.check_attr(obj, attr, category):
                         continue
