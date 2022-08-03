@@ -149,7 +149,8 @@ class CmdXYZOpen(building.CmdOpen):
 
         if all(char in self.rhs for char in ("(", ")", ",")):
             # search by (X,Y) or (X,Y,Z)
-            X, Y, *Z = self.rhs.split(",", 2)
+            inp = self.rhs.strip("()")
+            X, Y, *Z = inp.split(",", 2)
             if not Z:
                 self.caller.msg("A full (X,Y,Z) coordinate must be given for the destination.")
                 raise InterruptCommand
