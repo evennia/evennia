@@ -35,6 +35,8 @@ COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 _FUNCPARSER = None
 _ATTRFUNCPARSER = None
 
+_KEY_REGEX = re.compile(r"(?P<attr>.*?)(?P<key>(\[.*\]\ *)+)?$")
+
 # limit symbol import for API
 __all__ = (
     "ObjManipCommand",
@@ -126,7 +128,28 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
                     aliases = [alias.strip() for alias in aliases.split(";") if alias.strip()]
                 if "/" in objdef:
                     objdef, attrs = [part.strip() for part in objdef.split("/", 1)]
-                    attrs = [part.strip().lower() for part in attrs.split("/") if part.strip()]
+                    _attrs = []
+
+                    # Should an attribute key is specified, ie. we're working
+                    # on a dict, what we want is to lowercase attribute name
+                    # as usual but to preserve dict key case as one would
+                    # expect:
+                    #
+                    # set box/MyAttr = {'FooBar': 1}
+                    # Created attribute box/myattr [category:None] = {'FooBar': 1}
+                    # set box/MyAttr['FooBar'] = 2
+                    # Modified attribute box/myattr [category:None] = {'FooBar': 2}
+                    for match in (
+                        match
+                        for part in map(str.strip, attrs.split("/"))
+                        if part and (match := _KEY_REGEX.match(part.strip()))
+                    ):
+                        attr = match.group("attr").lower()
+                        # reappend untouched key, if present
+                        if match.group("key"):
+                            attr += match.group("key")
+                        _attrs.append(attr)
+                    attrs = _attrs
                 # store data
                 obj_defs[iside].append({"name": objdef, "option": option, "aliases": aliases})
                 obj_attrs[iside].append({"name": objdef, "attrs": attrs})

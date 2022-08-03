@@ -12,11 +12,11 @@ value - which may change as Evennia is developed. This way you can
 always be sure of what you have changed and what is default behaviour.
 
 """
-from django.contrib.messages import constants as messages
-from django.urls import reverse_lazy
-
 import os
 import sys
+
+from django.contrib.messages import constants as messages
+from django.urls import reverse_lazy
 
 ######################################################################
 # Evennia base server config
@@ -386,9 +386,11 @@ INITIAL_SETUP_MODULE = "evennia.server.initial_setup"
 # the server's initial setup sequence (the very first startup of the system).
 # The check will fail quietly if module doesn't exist or fails to load.
 AT_INITIAL_SETUP_HOOK_MODULE = "server.conf.at_initial_setup"
-# Module containing your custom at_server_start(), at_server_reload() and
-# at_server_stop() methods. These methods will be called every time
-# the server starts, reloads and resets/stops respectively.
+# Module(s) containing custom at_server_init(), at_server_start(),
+# at_server_reload() and at_server_stop() methods. These methods will be called
+# every time the server starts, reloads and resets/stops
+# respectively. Can be given as a single path or a list of paths. If a list,
+# each module's hooks will be called in list order.
 AT_SERVER_STARTSTOP_MODULE = "server.conf.at_server_startstop"
 # List of one or more module paths to modules containing a function start_
 # plugin_services(application). This module will be called with the main
