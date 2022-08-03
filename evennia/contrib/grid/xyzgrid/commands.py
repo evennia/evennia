@@ -8,14 +8,14 @@ the commands with XYZ-aware equivalents.
 """
 
 from collections import namedtuple
+
 from django.conf import settings
-from evennia import InterruptCommand
-from evennia import default_cmds, CmdSet
+from evennia import CmdSet, InterruptCommand, default_cmds
 from evennia.commands.default import building
-from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom
 from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
+from evennia.contrib.grid.xyzgrid.xyzroom import XYZRoom
 from evennia.utils import ansi
-from evennia.utils.utils import list_to_string, class_from_module, delay
+from evennia.utils.utils import class_from_module, delay, list_to_string
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -159,7 +159,7 @@ class CmdXYZOpen(building.CmdOpen):
             try:
                 self.destination = XYZRoom.objects.get_xyz(xyz=(X, Y, Z))
             except XYZRoom.DoesNotExist:
-                self.caller.msg("Found no target XYZRoom at ({X},{Y},{Y}).")
+                self.caller.msg(f"Found no target XYZRoom at ({X},{Y},{Z}).")
                 raise InterruptCommand
         else:
             # regular search query
