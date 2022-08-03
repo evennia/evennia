@@ -118,9 +118,10 @@ jobs:
         evennia migrate
         evennia collectstatic --noinput
 
-    - name: Run test suite
+    - name: Run test suite with coverage
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
+      working-directory: testing_mygame
       run: |
-        cd testing_mygame
         coverage run \
           --source=../evennia \
           --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
@@ -131,6 +132,17 @@ jobs:
             --timing \
             evennia
         coverage xml
+
+    - name: Run test suite
+      if: matrix.TESTING_DB != 'sqlite3' || matrix.python-version != '3.10'
+      working-directory: testing_mygame
+      run: |
+        evennia test \
+          --settings=settings \
+          --keepdb \
+          --parallel 4 \
+          --timing \
+          evennia
 
     # we only want to run coverall/codacy once, so we only do it for one of the matrix combinations
     # it's also not critical if pushing to either service fails (happens for PRs since env is not
