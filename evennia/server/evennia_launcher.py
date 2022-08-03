@@ -498,11 +498,11 @@ def _print_info(portal_info_dict, server_info_dict):
     pstr, sstr = "", ""
     if portal_info_dict:
         pdict = _prepare_dict(portal_info_dict)
-        pstr = _strip_empty_lines(PORTAL_INFO.format(**pdict))
+        pstr = _strip_empty_lines(PORTAL_INFO.format_map(pdict))
 
     if server_info_dict:
         sdict = _prepare_dict(server_info_dict)
-        sstr = _strip_empty_lines(SERVER_INFO.format(**sdict))
+        sstr = _strip_empty_lines(SERVER_INFO.format_map(sdict))
 
     info = pstr + ("\n\n" + sstr if sstr else "")
     maxwidth = max(len(line) for line in info.split("\n"))
@@ -1383,7 +1383,7 @@ def create_settings_file(init=True, secret_settings=False):
     with open(settings_path, "r") as f:
         settings_string = f.read()
 
-    settings_string = settings_string.format(**setting_dict)
+    settings_string = settings_string.format_map(setting_dict)
 
     with open(settings_path, "w") as f:
         f.write(settings_string)
