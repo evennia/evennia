@@ -92,9 +92,13 @@ jobs:
       run: docker ps -a
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        cache: pip
+        cache-dependency-path: |
+          requirements.txt
+          requirements_extra.txt
 
     - name: Install package dependencies
       run: |
