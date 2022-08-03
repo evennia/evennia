@@ -625,7 +625,7 @@ class CraftingRecipe(CraftingRecipeBase):
         mapping["outputs"] = iter_to_str(self.output_names)
 
         # populate template and return
-        return message.format(**mapping)
+        return message.format_map(mapping)
 
     @classmethod
     def seed(cls, tool_kwargs=None, consumable_kwargs=None, location=None):
