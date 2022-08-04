@@ -765,7 +765,7 @@ class EvAdventureCombatHandler(DefaultScript):
                     for enemy in defeated_enemies:
                         try:
                             if ally.pre_loot(enemy):
-                                enemy.get_loot(ally)
+                                enemy.at_looted(ally)
                                 ally.post_loot(enemy)
                         except Exception:
                             logger.log_trace()

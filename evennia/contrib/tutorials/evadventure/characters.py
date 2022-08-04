@@ -5,11 +5,14 @@ Character class.
 
 from evennia.objects.objects import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
+from evennia.utils.evmenu import ask_yes_no
+from evennia.utils.logger import log_trace
 from evennia.utils.utils import lazy_property
 
 from . import rules
-from .equipment import EquipmentHandler
+from .equipment import EquipmentError, EquipmentHandler
 from .quests import EvAdventureQuestHandler
+from .utils import get_obj_stats
 
 
 class LivingMixin:
@@ -79,7 +82,7 @@ class LivingMixin:
         """
         pass
 
-    def at_loot(self, looted):
+    def at_do_loot(self, looted):
         """
         Called when looting another entity.
 
@@ -87,9 +90,9 @@ class LivingMixin:
             looted: The thing to loot.
 
         """
-        looted.get_loot()
+        looted.at_looted()
 
-    def get_loot(self, looter):
+    def at_looted(self, looter):
         """
         Called when being looted (after defeat).
 
@@ -186,12 +189,14 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         Args:
             moved_object (Object): Object to move into this one (that is, into inventory).
             source_location (Object): Source location moved from.
-            **kwargs: Passed from move operation; unused here.
+            **kwargs: Passed from move operation; the `move_type` is useful; if someone is giving
+                us something (`move_type=='give'`) we want to ask first.
 
         Returns:
             bool: If move should be allowed or not.
 
         """
+        # this will raise EquipmentError if inventory is full
         return self.equipment.validate_slot_usage(moved_object)
 
     def at_object_receive(self, moved_object, source_location, **kwargs):
@@ -205,15 +210,18 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
             **kwargs: Passed from move operation; unused here.
 
         """
-        self.equipment.add(moved_object)
+        try:
+            self.equipment.add(moved_object)
+        except EquipmentError as err:
+            log_trace(f"at_object_receive error: {err}")
 
     def at_pre_object_leave(self, leaving_object, destination, **kwargs):
         """
         Hook called when dropping an item. We don't allow to drop weilded/worn items
-        (need to unwield/remove them first).
+        (need to unwield/remove them first). Return False to
 
         """
-        return self.equipment.can_remove(leaving_object)
+        return True
 
     def at_object_leave(self, moved_object, destination, **kwargs):
         """
@@ -264,7 +272,7 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         # don't allow looting in pvp
         return not self.location.allow_pvp
 
-    def get_loot(self, looter):
+    def at_looted(self, looter):
         """
         Called when being looted.
 

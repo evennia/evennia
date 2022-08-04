@@ -280,7 +280,7 @@ class EvAdventureMob(EvAdventureNPC):
         """
         self.at_death()
 
-    def at_loot(self, looted):
+    def at_do_loot(self, looted):
         """
         Called when mob gets to loot a PC.
 

@@ -3,8 +3,10 @@ Knave has a system of Slots for its inventory.
 
 """
 
+from evennia.utils.utils import inherits_from
+
 from .enums import Ability, WieldLocation
-from .objects import WeaponEmptyHand
+from .objects import EvAdventureObject, WeaponEmptyHand
 
 
 class EquipmentError(TypeError):
@@ -81,6 +83,16 @@ class EquipmentHandler:
         """
         return getattr(self.obj, Ability.CON.value, 1) + 10
 
+    def get_slot_usage_string(self):
+        """
+        Get a slot usage/max string for display.
+
+        Returns:
+            str: The usage string.
+
+        """
+        return f"|b{self.count_slots()}/{self.max_slots}|n"
+
     def validate_slot_usage(self, obj):
         """
         Check if obj can fit in equipment, based on its size.
@@ -92,7 +104,10 @@ class EquipmentHandler:
             EquipmentError: If there's not enough room.
 
         """
-        size = getattr(obj, "size", 0)
+        if not inherits_from(obj, EvAdventureObject):
+            raise EquipmentError(f"{obj.key} is not something that can be equipped.")
+
+        size = obj.size
         max_slots = self.max_slots
         current_slot_usage = self.count_slots()
         if current_slot_usage + size > max_slots:
@@ -104,25 +119,21 @@ class EquipmentHandler:
             )
         return True
 
-    def all(self):
+    def get_current_slot(self, obj):
         """
-        Get all objects in inventory, regardless of location.
+        Check which slot-type the given object is in.
+
+        Args:
+            obj (EvAdventureObject): The object to check.
 
         Returns:
-            list: A flat list of item tuples `[(item, WieldLocation),...]`
-            starting with the wielded ones, backpack content last.
+            WieldLocation: A location the object is in. None if the object
+            is not in the inventory at all.
 
         """
-        slots = self.slots
-        lst = [
-            (slots[WieldLocation.WEAPON_HAND], WieldLocation.WEAPON_HAND),
-            (slots[WieldLocation.SHIELD_HAND], WieldLocation.SHIELD_HAND),
-            (slots[WieldLocation.TWO_HANDS], WieldLocation.TWO_HANDS),
-            (slots[WieldLocation.BODY], WieldLocation.BODY),
-            (slots[WieldLocation.HEAD], WieldLocation.HEAD),
-        ] + [(item, WieldLocation.BACKPACK) for item in slots[WieldLocation.BACKPACK]]
-        # remove any None-results from empty slots
-        return [tup for tup in lst if item[0]]
+        for equipment_item, slot in self.all():
+            if obj == equipment_item:
+                return slot
 
     @property
     def armor(self):
@@ -205,10 +216,10 @@ class EquipmentHandler:
 
         return f"{weapon_str}{shield_str}\n{armor_str}{helmet_str}"
 
-    def use(self, obj):
+    def move(self, obj):
         """
-        Make use of item - this makes use of the object's wield slot to decide where
-        it goes. If it doesn't have any, it goes into backpack.
+        Moves item to the place it things it should be in - this makes use of the object's wield
+        slot to decide where it goes. If it doesn't have any, it goes into backpack.
 
         Args:
             obj (EvAdventureObject): Thing to use.
@@ -238,7 +249,7 @@ class EquipmentHandler:
             slots[WieldLocation.WEAPON_HAND] = slots[WieldLocation.SHIELD_HAND] = None
             slots[use_slot] = obj
         elif use_slot in (WieldLocation.WEAPON_HAND, WieldLocation.SHIELD_HAND):
-            # can't keep a two-handed weapon if adding a one-handede weapon or shield
+            # can't keep a two-handed weapon if adding a one-handed weapon or shield
             slots[WieldLocation.TWO_HANDS] = None
             slots[use_slot] = obj
         elif use_slot is WieldLocation.BACKPACK:
@@ -255,18 +266,18 @@ class EquipmentHandler:
         """
         Put something in the backpack specifically (even if it could be wield/worn).
 
+        Args:
+            obj (EvAdventureObject): The object to add.
+
+        Notes:
+            This will not change the object's `.location`, this must be done
+            by the calling code.
+
         """
         # check if we have room
         self.validate_slot_usage(obj)
         self.slots[WieldLocation.BACKPACK].append(obj)
         self._save()
-
-    def can_remove(self, leaving_object):
-        """
-        Called to check if the object can be removed.
-
-        """
-        return True  # TODO - some things may not be so easy, like mud
 
     def remove(self, obj_or_slot):
         """
@@ -278,6 +289,10 @@ class EquipmentHandler:
                 in the backpack will be emptied and returned!
         Returns:
             list: A list of 0, 1 or more objects emptied from the inventory.
+
+        Notes:
+            This will not change the object's `.location`, this must be done separately
+            by the calling code.
 
         """
         slots = self.slots
@@ -354,21 +369,28 @@ class EquipmentHandler:
         character = self.obj
         return [obj for obj in self.slots[WieldLocation.BACKPACK] if obj.at_pre_use(character)]
 
-    def get_obj_stats(self, obj):
+    def all(self, only_objs=False):
         """
-        Get a string of stats about the object.
+        Get all objects in inventory, regardless of location.
+
+        Keyword Args:
+            only_objs (bool): Only return a flat list of objects, not tuples.
+
+        Returns:
+            list: A list of item tuples `[(item, WieldLocation),...]`
+            starting with the wielded ones, backpack content last. If `only_objs` is set,
+            this will just be a flat list of objects.
 
         """
-        objmap = dict(self.all())
-        carried = objmap.get(obj)
-        carried = f"Worn: [{carried.value}]" if carried else ""
-
-        return f"""
-|c{self.key}|n  Value: |y{self.value}|n coins {carried}
-
-{self.desc}
-
-Slots: |w{self.size}|n Used from: |w{self.use_slot.value}|n
-Quality: |w{self.quality}|n Uses: |wself.uses|n
-Attacks using: |w{self.attack_type.value}|n against |w{self.defense_type.value}|n
-Damage roll: |w{self.damage_roll}"""
+        slots = self.slots
+        lst = [
+            (slots[WieldLocation.WEAPON_HAND], WieldLocation.WEAPON_HAND),
+            (slots[WieldLocation.SHIELD_HAND], WieldLocation.SHIELD_HAND),
+            (slots[WieldLocation.TWO_HANDS], WieldLocation.TWO_HANDS),
+            (slots[WieldLocation.BODY], WieldLocation.BODY),
+            (slots[WieldLocation.HEAD], WieldLocation.HEAD),
+        ] + [(item, WieldLocation.BACKPACK) for item in slots[WieldLocation.BACKPACK]]
+        # remove any None-results from empty slots
+        if only_objs:
+            return [tup[0] for tup in lst if tup[0]]
+        return [tup for tup in lst if tup[0]]
