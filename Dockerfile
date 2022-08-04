@@ -31,8 +31,9 @@
 #
 ARG BASE_IMAGE=python
 ARG BASE_VERSION=3.10
+ARG BASE_IMAGE_TAG=$BASE_VERSION-slim
 
-FROM $BASE_IMAGE:$BASE_VERSION-slim as builder
+FROM $BASE_IMAGE:$BASE_IMAGE_TAG as builder
 
 LABEL maintainer="www.evennia.com"
 
@@ -65,7 +66,7 @@ RUN pip install --upgrade pip \
         pyasn1 \
         service_identity
 
-FROM $BASE_IMAGE:$BASE_VERSION-slim as deps
+FROM $BASE_IMAGE:$BASE_IMAGE_TAG as deps
 
 LABEL maintainer="www.evennia.com"
 
@@ -116,7 +117,13 @@ ARG PARALLEL=4
 
 LABEL maintainer="www.evennia.com"
 
-RUN pip install -r /usr/src/evennia/requirements_extra.txt
+RUN set -x; \
+    apt-get update \
+    && apt-get install -y \
+        gfortran \
+        libblas-dev \
+        liblapack-dev \
+    && pip install -r /usr/src/evennia/requirements_extra.txt
 
 USER evennia
 WORKDIR /tmp
