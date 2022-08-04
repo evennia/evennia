@@ -112,7 +112,11 @@ class CmdInventory(EvAdventureCommand):
     aliases = ("i", "inv")
 
     def func(self):
-        self.caller.msg(self.caller.equipment.display_loadout())
+        loadout = self.caller.equipment.display_loadout()
+        backpack = self.caller.equipment.display_backpack()
+        slot_usage = self.caller.equipment.display_slot_usage()
+
+        self.caller.msg(f"{loadout}\n{backpack}\nYou use {slot_usage} equipment slots.")
 
 
 class CmdWieldOrWear(EvAdventureCommand):
@@ -296,7 +300,7 @@ def node_receive(caller, raw_string, **kwargs):
 
 {get_obj_stats(item)}
 
-[Your inventory usage: {caller.equipment.get_slot_usage_string()}]
+[Your inventory usage: {caller.equipment.display_slot_usage()}]
 |wDo you want to accept the given item? Y/[N]
     """
     options = ({"key": "_default", "goto": (_accept_or_reject_gift, kwargs)},)
