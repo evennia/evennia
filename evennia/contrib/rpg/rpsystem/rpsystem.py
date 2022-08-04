@@ -605,7 +605,7 @@ def send_emote(sender, receivers, emote, msg_type="pose", anonymous_add="first",
             }
         # map the language {##num} markers. This will convert the escaped sdesc markers on
         # the form {{#num}} to {#num} markers ready to sdesc-map in the next step.
-        sendemote = emote.format(**receiver_lang_mapping)
+        sendemote = emote.format_map(receiver_lang_mapping)
 
         # map the ref keys to sdescs
         receiver_sdesc_mapping = dict(
@@ -617,7 +617,11 @@ def send_emote(sender, receivers, emote, msg_type="pose", anonymous_add="first",
         )
 
         # do the template replacement of the sdesc/recog {#num} markers
-        receiver.msg(text=(sendemote.format(**receiver_sdesc_mapping), {"type": msg_type}), from_obj=sender, **kwargs)
+        receiver.msg(
+            text=(sendemote.format_map(receiver_sdesc_mapping), {"type": msg_type}),
+            from_obj=sender,
+            **kwargs,
+        )
 
 
 # ------------------------------------------------------------
@@ -1055,7 +1059,7 @@ class CmdPose(RPCommand):  # set current pose and default pose
                 (ref, obj.sdesc.get() if hasattr(obj, "sdesc") else obj.key)
                 for ref, obj in mapping.items()
             )
-            pose = parsed.format(**mapping)
+            pose = parsed.format_map(mapping)
 
             if len(target_name) + len(pose) > 60:
                 caller.msg(f"'{pose}' is too long.")

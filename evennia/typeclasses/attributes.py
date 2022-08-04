@@ -1552,7 +1552,7 @@ def parse_nick_template(string, template_regex, outtemplate):
         matchdict = {
             key: value if value is not None else "" for key, value in match.groupdict().items()
         }
-        return True, outtemplate.format(**matchdict)
+        return True, outtemplate.format_map(matchdict)
     return False, string
 
 
