@@ -83,16 +83,6 @@ class EquipmentHandler:
         """
         return getattr(self.obj, Ability.CON.value, 1) + 10
 
-    def get_slot_usage_string(self):
-        """
-        Get a slot usage/max string for display.
-
-        Returns:
-            str: The usage string.
-
-        """
-        return f"|b{self.count_slots()}/{self.max_slots}|n"
-
     def validate_slot_usage(self, obj):
         """
         Check if obj can fit in equipment, based on its size.
@@ -215,6 +205,29 @@ class EquipmentHandler:
             helmet_str = f" and {helmet} on your head."
 
         return f"{weapon_str}{shield_str}\n{armor_str}{helmet_str}"
+
+    def display_backpack(self):
+        """
+        Get a visual representation of the backpack's contents.
+
+        """
+        backpack = self.slots[WieldLocation.BACKPACK]
+        if not backpack:
+            return "Backpack is empty."
+        out = []
+        for item in backpack:
+            out.append(f"{item.key} [|b{item.size}|n] slot(s)")
+        return "\n".join(out)
+
+    def display_slot_usage(self):
+        """
+        Get a slot usage/max string for display.
+
+        Returns:
+            str: The usage string.
+
+        """
+        return f"|b{self.count_slots()}/{self.max_slots}|n"
 
     def move(self, obj):
         """

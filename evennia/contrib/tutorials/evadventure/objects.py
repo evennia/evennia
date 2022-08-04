@@ -18,11 +18,12 @@ rune sword (weapon+quest).
 
 """
 
-from evennia import AttributeProperty, TagProperty
+from evennia import AttributeProperty
 from evennia.objects.objects import DefaultObject
 from evennia.utils.utils import make_iter
 
 from .enums import Ability, ObjType, WieldLocation
+from .utils import get_obj_stats
 
 
 class EvAdventureObject(DefaultObject):
@@ -43,6 +44,12 @@ class EvAdventureObject(DefaultObject):
     def at_object_creation(self):
         for obj_type in make_iter(self.obj_type):
             self.tags.add(obj_type, category="obj_type")
+
+    def get_display_header(self, looker, **kwargs):
+        return ""  # this is handled by get_obj_stats
+
+    def get_display_desc(self, looker, **kwargs):
+        return get_obj_stats(self, owner=looker)
 
     def has_obj_type(self, objtype):
         """
