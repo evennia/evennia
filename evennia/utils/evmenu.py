@@ -1744,10 +1744,11 @@ def ask_yes_no(
     **kwargs,
 ):
     """
-    A helper question for asking a simple yes/no question. This will cause
+    A helper function for asking a simple yes/no question. This will cause
     the system to pause and wait for input from the player.
 
     Args:
+        caller (Object): The entity being asked.
         prompt (str): The yes/no question to ask. This takes an optional formatting
             marker `{options}` which will be filled with 'Y/N', '[Y]/N' or
             'Y/[N]' depending on the setting of `default`. If `allow_abort` is set,
