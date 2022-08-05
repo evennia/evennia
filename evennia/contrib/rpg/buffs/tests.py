@@ -16,6 +16,13 @@ class _EmptyBuff(BaseBuff):
     pass
 
 
+class _TestDivBuff(BaseBuff):
+    key = "tdb"
+    name = "tdb"
+    flavor = "divverbuff"
+    mods = [Mod("stat1", "div", 1)]
+
+
 class _TestModBuff(BaseBuff):
     key = "tmb"
     name = "tmb"
@@ -190,12 +197,19 @@ class TestBuffsAndHandler(EvenniaTest):
 
     @patch("evennia.contrib.rpg.buffs.buff.utils.delay", new=Mock())
     def test_details(self):
-        """tests that buff details like name and flavor are correct"""
+        """tests that buff details like name and flavor are correct; also test modifier viewing"""
         handler: BuffHandler = self.testobj.buffs
         handler.add(_TestModBuff)
         handler.add(_TestTrigBuff)
         self.assertEqual(handler.get("tmb").flavor, "modderbuff")
         self.assertEqual(handler.get("ttb").name, "ttb")
+        mods = handler.view_modifiers("stat1")
+        _testmods = {
+            "add": {"total": 15, "strongest": 15},
+            "mult": {"total": 0, "strongest": 0},
+            "div": {"total": 0, "strongest": 0},
+        }
+        self.assertDictEqual(mods, _testmods)
 
     @patch("evennia.contrib.rpg.buffs.buff.utils.delay", new=Mock())
     def test_modify(self):
@@ -228,9 +242,15 @@ class TestBuffsAndHandler(EvenniaTest):
         handler.add(_TestModBuff2)
         self.assertEqual(handler.check(_stat1, "stat1"), 100)
         self.assertEqual(handler.check(_stat2, "stat2"), 30)
+        # apply only the strongest value
+        self.assertEqual(handler.check(_stat1, "stat1", strongest=True), 80)
+        # removing mod properly reduces value, doesn't affect other mods
         handler.remove_by_type(_TestModBuff)
         self.assertEqual(handler.check(_stat1, "stat1"), 30)
         self.assertEqual(handler.check(_stat2, "stat2"), 20)
+        # divider mod test
+        handler.add(_TestDivBuff)
+        self.assertEqual(handler.check(_stat1, "stat1"), 15)
 
     @patch("evennia.contrib.rpg.buffs.buff.utils.delay", new=Mock())
     def test_trigger(self):
