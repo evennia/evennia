@@ -176,7 +176,7 @@ class AttributeProperty:
 
     attrhandler_name = "attributes"
 
-    def __init__(self, default=None, category=None, strattr=False, lockstring="", autocreate=True):
+    def __init__(self, default=None, default_factory=None, category=None, strattr=False, lockstring="", autocreate=True):
         """
         Initialize an Attribute as a property descriptor.
 
@@ -209,10 +209,10 @@ class AttributeProperty:
         Tries returning a new instance of default if callable.
         
         """
-        try:
+        if callable(self.__default):
             return self.__default()
-        except:
-            return self.__default
+        
+        return self.__default
             
     @_default.setter
     def _default(self, value):
