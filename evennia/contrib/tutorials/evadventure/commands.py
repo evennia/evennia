@@ -159,11 +159,11 @@ class CmdWieldOrWear(EvAdventureCommand):
         current = self.caller.equipment.slots[use_slot]
 
         if current == item:
-            self.caller.msg(f"You are already using {item.key} here.")
+            self.caller.msg(f"You are already using {item.key}.")
             return
 
         # move it to the right slot based on the type of object
-        self.caller.equipment.use(item)
+        self.caller.equipment.move(item)
 
         # inform the user of the change (and potential swap)
         if current:
@@ -381,14 +381,16 @@ class CmdGive(EvAdventureCommand):
 
         if self.coins:
             current_coins = caller.coins
-            if caller.coins < current_coins:
-                caller.msg("You only have |y{current_coins}|n to give.")
+            if self.coins > current_coins:
+                caller.msg(f"You only have |y{current_coins}|n coins to give.")
                 return
             # do transaction
             caller.coins -= self.coins
             receiver.coins += self.coins
             caller.location.msg_contents(
-                f"$You() $conj(give) $You(receiver.key) {self.coins} coins."
+                f"$You() $conj(give) $You({receiver.key}) {self.coins} coins.",
+                from_obj=caller,
+                mapping={receiver.key: receiver},
             )
             return
 
@@ -432,7 +434,7 @@ class CmdTalk(EvAdventureCommand):
     key = "talk"
 
     def func(self):
-        target = self.search(self.args)
+        target = self.caller.search(self.args)
         if not target:
             return
 

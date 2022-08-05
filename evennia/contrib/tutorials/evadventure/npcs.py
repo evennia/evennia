@@ -105,8 +105,8 @@ class EvAdventureTalkativeNPC(EvAdventureNPC):
 
     """
 
-    menudata = AttributeProperty(None, autocreate=False)
-    menu_kwargs = AttributeProperty(None, autocreate=False)
+    menudata = AttributeProperty(dict(), autocreate=False)
+    menu_kwargs = AttributeProperty(dict(), autocreate=False)
     # text shown when greeting at the start of a conversation. If this is an
     # iterable, a random reply will be chosen by the menu
     hi_text = AttributeProperty("Hi!", autocreate=False)
