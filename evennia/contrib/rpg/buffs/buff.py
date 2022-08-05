@@ -98,7 +98,6 @@ You can see all the features of the `BaseBuff` class below, or browse `samplebuf
 many attributes and hook methods you can overload to create complex, interrelated buffs.
 
 """
-
 from random import random
 import time
 from evennia import Command
@@ -235,8 +234,11 @@ class BaseBuff:
         self.start = time.time()
         self.handler.buffcache[self.buffkey]["start"] = time.time()
 
-    def alter_cache(self, to_cache: dict = None):
-        """Alters this buff's cache, both internally (this instance) and on the handler's buff cache."""
+    def alter_cache(self, to_cache: dict):
+        """Alters this buff's cache, both internally (this instance) and on the handler's buff cache.
+
+        Args:
+            to_cache:   The dictionary of values you want to add to the cache"""
         if not isinstance(to_cache, dict):
             raise TypeError
         _cache = dict(self.handler.buffcache[self.buffkey])
@@ -331,6 +333,7 @@ class BuffHandler:
         self.dbkey = dbkey
         self.autopause = autopause
         if autopause:
+            self._validate_state()
             signals.SIGNAL_OBJECT_POST_UNPUPPET.connect(self._pause_playtime)
             signals.SIGNAL_OBJECT_POST_PUPPET.connect(self._unpause_playtime)
 
@@ -769,7 +772,9 @@ class BuffHandler:
                     return True
         return False
 
-    def check(self, value: float, stat: str, loud=True, context=None, trigger=False):
+    def check(
+        self, value: float, stat: str, loud=True, context=None, trigger=False, strongest=False
+    ):
         """Finds all buffs and perks related to a stat and applies their effects.
 
         Args:
@@ -778,6 +783,7 @@ class BuffHandler:
             loud:   (optional) Call the buff's at_post_check method after checking (default: True)
             context: (optional) A dictionary you wish to pass to the at_pre_check/at_post_check and conditional methods as kwargs
             trigger: (optional) Trigger buffs with the `stat` string as well. (default: False)
+            strongest:  (optional) Applies only the strongest mods of the corresponding stat value (default: False)
 
         Returns the value modified by relevant buffs."""
         # Buff cleanup to make sure all buffs are valid before processing
@@ -789,15 +795,21 @@ class BuffHandler:
         applied = self.get_by_stat(stat)
         if not applied:
             return value
+
+        # Run pre-check hooks on related buffs
         for buff in applied.values():
             buff.at_pre_check(**context)
 
+        # Sift out buffs that won't be applying their mods (paused, conditional)
         applied = {
             k: buff for k, buff in applied.items() if buff.conditional(**context) if not buff.paused
         }
 
-        # The final result
-        final = self._calculate_mods(value, stat, applied)
+        # The mod totals
+        calc = self._calculate_mods(stat, applied)
+
+        # The calculated final value
+        final = self._apply_mods(value, calc, strongest=strongest)
 
         # Run the "after check" functions on all relevant buffs
         for buff in applied.values():
@@ -999,29 +1011,58 @@ class BuffHandler:
             buff.unpause()
         pass
 
-    def _calculate_mods(self, value, stat: str, buffs: dict):
-        """Calculates a return value from a base value, a stat string, and a dictionary of instanced buffs with associated mods.
+    def _calculate_mods(self, stat: str, buffs: dict):
+        """Calculates the total value of applicable mods.
 
         Args:
-            value:  The base value to modify
             stat:   The string identifier to search mods for
-            buffs:  The dictionary of buffs to apply"""
+            buffs:  The dictionary of buffs to calculate mods from
+
+        Returns a nested dictionary. The first layer's keys represent the type of modifier ('add' and 'mult'),
+        and the second layer's keys represent the type of value ('total' and 'strongest')."""
+
+        # The base return dictionary. If you update how modifiers are calculated, make sure to update this too, or you will get key errors!
+        calculated = {
+            "add": {"total": 0, "strongest": 0},
+            "mult": {"total": 0, "strongest": 0},
+            "div": {"total": 0, "strongest": 0},
+        }
         if not buffs:
-            return value
-        add = 0
-        mult = 0
+            return calculated
 
         for buff in buffs.values():
             for mod in buff.mods:
                 buff: BaseBuff
                 mod: Mod
                 if mod.stat == stat:
-                    if mod.modifier == "add":
-                        add += mod.value + ((buff.stacks) * mod.perstack)
-                    if mod.modifier == "mult":
-                        mult += mod.value + ((buff.stacks) * mod.perstack)
+                    _modval = mod.value + ((buff.stacks) * mod.perstack)
+                    calculated[mod.modifier]["total"] += _modval
+                    if _modval > calculated[mod.modifier]["strongest"]:
+                        calculated[mod.modifier]["strongest"] = _modval
+        return calculated
 
-        final = (value + add) * max(0, 1.0 + mult)
+    def _apply_mods(self, value, calc: dict, strongest=False):
+        """Applies modifiers to a value.
+
+        Args:
+            value:  The value to modify
+            calc:   The dictionary of calculated modifier values (see _calculate_mods)
+            strongest:  (optional) Applies only the strongest mods of the corresponding stat value (default: False)
+
+        Returns value modified by the relevant mods."""
+        final = value
+        if strongest:
+            final = (
+                (value + calc["add"]["strongest"])
+                / max(1, 1.0 + calc["div"]["strongest"])
+                * max(0, 1.0 + calc["mult"]["strongest"])
+            )
+        else:
+            final = (
+                (value + calc["add"]["total"])
+                / max(1, 1.0 + calc["div"]["total"])
+                * max(0, 1.0 + calc["mult"]["total"])
+            )
         return final
 
     def _remove_via_dict(self, buffs: dict, loud=True, dispel=False, expire=False, context=None):
