@@ -38,7 +38,8 @@ Fully coded examples of all code we make in this part can be found in the
 :maxdepth: 1
 
 Beginner-Tutorial-Utilities
-Beginner-Tutorial-Rule-System
+Beginner-Tutorial-Rules
+Beginner-Tutorial-Chargen
 Beginner-Tutorial-Characters
 Beginner-Tuturial-Objects
 Beginner-Tutorial-Rooms
@@ -55,7 +56,8 @@ Beginner-Tutorial-Commands
 ```{toctree} 
 
 Beginner-Tutorial-Utilities
-Beginner-Tutorial-Rule-System
+Beginner-Tutorial-Rules
+Beginner-Tutorial-Chargen
 Beginner-Tutorial-Characters
 Beginner-Tuturial-Objects
 Beginner-Tutorial-Rooms
