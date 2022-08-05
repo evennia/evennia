@@ -1,4 +1,4 @@
-[prev lesson](../../../Unimplemented.md) | [next lesson](../../../Unimplemented.md)
+[prev lesson](../Unimplemented.md) | [next lesson](../Unimplemented.md)
 
 # Making a sittable object
 
@@ -524,7 +524,7 @@ class CmdStand(Command):
 # ...
 ```
 
-We define a [Lock](../../../Components/Locks.md) on the command. The `cmd:` is in what situation Evennia will check
+We define a [Lock](../Components/Locks.md) on the command. The `cmd:` is in what situation Evennia will check
 the lock. The `cmd` means that it will check the lock when determining if a user has access to this command or not.
 What will be checked is the `sitsonthis` _lock function_ which doesn't exist yet.
 
@@ -753,7 +753,7 @@ class CmdStand2(Command):
 ```
 
 This forced us to to use the full power of the `caller.search` method. If we wanted to search for something
-more complex we would likely need to break out a [Django query](../Part1/Django-queries.md) to do it. The key here is that
+more complex we would likely need to break out a [Django query](Beginner-Tutorial/Part1/Django-queries.md) to do it. The key here is that
 we know that the object we are looking for is a `Sittable` and that it must have an Attribute named `sitter`
 which should be set to us, the one sitting on/in the thing. Once we have that we just call `.do_stand` on it
 and let the Typeclass handle the rest.
@@ -799,4 +799,4 @@ Eagle-eyed readers will notice that the `stand` command sitting "on" the chair (
 together with the `sit` command sitting "on" the Character (variant 2). There is nothing stopping you from
 mixing them, or even try a third solution that better fits what you have in mind.
 
-[prev lesson](../../../Unimplemented.md) | [next lesson](../../../Unimplemented.md)
+[prev lesson](../Unimplemented.md) | [next lesson](../Unimplemented.md)

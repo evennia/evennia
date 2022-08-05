@@ -30,17 +30,8 @@ class Ability(Enum):
     WIS = "wisdom"
     CHA = "charisma"
 
-    STR_DEFENSE = "strength_defense"
-    DEX_DEFENSE = "dexterity_defense"
-    CON_DEFENSE = "constitution_defense"
-    INT_DEFENSE = "intelligence_defense"
-    WIS_DEFENSE = "wisdom_defense"
-    CHA_DEFENSE = "charisma_defense"
-
     ARMOR = "armor"
     HP = "hp"
-    EXPLORATION_SPEED = "exploration_speed"
-    COMBAT_SPEED = "combat_speed"
     LEVEL = "level"
     XP = "xp"
 
@@ -65,10 +56,6 @@ class WieldLocation(Enum):
     TWO_HANDS = "two_handed_weapons"
     BODY = "body"  # armor
     HEAD = "head"  # helmets
-
-    # combat-related
-    OPTIMAL_DISTANCE = "optimal_distance"
-    SUBOPTIMAL_DISTANCE = "suboptimal_distance"
 
 
 class ObjType(Enum):
