@@ -145,6 +145,16 @@ class BaseBuff:
         return self.handler.owner
 
     @property
+    def timeleft(self):
+        """Returns how much time this buff has left"""
+        _tl = 0
+        if not self.start:
+            _tl = self.duration
+        else:
+            _tl = self.duration - (time.time() - self.start)
+        return _tl
+
+    @property
     def ticking(self) -> bool:
         """Returns if this buff ticks or not (tickrate => 1)"""
         return self.tickrate >= 1
