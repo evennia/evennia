@@ -119,9 +119,6 @@ class Ability(Enum):
     CHA = "charisma"
      
     ARMOR = "armor"
-    HP = "hp"
-    LEVEL = "level"
-    XP = "xp"
     
     CRITICAL_FAILURE = "critical_failure"
     CRITICAL_SUCCESS = "critical_success"

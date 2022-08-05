@@ -346,13 +346,12 @@ class EvAdventureRollEngine:
                 character.at_death()
             else:
                 # refresh health, but get permanent ability loss
-                new_hp = max(character.hp_max, self.roll("1d4"))
+                self.heal(character, self.roll("1d4"))
                 setattr(character, abi, current_abi)
-                character.hp = new_hp
 
                 character.msg(
                     "~" * 78 + "\n|yYou survive your brush with death, "
-                    f"but are |r{result.upper()}|y and permenently |rlose {loss} {abi}|y.|n\n"
+                    f"but are |r{result.upper()}|y and permanently |rlose {loss} {abi}|y.|n\n"
                     f"|GYou recover |g{new_hp}|G health|.\n" + "~" * 78
                 )
 
@@ -532,7 +531,7 @@ class EvAdventureCharacterGeneration:
 
         for item in self.backpack:
             # TODO create here
-            character.equipment.add(item)
+            character.equipment.store(item)
 
 
 # character improvement
