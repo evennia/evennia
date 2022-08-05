@@ -766,8 +766,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             )
 
             # director-stance replacements
-            outmessage = inmessage.format(
-                **{
+            outmessage = inmessage.format_map(
+                {
                     key: obj.get_display_name(looker=receiver)
                     if hasattr(obj, "get_display_name")
                     else str(obj)
@@ -2327,7 +2327,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 "speech": message,
             }
             self_mapping.update(custom_mapping)
-            self.msg(text=(msg_self.format(**self_mapping), {"type": msg_type}), from_obj=self)
+            self.msg(text=(msg_self.format_map(self_mapping), {"type": msg_type}), from_obj=self)
 
         if receivers and msg_receivers:
             receiver_mapping = {
@@ -2350,7 +2350,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 receiver_mapping.update(individual_mapping)
                 receiver_mapping.update(custom_mapping)
                 receiver.msg(
-                    text=(msg_receivers.format(**receiver_mapping), {"type": msg_type}),
+                    text=(msg_receivers.format_map(receiver_mapping), {"type": msg_type}),
                     from_obj=self,
                 )
 
@@ -2473,9 +2473,9 @@ class DefaultCharacter(DefaultObject):
             if not locks and account:
                 # Allow only the character itself and the creator account to puppet this character
                 # (and Developers).
-                locks = cls.lockstring.format(**{"character_id": obj.id, "account_id": account.id})
+                locks = cls.lockstring.format(character_id=obj.id, account_id=account.id)
             elif not locks and not account:
-                locks = cls.lockstring.format(**{"character_id": obj.id, "account_id": -1})
+                locks = cls.lockstring.format(character_id=obj.id, account_id=-1)
 
             obj.locks.add(locks)
 
@@ -2724,9 +2724,9 @@ class DefaultRoom(DefaultObject):
 
             # Add locks
             if not locks and account:
-                locks = cls.lockstring.format(**{"id": account.id})
+                locks = cls.lockstring.format(id=account.id)
             elif not locks and not account:
-                locks = cls.lockstring.format(**{"id": obj.id})
+                locks = cls.lockstring.format(id=obj.id)
 
             obj.locks.add(locks)
 
@@ -2932,9 +2932,9 @@ class DefaultExit(DefaultObject):
 
             # Set appropriate locks
             if not locks and account:
-                locks = cls.lockstring.format(**{"id": account.id})
+                locks = cls.lockstring.format(id=account.id)
             elif not locks and not account:
-                locks = cls.lockstring.format(**{"id": obj.id})
+                locks = cls.lockstring.format(id=obj.id)
             obj.locks.add(locks)
 
             # Record creator id and creation IP

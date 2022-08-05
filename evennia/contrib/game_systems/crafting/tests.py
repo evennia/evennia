@@ -190,7 +190,7 @@ class TestCraftingRecipe(BaseEvenniaTestCase):
         }
 
         result = recipe._format_message(msg, **kwargs)
-        self.assertEqual(result, msg.format(**expected))
+        self.assertEqual(result, msg.format_map(expected))
 
     def test_craft__success(self):
         """Test to create a result from the recipe"""
