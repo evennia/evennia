@@ -923,12 +923,45 @@ class BuffHandler:
             self.buffcache[key]["duration"] = value
         return
 
-    def view(self) -> dict:
-        """Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind."""
+    def view(self, to_filter=None) -> dict:
+        """Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.
+
+        Args:
+            to_filter:  (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)"""
+        if not isinstance(to_filter, dict):
+            raise TypeError
         self.cleanup()
-        _cache = self.visible
+        _cache = self.visible if not to_filter else to_filter
         _flavor = {k: (buff.name, buff.flavor) for k, buff in _cache.items()}
         return _flavor
+
+    def view_modifiers(self, stat: str, context=None):
+        """Checks all modifiers of the specified stat without actually applying them. Hits the conditional hook for relevant buffs.
+
+        Args:
+            stat:   The mod identifier string to search for
+            context:    (optional) A dictionary you wish to pass to the conditional hooks as kwargs
+
+        Returns a nested dictionary. The first layer's keys represent the type of modifier ('add' and 'mult'),
+        and the second layer's keys represent the type of value ('total' and 'strongest')."""
+        # Buff cleanup to make sure all buffs are valid before processing
+        self.cleanup()
+
+        # Find all buffs and traits related to the specified stat.
+        if not context:
+            context = {}
+        applied = self.get_by_stat(stat)
+        if not applied:
+            return None
+
+        # Sift out buffs that won't be applying their mods (paused, conditional)
+        applied = {
+            k: buff for k, buff in applied.items() if buff.conditional(**context) if not buff.paused
+        }
+
+        # Calculate and return our values dictionary
+        calc = self._calculate_mods(stat, applied)
+        return calc
 
     def cleanup(self):
         """Removes expired buffs, ensures pause state is respected."""
