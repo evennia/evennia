@@ -174,6 +174,24 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Simplified `EvMenu.options_formatter` hook to use `EvColumn` and f-strings (inspectorcaracal)
 - Allow `# CODE`, `# HEADER` etc as well as `#CODE`/`#HEADER` in batchcode
   files - this works better with black linting.
+- Added `move_type` str kwarg to `move_to()` calls, optionally identifying the type of
+  move being done ('teleport', 'disembark', 'give' etc). (volund)
+- Made RPSystem contrib msg calls pass `pose` or `say` as msg-`type` for use in
+  e.g. webclient pane filtering where desired. (volund)
+- Added `Account.uses_screenreader(session=None)` as a quick shortcut for
+  finding if a user uses a screenreader (and adjust display accordingly).
+- Fixed bug in `cmdset.remove()` where a command could not be deleted by `key`,
+  even though doc suggested one could (ChrisLR)
+- New contrib `name_generator` for building random real-world based or fantasy-names
+  based on phonetic rules.
+- Enable proper serialization of dict subclasses in Attributes (aogier)
+- `object.search` fuzzy-matching now uses `icontains` instead of `istartswith`
+  to better match how search works elsewhere (volund)
+- The `.at_traverse` hook now receives a `exit_obj` kwarg, linking back to the
+  exit triggering the hook (volund)
+- Contrib `buffs` for managing temporary and permanent RPG status buffs effects (tegiminis)
+- New `at_server_init()` hook called before all other startup hooks for all
+  startup modes. Used for more generic overriding (volund)
 
 
 ## Evennia 0.9.5

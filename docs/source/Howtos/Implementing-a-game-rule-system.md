@@ -45,12 +45,12 @@ makes it easier to change and update things in one place later.
 values for Health, a list of skills etc, store those things on the Character - don't store how to
 roll or change them.
 - Next is to determine just how you want to store things on your Objects and Characters. You can
-choose to either store things as individual [Attributes](../../../Components/Attributes.md), like `character.db.STR=34` and
+choose to either store things as individual [Attributes](../Components/Attributes.md), like `character.db.STR=34` and
 `character.db.Hunting_skill=20`. But you could also use some custom storage method, like a
 dictionary `character.db.skills = {"Hunting":34, "Fishing":20, ...}`. A much more fancy solution is
 to look at the Ainneve [Trait
 handler](https://github.com/evennia/ainneve/blob/master/world/traits.py). Finally you could even go
-with a [custom django model](../../../Concepts/New-Models.md). Which is the better depends on your game and the
+with a [custom django model](../Concepts/New-Models.md). Which is the better depends on your game and the
 complexity of your system.
 - Make a clear [API](https://en.wikipedia.org/wiki/Application_programming_interface) into your
 rules. That is, make methods/functions that you feed with, say, your Character and which skill you

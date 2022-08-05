@@ -17,47 +17,52 @@
     Taking our new game online and let players try it out
 ```
 
-In part three of the Evennia Beginner tutorial we will go through the creation of several key parts of our tutorial
-game _EvAdventure_. This is a pretty big part with plenty of examples.
+In part three of the Evennia Beginner tutorial we will go through the actual creation of 
+our tutorial game _EvAdventure_, based on the [Knave](https://www.drivethrurpg.com/product/250888/Knave)
+RPG ruleset. 
 
-If you followed the previous parts of this tutorial you will have some notions about Python and where to find
-and make use of things in Evennia. We also have a good idea of the type of game we want.
-Even if this is not the game-style you are interested in, following along will give you a lot of experience
-with using Evennia. This be of much use when doing your own thing later.
+This is a big part. You'll be seeing a lot of code and there are plenty of lessons to go through. 
+Take your time!
 
+If you followed the previous parts of this tutorial you will have some notions about Python and where to 
+find and make use of things in Evennia. We also have a good idea of the type of game we want.
+Even if this is not the game-style you are interested in, following along will give you a lot 
+of experience with using Evennia. This be _really_ helpful for doing your own thing later.
+
+Fully coded examples of all code we make in this part can be found in the 
+[evennia/contrib/tutorials/evadventure](evennia.contrib.tutorials.evadventure) package.
 
 ## Lessons 
-
-_TODO_
 
 ```{toctree} 
 :maxdepth: 1
 
-Implementing-a-game-rule-system
-Turn-based-Combat-System
-A-Sittable-Object
-
-```
-1. [Changing settings](../../../Unimplemented.md)
-1. [Applying contribs](../../../Unimplemented.md)
-1. [Creating a rule module](../../../Unimplemented.md)
-1. [Tweaking the base Typeclasses](../../../Unimplemented.md)
-1. [Character creation menu](../../../Unimplemented.md)
-1. [Wearing armor and wielding weapons](../../../Unimplemented.md)
-1. [Two types of combat](../../../Unimplemented.md)
-1. [Monsters and AI](../../../Unimplemented.md)
-1. [Questing and rewards](../../../Unimplemented.md)
-1. [Overview of Tech demo](../../../Unimplemented.md)
+Beginner-Tutorial-Utilities
+Beginner-Tutorial-Rule-System
+Beginner-Tutorial-Characters
+Beginner-Tuturial-Objects
+Beginner-Tutorial-Rooms
+Beginner-Tutorial-NPCs
+Beginner-Tutorial-Turnbased-Combat
+Beginner-Tutorial-Quests
+Beginner-Tutorial-Shops
+Beginner-Tutorial-Dungeon
+Beginner-Tutorial-Commands
 
 
 ## Table of Contents
 
-_TODO_
-
 ```{toctree} 
-:maxdepth: 1
 
-Implementing-a-game-rule-system
-Turn-Based-Combat-System
-A-Sittable-Object
+Beginner-Tutorial-Utilities
+Beginner-Tutorial-Rule-System
+Beginner-Tutorial-Characters
+Beginner-Tuturial-Objects
+Beginner-Tutorial-Rooms
+Beginner-Tutorial-NPCs
+Beginner-Tutorial-Turnbased-Combat
+Beginner-Tutorial-Quests
+Beginner-Tutorial-Shops
+Beginner-Tutorial-Dungeon
+Beginner-Tutorial-Commands
 ```

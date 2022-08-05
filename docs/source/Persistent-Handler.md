@@ -110,7 +110,7 @@ class QuestHandler:
 
 ```
 
-The handler is just a normal Python class and has no database-storage on its own. But it has a link to `.obj`, which is assumed to be a full typeclased entity, on which we can create persistent [Attributes](Attributes) to store things however we like!
+The handler is just a normal Python class and has no database-storage on its own. But it has a link to `.obj`, which is assumed to be a full typeclased entity, on which we can create persistent [Attributes](Components/Attributes.md) to store things however we like!
 
 We make two helper methods `_load` and 
 `_save` that handles local fetches and saves `storage` to an Attribute on the object.  To avoid saving more than necessary, we have a property `do_save`. This we will set in `Quest` below.
@@ -160,7 +160,7 @@ class Quest:
 
 The `Quest.__init__` now takes `obj` as argument, to match what we pass to it in `QuestHandler.add`. We want to monitor the changing of `current_step`, so we make it into a `property`. When we edit that value, we set the `do_save` flag on the handler, which means it will save the status to database once it has checked progress on all its quests.
 
-The `__serialize__dbobjs__` and `__deserialize_dbobjs__` methods are needed because `Attributes` can't store 'hidden' database objects (the `Quest.obj` property. The methods help Evennia serialize/deserialize `Quest` propertly when the handler saves it.  For more information, see [Storing Single objects](Attributes#storing-single-objects) in the Attributes documentation. 
+The `__serialize__dbobjs__` and `__deserialize_dbobjs__` methods are needed because `Attributes` can't store 'hidden' database objects (the `Quest.obj` property. The methods help Evennia serialize/deserialize `Quest` propertly when the handler saves it.  For more information, see [Storing Single objects](Components/Attributes.md#storing-single-objects) in the Attributes documentation. 
 
 ### Tying it all together
 
