@@ -458,11 +458,23 @@ and rule implementation like character traits, dice rolling and emoting._
 ```{toctree}
 :maxdepth: 1
 
+Contrib-Buffs.md
 Contrib-Dice.md
 Contrib-Health-Bar.md
 Contrib-RPSystem.md
 Contrib-Traits.md
 ```
+
+
+### Contrib: `buffs`
+
+_Contribution by Tegiminis 2022_
+
+A buff is a timed object, attached to a game entity. It is capable of modifying values, triggering code, or both. 
+It is a common design pattern in RPGs, particularly action games.
+
+[Read the documentation](./Contrib-Buffs.md) - [Browse the Code](evennia.contrib.rpg.buffs)
+
 
 
 ### Contrib: `dice`
@@ -628,6 +640,7 @@ and more._
 
 Contrib-Auditing.md
 Contrib-Fieldfill.md
+Contrib-Name-Generator.md
 Contrib-Random-String-Generator.md
 Contrib-Tree-Select.md
 ```
@@ -658,6 +671,19 @@ function. Once the form is submitted, the form's data is submitted as a dictiona
 to any callable of your choice.
 
 [Read the documentation](./Contrib-Fieldfill.md) - [Browse the Code](evennia.contrib.utils.fieldfill)
+
+
+
+### Contrib: `name_generator`
+
+_Contribution by InspectorCaracal (2022)_
+
+A module for generating random names, both real-world and fantasy. Real-world
+names can be generated either as first (personal) names, family (last) names, or
+full names (first, optional middles, and last). The name data is from [Behind the Name](https://www.behindthename.com/)
+and used under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).
+
+[Read the documentation](./Contrib-Name-Generator.md) - [Browse the Code](evennia.contrib.utils.name_generator)
 
 
 

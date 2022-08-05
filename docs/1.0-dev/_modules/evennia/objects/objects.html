@@ -55,7 +55,6 @@
 <span class="kn">import</span> <span class="nn">inflect</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdset</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.manager</span> <span class="kn">import</span> <span class="n">ObjectManager</span>
@@ -859,8 +858,8 @@
             <span class="p">)</span>
 
             <span class="c1"># director-stance replacements</span>
-            <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="o">**</span><span class="p">{</span>
+            <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span>
+                <span class="p">{</span>
                     <span class="n">key</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span>
                     <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -908,6 +907,7 @@
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">          Passed on to announce_move_to and announce_move_from hooks.</span>
+<span class="sd">          Exits will set the &quot;exit_obj&quot; kwarg to themselves.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            result (bool): True/False depending on if there were problems with the move.</span>
@@ -1597,7 +1597,9 @@
             <span class="p">}</span>
         <span class="p">)</span>
 
-        <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">((</span><span class="n">string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">move_type</span><span class="p">}),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span></div>
+        <span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">move_type</span><span class="p">}),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultObject.announce_move_to"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.announce_move_to">[docs]</a>    <span class="k">def</span> <span class="nf">announce_move_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1665,7 +1667,9 @@
             <span class="p">}</span>
         <span class="p">)</span>
 
-        <span class="n">destination</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">((</span><span class="n">string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">move_type</span><span class="p">}),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span></div>
+        <span class="n">destination</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">move_type</span><span class="p">}),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="p">,),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DefaultObject.at_post_move"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_move">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2241,7 +2245,7 @@
                 <span class="s2">&quot;speech&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
             <span class="p">}</span>
             <span class="n">self_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">custom_mapping</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">msg_self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">self_mapping</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">msg_type</span><span class="p">}),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">msg_self</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">self_mapping</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">msg_type</span><span class="p">}),</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">receivers</span> <span class="ow">and</span> <span class="n">msg_receivers</span><span class="p">:</span>
             <span class="n">receiver_mapping</span> <span class="o">=</span> <span class="p">{</span>
@@ -2264,7 +2268,7 @@
                 <span class="n">receiver_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">individual_mapping</span><span class="p">)</span>
                 <span class="n">receiver_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">custom_mapping</span><span class="p">)</span>
                 <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">msg_receivers</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_mapping</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">msg_type</span><span class="p">}),</span>
+                    <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">msg_receivers</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">receiver_mapping</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">msg_type</span><span class="p">}),</span>
                     <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -2387,9 +2391,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="n">account</span><span class="p">:</span>
                 <span class="c1"># Allow only the character itself and the creator account to puppet this character</span>
                 <span class="c1"># (and Developers).</span>
-                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;character_id&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;account_id&quot;</span><span class="p">:</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">character_id</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account_id</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
-                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;character_id&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;account_id&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">character_id</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account_id</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
             <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
 
@@ -2638,9 +2642,9 @@
 
             <span class="c1"># Add locks</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="n">account</span><span class="p">:</span>
-                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
-                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
             <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
 
@@ -2846,9 +2850,9 @@
 
             <span class="c1"># Set appropriate locks</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="n">account</span><span class="p">:</span>
-                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">locks</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="p">:</span>
-                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">})</span>
+                <span class="n">locks</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">lockstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">locks</span><span class="p">)</span>
 
             <span class="c1"># Record creator id and creation IP</span>
@@ -2888,8 +2892,8 @@
             <span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="c1"># an exit should have a destination (this is replaced at creation time)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+        <span class="c1"># an exit should have a destination - try to make sure it does</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span></div>
 
 <div class="viewcode-block" id="DefaultExit.at_cmdset_get"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_cmdset_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2931,7 +2935,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">source_location</span> <span class="o">=</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">location</span>
-        <span class="k">if</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;traverse&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">traversing_object</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target_location</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;traverse&quot;</span><span class="p">,</span> <span class="n">exit_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">at_post_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">err_traverse</span><span class="p">:</span>

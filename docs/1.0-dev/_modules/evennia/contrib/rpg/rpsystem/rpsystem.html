@@ -255,6 +255,7 @@
 <span class="c1"># this regex returns in groups (langname, say), where langname can be empty.</span>
 <span class="n">_RE_LANGUAGE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?:\((\w+)\))*(</span><span class="se">\&quot;</span><span class="s2">.+?</span><span class="se">\&quot;</span><span class="s2">)&quot;</span><span class="p">)</span>
 
+
 <span class="c1"># the emote parser works in two steps:</span>
 <span class="c1">#  1) convert the incoming emote into an intermediary</span>
 <span class="c1">#     form with all object references mapped to ids.</span>
@@ -446,7 +447,7 @@
         <span class="n">match_index</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="c1"># split the emote string at the reference marker, to process everything after it</span>
         <span class="n">head</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">match_index</span><span class="p">]</span>
-        <span class="n">tail</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">match_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">match_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
 
         <span class="k">if</span> <span class="n">search_mode</span><span class="p">:</span>
             <span class="c1"># match the candidates against the whole search string after the marker</span>
@@ -492,7 +493,7 @@
             <span class="c1"># save search string</span>
             <span class="n">matched_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tail</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">iend</span><span class="p">])</span>
             <span class="c1"># recombine remainder of emote back into a string</span>
-            <span class="n">tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tail</span><span class="p">[</span><span class="n">iend</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span>
+            <span class="n">tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tail</span><span class="p">[</span><span class="n">iend</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
 
         <span class="n">nmatches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bestmatches</span><span class="p">)</span>
 
@@ -569,7 +570,7 @@
     <span class="k">return</span> <span class="n">string</span><span class="p">,</span> <span class="n">mapping</span></div>
 
 
-<div class="viewcode-block" id="send_emote"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.send_emote">[docs]</a><span class="k">def</span> <span class="nf">send_emote</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="send_emote"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.send_emote">[docs]</a><span class="k">def</span> <span class="nf">send_emote</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">msg_type</span><span class="o">=</span><span class="s2">&quot;pose&quot;</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main access function for distribute an emote.</span>
 
@@ -579,6 +580,9 @@
 <span class="sd">            will also form the basis for which sdescs are</span>
 <span class="sd">            &#39;valid&#39; to use in the emote.</span>
 <span class="sd">        emote (str): The raw emote string as input by emoter.</span>
+<span class="sd">        msg_type (str): The type of emote this is. &quot;say&quot; or &quot;pose&quot;</span>
+<span class="sd">            for example. This is arbitrary and used for generating</span>
+<span class="sd">            extra data for .msg(text) tuple.</span>
 <span class="sd">        anonymous_add (str or None, optional): If `sender` is not</span>
 <span class="sd">            self-referencing in the emote, this will auto-add</span>
 <span class="sd">            `sender`&#39;s data to the emote. Possible values are</span>
@@ -643,7 +647,7 @@
             <span class="p">}</span>
         <span class="c1"># map the language {##num} markers. This will convert the escaped sdesc markers on</span>
         <span class="c1"># the form {{#num}} to {#num} markers ready to sdesc-map in the next step.</span>
-        <span class="n">sendemote</span> <span class="o">=</span> <span class="n">emote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_lang_mapping</span><span class="p">)</span>
+        <span class="n">sendemote</span> <span class="o">=</span> <span class="n">emote</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">receiver_lang_mapping</span><span class="p">)</span>
 
         <span class="c1"># map the ref keys to sdescs</span>
         <span class="n">receiver_sdesc_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -655,7 +659,11 @@
         <span class="p">)</span>
 
         <span class="c1"># do the template replacement of the sdesc/recog {#num} markers</span>
-        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">sendemote</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">receiver_sdesc_mapping</span><span class="p">),</span> <span class="n">from_obj</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">receiver</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">sendemote</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">receiver_sdesc_mapping</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">msg_type</span><span class="p">}),</span>
+            <span class="n">from_obj</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <span class="c1"># ------------------------------------------------------------</span>
@@ -966,7 +974,7 @@
         <span class="c1"># calling the speech modifying hook</span>
         <span class="n">speech</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">at_pre_say</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
-        <span class="n">send_emote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">speech</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
+        <span class="n">send_emote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">speech</span><span class="p">,</span> <span class="n">msg_type</span><span class="o">=</span><span class="s2">&quot;say&quot;</span><span class="p">,</span> <span class="n">anonymous_add</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdSdesc"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.CmdSdesc">[docs]</a><span class="k">class</span> <span class="nc">CmdSdesc</span><span class="p">(</span><span class="n">RPCommand</span><span class="p">):</span>  <span class="c1"># set/look at own sdesc</span>
@@ -1093,7 +1101,7 @@
                 <span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sdesc&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">ref</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="n">pose</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">mapping</span><span class="p">)</span>
+            <span class="n">pose</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_name</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">pose</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">pose</span><span class="si">}</span><span class="s2">&#39; is too long.&quot;</span><span class="p">)</span>
@@ -1309,19 +1317,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Something&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ContribRPObject.search"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">searchdata</span><span class="p">,</span>
-        <span class="n">global_search</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">use_nicks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">attribute_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">nofound_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">multimatch_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">searchdata</span><span class="p">,</span>
+            <span class="n">global_search</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">use_nicks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">attribute_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">nofound_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">multimatch_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an Object matching a search string/condition, taking</span>
@@ -1405,10 +1413,10 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">global_search</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">is_string</span>
-            <span class="ow">and</span> <span class="n">searchdata</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
-            <span class="ow">and</span> <span class="n">searchdata</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
+                <span class="n">is_string</span>
+                <span class="ow">and</span> <span class="n">searchdata</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="ow">and</span> <span class="n">searchdata</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="c1"># only allow exact matching if searching the entire database</span>
             <span class="c1"># or unique #dbrefs</span>

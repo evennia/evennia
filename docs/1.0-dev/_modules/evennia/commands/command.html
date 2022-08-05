@@ -262,7 +262,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">_init_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+            <span class="n">_init_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimize</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Command.lockhandler"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.lockhandler">[docs]</a>    <span class="nd">@lazy_property</span>
     <span class="k">def</span> <span class="nf">lockhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -339,9 +340,14 @@
 <span class="sd">        Optimize the key and aliases for lookups.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># optimization - a set is much faster to match against than a list</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+        <span class="n">matches</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
         <span class="c1"># optimization for looping over keys+aliases</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_keyaliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_noprefix_aliases</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">CMD_IGNORE_PREFIXES</span><span class="p">):</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">}</span>
 
 <div class="viewcode-block" id="Command.set_key"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.set_key">[docs]</a>    <span class="k">def</span> <span class="nf">set_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -378,7 +384,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span> <span class="k">if</span> <span class="n">alias</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimize</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Command.match"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">):</span>
+<div class="viewcode-block" id="Command.match"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdname</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called by the system when searching the available commands,</span>
 <span class="sd">        in order to determine if this is the one we wanted. cmdname was</span>
@@ -387,11 +393,23 @@
 <span class="sd">        Args:</span>
 <span class="sd">            cmdname (str): Always lowercase when reaching this point.</span>
 
+<span class="sd">        Kwargs:</span>
+<span class="sd">            include_prefixes (bool): If false, will compare against the _noprefix</span>
+<span class="sd">                variants of commandnames.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            result (bool): Match result.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">cmdname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matchset</span></div>
+        <span class="k">if</span> <span class="n">include_prefixes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">cmd_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keyaliases</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmd_key</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cmd_key</span><span class="p">)</span> <span class="p">:])):</span>
+                    <span class="k">return</span> <span class="n">cmd_key</span><span class="p">,</span> <span class="n">cmd_key</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noprefix_aliases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">cmdname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg_regex</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">cmdname</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="p">:])):</span>
+                    <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Command.access"><a class="viewcode-back" href="../../../api/evennia.commands.command.html#evennia.commands.cmdhandler.Command.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcobj</span><span class="p">,</span> <span class="n">access_type</span><span class="o">=</span><span class="s2">&quot;cmd&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

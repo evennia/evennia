@@ -999,6 +999,39 @@
             <span class="s2">&quot;{&#39;one&#39;: 99, &#39;three&#39;: 3, &#39;+&#39;: 42, &#39;+1&#39;: 33}&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
+        <span class="c1"># dict - case sensitive keys</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test_case = {&#39;FooBar&#39;: 1}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Created attribute Obj/test_case [category:None] = {&#39;FooBar&#39;: 1}&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test_case[&#39;FooBar&#39;] = 2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test_case [category:None] = {&#39;FooBar&#39;: 2}&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test_case&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test_case [category:None] = {&#39;FooBar&#39;: 2}&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test_case[&#39;FooBar&#39;] = {&#39;BarBaz&#39;: 1}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test_case [category:None] = {&#39;FooBar&#39;: {&#39;BarBaz&#39;: 1}}&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test_case[&#39;FooBar&#39;][&#39;BarBaz&#39;] = 2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Modified attribute Obj/test_case [category:None] = {&#39;FooBar&#39;: {&#39;BarBaz&#39;: 2}}&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>
+            <span class="s2">&quot;Obj/test_case&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Attribute Obj/test_case [category:None] = {&#39;FooBar&#39;: {&#39;BarBaz&#39;: 2}}&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="c1"># tuple</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSetAttribute</span><span class="p">(),</span>

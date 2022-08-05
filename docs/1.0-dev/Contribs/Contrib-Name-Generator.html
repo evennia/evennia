@@ -1,0 +1,415 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Random Name Generator &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Pseudo-random generator and registry" href="Contrib-Random-String-Generator.html" />
+    <link rel="prev" title="Easy fillable form" href="Contrib-Fieldfill.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Random-String-Generator.html" title="Pseudo-random generator and registry"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Fieldfill.html" title="Easy fillable form"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Random Name Generator</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="random-name-generator">
+<h1>Random Name Generator<a class="headerlink" href="#random-name-generator" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by InspectorCaracal (2022)</p>
+<p>A module for generating random names, both real-world and fantasy. Real-world
+names can be generated either as first (personal) names, family (last) names, or
+full names (first, optional middles, and last). The name data is from <a class="reference external" href="https://www.behindthename.com/">Behind the Name</a>
+and used under the <a class="reference external" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0 license</a>.</p>
+<p>Fantasy names are generated from basic phonetic rules, using CVC syllable syntax.</p>
+<p>Both real-world and fantasy name generation can be extended to include additional
+information via your game’s <code class="docutils literal notranslate"><span class="pre">settings.py</span></code></p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>This is a stand-alone utility. Just import this module (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.contrib.utils</span> <span class="pre">import</span> <span class="pre">name_generator</span></code>) and use its functions wherever you like.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Import the module where you need it with the following:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.utils.name_generator</span> <span class="kn">import</span> <span class="n">namegen</span>
+</pre></div>
+</div>
+<p>By default, all of the functions will return a string with one generated name.
+If you specify more than one, or pass <code class="docutils literal notranslate"><span class="pre">return_list=True</span></code> as a keyword argument, the returned value will be a list of strings.</p>
+<p>The module is especially useful for naming newly-created NPCs, like so:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">npc_name</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">full_name</span><span class="p">()</span>
+<span class="n">npc_obj</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">npc_name</span><span class="p">,</span> <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.characters.NPC&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="available-settings">
+<h2>Available Settings<a class="headerlink" href="#available-settings" title="Permalink to this headline">¶</a></h2>
+<p>These settings can all be defined in your game’s <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code> file.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">NAMEGEN_FIRST_NAMES</span></code> adds a new list of first (personal) names.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NAMEGEN_LAST_NAMES</span></code> adds a new list of last (family) names.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NAMEGEN_REPLACE_LISTS</span></code> - set to <code class="docutils literal notranslate"><span class="pre">True</span></code> if you want to use only the names defined in your settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NAMEGEN_FANTASY_RULES</span></code> lets you add new phonetic rules for generating entirely made-up names. See the section “Custom Fantasy Name style rules” for details on how this should look.</p></li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">NAMEGEN_FIRST_NAMES</span> <span class="o">=</span> <span class="p">[</span>
+		<span class="p">(</span><span class="s2">&quot;Evennia&quot;</span><span class="p">,</span> <span class="s1">&#39;mf&#39;</span><span class="p">),</span>
+		<span class="p">(</span><span class="s2">&quot;Green Tea&quot;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">),</span>
+	<span class="p">]</span>
+
+<span class="n">NAMEGEN_LAST_NAMES</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;Beeblebrox&quot;</span><span class="p">,</span> <span class="s2">&quot;Son of Odin&quot;</span> <span class="p">]</span>
+
+<span class="n">NAMEGEN_FANTASY_RULES</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;example_style&quot;</span><span class="p">:</span> <span class="p">{</span>
+			<span class="s2">&quot;syllable&quot;</span><span class="p">:</span> <span class="s2">&quot;(C)VC&quot;</span><span class="p">,</span>
+			<span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">,</span><span class="s1">&#39;ph&#39;</span><span class="p">,</span><span class="s1">&#39;sh&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="s1">&#39;n&#39;</span> <span class="p">],</span>
+			<span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">],</span>
+			<span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;n&#39;</span><span class="p">],</span>
+			<span class="s2">&quot;vowels&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">,</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">],</span>
+			<span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="generating-real-names">
+<h2>Generating Real Names<a class="headerlink" href="#generating-real-names" title="Permalink to this headline">¶</a></h2>
+<p>The contrib offers three functions for generating random real-world names:
+<code class="docutils literal notranslate"><span class="pre">first_name()</span></code>, <code class="docutils literal notranslate"><span class="pre">last_name()</span></code>, and <code class="docutils literal notranslate"><span class="pre">full_name()</span></code>. If you want more than one name
+generated at once, you can use the <code class="docutils literal notranslate"><span class="pre">num</span></code> keyword argument to specify how many.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">[&#39;Genesis&#39;, &#39;Tali&#39;, &#39;Budur&#39;, &#39;Dominykas&#39;, &#39;Kamau&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">gender</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
+<span class="go">&#39;Blanchard&#39;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">first_name</span></code> function also takes a <code class="docutils literal notranslate"><span class="pre">gender</span></code> keyword argument to filter names
+by gender association. ‘f’ for feminine, ‘m’ for masculine, ‘mf’ for feminine
+<em>and</em> masculine, or the default <code class="docutils literal notranslate"><span class="pre">None</span></code> to match any gendering.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">full_name</span></code> function also takes the <code class="docutils literal notranslate"><span class="pre">gender</span></code> keyword, as well as <code class="docutils literal notranslate"><span class="pre">parts</span></code> which
+defines how many names make up the full name. The minimum is two: a first name and
+a last name. You can also generate names with the family name first by setting
+the keyword arg <code class="docutils literal notranslate"><span class="pre">surname_first</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">full_name</span><span class="p">()</span>
+<span class="go">&#39;Keeva Bernat&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">full_name</span><span class="p">(</span><span class="n">parts</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">&#39;Suzu Shabnam Kafka Baier&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">full_name</span><span class="p">(</span><span class="n">parts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">surname_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">&#39;Ó Muircheartach Torunn Dyson&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">full_name</span><span class="p">(</span><span class="n">gender</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="go">&#39;Wikolia Ó Deasmhumhnaigh&#39;</span>
+</pre></div>
+</div>
+<section id="adding-your-own-names">
+<h3>Adding your own names<a class="headerlink" href="#adding-your-own-names" title="Permalink to this headline">¶</a></h3>
+<p>You can add additional names with the settings <code class="docutils literal notranslate"><span class="pre">NAMEGEN_FIRST_NAMES</span></code> and
+<code class="docutils literal notranslate"><span class="pre">NAMEGEN_LAST_NAMES</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">NAMEGEN_FIRST_NAMES</span></code> should be a list of tuples, where the first value is the name
+and then second value is the gender flag - ‘m’ for masculine-only, ‘f’ for feminine-
+only, and ‘mf’ for either one.</p>
+<p><code class="docutils literal notranslate"><span class="pre">NAMEGEN_LAST_NAMES</span></code> should be a list of strings, where each item is an available
+surname.</p>
+<p>Examples:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">NAMEGEN_FIRST_NAMES</span> <span class="o">=</span> <span class="p">[</span>
+		<span class="p">(</span><span class="s2">&quot;Evennia&quot;</span><span class="p">,</span> <span class="s1">&#39;mf&#39;</span><span class="p">),</span>
+		<span class="p">(</span><span class="s2">&quot;Green Tea&quot;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">),</span>
+	<span class="p">]</span>
+
+<span class="n">NAMEGEN_LAST_NAMES</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;Beeblebrox&quot;</span><span class="p">,</span> <span class="s2">&quot;Son of Odin&quot;</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">NAMEGEN_REPLACE_LISTS</span> <span class="pre">=</span> <span class="pre">True</span></code> if you want your custom lists above to entirely replace the built-in lists rather than extend them.</p>
+</section>
+</section>
+<section id="generating-fantasy-names">
+<h2>Generating Fantasy Names<a class="headerlink" href="#generating-fantasy-names" title="Permalink to this headline">¶</a></h2>
+<p>Generating completely made-up names is done with the <code class="docutils literal notranslate"><span class="pre">fantasy_name</span></code> function. The
+contrib comes with three built-in styles of names which you can use, or you can
+put a dictionary of custom name rules into <code class="docutils literal notranslate"><span class="pre">settings.py</span></code></p>
+<p>Generating a fantasy name takes the ruleset key as the “style” keyword, and can
+return either a single name or multiple names. By default, it will return a
+single name in the built-in “harsh” style. The contrib also comes with “fluid” and “alien” styles.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">()</span>
+<span class="go">&#39;Vhon&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;harsh&quot;</span><span class="p">)</span>
+<span class="go">[&#39;Kha&#39;, &#39;Kizdhu&#39;, &#39;Godögäk&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;fluid&quot;</span><span class="p">)</span>
+<span class="go">[&#39;Aewalisash&#39;, &#39;Ayi&#39;, &#39;Iaa&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;alien&quot;</span><span class="p">)</span>
+<span class="go">[&quot;Qz&#39;vko&#39;&quot;, &quot;Xv&#39;w&#39;hk&#39;hxyxyz&quot;, &quot;Wxqv&#39;hv&#39;k&quot;, &quot;Wh&#39;k&quot;, &quot;Xbx&#39;qk&#39;vz&quot;]</span>
+</pre></div>
+</div>
+<section id="multi-word-fantasy-names">
+<h3>Multi-Word Fantasy Names<a class="headerlink" href="#multi-word-fantasy-names" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">fantasy_name</span></code> function will only generate one name-word at a time, so for multi-word names
+you’ll need to combine pieces together. Depending on what kind of end result you want, there are
+several approaches.</p>
+<section id="the-simple-approach">
+<h4>The simple approach<a class="headerlink" href="#the-simple-approach" title="Permalink to this headline">¶</a></h4>
+<p>If all you need is for it to have multiple parts, you can generate multiple names at once and <code class="docutils literal notranslate"><span class="pre">join</span></code> them.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">name</span>
+<span class="go">&#39;Dezhvözh Khäk&#39;</span>
+</pre></div>
+</div>
+<p>If you want a little more variation between first/last names, you can also generate names for
+different styles and then combine them.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">first</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;fluid&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">last</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;harsh&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">first</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">last</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">name</span>
+<span class="go">&#39;Ofasa Käkudhu&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="nakku-silversmith">
+<h4>“Nakku Silversmith”<a class="headerlink" href="#nakku-silversmith" title="Permalink to this headline">¶</a></h4>
+<p>One common fantasy name practice is profession- or title-based surnames. To achieve this effect,
+you can use the <code class="docutils literal notranslate"><span class="pre">last_name</span></code> function with a custom list of last names and combine it with your generated
+fantasy name.</p>
+<p>Example:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">NAMEGEN_LAST_NAMES</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;Silversmith&quot;</span><span class="p">,</span> <span class="s2">&quot;the Traveller&quot;</span><span class="p">,</span> <span class="s2">&quot;Destroyer of Worlds&quot;</span> <span class="p">]</span>
+<span class="n">NAMEGEN_REPLACE_LISTS</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">last</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">last_name</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">first</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">last</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">name</span>
+<span class="s1">&#39;Tözhkheko the Traveller&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="elarion-dyrinea-thror-obinson">
+<h4>Elarion d’Yrinea, Thror Obinson<a class="headerlink" href="#elarion-dyrinea-thror-obinson" title="Permalink to this headline">¶</a></h4>
+<p>Another common flavor of fantasy names is to use a surname suffix or prefix. For that, you’ll
+need to add in the extra bit yourself.</p>
+<p>Examples:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">names</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> za&#39;</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">name</span>
+<span class="go">&quot;Tithe za&#39;Dhudozkok&quot;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">names</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">son&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">name</span>
+<span class="go">&#39;Kön Ködhöddoson&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="custom-fantasy-name-style-rules">
+<h3>Custom Fantasy Name style rules<a class="headerlink" href="#custom-fantasy-name-style-rules" title="Permalink to this headline">¶</a></h3>
+<p>The style rules are contained in a dictionary of dictionaries, where the style name
+is the key and the style rules are the dictionary value.</p>
+<p>The following is how you would add a custom style to <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">NAMEGEN_FANTASY_RULES</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;example_style&quot;</span><span class="p">:</span> <span class="p">{</span>
+			<span class="s2">&quot;syllable&quot;</span><span class="p">:</span> <span class="s2">&quot;(C)VC&quot;</span><span class="p">,</span>
+			<span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">,</span><span class="s1">&#39;ph&#39;</span><span class="p">,</span><span class="s1">&#39;sh&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="s1">&#39;n&#39;</span> <span class="p">],</span>
+			<span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">],</span>
+			<span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;n&#39;</span><span class="p">],</span>
+			<span class="s2">&quot;vowels&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">,</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">],</span>
+			<span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then you could generate names following that ruleset with <code class="docutils literal notranslate"><span class="pre">namegen.fantasy_name(style=&quot;example_style&quot;)</span></code>.</p>
+<p>The keys <code class="docutils literal notranslate"><span class="pre">syllable</span></code>, <code class="docutils literal notranslate"><span class="pre">consonants</span></code>, <code class="docutils literal notranslate"><span class="pre">vowels</span></code>, and <code class="docutils literal notranslate"><span class="pre">length</span></code> must be present, and <code class="docutils literal notranslate"><span class="pre">length</span></code> must be the minimum and maximum syllable counts. <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> are optional.</p>
+<section id="syllable">
+<h4>syllable<a class="headerlink" href="#syllable" title="Permalink to this headline">¶</a></h4>
+<p>The “syllable” field defines the structure of each syllable. C is consonant, V is vowel,
+and parentheses mean it’s optional. So, the example <code class="docutils literal notranslate"><span class="pre">(C)VC</span></code> means that every syllable
+will always have a vowel followed by a consonant, and will <em>sometimes</em> have another
+consonant at the beginning. e.g. <code class="docutils literal notranslate"><span class="pre">en</span></code>, <code class="docutils literal notranslate"><span class="pre">bak</span></code></p>
+<p><em>Note:</em> While it’s not standard, the contrib lets you nest parentheses, with each layer
+being less likely to show up. Additionally, any other characters put into the syllable
+structure - e.g. an apostrophe - will be read and inserted as written. The
+“alien” style rules in the module gives an example of both: the syllable structure is <code class="docutils literal notranslate"><span class="pre">C(C(V))(')(C)</span></code>
+which results in syllables such as <code class="docutils literal notranslate"><span class="pre">khq</span></code>, <code class="docutils literal notranslate"><span class="pre">xho'q</span></code>, and <code class="docutils literal notranslate"><span class="pre">q'</span></code> with a much lower frequency of vowels than
+<code class="docutils literal notranslate"><span class="pre">C(C)(V)(')(C)</span></code> would have given.</p>
+</section>
+<section id="consonants">
+<h4>consonants<a class="headerlink" href="#consonants" title="Permalink to this headline">¶</a></h4>
+<p>A simple list of consonant phonemes that can be chosen from. Multi-character strings are
+perfectly acceptable, such as “th”, but each one will be treated as a single consonant.</p>
+<p>The function uses a naive form of weighting, where you make a phoneme more likely to
+occur by putting more copies of it into the list.</p>
+</section>
+<section id="start-and-end">
+<h4>start and end<a class="headerlink" href="#start-and-end" title="Permalink to this headline">¶</a></h4>
+<p>These are <strong>optional</strong> lists for the first and last letters of a syllable, if they’re
+a consonant. You can add on additional consonants which can only occur at the beginning
+or end of a syllable, or you can add extra copies of already-defined consonants to
+increase the frequency of them at the start/end of syllables.</p>
+<p>For example, in the <code class="docutils literal notranslate"><span class="pre">example_style</span></code> above, we have a <code class="docutils literal notranslate"><span class="pre">start</span></code> of m, and <code class="docutils literal notranslate"><span class="pre">end</span></code> of x and n.
+Taken with the rest of the consonants/vowels, this means you can have the syllables of <code class="docutils literal notranslate"><span class="pre">mez</span></code>
+but not <code class="docutils literal notranslate"><span class="pre">zem</span></code>, and you can have <code class="docutils literal notranslate"><span class="pre">phex</span></code> or <code class="docutils literal notranslate"><span class="pre">phen</span></code> but not <code class="docutils literal notranslate"><span class="pre">xeph</span></code> or <code class="docutils literal notranslate"><span class="pre">neph</span></code>.</p>
+<p>They can be left out of custom rulesets entirely.</p>
+</section>
+<section id="vowels">
+<h4>vowels<a class="headerlink" href="#vowels" title="Permalink to this headline">¶</a></h4>
+<p>Vowels is a simple list of vowel phonemes - exactly like consonants, but instead used for the
+vowel selection. Single-or multi-character strings are equally fine. It uses the same naive weighting system
+as consonants - you can increase the frequency of any given vowel by putting it into the list multiple times.</p>
+</section>
+<section id="length">
+<h4>length<a class="headerlink" href="#length" title="Permalink to this headline">¶</a></h4>
+<p>A tuple with the minimum and maximum number of syllables a name can have.</p>
+<p>When setting this, keep in mind how long your syllables can get! 4 syllables might
+not seem like very many, but if you have a ©(V)VC structure with one- and
+two-letter phonemes, you can get up to eight characters per syllable.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/utils/name_generator/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Random Name Generator</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#available-settings">Available Settings</a></li>
+<li><a class="reference internal" href="#generating-real-names">Generating Real Names</a><ul>
+<li><a class="reference internal" href="#adding-your-own-names">Adding your own names</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#generating-fantasy-names">Generating Fantasy Names</a><ul>
+<li><a class="reference internal" href="#multi-word-fantasy-names">Multi-Word Fantasy Names</a><ul>
+<li><a class="reference internal" href="#the-simple-approach">The simple approach</a></li>
+<li><a class="reference internal" href="#nakku-silversmith">“Nakku Silversmith”</a></li>
+<li><a class="reference internal" href="#elarion-dyrinea-thror-obinson">Elarion d’Yrinea, Thror Obinson</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-fantasy-name-style-rules">Custom Fantasy Name style rules</a><ul>
+<li><a class="reference internal" href="#syllable">syllable</a></li>
+<li><a class="reference internal" href="#consonants">consonants</a></li>
+<li><a class="reference internal" href="#start-and-end">start and end</a></li>
+<li><a class="reference internal" href="#vowels">vowels</a></li>
+<li><a class="reference internal" href="#length">length</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Fieldfill.html"
+                        title="previous chapter">Easy fillable form</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Random-String-Generator.html"
+                        title="next chapter">Pseudo-random generator and registry</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Name-Generator.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Name-Generator.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Random-String-Generator.html" title="Pseudo-random generator and registry"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Fieldfill.html" title="Easy fillable form"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Random Name Generator</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

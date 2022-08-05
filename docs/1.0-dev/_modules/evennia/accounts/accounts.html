@@ -340,7 +340,7 @@
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">):</span>
             <span class="c1"># no access</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to puppet &#39;</span><span class="si">{obj.key}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have permission to puppet &#39;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
             <span class="c1"># object already puppeted</span>

@@ -69,6 +69,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">weakref</span> <span class="kn">import</span> <span class="n">WeakKeyDictionary</span>
+
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">is_iter</span>
 
@@ -588,10 +589,7 @@
                 <span class="n">commands</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>  <span class="c1"># replace</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">commands</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_duplicates</span><span class="p">:</span>
-                <span class="c1"># extra run to make sure to avoid doublets</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">))</span>
+
             <span class="c1"># add system_command to separate list as well,</span>
             <span class="c1"># for quick look-up</span>
             <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
@@ -599,7 +597,12 @@
                     <span class="n">ic</span> <span class="o">=</span> <span class="n">system_commands</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
                     <span class="n">system_commands</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>  <span class="c1"># replace</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="n">system_commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+                    <span class="n">system_commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">commands</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_duplicates</span><span class="p">:</span>
+            <span class="c1"># extra run to make sure to avoid doublets</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="CmdSet.remove"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -610,6 +613,15 @@
 <span class="sd">                or the key of such a command.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">_cmd</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">_cmd</span> <span class="k">for</span> <span class="n">_cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="k">if</span> <span class="n">_cmd</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">cmd</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_cmd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
+                    <span class="c1"># if a syscommand, keep the original string and instantiate on it</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">_cmd</span>
+
         <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -633,6 +645,15 @@
 <span class="sd">            cmd (Command): The first matching Command in the set.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">_cmd</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">_cmd</span> <span class="k">for</span> <span class="n">_cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="k">if</span> <span class="n">_cmd</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">cmd</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_cmd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
+                    <span class="c1"># if a syscommand, keep the original string and instantiate on it</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">_cmd</span>
+
         <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thiscmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">thiscmd</span> <span class="o">==</span> <span class="n">cmd</span><span class="p">:</span>

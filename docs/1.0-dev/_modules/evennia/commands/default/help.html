@@ -916,14 +916,14 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">HelpCategory</span><span class="p">):</span>
                     <span class="n">warning</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">querystr</span><span class="si">}</span><span class="s2">&#39; matches (or partially matches) the name of &quot;</span>
-                        <span class="s2">&quot;help-category &#39;</span><span class="si">{match.key}</span><span class="s2">&#39;. If you continue, your help entry will &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;help-category &#39;</span><span class="si">{</span><span class="n">match</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;. If you continue, your help entry will &quot;</span>
                         <span class="s2">&quot;take precedence and the category (or part of its name) *may* not &quot;</span>
                         <span class="s2">&quot;be usable for grouping help entries anymore.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="s2">&quot;evennia.commands.command.Command&quot;</span><span class="p">):</span>
                     <span class="n">warning</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">querystr</span><span class="si">}</span><span class="s2">&#39; matches (or partially matches) the key/alias of &quot;</span>
-                        <span class="s2">&quot;Command &#39;</span><span class="si">{match.key}</span><span class="s2">&#39;. Command-help take precedence over other &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Command &#39;</span><span class="si">{</span><span class="n">match</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;. Command-help take precedence over other &quot;</span>
                         <span class="s2">&quot;help entries so your help *may* be impossible to reach for those &quot;</span>
                         <span class="s2">&quot;with access to that command.&quot;</span>
                     <span class="p">)</span>

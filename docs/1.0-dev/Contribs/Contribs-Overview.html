@@ -384,12 +384,20 @@ current location (useful for displaying the grid as an in-game, updating map).</
 and rule implementation like character traits, dice rolling and emoting.</em></p>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Buffs.html">Buffs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Dice.html">Dice roller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Health-Bar.html">Health Bar</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-RPSystem.html">Roleplaying base system for Evennia</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Traits.html">Traits</a></li>
 </ul>
 </div>
+<section id="contrib-buffs">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">buffs</span></code><a class="headerlink" href="#contrib-buffs" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by Tegiminis 2022</em></p>
+<p>A buff is a timed object, attached to a game entity. It is capable of modifying values, triggering code, or both.
+It is a common design pattern in RPGs, particularly action games.</p>
+<p><a class="reference internal" href="Contrib-Buffs.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.rpg.buffs.html#evennia-contrib-rpg-buffs"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
 <section id="contrib-dice">
 <h3>Contrib: <code class="docutils literal notranslate"><span class="pre">dice</span></code><a class="headerlink" href="#contrib-dice" title="Permalink to this headline">¶</a></h3>
 <p><em>Contribution by Griatch, 2012</em></p>
@@ -504,6 +512,7 @@ and more.</em></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Auditing.html">Input/Output Auditing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Fieldfill.html">Easy fillable form</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contrib-Name-Generator.html">Random Name Generator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Random-String-Generator.html">Pseudo-random generator and registry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Contrib-Tree-Select.html">Easy menu selection tree</a></li>
 </ul>
@@ -527,6 +536,15 @@ minimum and maximum values / character lengths, or can even be verified by a cus
 function. Once the form is submitted, the form’s data is submitted as a dictionary
 to any callable of your choice.</p>
 <p><a class="reference internal" href="Contrib-Fieldfill.html"><span class="doc std std-doc">Read the documentation</span></a> - <a class="reference internal" href="../api/evennia.contrib.utils.fieldfill.html#evennia-contrib-utils-fieldfill"><span class="std std-ref">Browse the Code</span></a></p>
+</section>
+<section id="contrib-name-generator">
+<h3>Contrib: <code class="docutils literal notranslate"><span class="pre">name_generator</span></code><a class="headerlink" href="#contrib-name-generator" title="Permalink to this headline">¶</a></h3>
+<p><em>Contribution by InspectorCaracal (2022)</em></p>
+<p>A module for generating random names, both real-world and fantasy. Real-world
+names can be generated either as first (personal) names, family (last) names, or
+full names (first, optional middles, and last). The name data is from <a class="reference external" href="https://www.behindthename.com/">Behind the Name</a>
+and used under the <a class="reference external" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0 license</a>.</p>
+<p><a class="reference internal" href="Contrib-Name-Generator.html"><span class="doc std std-doc">Read the documentation</span></a> - <span class="xref myst">Browse the Code</span></p>
 </section>
 <section id="contrib-random-string-generator">
 <h3>Contrib: <code class="docutils literal notranslate"><span class="pre">random_string_generator</span></code><a class="headerlink" href="#contrib-random-string-generator" title="Permalink to this headline">¶</a></h3>
@@ -615,6 +633,7 @@ will be overwritten.</small></p>
 </ul>
 </li>
 <li><a class="reference internal" href="#rpg">rpg</a><ul>
+<li><a class="reference internal" href="#contrib-buffs">Contrib: <code class="docutils literal notranslate"><span class="pre">buffs</span></code></a></li>
 <li><a class="reference internal" href="#contrib-dice">Contrib: <code class="docutils literal notranslate"><span class="pre">dice</span></code></a></li>
 <li><a class="reference internal" href="#contrib-health-bar">Contrib: <code class="docutils literal notranslate"><span class="pre">health_bar</span></code></a></li>
 <li><a class="reference internal" href="#contrib-rpsystem">Contrib: <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code></a></li>
@@ -633,6 +652,7 @@ will be overwritten.</small></p>
 <li><a class="reference internal" href="#utils">utils</a><ul>
 <li><a class="reference internal" href="#contrib-auditing">Contrib: <code class="docutils literal notranslate"><span class="pre">auditing</span></code></a></li>
 <li><a class="reference internal" href="#contrib-fieldfill">Contrib: <code class="docutils literal notranslate"><span class="pre">fieldfill</span></code></a></li>
+<li><a class="reference internal" href="#contrib-name-generator">Contrib: <code class="docutils literal notranslate"><span class="pre">name_generator</span></code></a></li>
 <li><a class="reference internal" href="#contrib-random-string-generator">Contrib: <code class="docutils literal notranslate"><span class="pre">random_string_generator</span></code></a></li>
 <li><a class="reference internal" href="#contrib-tree-select">Contrib: <code class="docutils literal notranslate"><span class="pre">tree_select</span></code></a></li>
 </ul>

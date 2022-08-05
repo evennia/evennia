@@ -667,7 +667,7 @@
         <span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">)</span>
 
         <span class="c1"># populate template and return</span>
-        <span class="k">return</span> <span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">mapping</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CraftingRecipe.seed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.seed">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tool_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">consumable_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

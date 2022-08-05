@@ -218,6 +218,22 @@ to allow custom packing/unpacking of nested dbobjs, to allow storing in Attribut
 now return <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of <code class="docutils literal notranslate"><span class="pre">.db.desc</span></code> if no sdesc is set; fallback in hook (inspectorCaracal)</p></li>
 <li><p>Reworked text2html parser to avoid problems with stateful color tags (inspectorCaracal)</p></li>
 <li><p>Simplified <code class="docutils literal notranslate"><span class="pre">EvMenu.options_formatter</span></code> hook to use <code class="docutils literal notranslate"><span class="pre">EvColumn</span></code> and f-strings (inspectorcaracal)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">move_type</span></code> str kwarg to <code class="docutils literal notranslate"><span class="pre">move_to()</span></code> calls, optionally identifying the type of
+move being done (‘teleport’, ‘disembark’, ‘give’ etc). (volund)</p></li>
+<li><p>Made RPSystem contrib msg calls pass <code class="docutils literal notranslate"><span class="pre">pose</span></code> or <code class="docutils literal notranslate"><span class="pre">say</span></code> as msg-<code class="docutils literal notranslate"><span class="pre">type</span></code> for use in
+e.g. webclient pane filtering where desired. (volund)</p></li>
+<li><p>Fixed bug in <code class="docutils literal notranslate"><span class="pre">cmdset.remove()</span></code> where a command could not be deleted by <code class="docutils literal notranslate"><span class="pre">key</span></code>,
+even though doc suggested one could (ChrisLR)</p></li>
+<li><p>New contrib <code class="docutils literal notranslate"><span class="pre">name_generator</span></code> for building random real-world based or fantasy-names
+based on phonetic rules.</p></li>
+<li><p>Enable proper serialization of dict subclasses in Attributes (aogier)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">object.search</span></code> fuzzy-matching now uses <code class="docutils literal notranslate"><span class="pre">icontains</span></code> instead of <code class="docutils literal notranslate"><span class="pre">istartswith</span></code>
+to better match how search works elsewhere (volund)</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">.at_traverse</span></code> hook now receives a <code class="docutils literal notranslate"><span class="pre">exit_obj</span></code> kwarg, linking back to the
+exit triggering the hook (volund)</p></li>
+<li><p>Contrib <code class="docutils literal notranslate"><span class="pre">buffs</span></code> for managing temporary and permanent RPG status buffs effects (tegiminis)</p></li>
+<li><p>New <code class="docutils literal notranslate"><span class="pre">at_server_init()</span></code> hook called before all other startup hooks for all
+startup modes. Used for more generic overriding (volund)</p></li>
 </ul>
 </section>
 <section id="evennia-0-9-5">

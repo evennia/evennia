@@ -232,7 +232,7 @@
         <span class="p">}</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">_format_message</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">expected</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">expected</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TestCraftingRecipe.test_craft__success"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft__success">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft__success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test to create a result from the recipe&quot;&quot;&quot;</span>

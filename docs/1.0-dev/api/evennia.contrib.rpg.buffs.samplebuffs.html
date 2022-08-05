@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.rpg.buffs.samplebuffs &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.rpg.buffs.tests" href="evennia.contrib.rpg.buffs.tests.html" />
+    <link rel="prev" title="evennia.contrib.rpg.buffs.buff" href="evennia.contrib.rpg.buffs.buff.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.buffs.tests.html" title="evennia.contrib.rpg.buffs.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.buffs.buff.html" title="evennia.contrib.rpg.buffs.buff"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.rpg.html" >evennia.contrib.rpg</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.rpg.buffs.html" accesskey="U">evennia.contrib.rpg.buffs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.buffs.samplebuffs</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.rpg.buffs.samplebuffs">
+<span id="evennia-contrib-rpg-buffs-samplebuffs"></span><h1>evennia.contrib.rpg.buffs.samplebuffs<a class="headerlink" href="#module-evennia.contrib.rpg.buffs.samplebuffs" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.buffs.samplebuffs.</code><code class="sig-name descname">Exploit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">buffkey</span></em>, <em class="sig-param"><span class="n">cache</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Exploit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff" title="evennia.contrib.rpg.buffs.buff.BaseBuff"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.buffs.buff.BaseBuff</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.key">
+<code class="sig-name descname">key</code><em class="property"> = 'exploit'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.name">
+<code class="sig-name descname">name</code><em class="property"> = 'Exploit'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.flavor">
+<code class="sig-name descname">flavor</code><em class="property"> = &quot;You are learning your opponent's weaknesses.&quot;</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.flavor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.duration">
+<code class="sig-name descname">duration</code><em class="property"> = -1</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.maxstacks">
+<code class="sig-name descname">maxstacks</code><em class="property"> = 20</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.maxstacks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.triggers">
+<code class="sig-name descname">triggers</code><em class="property"> = ['hit']</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.triggers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.stack_msg">
+<code class="sig-name descname">stack_msg</code><em class="property"> = {1: &quot;You begin to notice flaws in your opponent's defense.&quot;, 10: &quot;You've begun to match the battle's rhythm.&quot;, 20: &quot;You've found a gap in the guard!&quot;}</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.stack_msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.conditional">
+<code class="sig-name descname">conditional</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Exploit.conditional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.conditional" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook function for conditional evaluation.</p>
+<p>This must return True for a buff to apply modifiers, trigger effects, or tick.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploit.at_trigger">
+<code class="sig-name descname">at_trigger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trigger</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Exploit.at_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploit.at_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for the code you want to run whenever the effect is triggered.
+Passes the trigger string to the function, so you can have multiple
+triggers on one buff.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploited">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.buffs.samplebuffs.</code><code class="sig-name descname">Exploited</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">buffkey</span></em>, <em class="sig-param"><span class="n">cache</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Exploited"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploited" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff" title="evennia.contrib.rpg.buffs.buff.BaseBuff"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.buffs.buff.BaseBuff</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploited.key">
+<code class="sig-name descname">key</code><em class="property"> = 'exploited'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploited.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploited.name">
+<code class="sig-name descname">name</code><em class="property"> = 'Exploited'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploited.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploited.flavor">
+<code class="sig-name descname">flavor</code><em class="property"> = &quot;You have sensed your target's vulnerability, and are poised to strike.&quot;</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploited.flavor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploited.duration">
+<code class="sig-name descname">duration</code><em class="property"> = 30</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploited.duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploited.mods">
+<code class="sig-name descname">mods</code><em class="property"> = [&lt;evennia.contrib.rpg.buffs.buff.Mod object&gt;]</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploited.mods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploited.at_post_check">
+<code class="sig-name descname">at_post_check</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Exploited.at_post_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploited.at_post_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook function to run after this buff’s mods are checked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Exploited.at_remove">
+<code class="sig-name descname">at_remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Exploited.at_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Exploited.at_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook function to run when this buff is removed from an object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Leeching">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.buffs.samplebuffs.</code><code class="sig-name descname">Leeching</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">buffkey</span></em>, <em class="sig-param"><span class="n">cache</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Leeching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Leeching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff" title="evennia.contrib.rpg.buffs.buff.BaseBuff"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.buffs.buff.BaseBuff</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Leeching.key">
+<code class="sig-name descname">key</code><em class="property"> = 'leeching'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Leeching.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Leeching.name">
+<code class="sig-name descname">name</code><em class="property"> = 'Leeching'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Leeching.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Leeching.flavor">
+<code class="sig-name descname">flavor</code><em class="property"> = 'Attacking this target fills you with vigor.'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Leeching.flavor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Leeching.duration">
+<code class="sig-name descname">duration</code><em class="property"> = 30</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Leeching.duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Leeching.triggers">
+<code class="sig-name descname">triggers</code><em class="property"> = ['taken_damage']</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Leeching.triggers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Leeching.at_trigger">
+<code class="sig-name descname">at_trigger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trigger</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">attacker</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">damage</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Leeching.at_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Leeching.at_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for the code you want to run whenever the effect is triggered.
+Passes the trigger string to the function, so you can have multiple
+triggers on one buff.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.buffs.samplebuffs.</code><code class="sig-name descname">Poison</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">buffkey</span></em>, <em class="sig-param"><span class="n">cache</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Poison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff" title="evennia.contrib.rpg.buffs.buff.BaseBuff"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.buffs.buff.BaseBuff</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.key">
+<code class="sig-name descname">key</code><em class="property"> = 'poison'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.name">
+<code class="sig-name descname">name</code><em class="property"> = 'Poison'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.flavor">
+<code class="sig-name descname">flavor</code><em class="property"> = 'A poison wracks this body with painful spasms.'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.flavor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.duration">
+<code class="sig-name descname">duration</code><em class="property"> = 120</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.maxstacks">
+<code class="sig-name descname">maxstacks</code><em class="property"> = 5</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.maxstacks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.tickrate">
+<code class="sig-name descname">tickrate</code><em class="property"> = 5</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.tickrate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.dmg">
+<code class="sig-name descname">dmg</code><em class="property"> = 5</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.dmg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.playtime">
+<code class="sig-name descname">playtime</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.playtime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.at_pause">
+<code class="sig-name descname">at_pause</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Poison.at_pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.at_pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for when this buff is paused</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.at_unpause">
+<code class="sig-name descname">at_unpause</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Poison.at_unpause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.at_unpause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for when this buff is unpaused.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Poison.at_tick">
+<code class="sig-name descname">at_tick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initial</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Poison.at_tick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Poison.at_tick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook for actions that occur per-tick, a designer-set sub-duration.
+<strong>initial</strong> tells you if it’s the first tick that happens (when a buff is applied).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Sated">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.buffs.samplebuffs.</code><code class="sig-name descname">Sated</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">buffkey</span></em>, <em class="sig-param"><span class="n">cache</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#Sated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Sated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff" title="evennia.contrib.rpg.buffs.buff.BaseBuff"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.buffs.buff.BaseBuff</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Sated.key">
+<code class="sig-name descname">key</code><em class="property"> = 'sated'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Sated.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Sated.name">
+<code class="sig-name descname">name</code><em class="property"> = 'Sated'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Sated.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Sated.flavor">
+<code class="sig-name descname">flavor</code><em class="property"> = 'You have eaten a great meal!'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Sated.flavor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Sated.duration">
+<code class="sig-name descname">duration</code><em class="property"> = 180</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Sated.duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Sated.maxstacks">
+<code class="sig-name descname">maxstacks</code><em class="property"> = 3</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Sated.maxstacks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.Sated.mods">
+<code class="sig-name descname">mods</code><em class="property"> = [&lt;evennia.contrib.rpg.buffs.buff.Mod object&gt;]</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.Sated.mods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.buffs.samplebuffs.</code><code class="sig-name descname">StatBuff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">buffkey</span></em>, <em class="sig-param"><span class="n">cache</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#StatBuff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff" title="evennia.contrib.rpg.buffs.buff.BaseBuff"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.buffs.buff.BaseBuff</span></code></a></p>
+<p>Customize the stat this buff affects by feeding a list in the order [stat, mod, base, perstack] to the cache argument when added</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff.key">
+<code class="sig-name descname">key</code><em class="property"> = 'statbuff'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff.name">
+<code class="sig-name descname">name</code><em class="property"> = 'statbuff'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff.maxstacks">
+<code class="sig-name descname">maxstacks</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.maxstacks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff.refresh">
+<code class="sig-name descname">refresh</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.refresh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff.unique">
+<code class="sig-name descname">unique</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.unique" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff.cache">
+<code class="sig-name descname">cache</code><em class="property"> = {'modgen': ['foo', 'add', 0, 0]}</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em>, <em class="sig-param"><span class="n">buffkey</span></em>, <em class="sig-param"><span class="n">cache</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/samplebuffs.html#StatBuff.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:
+handler:    The handler this buff is attached to
+buffkey:    The key this buff uses on the cache
+cache:      The cache dictionary (what you get if you use <strong>handler.buffcache.get(key)</strong>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.samplebuffs.StatBuff.flavor">
+<code class="sig-name descname">flavor</code><em class="property"> = 'This buff affects the following stats: {stats}'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.flavor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.rpg.buffs.buff.html"
+                        title="previous chapter">evennia.contrib.rpg.buffs.buff</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.rpg.buffs.tests.html"
+                        title="next chapter">evennia.contrib.rpg.buffs.tests</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.rpg.buffs.samplebuffs.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.rpg.buffs.samplebuffs.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.buffs.tests.html" title="evennia.contrib.rpg.buffs.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.buffs.buff.html" title="evennia.contrib.rpg.buffs.buff"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.rpg.html" >evennia.contrib.rpg</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.rpg.buffs.html" >evennia.contrib.rpg.buffs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.buffs.samplebuffs</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

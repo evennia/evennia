@@ -74,11 +74,11 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="sd">always be sure of what you have changed and what is default behaviour.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">django.contrib.messages</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">messages</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
-
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.messages</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">messages</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># Evennia base server config</span>
@@ -448,9 +448,11 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># the server&#39;s initial setup sequence (the very first startup of the system).</span>
 <span class="c1"># The check will fail quietly if module doesn&#39;t exist or fails to load.</span>
 <span class="n">AT_INITIAL_SETUP_HOOK_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server.conf.at_initial_setup&quot;</span>
-<span class="c1"># Module containing your custom at_server_start(), at_server_reload() and</span>
-<span class="c1"># at_server_stop() methods. These methods will be called every time</span>
-<span class="c1"># the server starts, reloads and resets/stops respectively.</span>
+<span class="c1"># Module(s) containing custom at_server_init(), at_server_start(),</span>
+<span class="c1"># at_server_reload() and at_server_stop() methods. These methods will be called</span>
+<span class="c1"># every time the server starts, reloads and resets/stops</span>
+<span class="c1"># respectively. Can be given as a single path or a list of paths. If a list,</span>
+<span class="c1"># each module&#39;s hooks will be called in list order.</span>
 <span class="n">AT_SERVER_STARTSTOP_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server.conf.at_server_startstop&quot;</span>
 <span class="c1"># List of one or more module paths to modules containing a function start_</span>
 <span class="c1"># plugin_services(application). This module will be called with the main</span>

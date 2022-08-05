@@ -540,11 +540,11 @@
     <span class="n">pstr</span><span class="p">,</span> <span class="n">sstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
     <span class="k">if</span> <span class="n">portal_info_dict</span><span class="p">:</span>
         <span class="n">pdict</span> <span class="o">=</span> <span class="n">_prepare_dict</span><span class="p">(</span><span class="n">portal_info_dict</span><span class="p">)</span>
-        <span class="n">pstr</span> <span class="o">=</span> <span class="n">_strip_empty_lines</span><span class="p">(</span><span class="n">PORTAL_INFO</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">pdict</span><span class="p">))</span>
+        <span class="n">pstr</span> <span class="o">=</span> <span class="n">_strip_empty_lines</span><span class="p">(</span><span class="n">PORTAL_INFO</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">pdict</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">server_info_dict</span><span class="p">:</span>
         <span class="n">sdict</span> <span class="o">=</span> <span class="n">_prepare_dict</span><span class="p">(</span><span class="n">server_info_dict</span><span class="p">)</span>
-        <span class="n">sstr</span> <span class="o">=</span> <span class="n">_strip_empty_lines</span><span class="p">(</span><span class="n">SERVER_INFO</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">sdict</span><span class="p">))</span>
+        <span class="n">sstr</span> <span class="o">=</span> <span class="n">_strip_empty_lines</span><span class="p">(</span><span class="n">SERVER_INFO</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">sdict</span><span class="p">))</span>
 
     <span class="n">info</span> <span class="o">=</span> <span class="n">pstr</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">sstr</span> <span class="k">if</span> <span class="n">sstr</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">maxwidth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
@@ -1425,7 +1425,7 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">settings_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">settings_string</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-    <span class="n">settings_string</span> <span class="o">=</span> <span class="n">settings_string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">setting_dict</span><span class="p">)</span>
+    <span class="n">settings_string</span> <span class="o">=</span> <span class="n">settings_string</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">setting_dict</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">settings_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">settings_string</span><span class="p">)</span></div>

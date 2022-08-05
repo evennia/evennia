@@ -218,7 +218,7 @@ caches are properly updated as well.</p>
 
 <dl class="py method">
 <dt id="evennia.commands.command.Command.match">
-<code class="sig-name descname">match</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">match</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdname</span></em>, <em class="sig-param"><span class="n">include_prefixes</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/command.html#Command.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.command.Command.match" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is called by the system when searching the available commands,
 in order to determine if this is the one we wanted. cmdname was
 previously extracted from the raw string by the system.</p>
@@ -226,8 +226,17 @@ previously extracted from the raw string by the system.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>cmdname</strong> (<em>str</em>) – Always lowercase when reaching this point.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>result (bool)</em> – Match result.</p>
+</dl>
+<dl class="simple">
+<dt>Kwargs:</dt><dd><dl class="simple">
+<dt>include_prefixes (bool): If false, will compare against the _noprefix</dt><dd><p>variants of commandnames.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>result (bool)</em> – Match result.</p>
 </dd>
 </dl>
 </dd></dl>

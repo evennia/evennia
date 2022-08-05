@@ -88,8 +88,9 @@
 <span class="c1"># a file with a flag telling the server to restart after shutdown or not.</span>
 <span class="n">SERVER_RESTART</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;server.restart&quot;</span><span class="p">)</span>
 
-<span class="c1"># module containing hook methods called during start_stop</span>
-<span class="n">SERVER_STARTSTOP_MODULE</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">AT_SERVER_STARTSTOP_MODULE</span><span class="p">)</span>
+<span class="c1"># modules containing hook methods called during start_stop</span>
+<span class="n">SERVER_STARTSTOP_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="n">mod_import</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">AT_SERVER_STARTSTOP_MODULE</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
 
 <span class="c1"># modules containing plugin services</span>
 <span class="n">SERVER_SERVICES_PLUGIN_MODULES</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SERVICES_PLUGIN_MODULES</span><span class="p">)</span>
@@ -455,6 +456,8 @@
             <span class="k">for</span> <span class="n">typeclass_db</span> <span class="ow">in</span> <span class="n">TypedObject</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
         <span class="p">]</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">at_server_init</span><span class="p">()</span>
+
         <span class="c1"># call correct server hook based on start file value</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;reload&quot;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_msg</span><span class="p">(</span><span class="s2">&quot;Server successfully reloaded.&quot;</span><span class="p">)</span>
@@ -567,14 +570,23 @@
 
     <span class="c1"># server start/stop hooks</span>
 
+<div class="viewcode-block" id="Evennia.at_server_init"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called first when the server is starting, before any other hooks, regardless of how it&#39;s starting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">SERVER_STARTSTOP_MODULES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;at_server_init&quot;</span><span class="p">):</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">at_server_init</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="Evennia.at_server_start"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called every time the server starts up, regardless of</span>
 <span class="sd">        how it was shut down.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
-            <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">SERVER_STARTSTOP_MODULES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;at_server_start&quot;</span><span class="p">):</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Evennia.at_server_stop"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -582,16 +594,18 @@
 <span class="sd">        of it is fore a reload, reset or shutdown.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
-            <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_stop</span><span class="p">()</span></div>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">SERVER_STARTSTOP_MODULES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;at_server_stop&quot;</span><span class="p">):</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">at_server_stop</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Evennia.at_server_reload_start"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_reload_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_reload_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when server starts back up after a reload.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
-            <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_reload_start</span><span class="p">()</span></div>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">SERVER_STARTSTOP_MODULES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;at_server_reload_start&quot;</span><span class="p">):</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">at_server_reload_start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Evennia.at_post_portal_sync"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_post_portal_sync">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_portal_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -631,8 +645,9 @@
 <span class="sd">        This is called only time the server stops before a reload.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
-            <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_reload_stop</span><span class="p">()</span></div>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">SERVER_STARTSTOP_MODULES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;at_server_reload_stop&quot;</span><span class="p">):</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">at_server_reload_stop</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Evennia.at_server_cold_start"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_cold_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -660,16 +675,18 @@
                     <span class="k">if</span> <span class="n">character</span><span class="p">:</span>
                         <span class="n">character</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
                 <span class="n">guest</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
-            <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_cold_start</span><span class="p">()</span></div>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">SERVER_STARTSTOP_MODULES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;at_server_cold_start&quot;</span><span class="p">):</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">at_server_cold_start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Evennia.at_server_cold_stop"><a class="viewcode-back" href="../../../api/evennia.server.server.html#evennia.server.server.Evennia.at_server_cold_stop">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_cold_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is called only when the server goes down due to a shutdown or reset.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">SERVER_STARTSTOP_MODULE</span><span class="p">:</span>
-            <span class="n">SERVER_STARTSTOP_MODULE</span><span class="o">.</span><span class="n">at_server_cold_stop</span><span class="p">()</span></div></div>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">SERVER_STARTSTOP_MODULES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s2">&quot;at_server_cold_stop&quot;</span><span class="p">):</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">at_server_cold_stop</span><span class="p">()</span></div></div>
 
 
 <span class="c1"># ------------------------------------------------------------</span>

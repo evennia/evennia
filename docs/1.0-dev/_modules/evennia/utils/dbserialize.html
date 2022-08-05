@@ -285,6 +285,9 @@
     <span class="k">def</span> <span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">|</span> <span class="n">other</span>
 
+    <span class="k">def</span> <span class="fm">__ror__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">|</span> <span class="n">other</span>
+
     <span class="nd">@_save</span>
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_mutables</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
@@ -305,7 +308,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_class&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">)()</span>
 
     <span class="nd">@_save</span>
     <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otherlist</span><span class="p">):</span>
@@ -349,7 +352,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_class&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)()</span>
 
     <span class="k">def</span> <span class="nf">has_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
@@ -687,11 +690,20 @@
                 <span class="k">pass</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
-            <span class="c1"># we try to conserve the iterable class, if not convert to list</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">([</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">])</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">]</span>
+                <span class="c1"># we try to conserve the iterable class, if not convert to dict</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="p">{</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c1"># we try to conserve the iterable class, if not convert to list</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">([</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">])</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;sessid&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;conn_time&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">pack_session</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -756,11 +768,20 @@
             <span class="k">return</span> <span class="n">deque</span><span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># we try to conserve the iterable class if</span>
-                <span class="c1"># it accepts an iterator</span>
-                <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">]</span>
+                <span class="c1"># we try to conserve the iterable class, if not convert to dict</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="p">{</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># we try to conserve the iterable class if</span>
+                    <span class="c1"># it accepts an iterator</span>
+                    <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__deserialize_dbobjs__&quot;</span><span class="p">):</span>
             <span class="c1"># this allows the object to custom-deserialize any embedded dbobjs</span>
@@ -822,13 +843,30 @@
             <span class="k">return</span> <span class="n">dat</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># we try to conserve the iterable class if it</span>
-                <span class="c1"># accepts an iterator</span>
-                <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-                <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverList</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-                <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">dat</span>
+                <span class="c1"># we try to conserve the iterable class, if not convert to dict</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDict</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+                    <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">dat</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDict</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+                    <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">dat</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># we try to conserve the iterable class if it</span>
+                    <span class="c1"># accepts an iterator</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverList</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+                    <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">dat</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverList</span><span class="p">(</span><span class="n">_parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+                    <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">dat</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;__deserialize_dbobjs__&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -842,7 +880,9 @@
         <span class="c1"># convert lists, dicts and sets to their Saved* counterparts. It</span>
         <span class="c1"># is only relevant if the &quot;root&quot; is an iterable of the right type.</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">SafeString</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">process_item</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
             <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverList</span><span class="p">(</span><span class="n">_db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">)</span>
             <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">dat</span>
@@ -872,6 +912,34 @@
             <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDeque</span><span class="p">(</span><span class="n">_db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">)</span>
             <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">dat</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># we try to conserve the iterable class, if not convert to dict</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDict</span><span class="p">(</span><span class="n">_db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+                    <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">dat</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverDict</span><span class="p">(</span><span class="n">_db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">)</span>
+                    <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">process_item</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">dat</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># we try to conserve the iterable class if it</span>
+                    <span class="c1"># accepts an iterator</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverList</span><span class="p">(</span><span class="n">_db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+                    <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">dat</span>
+
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">_SaverList</span><span class="p">(</span><span class="n">_db_obj</span><span class="o">=</span><span class="n">db_obj</span><span class="p">)</span>
+                    <span class="n">dat</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_tree</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">dat</span>
+
     <span class="k">return</span> <span class="n">process_item</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
