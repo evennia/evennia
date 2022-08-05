@@ -232,7 +232,17 @@ class BaseBuff:
 
     def reset(self):
         """Resets the buff start time as though it were just applied; functionally identical to a refresh"""
+        self.start = time.time()
         self.handler.buffcache[self.buffkey]["start"] = time.time()
+
+    def alter_cache(self, to_cache: dict = None):
+        """Alters this buff's cache, both internally (this instance) and on the handler's buff cache."""
+        if not isinstance(to_cache, dict):
+            raise TypeError
+        _cache = dict(self.handler.buffcache[self.buffkey])
+        _cache.update(to_cache)
+        self.cache = _cache
+        self.handler.buffcache[self.buffkey] = _cache
 
     # endregion
 
