@@ -57,8 +57,10 @@ class LivingMixin:
 
         if healer is self:
             self.msg(f"|gYou heal yourself for {healed} health.|n")
-        else:
+        elif healer:
             self.msg(f"|g{healer.key} heals you for {healed} health.|n")
+        else:
+            self.msg(f"You are healed for {healed} health.")
 
     def at_damage(self, damage, attacker=None):
         """
@@ -82,15 +84,14 @@ class LivingMixin:
         """
         pass
 
-    def at_do_loot(self, looted):
+    def at_pay(self, amount):
         """
-        Called when looting another entity.
-
-        Args:
-            looted: The thing to loot.
+        Get coins, but no more than we actually have.
 
         """
-        looted.at_looted()
+        amount = min(amount, self.coins)
+        self.coins -= amount
+        return amount
 
     def at_looted(self, looter):
         """
@@ -101,9 +102,8 @@ class LivingMixin:
 
         """
         max_steal = rules.dice.roll("1d10")
-        owned = self.coin
-        stolen = max(max_steal, owned)
-        self.coins -= stolen
+        stolen = self.at_pay(max_steal)
+
         looter.coins += stolen
 
         self.location.msg_contents(
@@ -125,6 +125,16 @@ class LivingMixin:
         """
         pass
 
+    def at_do_loot(self, defeated_enemy):
+        """
+        Called when looting another entity.
+
+        Args:
+            defeated_enemy: The thing to loot.
+
+        """
+        defeated_enemy.at_looted(self)
+
     def post_loot(self, defeated_enemy):
         """
         Called just after having looted an enemy.
@@ -138,8 +148,7 @@ class LivingMixin:
 
 class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     """
-    A Character for use with EvAdventure. This also works fine for
-    monsters and NPCS.
+    A Character for use with EvAdventure.
 
     """
 
@@ -153,16 +162,11 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     wisdom = AttributeProperty(default=1)
     charisma = AttributeProperty(default=1)
 
-    exploration_speed = AttributeProperty(default=120)
-    combat_speed = AttributeProperty(default=40)
-
     hp = AttributeProperty(default=4)
     hp_max = AttributeProperty(default=4)
     level = AttributeProperty(default=1)
     xp = AttributeProperty(default=0)
     coins = AttributeProperty(default=0)  # copper coins
-
-    morale = AttributeProperty(default=9)  # only used for NPC/monster morale checks
 
     @lazy_property
     def equipment(self):
@@ -244,13 +248,6 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
         """
         if self.location.allow_death:
             rules.dice.roll_death(self)
-            if self.hp > 0:
-                # still alive, but lost some stats
-                self.location.msg_contents(
-                    "|y$You() $conj(stagger) back and fall to the ground - alive, "
-                    "but unable to move.|n",
-                    from_obj=self,
-                )
         else:
             self.location.msg_contents("|y$You() $conj(yield), beaten and out of the fight.|n")
             self.hp = self.hp_max

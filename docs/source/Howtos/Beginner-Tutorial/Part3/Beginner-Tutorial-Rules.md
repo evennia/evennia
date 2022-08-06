@@ -361,30 +361,21 @@ class EvAdventureRollEngine:
 
     # ... 
     
-    def heal(character, amount): 
-        """ 
-        Heal a certain amount of health, but not more 
-        than character's `hp_max`.
-        
-        """
-    
-        hp = character.hp
-        hp_max = character.hp_max
-        
-        damage = hp_max - hp 
-        character.hp += min(damage, amount)
-    
     def heal_from_rest(self, character): 
         """ 
         A night's rest retains 1d8 + CON HP  
         
         """
         con_bonus = getattr(character, Ability.CON.value, 1)
-        self.heal(character, self.roll("1d8") + con_bonus)
+        character.heal(self.roll("1d8") + con_bonus)
 ```
 
-By splitting this into two methods, we get a free convenient `heal` method we can use for healing 
-also outside of sleeping. 
+We make another assumption here - that `character.heal()` is a thing. We tell this function how 
+much the character should heal, and it will do so, making sure to not heal more than its max 
+number of HPs
+
+> Knowing what is available on the character and what rule rolls we need is a bit of a chicken-and-egg 
+> problem. We will make sure to implement the matching _Character_ class next lesson.
 
 
 ### Rolling on a table 
@@ -568,11 +559,71 @@ We don't yet know what 'killing the character' technically means, so we mark thi
 return to it in a later lesson. We just know that we need to do _something_ here to kill off the 
 character!
 
+## Testing 
+
+> Make a new module `mygame/evadventure/tests/test_rules.py`
+
+Testing the `rules` module will also showcase some very useful tools when testing. 
+
+```python 
+# mygame/evadventure/tests/test_rules.py 
+
+from unittest.mock import patch 
+from evennia.utils.test_resources import BaseEvenniaTest
+from .. import rules 
+
+class TestEvAdventureRuleEngine(BaseEvenniaTest):
+   
+    def setUp(self):
+        """Called before every test method"""
+        super().setUp()
+        self.roll_engine = rules.EvAdventureRollEngine()
+    
+    @patch("evadventure.rules.randint")
+    def test_roll(self, mock_randint):
+        mock_randint.return_value = 4 
+        self.assertEqual(self.roll_engine.roll("1d6", 4)     
+        self.assertEqual(self.roll_engine.roll("2d6", 2 * 4)     
+        
+    # test of the other rule methods below ...
+```
+
+As before, run the specific test with 
+
+    evennia test --settings settings.py .evadventure.tests.test_rules
+
+### Mocking and patching
+
+```{sidebar}
+In [evennia/contrib/tutorials/evadventure/tests/test_rules.py](evennia.contrib.tutorials.evadventure.tests.test_rules)
+has a complete example of rule testing.
+```
+The `setUp` method is a special method of the testing class. It will be run before every 
+test method. We use `super().setUp()` to make sure the parent class' version of this method 
+always fire. Then we create a fresh `EvAdventureRollEngine` we can test with. 
+
+In our test, we import `patch` from the `unittest.mock` library. This is a very useful tool for testing. 
+Normally the `randint` function we imported in `rules` will return a random value. That's very hard to 
+test for, since the value will be different every test.
+
+With `@patch` (this is called a _decorator_), we temporarily replace `rules.randint` with a 'mock' - a 
+dummy entity. This mock is passed into the testing method. We then take this `mock_randint` and set 
+`.return_value = 4` on it. 
+
+Adding `return_value` to the mock means that every time this mock is called, it will return 4. For the 
+duration of the test we can now check with `self.assertEqual` that our `roll` method always returns a 
+result as-if the random result was 4.
+
+There are [many resources for understanding mock](https://realpython.com/python-mock-library/), refer to 
+them for further help.
+
+> The `EvAdventureRollEngine` have many methods to test. We leave this as an extra exercise!
+
 ## Summary 
 
 This concludes all the core rule mechanics of _Knave_ - the rules used during play. We noticed here 
 that we are going to soon need to establish how our _Character_ actually stores data. So we will 
-address that next, before we get to the character generation itself.
+address that next.
 
 
 

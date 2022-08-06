@@ -39,11 +39,11 @@ class EvAdventureObject(DefaultObject):
     value = AttributeProperty(0)
 
     # can also be an iterable, for adding multiple obj-type tags
-    obj_type = ObjType.TREASURE.value
+    obj_type = ObjType.GEAR
 
     def at_object_creation(self):
         for obj_type in make_iter(self.obj_type):
-            self.tags.add(obj_type, category="obj_type")
+            self.tags.add(obj_type.value, category="obj_type")
 
     def get_display_header(self, looker, **kwargs):
         return ""  # this is handled by get_obj_stats
@@ -68,43 +68,7 @@ class EvAdventureObject(DefaultObject):
             str: The help text, by default taken from the `.help_text` property.
 
         """
-        return self.help_text
-
-    def at_pre_use(self, user, *args, **kwargs):
-        """
-        Called before this item is used.
-
-        Args:
-            user (Object): The one using the item.
-            *args, **kwargs: Optional arguments.
-
-        Return:
-            bool: False to stop usage.
-
-        """
-        return self.uses > 0
-
-    def at_use(self, user, *args, **kwargs):
-        """
-        Called when this item is used.
-
-        Args:
-            user (Object): The one using the item.
-            *args, **kwargs: Optional arguments.
-
-        """
-        pass
-
-    def at_post_use(self, user, *args, **kwargs):
-        """
-        Called after this item was used.
-
-        Args:
-            user (Object): The one using the item.
-            *args, **kwargs: Optional arguments.
-
-        """
-        self.uses -= 1
+        return "No help for this item."
 
 
 class EvAdventureObjectFiller(EvAdventureObject):
@@ -124,13 +88,13 @@ class EvAdventureObjectFiller(EvAdventureObject):
     quality = AttributeProperty(0)
 
 
-class EvAdventureQuest(EvAdventureObject):
+class EvAdventureQuestObject(EvAdventureObject):
     """
     A quest object. These cannot be sold and only be used for quest resolution.
 
     """
 
-    obj_type = ObjType.QUEST.value
+    obj_type = ObjType.QUEST
     value = AttributeProperty(0)
 
 
@@ -140,7 +104,7 @@ class EvAdventureTreasure(EvAdventureObject):
 
     """
 
-    obj_type = ObjType.TREASURE.value
+    obj_type = ObjType.TREASURE
     value = AttributeProperty(100)
 
 
@@ -151,7 +115,7 @@ class EvAdventureConsumable(EvAdventureObject):
 
     """
 
-    obj_type = ObjType.CONSUMABLE.value
+    obj_type = ObjType.CONSUMABLE
     size = AttributeProperty(0.25)
     uses = AttributeProperty(1)
 
@@ -188,7 +152,7 @@ class WeaponEmptyHand:
 
     """
 
-    obj_type = ObjType.WEAPON.value
+    obj_type = ObjType.WEAPON
     key = "Empty Fists"
     inventory_use_slot = WieldLocation.WEAPON_HAND
     attack_type = Ability.STR
@@ -206,7 +170,7 @@ class EvAdventureWeapon(EvAdventureObject):
 
     """
 
-    obj_type = ObjType.WEAPON.value
+    obj_type = ObjType.WEAPON
     inventory_use_slot = AttributeProperty(WieldLocation.WEAPON_HAND)
     quality = AttributeProperty(3)
 
@@ -217,7 +181,7 @@ class EvAdventureWeapon(EvAdventureObject):
     damage_roll = AttributeProperty("1d6")
 
 
-class EvAdventureRunestone(EvAdventureWeapon):
+class EvAdventureRunestone(EvAdventureWeapon, EvAdventureConsumable):
     """
     Base class for magic runestones. In _Knave_, every spell is represented by a rune stone
     that takes up an inventory slot. It is wielded as a weapon in order to create the specific
@@ -226,13 +190,22 @@ class EvAdventureRunestone(EvAdventureWeapon):
 
     """
 
-    obj_type = (ObjType.WEAPON.value, ObjType.MAGIC.value)
-    inventory_use_slot = AttributeProperty(WieldLocation.TWO_HANDS)
+    obj_type = (ObjType.WEAPON, ObjType.MAGIC)
+    inventory_use_slot = WieldLocation.TWO_HANDS
     quality = AttributeProperty(3)
 
     attack_type = AttributeProperty(Ability.INT)
     defense_type = AttributeProperty(Ability.DEX)
     damage_roll = AttributeProperty("1d8")
+
+    def at_post_use(self, user, *args, **kwargs):
+        """Called after the spell was cast"""
+        self.uses -= 1
+        # the rune stone is not deleted after use, but
+        # it needs to be refreshed after resting.
+
+    def refresh(self):
+        self.uses = 1
 
 
 class EvAdventureArmor(EvAdventureObject):
@@ -241,9 +214,10 @@ class EvAdventureArmor(EvAdventureObject):
 
     """
 
-    obj_type = ObjType.ARMOR.value
-    inventory_use_slot = AttributeProperty(WieldLocation.BODY)
-    armor = AttributeProperty(11)
+    obj_type = ObjType.ARMOR
+    inventory_use_slot = WieldLocation.BODY
+
+    armor = AttributeProperty(1)
     quality = AttributeProperty(3)
 
 
@@ -253,9 +227,8 @@ class EvAdventureShield(EvAdventureArmor):
 
     """
 
-    obj_type = ObjType.SHIELD.value
-    inventory_use_slot = AttributeProperty(WieldLocation.SHIELD_HAND)
-    armor = AttributeProperty(1)
+    obj_type = ObjType.SHIELD
+    inventory_use_slot = WieldLocation.SHIELD_HAND
 
 
 class EvAdventureHelmet(EvAdventureArmor):
@@ -264,6 +237,5 @@ class EvAdventureHelmet(EvAdventureArmor):
 
     """
 
-    obj_type = ObjType.HELMET.value
-    inventory_use_slot = AttributeProperty(WieldLocation.HEAD)
-    armor = AttributeProperty(1)
+    obj_type = ObjType.HELMET
+    inventory_use_slot = WieldLocation.HEAD
