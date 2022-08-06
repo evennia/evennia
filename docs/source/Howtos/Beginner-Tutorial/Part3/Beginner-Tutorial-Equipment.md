@@ -8,7 +8,7 @@ We still need to track what the character is using however: What weapon they hav
 they can do. The shield, helmet and armor they use affects their defense. 
 
 We have already set up the possible 'wear/wield locations' when we defined our Objects
-[in the previous lesson](Beginner-Tutorial-Objects). This is what we have in `enums.py`:
+[in the previous lesson](./Beginner-Tutorial-Objects.md). This is what we have in `enums.py`:
 
 ```python 
 # mygame/evadventure/enums.py
@@ -38,7 +38,7 @@ when we pick them up, but we will add more functionality using an _Equipment han
 
 ```{sidebar}
 If you want to understand more about behind how Evennia uses handlers, there is a 
-[dedicated tutorial](Tutorial-Persistent-Handler) talking about the principle.
+[dedicated tutorial](../../Tutorial-Persistent-Handler.md) talking about the principle.
 ```
 
 A handler is (for our purposes) an object that sits "on" another entity, containing functionality 
@@ -117,4 +117,4 @@ our data - our _Knave_ slots. We must save them to the database, because we want
 them even after reloading.
 
 Using `self.obj.attributes.add()` and `.get()` we save the data to the Character in a specially named
-[Attribute](Attributes). Since we use a `category`, we are unlikely to collide with other Attributes.
+[Attribute](../../../Components/Attributes.md). Since we use a `category`, we are unlikely to collide with other Attributes.

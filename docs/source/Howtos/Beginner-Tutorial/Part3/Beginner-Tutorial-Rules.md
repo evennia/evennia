@@ -1,4 +1,4 @@
-# Rules - summary and dice rolling
+# Rules and dice rolling
 
 In _EvAdventure_ we have decided to use the [Knave](https://www.drivethrurpg.com/product/250888/Knave) 
 RPG ruleset. This is commercial, but released under Creative Commons 4.0, meaning it's okay to share and 
@@ -15,26 +15,28 @@ and _Charisma_ (CHA). These are rated from `+1` to `+10`.
 - Rolls are made with a twenty-sided die (`1d20`), usually adding a suitable Ability bonus to the roll.
 - If you roll _with advantage_, you roll `2d20` and pick the 
 _highest_ value, If you roll _with disadvantage_, you roll `2d20` and pick the _lowest_. 
-- Rolling a natural `1` is a _critical failure_. A natural `20` is a _critical success_.
+- Rolling a natural `1` is a _critical failure_. A natural `20` is a _critical success_. Rolling such
+in combat means your weapon or armor loses quality, which will eventually destroy it.
 - A _saving throw_ (trying to succeed against the environment) means making a roll to beat `15` (always).
-So if you are lifting a heavy stone and have a strength of `+2`, you'd roll `1d20 + 2` and hope the result
+So if you are lifting a heavy stone and have `STR +2`, you'd roll `1d20 + 2` and hope the result
 is higher than `15`. 
 - An _opposed saving throw_ means beating the enemy's suitable Ability 'defense', which is always their 
-`Ability bonus + 10`. So if you have STR `+1` and are arm wrestling someone with STR `+2`, you roll
+`Ability bonus + 10`. So if you have `STR +1` and are arm wrestling someone with `STR +2`, you roll
 `1d20 + 1` and hope to roll higher than `2 + 10 = 12`. 
-- A special bonus is _Armor_, which is given by equipment. Melee attacks test STR versus the _Armor_ 
-defense value while ranged attacks uses WIS vs Armor.
-- _Knave_ have no skills or classes. Everyone can use all items and using magic means having a special 
+- A special bonus is `Armor`, `+1` is unarmored, additional armor is given by equipment. Melee attacks 
+test `STR` versus the `Armor` defense value while ranged attacks uses `WIS` vs `Armor`.
+- _Knave_ has no skills or classes. Everyone can use all items and using magic means having a special 
 'rune stone' in your hands; one spell per stone and day.
-- A character has CON + 10 carry 'slots'. Most normal items uses one slot, armor and large weapons uses
+- A character has `CON + 10` carry 'slots'. Most normal items uses one slot, armor and large weapons uses
 two or three.
-- Healing is random, usually `1d8` health healed roll after food and sleep.
+- Healing is random, `1d8 + CON` health healed after food and sleep.
+- Monster difficulty is listed by hy many 1d8 HP they have; this is called their "hit die" or HD. If
+needing to test Abilities, monsters have HD bonus in every Ability.
 - Monsters have a _morale rating_. When things go bad, they have a chance to panic and flee if 
-rolling `2d6` gives a value over their morale rating.
-- All Characters in _Knave_ are mostly randomly generated. Normally HP is `1d8`, but we will start HP at 
-max value. We will also give everyone an even Ability bonus distribution to avoid people re-rolling
-their characters over and over until happy.
-- _Knave_ also have some random tables, such as for starting equipment and to see if dying when 
+rolling `2d6` over their morale rating.
+- All Characters in _Knave_ are mostly randomly generated. HP is `<level>d8` but we give every 
+new character max HP to start. 
+- _Knave_ also have random tables, such as for starting equipment and to see if dying when 
 hitting 0. Death, if it happens, is permanent.
 
 
