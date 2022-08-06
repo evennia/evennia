@@ -25,9 +25,11 @@ This is a big part. You'll be seeing a lot of code and there are plenty of lesso
 Take your time!
 
 If you followed the previous parts of this tutorial you will have some notions about Python and where to 
-find and make use of things in Evennia. We also have a good idea of the type of game we want.
+find and make use of things in Evennia. We also have a good idea of the type of game we will
+create.
+
 Even if this is not the game-style you are interested in, following along will give you a lot 
-of experience with using Evennia. This be _really_ helpful for doing your own thing later.
+of experience using Evennia and be really helpful for doing your own thing later!
 
 Fully coded examples of all code we make in this part can be found in the 
 [evennia/contrib/tutorials/evadventure](evennia.contrib.tutorials.evadventure) package.
@@ -39,9 +41,10 @@ Fully coded examples of all code we make in this part can be found in the
 
 Beginner-Tutorial-Utilities
 Beginner-Tutorial-Rules
-Beginner-Tutorial-Chargen
 Beginner-Tutorial-Characters
-Beginner-Tuturial-Objects
+Beginner-Tutorial-Objects
+Beginner-Tutorial-Equipment
+Beginner-Tutorial-Chargen
 Beginner-Tutorial-Rooms
 Beginner-Tutorial-NPCs
 Beginner-Tutorial-Turnbased-Combat
@@ -49,7 +52,7 @@ Beginner-Tutorial-Quests
 Beginner-Tutorial-Shops
 Beginner-Tutorial-Dungeon
 Beginner-Tutorial-Commands
-
+```
 
 ## Table of Contents
 
@@ -57,9 +60,10 @@ Beginner-Tutorial-Commands
 
 Beginner-Tutorial-Utilities
 Beginner-Tutorial-Rules
-Beginner-Tutorial-Chargen
 Beginner-Tutorial-Characters
-Beginner-Tuturial-Objects
+Beginner-Tutorial-Objects
+Beginner-Tutorial-Equipment
+Beginner-Tutorial-Chargen
 Beginner-Tutorial-Rooms
 Beginner-Tutorial-NPCs
 Beginner-Tutorial-Turnbased-Combat

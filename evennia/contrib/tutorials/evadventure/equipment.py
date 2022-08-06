@@ -144,7 +144,7 @@ class EquipmentHandler:
             (
                 # armor is listed using its defense, so we remove 10 from it
                 # (11 is base no-armor value in Knave)
-                getattr(slots[WieldLocation.BODY], "armor", 11) - 10,
+                getattr(slots[WieldLocation.BODY], "armor", 1),
                 # shields and helmets are listed by their bonus to armor
                 getattr(slots[WieldLocation.SHIELD_HAND], "armor", 0),
                 getattr(slots[WieldLocation.HEAD], "armor", 0),

@@ -289,18 +289,6 @@ class EvAdventureRollEngine:
         """
         return self.roll("2d6") <= defender.morale
 
-    def heal(self, character, amount):
-        """
-        Heal specific amount, but not more than our max.
-
-        Args:
-            character (EvAdventureCharacter): The character to heal
-            amount (int): How many HP to heal.
-
-        """
-        damage = character.hp_max - character.hp
-        character.hp += min(damage, amount)
-
     def heal_from_rest(self, character):
         """
         A meal and a full night's rest allow for regaining 1d8 + Const bonus HP.
@@ -312,7 +300,7 @@ class EvAdventureRollEngine:
             int: How much HP was healed. This is never more than how damaged we are.
 
         """
-        self.heal(character, self.roll("1d8") + character.constitution)
+        character.heal(self.roll("1d8") + character.constitution)
 
     death_map = {
         "weakened": "strength",

@@ -128,42 +128,9 @@ class Ability(Enum):
     ALLEGIANCE_FRIENDLY = "friendly"
     
 
-class WieldLocation(Enum):
-    """
-    Wield (or wear) locations.
-
-    """
-
-    # wield/wear location
-    BACKPACK = "backpack"
-    WEAPON_HAND = "weapon_hand"
-    SHIELD_HAND = "shield_hand"
-    TWO_HANDS = "two_handed_weapons"
-    BODY = "body"  # armor
-    HEAD = "head"  # helmets
-
-
-class ObjType(Enum):
-    """
-    Object types.
-
-    """
-
-    WEAPON = "weapon"
-    ARMOR = "armor"
-    SHIELD = "shield"
-    HELMET = "helmet"
-    CONSUMABLE = "consumable"
-    GEAR = "gear"
-    MAGIC = "magic"
-    QUEST = "quest"
-    TREASURE = "treasure"
 ```
 
-Here the `Ability` class holds basic properties of a character sheet, while `WieldLocation` tracks 
-equipment and where a character would wield and wear things - since _Knave_ has these, it makes sense 
-to track it. Finally we have a set of different `ObjType`s, for differentiate game items. These are 
-extracted by reading the _Knave_ object lists and figuring out how they should be categorized.
+Here the `Ability` class holds basic properties of a character sheet. 
 
 
 ## Utility module
