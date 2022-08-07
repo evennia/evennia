@@ -1860,7 +1860,7 @@ def percentile(iterable, percent, key=lambda x: x):
     return d0 + d1
 
 
-def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
+def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefix=""):
     """
     This helper function makes a 'grid' output, where it distributes the given
     string-elements as evenly as possible to fill out the given width.
@@ -1897,7 +1897,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
             if rowlen + elen <= width:
                 rows[-1] += element
             else:
-                rows.append(element)
+                rows.append(line_prefix + element)
         return rows
 
     def _weighted_rows(elements):
@@ -1933,13 +1933,13 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
         for ie, element in enumerate(elements):
 
             wl = wls[ie]
-            lrow = display_len((row))
+            lrow = display_len((line_prefix + row))
             # debug = row.replace(" ", ".")
 
             if lrow + wl > width:
                 # this slot extends outside grid, move to next line
                 row += " " * (width - lrow)
-                rows.append(row)
+                rows.append(line_prefix + row)
                 if wl >= width:
                     # remove sep if this fills the entire line
                     element = element.rstrip()
@@ -1948,7 +1948,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
             elif ic >= aver_per_row - 1:
                 # no more slots available on this line
                 row += " " * max(0, (width - lrow))
-                rows.append(row)
+                rows.append(line_prefix + row)
                 row = crop(element, width)
                 ic = 0
             else:
@@ -1963,7 +1963,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
                         row = crop(element, width)
                     else:
                         row += " " * max(0, width - lrow)
-                    rows.append(row)
+                    rows.append(line_prefix + row)
                     row = ""
                     ic = 0
                 else:
@@ -1974,7 +1974,7 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
             if ie >= nelements - 1:
                 # last element, make sure to store
                 row += " " * max(0, width - display_len((row)))
-                rows.append(row)
+                rows.append(line_prefix + row)
         return rows
 
     if not elements:
