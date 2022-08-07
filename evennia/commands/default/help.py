@@ -174,7 +174,11 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             else:
                 subtopics = [f"|w{topic}/{subtop}|n" for subtop in subtopics]
             subtopics = "\n|CSubtopics:|n\n  {}".format(
-                "\n  ".join(format_grid(subtopics, width=self.client_width()))
+                "\n  ".join(
+                    format_grid(
+                        subtopics, width=self.client_width(), line_prefix=self.index_topic_clr
+                    )
+                )
             )
         else:
             subtopics = ""
@@ -186,7 +190,11 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             else:
                 suggested = [f"|w{sug}|n" for sug in suggested]
             suggested = "\n|COther topic suggestions:|n\n{}".format(
-                "\n  ".join(format_grid(suggested, width=self.client_width()))
+                "\n  ".join(
+                    format_grid(
+                        suggested, width=self.client_width(), line_prefix=self.index_topic_clr
+                    )
+                )
             )
         else:
             suggested = ""
@@ -280,7 +288,13 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 + self.index_topic_clr
             )
             grid, verbatim_elements = _group_by_category(cmd_help_dict)
-            gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
+            gridrows = format_grid(
+                grid,
+                width,
+                sep="  ",
+                verbatim_elements=verbatim_elements,
+                line_prefix=self.index_topic_clr,
+            )
             cmd_grid = ANSIString("\n").join(gridrows) if gridrows else ""
 
         if any(db_help_dict.values()):
@@ -291,7 +305,13 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 + self.index_topic_clr
             )
             grid, verbatim_elements = _group_by_category(db_help_dict)
-            gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
+            gridrows = format_grid(
+                grid,
+                width,
+                sep="  ",
+                verbatim_elements=verbatim_elements,
+                line_prefix=self.index_topic_clr,
+            )
             db_grid = ANSIString("\n").join(gridrows) if gridrows else ""
 
         # only show the main separators if there are actually both cmd and db-based help
