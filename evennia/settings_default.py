@@ -18,6 +18,15 @@ import sys
 from django.contrib.messages import constants as messages
 from django.urls import reverse_lazy
 
+if "__pypy__" in sys.builtin_module_names:
+    try:
+        from psycopg2cffi import compat
+
+        compat.register()
+    except ImportError:
+        pass
+
+
 ######################################################################
 # Evennia base server config
 ######################################################################

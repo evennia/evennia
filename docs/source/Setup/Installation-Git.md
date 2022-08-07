@@ -17,9 +17,9 @@ more detailed instructions for your platform.
 1. Install Python, GIT and python-virtualenv. Start a Console/Terminal.
 2. `cd` to some place you want to do your development (like a folder
    `/home/anna/muddev/` on Linux or a folder in your personal user directory on Windows).
-3. `git clone https://github.com/evennia/evennia.git`  (a new folder `evennia` is created)
-4. `python3.10 -m venv evenv`  (a new folder `evenv` is created)
-5. `source evenv/bin/activate` (Linux, Mac), `evenv\Scripts\activate` (Windows)
+3. `python3.10 -m venv evenv`  (a new folder `evenv` is created)
+4. `source evenv/bin/activate` (Linux, Mac), `evenv\Scripts\activate` (Windows)
+5. `git clone https://github.com/evennia/evennia.git`  (a new folder `evennia` is created)
 6. `pip install -e evennia`
 7. `evennia --init mygame`
 8. `cd mygame`

@@ -1,0 +1,242 @@
+# This Evennia workflow will install Python dependencies, run tests with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: common-workflow
+
+on:
+  workflow_call:
+    inputs:
+
+      python-matrix:
+        description: python versions to use. JSON string.
+        type: string
+        required: true
+
+      db-matrix:
+        description: database engines to use. JSON string.
+        type: string
+        required: false
+        default: '["sqlite3", "postgresql", "mysql"]'
+
+      # defaults you seldom change (remember to align settings file!)
+
+      _DB_ROOT_PASSWORD:
+        description: database root password - just for DRY
+        type: string
+        required: false
+        default: root_password
+
+      _DB_NAME:
+        description: database name - just for DRY
+        type: string
+        required: false
+        default: evennia
+
+      _DB_USERNAME:
+        description: database username - just for DRY
+        type: string
+        required: false
+        default: evennia
+
+      _DB_PASSWORD:
+        description: database password - just for DRY
+        type: string
+        required: false
+        default: password
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.python-version }}-${{ matrix.TESTING_DB }}
+      cancel-in-progress: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(inputs.python-matrix) }}
+        TESTING_DB: ${{ fromJSON(inputs.db-matrix) }}
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Set up PostgreSQL server
+      uses: harmon758/postgresql-action@v1
+      if: matrix.TESTING_DB == 'postgresql'
+      with:
+        postgresql version: '10.7'
+        postgresql db: ${{ inputs._DB_NAME }}
+        postgresql user: ${{ inputs._DB_USERNAME }}
+        postgresql password: ${{ inputs._DB_PASSWORD }}
+
+    - name: Set up MySQL server
+      uses: mirromutth/mysql-action@v1.1
+      if: matrix.TESTING_DB == 'mysql'
+      with:
+        host port: 3306
+        # character set server: 'utf8mb4'
+        # collation server: 'utf8mb4_unicode_ci'
+        character set server: 'utf8'
+        collation server: 'utf8_general_ci'
+        default storage engine: 'InnoDB'
+        mysql database: ${{ inputs._DB_NAME }}
+        mysql user: ${{ inputs._DB_USERNAME }}
+        mysql password: ${{ inputs._DB_PASSWORD }}
+        mysql root password: ${{ inputs._DB_ROOT_PASSWORD }}
+
+    # wait for db to activate
+    - name: wait for db to activate
+      if: matrix.TESTING_DB == 'mysql' || matrix.TESTING_DB == 'postgresql'
+      shell: bash
+      run: |
+
+        if [ ${{ matrix.TESTING_DB }} = mysql ]
+        then
+          db_ping='mysqladmin ping -h 127.0.0.1 -u root -p"${{ inputs._DB_ROOT_PASSWORD }}" -s'
+        else
+          db_ping='pg_isready -h 127.0.0.1 -q'
+        fi
+
+        while ! $db_ping >/dev/null 2>&1
+        do
+          sleep 1
+          echo -n .
+        done
+        echo
+
+    - name: mysql privileges
+      if: matrix.TESTING_DB == 'mysql'
+      shell: bash
+      run: |
+
+        cat <<EOF | mysql -u root -p"${{ inputs._DB_ROOT_PASSWORD }}" -h 127.0.0.1 mysql
+          create user '${{ inputs._DB_USERNAME }}'@'%' identified by '${{ inputs._DB_PASSWORD }}';
+          grant all on \`${{ inputs._DB_NAME }}%\`.* to '${{ inputs._DB_USERNAME }}'@'%';
+          grant process on *.* to '${{ inputs._DB_USERNAME }}'@'%';
+          flush privileges
+        EOF
+
+    # get logs from db start
+    - name: Database container logs
+      uses: jwalton/gh-docker-logs@v1.0.0
+
+    - name: Check running containers
+      shell: bash
+      run: docker ps -a
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: pip
+        cache-dependency-path: |
+          requirements.txt
+          requirements_extra.txt
+
+    - name: Install package dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install wheel
+        pip install psycopg2-binary==2.8.6   # fix issue for Django 2.2
+        pip install mysqlclient
+        pip install coveralls
+        pip install codacy-coverage
+        pip install tblib
+        pip install -e .
+
+    - name: Install extra dependencies
+      run: pip install -r requirements_extra.txt
+
+    - name: Install pypy-specific psql driver
+      if: matrix.TESTING_DB == 'postgresql' && startsWith(matrix.python-version, 'pypy')
+      run: |
+        pip install psycopg2cffi
+
+    - name: Initialize evennia
+      run: |
+        evennia --init testing_mygame
+        cp .github/workflows/${{ matrix.TESTING_DB }}_settings.py testing_mygame/server/conf/settings.py
+        cd testing_mygame
+        evennia migrate
+        evennia collectstatic --noinput
+
+    - name: Run test suite with coverage
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
+      working-directory: testing_mygame
+      run: |
+        coverage run \
+          --source=../evennia \
+          --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
+          ../bin/unix/evennia test \
+            --settings=settings \
+            --keepdb \
+            --parallel 4 \
+            --timing \
+            evennia
+        coverage xml
+
+    - name: Run test suite
+      if: matrix.TESTING_DB != 'sqlite3' || matrix.python-version != '3.10'
+      working-directory: testing_mygame
+      run: |
+        python -X jit-off ../bin/unix/evennia test \
+          --settings=settings \
+          --keepdb \
+          --parallel 4 \
+          --timing \
+          evennia
+
+    # we only want to run coverall/codacy once, so we only do it for one of the matrix combinations
+    # it's also not critical if pushing to either service fails (happens for PRs since env is not
+    # available outside of the evennia org)
+    - name: Send data to Coveralls
+      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' }}
+      continue-on-error: true
+      env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        cd testing_mygame
+        coveralls
+
+    - name: Send data to Codacy
+      if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' }}
+      continue-on-error: true
+      uses: codacy/codacy-coverage-reporter-action@master
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: ./testing_mygame/coverage.xml
+
+    # docker setup and push
+    -
+      name: Set up QEMU
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
+      uses: docker/setup-qemu-action@v1
+    -
+      name: Set up Docker Buildx
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
+      uses: docker/setup-buildx-action@v1
+    -
+      name: Login to DockerHub
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    -
+      name: Build and push for master
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.9' && github.ref == 'refs/heads/master'
+      id: docker_build_master
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: evennia/evennia:latest
+    -
+      name: Build and push for develop
+      if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' && github.ref == 'refs/heads/develop'
+      id: docker_build_develop
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: evennia/evennia:develop
