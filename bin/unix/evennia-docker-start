@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 # called by the Dockerfile to start the server in docker mode
 
