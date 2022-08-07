@@ -87,8 +87,14 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
     # colors for the help index
     index_type_separator_clr = "|w"
-    index_category_clr = "|W"
-    index_topic_clr = "|G"
+
+    @property
+    def index_category_clr(self):
+        return f"|{ret}" if (ret := self.account.options.help_category_color) != "n" else "|W"
+
+    @property
+    def index_topic_clr(self):
+        return f"|{ret}" if (ret := self.account.options.help_entry_color) != "n" else "|G"
 
     # suggestion cutoff, between 0 and 1 (1 => perfect match)
     suggestion_cutoff = 0.6
