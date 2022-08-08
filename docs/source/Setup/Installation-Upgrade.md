@@ -30,6 +30,9 @@ game dir, continue below.
 anything you want to keep), you can _delete_ it entirely.
 - Copy `evennia/evennia/game_template/web` to `mygame/` (e.g. using `cp -Rf` or a file manager). This new `web` folder
 replaces the old one and has a very different structure.
+- Replace/comment out import and calls to
+[deprecated `django.conf.urls`](https://docs.djangoproject.com/en/3.2/ref/urls/#url). If needed, a replacement is
+[available here](https://docs.djangoproject.com/en/4.0/ref/urls/#django.urls.re_path).
 - `evennia migrate`
 - `evennia start`
 
