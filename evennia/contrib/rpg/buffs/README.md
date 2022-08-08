@@ -283,26 +283,35 @@ Regardless of any other functionality, all buffs have the following class attrib
 - They can `refresh` (bool), which resets the duration when stacked or reapplied. (default: True)
 - They can be `playtime` (bool) buffs, where duration only counts down during active play. (default: False)
 
-They also always store some useful mutable information about themselves in the cache:
-
-- `ref` (class): The buff class path we use to construct the buff.
-- `start` (float): The timestamp of when the buff was applied.
-- `source` (Object): If specified; this allows you to track who or what applied the buff.
-- `prevtick` (float): The timestamp of the previous tick.
-- `duration` (float): The cached duration. This can vary from the class duration, depending on if the duration has been modified (paused, extended, shortened, etc).
-- `stacks` (int): How many stacks they have.
-- `paused` (bool): Paused buffs do not clean up, modify values, tick, or fire any hook methods.
-
-You can always access the raw cache dictionary through the `cache` attribute on an instanced buff. This is grabbed when you get the buff through
-a handler method, so it may not always reflect recent changes you've made, depending on how you structure your buff calls. All of the above
-mutable information can be found in this cache, as well as any arbitrary information you pass through the handler `add` method (via `to_cache`).
-
 Buffs also have a few useful properties:
 
 - `owner`: The object this buff is attached to
 - `ticknum`: How many ticks the buff has gone through
 - `timeleft`: How much time is remaining on the buff
 - `ticking`/`stacking`: If this buff ticks/stacks (checks `tickrate` and `maxstacks`)
+
+#### Buff Cache (Advanced)
+
+Buffs always store some useful mutable information about themselves in the cache (what is stored on the owning object's database attribute). A buff's cache corresponds to `{buffkey: buffcache}`, where `buffcache` is a dictionary containing __at least__ the mutable information below.:
+
+- `ref` (class): The buff class path we use to construct the buff.
+- `start` (float): The timestamp of when the buff was applied.
+- `source` (Object): If specified; this allows you to track who or what applied the buff.
+- `prevtick` (float): The timestamp of the previous tick.
+- `duration` (float): The cached duration. This can vary from the class duration, depending on if the duration has been modified (paused, extended, shortened, etc).
+- `tickrate` (float): The buff's tick rate. Cannot go below 0. Altering the tickrate on an applied buff will not cause it to start ticking if it wasn't ticking before. (pause and unpause to start/stop ticking on existing buffs)
+- `stacks` (int): How many stacks they have.
+- `paused` (bool): Paused buffs do not clean up, modify values, tick, or fire any hook methods.
+
+Sometimes you will want to dynamically update a buff's cache at runtime, such as changing a tickrate in a hook method, or altering a buff's duration. 
+You can do so by using the interface `buff.cachekey`. As long as the attribute name matches a key in the cache dictionary, 
+it will update the stored cache with the new value.
+
+> **Example**: You want to increase a buff's duration by 30 seconds. You use `buff.duration += 30`. This new duration is now reflected on both the instance and the cache.
+
+All of the above mutable information can be found in this cache, as well as any arbitrary information you pass through the handler `add` method (via `to_cache`).
+
+> **Example**: You store `damage` as a value in the buff cache and use it for your poison buff. You want to increase it over time, so you use `buff.damage += 1` in the tick method.
 
 ### Modifiers
 

@@ -13,6 +13,7 @@ from evennia.contrib.rpg.buffs import buff
 
 
 class _EmptyBuff(BaseBuff):
+    key = "empty"
     pass
 
 
@@ -371,6 +372,17 @@ class TestBuffsAndHandler(EvenniaTest):
         self.assertEqual(handler.get("ttib").duration, 0)
         handler.cleanup()
         self.assertFalse(handler.get("ttib"), None)
+
+    @patch("evennia.contrib.rpg.buffs.buff.utils.delay", new=Mock())
+    def test_cacheattrlink(self):
+        """tests the link between the instance attribute and the cache attribute"""
+        # setup
+        handler: BuffHandler = self.testobj.buffs
+        handler.add(_EmptyBuff)
+        self.assertEqual(handler.buffcache["empty"]["duration"], -1)
+        empty: _EmptyBuff = handler.get("empty")
+        empty.duration = 30
+        self.assertEqual(handler.buffcache["empty"]["duration"], 30)
 
     @patch("evennia.contrib.rpg.buffs.buff.utils.delay", new=Mock())
     def test_buffableproperty(self):

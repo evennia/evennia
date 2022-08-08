@@ -116,9 +116,8 @@ class BaseBuff:
 
     handler = None
     start = 0
-    # Default buff duration; -1 or lower for permanent, 0 for "instant" (removed immediately)
-    duration = -1
 
+    duration = -1  # Default buff duration; -1 for permanent, 0 for "instant", >0 normal
     playtime = False  # Does this buff autopause when owning object is unpuppeted?
 
     refresh = True  # Does the buff refresh its timer on application?
@@ -133,7 +132,7 @@ class BaseBuff:
     @property
     def ticknum(self):
         """Returns how many ticks this buff has gone through as an integer."""
-        x = (time.time() - self.start) / self.tickrate
+        x = (time.time() - self.start) / max(1, self.tickrate)
         return int(x)
 
     @property
@@ -145,12 +144,12 @@ class BaseBuff:
 
     @property
     def timeleft(self):
-        """Returns how much time this buff has left"""
+        """Returns how much time this buff has left. If -1, it is permanent."""
         _tl = 0
         if not self.start:
             _tl = self.duration
         else:
-            _tl = self.duration - (time.time() - self.start)
+            _tl = max(-1, self.duration - (time.time() - self.start))
         return _tl
 
     @property
@@ -169,17 +168,18 @@ class BaseBuff:
             handler:    The handler this buff is attached to
             buffkey:    The key this buff uses on the cache
             cache:      The cache dictionary (what you get if you use `handler.buffcache.get(key)`)"""
-        self.handler: BuffHandler = handler
-        self.buffkey = buffkey
-        # Cache assignment
-        self.cache = cache
-        # Default system cache values
-        self.start = self.cache.get("start")
-        self.duration = self.cache.get("duration")
-        self.prevtick = self.cache.get("prevtick")
-        self.paused = self.cache.get("paused")
-        self.stacks = self.cache.get("stacks")
-        self.source = self.cache.get("source")
+        required = {"handler": handler, "buffkey": buffkey, "cache": cache}
+        self.__dict__.update(cache)
+        self.__dict__.update(required)
+        # Init hook
+        self.at_init()
+
+    def __setattr__(self, attr, value):
+        if attr in self.cache:
+            if attr == "tickrate":
+                value = max(0, value)
+            self.handler.buffcache[self.buffkey][attr] = value
+        super().__setattr__(attr, value)
 
     def conditional(self, *args, **kwargs):
         """Hook function for conditional evaluation.
@@ -249,6 +249,10 @@ class BaseBuff:
     # endregion
 
     # region hook methods
+    def at_init(self, *args, **kwargs):
+        """Hook function called when this buff object is initialized."""
+        pass
+
     def at_apply(self, *args, **kwargs):
         """Hook function to run when this buff is applied to an object."""
         pass
@@ -461,6 +465,7 @@ class BuffHandler:
                 "ref": buff,
                 "start": time.time(),
                 "duration": buff.duration,
+                "tickrate": buff.tickrate,
                 "prevtick": time.time(),
                 "paused": False,
                 "stacks": stacks,
@@ -1159,7 +1164,7 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
 
     # Instantiate the buff and tickrate
     buff: BaseBuff = handler.get(buffkey)
-    tr = buff.tickrate
+    tr = max(1, buff.tickrate)
 
     # This stops the old ticking process if you refresh/stack the buff
     if tr > time.time() - buff.prevtick and initial != True:
@@ -1172,7 +1177,7 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
             buff.at_tick(initial, **context)
 
         # Tick this buff one last time, then remove
-        if buff.duration <= time.time() - buff.start:
+        if buff.duration > -1 and buff.duration <= time.time() - buff.start:
             if tr < time.time() - buff.prevtick:
                 buff.at_tick(initial, **context)
             buff.remove(expire=True)
@@ -1183,6 +1188,7 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
             buff.at_tick(initial, **context)
 
     handler.buffcache[buffkey]["prevtick"] = time.time()
+    tr = max(1, buff.tickrate)
 
     # Recur this function at the tickrate interval, if it didn't stop/fail
     utils.delay(
