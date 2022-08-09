@@ -234,8 +234,8 @@ class BaseBuff:
         self.start = time.time()
         self.handler.buffcache[self.buffkey]["start"] = time.time()
 
-    def alter_cache(self, to_cache: dict):
-        """Alters this buff's cache, both internally (this instance) and on the handler's buff cache.
+    def update_cache(self, to_cache: dict):
+        """Updates this buff's cache using the given values, both internally (this instance) and on the handler.
 
         Args:
             to_cache:   The dictionary of values you want to add to the cache"""
@@ -928,16 +928,6 @@ class BuffHandler:
                 utils.delay(
                     tickrate, tick_buff, handler=self, buffkey=key, initial=False, persistent=True
                 )
-        return
-
-    def set_duration(self, key, value):
-        """Sets the duration of the specified buff.
-
-        Args:
-            key:    The key of the buff whose duration you want to set
-            value:  The value you want the new duration to be"""
-        if key in self.buffcache.keys():
-            self.buffcache[key]["duration"] = value
         return
 
     def view(self, to_filter=None) -> dict:
