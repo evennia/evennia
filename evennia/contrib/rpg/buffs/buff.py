@@ -877,23 +877,25 @@ class BuffHandler:
             start = buff["start"]  # Start
             duration = buff["duration"]  # Duration
             prevtick = buff["prevtick"]  # Previous tick timestamp
-            tickrate = buff["ref"].tickrate  # Buff's tick rate
-
-            # Original buff ending, and new duration
+            tickrate = buff["tickrate"]  # Buff's tick rate
             end = start + duration  # End
-            newduration = end - current  # New duration
 
-            # Apply the new duration
-            if newduration > 0:
-                buff["duration"] = newduration
-                if buff["ref"].ticking:
-                    buff["tickleft"] = max(1, tickrate - (current - prevtick))
-                self.buffcache[key] = buff
-                instance: BaseBuff = buff["ref"](self, key, buff)
-                instance.at_pause(**context)
-            else:
-                self.remove(key)
-        return
+            # Setting "tickleft"
+            if buff["ref"].ticking:
+                buff["tickleft"] = max(1, tickrate - (current - prevtick))
+
+            # Setting the new duration (if applicable)
+            if duration > -1:
+                newduration = end - current  # New duration
+                if newduration > 0:
+                    buff["duration"] = newduration
+                else:
+                    self.remove(key)
+
+            # Apply new cache info, call pause hook
+            self.buffcache[key] = buff
+            instance: BaseBuff = buff["ref"](self, key, buff)
+            instance.at_pause(**context)
 
     def unpause(self, key: str, context=None):
         """Unpauses a buff. This makes it visible to the various buff systems again.
@@ -920,15 +922,19 @@ class BuffHandler:
             buff["start"] = current
             if buff["ref"].ticking:
                 buff["prevtick"] = current - (tickrate - tickleft)
+
+            # Apply new cache info, call hook
             self.buffcache[key] = buff
             instance: BaseBuff = buff["ref"](self, key, buff)
             instance.at_unpause(**context)
-            utils.delay(buff["duration"], cleanup_buffs, self, persistent=True)
+
+            # Set up typical delays (cleanup/ticking)
+            if instance.duration > -1:
+                utils.delay(buff["duration"], cleanup_buffs, self, persistent=True)
             if instance.ticking:
                 utils.delay(
                     tickrate, tick_buff, handler=self, buffkey=key, initial=False, persistent=True
                 )
-        return
 
     def view(self, to_filter=None) -> dict:
         """Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.
@@ -1157,7 +1163,7 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
     tr = max(1, buff.tickrate)
 
     # This stops the old ticking process if you refresh/stack the buff
-    if tr > time.time() - buff.prevtick and initial != True:
+    if (tr > time.time() - buff.prevtick and initial != True) or buff.paused:
         return
 
     # Only fire the at_tick methods if the conditional is truthy
