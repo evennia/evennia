@@ -123,7 +123,7 @@ class BaseBuff:
     refresh = True  # Does the buff refresh its timer on application?
     unique = True  # Does the buff overwrite existing buffs with the same key on the same target?
     maxstacks = 1  # The maximum number of stacks the buff can have. If >1, this buff will stack.
-    stacks = 1  # If >1, used as the default when applying this buff
+    stacks = 1  # Used as the default when applying this buff if no or negative stacks were specified (min: 1)
     tickrate = 0  # How frequent does this buff tick, in seconds (cannot be lower than 1)
 
     mods = []  # List of mod objects. See Mod class below for more detail
@@ -452,10 +452,14 @@ class BuffHandler:
             context = {}
         b = {}
         _context = dict(context)
+
+        # Initial cache updating, starting with the class cache attribute and/or to_cache
         if buff.cache:
             b = dict(buff.cache)
         if to_cache:
             b.update(dict(to_cache))
+
+        # Guarantees we stack either at least 1 stack or whatever the class stacks attribute is
         if stacks < 1:
             stacks = min(1, buff.stacks)
 
