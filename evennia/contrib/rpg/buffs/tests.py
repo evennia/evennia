@@ -368,7 +368,7 @@ class TestBuffsAndHandler(EvenniaTest):
         _instance.at_tick()
         self.assertTrue(self.testobj.db.ticktest)
         # test duration modification and cleanup
-        handler.set_duration("ttib", 0)
+        _instance.duration = 0
         self.assertEqual(handler.get("ttib").duration, 0)
         handler.cleanup()
         self.assertFalse(handler.get("ttib"), None)
