@@ -431,12 +431,11 @@ Perma-death means that once your character dies, it's gone and you have to make 
 
 Perma-death comes with some severe disadvantages however.
 
-- It's impopular. Many players will just not play a game where they risk losing their beloved character  just like that.
 - Many players say they like the _idea_ of permadeath except when it could happen to them.
-- It can limit roleplaying freedom and make people refuse to take any risks.
+- Some players refuse to take any risks if death is permanent.
 - It may make players even more reluctant to play conflict-driving 'bad guys'.
-- Game balance is much, much more important when results are "final". This escalates the severity of 'unfairness'
-  a hundred-fold. Things like bugs or exploits can also lead to much more server effects.
+- Balancing PvP becomes very hard. Fairness and avoiding exploits becomes critical when the outcome
+is permanent.
 
 For these reasons, it's very common to do hybrid systems. Some tried variations:
 
@@ -450,7 +449,10 @@ For these reasons, it's very common to do hybrid systems. Some tried variations:
 
 **EvAdventure Answer**
 
-In _Knave_, when you hit 0 HP, you roll on a death table, with a 1/6 chance of immediate death (otherwise you lose points in a random stat). We will offer an "Insurance" that allows you to resurrect if you carry enough coin on you when you die. If not, you are perma-dead and have to create a new character (which is easy and quick since it's mostly randomized). 
+In _Knave_, when you hit 0 HP, you roll on a death table, with a 1/8 chance of immediate death (otherwise you lose
+points in a random stat). We will offer an "Insurance" that allows you to resurrect if you carry enough coin on you when
+you die. If not, you are perma-dead and have to create a new character (which is easy and quick since it's mostly
+randomized).
 
 ## Conclusions
 
