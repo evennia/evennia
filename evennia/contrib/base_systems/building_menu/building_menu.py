@@ -122,7 +122,7 @@ heavily-documented code below.
 
 """
 
-from inspect import getargspec
+from inspect import getfullargspec
 from textwrap import dedent
 
 from django.conf import settings
@@ -209,9 +209,9 @@ def _call_or_get(value, menu=None, choice=None, string=None, obj=None, caller=No
     if callable(value):
         # Check the function arguments
         kwargs = {}
-        spec = getargspec(value)
+        spec = getfullargspec(value)
         args = spec.args
-        if spec.keywords:
+        if spec.varkw:
             kwargs.update(dict(menu=menu, choice=choice, string=string, obj=obj, caller=caller))
         else:
             if "menu" in args:
