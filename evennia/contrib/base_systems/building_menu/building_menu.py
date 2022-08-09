@@ -122,7 +122,11 @@ heavily-documented code below.
 
 """
 
-from inspect import getfullargspec
+try:
+    from inspect import getfullargspec
+except ImportError:
+    from inspect import getargspec as getfullargspec
+
 from textwrap import dedent
 
 from django.conf import settings

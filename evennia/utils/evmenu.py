@@ -274,9 +274,15 @@ import inspect
 
 from ast import literal_eval
 from fnmatch import fnmatch
+from inspect import isfunction
+
+try:
+    from inspect import getfullargspec
+except ImportError:
+    from inspect import getargspec as getfullargspec
+
 from math import ceil
 
-from inspect import isfunction, getargspec
 from django.conf import settings
 from evennia import Command, CmdSet
 from evennia.utils import logger

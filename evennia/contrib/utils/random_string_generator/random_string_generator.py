@@ -49,10 +49,16 @@ available.
 
 """
 
-from random import choice, randint, seed
-import re
 import string
 import time
+from random import choice, randint, seed
+
+try:
+    from re._parser import parse as sre_parse
+except ModuleNotFoundError:
+    import re
+
+    sre_parse = re.sre_parse.parse
 
 from evennia import DefaultScript, ScriptDB
 from evennia.utils.create import create_script
@@ -188,7 +194,7 @@ class RandomStringGenerator:
         """
         self.total = 1
         self.elements = []
-        tree = re._parser.parse(regex).data
+        tree = sre_parse(regex).data
         # `tree` contains a list of elements in the regular expression
         for element in tree:
             # `element` is also a list, the first element is a string
