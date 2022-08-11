@@ -28,7 +28,7 @@ class WieldLocation(Enum):
 Basically, all the weapon/armor locations are exclusive - you can only have one item in each (or none). 
 The BACKPACK is special - it contains any number of items (up to the maximum slot usage).
 
-## EquipmentHandler
+## EquipmentHandler that saves
 
 > Create a new module `mygame/evadventure/equipment.py`.
 
@@ -79,7 +79,7 @@ class EquipmentHandler:
         self.obj.attributes.add(self.save_attribute, self.slots, category="inventory") 
 ```
 
-This is a compact and functioning little handler. Before analyzing how it works, this is how 
+This is a compact and functional little handler. Before analyzing how it works, this is how 
 we will add it to the Character: 
 
 ```python
@@ -113,8 +113,54 @@ So we now have a handler on the character, and the handler has a back-reference 
 on. 
 
 Since the handler itself is just a regular Python object, we need to use the `Character` to store
-our data - our _Knave_ slots. We must save them to the database, because we want the server to remember
+our data - our _Knave_ "slots". We must save them to the database, because we want the server to remember
 them even after reloading.
 
 Using `self.obj.attributes.add()` and `.get()` we save the data to the Character in a specially named
-[Attribute](../../../Components/Attributes.md). Since we use a `category`, we are unlikely to collide with other Attributes.
+[Attribute](../../../Components/Attributes.md). Since we use a `category`, we are unlikely to collide with 
+other Attributes.
+
+Our storage structure is a `dict` with keys after our available `WieldLocation` enums. Each can only 
+have one item except `WieldLocation.BACKPACK`, which is a list.
+
+## Connecting the EquipmentHandler
+
+We already made `EquipmentHandler` available on the Character as `.equipment`. Now we want it to come into 
+play automatically whenever we pick up or drop something. To do this we need to override two hooks
+on the Character class: 
+
+```python 
+# mygame/evadventure/character.py 
+
+# ... 
+
+class EvAdventureCharacter(LivingMixin, DefaultCharacter): 
+
+    # ... 
+    
+    def at_pre_object_receive(self, moved_object, source_location, **kwargs): 
+        """Called by Evennia before object arrives 'in' this character (that is,
+        if they pick up something). If it returns False, move is aborted.
+        
+        """ 
+        # we haven't written this yet!
+        return self.equipment.validate_slot_usage(moved_object)
+    
+    def at_object_receive(self, moved_object, source_location, **kwargs): 
+        """ 
+        Called by Evennia when an object arrives 'in' the character.
+        
+        """
+        self.equipment.add(moved_object) 
+
+    def at_object_leave(self, moved_object, destination, **kwargs):
+        """ 
+        Called by Evennia when object leaves the Character. 
+        
+        """
+        self.equipment.remove(moved_object)
+```
+
+
+
+

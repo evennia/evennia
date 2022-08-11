@@ -593,39 +593,40 @@ class EvAdventureImprovement:
 # character sheet visualization
 
 
-class EvAdventureCharacterSheet:
+_SHEET = """
+ +----------------------------------------------------------------------------+
+ | Name: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+ +----------------------------------------------------------------------------+
+ | STR: x2xxxxx  DEX: x3xxxxx  CON: x4xxxxx  WIS: x5xxxxx  CHA: x6xxxxx       |
+ +----------------------------------------------------------------------------+
+ | HP: x7xxxxx  XP: x8xxxxx        Exploration speed: x9x  Combat speed: xAx  |
+ +----------------------------------------------------------------------------+
+ | Desc: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+ | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+ | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+ +----------------------------------------------------------------------------+
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccc1ccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ +----------------------------------------------------------------------------+
+    """
+
+
+def get_character_sheet(character):
     """
     Generate a character sheet. This is grouped in a class in order to make
     it easier to override the look of the sheet.
 
-    """
-
-    sheet = """
-    +----------------------------------------------------------------------------+
-    | Name: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
-    +----------------------------------------------------------------------------+
-    | STR: x2xxxxx  DEX: x3xxxxx  CON: x4xxxxx  WIS: x5xxxxx  CHA: x6xxxxx       |
-    +----------------------------------------------------------------------------+
-    | HP: x7xxxxx  XP: x8xxxxx        Exploration speed: x9x  Combat speed: xAx  |
-    +----------------------------------------------------------------------------+
-    | Desc: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
-    | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
-    | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
-    +----------------------------------------------------------------------------+
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccc1ccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
-    +----------------------------------------------------------------------------+
     """
 
     @staticmethod
@@ -639,7 +640,7 @@ class EvAdventureCharacterSheet:
         equipment_table = EvTable(
             table=[equipment[i : i + 10] for i in range(0, len(equipment), 10)]
         )
-        form = EvForm({"FORMCHAR": "x", "TABLECHAR": "c", "SHEET": EvAdventureCharacterSheet.sheet})
+        form = EvForm({"FORMCHAR": "x", "TABLECHAR": "c", "SHEET": _SHEET})
         form.map(
             cells={
                 1: character.key,
@@ -663,8 +664,6 @@ class EvAdventureCharacterSheet:
 
 # singletons
 
-# access sheet as rules.character_sheet.get(character)
-character_sheet = EvAdventureCharacterSheet()
 # access rolls e.g. with rules.dice.opposed_saving_throw(...)
 dice = EvAdventureRollEngine()
 # access improvement e.g. with rules.improvement.add_xp(character, xp)
