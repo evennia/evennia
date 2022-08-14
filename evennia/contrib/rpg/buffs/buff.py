@@ -98,7 +98,6 @@ You can see all the features of the `BaseBuff` class below, or browse `samplebuf
 many attributes and hook methods you can overload to create complex, interrelated buffs.
 
 """
-
 from random import random
 import time
 from evennia import Command
@@ -117,15 +116,14 @@ class BaseBuff:
 
     handler = None
     start = 0
-    # Default buff duration; -1 or lower for permanent, 0 for "instant" (removed immediately)
-    duration = -1
 
+    duration = -1  # Default buff duration; -1 for permanent, 0 for "instant", >0 normal
     playtime = False  # Does this buff autopause when owning object is unpuppeted?
 
     refresh = True  # Does the buff refresh its timer on application?
     unique = True  # Does the buff overwrite existing buffs with the same key on the same target?
     maxstacks = 1  # The maximum number of stacks the buff can have. If >1, this buff will stack.
-    stacks = 1  # If >1, used as the default when applying this buff
+    stacks = 1  # Used as the default when applying this buff if no or negative stacks were specified (min: 1)
     tickrate = 0  # How frequent does this buff tick, in seconds (cannot be lower than 1)
 
     mods = []  # List of mod objects. See Mod class below for more detail
@@ -134,7 +132,7 @@ class BaseBuff:
     @property
     def ticknum(self):
         """Returns how many ticks this buff has gone through as an integer."""
-        x = (time.time() - self.start) / self.tickrate
+        x = (time.time() - self.start) / max(1, self.tickrate)
         return int(x)
 
     @property
@@ -143,6 +141,16 @@ class BaseBuff:
         if not self.handler:
             return None
         return self.handler.owner
+
+    @property
+    def timeleft(self):
+        """Returns how much time this buff has left. If -1, it is permanent."""
+        _tl = 0
+        if not self.start:
+            _tl = self.duration
+        else:
+            _tl = max(-1, self.duration - (time.time() - self.start))
+        return _tl
 
     @property
     def ticking(self) -> bool:
@@ -160,17 +168,18 @@ class BaseBuff:
             handler:    The handler this buff is attached to
             buffkey:    The key this buff uses on the cache
             cache:      The cache dictionary (what you get if you use `handler.buffcache.get(key)`)"""
-        self.handler: BuffHandler = handler
-        self.buffkey = buffkey
-        # Cache assignment
-        self.cache = cache
-        # Default system cache values
-        self.start = self.cache.get("start")
-        self.duration = self.cache.get("duration")
-        self.prevtick = self.cache.get("prevtick")
-        self.paused = self.cache.get("paused")
-        self.stacks = self.cache.get("stacks")
-        self.source = self.cache.get("source")
+        required = {"handler": handler, "buffkey": buffkey, "cache": cache}
+        self.__dict__.update(cache)
+        self.__dict__.update(required)
+        # Init hook
+        self.at_init()
+
+    def __setattr__(self, attr, value):
+        if attr in self.cache:
+            if attr == "tickrate":
+                value = max(0, value)
+            self.handler.buffcache[self.buffkey][attr] = value
+        super().__setattr__(attr, value)
 
     def conditional(self, *args, **kwargs):
         """Hook function for conditional evaluation.
@@ -222,11 +231,28 @@ class BaseBuff:
 
     def reset(self):
         """Resets the buff start time as though it were just applied; functionally identical to a refresh"""
+        self.start = time.time()
         self.handler.buffcache[self.buffkey]["start"] = time.time()
+
+    def update_cache(self, to_cache: dict):
+        """Updates this buff's cache using the given values, both internally (this instance) and on the handler.
+
+        Args:
+            to_cache:   The dictionary of values you want to add to the cache"""
+        if not isinstance(to_cache, dict):
+            raise TypeError
+        _cache = dict(self.handler.buffcache[self.buffkey])
+        _cache.update(to_cache)
+        self.cache = _cache
+        self.handler.buffcache[self.buffkey] = _cache
 
     # endregion
 
     # region hook methods
+    def at_init(self, *args, **kwargs):
+        """Hook function called when this buff object is initialized."""
+        pass
+
     def at_apply(self, *args, **kwargs):
         """Hook function to run when this buff is applied to an object."""
         pass
@@ -311,6 +337,7 @@ class BuffHandler:
         self.dbkey = dbkey
         self.autopause = autopause
         if autopause:
+            self._validate_state()
             signals.SIGNAL_OBJECT_POST_UNPUPPET.connect(self._pause_playtime)
             signals.SIGNAL_OBJECT_POST_PUPPET.connect(self._unpause_playtime)
 
@@ -425,10 +452,14 @@ class BuffHandler:
             context = {}
         b = {}
         _context = dict(context)
+
+        # Initial cache updating, starting with the class cache attribute and/or to_cache
         if buff.cache:
             b = dict(buff.cache)
         if to_cache:
             b.update(dict(to_cache))
+
+        # Guarantees we stack either at least 1 stack or whatever the class stacks attribute is
         if stacks < 1:
             stacks = min(1, buff.stacks)
 
@@ -438,6 +469,7 @@ class BuffHandler:
                 "ref": buff,
                 "start": time.time(),
                 "duration": buff.duration,
+                "tickrate": buff.tickrate,
                 "prevtick": time.time(),
                 "paused": False,
                 "stacks": stacks,
@@ -749,7 +781,9 @@ class BuffHandler:
                     return True
         return False
 
-    def check(self, value: float, stat: str, loud=True, context=None, trigger=False):
+    def check(
+        self, value: float, stat: str, loud=True, context=None, trigger=False, strongest=False
+    ):
         """Finds all buffs and perks related to a stat and applies their effects.
 
         Args:
@@ -758,6 +792,7 @@ class BuffHandler:
             loud:   (optional) Call the buff's at_post_check method after checking (default: True)
             context: (optional) A dictionary you wish to pass to the at_pre_check/at_post_check and conditional methods as kwargs
             trigger: (optional) Trigger buffs with the `stat` string as well. (default: False)
+            strongest:  (optional) Applies only the strongest mods of the corresponding stat value (default: False)
 
         Returns the value modified by relevant buffs."""
         # Buff cleanup to make sure all buffs are valid before processing
@@ -769,15 +804,21 @@ class BuffHandler:
         applied = self.get_by_stat(stat)
         if not applied:
             return value
+
+        # Run pre-check hooks on related buffs
         for buff in applied.values():
             buff.at_pre_check(**context)
 
+        # Sift out buffs that won't be applying their mods (paused, conditional)
         applied = {
             k: buff for k, buff in applied.items() if buff.conditional(**context) if not buff.paused
         }
 
-        # The final result
-        final = self._calculate_mods(value, stat, applied)
+        # The mod totals
+        calc = self._calculate_mods(stat, applied)
+
+        # The calculated final value
+        final = self._apply_mods(value, calc, strongest=strongest)
 
         # Run the "after check" functions on all relevant buffs
         for buff in applied.values():
@@ -840,23 +881,25 @@ class BuffHandler:
             start = buff["start"]  # Start
             duration = buff["duration"]  # Duration
             prevtick = buff["prevtick"]  # Previous tick timestamp
-            tickrate = buff["ref"].tickrate  # Buff's tick rate
-
-            # Original buff ending, and new duration
+            tickrate = buff["tickrate"]  # Buff's tick rate
             end = start + duration  # End
-            newduration = end - current  # New duration
 
-            # Apply the new duration
-            if newduration > 0:
-                buff["duration"] = newduration
-                if buff["ref"].ticking:
-                    buff["tickleft"] = max(1, tickrate - (current - prevtick))
-                self.buffcache[key] = buff
-                instance: BaseBuff = buff["ref"](self, key, buff)
-                instance.at_pause(**context)
-            else:
-                self.remove(key)
-        return
+            # Setting "tickleft"
+            if buff["ref"].ticking:
+                buff["tickleft"] = max(1, tickrate - (current - prevtick))
+
+            # Setting the new duration (if applicable)
+            if duration > -1:
+                newduration = end - current  # New duration
+                if newduration > 0:
+                    buff["duration"] = newduration
+                else:
+                    self.remove(key)
+
+            # Apply new cache info, call pause hook
+            self.buffcache[key] = buff
+            instance: BaseBuff = buff["ref"](self, key, buff)
+            instance.at_pause(**context)
 
     def unpause(self, key: str, context=None):
         """Unpauses a buff. This makes it visible to the various buff systems again.
@@ -883,32 +926,59 @@ class BuffHandler:
             buff["start"] = current
             if buff["ref"].ticking:
                 buff["prevtick"] = current - (tickrate - tickleft)
+
+            # Apply new cache info, call hook
             self.buffcache[key] = buff
             instance: BaseBuff = buff["ref"](self, key, buff)
             instance.at_unpause(**context)
-            utils.delay(buff["duration"], cleanup_buffs, self, persistent=True)
+
+            # Set up typical delays (cleanup/ticking)
+            if instance.duration > -1:
+                utils.delay(buff["duration"], cleanup_buffs, self, persistent=True)
             if instance.ticking:
                 utils.delay(
                     tickrate, tick_buff, handler=self, buffkey=key, initial=False, persistent=True
                 )
-        return
 
-    def set_duration(self, key, value):
-        """Sets the duration of the specified buff.
+    def view(self, to_filter=None) -> dict:
+        """Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.
 
         Args:
-            key:    The key of the buff whose duration you want to set
-            value:  The value you want the new duration to be"""
-        if key in self.buffcache.keys():
-            self.buffcache[key]["duration"] = value
-        return
-
-    def view(self) -> dict:
-        """Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind."""
+            to_filter:  (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)"""
+        if not isinstance(to_filter, dict):
+            raise TypeError
         self.cleanup()
-        _cache = self.visible
+        _cache = self.visible if not to_filter else to_filter
         _flavor = {k: (buff.name, buff.flavor) for k, buff in _cache.items()}
         return _flavor
+
+    def view_modifiers(self, stat: str, context=None):
+        """Checks all modifiers of the specified stat without actually applying them. Hits the conditional hook for relevant buffs.
+
+        Args:
+            stat:   The mod identifier string to search for
+            context:    (optional) A dictionary you wish to pass to the conditional hooks as kwargs
+
+        Returns a nested dictionary. The first layer's keys represent the type of modifier ('add' and 'mult'),
+        and the second layer's keys represent the type of value ('total' and 'strongest')."""
+        # Buff cleanup to make sure all buffs are valid before processing
+        self.cleanup()
+
+        # Find all buffs and traits related to the specified stat.
+        if not context:
+            context = {}
+        applied = self.get_by_stat(stat)
+        if not applied:
+            return None
+
+        # Sift out buffs that won't be applying their mods (paused, conditional)
+        applied = {
+            k: buff for k, buff in applied.items() if buff.conditional(**context) if not buff.paused
+        }
+
+        # Calculate and return our values dictionary
+        calc = self._calculate_mods(stat, applied)
+        return calc
 
     def cleanup(self):
         """Removes expired buffs, ensures pause state is respected."""
@@ -946,29 +1016,58 @@ class BuffHandler:
             buff.unpause()
         pass
 
-    def _calculate_mods(self, value, stat: str, buffs: dict):
-        """Calculates a return value from a base value, a stat string, and a dictionary of instanced buffs with associated mods.
+    def _calculate_mods(self, stat: str, buffs: dict):
+        """Calculates the total value of applicable mods.
 
         Args:
-            value:  The base value to modify
             stat:   The string identifier to search mods for
-            buffs:  The dictionary of buffs to apply"""
+            buffs:  The dictionary of buffs to calculate mods from
+
+        Returns a nested dictionary. The first layer's keys represent the type of modifier ('add' and 'mult'),
+        and the second layer's keys represent the type of value ('total' and 'strongest')."""
+
+        # The base return dictionary. If you update how modifiers are calculated, make sure to update this too, or you will get key errors!
+        calculated = {
+            "add": {"total": 0, "strongest": 0},
+            "mult": {"total": 0, "strongest": 0},
+            "div": {"total": 0, "strongest": 0},
+        }
         if not buffs:
-            return value
-        add = 0
-        mult = 0
+            return calculated
 
         for buff in buffs.values():
             for mod in buff.mods:
                 buff: BaseBuff
                 mod: Mod
                 if mod.stat == stat:
-                    if mod.modifier == "add":
-                        add += mod.value + ((buff.stacks) * mod.perstack)
-                    if mod.modifier == "mult":
-                        mult += mod.value + ((buff.stacks) * mod.perstack)
+                    _modval = mod.value + ((buff.stacks) * mod.perstack)
+                    calculated[mod.modifier]["total"] += _modval
+                    if _modval > calculated[mod.modifier]["strongest"]:
+                        calculated[mod.modifier]["strongest"] = _modval
+        return calculated
 
-        final = (value + add) * max(0, 1.0 + mult)
+    def _apply_mods(self, value, calc: dict, strongest=False):
+        """Applies modifiers to a value.
+
+        Args:
+            value:  The value to modify
+            calc:   The dictionary of calculated modifier values (see _calculate_mods)
+            strongest:  (optional) Applies only the strongest mods of the corresponding stat value (default: False)
+
+        Returns value modified by the relevant mods."""
+        final = value
+        if strongest:
+            final = (
+                (value + calc["add"]["strongest"])
+                / max(1, 1.0 + calc["div"]["strongest"])
+                * max(0, 1.0 + calc["mult"]["strongest"])
+            )
+        else:
+            final = (
+                (value + calc["add"]["total"])
+                / max(1, 1.0 + calc["div"]["total"])
+                * max(0, 1.0 + calc["mult"]["total"])
+            )
         return final
 
     def _remove_via_dict(self, buffs: dict, loud=True, dispel=False, expire=False, context=None):
@@ -1065,10 +1164,10 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
 
     # Instantiate the buff and tickrate
     buff: BaseBuff = handler.get(buffkey)
-    tr = buff.tickrate
+    tr = max(1, buff.tickrate)
 
     # This stops the old ticking process if you refresh/stack the buff
-    if tr > time.time() - buff.prevtick and initial != True:
+    if (tr > time.time() - buff.prevtick and initial != True) or buff.paused:
         return
 
     # Only fire the at_tick methods if the conditional is truthy
@@ -1078,7 +1177,7 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
             buff.at_tick(initial, **context)
 
         # Tick this buff one last time, then remove
-        if buff.duration <= time.time() - buff.start:
+        if buff.duration > -1 and buff.duration <= time.time() - buff.start:
             if tr < time.time() - buff.prevtick:
                 buff.at_tick(initial, **context)
             buff.remove(expire=True)
@@ -1089,6 +1188,7 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
             buff.at_tick(initial, **context)
 
     handler.buffcache[buffkey]["prevtick"] = time.time()
+    tr = max(1, buff.tickrate)
 
     # Recur this function at the tickrate interval, if it didn't stop/fail
     utils.delay(
