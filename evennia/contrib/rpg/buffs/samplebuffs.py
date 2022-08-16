@@ -84,13 +84,13 @@ class Poison(BaseBuff):
 
     def at_pause(self, *args, **kwargs):
         self.owner.db.prelogout_location.msg_contents(
-            "{actor} stops twitching, their flesh a deathly pallor.".format(actor=self.owner.named)
+            "{actor} stops twitching, their flesh a deathly pallor.".format(actor=self.owner)
         )
 
     def at_unpause(self, *args, **kwargs):
         self.owner.location.msg_contents(
             "{actor} begins to twitch again, their cheeks flushing red with blood.".format(
-                actor=self.owner.named
+                actor=self.owner
             )
         )
 
@@ -99,7 +99,7 @@ class Poison(BaseBuff):
         if not initial:
             self.owner.location.msg_contents(
                 "Poison courses through {actor}'s body, dealing {damage} damage.".format(
-                    actor=self.owner.named, damage=_dmg
+                    actor=self.owner, damage=_dmg
                 )
             )
 
