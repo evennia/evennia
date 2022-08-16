@@ -81,6 +81,8 @@ buffs after application, they are very useful. The handler's `check`/`trigger` m
 `get(key)` is the most basic getter. It returns a single buff instance, or `None` if the buff doesn't exist on the handler. It is also the only getter
 that returns a single buff instance, rather than a dictionary.
 
+> **Note**: The handler method `has(buff)` allows you to check if a matching key (if a string) or buff class (if a class) is present on the handler cache, without actually instantiating the buff. You should use this method for basic "is this buff present?" checks.
+
 Group getters, listed below, return a dictionary of values in the format `{buffkey: instance}`. If you want to iterate over all of these buffs,
 you should do so via the `dict.values()` method.
 
@@ -141,6 +143,44 @@ This method calls the `at_pre_check` and `at_post_check` methods at the relevant
 buffs that are reactive to being checked; for example, removing themselves, altering their values, or interacting with the game state.
 
 > **Note**: You can also trigger relevant buffs at the same time as you check them by ensuring the optional argument `trigger` is True in the `check` method.
+
+Modifiers are calculated additively - that is, all modifiers of the same type are added together before being applied. They are then
+applied through the following formula.
+
+```python
+(base + total_add) / max(1, 1.0 + total_div) * max(0, 1.0 + total_mult)
+```
+
+#### Multiplicative Buffs (Advanced)
+
+Multiply/divide modifiers in this buff system are additive by default. This means that two +50% modifiers will equal a +100% modifier. But what if you want to apply mods multiplicatively?
+
+First, you should carefully consider if you truly want multiplicative modifiers. Here's some things to consider.
+
+- They are unintuitive to the average user, as two +50% damage buffs equal +125% instead of +100%.
+- They lead to "power explosion", where stacking buffs in the right way can turn characters into unstoppable forces
+
+Doing purely-additive multipliers allows you to better control the balance of your game. Conversely, doing multiplicative multipliers enables very fun build-crafting where smart usage of buffs and skills can turn you into a one-shot powerhouse. Each has its place.
+
+The best design practice for multiplicative buffs is to divide your multipliers into "tiers", where each tier is applied separately. You can easily do this with multiple `check` calls.
+
+```python
+damage = damage
+damage = handler.check(damage, 'damage')
+damage = handler.check(damage, 'empower')
+damage = handler.check(damage, 'radiant')
+damage = handler.check(damage, 'overpower')
+```
+
+#### Buff Strength Priority (Advanced)
+
+Sometimes you only want to apply the strongest modifier to a stat. This is supported by the optional `strongest` bool arg in the handler's check method
+
+```python
+def take_damage(self, source, damage):
+    _damage = self.buffs.check(damage, 'taken_damage', strongest=True)
+    self.db.health -= _damage
+```
 
 ### Trigger Buffs
 
@@ -219,6 +259,15 @@ class ThornsBuff(BaseBuff):
 ```
 Apply the buff, take damage, and watch the thorns buff do its work!
 
+### Viewing
+
+There are two helper methods on the handler that allow you to get useful buff information back.
+
+- `view`: Returns a dictionary of tuples in the format `{buffkey: (buff.name, buff.flavor)}`. Finds all buffs by default, but optionally accepts a dictionary of buffs to filter as well. Useful for basic buff readouts.
+- `view_modifiers(stat)`: Returns a nested dictionary of information on modifiers that affect the specified stat. The first layer is the modifier type (`add/mult/div`) and the second layer is the value type (`total/strongest`). Does not return the buffs that cause these modifiers, just the modifiers themselves (akin to using `handler.check` but without actually modifying a value). Useful for stat sheets.
+
+You can also create your own custom viewing methods through the various handler getters, which will always return the entire buff object.
+
 ## Creating New Buffs
 
 Creating a new buff is very easy: extend `BaseBuff` into a new class, and fill in all the relevant buff details.
@@ -230,24 +279,45 @@ Regardless of any other functionality, all buffs have the following class attrib
 
 - They have customizable `key`, `name`, and `flavor` strings.
 - They have a `duration` (float), and automatically clean-up at the end. Use -1 for infinite duration, and 0 to clean-up immediately. (default: -1)
+- They have a `tickrate` (float), and automatically tick if it is greater than 1 (default: 0)
 - They can stack, if `maxstacks` (int) is not equal to 1. If it's 0, the buff stacks forever. (default: 1)
 - They can be `unique` (bool), which determines if they have a unique namespace or not. (default: True)
 - They can `refresh` (bool), which resets the duration when stacked or reapplied. (default: True)
 - They can be `playtime` (bool) buffs, where duration only counts down during active play. (default: False)
 
-They also always store some useful mutable information about themselves in the cache:
+Buffs also have a few useful properties:
+
+- `owner`: The object this buff is attached to
+- `ticknum`: How many ticks the buff has gone through
+- `timeleft`: How much time is remaining on the buff
+- `ticking`/`stacking`: If this buff ticks/stacks (checks `tickrate` and `maxstacks`)
+
+#### Buff Cache (Advanced)
+
+Buffs always store some useful mutable information about themselves in the cache (what is stored on the owning object's database attribute). A buff's cache corresponds to `{buffkey: buffcache}`, where `buffcache` is a dictionary containing __at least__ the information below:
 
 - `ref` (class): The buff class path we use to construct the buff.
 - `start` (float): The timestamp of when the buff was applied.
 - `source` (Object): If specified; this allows you to track who or what applied the buff.
 - `prevtick` (float): The timestamp of the previous tick.
 - `duration` (float): The cached duration. This can vary from the class duration, depending on if the duration has been modified (paused, extended, shortened, etc).
+- `tickrate` (float): The buff's tick rate. Cannot go below 0. Altering the tickrate on an applied buff will not cause it to start ticking if it wasn't ticking before. (`pause` and `unpause` to start/stop ticking on existing buffs)
 - `stacks` (int): How many stacks they have.
 - `paused` (bool): Paused buffs do not clean up, modify values, tick, or fire any hook methods.
 
-You can always access the raw cache dictionary through the `cache` attribute on an instanced buff. This is grabbed when you get the buff through
-a handler method, so it may not always reflect recent changes you've made, depending on how you structure your buff calls. All of the above
-mutable information can be found in this cache, as well as any arbitrary information you pass through the handler `add` method (via `to_cache`).
+Sometimes you will want to dynamically update a buff's cache at runtime, such as changing a tickrate in a hook method, or altering a buff's duration. 
+You can do so by using the interface `buff.cachekey`. As long as the attribute name matches a key in the cache dictionary, it will update the stored 
+cache with the new value. 
+
+If there is no matching key, it will do nothing. If you wish to add a new key to the cache, you must use the `buff.update_cache(dict)` method, 
+which will properly update the cache (including adding new keys) using the dictionary provided.
+
+> **Example**: You want to increase a buff's duration by 30 seconds. You use `buff.duration += 30`. This new duration is now reflected on both the instance and the cache.
+
+The buff cache can also store arbitrary information. To do so, pass a dictionary through the handler `add` method (`handler.add(BuffClass, to_cache=dict)`), 
+set the `cache` dictionary attribute on your buff class, or use the aforementioned `buff.update_cache(dict)` method.
+
+> **Example**: You store `damage` as a value in the buff cache and use it for your poison buff. You want to increase it over time, so you use `buff.damage += 1` in the tick method.
 
 ### Modifiers
 
@@ -257,9 +327,9 @@ mods of a specific stat string and apply their modifications to the value; howev
 Mod objects consist of only four values, assigned by the constructor in this order:
 
 - `stat`: The stat you want to modify. When `check` is called, this string is used to find all the mods that are to be collected.
-- `mod`: The modifier. Defaults are 'add' and 'mult'. Modifiers are calculated additively, and in standard arithmetic order (see `_calculate_mods` for more)
+- `mod`: The modifier. Defaults are `add` (addition/subtraction), `mult` (multiply), and `div` (divide). Modifiers are calculated additively (see `_calculate_mods` for more)
 - `value`: How much value the modifier gives regardless of stacks
-- `perstack`: How much value the modifier grants per stack, INCLUDING the first. (default: 0)
+- `perstack`: How much value the modifier grants per stack, **INCLUDING** the first. (default: 0)
 
 The most basic way to add a Mod to a buff is to do so in the buff class definition, like this:
 
@@ -281,8 +351,7 @@ An advanced way to do mods is to generate them when the buff is initialized. Thi
 ```python
 class GeneratedStatBuff(BaseBuff):
     ...
-    def __init__(self, handler, buffkey, cache={}) -> None:
-        super().__init__(handler, buffkey, cache)
+    def at_init(self, *args, **kwargs) -> None:
         # Finds our "modgen" cache value, and generates a mod from it
         modgen = list(self.cache.get("modgen"))
         if modgen:
@@ -339,7 +408,7 @@ example, if you want a buff that makes the player take more damage when they are
 class FireSick(BaseBuff):
     ...
     def conditional(self, *args, **kwargs):
-        if self.owner.buffs.get_by_type(FireBuff): 
+        if self.owner.buffs.has(FireBuff): 
             return True
         return False
 ```
@@ -354,6 +423,7 @@ Buff instances have a number of helper methods.
 - `remove`/`dispel`: Allows you to remove or dispel the buff. Calls `at_remove`/`at_dispel`, depending on optional arguments.
 - `pause`/`unpause`: Pauses and unpauses the buff. Calls `at_pause`/`at_unpause`.
 - `reset`: Resets the buff's start to the current time; same as "refreshing" it.
+- `alter_cache`: Updates the buff's cache with the `{key:value}` pairs in the provided dictionary. Can overwrite default values, so be careful!
 
 #### Playtime Duration
 
