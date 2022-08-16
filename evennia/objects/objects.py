@@ -1885,7 +1885,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         now in.
 
         Args:
-            source_location (Object): Wwhere we came from. This may be `None`.
+            source_location (Object): Where we came from. This may be `None`.
             move_type (str): The type of move. "give", "traverse", etc.
                 This is an arbitrary string provided to obj.move_to().
                 Useful for altering messages or altering logic depending
