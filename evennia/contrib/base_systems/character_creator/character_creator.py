@@ -27,6 +27,7 @@ from evennia.objects.models import ObjectDB
 from evennia.utils import create, search
 from evennia.utils.evmenu import EvMenu
 
+_CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS 
 
 class ContribCmdCharCreate(MuxAccountCommand):
     """
@@ -48,7 +49,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
         session = self.session
         
         # only one character should be in progress at a time, so we check for WIPs first
-        in_progress = [chara for chara in account.playable if chara.db.chargen_step]
+        in_progress = [chara for chara in account.db._playable_characters if chara.db.chargen_step]
         
         if len(in_progress):
             # we're continuing chargen for a WIP character
@@ -70,7 +71,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
             permissions = settings.PERMISSION_ACCOUNT_DEFAULT
             # generate a randomized key so the player can choose a character name later
             key = ''.join(choices(string.ascii_letters + string.digits, k=10)
-            new_character = create.create_object(Character, key=key,
+            new_character = create.create_object(_CHARACTER_TYPECLASS, key=key,
                                location=None,
                                home=home,
                                permissions=permissions)
@@ -92,18 +93,13 @@ class ContribCmdCharCreate(MuxAccountCommand):
             char = session.new_char
             if not char.db.chargen_step:
                 # this means character creation was completed - start playing!
-                # any additional first-time-playing code can go here as well
-                # e.g. creating generic default gear,
-                # changing the pre-logout location of the character so they log in to a specific spot,
-                # notifying admins of a new player, etc.
-                
-                # execute the ic command as the session to start puppeting the character
-                session.execute_cmd("ic {}".format(char.key))
+                # execute the ic command to start puppeting the character
+                account.execute_cmd("ic {}".format(char.key))
 
         EvMenu(session,
-                 settings.CHARGEN_MENU,
-                 startnode=startnode,
-                 cmd_on_exit=finish_char_callback)
+               settings.CHARGEN_MENU,
+               startnode=startnode,
+               cmd_on_exit=finish_char_callback)
 
 
 from django.conf import settings
