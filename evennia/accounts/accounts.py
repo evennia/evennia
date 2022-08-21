@@ -660,7 +660,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             typeclass (str, optional): Typeclass to use for this character. If
                 not given, use settings.BASE_CHARACTER_TYPECLASS.
             permissions (list, optional): If not given, use the account's permissions.
-            ip (str, optiona): The client IP creating this character. Will fall back to the
+            ip (str, optional): The client IP creating this character. Will fall back to the
                 one stored for the account if not given.
             kwargs (any): Other kwargs will be used in the create_call.
         Returns:
@@ -927,7 +927,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             kwargs (any): Other keyword arguments will be added to the
                 found command object instance as variables before it
                 executes. This is unused by default Evennia but may be
-                used to set flags and change operating paramaters for
+                used to set flags and change operating parameters for
                 commands at run-time.
 
         """
@@ -1307,7 +1307,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         self._send_to_connect_channel(_("|G{key} connected|n").format(key=self.key))
         if _MULTISESSION_MODE == 0:
             # in this mode we should have only one character available. We
-            # try to auto-connect to our last conneted object, if any
+            # try to auto-connect to our last connected object, if any
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
@@ -1334,7 +1334,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         Called by the login process if a user account is targeted correctly
         but provided with an invalid password. By default it does nothing,
-        but exists to be overriden.
+        but exists to be overridden.
 
         Args:
             session (session): Session logging in.
@@ -1574,7 +1574,7 @@ class DefaultGuest(DefaultAccount):
         Gets or creates a Guest account object.
 
         Keyword Args:
-            ip (str, optional): IP address of requestor; used for ban checking,
+            ip (str, optional): IP address of requester; used for ban checking,
                 throttling and logging
 
         Returns:

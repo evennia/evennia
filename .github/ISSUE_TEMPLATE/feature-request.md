@@ -8,13 +8,13 @@ assignees: ''
 ---
 
 #### Is your feature request related to a problem? Please describe.
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+<!--(Optional - a concise description of what the problem is. Ex. I'm always frustrated when [...])-->
 
 #### Describe the solution you'd like
-A clear and concise description of what you want to happen.
+<!--(A clear and concise description of what you want to happen after this feature is added)-->
 
-#### Describe alternatives you've considered
-A clear and concise description of any alternative solutions or features you've considered.
+#### Alternatives you've considered
+<!--(Describe any alternatives you've already considered/tried, if any)-->
 
 #### Additional context
-Add any other context or screenshots about the feature request here.
+<!--(Any other info, links, images etc that can help with implementing or motivate adding this feature)-->
