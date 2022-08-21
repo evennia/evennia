@@ -7,11 +7,11 @@ assignees: ''
 
 ---
 
-#### Existing page / new
-(Link to existing documentation page or proposed name of new page)
+#### Documentation page name and link
+<!--(Give the name and link to the documentation page that needs changes, or the proposed name of a new page)-->
 
-#### Documentation issue
-(Replace with the description of what the issue is or motivate a changes/additions)
+#### Reason for issue
+<!--(Motivate why you suggest this change)-->
 
 #### Suggested change
-(Enter the suggested change here)
+<!--(Enter the suggested change here)-->
