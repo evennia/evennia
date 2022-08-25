@@ -1,6 +1,9 @@
+from django.conf import settings
 from django.test import override_settings
+from evennia import DefaultCharacter
 from evennia.utils import inherits_from
 from evennia.utils.test_resources import BaseEvenniaCommandTest
+from evennia.commands.default import account
 from . import character_creator
 
 class TestAccount(BaseEvenniaCommandTest):
@@ -11,7 +14,7 @@ class TestAccount(BaseEvenniaCommandTest):
             )
         if settings.MULTISESSION_MODE == 2:
             # test both normal output and also inclusion of in-progress character
-            account.db._playable_characters = [self.char1]
+            self.account.db._playable_characters = [self.char1]
             self.char1.db.chargen_step = "start"
             output = self.call(
                 account.CmdOOCLook(),
@@ -21,15 +24,13 @@ class TestAccount(BaseEvenniaCommandTest):
             )
             self.assertIn("|Yin progress|n", output)
 
-    @override_settings(CHARGEN_MENU="evennia.contrib.base_systems.example_menu")
+    @override_settings(CHARGEN_MENU="evennia.contrib.base_systems.character_creator.example_menu")
     def test_char_create(self):
-        account = self.account
-        session = self.session
         self.call(
             character_creator.ContribCmdCharCreate(),
             "",
-            caller=account,
+            caller=self.account,
         )
-        menu = session.ndb._menutree
-        self.assertNotNone(menu)
-        self.assertTrue(inherits_from(session.new_char, DefaultCharacter) )
+        menu = self.session.ndb._menutree
+        self.assertNotEqual(menu, None)
+        self.assertTrue(inherits_from(self.session.new_char, DefaultCharacter) )

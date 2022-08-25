@@ -70,10 +70,10 @@ class ContribCmdCharCreate(MuxAccountCommand):
             default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
             permissions = settings.PERMISSION_ACCOUNT_DEFAULT
             # generate a randomized key so the player can choose a character name later
-            key = ''.join(choices(string.ascii_letters + string.digits, k=10)
+            key = ''.join(choices(string.ascii_letters + string.digits, k=10))
             new_character = create.create_object(_CHARACTER_TYPECLASS, key=key,
                                location=None,
-                               home=home,
+                               home=default_home,
                                permissions=permissions)
             # only allow creator (and developers) to puppet this char
             new_character.locks.add(
@@ -150,7 +150,7 @@ class ContribChargenAccount(DefaultAccount):
             )
             if session.sessid == csessid:
                 result.append(f"\n |w* {isess+1}|n {addr}")
-            else
+            else:
                 result.append(f"\n   {isess+1} {addr}")
 
         result.append("\n\n |whelp|n - more commands")
@@ -163,7 +163,7 @@ class ContribChargenAccount(DefaultAccount):
 
         if characters:
             result.append(
-                "\n |wdchardelete <name>|n - delete a character (cannot be undone!)"
+                "\n |wchardelete <name>|n - delete a character (cannot be undone!)"
             )
         plural = "" if len(characters) == 1 else "s"
         result.append("\n |wic <character>|n - enter the game (|wooc|n to return here)")
