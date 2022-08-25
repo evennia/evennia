@@ -1,7 +1,7 @@
 # Character Creator contrib
 by InspectorCaracal
 
-This contrib is designed to be used in MULTISESSION_MODE = 2 or higher, where characters are not automatically created to match the account.
+This contrib is designed to be used in MULTISESSION_MODE = 2 or higher, where characters are not automatically created to match the account. To use this with lower modes, you'll need to implement your own solution for preventing the built-in automatic character creation.
 
 ## Installation
 
