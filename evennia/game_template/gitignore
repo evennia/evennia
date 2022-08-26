@@ -21,6 +21,7 @@ __pycache__
 # Other
 *.swp
 *.log
+*.log.*
 *.pid
 *.restart
 *.db3
