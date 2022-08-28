@@ -391,7 +391,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
                     "{}|n".format(utils.crop(raw_ansi(item.db.desc or ""), width=50) or ""),
                 )
             string = f"|wYou are carrying:\n{table}"
-        self.caller.msg(string)
+        self.caller.msg(text=(string, {"type": "inventory"}))
 
 
 class CmdGet(COMMAND_DEFAULT_CLASS):
