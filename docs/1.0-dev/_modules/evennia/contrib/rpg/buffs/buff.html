@@ -140,7 +140,6 @@
 <span class="sd">many attributes and hook methods you can overload to create complex, interrelated buffs.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span>
@@ -159,15 +158,14 @@
 
     <span class="n">handler</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="c1"># Default buff duration; -1 or lower for permanent, 0 for &quot;instant&quot; (removed immediately)</span>
-    <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
+    <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># Default buff duration; -1 for permanent, 0 for &quot;instant&quot;, &gt;0 normal</span>
     <span class="n">playtime</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Does this buff autopause when owning object is unpuppeted?</span>
 
     <span class="n">refresh</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Does the buff refresh its timer on application?</span>
     <span class="n">unique</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Does the buff overwrite existing buffs with the same key on the same target?</span>
     <span class="n">maxstacks</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># The maximum number of stacks the buff can have. If &gt;1, this buff will stack.</span>
-    <span class="n">stacks</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># If &gt;1, used as the default when applying this buff</span>
+    <span class="n">stacks</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Used as the default when applying this buff if no or negative stacks were specified (min: 1)</span>
     <span class="n">tickrate</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># How frequent does this buff tick, in seconds (cannot be lower than 1)</span>
 
     <span class="n">mods</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List of mod objects. See Mod class below for more detail</span>
@@ -176,7 +174,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ticknum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns how many ticks this buff has gone through as an integer.&quot;&quot;&quot;</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickrate</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tickrate</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -185,6 +183,16 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">owner</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">timeleft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns how much time this buff has left. If -1, it is permanent.&quot;&quot;&quot;</span>
+        <span class="n">_tl</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
+            <span class="n">_tl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_tl</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">-</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">_tl</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ticking</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -202,17 +210,18 @@
 <span class="sd">            handler:    The handler this buff is attached to</span>
 <span class="sd">            buffkey:    The key this buff uses on the cache</span>
 <span class="sd">            cache:      The cache dictionary (what you get if you use `handler.buffcache.get(key)`)&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="n">handler</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span> <span class="o">=</span> <span class="n">buffkey</span>
-        <span class="c1"># Cache assignment</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
-        <span class="c1"># Default system cache values</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prevtick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prevtick&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;paused&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stacks&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span></div>
+        <span class="n">required</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;handler&quot;</span><span class="p">:</span> <span class="n">handler</span><span class="p">,</span> <span class="s2">&quot;buffkey&quot;</span><span class="p">:</span> <span class="n">buffkey</span><span class="p">,</span> <span class="s2">&quot;cache&quot;</span><span class="p">:</span> <span class="n">cache</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">required</span><span class="p">)</span>
+        <span class="c1"># Init hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;tickrate&quot;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">][</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseBuff.conditional"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.conditional">[docs]</a>    <span class="k">def</span> <span class="nf">conditional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Hook function for conditional evaluation.</span>
@@ -264,11 +273,28 @@
 
 <div class="viewcode-block" id="BaseBuff.reset"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Resets the buff start time as though it were just applied; functionally identical to a refresh&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseBuff.update_cache"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.update_cache">[docs]</a>    <span class="k">def</span> <span class="nf">update_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates this buff&#39;s cache using the given values, both internally (this instance) and on the handler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            to_cache:   The dictionary of values you want to add to the cache&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_cache</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
+        <span class="n">_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">])</span>
+        <span class="n">_cache</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">to_cache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">_cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">buffkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cache</span></div>
 
     <span class="c1"># endregion</span>
 
     <span class="c1"># region hook methods</span>
+<div class="viewcode-block" id="BaseBuff.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Hook function called when this buff object is initialized.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
 <div class="viewcode-block" id="BaseBuff.at_apply"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_apply">[docs]</a>    <span class="k">def</span> <span class="nf">at_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Hook function to run when this buff is applied to an object.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -353,6 +379,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dbkey</span> <span class="o">=</span> <span class="n">dbkey</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">autopause</span> <span class="o">=</span> <span class="n">autopause</span>
         <span class="k">if</span> <span class="n">autopause</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_state</span><span class="p">()</span>
             <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_OBJECT_POST_UNPUPPET</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pause_playtime</span><span class="p">)</span>
             <span class="n">signals</span><span class="o">.</span><span class="n">SIGNAL_OBJECT_POST_PUPPET</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unpause_playtime</span><span class="p">)</span></div>
 
@@ -467,10 +494,14 @@
             <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">b</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">_context</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># Initial cache updating, starting with the class cache attribute and/or to_cache</span>
         <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
             <span class="n">b</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">buff</span><span class="o">.</span><span class="n">cache</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">to_cache</span><span class="p">:</span>
             <span class="n">b</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">to_cache</span><span class="p">))</span>
+
+        <span class="c1"># Guarantees we stack either at least 1 stack or whatever the class stacks attribute is</span>
         <span class="k">if</span> <span class="n">stacks</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">stacks</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">buff</span><span class="o">.</span><span class="n">stacks</span><span class="p">)</span>
 
@@ -480,6 +511,7 @@
                 <span class="s2">&quot;ref&quot;</span><span class="p">:</span> <span class="n">buff</span><span class="p">,</span>
                 <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
                 <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">buff</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+                <span class="s2">&quot;tickrate&quot;</span><span class="p">:</span> <span class="n">buff</span><span class="o">.</span><span class="n">tickrate</span><span class="p">,</span>
                 <span class="s2">&quot;prevtick&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
                 <span class="s2">&quot;paused&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s2">&quot;stacks&quot;</span><span class="p">:</span> <span class="n">stacks</span><span class="p">,</span>
@@ -791,7 +823,9 @@
                     <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="BuffHandler.check"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trigger</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BuffHandler.check"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trigger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">strongest</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Finds all buffs and perks related to a stat and applies their effects.</span>
 
 <span class="sd">        Args:</span>
@@ -800,6 +834,7 @@
 <span class="sd">            loud:   (optional) Call the buff&#39;s at_post_check method after checking (default: True)</span>
 <span class="sd">            context: (optional) A dictionary you wish to pass to the at_pre_check/at_post_check and conditional methods as kwargs</span>
 <span class="sd">            trigger: (optional) Trigger buffs with the `stat` string as well. (default: False)</span>
+<span class="sd">            strongest:  (optional) Applies only the strongest mods of the corresponding stat value (default: False)</span>
 
 <span class="sd">        Returns the value modified by relevant buffs.&quot;&quot;&quot;</span>
         <span class="c1"># Buff cleanup to make sure all buffs are valid before processing</span>
@@ -811,15 +846,21 @@
         <span class="n">applied</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_by_stat</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">applied</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
+
+        <span class="c1"># Run pre-check hooks on related buffs</span>
         <span class="k">for</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">applied</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">buff</span><span class="o">.</span><span class="n">at_pre_check</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">)</span>
 
+        <span class="c1"># Sift out buffs that won&#39;t be applying their mods (paused, conditional)</span>
         <span class="n">applied</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">applied</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">buff</span><span class="o">.</span><span class="n">paused</span>
         <span class="p">}</span>
 
-        <span class="c1"># The final result</span>
-        <span class="n">final</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_mods</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">applied</span><span class="p">)</span>
+        <span class="c1"># The mod totals</span>
+        <span class="n">calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_mods</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">applied</span><span class="p">)</span>
+
+        <span class="c1"># The calculated final value</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mods</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="n">strongest</span><span class="o">=</span><span class="n">strongest</span><span class="p">)</span>
 
         <span class="c1"># Run the &quot;after check&quot; functions on all relevant buffs</span>
         <span class="k">for</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">applied</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -882,23 +923,25 @@
             <span class="n">start</span> <span class="o">=</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span>  <span class="c1"># Start</span>
             <span class="n">duration</span> <span class="o">=</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span>  <span class="c1"># Duration</span>
             <span class="n">prevtick</span> <span class="o">=</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;prevtick&quot;</span><span class="p">]</span>  <span class="c1"># Previous tick timestamp</span>
-            <span class="n">tickrate</span> <span class="o">=</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tickrate</span>  <span class="c1"># Buff&#39;s tick rate</span>
-
-            <span class="c1"># Original buff ending, and new duration</span>
+            <span class="n">tickrate</span> <span class="o">=</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;tickrate&quot;</span><span class="p">]</span>  <span class="c1"># Buff&#39;s tick rate</span>
             <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">duration</span>  <span class="c1"># End</span>
-            <span class="n">newduration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">current</span>  <span class="c1"># New duration</span>
 
-            <span class="c1"># Apply the new duration</span>
-            <span class="k">if</span> <span class="n">newduration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">newduration</span>
-                <span class="k">if</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ticking</span><span class="p">:</span>
-                    <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;tickleft&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">tickrate</span> <span class="o">-</span> <span class="p">(</span><span class="n">current</span> <span class="o">-</span> <span class="n">prevtick</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">buff</span>
-                <span class="n">instance</span><span class="p">:</span> <span class="n">BaseBuff</span> <span class="o">=</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">buff</span><span class="p">)</span>
-                <span class="n">instance</span><span class="o">.</span><span class="n">at_pause</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span></div>
+            <span class="c1"># Setting &quot;tickleft&quot;</span>
+            <span class="k">if</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ticking</span><span class="p">:</span>
+                <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;tickleft&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">tickrate</span> <span class="o">-</span> <span class="p">(</span><span class="n">current</span> <span class="o">-</span> <span class="n">prevtick</span><span class="p">))</span>
+
+            <span class="c1"># Setting the new duration (if applicable)</span>
+            <span class="k">if</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">newduration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">current</span>  <span class="c1"># New duration</span>
+                <span class="k">if</span> <span class="n">newduration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">newduration</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+            <span class="c1"># Apply new cache info, call pause hook</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">buff</span>
+            <span class="n">instance</span><span class="p">:</span> <span class="n">BaseBuff</span> <span class="o">=</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">buff</span><span class="p">)</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">at_pause</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BuffHandler.unpause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Unpauses a buff. This makes it visible to the various buff systems again.</span>
@@ -925,32 +968,59 @@
             <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span>
             <span class="k">if</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ticking</span><span class="p">:</span>
                 <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;prevtick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span> <span class="o">-</span> <span class="p">(</span><span class="n">tickrate</span> <span class="o">-</span> <span class="n">tickleft</span><span class="p">)</span>
+
+            <span class="c1"># Apply new cache info, call hook</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">buff</span>
             <span class="n">instance</span><span class="p">:</span> <span class="n">BaseBuff</span> <span class="o">=</span> <span class="n">buff</span><span class="p">[</span><span class="s2">&quot;ref&quot;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">buff</span><span class="p">)</span>
             <span class="n">instance</span><span class="o">.</span><span class="n">at_unpause</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">)</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">buff</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">],</span> <span class="n">cleanup_buffs</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Set up typical delays (cleanup/ticking)</span>
+            <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">duration</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">buff</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">],</span> <span class="n">cleanup_buffs</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">ticking</span><span class="p">:</span>
                 <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span>
                     <span class="n">tickrate</span><span class="p">,</span> <span class="n">tick_buff</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffkey</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span>
-                <span class="p">)</span>
-        <span class="k">return</span></div>
+                <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BuffHandler.set_duration"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.set_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets the duration of the specified buff.</span>
+<div class="viewcode-block" id="BuffHandler.view"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            key:    The key of the buff whose duration you want to set</span>
-<span class="sd">            value:  The value you want the new duration to be&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffcache</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="k">return</span></div>
-
-<div class="viewcode-block" id="BuffHandler.view"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.&quot;&quot;&quot;</span>
+<span class="sd">            to_filter:  (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_filter</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
-        <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span>
+        <span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">to_filter</span> <span class="k">else</span> <span class="n">to_filter</span>
         <span class="n">_flavor</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">(</span><span class="n">buff</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">buff</span><span class="o">.</span><span class="n">flavor</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">return</span> <span class="n">_flavor</span></div>
+
+<div class="viewcode-block" id="BuffHandler.view_modifiers"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.view_modifiers">[docs]</a>    <span class="k">def</span> <span class="nf">view_modifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks all modifiers of the specified stat without actually applying them. Hits the conditional hook for relevant buffs.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stat:   The mod identifier string to search for</span>
+<span class="sd">            context:    (optional) A dictionary you wish to pass to the conditional hooks as kwargs</span>
+
+<span class="sd">        Returns a nested dictionary. The first layer&#39;s keys represent the type of modifier (&#39;add&#39; and &#39;mult&#39;),</span>
+<span class="sd">        and the second layer&#39;s keys represent the type of value (&#39;total&#39; and &#39;strongest&#39;).&quot;&quot;&quot;</span>
+        <span class="c1"># Buff cleanup to make sure all buffs are valid before processing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+
+        <span class="c1"># Find all buffs and traits related to the specified stat.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">applied</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_by_stat</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">applied</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Sift out buffs that won&#39;t be applying their mods (paused, conditional)</span>
+        <span class="n">applied</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">buff</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">applied</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">buff</span><span class="o">.</span><span class="n">paused</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Calculate and return our values dictionary</span>
+        <span class="n">calc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_mods</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">applied</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">calc</span></div>
 
 <div class="viewcode-block" id="BuffHandler.cleanup"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes expired buffs, ensures pause state is respected.&quot;&quot;&quot;</span>
@@ -988,29 +1058,58 @@
             <span class="n">buff</span><span class="o">.</span><span class="n">unpause</span><span class="p">()</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_calculate_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">buffs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculates a return value from a base value, a stat string, and a dictionary of instanced buffs with associated mods.</span>
+    <span class="k">def</span> <span class="nf">_calculate_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">buffs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the total value of applicable mods.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            value:  The base value to modify</span>
 <span class="sd">            stat:   The string identifier to search mods for</span>
-<span class="sd">            buffs:  The dictionary of buffs to apply&quot;&quot;&quot;</span>
+<span class="sd">            buffs:  The dictionary of buffs to calculate mods from</span>
+
+<span class="sd">        Returns a nested dictionary. The first layer&#39;s keys represent the type of modifier (&#39;add&#39; and &#39;mult&#39;),</span>
+<span class="sd">        and the second layer&#39;s keys represent the type of value (&#39;total&#39; and &#39;strongest&#39;).&quot;&quot;&quot;</span>
+
+        <span class="c1"># The base return dictionary. If you update how modifiers are calculated, make sure to update this too, or you will get key errors!</span>
+        <span class="n">calculated</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;add&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;strongest&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="s2">&quot;mult&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;strongest&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="s2">&quot;div&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;strongest&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+        <span class="p">}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">buffs</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">value</span>
-        <span class="n">add</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">mult</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="n">calculated</span>
 
         <span class="k">for</span> <span class="n">buff</span> <span class="ow">in</span> <span class="n">buffs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">buff</span><span class="o">.</span><span class="n">mods</span><span class="p">:</span>
                 <span class="n">buff</span><span class="p">:</span> <span class="n">BaseBuff</span>
                 <span class="n">mod</span><span class="p">:</span> <span class="n">Mod</span>
                 <span class="k">if</span> <span class="n">mod</span><span class="o">.</span><span class="n">stat</span> <span class="o">==</span> <span class="n">stat</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">mod</span><span class="o">.</span><span class="n">modifier</span> <span class="o">==</span> <span class="s2">&quot;add&quot;</span><span class="p">:</span>
-                        <span class="n">add</span> <span class="o">+=</span> <span class="n">mod</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="p">((</span><span class="n">buff</span><span class="o">.</span><span class="n">stacks</span><span class="p">)</span> <span class="o">*</span> <span class="n">mod</span><span class="o">.</span><span class="n">perstack</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">mod</span><span class="o">.</span><span class="n">modifier</span> <span class="o">==</span> <span class="s2">&quot;mult&quot;</span><span class="p">:</span>
-                        <span class="n">mult</span> <span class="o">+=</span> <span class="n">mod</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="p">((</span><span class="n">buff</span><span class="o">.</span><span class="n">stacks</span><span class="p">)</span> <span class="o">*</span> <span class="n">mod</span><span class="o">.</span><span class="n">perstack</span><span class="p">)</span>
+                    <span class="n">_modval</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="p">((</span><span class="n">buff</span><span class="o">.</span><span class="n">stacks</span><span class="p">)</span> <span class="o">*</span> <span class="n">mod</span><span class="o">.</span><span class="n">perstack</span><span class="p">)</span>
+                    <span class="n">calculated</span><span class="p">[</span><span class="n">mod</span><span class="o">.</span><span class="n">modifier</span><span class="p">][</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_modval</span>
+                    <span class="k">if</span> <span class="n">_modval</span> <span class="o">&gt;</span> <span class="n">calculated</span><span class="p">[</span><span class="n">mod</span><span class="o">.</span><span class="n">modifier</span><span class="p">][</span><span class="s2">&quot;strongest&quot;</span><span class="p">]:</span>
+                        <span class="n">calculated</span><span class="p">[</span><span class="n">mod</span><span class="o">.</span><span class="n">modifier</span><span class="p">][</span><span class="s2">&quot;strongest&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_modval</span>
+        <span class="k">return</span> <span class="n">calculated</span>
 
-        <span class="n">final</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">add</span><span class="p">)</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">mult</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_apply_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">calc</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">strongest</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Applies modifiers to a value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value:  The value to modify</span>
+<span class="sd">            calc:   The dictionary of calculated modifier values (see _calculate_mods)</span>
+<span class="sd">            strongest:  (optional) Applies only the strongest mods of the corresponding stat value (default: False)</span>
+
+<span class="sd">        Returns value modified by the relevant mods.&quot;&quot;&quot;</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="n">strongest</span><span class="p">:</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">calc</span><span class="p">[</span><span class="s2">&quot;add&quot;</span><span class="p">][</span><span class="s2">&quot;strongest&quot;</span><span class="p">])</span>
+                <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">calc</span><span class="p">[</span><span class="s2">&quot;div&quot;</span><span class="p">][</span><span class="s2">&quot;strongest&quot;</span><span class="p">])</span>
+                <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">calc</span><span class="p">[</span><span class="s2">&quot;mult&quot;</span><span class="p">][</span><span class="s2">&quot;strongest&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">final</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">calc</span><span class="p">[</span><span class="s2">&quot;add&quot;</span><span class="p">][</span><span class="s2">&quot;total&quot;</span><span class="p">])</span>
+                <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">calc</span><span class="p">[</span><span class="s2">&quot;div&quot;</span><span class="p">][</span><span class="s2">&quot;total&quot;</span><span class="p">])</span>
+                <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">calc</span><span class="p">[</span><span class="s2">&quot;mult&quot;</span><span class="p">][</span><span class="s2">&quot;total&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">final</span>
 
     <span class="k">def</span> <span class="nf">_remove_via_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dispel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">expire</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1107,10 +1206,10 @@
 
     <span class="c1"># Instantiate the buff and tickrate</span>
     <span class="n">buff</span><span class="p">:</span> <span class="n">BaseBuff</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">buffkey</span><span class="p">)</span>
-    <span class="n">tr</span> <span class="o">=</span> <span class="n">buff</span><span class="o">.</span><span class="n">tickrate</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">buff</span><span class="o">.</span><span class="n">tickrate</span><span class="p">)</span>
 
     <span class="c1"># This stops the old ticking process if you refresh/stack the buff</span>
-    <span class="k">if</span> <span class="n">tr</span> <span class="o">&gt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">buff</span><span class="o">.</span><span class="n">prevtick</span> <span class="ow">and</span> <span class="n">initial</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">tr</span> <span class="o">&gt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">buff</span><span class="o">.</span><span class="n">prevtick</span> <span class="ow">and</span> <span class="n">initial</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="n">buff</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
         <span class="k">return</span>
 
     <span class="c1"># Only fire the at_tick methods if the conditional is truthy</span>
@@ -1120,7 +1219,7 @@
             <span class="n">buff</span><span class="o">.</span><span class="n">at_tick</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">)</span>
 
         <span class="c1"># Tick this buff one last time, then remove</span>
-        <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">duration</span> <span class="o">&lt;=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">buff</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">buff</span><span class="o">.</span><span class="n">duration</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">buff</span><span class="o">.</span><span class="n">duration</span> <span class="o">&lt;=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">buff</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">tr</span> <span class="o">&lt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">buff</span><span class="o">.</span><span class="n">prevtick</span><span class="p">:</span>
                 <span class="n">buff</span><span class="o">.</span><span class="n">at_tick</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">)</span>
             <span class="n">buff</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">expire</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1131,6 +1230,7 @@
             <span class="n">buff</span><span class="o">.</span><span class="n">at_tick</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">)</span>
 
     <span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="n">buffkey</span><span class="p">][</span><span class="s2">&quot;prevtick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">buff</span><span class="o">.</span><span class="n">tickrate</span><span class="p">)</span>
 
     <span class="c1"># Recur this function at the tickrate interval, if it didn&#39;t stop/fail</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span>

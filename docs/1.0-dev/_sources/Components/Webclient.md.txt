@@ -2,7 +2,7 @@
 
 Evennia comes with a MUD client accessible from a normal web browser. During development you can try
 it at `http://localhost:4001/webclient`. The client consists of several parts, all under
-`evennia/web/webclient/`:
+`evennia/web`:
 
 `templates/webclient/webclient.html` and `templates/webclient/base.html` are the very simplistic
 django html templates describing the webclient layout.
@@ -18,7 +18,7 @@ be used also if swapping out the gui front end.
 various plugins, and uses the Evennia object library for all in/out.
 
 `static/webclient/js/plugins` provides a default set of plugins that implement a "telnet-like"
-interface.
+interface, and a couple of example plugins to show how you could implement new plugin features.
 
 `static/webclient/css/webclient.css` is the CSS file for the client; it also defines things like how
 to display ANSI/Xterm256 colors etc.
@@ -30,17 +30,17 @@ these.
 ## Customizing the web client
 
 Like was the case for the website, you override the webclient from your game directory. You need to
-add/modify a file in the matching directory location within one of the _overrides directories.
-These _override directories are NOT directly used by the web server when the game is running, the
-server copies everything web related in the Evennia folder over to `mygame/web/static/` and then
-copies in all of your _overrides.  This can cause some cases were you edit a file, but it doesn't
+add/modify a file in the matching directory locations within your project's `mygame/web/` directories.
+These directories are NOT directly used by the web server when the game is running, the
+server copies everything web related in the Evennia folder over to `mygame/server/.static/` and then
+copies in all of your `mygame/web/` files.  This can cause some cases were you edit a file, but it doesn't
 seem to make any difference in the servers behavior.  **Before doing anything else, try shutting
 down the game and running `evennia collectstatic` from the command line then start it back up, clear
 your browser cache, and see if your edit shows up.**
 
-Example: To change the utilized plugin list, you need to override base.html by copying
-`evennia/web/webclient/templates/webclient/base.html` to
-`mygame/web/template_overrides/webclient/base.html` and  editing it to add your new plugin.
+Example: To change the list of in-use plugins, you need to override base.html by copying
+`evennia/web/templates/webclient/base.html` to
+`mygame/web/templates/webclient/base.html` and editing it to add your new plugin.
 
 # Evennia Web Client API (from evennia.js)
 * `Evennia.init( opts )`
@@ -96,6 +96,8 @@ manager for drag-n-drop windows, text routing and more.
 keys to peruse.
 * `hotbuttons.js` Defines onGotOptions. A Disabled-by-default plugin that defines a button bar with
 user-assignable commands.
+* `html.js` A basic plugin to allow the client to handle "raw html" messages from the server, this
+allows the server to send native HTML messages like &gt;div style='s'&lt;styled text&gt;/div&lt;
 * `iframe.js` Defines onOptionsUI.  A goldenlayout-only plugin to create a restricted browsing sub-
 window for a side-by-side web/text interface, mostly an example of how to build new HTML
 "components" for goldenlayout.
@@ -108,8 +110,50 @@ from the server and display them as inline HTML.
 while the tab is hidden.
 * `oob.js` Defines onSend. Allows the user to test/send Out Of Band json messages to the server.
 * `options.js` Defines most callbacks. Provides a popup-based UI to coordinate options settings with the server.
-* `options2.js` Defines most callbacks. Provides a goldenlayout-based version of the options/settings tab.  Integrates with other plugins via the custom onOptionsUI callback.
+* `options2.js` Defines most callbacks. Provides a goldenlayout-based version of the options/settings tab.
+Integrates with other plugins via the custom onOptionsUI callback.
 * `popups.js` Provides default popups/Dialog UI for other plugins to use.  
+* `text2html.js` Provides a new message handler type: `text2html`, similar to the multimedia and html
+plugins. This plugin provides a way to offload rendering the regular pipe-styled ASCII messages
+to the client.  This allows the server to do less work, while also allowing the client a place to
+customize this conversion process.  To use this plugin you will need to override the current commands
+in Evennia, changing any place where a raw text output message is generated and turn it into a
+`text2html` message. For example: `target.msg("my text")` becomes: `target.msg(text2html=("my text"))`
+(even better, use a webclient pane routing tag: `target.msg(text2html=("my text", {"type": "sometag"}))`)
+`text2html` messages should format and behave identically to the server-side generated text2html() output.
+
+# A side note on html messages vrs text2html messages
+
+So...lets say you have a desire to make your webclient output more like standard webpages...
+For telnet clients, you could collect a bunch of text lines together, with ASCII formatted borders, etc.
+Then send the results to be rendered client-side via the text2html plugin.
+
+But for webclients, you could format a message directly with the html plugin to render the whole thing as an
+HTML table, like so:
+```
+    # Server Side Python Code:
+
+    if target.is_webclient():
+        # This can be styled however you like using CSS, just add the CSS file to web/static/webclient/css/...
+        table = [
+                 "<table>",
+                  "<tr><td>1</td><td>2</td><td>3</td></tr>",
+                  "<tr><td>4</td><td>5</td><td>6</td></tr>",
+                 "</table>"
+               ]
+        target.msg( html=( "".join(table), {"type": "mytag"}) )
+    else:
+        # This will use the client to render this as "plain, simple" ASCII text, the same
+        #   as if it was rendered server-side via the Portal's text2html() functions
+        table = [ 
+                "#############",
+                "# 1 # 2 # 3 #",
+                "#############",
+                "# 4 # 5 # 6 #",
+                "#############"
+               ]
+        target.msg( html2html=( "\n".join(table), {"type": "mytag"}) )
+```
 
 # Writing your own Plugins
 
@@ -131,7 +175,7 @@ output and the one starting input window.  This is done by modifying your server
 goldenlayout_default_config.js.
 
 Start by creating a new
-`mygame/web/static_overrides/webclient/js/plugins/goldenlayout_default_config.js` file, and adding
+`mygame/web/static/webclient/js/plugins/goldenlayout_default_config.js` file, and adding
 the following JSON variable:
 
 ```
@@ -222,7 +266,7 @@ type="text/javascript"></script>
 Remember, plugins are load-order dependent, so make sure the new `<script>` tag comes before the
 goldenlayout.js
 
-Next, create a new plugin file `mygame/web/static_overrides/webclient/js/plugins/myplugin.js` and
+Next, create a new plugin file `mygame/web/static/webclient/js/plugins/myplugin.js` and
 edit it.
 
 ```

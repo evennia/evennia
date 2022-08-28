@@ -126,13 +126,13 @@
 
 <div class="viewcode-block" id="Poison.at_pause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.at_pause">[docs]</a>    <span class="k">def</span> <span class="nf">at_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">prelogout_location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="si">{actor}</span><span class="s2"> stops twitching, their flesh a deathly pallor.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">named</span><span class="p">)</span>
+            <span class="s2">&quot;</span><span class="si">{actor}</span><span class="s2"> stops twitching, their flesh a deathly pallor.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Poison.at_unpause"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.at_unpause">[docs]</a>    <span class="k">def</span> <span class="nf">at_unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
             <span class="s2">&quot;</span><span class="si">{actor}</span><span class="s2"> begins to twitch again, their cheeks flushing red with blood.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">named</span>
+                <span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
 
@@ -141,7 +141,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">initial</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
                 <span class="s2">&quot;Poison courses through </span><span class="si">{actor}</span><span class="s2">&#39;s body, dealing </span><span class="si">{damage}</span><span class="s2"> damage.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">named</span><span class="p">,</span> <span class="n">damage</span><span class="o">=</span><span class="n">_dmg</span>
+                    <span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">,</span> <span class="n">damage</span><span class="o">=</span><span class="n">_dmg</span>
                 <span class="p">)</span>
             <span class="p">)</span></div></div>
 

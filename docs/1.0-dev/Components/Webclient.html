@@ -51,7 +51,7 @@
 <h1>Web Client<a class="headerlink" href="#web-client" title="Permalink to this headline">¶</a></h1>
 <p>Evennia comes with a MUD client accessible from a normal web browser. During development you can try
 it at <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/webclient</span></code>. The client consists of several parts, all under
-<code class="docutils literal notranslate"><span class="pre">evennia/web/webclient/</span></code>:</p>
+<code class="docutils literal notranslate"><span class="pre">evennia/web</span></code>:</p>
 <p><code class="docutils literal notranslate"><span class="pre">templates/webclient/webclient.html</span></code> and <code class="docutils literal notranslate"><span class="pre">templates/webclient/base.html</span></code> are the very simplistic
 django html templates describing the webclient layout.</p>
 <p><code class="docutils literal notranslate"><span class="pre">static/webclient/js/evennia.js</span></code> is the main evennia javascript library. This handles all
@@ -63,7 +63,7 @@ be used also if swapping out the gui front end.</p>
 <code class="docutils literal notranslate"><span class="pre">plugin_manager</span></code> objects to the javascript namespace, coordinates the GUI operations between the
 various plugins, and uses the Evennia object library for all in/out.</p>
 <p><code class="docutils literal notranslate"><span class="pre">static/webclient/js/plugins</span></code> provides a default set of plugins that implement a “telnet-like”
-interface.</p>
+interface, and a couple of example plugins to show how you could implement new plugin features.</p>
 <p><code class="docutils literal notranslate"><span class="pre">static/webclient/css/webclient.css</span></code> is the CSS file for the client; it also defines things like how
 to display ANSI/Xterm256 colors etc.</p>
 <p>The server-side webclient protocols are found in <code class="docutils literal notranslate"><span class="pre">evennia/server/portal/webclient.py</span></code> and
@@ -72,16 +72,16 @@ these.</p>
 <section id="customizing-the-web-client">
 <h2>Customizing the web client<a class="headerlink" href="#customizing-the-web-client" title="Permalink to this headline">¶</a></h2>
 <p>Like was the case for the website, you override the webclient from your game directory. You need to
-add/modify a file in the matching directory location within one of the _overrides directories.
-These _override directories are NOT directly used by the web server when the game is running, the
-server copies everything web related in the Evennia folder over to <code class="docutils literal notranslate"><span class="pre">mygame/web/static/</span></code> and then
-copies in all of your _overrides.  This can cause some cases were you edit a file, but it doesn’t
+add/modify a file in the matching directory locations within your project’s <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> directories.
+These directories are NOT directly used by the web server when the game is running, the
+server copies everything web related in the Evennia folder over to <code class="docutils literal notranslate"><span class="pre">mygame/server/.static/</span></code> and then
+copies in all of your <code class="docutils literal notranslate"><span class="pre">mygame/web/</span></code> files.  This can cause some cases were you edit a file, but it doesn’t
 seem to make any difference in the servers behavior.  <strong>Before doing anything else, try shutting
 down the game and running <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code> from the command line then start it back up, clear
 your browser cache, and see if your edit shows up.</strong></p>
-<p>Example: To change the utilized plugin list, you need to override base.html by copying
-<code class="docutils literal notranslate"><span class="pre">evennia/web/webclient/templates/webclient/base.html</span></code> to
-<code class="docutils literal notranslate"><span class="pre">mygame/web/template_overrides/webclient/base.html</span></code> and  editing it to add your new plugin.</p>
+<p>Example: To change the list of in-use plugins, you need to override base.html by copying
+<code class="docutils literal notranslate"><span class="pre">evennia/web/templates/webclient/base.html</span></code> to
+<code class="docutils literal notranslate"><span class="pre">mygame/web/templates/webclient/base.html</span></code> and editing it to add your new plugin.</p>
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="evennia-web-client-api-from-evennia-js">
@@ -151,6 +151,8 @@ manager for drag-n-drop windows, text routing and more.</p></li>
 keys to peruse.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">hotbuttons.js</span></code> Defines onGotOptions. A Disabled-by-default plugin that defines a button bar with
 user-assignable commands.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">html.js</span></code> A basic plugin to allow the client to handle “raw html” messages from the server, this
+allows the server to send native HTML messages like &gt;div style=‘s’&lt;styled text&gt;/div&lt;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">iframe.js</span></code> Defines onOptionsUI.  A goldenlayout-only plugin to create a restricted browsing sub-
 window for a side-by-side web/text interface, mostly an example of how to build new HTML
 “components” for goldenlayout.</p></li>
@@ -163,9 +165,50 @@ from the server and display them as inline HTML.</p></li>
 while the tab is hidden.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">oob.js</span></code> Defines onSend. Allows the user to test/send Out Of Band json messages to the server.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">options.js</span></code> Defines most callbacks. Provides a popup-based UI to coordinate options settings with the server.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">options2.js</span></code> Defines most callbacks. Provides a goldenlayout-based version of the options/settings tab.  Integrates with other plugins via the custom onOptionsUI callback.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options2.js</span></code> Defines most callbacks. Provides a goldenlayout-based version of the options/settings tab.
+Integrates with other plugins via the custom onOptionsUI callback.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">popups.js</span></code> Provides default popups/Dialog UI for other plugins to use.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text2html.js</span></code> Provides a new message handler type: <code class="docutils literal notranslate"><span class="pre">text2html</span></code>, similar to the multimedia and html
+plugins. This plugin provides a way to offload rendering the regular pipe-styled ASCII messages
+to the client.  This allows the server to do less work, while also allowing the client a place to
+customize this conversion process.  To use this plugin you will need to override the current commands
+in Evennia, changing any place where a raw text output message is generated and turn it into a
+<code class="docutils literal notranslate"><span class="pre">text2html</span></code> message. For example: <code class="docutils literal notranslate"><span class="pre">target.msg(&quot;my</span> <span class="pre">text&quot;)</span></code> becomes: <code class="docutils literal notranslate"><span class="pre">target.msg(text2html=(&quot;my</span> <span class="pre">text&quot;))</span></code>
+(even better, use a webclient pane routing tag: <code class="docutils literal notranslate"><span class="pre">target.msg(text2html=(&quot;my</span> <span class="pre">text&quot;,</span> <span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;sometag&quot;}))</span></code>)
+<code class="docutils literal notranslate"><span class="pre">text2html</span></code> messages should format and behave identically to the server-side generated text2html() output.</p></li>
 </ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="a-side-note-on-html-messages-vrs-text2html-messages">
+<h1>A side note on html messages vrs text2html messages<a class="headerlink" href="#a-side-note-on-html-messages-vrs-text2html-messages" title="Permalink to this headline">¶</a></h1>
+<p>So…lets say you have a desire to make your webclient output more like standard webpages…
+For telnet clients, you could collect a bunch of text lines together, with ASCII formatted borders, etc.
+Then send the results to be rendered client-side via the text2html plugin.</p>
+<p>But for webclients, you could format a message directly with the html plugin to render the whole thing as an
+HTML table, like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># Server Side Python Code:</span>
+
+    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">is_webclient</span><span class="p">():</span>
+        <span class="c1"># This can be styled however you like using CSS, just add the CSS file to web/static/webclient/css/...</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[</span>
+                 <span class="s2">&quot;&lt;table&gt;&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;3&lt;/td&gt;&lt;/tr&gt;&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;&lt;td&gt;5&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;/tr&gt;&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;&lt;/table&gt;&quot;</span>
+               <span class="p">]</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span> <span class="n">html</span><span class="o">=</span><span class="p">(</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;mytag&quot;</span><span class="p">})</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># This will use the client to render this as &quot;plain, simple&quot; ASCII text, the same</span>
+        <span class="c1">#   as if it was rendered server-side via the Portal&#39;s text2html() functions</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[</span> 
+                <span class="s2">&quot;#############&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;# 1 # 2 # 3 #&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;#############&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;# 4 # 5 # 6 #&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;#############&quot;</span>
+               <span class="p">]</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span> <span class="n">html2html</span><span class="o">=</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table</span><span class="p">),</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;mytag&quot;</span><span class="p">})</span> <span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="writing-your-own-plugins">
 <h1>Writing your own Plugins<a class="headerlink" href="#writing-your-own-plugins" title="Permalink to this headline">¶</a></h1>
@@ -184,7 +227,7 @@ window and the first input window are unique in that they can’t be “closed�
 output and the one starting input window.  This is done by modifying your server’s
 goldenlayout_default_config.js.</p>
 <p>Start by creating a new
-<code class="docutils literal notranslate"><span class="pre">mygame/web/static_overrides/webclient/js/plugins/goldenlayout_default_config.js</span></code> file, and adding
+<code class="docutils literal notranslate"><span class="pre">mygame/web/static/webclient/js/plugins/goldenlayout_default_config.js</span></code> file, and adding
 the following JSON variable:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">goldenlayout_config</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">content</span><span class="p">:</span> <span class="p">[{</span>
@@ -269,7 +312,7 @@ base.html.</p>
 </div>
 <p>Remember, plugins are load-order dependent, so make sure the new <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag comes before the
 goldenlayout.js</p>
-<p>Next, create a new plugin file <code class="docutils literal notranslate"><span class="pre">mygame/web/static_overrides/webclient/js/plugins/myplugin.js</span></code> and
+<p>Next, create a new plugin file <code class="docutils literal notranslate"><span class="pre">mygame/web/static/webclient/js/plugins/myplugin.js</span></code> and
 edit it.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>let myplugin = (function () {
     //
@@ -331,6 +374,7 @@ window.plugin_handler.add(&quot;myplugin&quot;, myplugin);
 <li><a class="reference internal" href="#plugin-manager-api-from-webclient-gui-js">Plugin Manager API (from webclient_gui.js)</a></li>
 <li><a class="reference internal" href="#plugin-callbacks-api">Plugin callbacks API</a></li>
 <li><a class="reference internal" href="#example-default-plugins-plugins-js">Example/Default Plugins (plugins/*.js)</a></li>
+<li><a class="reference internal" href="#a-side-note-on-html-messages-vrs-text2html-messages">A side note on html messages vrs text2html messages</a></li>
 <li><a class="reference internal" href="#writing-your-own-plugins">Writing your own Plugins</a><ul>
 <li><a class="reference internal" href="#goldenlayout">GoldenLayout</a></li>
 </ul>

@@ -179,6 +179,21 @@ many attributes and hook methods you can overload to create complex, interrelate
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.handler">
+<code class="sig-name descname">handler</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.start">
+<code class="sig-name descname">start</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.duration">
+<code class="sig-name descname">duration</code><em class="property"> = -1</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.playtime">
 <code class="sig-name descname">playtime</code><em class="property"> = False</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.playtime" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -199,6 +214,11 @@ many attributes and hook methods you can overload to create complex, interrelate
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.stacks">
+<code class="sig-name descname">stacks</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.stacks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.tickrate">
 <code class="sig-name descname">tickrate</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.tickrate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -206,6 +226,11 @@ many attributes and hook methods you can overload to create complex, interrelate
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.mods">
 <code class="sig-name descname">mods</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.mods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.cache">
+<code class="sig-name descname">cache</code><em class="property"> = {}</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.cache" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -218,6 +243,12 @@ many attributes and hook methods you can overload to create complex, interrelate
 <dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.owner">
 <em class="property">property </em><code class="sig-name descname">owner</code><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.owner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return this buff’s owner (the object its handler is attached to)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.timeleft">
+<em class="property">property </em><code class="sig-name descname">timeleft</code><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.timeleft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns how much time this buff has left. If -1, it is permanent.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -245,31 +276,6 @@ many attributes and hook methods you can overload to create complex, interrelate
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.handler">
-<code class="sig-name descname">handler</code><em class="property">: <a class="reference internal" href="#evennia.contrib.rpg.buffs.buff.BuffHandler" title="evennia.contrib.rpg.buffs.buff.BuffHandler">BuffHandler</a></em><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.cache">
-<code class="sig-name descname">cache</code><em class="property"> = {}</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.cache" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.start">
-<code class="sig-name descname">start</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.start" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.duration">
-<code class="sig-name descname">duration</code><em class="property"> = -1</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.duration" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.stacks">
-<code class="sig-name descname">stacks</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.stacks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.conditional">
@@ -335,6 +341,23 @@ many attributes and hook methods you can overload to create complex, interrelate
 <dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.reset">
 <code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BaseBuff.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resets the buff start time as though it were just applied; functionally identical to a refresh</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.update_cache">
+<code class="sig-name descname">update_cache</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_cache</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BaseBuff.update_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.update_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates this buff’s cache using the given values, both internally (this instance) and on the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>to_cache</strong> – The dictionary of values you want to add to the cache</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.buff.BaseBuff.at_init">
+<code class="sig-name descname">at_init</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BaseBuff.at_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BaseBuff.at_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook function called when this buff object is initialized.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -772,7 +795,7 @@ You should delete this when you’re done with it, so that garbage collection do
 
 <dl class="py method">
 <dt id="evennia.contrib.rpg.buffs.buff.BuffHandler.check">
-<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">stat</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">loud</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trigger</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BuffHandler.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BuffHandler.check" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">stat</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">loud</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trigger</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">strongest</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BuffHandler.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BuffHandler.check" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds all buffs and perks related to a stat and applies their effects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -782,6 +805,7 @@ You should delete this when you’re done with it, so that garbage collection do
 <li><p><strong>loud</strong> – (optional) Call the buff’s at_post_check method after checking (default: True)</p></li>
 <li><p><strong>context</strong> – (optional) A dictionary you wish to pass to the at_pre_check/at_post_check and conditional methods as kwargs</p></li>
 <li><p><strong>trigger</strong> – (optional) Trigger buffs with the <strong>stat</strong> string as well. (default: False)</p></li>
+<li><p><strong>strongest</strong> – (optional) Applies only the strongest mods of the corresponding stat value (default: False)</p></li>
 </ul>
 </dd>
 </dl>
@@ -831,23 +855,30 @@ You should delete this when you’re done with it, so that garbage collection do
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.rpg.buffs.buff.BuffHandler.set_duration">
-<code class="sig-name descname">set_duration</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BuffHandler.set_duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BuffHandler.set_duration" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the duration of the specified buff.</p>
+<dt id="evennia.contrib.rpg.buffs.buff.BuffHandler.view">
+<code class="sig-name descname">view</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_filter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BuffHandler.view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BuffHandler.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – The key of the buff whose duration you want to set</p></li>
-<li><p><strong>value</strong> – The value you want the new duration to be</p></li>
-</ul>
+<dd class="field-odd"><p><strong>to_filter</strong> – (optional) The dictionary of buffs to iterate over. If none is provided, returns all buffs (default: None)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.rpg.buffs.buff.BuffHandler.view">
-<code class="sig-name descname">view</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BuffHandler.view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BuffHandler.view" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a buff flavor text as a dictionary of tuples in the format {key: (name, flavor)}. Common use for this is a buff readout of some kind.</p>
+<dt id="evennia.contrib.rpg.buffs.buff.BuffHandler.view_modifiers">
+<code class="sig-name descname">view_modifiers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stat</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/buff.html#BuffHandler.view_modifiers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.BuffHandler.view_modifiers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks all modifiers of the specified stat without actually applying them. Hits the conditional hook for relevant buffs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stat</strong> – The mod identifier string to search for</p></li>
+<li><p><strong>context</strong> – (optional) A dictionary you wish to pass to the conditional hooks as kwargs</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns a nested dictionary. The first layer’s keys represent the type of modifier (‘add’ and ‘mult’),
+and the second layer’s keys represent the type of value (‘total’ and ‘strongest’).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -894,16 +925,6 @@ to react to the retrieval or modify the result in some way.</p>
 </dl>
 <p>Applies the specified buff to the target. All buffs are defined in the bufflist dictionary on this command.</p>
 <dl class="py attribute">
-<dt id="evennia.contrib.rpg.buffs.buff.CmdBuff.lock_storage">
-<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.CmdBuff.lock_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.contrib.rpg.buffs.buff.CmdBuff.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'builder', 'key': 'buff', 'no_prefix': ' ', 'tags': '', 'text': '\n    Buff a target.\n\n    Usage:\n      buff &lt;target&gt; &lt;buff&gt;\n\n    Applies the specified buff to the target. All buffs are defined in the bufflist dictionary on this command.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.CmdBuff.search_index_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt id="evennia.contrib.rpg.buffs.buff.CmdBuff.key">
 <code class="sig-name descname">key</code><em class="property"> = 'buff'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.CmdBuff.key" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -911,6 +932,16 @@ to react to the retrieval or modify the result in some way.</p>
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.buffs.buff.CmdBuff.aliases">
 <code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.CmdBuff.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.buff.CmdBuff.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.CmdBuff.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.buff.CmdBuff.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'builder', 'key': 'buff', 'no_prefix': ' ', 'tags': '', 'text': '\n    Buff a target.\n\n    Usage:\n      buff &lt;target&gt; &lt;buff&gt;\n\n    Applies the specified buff to the target. All buffs are defined in the bufflist dictionary on this command.\n    '}</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.buff.CmdBuff.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
