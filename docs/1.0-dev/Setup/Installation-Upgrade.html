@@ -50,7 +50,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="upgrading-an-existing-installation">
 <h1>Upgrading an existing installation<a class="headerlink" href="#upgrading-an-existing-installation" title="Permalink to this headline">¶</a></h1>
 <section id="evennia-v0-9-5-to-1-0">
-<h2>Evennia v0.9.5 to  1.0<a class="headerlink" href="#evennia-v0-9-5-to-1-0" title="Permalink to this headline">¶</a></h2>
+<h2>Evennia v0.9.5 to 1.0<a class="headerlink" href="#evennia-v0-9-5-to-1-0" title="Permalink to this headline">¶</a></h2>
 <p>Prior to 1.0, all Evennia installs were <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">Git-installs</span></a>. These instructions
 assume that you have a cloned <code class="docutils literal notranslate"><span class="pre">evennia</span></code> repo and use a virtualenv (best practices).</p>
 <ul class="simple">
@@ -79,8 +79,11 @@ game dir, continue below.</p>
 anything you want to keep), you can <em>delete</em> it entirely.</p></li>
 <li><p>Copy <code class="docutils literal notranslate"><span class="pre">evennia/evennia/game_template/web</span></code> to <code class="docutils literal notranslate"><span class="pre">mygame/</span></code> (e.g. using <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">-Rf</span></code> or a file manager). This new <code class="docutils literal notranslate"><span class="pre">web</span></code> folder
 replaces the old one and has a very different structure.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code></p></li>
+<li><p>It’s possible you need to replace/comment out import and calls to the deprecated
+<a class="reference external" href="https://docs.djangoproject.com/en/3.2/ref/urls/#url"><code class="docutils literal notranslate"><span class="pre">django.conf.urls</span></code></a>. The new way to call it is
+<a class="reference external" href="https://docs.djangoproject.com/en/4.0/ref/urls/#django.urls.re_path">available here</a>.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code></p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code></p></li>
 </ul>
 <p>If you made extensive work in your game dir, you may well find that you need to do some (hopefully minor)
 changes to your code before it will start with Evennia 1.0. Some important points:</p>
@@ -116,7 +119,7 @@ your imports.</p></li>
 <p><h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Upgrading an existing installation</a><ul>
-<li><a class="reference internal" href="#evennia-v0-9-5-to-1-0">Evennia v0.9.5 to  1.0</a></li>
+<li><a class="reference internal" href="#evennia-v0-9-5-to-1-0">Evennia v0.9.5 to 1.0</a></li>
 </ul>
 </li>
 </ul>
