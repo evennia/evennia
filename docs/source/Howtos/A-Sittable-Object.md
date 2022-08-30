@@ -753,7 +753,7 @@ class CmdStand2(Command):
 ```
 
 This forced us to to use the full power of the `caller.search` method. If we wanted to search for something
-more complex we would likely need to break out a [Django query](Beginner-Tutorial/Part1/Django-queries.md) to do it. The key here is that
+more complex we would likely need to break out a [Django query](Beginner-Tutorial/Part1/Beginner-Tutorial-Django-queries.md) to do it. The key here is that
 we know that the object we are looking for is a `Sittable` and that it must have an Attribute named `sitter`
 which should be set to us, the one sitting on/in the thing. Once we have that we just call `.do_stand` on it
 and let the Typeclass handle the rest.

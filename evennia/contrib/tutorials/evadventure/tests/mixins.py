@@ -32,22 +32,18 @@ class EvAdventureMixin:
         self.helmet = create.create_object(
             EvAdventureHelmet,
             key="helmet",
-            attributes=[("inventory_use_slot", enums.WieldLocation.HEAD), ("armor", 1)],
         )
         self.shield = create.create_object(
             EvAdventureShield,
             key="shield",
-            attributes=[("inventory_use_slot", enums.WieldLocation.SHIELD_HAND), ("armor", 1)],
         )
         self.armor = create.create_object(
             EvAdventureArmor,
             key="armor",
-            attributes=[("inventory_use_slot", enums.WieldLocation.BODY), ("armor", 11)],
         )
         self.weapon = create.create_object(
             EvAdventureWeapon,
             key="weapon",
-            attributes=[("inventory_use_slot", enums.WieldLocation.WEAPON_HAND)],
         )
         self.big_weapon = create.create_object(
             EvAdventureWeapon,

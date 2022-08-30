@@ -29,7 +29,7 @@ object in various ways. Consider a "Tree" object with a cmdset defining the comm
 
 This page goes into full detail about how to use Commands. To fully use them you must also read the
 page detailing [Command Sets](./Command-Sets.md).  There is also a step-by-step
-[Adding Command Tutorial](../Howtos/Beginner-Tutorial/Part1/Adding-Commands.md) that will get you started quickly without the
+[Adding Command Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md) that will get you started quickly without the
 extra explanations.
 
 ## Defining Commands

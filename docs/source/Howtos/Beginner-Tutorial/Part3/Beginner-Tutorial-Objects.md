@@ -325,10 +325,36 @@ class EvAdventureHelmet(EvAdventureArmor):
     inventory_use_slot = WieldLocation.HEAD
 ``` 
 
+## Your Bare hands 
 
+This is a 'dummy' object that is not stored in the database. We will use this in the upcoming 
+[Equipment tutorial lesson](./Beginner-Tutorial-Equipment.md) to represent when you have 'nothing' 
+in your hands. This way we don't need to add any special case for this.
 
+```python
+class WeaponEmptyHand:
+     obj_type = ObjType.WEAPON
+     key = "Empty Fists"
+     inventory_use_slot = WieldLocation.WEAPON_HAND
+     attack_type = Ability.STR
+     defense_type = Ability.ARMOR
+     damage_roll = "1d4"
+     quality = 100000  # let's assume fists are always available ...
+ 
+     def __repr__(self):
+         return "<WeaponEmptyHand>"
+```
 
+## Testing and Extra credits 
 
+Remember the `get_obj_stats` function from the [Utility Tutorial](./Beginner-Tutorial-Utilities.md) earlier? 
+We had to use dummy-values since we didn't yet know how we would store properties on Objects in the game. 
 
+Well, we just figured out all we need! You can go back and update `get_obj_stats` to properly read the data 
+from the object it receives. 
 
+When you change this function you must also update the related unit test - so your existing test becomes a 
+nice way to test your new Objects as well! Add more tests showing the output of feeding different object-types
+to `get_obj_stats`.
 
+Try it out yourself. If you need help, a finished utility example is found in [evennia/contrib/tutorials/evadventure/utils.py](get_obj_stats).

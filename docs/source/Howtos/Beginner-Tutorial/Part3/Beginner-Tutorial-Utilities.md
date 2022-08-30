@@ -216,6 +216,12 @@ So we just set them to dummy values. We'll need to get back to this when we have
 
 ## Testing 
 
+```{important}
+It's useful for any game dev to know how to effectively test their code. So we'll try to include a 
+*Testing* section at the end of each of the implementation lessons to follow. Writing tests for your code 
+is optional but highly recommended; it can feel a little cumbersome at first, but you'll thank yourself later.
+```
+
 > create a new module `mygame/evadventure/tests/test_utils.py`
 
 How do you know if you made a typo in the code above? You could _manually_ test it by reloading your 
@@ -228,7 +234,7 @@ doing that test when you change this code later.
 
 ```{sidebar}
 In [evennia/contrib/evadventure/tests/test_utils.py](evennia.contrib.evadventure.tests.test_utils)
-is the final test module. To dive deeper into unit testing in Evennia, see the 
+is an example of the testing module. To dive deeper into unit testing in Evennia, see the 
 [Unit testing](../../../Coding/Unit-Testing.md) documentation.
 ```
 

@@ -54,7 +54,7 @@ A new folder `myarx` should appear next to the ones you already had. You could r
 something else if you want.
 
 `cd` into `myarx`. If you wonder about the structure of the game dir, you can
-[read more about it here](Beginner-Tutorial/Part1/Gamedir-Overview.md).
+[read more about it here](Beginner-Tutorial/Part1/Beginner-Tutorial-Gamedir-Overview.md).
 
 ### Clean up settings
 

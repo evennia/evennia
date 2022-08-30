@@ -161,7 +161,7 @@ class EquipmentHandler:
 
         """
         # first checks two-handed wield, then one-handed; the two
-        # should never appear simultaneously anyhow (checked in `use` method).
+        # should never appear simultaneously anyhow (checked in `move` method).
         slots = self.slots
         weapon = slots[WieldLocation.TWO_HANDS]
         if not weapon:
@@ -232,7 +232,7 @@ class EquipmentHandler:
     def move(self, obj):
         """
         Moves item to the place it things it should be in - this makes use of the object's wield
-        slot to decide where it goes. If it doesn't have any, it goes into backpack.
+        slot to decide where it goes. The item is assumed to already be in the backpack.
 
         Args:
             obj (EvAdventureObject): Thing to use.
@@ -242,35 +242,41 @@ class EquipmentHandler:
                 of the error, suitable to echo to user.
 
         Notes:
-            If using an item already in the backpack, it should first be `removed` from the
-            backpack, before applying here - otherwise, it will be added a second time!
-
-            this will cleanly move any 'colliding' items to the backpack to
+            This will cleanly move any 'colliding' items to the backpack to
             make the use possible (such as moving sword + shield to backpack when wielding
             a two-handed weapon). If wanting to warn the user about this, it needs to happen
             before this call.
 
         """
-        # first check if we have room for this
-        self.validate_slot_usage(obj)
+        # make sure to remove from backpack first, if it's there, since we'll be re-adding it
+        self.remove(obj)
 
+        self.validate_slot_usage(obj)
         slots = self.slots
         use_slot = getattr(obj, "inventory_use_slot", WieldLocation.BACKPACK)
 
+        to_backpack = []
         if use_slot is WieldLocation.TWO_HANDS:
             # two-handed weapons can't co-exist with weapon/shield-hand used items
+            to_backpack = [slots[WieldLocation.WEAPON_HAND], slots[WieldLocation.SHIELD_HAND]]
             slots[WieldLocation.WEAPON_HAND] = slots[WieldLocation.SHIELD_HAND] = None
             slots[use_slot] = obj
         elif use_slot in (WieldLocation.WEAPON_HAND, WieldLocation.SHIELD_HAND):
             # can't keep a two-handed weapon if adding a one-handed weapon or shield
+            to_backpack = [slots[WieldLocation.TWO_HANDS]]
             slots[WieldLocation.TWO_HANDS] = None
             slots[use_slot] = obj
         elif use_slot is WieldLocation.BACKPACK:
-            # backpack has multiple slots.
-            slots[use_slot].append(obj)
+            # it belongs in backpack, so goes back to it
+            to_backpack = [obj]
         else:
             # for others (body, head), just replace whatever's there
+            replaced = [obj]
             slots[use_slot] = obj
+
+        for to_backpack_obj in to_backpack:
+            # put stuff in backpack
+            slots[use_slot].append(to_backpack_obj)
 
         # store new state
         self._save()
@@ -403,7 +409,8 @@ class EquipmentHandler:
             (slots[WieldLocation.BODY], WieldLocation.BODY),
             (slots[WieldLocation.HEAD], WieldLocation.HEAD),
         ] + [(item, WieldLocation.BACKPACK) for item in slots[WieldLocation.BACKPACK]]
-        # remove any None-results from empty slots
         if only_objs:
+            # remove any None-results from empty slots
             return [tup[0] for tup in lst if tup[0]]
-        return [tup for tup in lst if tup[0]]
+        # keep empty slots
+        return [tup for tup in lst]
