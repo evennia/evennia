@@ -93,7 +93,7 @@ The form `from ... import ... as ...` renames the import.
 > Avoid renaming unless it's to avoid a name-collistion like above - you want to make things as
 > easy to read as possible, and renaming adds another layer of potential confusion.
 
-In [the basic intro to Python](./Python-basic-introduction.md) we learned how to open the in-game
+In [the basic intro to Python](./Beginner-Tutorial-Python-basic-introduction.md) we learned how to open the in-game
 multi-line interpreter.
 
     > py
@@ -153,7 +153,7 @@ Next we have a `class` named `Object`, which _inherits_ from `DefaultObject`. Th
 actually do anything on its own, its only code (except the docstring) is `pass` which means,
 well, to pass and don't do anything.
 
-We will get back to this module in the [next lesson](./Learning-Typeclasses.md). First we need to do a
+We will get back to this module in the [next lesson](./Beginner-Tutorial-Learning-Typeclasses.md). First we need to do a
 little detour to understand what a 'class', an 'object' or 'instance' is. These are fundamental
 things to understand before you can use Evennia efficiently.
 ```{sidebar} OOP

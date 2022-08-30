@@ -30,18 +30,18 @@ these concepts in the context of Evennia before.
 :maxdepth: 1
 :numbered:
 
-Building-Quickstart
-Tutorial-World
-Python-basic-introduction
-Gamedir-Overview
-Python-classes-and-objects
-Evennia-Library-Overview
-Learning-Typeclasses
-Adding-Commands
-More-on-Commands
-Creating-Things
-Searching-Things
-Django-queries
+Beginner-Tutorial-Building-Quickstart
+Beginner-Tutorial-Tutorial-World
+Beginner-Tutorial-Python-basic-introduction
+Beginner-Tutorial-Gamedir-Overview
+Beginner-Tutorial-Python-classes-and-objects
+Beginner-Tutorial-Evennia-Library-Overview
+Beginner-Tutorial-Learning-Typeclasses
+Beginner-Tutorial-Adding-Commands
+Beginner-Tutorial-More-on-Commands
+Beginner-Tutorial-Creating-Things
+Beginner-Tutorial-Searching-Things
+Beginner-Tutorial-Django-queries
 
 ```
 
@@ -50,17 +50,17 @@ Django-queries
 ```{toctree}
 :maxdepth: 2
 
-Building-Quickstart
-Tutorial-World
-Python-basic-introduction
-Gamedir-Overview
-Python-classes-and-objects
-Evennia-Library-Overview
-Learning-Typeclasses
-Adding-Commands
-More-on-Commands
-Creating-Things
-Searching-Things
-Django-queries
+Beginner-Tutorial-Building-Quickstart
+Beginner-Tutorial-Tutorial-World
+Beginner-Tutorial-Python-basic-introduction
+Beginner-Tutorial-Gamedir-Overview
+Beginner-Tutorial-Python-classes-and-objects
+Beginner-Tutorial-Evennia-Library-Overview
+Beginner-Tutorial-Learning-Typeclasses
+Beginner-Tutorial-Adding-Commands
+Beginner-Tutorial-More-on-Commands
+Beginner-Tutorial-Creating-Things
+Beginner-Tutorial-Searching-Things
+Beginner-Tutorial-Django-queries
 
 ```

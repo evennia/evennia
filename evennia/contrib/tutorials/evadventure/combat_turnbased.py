@@ -469,8 +469,8 @@ class CombatActionFlee(CombatAction):
     def use(self, *args, **kwargs):
         # it's safe to do this twice
         self.msg(
-            "$You() retreats, and will leave combat next round unless someone successfully "
-            "blocks them."
+            "$You() $conj(retreat), and will leave combat next round unless someone successfully "
+            "blocks the escape."
         )
         self.combathandler.flee(self.combatant)
 
@@ -513,14 +513,16 @@ class CombatActionBlock(CombatAction):
             advantage=advantage,
             disadvantage=disadvantage,
         )
-        self.msg(f"$You() tries to block the retreat of $You({fleeing_target.key}). {txt}")
+        self.msg(
+            f"$You() $conj(try) to block the retreat of $You({fleeing_target.key}). {txt}",
+        )
 
         if is_success:
             # managed to stop the target from fleeing/disengaging
             self.combathandler.unflee(fleeing_target)
             self.msg(f"$You() $conj(block) the retreat of $You({fleeing_target.key})")
         else:
-            self.msg(f"$You({fleeing_target.key}) dodges away from you $You()!")
+            self.msg(f"$You({fleeing_target.key}) $conj(dodge) away from you $You()!")
 
 
 class CombatActionDoNothing(CombatAction):

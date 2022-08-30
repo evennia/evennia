@@ -84,7 +84,7 @@ In this section we will try to create an actual "map" object that an account can
 at.
 
 Evennia offers a range of [default commands](../Components/Default-Commands.md) for 
-[creating objects and rooms in-game](Beginner-Tutorial/Part1/Building-Quickstart.md). While readily accessible, these commands are made to do very
+[creating objects and rooms in-game](Beginner-Tutorial/Part1/Beginner-Tutorial-Building-Quickstart.md). While readily accessible, these commands are made to do very
 specific, restricted things and will thus not offer as much flexibility to experiment (for an
 advanced exception see [the FuncParser](../Components/FuncParser.md)). Additionally, entering long
 descriptions and properties over and over in the game client can become tedious; especially when

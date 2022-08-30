@@ -276,6 +276,34 @@ class EvAdventureRollEngine:
                 # ... 
 ```
 
+## Connecting the Character with Evennia 
+
+You can easily make yourself an `EvAdventureCharacter` in-game by using the 
+`type` command: 
+
+    type self = evadventure.characters.EvAdventureCharacter
+
+You can now do `examine self` to check your type updated. 
+
+If you want _all_ new Characters to be of this type you need to tell Evennia about it. Evennia 
+uses a global setting `BASE_CHARACTER_TYPECLASS` to know which typeclass to use when creating 
+Characters (when logging in, for example). This defaults to `typeclasses.characters.Character` (that is,
+the `Character` class in `mygame/typeclasses/characters.py`). 
+
+There are thus two ways to weave your new Character class into Evennia: 
+
+1. Change `mygame/server/conf/settings.py` and add `BASE_CHARACTER_CLASS = "evadventure.characters.EvAdventureCharacter"`.
+2. Or, change `typeclasses.characters.Character` to inherit from `EvAdventureCharacter`. 
+
+You must always reload the server for changes like this to take effect.
+
+```{important}
+In this tutorial we are making all changes in a folder `mygame/evadventure/`. This means we can isolate 
+our code but means we need to do some extra steps to tie the character (and other objects) into Evennia. 
+For your own game it would be just fine to start editing `mygame/typeclasses/characters.py` directly 
+instead.
+```
+
 
 ## Unit Testing 
 
@@ -328,6 +356,34 @@ tests for other methods as practice. Refer to previous lessons for details.
 For running the tests you do: 
 
      evennia test --settings settings.py .evadventure.tests.test_character
+
+
+## About races and classes 
+
+_Knave_ doesn't have any D&D-style _classes_ (like Thief, Fighter etc). It also does not bother with 
+_races_ (like dwarves, elves etc). This makes the tutorial shorter, but you may ask yourself how you'd 
+add these functions. 
+
+In the framework we have sketched out for _Knave_, it would be simple - you'd add your race/class as 
+an Attribute on your Character: 
+
+```python
+# mygame/evadventure/characters.py
+
+from evennia import DefaultCharacter, AttributeProperty
+# ... 
+
+class EvAdventureCharacter(LivingMixin, DefaultCharacter):
+    
+    # ... 
+
+    charclass = AttributeProperty("Fighter")
+    charrace = AttributeProperty("Human")
+
+```
+We use `charclass` rather than `class` here, because `class` is a reserved Python keyword. Naming 
+`race` as `charrace` thus matches in style.
+
 
 ## Summary
 
