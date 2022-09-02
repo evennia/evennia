@@ -5,9 +5,11 @@ Character class.
 
 from evennia.objects.objects import DefaultCharacter
 from evennia.typeclasses.attributes import AttributeProperty
-from evennia.utils.evmenu import ask_yes_no
+from evennia.utils.evform import EvForm
+from evennia.utils.evmenu import EvMenu, ask_yes_no
+from evennia.utils.evtable import EvTable
 from evennia.utils.logger import log_trace
-from evennia.utils.utils import lazy_property
+from evennia.utils.utils import inherits_from, lazy_property
 
 from . import rules
 from .equipment import EquipmentError, EquipmentHandler
@@ -165,8 +167,10 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
     hp = AttributeProperty(default=4)
     hp_max = AttributeProperty(default=4)
     level = AttributeProperty(default=1)
-    xp = AttributeProperty(default=0)
     coins = AttributeProperty(default=0)  # copper coins
+
+    xp = AttributeProperty(default=0)
+    xp_per_level = 1000
 
     @lazy_property
     def equipment(self):
@@ -275,3 +279,135 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 
         """
         pass
+
+    def add_xp(self, xp):
+        """
+        Add new XP.
+
+        Args:
+            xp (int): The amount of gained XP.
+
+        Returns:
+            bool: If a new level was reached or not.
+
+        Notes:
+            level 1 -> 2 = 1000 XP
+            level 2 -> 3 = 2000 XP etc
+
+        """
+        self.xp += xp
+        next_level_xp = self.level * self.xp_per_level
+        return self.xp >= next_level_xp
+
+    def level_up(self, *abilities):
+        """
+        Perform the level-up action.
+
+        Args:
+            *abilities (str): A set of abilities (like 'strength', 'dexterity' (normally 3)
+                to upgrade by 1. Max is usually +10.
+        Notes:
+            We block increases above a certain value, but we don't raise an error here, that
+            will need to be done earlier, when the user selects the ability to increase.
+
+        """
+
+        self.level += 1
+        for ability in set(abilities[:3]):
+            # limit to max amount allowed, each one unique
+            try:
+                # set at most to the max bonus
+                current_bonus = getattr(self, ability)
+                setattr(
+                    self,
+                    ability,
+                    min(10, current_bonus + 1),
+                )
+            except AttributeError:
+                pass
+
+        # update hp
+        self.hp_max = max(self.max_hp + 1, rules.dice.roll(f"{self.level}d8"))
+
+
+# character sheet visualization
+
+
+_SHEET = """
+ +----------------------------------------------------------------------------+
+ | Name: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+ +----------------------------------------------------------------------------+
+ | STR: x2xxxxx  DEX: x3xxxxx  CON: x4xxxxx  WIS: x5xxxxx  CHA: x6xxxxx       |
+ +----------------------------------------------------------------------------+
+ | HP: x7xxxxx                                      XP: x8xxxxx  Level: x9x   |
+ +----------------------------------------------------------------------------+
+ | Desc: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+ | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+ | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+ +----------------------------------------------------------------------------+
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccc1ccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ | cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc |
+ +----------------------------------------------------------------------------+
+    """
+
+
+def get_character_sheet(data):
+    """
+    Generate a character sheet. This is grouped in a class in order to make
+    it easier to override the look of the sheet.
+
+    Args:
+        data (EvAdventureCharacter or EvAdventureCharacterGeneration): This contains
+            the data to put in the sheet, either as stored on a finished character
+            or on the temporary chargen storage object.
+
+    """
+
+    @staticmethod
+    def get(data):
+        """
+        Generate a character sheet from the character's stats.
+
+        data
+
+        """
+        if inherits_from(data, DefaultCharacter):
+            # a character, get info normally
+            equipment = [item.key for item in character.equipment.all()]
+        else:
+            equipment
+
+        # divide into chunks of max 10 length (to go into two columns)
+        equipment_table = EvTable(
+            table=[equipment[i : i + 10] for i in range(0, len(equipment), 10)]
+        )
+        form = EvForm({"FORMCHAR": "x", "TABLECHAR": "c", "SHEET": _SHEET})
+        form.map(
+            cells={
+                1: character.key,
+                2: f"+{data.strength}({data.strength + 10})",
+                3: f"+{data.dexterity}({data.dexterity + 10})",
+                4: f"+{data.constitution}({data.constitution + 10})",
+                5: f"+{data.wisdom}({data.wisdom + 10})",
+                6: f"+{data.charisma}({data.charisma + 10})",
+                7: f"{data.hp}/{data.hp_max}",
+                8: data.xp,
+                9: data.level,
+                "A": data.db.desc,
+            },
+            tables={
+                1: equipment_table,
+            },
+        )
+        return str(form)

@@ -382,7 +382,10 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
 
 ```
 We use `charclass` rather than `class` here, because `class` is a reserved Python keyword. Naming 
-`race` as `charrace` thus matches in style.
+`race` as `charrace` thus matches in style. 
+
+We'd then need to expand our [rules module](Beginner-Tutorial-Rules.md) (and later 
+[character generation](Beginner-Tutorial-Chargen.md) to check and include what these classes mean.
 
 
 ## Summary
