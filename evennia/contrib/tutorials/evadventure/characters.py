@@ -9,7 +9,7 @@ from evennia.utils.evform import EvForm
 from evennia.utils.evmenu import EvMenu, ask_yes_no
 from evennia.utils.evtable import EvTable
 from evennia.utils.logger import log_trace
-from evennia.utils.utils import inherits_from, lazy_property
+from evennia.utils.utils import lazy_property
 
 from . import rules
 from .equipment import EquipmentError, EquipmentHandler
@@ -362,32 +362,20 @@ _SHEET = """
     """
 
 
-def get_character_sheet(data):
+def get_character_sheet(character):
     """
     Generate a character sheet. This is grouped in a class in order to make
     it easier to override the look of the sheet.
 
-    Args:
-        data (EvAdventureCharacter or EvAdventureCharacterGeneration): This contains
-            the data to put in the sheet, either as stored on a finished character
-            or on the temporary chargen storage object.
-
     """
 
     @staticmethod
-    def get(data):
+    def get(character):
         """
         Generate a character sheet from the character's stats.
 
-        data
-
         """
-        if inherits_from(data, DefaultCharacter):
-            # a character, get info normally
-            equipment = [item.key for item in character.equipment.all()]
-        else:
-            equipment
-
+        equipment = character.equipment.all()
         # divide into chunks of max 10 length (to go into two columns)
         equipment_table = EvTable(
             table=[equipment[i : i + 10] for i in range(0, len(equipment), 10)]
@@ -396,15 +384,15 @@ def get_character_sheet(data):
         form.map(
             cells={
                 1: character.key,
-                2: f"+{data.strength}({data.strength + 10})",
-                3: f"+{data.dexterity}({data.dexterity + 10})",
-                4: f"+{data.constitution}({data.constitution + 10})",
-                5: f"+{data.wisdom}({data.wisdom + 10})",
-                6: f"+{data.charisma}({data.charisma + 10})",
-                7: f"{data.hp}/{data.hp_max}",
-                8: data.xp,
-                9: data.level,
-                "A": data.db.desc,
+                2: f"+{character.strength}({character.strength + 10})",
+                3: f"+{character.dexterity}({character.dexterity + 10})",
+                4: f"+{character.constitution}({character.constitution + 10})",
+                5: f"+{character.wisdom}({character.wisdom + 10})",
+                6: f"+{character.charisma}({character.charisma + 10})",
+                7: f"{character.hp}/{character.hp_max}",
+                8: character.xp,
+                9: character.level,
+                "A": character.db.desc,
             },
             tables={
                 1: equipment_table,

@@ -8,6 +8,14 @@ from evennia.utils.evmenu import EvMenu
 from .random_tables import chargen_table
 from .rules import dice
 
+_TEMP_SHEET = """
+STR +{strength} DEX +{dexterity} CON +{constitution} INT +{intelligence} WIS +{wisdom} CHA +{charisma}
+
+{description}
+
+{equipment}
+"""
+
 
 class EvAdventureCharacterGeneration:
     """
@@ -29,8 +37,7 @@ class EvAdventureCharacterGeneration:
 
     """
 
-    def random_ability(self):
-        """ """
+    def _random_ability(self):
         return min(dice.roll("1d6"), dice.roll("1d6"), dice.roll("1d6"))
 
     def generate(self):
@@ -43,29 +50,34 @@ class EvAdventureCharacterGeneration:
         self.name = dice.roll_random_table("1d282", chargen_table["name"])
 
         # base attribute values
-        self.strength = self.random_ability()
-        self.dexterity = self.random_ability()
-        self.constitution = self.random_ability()
-        self.intelligence = self.random_ability()
-        self.wisdom = self.random_ability()
-        self.charisma = self.random_ability()
+        self.strength = self._random_ability()
+        self.dexterity = self._random_ability()
+        self.constitution = self._random_ability()
+        self.intelligence = self._random_ability()
+        self.wisdom = self._random_ability()
+        self.charisma = self._random_ability()
 
         # physical attributes (only for rp purposes)
-        self.physique = dice.roll_random_table("1d20", chargen_table["physique"])
-        self.face = dice.roll_random_table("1d20", chargen_table["face"])
-        self.skin = dice.roll_random_table("1d20", chargen_table["skin"])
-        self.hair = dice.roll_random_table("1d20", chargen_table["hair"])
-        self.clothing = dice.roll_random_table("1d20", chargen_table["clothing"])
-        self.speech = dice.roll_random_table("1d20", chargen_table["speech"])
-        self.virtue = dice.roll_random_table("1d20", chargen_table["virtue"])
-        self.vice = dice.roll_random_table("1d20", chargen_table["vice"])
-        self.background = dice.roll_random_table("1d20", chargen_table["background"])
-        self.misfortune = dice.roll_random_table("1d20", chargen_table["misfortune"])
-        self.alignment = dice.roll_random_table("1d20", chargen_table["alignment"])
+        physique = dice.roll_random_table("1d20", chargen_table["physique"])
+        face = dice.roll_random_table("1d20", chargen_table["face"])
+        skin = dice.roll_random_table("1d20", chargen_table["skin"])
+        hair = dice.roll_random_table("1d20", chargen_table["hair"])
+        clothing = dice.roll_random_table("1d20", chargen_table["clothing"])
+        speech = dice.roll_random_table("1d20", chargen_table["speech"])
+        virtue = dice.roll_random_table("1d20", chargen_table["virtue"])
+        vice = dice.roll_random_table("1d20", chargen_table["vice"])
+        background = dice.roll_random_table("1d20", chargen_table["background"])
+        misfortune = dice.roll_random_table("1d20", chargen_table["misfortune"])
+        alignment = dice.roll_random_table("1d20", chargen_table["alignment"])
+
+        self.desc = (
+            f"{background.title()}. Wears {clothing} clothes, and has {speech} "
+            f"speech. Has a {physique} physique, a {face} face, {skin} skin and "
+            f"{hair} hair. Is {virtue}, but {vice}. Has been {misfortune} in "
+            f"the past. Favors {alignment}."
+        )
 
         # same for all
-        self.exploration_speed = 120
-        self.combat_speed = 40
         self.hp_max = max(5, dice.roll("1d8"))
         self.hp = self.hp_max
         self.xp = 0
@@ -89,20 +101,27 @@ class EvAdventureCharacterGeneration:
             dice.roll_random_table("1d20", chargen_table["general gear 2"]),
         ]
 
-    def build_desc(self):
+    def show_sheet(self):
         """
-        Generate a backstory / description paragraph from random elements.
+        Show a temp character sheet, a compressed version of the real thing.
 
         """
-        return (
-            f"{self.background.title()}. Wears {self.clothing} clothes, and has {self.speech} "
-            f"speech. Has a {self.physique} physique, a {self.face} face, {self.skin} skin and "
-            f"{self.hair} hair. Is {self.virtue}, but {self.vice}. Has been {self.misfortune} in "
-            f"the past. Favors {self.alignment}."
+        equipment = (
+            str(item)
+            for item in [self.armor, self.helmet, self.shield, self.weapon] + self.backpack
+            if item
         )
 
-    def show_sheet(self):
-        return get_character_sheet(self)
+        return _TEMP_SHEET.format(
+            strength=self.strength,
+            dexterity=self.dexterity,
+            constitution=self.constitution,
+            intelligence=self.intelligence,
+            wisdom=self.wisdom,
+            charisma=self.charisma,
+            description=self.desc,
+            equipment=", ".join(equipment),
+        )
 
     def adjust_attribute(self, source_attribute, target_attribute, value):
         """
