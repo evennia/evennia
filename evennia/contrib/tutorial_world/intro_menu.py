@@ -357,7 +357,7 @@ graphical game is like comparing a book to a movie - it's just a different
 experience altogether.
 
 MUDs are |wdifferent|n from Interactive Fiction (IF) in that they are multiplayer
-and usually has a consistent game world with many stories and protagonists
+and usually have a consistent game world with many stories and protagonists
 acting at the same time.
 
 Like there are many different styles of graphical MMOs, there are |wmany
@@ -386,8 +386,8 @@ gaming style you like and possibly any new ones you can come up with!
 |g** About Evennia **|n
 
 |cEvennia|n is a Python game engine for creating multiplayer online text-games
-(aka MUDs, MUSHes, MUX, MOOs...). It is open-source and |wfree to use|n, also for
-commercial projects (BSD license).
+(aka MUDs, MUSHes, MUX, MOOs...). It is open-source and |wfree to use|n, for
+both personal and commercial projects (BSD license).
 
 Out of the box, Evennia provides a |wworking, if empty game|n. Whereas you can play
 via traditional telnet MUD-clients, the server runs your game's website and
@@ -453,32 +453,34 @@ There is also some |wextra|n info to learn about customizing the webclient.
 
 |g** Extra hints on customizing the Webclient **|n
 
-|y1)|n The panes of the webclient can be resized and you can create additional panes.
+|y1)|n The panes of the webclient can be resized and you can create additional
+panes.
 
 - Press the little  plus (|w+|n) sign in the top left and a new tab will appear.
-- Click and drag the tab and pull it far to the right and release when it creates two
-  panes next to each other.
+- Click and drag the tab and pull it far to the right and release when it creates
+  two panes next to each other.
 
 |y2)|n You can have certain server output only appear in certain panes.
 
 - In your new rightmost pane, click the diamond (⯁) symbol at the top.
 - Unselect everything and make sure to select "testing".
 - Click the diamond again so the menu closes.
-- Next, write "|ytest Hello world!|n". A test-text should appear in your rightmost pane!
+- Next, write "|ytest Hello world!|n". A test-text should appear in your rightmost
+  pane!
 
-|y3)|n You can customize general webclient settings by pressing the cogwheel in the upper
-left corner. It allows to change things like font and if the client should play sound.
+|y3)|n You can customize general webclient settings by pressing the cogwheel in the
+upper left corner. It allows to change things like font and if the client should
+play sound.
 
-The "message routing" allows for rerouting text matching a certain regular expression (regex)
-to a web client pane with a specific tag that you set yourself.
+The "message routing" allows for rerouting text matching a certain regular
+expression (regex) to a web client pane with a specific tag that you set yourself.
 
 |y4)|n Close the right-hand pane with the |wX|n in the rop right corner.
 
 ## OPTIONS
 
-    back;b: using webclient
-    > test *: send tagged message to new pane -> send_testing_tagged()
-    >: using webclient
+    back;b: using webclient > test *: send tagged message to new pane ->
+    send_testing_tagged() >: using webclient
 
 # ---------------------------------------------------------------------------------
 
@@ -488,9 +490,9 @@ to a web client pane with a specific tag that you set yourself.
 
 |g** Playing the game **|n
 
-Evennia has about |w90 default commands|n. They include useful administration/building
-commands and a few limited "in-game" commands to serve as examples. They are intended
-to be changed, extended and modified as you please.
+Evennia has about |w90 default commands|n. They include useful
+administration/building commands and a few limited "in-game" commands to serve as
+examples. They are intended to be changed, extended and modified as you please.
 
 First to try is |yhelp|n. This lists all commands |wcurrently|n available to you.
 
@@ -498,12 +500,12 @@ Use |yhelp <topic>|n to get specific help. Try |yhelp help|n to get help on usin
 the help command. For your game you could add help about your game, lore, rules etc
 as well.
 
-At the moment you only have |whelp|n and some |wChannel Names|n (the '<menu commands>'
-is just a placeholder to indicate you are using this menu).
+At the moment you only have |whelp|n and some |wChannel Names|n (the '<menu
+commands>' entry is just a placeholder to indicate you are using this menu).
 
-We'll add more commands as we get to them in this tutorial - but we'll only
-cover a small handful. Once you exit you'll find a lot more! Now let's try
-those channels ...
+We'll add more commands as we get to them in this tutorial - but we'll only cover a
+small handful. Once you exit you'll find a lot more! Now let's try those channels
+...
 
 ## OPTIONS
 
@@ -518,7 +520,7 @@ those channels ...
 
 |g** Talk on Channels **|n
 
-|wChannels|n are like in-game chatrooms. The |wChannel Names|n help-category
+|wChannels|n are like in-game chatrooms. The |wChannel Names|n help category
 holds the names of the channels available to you right now. One such channel is
 |wpublic|n. Use |yhelp public|n to see how to use it. Try it:
 
@@ -589,7 +591,7 @@ you if anyone paged you while you were offline.
 
 (By the way - depending on which games you are used to, you may think that the
 use of |y=|n above is strange. This is a MUSH/MUX-style of syntax. For your own
-game you can change the |wpose|n command to work however you prefer).
+game you can change the |wpage|n command to work however you prefer).
 
 ## OPTIONS
 
@@ -604,9 +606,9 @@ game you can change the |wpose|n command to work however you prefer).
 
 |g** U|rs|yi|gn|wg |c|yc|wo|rl|bo|gr|cs |g**|n
 
-You can add color in your text by the help of tags. However, remember that not
+You can add color in your text with the help of tags. However, remember that not
 everyone will see your colors - it depends on their client (and some use
-screenreaders). Using color can also make text harder to read. So use it
+screen readers). Using color can also make text harder to read. So use it
 sparingly.
 
 To start coloring something |rred|n, add a ||r (red) marker and then
@@ -692,7 +694,7 @@ If you want there is also some |wextra|n info for where to go beyond that.
 |gWhere to next?|n
 
 After playing through the tutorial-world quest, if you aim to make a game with
-Evennia you are wise to take a look at the |wEvennia documentation|n at
+Evennia it would be wise to take a look at the |wEvennia documentation|n at
 
     |yhttps://www.evennia.com/docs/latest
 
@@ -712,7 +714,7 @@ Evennia you are wise to take a look at the |wEvennia documentation|n at
 
 - Make sure to |wjoin our forum|n and connect to our |wsupport chat|n! The
   Evennia community is very active and friendly and no question is too simple.
-  You will often quickly get help. You can everything you need linked from
+  You will often quickly get help. You can find everything you need linked from
 
     |yhttps://www.evennia.com|n
 
