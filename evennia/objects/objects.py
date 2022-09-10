@@ -387,6 +387,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         quiet=False,
         exact=False,
         candidates=None,
+        use_locks=True,
         nofound_string=None,
         multimatch_string=None,
         use_dbref=None,
@@ -444,6 +445,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 is given. If not set, this list will automatically be defined
                 to include the location, the contents of location and the
                 caller's contents (inventory).
+            use_locks (bool): If True (default) - removes search results which
+                fail the "search" lock.
             nofound_string (str):  optional custom string for not-found error message.
             multimatch_string (str): optional custom string for multimatch error header.
             use_dbref (bool or None, optional): If `True`, allow to enter e.g. a query "#123"
@@ -529,6 +532,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             use_dbref=use_dbref,
         )
 
+        if use_locks:
+            results = [x for x in list(results) if x.access(self, "search")]
+        
         nresults = len(results)
         if stacked > 0 and nresults > 1:
             # handle stacks, disable multimatch errors
@@ -1797,7 +1803,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
     def get_visible_contents(self, looker, **kwargs):
         """
         Get all contents of this object that a looker can see (whatever that means, by default it
-        checks the 'view' lock), grouped by type. Helper method to return_appearance.
+        checks the 'view' and 'search' locks), grouped by type. Helper method to return_appearance.
 
         Args:
             looker (Object): The entity looking.
@@ -1811,7 +1817,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
 
         def filter_visible(obj_list):
-            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view")]
+            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view") and obj.access(looker, "search")]
 
         return {
             "exits": filter_visible(self.contents_get(content_type="exit")),
