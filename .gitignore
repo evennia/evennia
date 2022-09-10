@@ -44,6 +44,9 @@ nosetests.xml
 # PyCharm config
 .idea
 
+# VSCode config
+.vscode
+
 # Windows files generated during setup
 evennia.bat
 twistd.bat
