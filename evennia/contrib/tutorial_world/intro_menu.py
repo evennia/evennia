@@ -714,7 +714,7 @@ Evennia it would be wise to take a look at the |wEvennia documentation|n at
 
 - Make sure to |wjoin our forum|n and connect to our |wsupport chat|n! The
   Evennia community is very active and friendly and no question is too simple.
-  You will often quickly get help. You can findeverything you need linked from
+  You will often quickly get help. You can find everything you need linked from
 
     |yhttps://www.evennia.com|n
 
