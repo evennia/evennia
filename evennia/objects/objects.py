@@ -533,7 +533,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         )
 
         if use_locks:
-            results = [x for x in list(results) if x.access(self, "search")]
+            results = [x for x in list(results) if x.access(self, "search", default=True)]
         
         nresults = len(results)
         if stacked > 0 and nresults > 1:
@@ -1817,7 +1817,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
 
         def filter_visible(obj_list):
-            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view") and obj.access(looker, "search")]
+            return [obj for obj in obj_list if obj != looker and obj.access(looker, "view") and obj.access(looker, "search", default=True)]
 
         return {
             "exits": filter_visible(self.contents_get(content_type="exit")),
