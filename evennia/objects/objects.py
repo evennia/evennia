@@ -325,6 +325,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         quiet=False,
         exact=False,
         candidates=None,
+        use_locks=True,
         nofound_string=None,
         multimatch_string=None,
         use_dbref=None,
@@ -382,6 +383,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 is given. If not set, this list will automatically be defined
                 to include the location, the contents of location and the
                 caller's contents (inventory).
+            use_locks (bool): If True (default) - removes search results which
+                fail the "search" lock.
             nofound_string (str):  optional custom string for not-found error message.
             multimatch_string (str): optional custom string for multimatch error header.
             use_dbref (bool or None, optional): If `True`, allow to enter e.g. a query "#123"
@@ -467,12 +470,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             use_dbref=use_dbref,
         )
 
+        if use_locks:
+            results = [x for x in list(results) if x.access(self, "search", default=True)]
+
         nresults = len(results)
         if stacked > 0 and nresults > 1:
             # handle stacks, disable multimatch errors
             nstack = nresults
             if not exact:
-                # we re-run exact match agains one of the matches to
+                # we re-run exact match against one of the matches to
                 # make sure we were not catching partial matches not belonging
                 # to the stack
                 nstack = len(
@@ -980,8 +986,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 obj.location = None
                 obj.msg(_("Something went wrong! You are dumped into nowhere. Contact an admin."))
                 logger.log_err(
-                    "Missing default home - '{name}(#{dbid})' now "
-                    "has a null location.".format(name=obj.name, dbid=obj.dbid)
+                    "Missing default home - '{name}(#{dbid})' now has a null location.".format(
+                        name=obj.name, dbid=obj.dbid
+                    )
                 )
                 return
 
@@ -2040,6 +2047,85 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         pass
+
+    # hooks called by the default cmdset.
+
+    def get_visible_contents(self, looker, **kwargs):
+        """
+        Get all contents of this object that a looker can see (whatever that means, by default it
+        checks the 'view' and 'search' locks), grouped by type. Helper method to return_appearance.
+
+        Args:
+            looker (Object): The entity looking.
+            **kwargs (any): Passed from `return_appearance`. Unused by default.
+
+        Returns:
+            dict: A dict of lists categorized by type. Byt default this
+                contains 'exits', 'characters' and 'things'. The elements of these
+                lists are the actual objects.
+
+        """
+
+        def filter_visible(obj_list):
+            return [
+                obj
+                for obj in obj_list
+                if obj != looker
+                and obj.access(looker, "view")
+                and obj.access(looker, "search", default=True)
+            ]
+
+        return {
+            "exits": filter_visible(self.contents_get(content_type="exit")),
+            "characters": filter_visible(self.contents_get(content_type="character")),
+            "things": filter_visible(self.contents_get(content_type="object")),
+        }
+
+    def get_content_names(self, looker, **kwargs):
+        """
+        Get the proper names for all contents of this object. Helper method
+        for return_appearance.
+
+        Args:
+            looker (Object): The entity looking.
+            **kwargs (any): Passed from `return_appearance`. Passed into
+                `get_display_name` for each found entity.
+
+        Returns:
+            dict: A dict of lists categorized by type. Byt default this
+                contains 'exits', 'characters' and 'things'. The elements
+                of these lists are strings - names of the objects that
+                can depend on the looker and also be grouped in the case
+                of multiple same-named things etc.
+
+        Notes:
+            This method shouldn't add extra coloring to the names beyond what is
+            already given by the .get_display_name() (and the .name field) already.
+            Per-type coloring can be applied in `return_apperance`.
+
+        """
+        # a mapping {'exits': [...], 'characters': [...], 'things': [...]}
+        contents_map = self.get_visible_contents(looker, **kwargs)
+
+        character_names = [
+            char.get_display_name(looker, **kwargs) for char in contents_map["characters"]
+        ]
+        exit_names = [exi.get_display_name(looker, **kwargs) for exi in contents_map["exits"]]
+
+        # group all same-named things under one name
+        things = defaultdict(list)
+        for thing in contents_map["things"]:
+            things[thing.get_display_name(looker, **kwargs)].append(thing)
+
+        # pluralize same-named things
+        thing_names = []
+        for thingname, thinglist in sorted(things.items()):
+            nthings = len(thinglist)
+            thing = thinglist[0]
+            singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
+            thing_names.append(singular if nthings == 1 else plural)
+
+        return {"exits": exit_names, "characters": character_names, "things": thing_names}
 
     def at_look(self, target, **kwargs):
         """
