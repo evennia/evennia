@@ -534,7 +534,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # handle stacks, disable multimatch errors
             nstack = nresults
             if not exact:
-                # we re-run exact match agains one of the matches to
+                # we re-run exact match against one of the matches to
                 # make sure we were not catching partial matches not belonging
                 # to the stack
                 nstack = len(
