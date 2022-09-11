@@ -184,7 +184,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Contrib `buffs` for managing temporary and permanent RPG status buffs effects (tegiminis)
 - New `at_server_init()` hook called before all other startup hooks for all
   startup modes. Used for more generic overriding (volund)
-
+- New `search` lock type used to completely hide an object from being found by
+  the `DefaultObject.search` (`caller.search`) method. (CloudKeeper)
 
 ## Evennia 0.9.5
 

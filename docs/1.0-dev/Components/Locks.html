@@ -140,7 +140,15 @@ something like <code class="docutils literal notranslate"><span class="pre">call
 <li><p><code class="docutils literal notranslate"><span class="pre">examine</span></code> - who may examine this object’s properties.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">delete</span></code> - who may delete the object.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">edit</span></code> - who may edit properties and attributes of the object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">view</span></code> - if the <code class="docutils literal notranslate"><span class="pre">look</span></code> command will display/list this object</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view</span></code> - if the <code class="docutils literal notranslate"><span class="pre">look</span></code> command will display/list this object in descriptions
+and if you will be able to see its description. Note that if
+you target it specifically by name, the system will still find it, just
+not be able to look at it. See <code class="docutils literal notranslate"><span class="pre">search</span></code> lock to completely hide the item.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">search</span></code> - this controls if the object can be found with the
+<code class="docutils literal notranslate"><span class="pre">DefaultObject.search</span></code> method (usually referred to with <code class="docutils literal notranslate"><span class="pre">caller.search</span></code>
+in Commands). This is how to create entirely ‘undetectable’ in-game objects.
+Note that if you are aiming to make some permanently invisible game system,
+using a <a class="reference internal" href="Scripts.html"><span class="doc std std-doc">Script</span></a> is a better bet.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">get</span></code>- who may pick up the object and carry it around.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">puppet</span></code> - who may “become” this object and control it as their “character”.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">attrcreate</span></code> - who may create new attributes on the object (default True)</p></li>

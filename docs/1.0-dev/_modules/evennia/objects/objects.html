@@ -429,6 +429,7 @@
         <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_locks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">nofound_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">multimatch_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -486,6 +487,8 @@
 <span class="sd">                is given. If not set, this list will automatically be defined</span>
 <span class="sd">                to include the location, the contents of location and the</span>
 <span class="sd">                caller&#39;s contents (inventory).</span>
+<span class="sd">            use_locks (bool): If True (default) - removes search results which</span>
+<span class="sd">                fail the &quot;search&quot; lock.</span>
 <span class="sd">            nofound_string (str):  optional custom string for not-found error message.</span>
 <span class="sd">            multimatch_string (str): optional custom string for multimatch error header.</span>
 <span class="sd">            use_dbref (bool or None, optional): If `True`, allow to enter e.g. a query &quot;#123&quot;</span>
@@ -571,12 +574,15 @@
             <span class="n">use_dbref</span><span class="o">=</span><span class="n">use_dbref</span><span class="p">,</span>
         <span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">use_locks</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+        
         <span class="n">nresults</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">stacked</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">nresults</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># handle stacks, disable multimatch errors</span>
             <span class="n">nstack</span> <span class="o">=</span> <span class="n">nresults</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
-                <span class="c1"># we re-run exact match agains one of the matches to</span>
+                <span class="c1"># we re-run exact match against one of the matches to</span>
                 <span class="c1"># make sure we were not catching partial matches not belonging</span>
                 <span class="c1"># to the stack</span>
                 <span class="n">nstack</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
@@ -1839,7 +1845,7 @@
 <div class="viewcode-block" id="DefaultObject.get_visible_contents"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_visible_contents">[docs]</a>    <span class="k">def</span> <span class="nf">get_visible_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all contents of this object that a looker can see (whatever that means, by default it</span>
-<span class="sd">        checks the &#39;view&#39; lock), grouped by type. Helper method to return_appearance.</span>
+<span class="sd">        checks the &#39;view&#39; and &#39;search&#39; locks), grouped by type. Helper method to return_appearance.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            looker (Object): The entity looking.</span>
@@ -1853,7 +1859,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">filter_visible</span><span class="p">(</span><span class="n">obj_list</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">looker</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">looker</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;exits&quot;</span><span class="p">:</span> <span class="n">filter_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents_get</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;exit&quot;</span><span class="p">)),</span>
