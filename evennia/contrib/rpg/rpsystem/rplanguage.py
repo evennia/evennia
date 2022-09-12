@@ -17,109 +17,132 @@ in the game in various ways:
     overhear (for example "s" sounds tend to be audible even when no other
     meaning can be determined).
 
-Usage:
+## Usage
 
-    ```python
-    from evennia.contrib import rplanguage
+```python
+from evennia.contrib import rplanguage
 
-    # need to be done once, here we create the "default" lang
-    rplanguage.add_language()
+# need to be done once, here we create the "default" lang
+rplanguage.add_language()
 
-    say = "This is me talking."
-    whisper = "This is me whispering.
+say = "This is me talking."
+whisper = "This is me whispering.
 
-    print rplanguage.obfuscate_language(say, level=0.0)
-    <<< "This is me talking."
-    print rplanguage.obfuscate_language(say, level=0.5)
-    <<< "This is me byngyry."
-    print rplanguage.obfuscate_language(say, level=1.0)
-    <<< "Daly ly sy byngyry."
+print rplanguage.obfuscate_language(say, level=0.0)
+<<< "This is me talking."
+print rplanguage.obfuscate_language(say, level=0.5)
+<<< "This is me byngyry."
+print rplanguage.obfuscate_language(say, level=1.0)
+<<< "Daly ly sy byngyry."
 
-    result = rplanguage.obfuscate_whisper(whisper, level=0.0)
-    <<< "This is me whispering"
-    result = rplanguage.obfuscate_whisper(whisper, level=0.2)
-    <<< "This is m- whisp-ring"
-    result = rplanguage.obfuscate_whisper(whisper, level=0.5)
-    <<< "---s -s -- ---s------"
-    result = rplanguage.obfuscate_whisper(whisper, level=0.7)
-    <<< "---- -- -- ----------"
-    result = rplanguage.obfuscate_whisper(whisper, level=1.0)
-    <<< "..."
+result = rplanguage.obfuscate_whisper(whisper, level=0.0)
+<<< "This is me whispering"
+result = rplanguage.obfuscate_whisper(whisper, level=0.2)
+<<< "This is m- whisp-ring"
+result = rplanguage.obfuscate_whisper(whisper, level=0.5)
+<<< "---s -s -- ---s------"
+result = rplanguage.obfuscate_whisper(whisper, level=0.7)
+<<< "---- -- -- ----------"
+result = rplanguage.obfuscate_whisper(whisper, level=1.0)
+<<< "..."
 
-    ```
+```
 
-    To set up new languages, import and use the `add_language()`
-    helper method in this module. This allows you to customize the
-    "feel" of the semi-random language you are creating. Especially
-    the `word_length_variance` helps vary the length of translated
-    words compared to the original and can help change the "feel" for
-    the language you are creating. You can also add your own
-    dictionary and "fix" random words for a list of input words.
+## Custom languages
 
-    Below is an example of "elvish", using "rounder" vowels and sounds:
+To set up new languages, you need to run `add_language()`
+helper function in this module. The arguments of this function (see below)
+are used to store the new language in the database (in the LanguageHandler,
+which is a type of Script).
 
-    ```python
-    # vowel/consonant grammar possibilities
-    grammar = ("v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc "
-               "vcvvccvvc cvcvvcvvcc vcvcvvccvcvv")
+If you want to remember the language definitions, you could put them all
+in a module along with the `add_language` call as a quick way to
+rebuild the language on a db reset:
 
-    # all not in this group is considered a consonant
-    vowels = "eaoiuy"
+```python
+# a stand-alone module somewhere under mygame. Just import this
+# once to automatically add the language!
 
-    # you need a representative of all of the minimal grammars here, so if a
-    # grammar v exists, there must be atleast one phoneme available with only
-    # one vowel in it
-    phonemes = ("oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy "
-                "oy ua uh uw y p b t d f v t dh s z sh zh ch jh k "
-                "ng g m n l r w")
+from evennia.contrib.rpg.rpsystem import rplanguage
+grammar = (...)
+vowels = "eaouy"
+# etc
 
-    # how much the translation varies in length compared to the original. 0 is
-    # smallest, higher values give ever bigger randomness (including removing
-    # short words entirely)
-    word_length_variance = 1
+rplanguage.add_language(grammar=grammar, vowels=vowels, ...)
+```
 
-    # if a proper noun (word starting with capitalized letter) should be
-    # translated or not. If not (default) it means e.g. names will remain
-    # unchanged across languages.
-    noun_translate = False
+The variables of `add_language` allows you to customize the "feel" of
+the semi-random language you are creating. Especially
+the `word_length_variance` helps vary the length of translated
+words compared to the original. You can also add your own
+dictionary and "fix" random words for a list of input words.
 
-    # all proper nouns (words starting with a capital letter not at the beginning
-    # of a sentence) can have either a postfix or -prefix added at all times
-    noun_postfix = "'la"
+## Example
 
-    # words in dict will always be translated this way. The 'auto_translations'
-    # is instead a list or filename to file with words to use to help build a
-    # bigger dictionary by creating random translations of each word in the
-    # list *once* and saving the result for subsequent use.
-    manual_translations = {"the":"y'e", "we":"uyi", "she":"semi", "he":"emi",
-                          "you": "do", 'me':'mi','i':'me', 'be':"hy'e", 'and':'y'}
+Below is an example module creating "elvish", using "rounder" vowels and sounds:
 
-    rplanguage.add_language(key="elvish", phonemes=phonemes, grammar=grammar,
-                             word_length_variance=word_length_variance,
-                             noun_translate=noun_translate,
-                             noun_postfix=noun_postfix, vowels=vowels,
-                             manual_translations=manual_translations,
-                             auto_translations="my_word_file.txt")
+```python
+# vowel/consonant grammar possibilities
+grammar = ("v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc "
+           "vcvvccvvc cvcvvcvvcc vcvcvvccvcvv")
 
-    ```
+# all not in this group is considered a consonant
+vowels = "eaoiuy"
 
-    This will produce a decicively more "rounded" and "soft" language
-    than the default one. The few manual_translations also make sure
-    to make it at least look superficially "reasonable".
+# you need a representative of all of the minimal grammars here, so if a
+# grammar v exists, there must be atleast one phoneme available with only
+# one vowel in it
+phonemes = ("oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy "
+            "oy ua uh uw y p b t d f v t dh s z sh zh ch jh k "
+            "ng g m n l r w")
 
-    The `auto_translations` keyword is useful, this accepts either a
-    list or a path to a file of words (one per line) to automatically
-    create fixed translations for according to the grammatical rules.
-    This allows to quickly build a large corpus of translated words
-    that never change (if this is desired).
+# how much the translation varies in length compared to the original. 0 is
+# smallest, higher values give ever bigger randomness (including removing
+# short words entirely)
+word_length_variance = 1
+
+# if a proper noun (word starting with capitalized letter) should be
+# translated or not. If not (default) it means e.g. names will remain
+# unchanged across languages.
+noun_translate = False
+
+# all proper nouns (words starting with a capital letter not at the beginning
+# of a sentence) can have either a postfix or -prefix added at all times
+noun_postfix = "'la"
+
+# words in dict will always be translated this way. The 'auto_translations'
+# is instead a list or filename to file with words to use to help build a
+# bigger dictionary by creating random translations of each word in the
+# list *once* and saving the result for subsequent use.
+manual_translations = {"the":"y'e", "we":"uyi", "she":"semi", "he":"emi",
+                      "you": "do", 'me':'mi','i':'me', 'be':"hy'e", 'and':'y'}
+
+rplanguage.add_language(key="elvish", phonemes=phonemes, grammar=grammar,
+                         word_length_variance=word_length_variance,
+                         noun_translate=noun_translate,
+                         noun_postfix=noun_postfix, vowels=vowels,
+                         manual_translations=manual_translations,
+                         auto_translations="my_word_file.txt")
+
+```
+
+This will produce a decicively more "rounded" and "soft" language
+than the default one. The few manual_translations also make sure
+to make it at least look superficially "reasonable".
+
+The `auto_translations` keyword is useful, this accepts either a
+list or a path to a file of words (one per line) to automatically
+create fixed translations for according to the grammatical rules.
+This allows to quickly build a large corpus of translated words
+that never change (if this is desired).
 
 """
 import re
-from random import choice, randint
 from collections import defaultdict
+from random import choice, randint
+
 from evennia import DefaultScript
 from evennia.utils import logger
-
 
 # ------------------------------------------------------------
 #
