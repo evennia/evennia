@@ -60,7 +60,7 @@
 <span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
     <span class="nd">@lazy_property</span><span class="p">:</span> 
     <span class="k">def</span> <span class="nf">namechange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-       <span class="k">return</span> <span class="n">MyHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+       <span class="k">return</span> <span class="n">NameChanger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
 <span class="n">obj</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">MyObject</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
@@ -71,7 +71,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="s2">&quot;test_extra&quot;</span>
 </pre></div>
 </div>
-<p>What happens here is that we make a new class <code class="docutils literal notranslate"><span class="pre">MyHandler</span></code>. We use the <code class="docutils literal notranslate"><span class="pre">&#64;lazy_property</span></code> decorator to set it up - this means the handler will not be actually created until someone really wants to use it, by accessing <code class="docutils literal notranslate"><span class="pre">obj.namechange</span></code> later. The decorated <code class="docutils literal notranslate"><span class="pre">namechange</span></code> method returns the handler and makes sure to initialize it with <code class="docutils literal notranslate"><span class="pre">self</span></code> - this becomes the <code class="docutils literal notranslate"><span class="pre">obj</span></code> inside the handler!</p>
+<p>What happens here is that we make a new class <code class="docutils literal notranslate"><span class="pre">NameChanger</span></code>. We use the <code class="docutils literal notranslate"><span class="pre">&#64;lazy_property</span></code> decorator to set it up - this means the handler will not be actually created until someone really wants to use it, by accessing <code class="docutils literal notranslate"><span class="pre">obj.namechange</span></code> later. The decorated <code class="docutils literal notranslate"><span class="pre">namechange</span></code> method returns the handler and makes sure to initialize it with <code class="docutils literal notranslate"><span class="pre">self</span></code> - this becomes the <code class="docutils literal notranslate"><span class="pre">obj</span></code> inside the handler!</p>
 <p>We then make a silly method <code class="docutils literal notranslate"><span class="pre">add_to_key</span></code> that uses the handler to manipulate the key of the object. In this example, the handler is pretty pointless, but grouping functionality this way can both make for an easy-to-remember API and can also allow you cache data for easy access - this is how the <code class="docutils literal notranslate"><span class="pre">AttributeHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.attributes</span></code>) and <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.tags</span></code>) works.</p>
 </section>
 <section id="persistent-storage-of-data-in-handler">
@@ -121,8 +121,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;quest_storage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{},</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;quests&quot;</span><span class="p">)</span>
 
-	<span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-		<span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+	    <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 		    <span class="s2">&quot;quest_storage&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;quests&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>  <span class="c1"># important</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
