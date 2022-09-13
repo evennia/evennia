@@ -76,9 +76,9 @@ meaning can be determined).</p>
 </dl>
 </li>
 </ul>
-<p>Usage:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">rplanguage</span>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">rplanguage</span>
 
 <span class="c1"># need to be done once, here we create the &quot;default&quot; lang</span>
 <span class="n">rplanguage</span><span class="o">.</span><span class="n">add_language</span><span class="p">()</span>
@@ -105,14 +105,36 @@ meaning can be determined).</p>
 <span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;...&quot;</span>
 </pre></div>
 </div>
-<p>To set up new languages, import and use the <strong>add_language()</strong>
-helper method in this module. This allows you to customize the
-“feel” of the semi-random language you are creating. Especially
+</section>
+<section id="custom-languages">
+<h2>Custom languages<a class="headerlink" href="#custom-languages" title="Permalink to this headline">¶</a></h2>
+<p>To set up new languages, you need to run <strong>add_language()</strong>
+helper function in this module. The arguments of this function (see below)
+are used to store the new language in the database (in the LanguageHandler,
+which is a type of Script).</p>
+<p>If you want to remember the language definitions, you could put them all
+in a module along with the <strong>add_language</strong> call as a quick way to
+rebuild the language on a db reset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># a stand-alone module somewhere under mygame. Just import this</span>
+<span class="c1"># once to automatically add the language!</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.rpsystem</span> <span class="kn">import</span> <span class="n">rplanguage</span>
+<span class="n">grammar</span> <span class="o">=</span> <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">vowels</span> <span class="o">=</span> <span class="s2">&quot;eaouy&quot;</span>
+<span class="c1"># etc</span>
+
+<span class="n">rplanguage</span><span class="o">.</span><span class="n">add_language</span><span class="p">(</span><span class="n">grammar</span><span class="o">=</span><span class="n">grammar</span><span class="p">,</span> <span class="n">vowels</span><span class="o">=</span><span class="n">vowels</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The variables of <strong>add_language</strong> allows you to customize the “feel” of
+the semi-random language you are creating. Especially
 the <strong>word_length_variance</strong> helps vary the length of translated
-words compared to the original and can help change the “feel” for
-the language you are creating. You can also add your own
+words compared to the original. You can also add your own
 dictionary and “fix” random words for a list of input words.</p>
-<p>Below is an example of “elvish”, using “rounder” vowels and sounds:</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Below is an example module creating “elvish”, using “rounder” vowels and sounds:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># vowel/consonant grammar possibilities</span>
 <span class="n">grammar</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc &quot;</span>
            <span class="s2">&quot;vcvvccvvc cvcvvcvvcc vcvcvvccvcvv&quot;</span><span class="p">)</span>
@@ -164,7 +186,6 @@ list or a path to a file of words (one per line) to automatically
 create fixed translations for according to the grammatical rules.
 This allows to quickly build a large corpus of translated words
 that never change (if this is desired).</p>
-</div></blockquote>
 <dl class="py exception">
 <dt id="evennia.contrib.rpg.rpsystem.rplanguage.LanguageError">
 <em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.rpg.rpsystem.rplanguage.</code><code class="sig-name descname">LanguageError</code><a class="reference internal" href="../_modules/evennia/contrib/rpg/rpsystem/rplanguage.html#LanguageError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.rpsystem.rplanguage.LanguageError" title="Permalink to this definition">¶</a></dt>
@@ -382,6 +403,7 @@ means fully obscured.</p></li>
 </dd></dl>
 
 </section>
+</section>
 
 
             <div class="clearer"></div>
@@ -403,6 +425,16 @@ means fully obscured.</p></li>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.rpg.rpsystem.rplanguage</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#custom-languages">Custom languages</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="evennia.contrib.rpg.rpsystem.html"
                         title="previous chapter">evennia.contrib.rpg.rpsystem</a></p>

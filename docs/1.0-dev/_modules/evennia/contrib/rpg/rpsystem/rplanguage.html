@@ -59,109 +59,132 @@
 <span class="sd">    overhear (for example &quot;s&quot; sounds tend to be audible even when no other</span>
 <span class="sd">    meaning can be determined).</span>
 
-<span class="sd">Usage:</span>
+<span class="sd">## Usage</span>
 
-<span class="sd">    ```python</span>
-<span class="sd">    from evennia.contrib import rplanguage</span>
+<span class="sd">```python</span>
+<span class="sd">from evennia.contrib import rplanguage</span>
 
-<span class="sd">    # need to be done once, here we create the &quot;default&quot; lang</span>
-<span class="sd">    rplanguage.add_language()</span>
+<span class="sd"># need to be done once, here we create the &quot;default&quot; lang</span>
+<span class="sd">rplanguage.add_language()</span>
 
-<span class="sd">    say = &quot;This is me talking.&quot;</span>
-<span class="sd">    whisper = &quot;This is me whispering.</span>
+<span class="sd">say = &quot;This is me talking.&quot;</span>
+<span class="sd">whisper = &quot;This is me whispering.</span>
 
-<span class="sd">    print rplanguage.obfuscate_language(say, level=0.0)</span>
-<span class="sd">    &lt;&lt;&lt; &quot;This is me talking.&quot;</span>
-<span class="sd">    print rplanguage.obfuscate_language(say, level=0.5)</span>
-<span class="sd">    &lt;&lt;&lt; &quot;This is me byngyry.&quot;</span>
-<span class="sd">    print rplanguage.obfuscate_language(say, level=1.0)</span>
-<span class="sd">    &lt;&lt;&lt; &quot;Daly ly sy byngyry.&quot;</span>
+<span class="sd">print rplanguage.obfuscate_language(say, level=0.0)</span>
+<span class="sd">&lt;&lt;&lt; &quot;This is me talking.&quot;</span>
+<span class="sd">print rplanguage.obfuscate_language(say, level=0.5)</span>
+<span class="sd">&lt;&lt;&lt; &quot;This is me byngyry.&quot;</span>
+<span class="sd">print rplanguage.obfuscate_language(say, level=1.0)</span>
+<span class="sd">&lt;&lt;&lt; &quot;Daly ly sy byngyry.&quot;</span>
 
-<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=0.0)</span>
-<span class="sd">    &lt;&lt;&lt; &quot;This is me whispering&quot;</span>
-<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=0.2)</span>
-<span class="sd">    &lt;&lt;&lt; &quot;This is m- whisp-ring&quot;</span>
-<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=0.5)</span>
-<span class="sd">    &lt;&lt;&lt; &quot;---s -s -- ---s------&quot;</span>
-<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=0.7)</span>
-<span class="sd">    &lt;&lt;&lt; &quot;---- -- -- ----------&quot;</span>
-<span class="sd">    result = rplanguage.obfuscate_whisper(whisper, level=1.0)</span>
-<span class="sd">    &lt;&lt;&lt; &quot;...&quot;</span>
+<span class="sd">result = rplanguage.obfuscate_whisper(whisper, level=0.0)</span>
+<span class="sd">&lt;&lt;&lt; &quot;This is me whispering&quot;</span>
+<span class="sd">result = rplanguage.obfuscate_whisper(whisper, level=0.2)</span>
+<span class="sd">&lt;&lt;&lt; &quot;This is m- whisp-ring&quot;</span>
+<span class="sd">result = rplanguage.obfuscate_whisper(whisper, level=0.5)</span>
+<span class="sd">&lt;&lt;&lt; &quot;---s -s -- ---s------&quot;</span>
+<span class="sd">result = rplanguage.obfuscate_whisper(whisper, level=0.7)</span>
+<span class="sd">&lt;&lt;&lt; &quot;---- -- -- ----------&quot;</span>
+<span class="sd">result = rplanguage.obfuscate_whisper(whisper, level=1.0)</span>
+<span class="sd">&lt;&lt;&lt; &quot;...&quot;</span>
 
-<span class="sd">    ```</span>
+<span class="sd">```</span>
 
-<span class="sd">    To set up new languages, import and use the `add_language()`</span>
-<span class="sd">    helper method in this module. This allows you to customize the</span>
-<span class="sd">    &quot;feel&quot; of the semi-random language you are creating. Especially</span>
-<span class="sd">    the `word_length_variance` helps vary the length of translated</span>
-<span class="sd">    words compared to the original and can help change the &quot;feel&quot; for</span>
-<span class="sd">    the language you are creating. You can also add your own</span>
-<span class="sd">    dictionary and &quot;fix&quot; random words for a list of input words.</span>
+<span class="sd">## Custom languages</span>
 
-<span class="sd">    Below is an example of &quot;elvish&quot;, using &quot;rounder&quot; vowels and sounds:</span>
+<span class="sd">To set up new languages, you need to run `add_language()`</span>
+<span class="sd">helper function in this module. The arguments of this function (see below)</span>
+<span class="sd">are used to store the new language in the database (in the LanguageHandler,</span>
+<span class="sd">which is a type of Script).</span>
 
-<span class="sd">    ```python</span>
-<span class="sd">    # vowel/consonant grammar possibilities</span>
-<span class="sd">    grammar = (&quot;v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc &quot;</span>
-<span class="sd">               &quot;vcvvccvvc cvcvvcvvcc vcvcvvccvcvv&quot;)</span>
+<span class="sd">If you want to remember the language definitions, you could put them all</span>
+<span class="sd">in a module along with the `add_language` call as a quick way to</span>
+<span class="sd">rebuild the language on a db reset:</span>
 
-<span class="sd">    # all not in this group is considered a consonant</span>
-<span class="sd">    vowels = &quot;eaoiuy&quot;</span>
+<span class="sd">```python</span>
+<span class="sd"># a stand-alone module somewhere under mygame. Just import this</span>
+<span class="sd"># once to automatically add the language!</span>
 
-<span class="sd">    # you need a representative of all of the minimal grammars here, so if a</span>
-<span class="sd">    # grammar v exists, there must be atleast one phoneme available with only</span>
-<span class="sd">    # one vowel in it</span>
-<span class="sd">    phonemes = (&quot;oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy &quot;</span>
-<span class="sd">                &quot;oy ua uh uw y p b t d f v t dh s z sh zh ch jh k &quot;</span>
-<span class="sd">                &quot;ng g m n l r w&quot;)</span>
+<span class="sd">from evennia.contrib.rpg.rpsystem import rplanguage</span>
+<span class="sd">grammar = (...)</span>
+<span class="sd">vowels = &quot;eaouy&quot;</span>
+<span class="sd"># etc</span>
 
-<span class="sd">    # how much the translation varies in length compared to the original. 0 is</span>
-<span class="sd">    # smallest, higher values give ever bigger randomness (including removing</span>
-<span class="sd">    # short words entirely)</span>
-<span class="sd">    word_length_variance = 1</span>
+<span class="sd">rplanguage.add_language(grammar=grammar, vowels=vowels, ...)</span>
+<span class="sd">```</span>
 
-<span class="sd">    # if a proper noun (word starting with capitalized letter) should be</span>
-<span class="sd">    # translated or not. If not (default) it means e.g. names will remain</span>
-<span class="sd">    # unchanged across languages.</span>
-<span class="sd">    noun_translate = False</span>
+<span class="sd">The variables of `add_language` allows you to customize the &quot;feel&quot; of</span>
+<span class="sd">the semi-random language you are creating. Especially</span>
+<span class="sd">the `word_length_variance` helps vary the length of translated</span>
+<span class="sd">words compared to the original. You can also add your own</span>
+<span class="sd">dictionary and &quot;fix&quot; random words for a list of input words.</span>
 
-<span class="sd">    # all proper nouns (words starting with a capital letter not at the beginning</span>
-<span class="sd">    # of a sentence) can have either a postfix or -prefix added at all times</span>
-<span class="sd">    noun_postfix = &quot;&#39;la&quot;</span>
+<span class="sd">## Example</span>
 
-<span class="sd">    # words in dict will always be translated this way. The &#39;auto_translations&#39;</span>
-<span class="sd">    # is instead a list or filename to file with words to use to help build a</span>
-<span class="sd">    # bigger dictionary by creating random translations of each word in the</span>
-<span class="sd">    # list *once* and saving the result for subsequent use.</span>
-<span class="sd">    manual_translations = {&quot;the&quot;:&quot;y&#39;e&quot;, &quot;we&quot;:&quot;uyi&quot;, &quot;she&quot;:&quot;semi&quot;, &quot;he&quot;:&quot;emi&quot;,</span>
-<span class="sd">                          &quot;you&quot;: &quot;do&quot;, &#39;me&#39;:&#39;mi&#39;,&#39;i&#39;:&#39;me&#39;, &#39;be&#39;:&quot;hy&#39;e&quot;, &#39;and&#39;:&#39;y&#39;}</span>
+<span class="sd">Below is an example module creating &quot;elvish&quot;, using &quot;rounder&quot; vowels and sounds:</span>
 
-<span class="sd">    rplanguage.add_language(key=&quot;elvish&quot;, phonemes=phonemes, grammar=grammar,</span>
-<span class="sd">                             word_length_variance=word_length_variance,</span>
-<span class="sd">                             noun_translate=noun_translate,</span>
-<span class="sd">                             noun_postfix=noun_postfix, vowels=vowels,</span>
-<span class="sd">                             manual_translations=manual_translations,</span>
-<span class="sd">                             auto_translations=&quot;my_word_file.txt&quot;)</span>
+<span class="sd">```python</span>
+<span class="sd"># vowel/consonant grammar possibilities</span>
+<span class="sd">grammar = (&quot;v vv vvc vcc vvcc cvvc vccv vvccv vcvccv vcvcvcc vvccvvcc &quot;</span>
+<span class="sd">           &quot;vcvvccvvc cvcvvcvvcc vcvcvvccvcvv&quot;)</span>
 
-<span class="sd">    ```</span>
+<span class="sd"># all not in this group is considered a consonant</span>
+<span class="sd">vowels = &quot;eaoiuy&quot;</span>
 
-<span class="sd">    This will produce a decicively more &quot;rounded&quot; and &quot;soft&quot; language</span>
-<span class="sd">    than the default one. The few manual_translations also make sure</span>
-<span class="sd">    to make it at least look superficially &quot;reasonable&quot;.</span>
+<span class="sd"># you need a representative of all of the minimal grammars here, so if a</span>
+<span class="sd"># grammar v exists, there must be atleast one phoneme available with only</span>
+<span class="sd"># one vowel in it</span>
+<span class="sd">phonemes = (&quot;oi oh ee ae aa eh ah ao aw ay er ey ow ia ih iy &quot;</span>
+<span class="sd">            &quot;oy ua uh uw y p b t d f v t dh s z sh zh ch jh k &quot;</span>
+<span class="sd">            &quot;ng g m n l r w&quot;)</span>
 
-<span class="sd">    The `auto_translations` keyword is useful, this accepts either a</span>
-<span class="sd">    list or a path to a file of words (one per line) to automatically</span>
-<span class="sd">    create fixed translations for according to the grammatical rules.</span>
-<span class="sd">    This allows to quickly build a large corpus of translated words</span>
-<span class="sd">    that never change (if this is desired).</span>
+<span class="sd"># how much the translation varies in length compared to the original. 0 is</span>
+<span class="sd"># smallest, higher values give ever bigger randomness (including removing</span>
+<span class="sd"># short words entirely)</span>
+<span class="sd">word_length_variance = 1</span>
+
+<span class="sd"># if a proper noun (word starting with capitalized letter) should be</span>
+<span class="sd"># translated or not. If not (default) it means e.g. names will remain</span>
+<span class="sd"># unchanged across languages.</span>
+<span class="sd">noun_translate = False</span>
+
+<span class="sd"># all proper nouns (words starting with a capital letter not at the beginning</span>
+<span class="sd"># of a sentence) can have either a postfix or -prefix added at all times</span>
+<span class="sd">noun_postfix = &quot;&#39;la&quot;</span>
+
+<span class="sd"># words in dict will always be translated this way. The &#39;auto_translations&#39;</span>
+<span class="sd"># is instead a list or filename to file with words to use to help build a</span>
+<span class="sd"># bigger dictionary by creating random translations of each word in the</span>
+<span class="sd"># list *once* and saving the result for subsequent use.</span>
+<span class="sd">manual_translations = {&quot;the&quot;:&quot;y&#39;e&quot;, &quot;we&quot;:&quot;uyi&quot;, &quot;she&quot;:&quot;semi&quot;, &quot;he&quot;:&quot;emi&quot;,</span>
+<span class="sd">                      &quot;you&quot;: &quot;do&quot;, &#39;me&#39;:&#39;mi&#39;,&#39;i&#39;:&#39;me&#39;, &#39;be&#39;:&quot;hy&#39;e&quot;, &#39;and&#39;:&#39;y&#39;}</span>
+
+<span class="sd">rplanguage.add_language(key=&quot;elvish&quot;, phonemes=phonemes, grammar=grammar,</span>
+<span class="sd">                         word_length_variance=word_length_variance,</span>
+<span class="sd">                         noun_translate=noun_translate,</span>
+<span class="sd">                         noun_postfix=noun_postfix, vowels=vowels,</span>
+<span class="sd">                         manual_translations=manual_translations,</span>
+<span class="sd">                         auto_translations=&quot;my_word_file.txt&quot;)</span>
+
+<span class="sd">```</span>
+
+<span class="sd">This will produce a decicively more &quot;rounded&quot; and &quot;soft&quot; language</span>
+<span class="sd">than the default one. The few manual_translations also make sure</span>
+<span class="sd">to make it at least look superficially &quot;reasonable&quot;.</span>
+
+<span class="sd">The `auto_translations` keyword is useful, this accepts either a</span>
+<span class="sd">list or a path to a file of words (one per line) to automatically</span>
+<span class="sd">create fixed translations for according to the grammatical rules.</span>
+<span class="sd">This allows to quickly build a large corpus of translated words</span>
+<span class="sd">that never change (if this is desired).</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">randint</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">randint</span>
+
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1">#</span>
