@@ -56,9 +56,9 @@
     <span class="k">def</span> <span class="nf">add_to_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;self.obj.key_</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
 
-<span class="c1"># make a test object </span>
-<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span> 
-    <span class="nd">@lazy_property</span><span class="p">:</span> 
+<span class="c1"># make a test object</span>
+<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="nd">@lazy_property</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">namechange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
        <span class="k">return</span> <span class="n">NameChanger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -71,12 +71,22 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="s2">&quot;test_extra&quot;</span>
 </pre></div>
 </div>
-<p>What happens here is that we make a new class <code class="docutils literal notranslate"><span class="pre">NameChanger</span></code>. We use the <code class="docutils literal notranslate"><span class="pre">&#64;lazy_property</span></code> decorator to set it up - this means the handler will not be actually created until someone really wants to use it, by accessing <code class="docutils literal notranslate"><span class="pre">obj.namechange</span></code> later. The decorated <code class="docutils literal notranslate"><span class="pre">namechange</span></code> method returns the handler and makes sure to initialize it with <code class="docutils literal notranslate"><span class="pre">self</span></code> - this becomes the <code class="docutils literal notranslate"><span class="pre">obj</span></code> inside the handler!</p>
-<p>We then make a silly method <code class="docutils literal notranslate"><span class="pre">add_to_key</span></code> that uses the handler to manipulate the key of the object. In this example, the handler is pretty pointless, but grouping functionality this way can both make for an easy-to-remember API and can also allow you cache data for easy access - this is how the <code class="docutils literal notranslate"><span class="pre">AttributeHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.attributes</span></code>) and <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.tags</span></code>) works.</p>
+<p>What happens here is that we make a new class <code class="docutils literal notranslate"><span class="pre">NameChanger</span></code>. We use the
+<code class="docutils literal notranslate"><span class="pre">&#64;lazy_property</span></code> decorator to set it up - this means the handler will not be
+actually created until someone really wants to use it, by accessing
+<code class="docutils literal notranslate"><span class="pre">obj.namechange</span></code> later. The decorated <code class="docutils literal notranslate"><span class="pre">namechange</span></code> method returns the handler
+and makes sure to initialize it with <code class="docutils literal notranslate"><span class="pre">self</span></code> - this becomes the <code class="docutils literal notranslate"><span class="pre">obj</span></code> inside the
+handler!</p>
+<p>We then make a silly method <code class="docutils literal notranslate"><span class="pre">add_to_key</span></code> that uses the handler to manipulate the
+key of the object. In this example, the handler is pretty pointless, but
+grouping functionality this way can both make for an easy-to-remember API and
+can also allow you cache data for easy access - this is how the
+<code class="docutils literal notranslate"><span class="pre">AttributeHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.attributes</span></code>) and <code class="docutils literal notranslate"><span class="pre">TagHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.tags</span></code>) works.</p>
 </section>
 <section id="persistent-storage-of-data-in-handler">
 <h2>Persistent storage of data in handler<a class="headerlink" href="#persistent-storage-of-data-in-handler" title="Permalink to this headline">¶</a></h2>
-<p>Let’s say we want to track ‘quests’ in our handler. A ‘quest’ is a regular class that represents the quest. Let’s make it simple as an example:</p>
+<p>Let’s say we want to track ‘quests’ in our handler. A ‘quest’ is a regular class
+that represents the quest. Let’s make it simple as an example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># for example in mygame/world/quests.py</span>
 
 
@@ -84,24 +94,24 @@
 
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;The quest for the red key&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
 
-    <span class="k">def</span> <span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-        <span class="c1"># uses self.current_step to check </span>
-        <span class="c1"># progress of this quest </span>
+    <span class="k">def</span> <span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># uses self.current_step to check</span>
+        <span class="c1"># progress of this quest</span>
         <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;step_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)()</span>
 
-	<span class="k">def</span> <span class="nf">step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-	    <span class="c1"># check here if quest-step is complete </span>
-	    <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;find_the_red_key&quot;</span>
-	<span class="k">def</span> <span class="nf">step_find_the_red_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-	    <span class="c1"># check if step is complete </span>
-	    <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;hand_in_quest&quot;</span>
-	<span class="k">def</span> <span class="nf">step_hand_in_quest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-	    <span class="c1"># check if handed in quest to quest giver</span>
-	    <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># finished</span>
-        
+    <span class="k">def</span> <span class="nf">step_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># check here if quest-step is complete</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;find_the_red_key&quot;</span>
+    <span class="k">def</span> <span class="nf">step_find_the_red_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># check if step is complete</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="s2">&quot;hand_in_quest&quot;</span>
+    <span class="k">def</span> <span class="nf">step_hand_in_quest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># check if handed in quest to quest giver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># finished</span>
+
 </pre></div>
 </div>
 <p>We expect the dev to make subclasses of this to implement different quests. Exactly how this works doesn’t matter, the key is that we want to track <code class="docutils literal notranslate"><span class="pre">self.current_step</span></code> - a property that <em>should survive a server reload</em>. But so far there is no way for <code class="docutils literal notranslate"><span class="pre">Quest</span></code> to accomplish this, it’s just a normal Python class with no connection to the database.</p>
@@ -112,8 +122,8 @@
 
 
 <span class="k">class</span> <span class="nc">QuestHandler</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>
 
@@ -121,22 +131,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;quest_storage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{},</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;quests&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-	    <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-		    <span class="s2">&quot;quest_storage&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;quests&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="s2">&quot;quest_storage&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;quests&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>  <span class="c1"># important</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">questclass</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">questclass</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">questclass</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">questclass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">quest</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">quest</span><span class="o">.</span><span class="n">check_progress</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span><span class="p">:</span>
             <span class="c1"># .do_save is set on handler by Quest if it wants to save progress</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>        
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
 
 </pre></div>
 </div>
@@ -154,67 +164,80 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
 
 
-<span class="k">class</span> <span class="nc">Quest</span><span class="p">:</span> 
+<span class="k">class</span> <span class="nc">Quest</span><span class="p">:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
 
     <span class="k">def</span> <span class="nf">__serialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="o">.</span><span class="n">dbserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__deserialize_dbobjs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span> 
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">dbserialize</span><span class="o">.</span><span class="n">dbunserialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
 
-    <span class="nd">@property</span> 
-    <span class="k">def</span> <span class="nf">questhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">questhandler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">quests</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span>
 
-	<span class="nd">@current_step</span><span class="o">.</span><span class="n">setter</span> 
-	<span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="n">value</span> 
+    <span class="nd">@current_step</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">current_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_step</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">questhandler</span><span class="o">.</span><span class="n">do_save</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># this triggers save in handler!</span>
 
     <span class="c1"># [same as before]</span>
 
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">Quest.__init__</span></code> now takes <code class="docutils literal notranslate"><span class="pre">obj</span></code> as argument, to match what we pass to it in <code class="docutils literal notranslate"><span class="pre">QuestHandler.add</span></code>. We want to monitor the changing of <code class="docutils literal notranslate"><span class="pre">current_step</span></code>, so we make it into a <code class="docutils literal notranslate"><span class="pre">property</span></code>. When we edit that value, we set the <code class="docutils literal notranslate"><span class="pre">do_save</span></code> flag on the handler, which means it will save the status to database once it has checked progress on all its quests.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">__serialize__dbobjs__</span></code> and <code class="docutils literal notranslate"><span class="pre">__deserialize_dbobjs__</span></code> methods are needed because <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> can’t store ‘hidden’ database objects (the <code class="docutils literal notranslate"><span class="pre">Quest.obj</span></code> property. The methods help Evennia serialize/deserialize <code class="docutils literal notranslate"><span class="pre">Quest</span></code> propertly when the handler saves it.  For more information, see <a class="reference internal" href="../Components/Attributes.html#storing-single-objects"><span class="std std-doc">Storing Single objects</span></a> in the Attributes documentation.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Quest.__init__</span></code> now takes <code class="docutils literal notranslate"><span class="pre">obj</span></code> as argument, to match what we pass to it in
+<code class="docutils literal notranslate"><span class="pre">QuestHandler.add</span></code>. We want to monitor the changing of <code class="docutils literal notranslate"><span class="pre">current_step</span></code>, so we
+make it into a <code class="docutils literal notranslate"><span class="pre">property</span></code>. When we edit that value, we set the <code class="docutils literal notranslate"><span class="pre">do_save</span></code> flag on
+the handler, which means it will save the status to database once it has checked
+progress on all its quests. The <code class="docutils literal notranslate"><span class="pre">Quest.questhandler</span></code> property allows to easily
+get back to the handler (and the object on which it sits).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">__serialize__dbobjs__</span></code> and <code class="docutils literal notranslate"><span class="pre">__deserialize_dbobjs__</span></code> methods are needed
+because <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> can’t store ‘hidden’ database objects (the <code class="docutils literal notranslate"><span class="pre">Quest.obj</span></code>
+property. The methods help Evennia serialize/deserialize <code class="docutils literal notranslate"><span class="pre">Quest</span></code> propertly when
+the handler saves it.  For more information, see <a class="reference internal" href="../Components/Attributes.html#storing-single-objects"><span class="std std-doc">Storing Single
+objects</span></a> in the Attributes
+documentation.</p>
 </section>
 <section id="tying-it-all-together">
 <h3>Tying it all together<a class="headerlink" href="#tying-it-all-together" title="Permalink to this headline">¶</a></h3>
 <p>The final thing we need to do is to add the quest-handler to the character:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/characters.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span> 
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
 <span class="kn">from</span> <span class="nn">.world.quests</span> <span class="kn">import</span> <span class="n">QuestHandler</span>  <span class="c1"># as an example</span>
 
 
-<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span> 
-    <span class="c1"># ... </span>
-    <span class="nd">@lazy_property</span> 
-    <span class="k">def</span> <span class="nf">quests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">quests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">QuestHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 </pre></div>
 </div>
-<p>You can now make your Quest classes to describe your quests and add them to characters with</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>character.quests.add(FindTheRedKey)
+<p>You can now make your Quest classes to describe your quests and add them to
+characters with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">FindTheRedKey</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>and can later do</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>character.quests.check_progress() 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">character</span><span class="o">.</span><span class="n">quests</span><span class="o">.</span><span class="n">check_progress</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>and be sure that quest data is not lost between reloads.</p>
-<p>You can find a full-fledged quest-handler example as  <span class="xref myst">EvAdventure quests</span> contrib in the Evennia repository.</p>
+<p>You can find a full-fledged quest-handler example as  <span class="xref myst">EvAdventure
+quests</span> contrib in the Evennia
+repository.</p>
 </section>
 </section>
 </section>
