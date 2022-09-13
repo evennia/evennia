@@ -24,7 +24,7 @@ class NameChanger:
 class MyObject(DefaultObject): 
     @lazy_property: 
     def namechange(self):
-       return MyHandler(self)
+       return NameChanger(self)
 
 
 obj = create_object(MyObject, key="test")
@@ -35,7 +35,7 @@ print(obj.key)
 >>> "test_extra"
 ```
 
-What happens here is that we make a new class `MyHandler`. We use the `@lazy_property` decorator to set it up - this means the handler will not be actually created until someone really wants to use it, by accessing `obj.namechange` later. The decorated `namechange` method returns the handler and makes sure to initialize it with `self` - this becomes the `obj` inside the handler! 
+What happens here is that we make a new class `NameChanger`. We use the `@lazy_property` decorator to set it up - this means the handler will not be actually created until someone really wants to use it, by accessing `obj.namechange` later. The decorated `namechange` method returns the handler and makes sure to initialize it with `self` - this becomes the `obj` inside the handler! 
 
 We then make a silly method `add_to_key` that uses the handler to manipulate the key of the object. In this example, the handler is pretty pointless, but grouping functionality this way can both make for an easy-to-remember API and can also allow you cache data for easy access - this is how the `AttributeHandler` (`.attributes`) and `TagHandler` (`.tags`) works. 
 
@@ -92,8 +92,8 @@ class QuestHandler:
         self.storage = self.obj.attributes.get(
             "quest_storage", default={}, category="quests")
 
-	def _save(self): 
-		self.obj.attributes.add(
+    def _save(self): 
+	    self.obj.attributes.add(
 		    "quest_storage", self.storage, category="quests")
         self._load()  # important
         self.do_save = False
