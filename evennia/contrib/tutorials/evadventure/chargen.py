@@ -8,20 +8,37 @@ from evennia.utils.evmenu import EvMenu
 from .random_tables import chargen_table
 from .rules import dice
 
+_ABILITIES = {
+    "STR": "strength",
+    "DEX": "dexterity",
+    "CON": "constitution",
+    "INT": "intelligence",
+    "WIS": "wisdom",
+    "CHA": "charisma",
+}
+
 _TEMP_SHEET = """
-STR +{strength} DEX +{dexterity} CON +{constitution} INT +{intelligence} WIS +{wisdom} CHA +{charisma}
+{name}
+
+STR +{strength}
+DEX +{dexterity}
+CON +{constitution}
+INT +{intelligence}
+WIS +{wisdom}
+CHA +{charisma}
 
 {description}
 
+Your belongings:
 {equipment}
 """
 
 
-class EvAdventureCharacterGeneration:
+class EvAdventureChargenStorage:
     """
-    This collects all the rules for generating a new character. An instance of this class can be
-    used to track all the stats during generation and will be used to apply all the data to the
-    character at the end. This class instance can also be saved on the menu to make sure a user
+    This collects all the rules for generating a new character. An instance of this class is used
+    to pass around the current character state during character generation and also applied to
+    the character at the end. This class instance can also be saved on the menu to make sure a user
     is not losing their half-created character.
 
     Note:
@@ -36,6 +53,10 @@ class EvAdventureCharacterGeneration:
         there is no GM to adjudicate a different choice).
 
     """
+
+    def __init__(self):
+        # you are only allowed to tweak abilities once
+        self.ability_changes = 0
 
     def _random_ability(self):
         return min(dice.roll("1d6"), dice.roll("1d6"), dice.roll("1d6"))
@@ -71,10 +92,10 @@ class EvAdventureCharacterGeneration:
         alignment = dice.roll_random_table("1d20", chargen_table["alignment"])
 
         self.desc = (
-            f"{background.title()}. Wears {clothing} clothes, and has {speech} "
-            f"speech. Has a {physique} physique, a {face} face, {skin} skin and "
-            f"{hair} hair. Is {virtue}, but {vice}. Has been {misfortune} in "
-            f"the past. Favors {alignment}."
+            f"You are {physique} with a {face} face and {hair} hair, {speech} speech, "
+            f"and {clothing} clothing. "
+            f"You were a {background.title()}, but you were {misfortune} and ended up a knave. "
+            f"You are {virtue} but also {vice}. You are of the {alignment} alignment."
         )
 
         # same for all
@@ -113,6 +134,7 @@ class EvAdventureCharacterGeneration:
         )
 
         return _TEMP_SHEET.format(
+            name=self.name,
             strength=self.strength,
             dexterity=self.dexterity,
             constitution=self.constitution,
@@ -197,3 +219,144 @@ class EvAdventureCharacterGeneration:
 
 
 # chargen menu
+
+
+def node_chargen(caller, raw_string, **kwargs):
+    """
+    This node is the central point of chargen. We return here to see our current
+    sheet and break off to edit different parts of it.
+
+    In Knave, not so much can be changed.
+    """
+    tmp_character = kwargs["tmp_character"]
+
+    text = tmp_character.show_sheet()
+
+    options = [{"desc": "Change your name", "goto": ("node_change_name", kwargs)}]
+    if tmp_character.ability_changes <= 0:
+        options.append(
+            {
+                "desc": "Swap two of your ability scores (once)",
+                "goto": ("node_swap_abilities", kwargs),
+            }
+        )
+    options.append(
+        {"desc": "Accept and create character", "goto": ("node_apply_character", kwargs)},
+    )
+
+    return text, options
+
+
+def _update_name(caller, raw_string, **kwargs):
+    """
+    Used by node_change_name below to check what user entered and update the name if appropriate.
+
+    """
+    if raw_string:
+        tmp_character = kwargs["tmp_character"]
+        tmp_character.name = raw_string.lower().capitalize()
+
+    return "node_chargen", kwargs
+
+
+def node_change_name(caller, raw_string, **kwargs):
+    """
+    Change the random name of the character.
+
+    """
+    tmp_character = kwargs["tmp_character"]
+
+    text = (f"Your current name is |w{tmp_character.name}|n. "
+            "Enter a new name or leave empty to abort."
+
+    options = {"key": "_default", "goto": (_update_name, kwargs)}
+
+    return text, options
+
+
+def _swap_abilities(caller, raw_string, **kwargs):
+    """
+    Used by node_swap_abilities to parse the user's input and swap ability
+    values.
+
+    """
+    if raw_string:
+        abi1, *abi2 = raw_string.split(" ", 1)
+        if not abi2:
+            caller.msg("That doesn't look right.")
+            return None, kwargs
+        abi2 = abi2[0]
+        abi1, abi2 = abi1.upper().strip(), abi2.upper().strip()
+        if abi1 not in _ABILITIES or abi2 not in _ABILITIES:
+            caller.msg("Not a familiar set of abilites.")
+            return None, kwargs
+
+        # looks okay = swap values. We need to convert STR to strength etc
+        tmp_character = kwargs["tmp_character"]
+        abi1 = _ABILITIES[abi1]
+        abi2 = _ABILITIES[abi2]
+        abival1 = getattr(tmp_character, abi1)
+        abival2 = getattr(tmp_character, abi2)
+
+        setattr(tmp_character, abi1, abival2)
+        setattr(tmp_character, abi2, abival1)
+
+    return "node_chargen", kwargs
+
+
+def node_swap_abilities(caller, raw_string, **kwargs):
+    """
+    One is allowed to swap the values of two abilities around, once.
+
+    """
+    tmp_character = kwargs["tmp_character"]
+
+    text = f"""
+Your current abilities:
+
+STR +{tmp_character.strength}
+DEX +{tmp_character.dexterity}
+CON +{tmp_character.constitution}
+INT +{tmp_character.intelligence}
+WIS +{tmp_character.wisdom}
+CHA +{tmp_character.charisma}
+
+You can swap the values of two abilities around.
+You can only do this once, so choose carefully!
+
+To swap the values of e.g.  STR and INT, write |wSTR INT|n. Empty to abort.
+"""
+
+    options = {"key": "_default", "goto": (_swap_abilities, kwargs)}
+
+    return text, options
+
+
+def node_apply_character(caller, raw_string, **kwargs):
+    """
+    End chargen and create the character. We will also puppet it.
+
+    """
+    tmp_character = kwargs["tmp_character"]
+
+    tmp_character.apply(caller)
+
+    caller.msg("Character created!")
+
+
+def start_chargen(caller, session=None):
+    """
+    This is a start point for spinning up the chargen from a command later.
+
+    """
+
+    menutree = {
+        "node_chargen": node_chargen,
+        "node_change_name": node_change_name,
+        "node_swap_abilities": node_swap_abilities,
+    }
+
+    # this generates all random components of the character
+    tmp_character = EvAdventureChargenStorage()
+
+    EvMenu(caller, menutree, startnode="node_chargen", session=session, tmp_character=tmp_character)

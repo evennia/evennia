@@ -1,8 +1,12 @@
 # Making a Persistent object Handler
 
-A _handler_ is a convenient way to group functionality on an object. This allows you to logically group all actions related to that thing in one place. This tutorial expemplifies how to make your own handlers and make sure data you store in them survives a reload.
+A _handler_ is a convenient way to group functionality on an object. This allows you to logically
+group all actions related to that thing in one place. This tutorial expemplifies how to make your
+own handlers and make sure data you store in them survives a reload.
 
-For example, when you do `obj.attributes.get("key")` or `obj.tags.add('tagname')` you are evoking handlers stored as `.attributes` and `tags` on the `obj`. On these handlers are methods (`get()` and `add()` in this example).
+For example, when you do `obj.attributes.get("key")` or `obj.tags.add('tagname')` you are evoking
+handlers stored as `.attributes` and `tags` on the `obj`. On these handlers are methods (`get()`
+and `add()` in this example).
 
 ## Base Handler example
 
@@ -81,8 +85,10 @@ class Quest:
 
 ```
 
-
-We expect the dev to make subclasses of this to implement different quests. Exactly how this works doesn't matter, the key is that we want to track `self.current_step` - a property that _should survive a server reload_. But so far there is no way for `Quest` to accomplish this, it's just a normal Python class with no connection to the database.
+We expect the dev to make subclasses of this to implement different quests. Exactly how this works
+doesn't matter, the key is that we want to track `self.current_step` - a property that _should
+survive a server reload_. But so far there is no way for `Quest` to accomplish this, it's just a
+normal Python class with no connection to the database.
 
 ### Handler with save/load capability
 
@@ -120,17 +126,24 @@ class QuestHandler:
 
 ```
 
-The handler is just a normal Python class and has no database-storage on its own. But it has a link to `.obj`, which is assumed to be a full typeclased entity, on which we can create persistent [Attributes](../Components/Attributes.md) to store things however we like!
+The handler is just a normal Python class and has no database-storage on its own. But it has a link
+to `.obj`, which is assumed to be a full typeclased entity, on which we can create
+persistent [Attributes](../Components/Attributes.md) to store things however we like!
 
 We make two helper methods `_load` and
-`_save` that handles local fetches and saves `storage` to an Attribute on the object.  To avoid saving more than necessary, we have a property `do_save`. This we will set in `Quest` below.
+`_save` that handles local fetches and saves `storage` to an Attribute on the object. To avoid
+saving more than necessary, we have a property `do_save`. This we will set in `Quest` below.
 
 > Note that once we `_save` the data, we need to call `_load` again. This is to make sure the version we store on the handler is properly de-serialized. If you get an error about data being `bytes`, you probably missed this step.
 
 
 ### Make quests storable
 
-The handler will save all `Quest` objects as a `dict` in an Attribute on `obj`. We are not done yet though, the `Quest` object needs access to the `obj` too - not only will this is important to figure out if the quest is complete (the `Quest` must be able to check the quester's inventory to see if they have the red key, for example), it also allows the `Quest` to tell the handler when its state changed and it should be saved.
+The handler will save all `Quest` objects as a `dict` in an Attribute on `obj`. We are not done yet
+though, the `Quest` object needs access to the `obj` too - not only will this is important to figure
+out if the quest is complete (the `Quest` must be able to check the quester's inventory to see if
+they have the red key, for example), it also allows the `Quest` to tell the handler when its state
+changed and it should be saved.
 
 We change the `Quest` such:
 
