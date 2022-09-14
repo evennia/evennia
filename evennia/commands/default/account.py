@@ -20,14 +20,15 @@ method. Otherwise all text will be returned to all connected sessions.
 """
 import time
 from codecs import lookup as codecs_lookup
+
 from django.conf import settings
 from evennia.server.sessionhandler import SESSIONS
-from evennia.utils import utils, create, logger, search
+from evennia.utils import create, logger, search, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
 _MAX_NR_CHARACTERS = settings.MAX_NR_CHARACTERS
-_MULTISESSION_MODE = settings.MULTISESSION_MODE
+_AUTO_PUPPET_ON_LOGIN = settings.AUTO_PUPPET_ON_LOGIN
 
 # limit symbol import for API
 __all__ = (
@@ -58,11 +59,6 @@ class MuxAccountLookCommand(COMMAND_DEFAULT_CLASS):
         """Custom parsing"""
 
         super().parse()
-
-        if _MULTISESSION_MODE < 2:
-            # only one character allowed - not used in this mode
-            self.playable = None
-            return
 
         playable = self.account.db._playable_characters
         if playable is not None:
@@ -111,8 +107,14 @@ class CmdOOCLook(MuxAccountLookCommand):
     def func(self):
         """implement the ooc look command"""
 
-        if _MULTISESSION_MODE < 2:
-            # only one character allowed
+        if self.session.puppet:
+            # if we are puppeting, this is only reached in the case the that puppet
+            # has no look command on its own.
+            self.msg("You currently have no ability to look around.")
+            return
+
+        if _AUTO_PUPPET_ON_LOGIN and _MAX_NR_CHARACTERS == 1 and self.playable:
+            # only one exists and is allowed - simplify
             self.msg("You are out-of-character (OOC).\nUse |wic|n to get back into the game.")
             return
 
@@ -149,14 +151,16 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         key = self.lhs
         desc = self.rhs
 
-        charmax = _MAX_NR_CHARACTERS
-
-        if not account.is_superuser and (
-            account.db._playable_characters and len(account.db._playable_characters) >= charmax
-        ):
-            plural = "" if charmax == 1 else "s"
-            self.msg(f"You may only create a maximum of {charmax} character{plural}.")
-            return
+        if _MAX_NR_CHARACTERS is not None:
+            if (
+                not account.is_superuser
+                and not account.check_permstring("Developer")
+                and account.db._playable_characters
+                and len(account.db._playable_characters) >= _MAX_NR_CHARACTERS
+            ):
+                plural = "" if _MAX_NR_CHARACTERS == 1 else "s"
+                self.msg(f"You may only have a maximum of {_MAX_NR_CHARACTERS} character{plural}.")
+                return
         from evennia.objects.models import ObjectDB
 
         typeclass = settings.BASE_CHARACTER_TYPECLASS
@@ -177,8 +181,8 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         )
         # only allow creator (and developers) to puppet this char
         new_character.locks.add(
-            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or perm(Admin)"
-            % (new_character.id, account.id, account.id)
+            "puppet:id(%i) or pid(%i) or perm(Developer) or pperm(Developer);delete:id(%i) or"
+            " perm(Admin)" % (new_character.id, account.id, account.id)
         )
         account.db._playable_characters.append(new_character)
         if desc:
@@ -228,7 +232,8 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
             return
         elif len(match) > 1:
             self.msg(
-                "Aborting - there are two characters with the same name. Ask an admin to delete the right one."
+                "Aborting - there are two characters with the same name. Ask an admin to delete the"
+                " right one."
             )
             return
         else:  # one match
@@ -419,8 +424,8 @@ class CmdOOC(MuxAccountLookCommand):
             account.unpuppet_object(session)
             self.msg("\n|GYou go OOC.|n\n")
 
-            if _MULTISESSION_MODE < 2:
-                # only one character allowed
+            if _AUTO_PUPPET_ON_LOGIN and _MAX_NR_CHARACTERS == 1 and self.playable:
+                # only one character exists and is allowed - simplify
                 self.msg("You are out-of-character (OOC).\nUse |wic|n to get back into the game.")
                 return
 
@@ -917,7 +922,10 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                             % (5 - ir, 5 - ig, 5 - ib, ir, ig, ib, "||[%i%i%i" % (ir, ig, ib))
                         )
             table = self.table_format(table)
-            string = "Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):"
+            string = (
+                "Xterm256 colors (if not all hues show, your client might not report that it can"
+                " handle xterm256):"
+            )
             string += "\n" + "\n".join("".join(row) for row in table)
             table = [[], [], [], [], [], [], [], [], [], [], [], []]
             for ibatch in range(4):
@@ -985,9 +993,7 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
         """Perform the command"""
         account = self.account
         permstr = (
-            account.is_superuser
-            and " (superuser)"
-            or "(%s)" % (", ".join(account.permissions.all()))
+            account.is_superuser and " (superuser)" or "(%s)" % ", ".join(account.permissions.all())
         )
         if self.cmdstring in ("unquell", "unquell"):
             if not account.attributes.get("_quell"):

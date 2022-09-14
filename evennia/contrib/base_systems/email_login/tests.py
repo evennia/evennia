@@ -4,6 +4,7 @@ Test email login.
 """
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from . import email_login
 
 
@@ -13,17 +14,20 @@ class TestEmailLogin(BaseEvenniaCommandTest):
             email_login.CmdUnconnectedConnect(),
             "mytest@test.com test",
             "The email 'mytest@test.com' does not match any accounts.",
+            inputs=["Y"],
         )
         self.call(
             email_login.CmdUnconnectedCreate(),
             '"mytest" mytest@test.com test11111',
             "A new account 'mytest' was created. Welcome!",
+            inputs=["Y"],
         )
         self.call(
             email_login.CmdUnconnectedConnect(),
             "mytest@test.com test11111",
             "",
             caller=self.account.sessions.get()[0],
+            inputs=["Y"],
         )
 
     def test_quit(self):
