@@ -41,14 +41,7 @@ BASIC_MAP_SIZE = 5  # This changes the default map width/height.
 
 ### ASCII map (and evennia supports UTF-8 characters and even emojis)
 
-This produces an ASCII map for sighted players that can be as large as you have it
-set to.
-
-### Screenreader-friendly map
-
-The screenreader-friendly map notes if the player has their screenreader toggled on
-and if so, displays a screenreader-friendly descriptive map instead. For the sake of
-concision, it is less detailed than the ASCII map.
+This produces an ASCII map for players of configurable size.
 
 ### New command
 
