@@ -30,7 +30,7 @@ def check_errors(settings):
         raise DeprecationWarning(deprstring % ("CMDSET_OOC", "CMDSET_ACCOUNT"))
     if settings.WEBSERVER_ENABLED and not isinstance(settings.WEBSERVER_PORTS[0], tuple):
         raise DeprecationWarning(
-            "settings.WEBSERVER_PORTS must be on the form " "[(proxyport, serverport), ...]"
+            "settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]"
         )
     if hasattr(settings, "BASE_COMM_TYPECLASS"):
         raise DeprecationWarning(deprstring % ("BASE_COMM_TYPECLASS", "BASE_CHANNEL_TYPECLASS"))
@@ -43,7 +43,7 @@ def check_errors(settings):
             "(see evennia/settings_default.py)."
         )
     deprstring = (
-        "settings.%s is now merged into settings.TYPECLASS_PATHS. " "Update your settings file."
+        "settings.%s is now merged into settings.TYPECLASS_PATHS. Update your settings file."
     )
     if hasattr(settings, "OBJECT_TYPECLASS_PATHS"):
         raise DeprecationWarning(deprstring % "OBJECT_TYPECLASS_PATHS")
@@ -145,6 +145,13 @@ def check_errors(settings):
             " 1. Delete any existing `web/static` folder and all its contents (this "
             "was auto-generated)\n"
             " 2. Rename your existing `static_overrides` folder to `static` instead."
+        )
+
+    if settings.MULTISESSION_MODE < 2 and settings.MAX_NR_SIMULTANEOUS_PUPPETS > 1:
+        raise DeprecationWarning(
+            f"settings.MULTISESSION_MODE={settings.MULTISESSION_MODE} is not compatible with "
+            f"settings.MAX_NR_SIMULTANEOUS_PUPPETS={settings.MAX_NR_SIMULTANEOUS_PUPPETS}. "
+            "To allow multiple simultaneous puppets, the multi-session mode must be higher than 1."
         )
 
 

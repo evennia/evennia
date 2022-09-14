@@ -22,26 +22,25 @@ Other:
   helper. Used by the command-test classes, but can be used for making a customt test class.
 
 """
-import sys
 import re
+import sys
 import types
-from twisted.internet.defer import Deferred
+
 from django.conf import settings
 from django.test import TestCase, override_settings
-from mock import Mock, patch, MagicMock
-from evennia.objects.objects import DefaultObject, DefaultCharacter, DefaultRoom, DefaultExit
+from evennia import settings_default
 from evennia.accounts.accounts import DefaultAccount
+from evennia.commands.command import InterruptCommand
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.scripts.scripts import DefaultScript
 from evennia.server.serversession import ServerSession
 from evennia.server.sessionhandler import SESSIONS
-from evennia.utils import create
+from evennia.utils import ansi, create
 from evennia.utils.idmapper.models import flush_cache
 from evennia.utils.utils import all_from_module, to_str
-from evennia.utils import ansi
-from evennia import settings_default
-from evennia.commands.default.muxcommand import MuxCommand
-from evennia.commands.command import InterruptCommand
-
+from mock import MagicMock, Mock, patch
+from twisted.internet.defer import Deferred
 
 _RE_STRIP_EVMENU = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 
@@ -382,7 +381,8 @@ class EvenniaCommandTestMixin:
             inputs (list, optional): A list of strings to pass to functions that pause to
                 take input from the user (normally using `@interactive` and
                 `ret = yield(question)` or `evmenu.get_input`). Each  element of the
-                list will be passed into the command as if the user wrote that at the prompt.
+                list will be passed into the command as if the user answered each prompt
+                in that order.
             raw_string (str, optional): Normally the `.raw_string` property  is set as
                 a combination of your `key/cmdname` and `input_args`. This allows
                 direct control of what this is, for example for testing edge cases
