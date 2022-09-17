@@ -1,0 +1,460 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.utils.name_generator.namegen &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.name_generator.namegen</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.utils.name_generator.namegen</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Random Name Generator</span>
+
+<span class="sd">Contribution by InspectorCaracal (2022)</span>
+
+<span class="sd">A module for generating random names, both real-world and fantasy. Real-world</span>
+<span class="sd">names can be generated either as first (personal) names, family (last) names, or</span>
+<span class="sd">full names (first, optional middles, and last). The name data is from [Behind the Name](https://www.behindthename.com/)</span>
+<span class="sd">and used under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).</span>
+
+<span class="sd">Fantasy names are generated from basic phonetic rules, using CVC syllable syntax.</span>
+
+<span class="sd">Both real-world and fantasy name generation can be extended to include additional</span>
+<span class="sd">information via your game&#39;s `settings.py`</span>
+
+
+<span class="sd">Available Methods:</span>
+
+<span class="sd">  first_name   - Selects a random a first (personal) name from the name lists.</span>
+<span class="sd">  last_name    - Selects a random last (family) name from the name lists.</span>
+<span class="sd">  full_name    - Generates a randomized full name, optionally including middle names, by selecting first/last names from the name lists.</span>
+<span class="sd">  fantasy_name - Generates a completely new made-up name based on phonetic rules.</span>
+
+<span class="sd">Method examples:</span>
+
+<span class="sd">&gt;&gt;&gt; namegen.first_name(num=5)</span>
+<span class="sd">[&#39;Genesis&#39;, &#39;Tali&#39;, &#39;Budur&#39;, &#39;Dominykas&#39;, &#39;Kamau&#39;]</span>
+
+<span class="sd">&gt;&gt;&gt; namegen.full_name(parts=3, surname_first=True)</span>
+<span class="sd">&#39;Ó Muircheartach Torunn Dyson&#39;</span>
+<span class="sd">&gt;&gt;&gt; namegen.full_name(gender=&#39;f&#39;)</span>
+<span class="sd">&#39;Wikolia Ó Deasmhumhnaigh&#39;</span>
+
+<span class="sd">&gt;&gt;&gt; namegen.fantasy_name(num=3, style=&quot;fluid&quot;)</span>
+<span class="sd">[&#39;Aewalisash&#39;, &#39;Ayi&#39;, &#39;Iaa&#39;]</span>
+
+
+<span class="sd">Available Settings (define these in your `settings.py`)</span>
+
+<span class="sd">  NAMEGEN_FIRST_NAMES   - Option to add a new list of first (personal) names.</span>
+<span class="sd">  NAMEGEN_LAST_NAMES    - Option to add a new list of last (family) names.</span>
+<span class="sd">  NAMEGEN_REPLACE_LISTS - Set to True if you want to use ONLY your name lists and not the ones that come with the contrib.</span>
+<span class="sd">  NAMEGEN_FANTASY_RULES - Option to add new fantasy-name style rules.</span>
+<span class="sd">      Must be a dictionary that includes &quot;syllable&quot;, &quot;consonants&quot;, &quot;vowels&quot;, and &quot;length&quot; - see the example.</span>
+<span class="sd">      &quot;start&quot; and &quot;end&quot; keys are optional.</span>
+
+<span class="sd">Settings examples:</span>
+
+<span class="sd">NAMEGEN_FIRST_NAMES = [</span>
+<span class="sd">        (&quot;Evennia&quot;, &#39;mf&#39;),</span>
+<span class="sd">        (&quot;Green Tea&quot;, &#39;f&#39;),</span>
+<span class="sd">    ]</span>
+
+<span class="sd">NAMEGEN_LAST_NAMES = [ &quot;Beeblebrox&quot;, &quot;Son of Odin&quot; ]</span>
+
+<span class="sd">NAMEGEN_FANTASY_RULES = {</span>
+<span class="sd">    &quot;example_style&quot;: {</span>
+<span class="sd">            &quot;syllable&quot;: &quot;(C)VC&quot;,</span>
+<span class="sd">            &quot;consonants&quot;: [ &#39;z&#39;,&#39;z&#39;,&#39;ph&#39;,&#39;sh&#39;,&#39;r&#39;,&#39;n&#39; ],</span>
+<span class="sd">            &quot;start&quot;: [&#39;m&#39;],</span>
+<span class="sd">            &quot;end&quot;: [&#39;x&#39;,&#39;n&#39;],</span>
+<span class="sd">            &quot;vowels&quot;: [ &quot;e&quot;,&quot;e&quot;,&quot;e&quot;,&quot;a&quot;,&quot;i&quot;,&quot;i&quot;,&quot;u&quot;,&quot;o&quot;, ],</span>
+<span class="sd">            &quot;length&quot;: (2,4),</span>
+<span class="sd">        }</span>
+<span class="sd">    }</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span>
+
+<span class="c1"># Load name data from Behind the Name lists</span>
+<span class="n">dirpath</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="n">_FIRSTNAME_LIST</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="s2">&quot;btn_givennames.txt&quot;</span><span class="p">),</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="n">_FIRSTNAME_LIST</span> <span class="o">=</span> <span class="p">[</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span> <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="p">]</span>
+
+<span class="n">_SURNAME_LIST</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="s2">&quot;btn_surnames.txt&quot;</span><span class="p">),</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="n">_SURNAME_LIST</span> <span class="o">=</span> <span class="p">[</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span> <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="p">]</span>
+
+<span class="n">_REQUIRED_KEYS</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;syllable&quot;</span><span class="p">,</span> <span class="s2">&quot;consonants&quot;</span><span class="p">,</span> <span class="s2">&quot;vowels&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span> <span class="p">}</span>
+<span class="c1"># Define phoneme structure for built-in fantasy name generators.</span>
+<span class="n">_FANTASY_NAME_STRUCTURES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;harsh&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;syllable&quot;</span><span class="p">:</span> <span class="s2">&quot;CV(C)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;zh&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;th&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="p">],</span>
+            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dh&quot;</span><span class="p">,</span> <span class="s2">&quot;kh&quot;</span><span class="p">,</span> <span class="s2">&quot;kh&quot;</span><span class="p">,</span> <span class="s2">&quot;kh&quot;</span><span class="p">,</span> <span class="s2">&quot;vh&quot;</span><span class="p">,</span> <span class="p">],</span>
+            <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="p">],</span>
+            <span class="s2">&quot;vowels&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;ä&quot;</span><span class="p">,</span> <span class="s2">&quot;ö&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="p">],</span>
+            <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;fluid&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;syllable&quot;</span><span class="p">:</span> <span class="s2">&quot;V(C)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="s1">&#39;l&#39;</span><span class="p">,</span><span class="s1">&#39;l&#39;</span><span class="p">,</span><span class="s1">&#39;l&#39;</span><span class="p">,</span><span class="s1">&#39;l&#39;</span><span class="p">,</span><span class="s1">&#39;s&#39;</span><span class="p">,</span><span class="s1">&#39;s&#39;</span><span class="p">,</span><span class="s1">&#39;s&#39;</span><span class="p">,</span><span class="s1">&#39;sh&#39;</span><span class="p">,</span><span class="s1">&#39;m&#39;</span><span class="p">,</span><span class="s1">&#39;n&#39;</span><span class="p">,</span><span class="s1">&#39;n&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;v&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="s1">&#39;th&#39;</span> <span class="p">],</span>
+            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;vowels&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;e&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="s2">&quot;y&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">,</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="p">],</span>
+            <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;alien&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;syllable&quot;</span><span class="p">:</span> <span class="s2">&quot;C(C(V))(&#39;)(C)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">,</span><span class="s1">&#39;v&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="s1">&#39;h&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span> <span class="p">],</span>
+            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,],</span>
+            <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;vowels&quot;</span><span class="p">:</span> <span class="p">[</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">,</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span> <span class="p">],</span>
+            <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+    <span class="p">},</span>
+
+<span class="p">}</span>  
+
+<span class="n">_RE_DOUBLES</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\w)\1{2,}&#39;</span><span class="p">)</span>
+
+<span class="c1"># Load in optional settings</span>
+
+<span class="n">custom_first_names</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">NAMEGEN_FIRST_NAMES</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;NAMEGEN_FIRST_NAMES&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+<span class="n">custom_last_names</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">NAMEGEN_LAST_NAMES</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;NAMEGEN_LAST_NAMES&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;NAMEGEN_FANTASY_RULES&quot;</span><span class="p">):</span>
+    <span class="n">_FANTASY_NAME_STRUCTURES</span> <span class="o">|=</span> <span class="n">settings</span><span class="o">.</span><span class="n">NAMEGEN_FANTASY_RULES</span>
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;NAMEGEN_REPLACE_LISTS&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">NAMEGEN_REPLACE_LISTS</span><span class="p">:</span>
+    <span class="n">_FIRSTNAME_LIST</span> <span class="o">=</span> <span class="n">custom_first_names</span> <span class="ow">or</span> <span class="n">_FIRSTNAME_LIST</span>
+    <span class="n">_SURNAME_LIST</span> <span class="o">=</span> <span class="n">custom_last_names</span> <span class="ow">or</span> <span class="n">_SURNAME_LIST</span>
+
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_FIRSTNAME_LIST</span> <span class="o">+=</span> <span class="n">custom_first_names</span>
+    <span class="n">_SURNAME_LIST</span> <span class="o">+=</span> <span class="n">custom_last_names</span>
+
+
+
+<div class="viewcode-block" id="fantasy_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.fantasy_name">[docs]</a><span class="k">def</span> <span class="nf">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;harsh&quot;</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate made-up names in one of a number of &quot;styles&quot;.</span>
+
+<span class="sd">    Keyword args:</span>
+<span class="sd">        num (int)      - How many names to return.</span>
+<span class="sd">        style (string) - The &quot;style&quot; of name. This references an existing algorithm.</span>
+<span class="sd">        return_list (bool) - Whether to always return a list. `False` by default,</span>
+<span class="sd">                which returns a string if there is only one value and a list if more.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="n">style_name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">style_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_FANTASY_NAME_STRUCTURES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid style name: &#39;</span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2">&#39;. Available style names: </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_FANTASY_NAME_STRUCTURES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">style_dict</span> <span class="o">=</span> <span class="n">_FANTASY_NAME_STRUCTURES</span><span class="p">[</span><span class="n">style_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">style_dict</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Style </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2"> must be a dictionary.&quot;</span><span class="p">)</span>
+          
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">style_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">missing_keys</span> <span class="o">=</span> <span class="n">_REQUIRED_KEYS</span> <span class="o">-</span> <span class="n">keys</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Style dictionary </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2"> is missing required keys: </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">style_dict</span><span class="p">[</span><span class="s1">&#39;consonants&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">style_dict</span><span class="p">[</span><span class="s1">&#39;vowels&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;consonants&#39; and &#39;vowels&#39; for style </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2"> must be lists.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_iter</span><span class="p">(</span><span class="n">style_dict</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">style_dict</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;length&#39; key for </span><span class="si">{</span><span class="n">style_name</span><span class="si">}</span><span class="s2"> must have a minimum and maximum number of syllables.&quot;</span><span class="p">)</span>
+      
+        <span class="k">return</span> <span class="n">style_dict</span>
+    
+    <span class="c1"># validate num first</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of names to generate must be positive.&quot;</span><span class="p">)</span>
+
+    <span class="n">style_dict</span> <span class="o">=</span> <span class="n">_validate</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
+
+    <span class="n">syllable</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="c1"># parse out the syllable structure with weights</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">style_dict</span><span class="p">[</span><span class="s2">&quot;syllable&quot;</span><span class="p">]:</span>
+        <span class="c1"># parentheses mean optional - allow nested parens</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="o">/</span><span class="mi">2</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="o">*</span><span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span>
+                <span class="n">sound_type</span> <span class="o">=</span> <span class="s2">&quot;consonants&quot;</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;V&quot;</span><span class="p">:</span>
+                <span class="n">sound_type</span> <span class="o">=</span> <span class="s2">&quot;vowels&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sound_type</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="c1"># append the sound type and weight</span>
+            <span class="n">syllable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">sound_type</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">weight</span><span class="p">))</span> <span class="p">)</span>
+    
+    <span class="n">name_list</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c1"># time to generate a name!</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+        <span class="c1"># build a list of syllables</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">*</span><span class="n">style_dict</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">])</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+            <span class="c1"># build the syllable itself</span>
+            <span class="n">syll</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">sound</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">syllable</span><span class="p">:</span>
+                <span class="c1"># random chance to skip this key; lower weights mean less likely</span>
+                <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">weight</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                
+                <span class="k">if</span> <span class="n">sound</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">style_dict</span><span class="p">:</span>
+                    <span class="c1"># extra character, like apostrophes</span>
+                    <span class="n">syll</span> <span class="o">+=</span> <span class="n">sound</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># get a random sound from the sound list</span>
+                <span class="n">choices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">style_dict</span><span class="p">[</span><span class="n">sound</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">sound</span> <span class="o">==</span> <span class="s2">&quot;consonants&quot;</span><span class="p">:</span>
+                    <span class="c1"># if it&#39;s a starting consonant, add starting-sounds to the options</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">syll</span><span class="p">):</span>
+                        <span class="n">choices</span> <span class="o">+=</span> <span class="n">style_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,[])</span>
+                    <span class="c1"># if it&#39;s an ending consonant, add ending-sounds to the options</span>
+                    <span class="k">elif</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="n">length</span><span class="p">:</span>
+                        <span class="n">choices</span> <span class="o">+=</span> <span class="n">style_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,[])</span>
+
+                <span class="n">syll</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
+
+            <span class="n">name</span> <span class="o">+=</span> <span class="n">syll</span>
+
+        <span class="c1"># condense repeating letters down to a maximum of 2</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">_RE_DOUBLES</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># capitalize the first letter</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">name_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">return_list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">name_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">name_list</span></div>
+        
+<div class="viewcode-block" id="first_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.first_name">[docs]</a><span class="k">def</span> <span class="nf">first_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate first names, also known as personal names.</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword args:</span>
+<span class="sd">        num (int)    - How many names to return.</span>
+<span class="sd">        gender (str) - Restrict names by gender association. `None` by default, which selects from</span>
+<span class="sd">                all possible names. Set to &quot;m&quot; for masculine, &quot;f&quot; for feminine, &quot;mf&quot; for androgynous </span>
+<span class="sd">        return_list (bool) - Whether to always return a list. `False` by default,</span>
+<span class="sd">                which returns a string if there is only one value and a list if more.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># validate num first</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of names to generate must be positive.&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">gender</span><span class="p">:</span>
+        <span class="c1"># filter the options by gender</span>
+        <span class="n">name_options</span> <span class="o">=</span> <span class="p">[</span> <span class="n">name_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">name_data</span> <span class="ow">in</span> <span class="n">_FIRSTNAME_LIST</span> <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">gender_key</span> <span class="ow">in</span> <span class="n">gender</span> <span class="k">for</span> <span class="n">gender_key</span> <span class="ow">in</span> <span class="n">name_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]])]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">name_options</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid gender &#39;</span><span class="si">{</span><span class="n">gender</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">name_options</span> <span class="o">=</span> <span class="p">[</span> <span class="n">name_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">name_data</span> <span class="ow">in</span> <span class="n">_FIRSTNAME_LIST</span> <span class="p">]</span>
+    
+    <span class="c1"># take a random selection of `num` names, without repeats</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">name_options</span><span class="p">,</span><span class="n">num</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">return_list</span><span class="p">:</span>
+        <span class="c1"># return single value as a string</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+    
+
+<div class="viewcode-block" id="last_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.last_name">[docs]</a><span class="k">def</span> <span class="nf">last_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate family names, also known as surnames or last names.</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword args:</span>
+<span class="sd">        num (int)    - How many names to return.</span>
+<span class="sd">        return_list (bool) - Whether to always return a list. `False` by default,</span>
+<span class="sd">                which returns a string if there is only one value and a list if more.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># validate num first</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of names to generate must be positive.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># take a random selection of `num` names, without repeats</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">_SURNAME_LIST</span><span class="p">,</span><span class="n">num</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">return_list</span><span class="p">:</span>
+        <span class="c1"># return single value as a string</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="full_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.namegen.html#evennia.contrib.utils.name_generator.namegen.full_name">[docs]</a><span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">surname_first</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate complete names with a personal name, family name, and optionally middle names.</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword args:</span>
+<span class="sd">        num (int)    - How many names to return.</span>
+<span class="sd">        parts (int)  - How many parts the name should have. By default two: first and last.</span>
+<span class="sd">        gender (str) - Restrict names by gender association. `None` by default, which selects from</span>
+<span class="sd">                all possible names. Set to &quot;m&quot; for masculine, &quot;f&quot; for feminine, &quot;mf&quot; for androgynous </span>
+<span class="sd">        return_list (bool) - Whether to always return a list. `False` by default,</span>
+<span class="sd">                which returns a string if there is only one value and a list if more.</span>
+<span class="sd">        surname_first (bool) - Default `False`. Set to `True` if you want the family name to be</span>
+<span class="sd">                placed at the beginning of the name instead of the end.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># validate num first</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of names to generate must be positive.&quot;</span><span class="p">)</span>
+    <span class="c1"># validate parts next</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parts</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of name parts to generate must be at least 2.&quot;</span><span class="p">)</span>
+
+    <span class="n">name_lists</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">middle</span> <span class="o">=</span> <span class="n">parts</span><span class="o">-</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="n">middle</span><span class="p">:</span>
+        <span class="c1"># calculate &quot;middle&quot; names.</span>
+        <span class="c1"># we want them to be an intelligent mix of personal names and family names</span>
+        <span class="c1"># first, split the total number of middle-name parts into &quot;personal&quot; and &quot;family&quot; at a random point</span>
+        <span class="n">total_mids</span> <span class="o">=</span> <span class="n">middle</span><span class="o">*</span><span class="n">num</span>
+        <span class="n">personals</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">total_mids</span><span class="p">)</span>
+        <span class="n">familys</span> <span class="o">=</span> <span class="n">total_mids</span> <span class="o">-</span> <span class="n">personals</span>
+        <span class="c1"># then get the names for each</span>
+        <span class="n">personal_mids</span> <span class="o">=</span> <span class="n">first_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">personals</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="n">gender</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">family_mids</span> <span class="o">=</span> <span class="n">last_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">familys</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">familys</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="c1"># splice them together according to surname_first....</span>
+        <span class="n">middle_names</span> <span class="o">=</span> <span class="n">family_mids</span><span class="o">+</span><span class="n">personal_mids</span> <span class="k">if</span> <span class="n">surname_first</span> <span class="k">else</span> <span class="n">personal_mids</span><span class="o">+</span><span class="n">family_mids</span>
+        <span class="c1"># ...and then split into `num`-length lists to be used for the final names</span>
+        <span class="n">name_lists</span> <span class="o">=</span> <span class="p">[</span> <span class="n">middle_names</span><span class="p">[</span><span class="n">num</span><span class="o">*</span><span class="n">i</span><span class="p">:</span><span class="n">num</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">middle</span><span class="p">)</span> <span class="p">]</span>
+    
+    <span class="c1"># get personal and family names</span>
+    <span class="n">personal_names</span> <span class="o">=</span> <span class="n">first_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="n">gender</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">last_names</span> <span class="o">=</span> <span class="n">last_name</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># attach personal/family names to the list of name lists, according to surname_first</span>
+    <span class="k">if</span> <span class="n">surname_first</span><span class="p">:</span>
+        <span class="n">name_lists</span> <span class="o">=</span> <span class="p">[</span><span class="n">last_names</span><span class="p">]</span> <span class="o">+</span> <span class="n">name_lists</span> <span class="o">+</span> <span class="p">[</span><span class="n">personal_names</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">name_lists</span> <span class="o">=</span> <span class="p">[</span><span class="n">personal_names</span><span class="p">]</span> <span class="o">+</span> <span class="n">name_lists</span> <span class="o">+</span> <span class="p">[</span><span class="n">last_names</span><span class="p">]</span>
+
+    <span class="c1"># lastly, zip them all up and join them together</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">name_lists</span><span class="p">))</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span> <span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">return_list</span><span class="p">:</span>
+        <span class="c1"># return single value as a string</span>
+        <span class="k">return</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">names</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="namegen.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.name_generator.namegen</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

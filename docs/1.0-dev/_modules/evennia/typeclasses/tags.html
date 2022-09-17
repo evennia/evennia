@@ -55,9 +55,8 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">make_iter</span>
 <span class="kn">from</span> <span class="nn">evennia.locks.lockfuncs</span> <span class="kn">import</span> <span class="n">perm</span> <span class="k">as</span> <span class="n">perm_lockfunc</span>
-
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span>
 
 <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_AGGRESSIVE_CACHE</span>
 
@@ -146,6 +145,10 @@
 <span class="sd">    created/assigned along with the object. Make sure the property/tagname does not collide</span>
 <span class="sd">    with an existing method/property on the class. If it does, you must use tags.add()</span>
 <span class="sd">    instead.</span>
+
+<span class="sd">    Note that while you _can_ check e.g. `obj.tagname,this will give an AttributeError</span>
+<span class="sd">    if the Tag is not set. Most often you want to use `obj.tags.get(&quot;tagname&quot;)` to check</span>
+<span class="sd">    if a tag is set on an object.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">    ::</span>

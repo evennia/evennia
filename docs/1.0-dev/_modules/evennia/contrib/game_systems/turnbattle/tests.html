@@ -45,12 +45,13 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tb_basic</span><span class="p">,</span> <span class="n">tb_equip</span><span class="p">,</span> <span class="n">tb_range</span><span class="p">,</span> <span class="n">tb_items</span><span class="p">,</span> <span class="n">tb_magic</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tb_basic</span><span class="p">,</span> <span class="n">tb_equip</span><span class="p">,</span> <span class="n">tb_items</span><span class="p">,</span> <span class="n">tb_magic</span><span class="p">,</span> <span class="n">tb_range</span>
 
 
 <div class="viewcode-block" id="TestTurnBattleBasicCmd"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicCmd">[docs]</a><span class="k">class</span> <span class="nc">TestTurnBattleBasicCmd</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>

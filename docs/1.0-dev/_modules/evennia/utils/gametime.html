@@ -52,8 +52,8 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 
-<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
@@ -278,7 +278,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        callback (function): The callback function that will be called. Note</span>
 <span class="sd">            that the callback must be a module-level function, since the script will</span>
-<span class="sd">            be persistent. The callable should be on form `callable(*args, **kwargs)`</span>
+<span class="sd">            be persistent. The callable should be on the form `callable(*args, **kwargs)`</span>
 <span class="sd">            where args/kwargs are passed into this schedule.</span>
 <span class="sd">        repeat (bool, optional): Defines if the callback should be called regularly</span>
 <span class="sd">            at the specified time.</span>
@@ -288,15 +288,14 @@
 <span class="sd">        day (int or None): Number of absolute days.</span>
 <span class="sd">        month (int or None): Number of absolute months.</span>
 <span class="sd">        year (int or None): Number of absolute years.</span>
-<span class="sd">        *args, **kwargs: Will be passed into the callable. These must be possible</span>
-<span class="sd">            to store in Attributes on the generated scheduling Script.</span>
+<span class="sd">        *args: Passed into the callable. Must be possible to store in Attribute.</span>
+<span class="sd">        **kwargs: Passed into the callable. Must be possible to store in Attribute.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Script: The created Script handling the scheduling.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        ::</span>
-
 <span class="sd">            schedule(func, min=5, sec=0)  # Will call 5 minutes past the next (in-game) hour.</span>
 <span class="sd">            schedule(func, hour=2, min=30, sec=0)  # Will call the next (in-game) day at 02:30.</span>
 

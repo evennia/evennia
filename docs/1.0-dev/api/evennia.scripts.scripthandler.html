@@ -88,6 +88,9 @@ in script definition and listings)</p></li>
 <li><p><strong>autostart</strong> (<em>bool</em><em>, </em><em>optional</em>) – Start the script upon adding it.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Script</em> – The newly created Script.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -114,14 +117,27 @@ in script definition and listings)</p></li>
 <dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Search criterion, the script’s key or dbref.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>scripts (list)</em> – The found scripts matching <strong>key</strong>.</p>
+<dd class="field-even"><p><em>scripts (queryset)</em> – The found scripts matching <strong>key</strong>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.scripts.scripthandler.ScriptHandler.remove">
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripthandler.html#ScriptHandler.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripthandler.ScriptHandler.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forcibly delete a script from this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – A script key or the path to a script (in the
+latter case all scripts with this path will be deleted!)
+If no key is given, delete <em>all</em> scripts on the object!</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="evennia.scripts.scripthandler.ScriptHandler.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/scripts/scripthandler.html#ScriptHandler.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.scripts.scripthandler.ScriptHandler.delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.scripts.scripthandler.ScriptHandler.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Forcibly delete a script from this object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

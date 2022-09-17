@@ -55,22 +55,20 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">decode</span> <span class="k">as</span> <span class="n">codecs_decode</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_LOGINSTART</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">is_iter</span><span class="p">,</span>
-    <span class="n">make_iter</span><span class="p">,</span>
-    <span class="n">delay</span><span class="p">,</span>
-    <span class="n">callables_from_module</span><span class="p">,</span>
-    <span class="n">class_from_module</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp</span>
-<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_ACCOUNT_POST_LOGIN</span><span class="p">,</span> <span class="n">SIGNAL_ACCOUNT_POST_LOGOUT</span>
-<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="n">SIGNAL_ACCOUNT_POST_FIRST_LOGIN</span><span class="p">,</span> <span class="n">SIGNAL_ACCOUNT_POST_LAST_LOGOUT</span>
-<span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">decode</span> <span class="k">as</span> <span class="n">codecs_decode</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">CMD_LOGINSTART</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">amp</span>
+<span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SIGNAL_ACCOUNT_POST_FIRST_LOGIN</span><span class="p">,</span>
+    <span class="n">SIGNAL_ACCOUNT_POST_LAST_LOGOUT</span><span class="p">,</span>
+    <span class="n">SIGNAL_ACCOUNT_POST_LOGIN</span><span class="p">,</span>
+    <span class="n">SIGNAL_ACCOUNT_POST_LOGOUT</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_trace</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">callables_from_module</span><span class="p">,</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span>
 
 <span class="n">_FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED</span>
 <span class="n">_BROADCAST_SERVER_RESTART_MESSAGES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BROADCAST_SERVER_RESTART_MESSAGES</span>

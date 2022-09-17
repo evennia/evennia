@@ -57,6 +57,7 @@
 
 
 <span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
@@ -508,12 +509,41 @@
 <span class="sd">    category.</span>
 <span class="sd">    If accessing_obj has the &quot;.obj&quot; property (such as is the case for</span>
 <span class="sd">    a command), then accessing_obj.obj is used instead.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">):</span>
         <span class="n">accessing_obj</span> <span class="o">=</span> <span class="n">accessing_obj</span><span class="o">.</span><span class="n">obj</span>
     <span class="n">tagkey</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="n">category</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">accessing_obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tagkey</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">objtag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">        objtag(tagkey)</span>
+<span class="sd">        objtag(tagkey, category):</span>
+
+<span class="sd">    Only true if `accessed_obj` has the given tag and optional category.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tag</span><span class="p">(</span><span class="n">accessed_obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="objloctag"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objloctag">[docs]</a><span class="k">def</span> <span class="nf">objloctag</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Usage:</span>
+<span class="sd">        objloctag(tagkey)</span>
+<span class="sd">        objloctag(tagkey, category):</span>
+
+<span class="sd">    Only true if `accessed_obj.location` has the given tag and optional category.</span>
+<span class="sd">    If obj has no location, this lockfunc fails.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tag</span><span class="p">(</span><span class="n">accessed_obj</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="is_ooc"><a class="viewcode-back" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.is_ooc">[docs]</a><span class="k">def</span> <span class="nf">is_ooc</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

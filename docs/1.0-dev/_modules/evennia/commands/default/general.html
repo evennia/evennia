@@ -44,9 +44,10 @@
 <span class="sd">General Character commands usually available to all characters</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickTemplateInvalid</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
@@ -543,7 +544,7 @@
 <span class="sd">    Usage:</span>
 <span class="sd">      give &lt;inventory obj&gt; &lt;to||=&gt; &lt;target&gt;</span>
 
-<span class="sd">    Gives an items from your inventory to another character,</span>
+<span class="sd">    Gives an item from your inventory to another person,</span>
 <span class="sd">    placing it in their inventory.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -580,7 +581,7 @@
             <span class="k">return</span>
 
         <span class="c1"># give object</span>
-        <span class="n">success</span> <span class="o">=</span> <span class="n">to_give</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;get&quot;</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">to_give</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;give&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;This could not be given.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

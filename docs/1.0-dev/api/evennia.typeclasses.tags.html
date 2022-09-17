@@ -246,6 +246,9 @@ on the class level. Since Tags are almost always used for querying, Tags are alw
 created/assigned along with the object. Make sure the property/tagname does not collide
 with an existing method/property on the class. If it does, you must use tags.add()
 instead.</p>
+<p>Note that while you _can_ check e.g. <strong>obj.tagname,this will give an AttributeError
+if the Tag is not set. Most often you want to use **obj.tags.get(“tagname”)</strong> to check
+if a tag is set on an object.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
     <span class="n">mytag</span> <span class="o">=</span> <span class="n">TagProperty</span><span class="p">()</span>  <span class="c1"># category=None</span>

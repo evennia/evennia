@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.tutorials.evadventure.tests.test_commands &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.tests.test_commands</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.tutorials.evadventure.tests.test_commands</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test the EvAdventure commands.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">call</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Something</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">commands</span>
+<span class="kn">from</span> <span class="nn">..characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span> <span class="nn">..npcs</span> <span class="kn">import</span> <span class="n">EvAdventureMob</span><span class="p">,</span> <span class="n">EvAdventureShopKeeper</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">EvAdventureMixin</span>
+
+
+<div class="viewcode-block" id="TestEvAdventureCommands"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands">[docs]</a><span class="k">class</span> <span class="nc">TestEvAdventureCommands</span><span class="p">(</span><span class="n">EvAdventureMixin</span><span class="p">,</span> <span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestEvAdventureCommands.setUp"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="c1"># needed for the .call mechanism</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character</span></div>
+
+<div class="viewcode-block" id="TestEvAdventureCommands.test_inventory"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_inventory">[docs]</a>    <span class="k">def</span> <span class="nf">test_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">commands</span><span class="o">.</span><span class="n">CmdInventory</span><span class="p">(),</span>
+            <span class="s2">&quot;inventory&quot;</span><span class="p">,</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">You are fighting with your bare fists and have no shield.</span>
+<span class="sd">You wear no armor and no helmet.</span>
+<span class="sd">Backpack is empty.</span>
+<span class="sd">You use 0/11 equipment slots.</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvAdventureCommands.test_attack"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_attack">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.commands.join_combat&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_join_combat</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">allow_combat</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureMob</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Ogre&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdAttackTurnBased</span><span class="p">(),</span> <span class="s2">&quot;ogre&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">mock_join_combat</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">Something</span><span class="p">)</span>
+
+        <span class="n">target</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestEvAdventureCommands.test_wield_or_wear"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_wield_or_wear">[docs]</a>    <span class="k">def</span> <span class="nf">test_wield_or_wear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdWieldOrWear</span><span class="p">(),</span> <span class="s2">&quot;shield&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;shield&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdWieldOrWear</span><span class="p">(),</span> <span class="s2">&quot;helmet&quot;</span><span class="p">,</span> <span class="s2">&quot;You put helmet on your head.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">commands</span><span class="o">.</span><span class="n">CmdWieldOrWear</span><span class="p">(),</span>
+            <span class="s2">&quot;weapon&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;You hold weapon in your strongest hand, ready for action.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdWieldOrWear</span><span class="p">(),</span> <span class="s2">&quot;helmet&quot;</span><span class="p">,</span> <span class="s2">&quot;You are already using helmet.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvAdventureCommands.test_remove"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_remove">[docs]</a>    <span class="k">def</span> <span class="nf">test_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdWieldOrWear</span><span class="p">(),</span> <span class="s2">&quot;helmet&quot;</span><span class="p">,</span> <span class="s2">&quot;You put helmet on your head.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdRemove</span><span class="p">(),</span> <span class="s2">&quot;helmet&quot;</span><span class="p">,</span> <span class="s2">&quot;You stash helmet in your backpack.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvAdventureCommands.test_give__coins"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_give__coins">[docs]</a>    <span class="k">def</span> <span class="nf">test_give__coins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">recipient</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Friend&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="n">recipient</span><span class="o">.</span><span class="n">coins</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">coins</span> <span class="o">=</span> <span class="mi">100</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;40 coins to friend&quot;</span><span class="p">,</span> <span class="s2">&quot;You give Friend 40 coins.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">coins</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">recipient</span><span class="o">.</span><span class="n">coins</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;10 to friend&quot;</span><span class="p">,</span> <span class="s2">&quot;You give Friend 10 coins.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">coins</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">recipient</span><span class="o">.</span><span class="n">coins</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;60 to friend&quot;</span><span class="p">,</span> <span class="s2">&quot;You only have 50 coins to give.&quot;</span><span class="p">)</span>
+
+        <span class="n">recipient</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestEvAdventureCommands.test_give__item"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_give__item">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.commands.EvMenu&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_give__item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_EvMenu</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
+        <span class="n">recipient</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Friend&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdGive</span><span class="p">(),</span> <span class="s2">&quot;helmet to friend&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">mock_EvMenu</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">call</span><span class="p">(</span>
+                    <span class="n">recipient</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;node_receive&quot;</span><span class="p">:</span> <span class="n">Something</span><span class="p">,</span> <span class="s2">&quot;node_end&quot;</span><span class="p">:</span> <span class="n">Something</span><span class="p">},</span>
+                    <span class="n">item</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">,</span>
+                    <span class="n">giver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">call</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;node_give&quot;</span><span class="p">:</span> <span class="n">Something</span><span class="p">,</span> <span class="s2">&quot;node_end&quot;</span><span class="p">:</span> <span class="n">Something</span><span class="p">},</span>
+                    <span class="n">item</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">,</span>
+                    <span class="n">receiver</span><span class="o">=</span><span class="n">recipient</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">recipient</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestEvAdventureCommands.test_talk"><a class="viewcode-back" href="../../../../../../api/evennia.contrib.tutorials.evadventure.tests.test_commands.html#evennia.contrib.tutorials.evadventure.tests.test_commands.TestEvAdventureCommands.test_talk">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.tutorials.evadventure.npcs.EvMenu&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_talk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_EvMenu</span><span class="p">):</span>
+        <span class="n">npc</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureShopKeeper</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;shopkeep&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+
+        <span class="n">npc</span><span class="o">.</span><span class="n">menudata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">CmdTalk</span><span class="p">(),</span> <span class="s2">&quot;shopkeep&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">mock_EvMenu</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+            <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_start&quot;</span><span class="p">,</span>
+            <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">npc</span><span class="o">=</span><span class="n">npc</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../../index.html">
+              <img class="logo" src="../../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="test_commands.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.tests.test_commands</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

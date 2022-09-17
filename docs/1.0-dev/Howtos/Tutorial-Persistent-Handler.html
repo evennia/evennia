@@ -16,7 +16,9 @@
     <script src="../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Gametime Tutorial" href="Gametime-Tutorial.html" />
+    <link rel="prev" title="Tutorial Vehicles" href="Tutorial-Vehicles.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,7 +29,14 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Gametime-Tutorial.html" title="Gametime Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Tutorial-Vehicles.html" title="Tutorial Vehicles"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Making a Persistent object Handler</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -40,8 +49,12 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="making-a-persistent-object-handler">
 <h1>Making a Persistent object Handler<a class="headerlink" href="#making-a-persistent-object-handler" title="Permalink to this headline">¶</a></h1>
-<p>A <em>handler</em> is a convenient way to group functionality on an object. This allows you to logically group all actions related to that thing in one place. This tutorial expemplifies how to make your own handlers and make sure data you store in them survives a reload.</p>
-<p>For example, when you do <code class="docutils literal notranslate"><span class="pre">obj.attributes.get(&quot;key&quot;)</span></code> or <code class="docutils literal notranslate"><span class="pre">obj.tags.add('tagname')</span></code> you are evoking handlers stored as <code class="docutils literal notranslate"><span class="pre">.attributes</span></code> and <code class="docutils literal notranslate"><span class="pre">tags</span></code> on the <code class="docutils literal notranslate"><span class="pre">obj</span></code>. On these handlers are methods (<code class="docutils literal notranslate"><span class="pre">get()</span></code> and <code class="docutils literal notranslate"><span class="pre">add()</span></code> in this example).</p>
+<p>A <em>handler</em> is a convenient way to group functionality on an object. This allows you to logically
+group all actions related to that thing in one place. This tutorial expemplifies how to make your
+own handlers and make sure data you store in them survives a reload.</p>
+<p>For example, when you do <code class="docutils literal notranslate"><span class="pre">obj.attributes.get(&quot;key&quot;)</span></code> or <code class="docutils literal notranslate"><span class="pre">obj.tags.add('tagname')</span></code> you are evoking
+handlers stored as <code class="docutils literal notranslate"><span class="pre">.attributes</span></code> and <code class="docutils literal notranslate"><span class="pre">tags</span></code> on the <code class="docutils literal notranslate"><span class="pre">obj</span></code>. On these handlers are methods (<code class="docutils literal notranslate"><span class="pre">get()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">add()</span></code> in this example).</p>
 <section id="base-handler-example">
 <h2>Base Handler example<a class="headerlink" href="#base-handler-example" title="Permalink to this headline">¶</a></h2>
 <p>Here is a base way to set up an on-object handler:</p>
@@ -114,7 +127,10 @@ that represents the quest. Let’s make it simple as an example:</p>
 
 </pre></div>
 </div>
-<p>We expect the dev to make subclasses of this to implement different quests. Exactly how this works doesn’t matter, the key is that we want to track <code class="docutils literal notranslate"><span class="pre">self.current_step</span></code> - a property that <em>should survive a server reload</em>. But so far there is no way for <code class="docutils literal notranslate"><span class="pre">Quest</span></code> to accomplish this, it’s just a normal Python class with no connection to the database.</p>
+<p>We expect the dev to make subclasses of this to implement different quests. Exactly how this works
+doesn’t matter, the key is that we want to track <code class="docutils literal notranslate"><span class="pre">self.current_step</span></code> - a property that <em>should
+survive a server reload</em>. But so far there is no way for <code class="docutils literal notranslate"><span class="pre">Quest</span></code> to accomplish this, it’s just a
+normal Python class with no connection to the database.</p>
 <section id="handler-with-save-load-capability">
 <h3>Handler with save/load capability<a class="headerlink" href="#handler-with-save-load-capability" title="Permalink to this headline">¶</a></h3>
 <p>Let’s make a <code class="docutils literal notranslate"><span class="pre">QuestHandler</span></code> that manages a character’s quests.</p>
@@ -142,7 +158,6 @@ that represents the quest. Let’s make it simple as an example:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">check_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">quest</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">quest</span><span class="o">.</span><span class="n">check_progress</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_save</span><span class="p">:</span>
             <span class="c1"># .do_save is set on handler by Quest if it wants to save progress</span>
@@ -150,16 +165,23 @@ that represents the quest. Let’s make it simple as an example:</p>
 
 </pre></div>
 </div>
-<p>The handler is just a normal Python class and has no database-storage on its own. But it has a link to <code class="docutils literal notranslate"><span class="pre">.obj</span></code>, which is assumed to be a full typeclased entity, on which we can create persistent <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a> to store things however we like!</p>
+<p>The handler is just a normal Python class and has no database-storage on its own. But it has a link
+to <code class="docutils literal notranslate"><span class="pre">.obj</span></code>, which is assumed to be a full typeclased entity, on which we can create
+persistent <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a> to store things however we like!</p>
 <p>We make two helper methods <code class="docutils literal notranslate"><span class="pre">_load</span></code> and
-<code class="docutils literal notranslate"><span class="pre">_save</span></code> that handles local fetches and saves <code class="docutils literal notranslate"><span class="pre">storage</span></code> to an Attribute on the object.  To avoid saving more than necessary, we have a property <code class="docutils literal notranslate"><span class="pre">do_save</span></code>. This we will set in <code class="docutils literal notranslate"><span class="pre">Quest</span></code> below.</p>
+<code class="docutils literal notranslate"><span class="pre">_save</span></code> that handles local fetches and saves <code class="docutils literal notranslate"><span class="pre">storage</span></code> to an Attribute on the object. To avoid
+saving more than necessary, we have a property <code class="docutils literal notranslate"><span class="pre">do_save</span></code>. This we will set in <code class="docutils literal notranslate"><span class="pre">Quest</span></code> below.</p>
 <blockquote>
 <div><p>Note that once we <code class="docutils literal notranslate"><span class="pre">_save</span></code> the data, we need to call <code class="docutils literal notranslate"><span class="pre">_load</span></code> again. This is to make sure the version we store on the handler is properly de-serialized. If you get an error about data being <code class="docutils literal notranslate"><span class="pre">bytes</span></code>, you probably missed this step.</p>
 </div></blockquote>
 </section>
 <section id="make-quests-storable">
 <h3>Make quests storable<a class="headerlink" href="#make-quests-storable" title="Permalink to this headline">¶</a></h3>
-<p>The handler will save all <code class="docutils literal notranslate"><span class="pre">Quest</span></code> objects as a <code class="docutils literal notranslate"><span class="pre">dict</span></code> in an Attribute on <code class="docutils literal notranslate"><span class="pre">obj</span></code>. We are not done yet though, the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> object needs access to the <code class="docutils literal notranslate"><span class="pre">obj</span></code> too - not only will this is important to figure out if the quest is complete (the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> must be able to check the quester’s inventory to see if they have the red key, for example), it also allows the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> to tell the handler when its state changed and it should be saved.</p>
+<p>The handler will save all <code class="docutils literal notranslate"><span class="pre">Quest</span></code> objects as a <code class="docutils literal notranslate"><span class="pre">dict</span></code> in an Attribute on <code class="docutils literal notranslate"><span class="pre">obj</span></code>. We are not done yet
+though, the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> object needs access to the <code class="docutils literal notranslate"><span class="pre">obj</span></code> too - not only will this is important to figure
+out if the quest is complete (the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> must be able to check the quester’s inventory to see if
+they have the red key, for example), it also allows the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> to tell the handler when its state
+changed and it should be saved.</p>
 <p>We change the <code class="docutils literal notranslate"><span class="pre">Quest</span></code> such:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
 
@@ -204,8 +226,7 @@ get back to the handler (and the object on which it sits).</p>
 because <code class="docutils literal notranslate"><span class="pre">Attributes</span></code> can’t store ‘hidden’ database objects (the <code class="docutils literal notranslate"><span class="pre">Quest.obj</span></code>
 property. The methods help Evennia serialize/deserialize <code class="docutils literal notranslate"><span class="pre">Quest</span></code> propertly when
 the handler saves it.  For more information, see <a class="reference internal" href="../Components/Attributes.html#storing-single-objects"><span class="std std-doc">Storing Single
-objects</span></a> in the Attributes
-documentation.</p>
+objects</span></a> in the Attributes</p>
 </section>
 <section id="tying-it-all-together">
 <h3>Tying it all together<a class="headerlink" href="#tying-it-all-together" title="Permalink to this headline">¶</a></h3>
@@ -235,8 +256,8 @@ characters with</p>
 </pre></div>
 </div>
 <p>and be sure that quest data is not lost between reloads.</p>
-<p>You can find a full-fledged quest-handler example as  <span class="xref myst">EvAdventure
-quests</span> contrib in the Evennia
+<p>You can find a full-fledged quest-handler example as  <a class="reference internal" href="../api/evennia.contrib.tutorials.evadventure.quests.html#evennia-contrib-tutorials-evadventure-quests"><span class="std std-ref">EvAdventure
+quests</span></a> contrib in the Evennia
 repository.</p>
 </section>
 </section>
@@ -276,6 +297,12 @@ repository.</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Tutorial-Vehicles.html"
+                        title="previous chapter">Tutorial Vehicles</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Gametime-Tutorial.html"
+                        title="next chapter">Gametime Tutorial</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -312,7 +339,14 @@ repository.</p>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="Gametime-Tutorial.html" title="Gametime Tutorial"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Tutorial-Vehicles.html" title="Tutorial Vehicles"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Making a Persistent object Handler</a></li> 
       </ul>
         <div class="develop">develop branch</div>

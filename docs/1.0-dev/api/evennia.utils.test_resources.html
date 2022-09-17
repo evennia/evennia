@@ -282,7 +282,8 @@ This can be used for testing on-object Command interactions.</p></li>
 <li><p><strong>inputs</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of strings to pass to functions that pause to
 take input from the user (normally using <strong>&#64;interactive</strong> and
 <strong>ret = yield(question)</strong> or <strong>evmenu.get_input</strong>). Each  element of the
-list will be passed into the command as if the user wrote that at the prompt.</p></li>
+list will be passed into the command as if the user answered each prompt
+in that order.</p></li>
 <li><p><strong>raw_string</strong> (<em>str</em><em>, </em><em>optional</em>) – Normally the <strong>.raw_string</strong> property  is set as
 a combination of your <strong>key/cmdname</strong> and <strong>input_args</strong>. This allows
 direct control of what this is, for example for testing edge cases

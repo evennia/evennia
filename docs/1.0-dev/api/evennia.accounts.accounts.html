@@ -194,6 +194,18 @@ at_account_creation()</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="evennia.accounts.accounts.DefaultAccount.uses_screenreader">
+<code class="sig-name descname">uses_screenreader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.uses_screenreader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.uses_screenreader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut to determine if a session uses a screenreader. If no session given,
+will return true if any of the sessions use a screenreader.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – The session to check for screen reader.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.get_display_name">
 <code class="sig-name descname">get_display_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.get_display_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.get_display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is used by channels and other OOC communications methods to give a
@@ -889,7 +901,7 @@ overriding the call (unused by default).</p></li>
 <p class="rubric">Notes</p>
 <p>This is called <em>before</em> an eventual Character’s
 <strong>at_post_login</strong> hook. By default it is used to set up
-auto-puppeting based on <strong>MULTISESSION_MODE</strong>.</p>
+auto-puppeting based on <strong>MULTISESSION_MODE</strong></p>
 </dd></dl>
 
 <dl class="py method">
@@ -1009,6 +1021,11 @@ to do it.</p>
 (i.e. not for a restart).</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="evennia.accounts.accounts.DefaultAccount.ooc_appearance_template">
+<code class="sig-name descname">ooc_appearance_template</code><em class="property"> = '--------------------------------------------------------------------\n{header}\n\n{sessions}\n\n  |whelp|n - more commands\n  |wpublic &lt;text&gt;|n - talk on public channel\n  |wcharcreate &lt;name&gt; [=description]|n - create new character\n  |wchardelete &lt;name&gt;|n - delete a character\n  |wic &lt;name&gt;|n - enter the game as character (|wooc|n to get back here)\n  |wic|n - enter the game as latest character controlled.\n\n{characters}\n{footer}\n--------------------------------------------------------------------'</em><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.ooc_appearance_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultAccount.at_look">
 <code class="sig-name descname">at_look</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultAccount.at_look"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultAccount.at_look" title="Permalink to this definition">¶</a></dt>
@@ -1018,7 +1035,7 @@ just what this means.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>Object</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – An object or a list
-objects to inspect.</p></li>
+objects to inspect. This is normally a list of characters.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – The session doing this look.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
@@ -1091,8 +1108,9 @@ errors (list): List of error messages accrued during this request.</p>
 <dl class="py method">
 <dt id="evennia.accounts.accounts.DefaultGuest.at_post_login">
 <code class="sig-name descname">at_post_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/accounts.html#DefaultGuest.at_post_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.accounts.DefaultGuest.at_post_login" title="Permalink to this definition">¶</a></dt>
-<dd><p>In theory, guests only have one character regardless of which
-MULTISESSION_MODE we’re in. They don’t get a choice.</p>
+<dd><p>By default, Guests only have one character regardless of which
+MAX_NR_CHARACTERS we use. They also always auto-puppet a matching
+character and don’t get a choice.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

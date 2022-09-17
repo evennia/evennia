@@ -27,7 +27,7 @@ told us that we couldn't go there.
 ## Adding default error commands
 
 The way to do this is to give Evennia an _alternative_ Command to use when no Exit-Command is found
-in the room. See [Adding Commands](Beginner-Tutorial/Part1/Adding-Commands.md) for more info about the 
+in the room. See [Adding Commands](Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md) for more info about the 
 process of adding new Commands to Evennia.
 
 In this example all we'll do is echo an error message.

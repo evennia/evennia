@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>6. Overview of the Evennia library &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="7. Making objects persistent" href="Beginner-Tutorial-Learning-Typeclasses.html" />
+    <link rel="prev" title="5. Introduction to Python classes and objects" href="Beginner-Tutorial-Python-classes-and-objects.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Learning-Typeclasses.html" title="7. Making objects persistent"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Python-classes-and-objects.html" title="5. Introduction to Python classes and objects"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Intro.html" accesskey="U">Part 1: What we have</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>Overview of the Evennia library</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="overview-of-the-evennia-library">
+<h1><span class="section-number">6. </span>Overview of the Evennia library<a class="headerlink" href="#overview-of-the-evennia-library" title="Permalink to this headline">¶</a></h1>
+<aside class="sidebar">
+<p class="sidebar-title">API</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>API stands for `Application Programming Interface`, a description for how to access
+the resources of a program or library.
+</pre></div>
+</div>
+</aside>
+<p>A good place to start exploring Evennia is the <a class="reference internal" href="../../../Evennia-API.html"><span class="doc std std-doc">Evenia-API frontpage</span></a>.
+This page sums up the main components of Evennia with a short description of each. Try clicking through
+to a few entries - once you get deep enough you’ll see full descriptions
+of each component along with their documentation. You can also click <code class="docutils literal notranslate"><span class="pre">[source]</span></code> to see the full Python source
+for each thing.</p>
+<p>You can also browse <a class="reference external" href="https://github.com/evennia/evennia">the evennia repository on github</a>. This is exactly
+what you can download from us. The github repo is also searchable.</p>
+<p>Finally, you can clone the evennia repo to your own computer and read the sources locally. This is necessary
+if you want to help with Evennia’s development itself. See the
+<a class="reference internal" href="../../../Setup/Installation-Git.html"><span class="doc std std-doc">extended install instructions</span></a> if you want to do this.</p>
+<section id="where-is-it">
+<h2><span class="section-number">6.1. </span>Where is it?<a class="headerlink" href="#where-is-it" title="Permalink to this headline">¶</a></h2>
+<p>If Evennia is installed, you can import from it simply with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import evennia
+from evennia import some_module
+from evennia.some_module.other_module import SomeClass
+</pre></div>
+</div>
+<p>and so on.</p>
+<p>If you installed Evennia with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>, the library folder will be installed deep inside your Python
+installation. If you cloned the repo there will be a folder <code class="docutils literal notranslate"><span class="pre">evennia</span></code> on your hard drive there.</p>
+<p>If you cloned the repo or read the code on <code class="docutils literal notranslate"><span class="pre">github</span></code> you’ll find this being the outermost structure:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia/
+    bin/
+    CHANGELOG.md
+    ...
+    ...
+    docs/
+    evennia/
+</pre></div>
+</div>
+<p>This outer layer is for Evennia’s installation and package distribution. That internal folder <code class="docutils literal notranslate"><span class="pre">evennia/evennia/</span></code> is
+the <em>actual</em> library, the thing covered by the API auto-docs and what you get when you do <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">evennia</span></code>.</p>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">evennia/docs/</span></code> folder contains the sources for this documentation. See
+<a class="reference internal" href="../../../Contributing-Docs.html"><span class="doc std std-doc">contributing to the docs</span></a> if you want to learn more about how this works.</p>
+</div></blockquote>
+<p>This the the structure of the Evennia library:</p>
+<ul class="simple">
+<li><p>evennia</p>
+<ul>
+<li><p><a class="reference internal" href="../../../Evennia-API.html#shortcuts"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">__init__.py</span></code></span></a> - The “flat API” of Evennia resides here.</p></li>
+<li><p><a class="reference internal" href="../../../Setup/Settings.html#settings-file"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">settings_default.py</span></code></span></a> - Root settings of Evennia. Copy settings
+from here to <code class="docutils literal notranslate"><span class="pre">mygame/server/settings.py</span></code> file.</p></li>
+<li><p><a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">commands/</span></code></span></a> - The command parser and handler.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">default/</span></code> - The <a class="reference internal" href="../../../Components/Default-Commands.html"><span class="doc std std-doc">default commands</span></a> and cmdsets.</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../../../Components/Channels.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">comms/</span></code></span></a> - Systems for communicating in-game.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contrib/</span></code> - Optional plugins too game-specific for core Evennia.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">game_template/</span></code> - Copied to become the “game directory” when using <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--init</span></code>.</p></li>
+<li><p><a class="reference internal" href="../../../Components/Help-System.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">help/</span></code></span></a> - Handles the storage and  creation of help entries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">locale/</span></code> - Language files (<a class="reference internal" href="../../../Concepts/Internationalization.html"><span class="doc std std-doc">i18n</span></a>).</p></li>
+<li><p><a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">locks/</span></code></span></a> - Lock system for restricting access to in-game entities.</p></li>
+<li><p><a class="reference internal" href="../../../Components/Objects.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">objects/</span></code></span></a> - In-game entities (all types of items and Characters).</p></li>
+<li><p><a class="reference internal" href="../../../Components/Prototypes.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">prototypes/</span></code></span></a> - Object Prototype/spawning system and OLC menu</p></li>
+<li><p><a class="reference internal" href="../../../Components/Accounts.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">accounts/</span></code></span></a> - Out-of-game Session-controlled entities (accounts, bots etc)</p></li>
+<li><p><a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">scripts/</span></code></span></a> - Out-of-game entities equivalence to Objects, also with timer support.</p></li>
+<li><p><a class="reference internal" href="../../../Components/Portal-And-Server.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">server/</span></code></span></a> - Core server code and Session handling.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">portal/</span></code> - Portal proxy and connection protocols.</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">typeclasses/</span></code></span></a> - Abstract classes for the typeclass storage and database system.</p></li>
+<li><p><a class="reference internal" href="../../../Components/Coding-Utils.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">utils/</span></code></span></a> - Various miscellaneous useful coding resources.</p></li>
+<li><p><a class="reference internal" href="../../../Concepts/Web-Features.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">web/</span></code></span></a> - Web resources and webserver. Partly copied into game directory on initialization.</p></li>
+</ul>
+</li>
+</ul>
+<aside class="sidebar">
+<p class="sidebar-title"><strong>init</strong>.py</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The `__init__.py` file is a special Python filename used to represent a Python &#39;package&#39;.
+When you import `evennia` on its own, you import this file. When you do `evennia.foo` Python will
+first look for a property `.foo` in `__init__.py` and then for a module or folder of that name
+in the same location.
+</pre></div>
+</div>
+</aside>
+<p>While all the actual Evennia code is found in the various folders, the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> represents the entire
+package <code class="docutils literal notranslate"><span class="pre">evennia</span></code>. It contains “shortcuts” to code that is actually located elsewhere. Most of these shortcuts
+are listed if you <a class="reference internal" href="../../../Evennia-API.html"><span class="doc std std-doc">scroll down a bit</span></a> on the Evennia-API page.</p>
+</section>
+<section id="an-example-of-exploring-the-library">
+<h2><span class="section-number">6.2. </span>An example of exploring the library<a class="headerlink" href="#an-example-of-exploring-the-library" title="Permalink to this headline">¶</a></h2>
+<p>In the previous lesson we took a brief look at <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects</span></code> as an example of a Python module. Let’s
+open it again. Inside is the <code class="docutils literal notranslate"><span class="pre">Object</span></code> class, which inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>.
+Near the top of the module is this line:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from evennia import DefaultObject
+</pre></div>
+</div>
+<p>We want to figure out just what this DefaultObject offers. Since this is imported directly from <code class="docutils literal notranslate"><span class="pre">evennia</span></code>, we
+are actually importing from <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code>.</p>
+<p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/__init__.py#159">Look at Line 159</a> of <code class="docutils literal notranslate"><span class="pre">evennia/__init__.py</span></code> and you’ll find this line:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>from .objects.objects import DefaultObject
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Relative and absolute imports</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The first full-stop in `from .objects.objects ...` means that
+we are importing from the current location. This is called a `relative import`.
+By comparison, `from evennia.objects.objects` is an `absolute import`. In this particular
+case, the two would give the same result.
+</pre></div>
+</div>
+</aside>
+<blockquote>
+<div><p>You can also look at <a class="reference internal" href="../../../Evennia-API.html#typeclasses"><span class="std std-doc">the right section of the API frontpage</span></a> and click through
+to the code that way.</p>
+</div></blockquote>
+<p>The fact that <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> is imported into <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> here is what makes it possible to also import
+it as <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia</span> <span class="pre">import</span> <span class="pre">DefaultObject</span></code> even though the code for the class is not actually here.</p>
+<p>So to find the code for <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> we need to look in <code class="docutils literal notranslate"><span class="pre">evennia/objects/objects.py</span></code>. Here’s how
+to look it up in the docs:</p>
+<ol class="simple">
+<li><p>Open the <a class="reference internal" href="../../../Evennia-API.html"><span class="doc std std-doc">API frontpage</span></a></p></li>
+<li><p>Locate the link to <a class="reference internal" href="../../../api/evennia.objects.objects.html#evennia-objects-objects"><span class="std std-ref">evennia.objects.objects</span></a> and click on it.
+3 You are now in the python module. Scroll down (or search in your web browser) to find the <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> class.
+4 You can now read what this does and what methods are on it. If you want to see the full source, click the
+[source] link next to it.</p></li>
+</ol>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6. Overview of the Evennia library</a><ul>
+<li><a class="reference internal" href="#where-is-it">6.1. Where is it?</a></li>
+<li><a class="reference internal" href="#an-example-of-exploring-the-library">6.2. An example of exploring the library</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Python-classes-and-objects.html"
+                        title="previous chapter"><span class="section-number">5. </span>Introduction to Python classes and objects</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Learning-Typeclasses.html"
+                        title="next chapter"><span class="section-number">7. </span>Making objects persistent</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Evennia-Library-Overview.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Beginner-Tutorial-Evennia-Library-Overview.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Learning-Typeclasses.html" title="7. Making objects persistent"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Python-classes-and-objects.html" title="5. Introduction to Python classes and objects"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part1-Intro.html" >Part 1: What we have</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>Overview of the Evennia library</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

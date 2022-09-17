@@ -311,24 +311,23 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
-
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
 <span class="kn">from</span> <span class="nn">fnmatch</span> <span class="kn">import</span> <span class="n">fnmatch</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getargspec</span><span class="p">,</span> <span class="n">isfunction</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isfunction</span><span class="p">,</span> <span class="n">getargspec</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvColumn</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">m_len</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">crop</span>
-<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
 
 <span class="c1"># i18n</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvColumn</span><span class="p">,</span> <span class="n">EvTable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">crop</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">m_len</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="n">to_str</span>
 
 <span class="c1"># read from protocol NAWS later?</span>
 <span class="n">_MAX_TEXT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
@@ -1436,9 +1435,9 @@
                     <span class="c1"># we assume a string was given, we inject the result into the kwargs</span>
                     <span class="c1"># to pass on to the next node</span>
                     <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">selection</span>
-                    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">select</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">select</span><span class="p">),</span> <span class="n">kwargs</span>
             <span class="c1"># this means the previous node will be re-run with these same kwargs</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
 
         <span class="k">def</span> <span class="nf">_list_node</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
@@ -1787,10 +1786,11 @@
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A helper question for asking a simple yes/no question. This will cause</span>
+<span class="sd">    A helper function for asking a simple yes/no question. This will cause</span>
 <span class="sd">    the system to pause and wait for input from the player.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">        caller (Object): The entity being asked.</span>
 <span class="sd">        prompt (str): The yes/no question to ask. This takes an optional formatting</span>
 <span class="sd">            marker `{options}` which will be filled with &#39;Y/N&#39;, &#39;[Y]/N&#39; or</span>
 <span class="sd">            &#39;Y/[N]&#39; depending on the setting of `default`. If `allow_abort` is set,</span>

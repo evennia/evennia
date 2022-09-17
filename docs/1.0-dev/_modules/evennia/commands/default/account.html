@@ -62,14 +62,15 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">codecs</span> <span class="kn">import</span> <span class="n">lookup</span> <span class="k">as</span> <span class="n">codecs_lookup</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
 <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_CHARACTERS</span>
-<span class="n">_MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
+<span class="n">_AUTO_PUPPET_ON_LOGIN</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">AUTO_PUPPET_ON_LOGIN</span>
 
 <span class="c1"># limit symbol import for API</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
@@ -100,11 +101,6 @@
         <span class="sd">&quot;&quot;&quot;Custom parsing&quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="c1"># only one character allowed - not used in this mode</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">playable</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">return</span>
 
         <span class="n">playable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span>
         <span class="k">if</span> <span class="n">playable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -153,8 +149,14 @@
 <div class="viewcode-block" id="CmdOOCLook.func"><a class="viewcode-back" href="../../../../api/evennia.commands.default.account.html#evennia.commands.default.account.CmdOOCLook.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;implement the ooc look command&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="c1"># only one character allowed</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">puppet</span><span class="p">:</span>
+            <span class="c1"># if we are puppeting, this is only reached in the case the that puppet</span>
+            <span class="c1"># has no look command on its own.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You currently have no ability to look around.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">_AUTO_PUPPET_ON_LOGIN</span> <span class="ow">and</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">playable</span><span class="p">:</span>
+            <span class="c1"># only one exists and is allowed - simplify</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are out-of-character (OOC).</span><span class="se">\n</span><span class="s2">Use |wic|n to get back into the game.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -191,14 +193,16 @@
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
 
-        <span class="n">charmax</span> <span class="o">=</span> <span class="n">_MAX_NR_CHARACTERS</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">charmax</span>
-        <span class="p">):</span>
-            <span class="n">plural</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">charmax</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;s&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You may only create a maximum of </span><span class="si">{</span><span class="n">charmax</span><span class="si">}</span><span class="s2"> character</span><span class="si">{</span><span class="n">plural</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">check_permstring</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_MAX_NR_CHARACTERS</span>
+            <span class="p">):</span>
+                <span class="n">plural</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;s&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You may only have a maximum of </span><span class="si">{</span><span class="n">_MAX_NR_CHARACTERS</span><span class="si">}</span><span class="s2"> character</span><span class="si">{</span><span class="n">plural</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
         <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
 
         <span class="n">typeclass</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span>
@@ -219,8 +223,8 @@
         <span class="p">)</span>
         <span class="c1"># only allow creator (and developers) to puppet this char</span>
         <span class="n">new_character</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-            <span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developer) or pperm(Developer);delete:id(</span><span class="si">%i</span><span class="s2">) or perm(Admin)&quot;</span>
-            <span class="o">%</span> <span class="p">(</span><span class="n">new_character</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="s2">&quot;puppet:id(</span><span class="si">%i</span><span class="s2">) or pid(</span><span class="si">%i</span><span class="s2">) or perm(Developer) or pperm(Developer);delete:id(</span><span class="si">%i</span><span class="s2">) or&quot;</span>
+            <span class="s2">&quot; perm(Admin)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">new_character</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_character</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
@@ -270,7 +274,8 @@
             <span class="k">return</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="s2">&quot;Aborting - there are two characters with the same name. Ask an admin to delete the right one.&quot;</span>
+                <span class="s2">&quot;Aborting - there are two characters with the same name. Ask an admin to delete the&quot;</span>
+                <span class="s2">&quot; right one.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># one match</span>
@@ -461,8 +466,8 @@
             <span class="n">account</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|GYou go OOC.|n</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="c1"># only one character allowed</span>
+            <span class="k">if</span> <span class="n">_AUTO_PUPPET_ON_LOGIN</span> <span class="ow">and</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">playable</span><span class="p">:</span>
+                <span class="c1"># only one character exists and is allowed - simplify</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are out-of-character (OOC).</span><span class="se">\n</span><span class="s2">Use |wic|n to get back into the game.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
 
@@ -959,7 +964,10 @@
                             <span class="o">%</span> <span class="p">(</span><span class="mi">5</span> <span class="o">-</span> <span class="n">ir</span><span class="p">,</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">ig</span><span class="p">,</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">ib</span><span class="p">,</span> <span class="n">ir</span><span class="p">,</span> <span class="n">ig</span><span class="p">,</span> <span class="n">ib</span><span class="p">,</span> <span class="s2">&quot;||[</span><span class="si">%i%i%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ir</span><span class="p">,</span> <span class="n">ig</span><span class="p">,</span> <span class="n">ib</span><span class="p">))</span>
                         <span class="p">)</span>
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_format</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Xterm256 colors (if not all hues show, your client might not report that it can handle xterm256):&quot;</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Xterm256 colors (if not all hues show, your client might not report that it can&quot;</span>
+                <span class="s2">&quot; handle xterm256):&quot;</span>
+            <span class="p">)</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="p">)</span>
             <span class="n">table</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]]</span>
             <span class="k">for</span> <span class="n">ibatch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
@@ -1027,9 +1035,7 @@
         <span class="sd">&quot;&quot;&quot;Perform the command&quot;&quot;&quot;</span>
         <span class="n">account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
         <span class="n">permstr</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span>
-            <span class="ow">and</span> <span class="s2">&quot; (superuser)&quot;</span>
-            <span class="ow">or</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span> <span class="ow">and</span> <span class="s2">&quot; (superuser)&quot;</span> <span class="ow">or</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;unquell&quot;</span><span class="p">,</span> <span class="s2">&quot;unquell&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_quell&quot;</span><span class="p">):</span>

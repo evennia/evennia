@@ -41,13 +41,13 @@
             
   <h1>Source code for evennia.web.website.tests</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">override_settings</span>
 <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">slugify</span>
+<span class="kn">from</span> <span class="nn">evennia.help</span> <span class="kn">import</span> <span class="n">filehelp</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
-<span class="kn">from</span> <span class="nn">evennia.help</span> <span class="kn">import</span> <span class="n">filehelp</span>
 
 <span class="n">_FILE_HELP_ENTRIES</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -258,7 +258,7 @@
     <span class="n">url_name</span> <span class="o">=</span> <span class="s2">&quot;character-create&quot;</span>
     <span class="n">unauthenticated_response</span> <span class="o">=</span> <span class="mi">302</span>
 
-<div class="viewcode-block" id="CharacterCreateView.test_valid_access_multisession_0"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_0">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MULTISESSION_MODE</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="viewcode-block" id="CharacterCreateView.test_valid_access_multisession_0"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_0">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MAX_NR_CHARACTERS</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_valid_access_multisession_0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Account1 with no characters should be able to create a new one&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[]</span>
@@ -279,10 +279,9 @@
             <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="CharacterCreateView.test_valid_access_multisession_2"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_2">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MULTISESSION_MODE</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MAX_NR_CHARACTERS</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="viewcode-block" id="CharacterCreateView.test_valid_access_multisession_2"><a class="viewcode-back" href="../../../../api/evennia.web.website.tests.html#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_2">[docs]</a>    <span class="nd">@override_settings</span><span class="p">(</span><span class="n">MAX_NR_CHARACTERS</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_valid_access_multisession_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Account1 should be able to create a new character&quot;</span>
+        <span class="s2">&quot;Account1 should be able to create multiple new characters&quot;</span>
         <span class="c1"># Login account</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
 
@@ -317,7 +316,8 @@
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">follow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
             <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">400</span><span class="p">,</span>
-            <span class="s2">&quot;Invalid access should return a 4xx code-- either obj not found or permission denied! (Returned </span><span class="si">%s</span><span class="s2">)&quot;</span>
+            <span class="s2">&quot;Invalid access should return a 4xx code-- either obj not found or permission denied!&quot;</span>
+            <span class="s2">&quot; (Returned </span><span class="si">%s</span><span class="s2">)&quot;</span>
             <span class="o">%</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 

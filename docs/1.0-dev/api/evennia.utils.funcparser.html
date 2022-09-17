@@ -313,7 +313,26 @@ as the input.</p>
 <dl class="py function">
 <dt id="evennia.utils.funcparser.funcparser_callable_toint">
 <code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_toint</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_toint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_toint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Usage: toint(43.0) -&gt; 43</p>
+<dd><p>Usage: $toint(43.0) -&gt; 43</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.funcparser.funcparser_callable_int2str">
+<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_int2str</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_int2str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_int2str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $int2str(1) -&gt; ‘one’ etc, up to 12-&gt;twelve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>number</strong> (<em>int</em>) – The number. If not an int, will be converted.</p>
+</dd>
+</dl>
+<p>Uses the int2str utility function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.funcparser.funcparser_callable_an">
+<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_an</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_an"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_an" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $an(thing) -&gt; a thing</p>
+<p>Adds a/an depending on if the first letter of the given word is a consonant or not.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -535,6 +554,29 @@ to <strong>|n</strong> (reset-color).</p></li>
 <li><p><strong>$clr(r, text, n) -&gt; “|rtext|n”</strong></p></li>
 <li><p><strong>$clr(r, text) -&gt; “|rtext|n</strong></p></li>
 <li><p><strong>$clr(text, start=r, end=n) -&gt; “|rtext|n”</strong></p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.funcparser.funcparser_callable_pluralize">
+<code class="sig-prename descclassname">evennia.utils.funcparser.</code><code class="sig-name descname">funcparser_callable_pluralize</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#funcparser_callable_pluralize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.funcparser_callable_pluralize" title="Permalink to this definition">¶</a></dt>
+<dd><p>FuncParser callable. Handles pluralization of a word.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>singular_word</strong> (<em>str</em>) – The base (singular) word to optionally pluralize</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – The number of elements; if 1 (or 0), use <strong>singular_word</strong> as-is,
+otherwise use plural form.</p></li>
+<li><p><strong>plural_word</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, this will be used if <strong>number</strong>
+is greater than one. If not given, we simply add ‘s’ to the end of
+<strong>singular_word</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<ul class="simple">
+<li><p><strong>$pluralize(thing, 2)</strong> -&gt; “things”</p></li>
+<li><p><strong>$pluralize(goose, 18, geese)</strong> -&gt; “geese”</p></li>
 </ul>
 </dd></dl>
 

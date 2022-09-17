@@ -48,38 +48,38 @@
 <span class="sd">be of use when designing your own game.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">gc</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">types</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">textwrap</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">import</span> <span class="nn">importlib.util</span>
 <span class="kn">import</span> <span class="nn">importlib.machinery</span>
+<span class="kn">import</span> <span class="nn">importlib.util</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">types</span>
 <span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
-<span class="kn">from</span> <span class="nn">simpleeval</span> <span class="kn">import</span> <span class="n">simple_eval</span>
-<span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">threads</span><span class="p">,</span> <span class="n">reactor</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getmembers</span><span class="p">,</span> <span class="n">getmodule</span><span class="p">,</span> <span class="n">getmro</span><span class="p">,</span> <span class="n">ismodule</span><span class="p">,</span> <span class="n">trace</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">osjoin</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">ismodule</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">getmembers</span><span class="p">,</span> <span class="n">getmodule</span><span class="p">,</span> <span class="n">getmro</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
+
+<span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">DjangoValidationError</span>
+<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="kn">import</span> <span class="n">validate_email</span> <span class="k">as</span> <span class="n">django_validate_email</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">strip_tags</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
-<span class="kn">from</span> <span class="nn">django.core.validators</span> <span class="kn">import</span> <span class="n">validate_email</span> <span class="k">as</span> <span class="n">django_validate_email</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">DjangoValidationError</span>
-
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">simpleeval</span> <span class="kn">import</span> <span class="n">simple_eval</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">threads</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="kn">import</span> <span class="n">returnValue</span>  <span class="c1"># noqa - used as import target</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">deferLater</span>
 
 <span class="n">_MULTIMATCH_TEMPLATE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_MULTIMATCH_TEMPLATE</span>
 <span class="n">_EVENNIA_DIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">EVENNIA_DIR</span>
@@ -428,22 +428,22 @@
 <span class="sd">    Examples:</span>
 
 <span class="sd">        ```python</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], endsep=&#39;,&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; iter_to_string([1,2,3], endsep=&#39;,&#39;)</span>
 <span class="sd">        &#39;1, 2, 3&#39;</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], endsep=&#39;&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; iter_to_string([1,2,3], endsep=&#39;&#39;)</span>
 <span class="sd">        &#39;1, 2 3&#39;</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], ensdep=&#39;and&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; iter_to_string([1,2,3], ensdep=&#39;and&#39;)</span>
 <span class="sd">        &#39;1, 2 and 3&#39;</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], sep=&#39;;&#39;, endsep=&#39;;&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; iter_to_string([1,2,3], sep=&#39;;&#39;, endsep=&#39;;&#39;)</span>
 <span class="sd">        &#39;1; 2; 3&#39;</span>
-<span class="sd">        &gt;&gt;&gt; list_to_string([1,2,3], addquote=True)</span>
+<span class="sd">        &gt;&gt;&gt; iter_to_string([1,2,3], addquote=True)</span>
 <span class="sd">        &#39;&quot;1&quot;, &quot;2&quot;, and &quot;3&quot;&#39;</span>
 <span class="sd">        ```</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">iterable</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">iterable</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">iterable</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">))</span>
     <span class="n">len_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">addquote</span><span class="p">:</span>
@@ -2754,6 +2754,43 @@
         <span class="k">return</span> <span class="n">function_or_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">threads</span><span class="o">.</span><span class="n">blockingCallFromThread</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">function_or_method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="n">_INT2STR_MAP_NOUN</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;one&quot;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;two&quot;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;three&quot;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;four&quot;</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;five&quot;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;six&quot;</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;seven&quot;</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;eight&quot;</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;nine&quot;</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;ten&quot;</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s2">&quot;eleven&quot;</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="s2">&quot;twelve&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_INT2STR_MAP_ADJ</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;1st&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;2nd&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;3rd&quot;</span><span class="p">}</span>  <span class="c1"># rest is Xth.</span>
+
+
+<div class="viewcode-block" id="int2str"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.int2str">[docs]</a><span class="k">def</span> <span class="nf">int2str</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">adjective</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a number to an English string for better display; so 1 -&gt; one, 2 -&gt; two etc</span>
+<span class="sd">    up until 12, after which it will be &#39;13&#39;, &#39;14&#39; etc.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        number (int): The number to convert. Floats will be converted to ints.</span>
+<span class="sd">        adjective (int): If set, map 1-&gt;1st, 2-&gt;2nd etc. If unset, map 1-&gt;one, 2-&gt;two etc.</span>
+<span class="sd">            up to twelve.</span>
+<span class="sd">    Return:</span>
+<span class="sd">        str: The number expressed as a string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">adjective</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_INT2STR_MAP_ADJ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">th&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_INT2STR_MAP_NOUN</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">))</span></div>
 </pre></div>
 
             <div class="clearer"></div>

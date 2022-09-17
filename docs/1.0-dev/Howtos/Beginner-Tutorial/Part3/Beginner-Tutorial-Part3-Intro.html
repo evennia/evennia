@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Implementing a game rule system" href="Implementing-a-game-rule-system.html" />
-    <link rel="prev" title="Planning our tutorial game" href="../Part2/Planning-The-Tutorial-Game.html" /> 
+    <link rel="next" title="Code structure and Utilities" href="Beginner-Tutorial-Utilities.html" />
+    <link rel="prev" title="Planning our tutorial game" href="../Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Implementing-a-game-rule-system.html" title="Implementing a game rule system"
+          <a href="Beginner-Tutorial-Utilities.html" title="Code structure and Utilities"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../Part2/Planning-The-Tutorial-Game.html" title="Planning our tutorial game"
+          <a href="../Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html" title="Planning our tutorial game"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
@@ -50,6 +50,12 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="part-3-how-we-get-there">
 <h1>Part 3: How we get there<a class="headerlink" href="#part-3-how-we-get-there" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The tutorial game is under development and is not yet complete, nor tested. Use the existing
+lessons as inspiration and to help get you going, but don’t expect out-of-the-box perfection
+from it at this time.</p>
+</div>
 <aside class="sidebar">
 <p class="sidebar-title">Beginner Tutorial Parts</p>
 <dl class="simple">
@@ -67,42 +73,145 @@
 </dd>
 </dl>
 </aside>
-<p>In part three of the Evennia Beginner tutorial we will go through the creation of several key parts of our tutorial
-game <em>EvAdventure</em>. This is a pretty big part with plenty of examples.</p>
-<p>If you followed the previous parts of this tutorial you will have some notions about Python and where to find
-and make use of things in Evennia. We also have a good idea of the type of game we want.
-Even if this is not the game-style you are interested in, following along will give you a lot of experience
-with using Evennia. This be of much use when doing your own thing later.</p>
+<p>In part three of the Evennia Beginner tutorial we will go through the actual creation of
+our tutorial game <em>EvAdventure</em>, based on the <a class="reference external" href="https://www.drivethrurpg.com/product/250888/Knave">Knave</a>
+RPG ruleset.</p>
+<p>This is a big part. You’ll be seeing a lot of code and there are plenty of lessons to go through.
+Take your time!</p>
+<p>If you followed the previous parts of this tutorial you will have some notions about Python and where to
+find and make use of things in Evennia. We also have a good idea of the type of game we will
+create.</p>
+<p>Even if this is not the game-style you are interested in, following along will give you a lot
+of experience using Evennia and be really helpful for doing your own thing later!</p>
+<p>Fully coded examples of all code we make in this part can be found in the
+<a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.html#evennia-contrib-tutorials-evadventure"><span class="std std-ref">evennia/contrib/tutorials/evadventure</span></a> package.</p>
 <section id="lessons">
 <h2>Lessons<a class="headerlink" href="#lessons" title="Permalink to this headline">¶</a></h2>
-<p><em>TODO</em></p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Implementing-a-game-rule-system.html">Implementing a game rule system</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Turn-based-Combat-System.html">Turn based Combat System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="A-Sittable-Object.html">Making a sittable object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Utilities.html">Code structure and Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Rules.html">Rules and dice rolling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Characters.html">Player Characters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Objects.html">In-game Objects and items</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Equipment.html">Handling Equipment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Chargen.html">Character Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Rooms.html">In-game Rooms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-NPCs.html">Non-Player-Characters (NPCs)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Quests.html">Game Quests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Shops.html">In-game Shops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Dungeon.html">Dynamically generated Dungeon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Commands.html">In-game Commands</a></li>
 </ul>
 </div>
-<ol class="simple">
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Changing settings</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Applying contribs</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Creating a rule module</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Tweaking the base Typeclasses</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Character creation menu</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Wearing armor and wielding weapons</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Two types of combat</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Monsters and AI</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Questing and rewards</span></a></p></li>
-<li><p><a class="reference internal" href="../../../Unimplemented.html"><span class="doc std std-doc">Overview of Tech demo</span></a></p></li>
-</ol>
 </section>
 <section id="table-of-contents">
 <h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
-<p><em>TODO</em></p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Implementing-a-game-rule-system.html">Implementing a game rule system</a></li>
-<li class="toctree-l1"><a class="reference internal" href="A-Sittable-Object.html">Making a sittable object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Utilities.html">Code structure and Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Utilities.html#folder-structure">Folder structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Utilities.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Utilities.html#utility-module">Utility module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Utilities.html#testing">Testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Utilities.html#running-your-test">Running your test</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Utilities.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Rules.html">Rules and dice rolling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Rules.html#summary-of-knave-rules">Summary of <em>Knave</em> rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Rules.html#making-a-rule-module">Making a rule module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Rules.html#rolling-dice">Rolling dice</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#generic-dice-roller">Generic dice roller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#rolling-with-advantage">Rolling with advantage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#saving-throws">Saving throws</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#opposed-saving-throw">Opposed saving throw</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#morale-check">Morale check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#roll-for-healing">Roll for Healing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#rolling-on-a-table">Rolling on a table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#roll-for-death">Roll for death</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Rules.html#testing">Testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Rules.html#mocking-and-patching">Mocking and patching</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Rules.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Characters.html">Player Characters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Characters.html#inheritance-structure">Inheritance structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Characters.html#living-mixin-class">Living mixin class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Characters.html#character-class">Character class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Characters.html#funcparser-inlines">Funcparser inlines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Characters.html#backtracking">Backtracking</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Characters.html#connecting-the-character-with-evennia">Connecting the Character with Evennia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Characters.html#unit-testing">Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Characters.html#about-races-and-classes">About races and classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Characters.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Objects.html">In-game Objects and items</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#new-enums">New Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#the-base-object">The base object</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Objects.html#using-attributes-or-not">Using Attributes or not</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Objects.html#creating-tags-in-at-object-creation">Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#other-object-types">Other object types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#consumables">Consumables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#weapons">Weapons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#magic">Magic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#armor">Armor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#your-bare-hands">Your Bare hands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Objects.html#testing-and-extra-credits">Testing and Extra credits</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Equipment.html">Handling Equipment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#equipmenthandler-that-saves">EquipmentHandler that saves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#connecting-the-equipmenthandler">Connecting the EquipmentHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#expanding-the-equipmenthandler">Expanding the Equipmenthandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#validate-slot-usage"><code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#max-slots"><code class="docutils literal notranslate"><span class="pre">.max_slots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#count-slots"><code class="docutils literal notranslate"><span class="pre">.count_slots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#validating-slots">Validating slots</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#add-and-remove"><code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#moving-things-around">Moving things around</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#get-everything">Get everything</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#weapon-and-armor">Weapon and armor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#extra-credits">Extra credits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#unit-testing">Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Equipment.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Chargen.html">Character Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#how-it-will-work">How it will work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#random-tables">Random tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#storing-state-of-the-menu">Storing state of the menu</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#showing-the-sheet">Showing the sheet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#apply-character">Apply character</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#initializing-evmenu">Initializing EvMenu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#main-node-choosing-what-to-do">Main Node: Choosing what to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#node-changing-your-name">Node: Changing your name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#node-swapping-abilities-around">Node: Swapping Abilities around</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#node-creating-the-character">Node: Creating the Character</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#tying-the-nodes-together">Tying the nodes together</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Chargen.html#conclusions">Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Rooms.html">In-game Rooms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-NPCs.html">Non-Player-Characters (NPCs)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Quests.html">Game Quests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Shops.html">In-game Shops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Dungeon.html">Dynamically generated Dungeon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Commands.html">In-game Commands</a></li>
 </ul>
 </div>
 </section>
@@ -138,11 +247,11 @@ with using Evennia. This be of much use when doing your own thing later.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../Part2/Planning-The-Tutorial-Game.html"
+  <p class="topless"><a href="../Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html"
                         title="previous chapter">Planning our tutorial game</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Implementing-a-game-rule-system.html"
-                        title="next chapter">Implementing a game rule system</a></p>
+  <p class="topless"><a href="Beginner-Tutorial-Utilities.html"
+                        title="next chapter">Code structure and Utilities</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -180,10 +289,10 @@ with using Evennia. This be of much use when doing your own thing later.</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Implementing-a-game-rule-system.html" title="Implementing a game rule system"
+          <a href="Beginner-Tutorial-Utilities.html" title="Code structure and Utilities"
              >next</a> |</li>
         <li class="right" >
-          <a href="../Part2/Planning-The-Tutorial-Game.html" title="Planning our tutorial game"
+          <a href="../Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html" title="Planning our tutorial game"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>

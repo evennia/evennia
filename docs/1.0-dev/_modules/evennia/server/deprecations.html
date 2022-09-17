@@ -72,7 +72,7 @@
         <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;CMDSET_OOC&quot;</span><span class="p">,</span> <span class="s2">&quot;CMDSET_ACCOUNT&quot;</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEBSERVER_ENABLED</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">WEBSERVER_PORTS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
-            <span class="s2">&quot;settings.WEBSERVER_PORTS must be on the form &quot;</span> <span class="s2">&quot;[(proxyport, serverport), ...]&quot;</span>
+            <span class="s2">&quot;settings.WEBSERVER_PORTS must be on the form [(proxyport, serverport), ...]&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;BASE_COMM_TYPECLASS&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;BASE_COMM_TYPECLASS&quot;</span><span class="p">,</span> <span class="s2">&quot;BASE_CHANNEL_TYPECLASS&quot;</span><span class="p">))</span>
@@ -85,7 +85,7 @@
             <span class="s2">&quot;(see evennia/settings_default.py).&quot;</span>
         <span class="p">)</span>
     <span class="n">deprstring</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;settings.</span><span class="si">%s</span><span class="s2"> is now merged into settings.TYPECLASS_PATHS. &quot;</span> <span class="s2">&quot;Update your settings file.&quot;</span>
+        <span class="s2">&quot;settings.</span><span class="si">%s</span><span class="s2"> is now merged into settings.TYPECLASS_PATHS. Update your settings file.&quot;</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;OBJECT_TYPECLASS_PATHS&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="n">deprstring</span> <span class="o">%</span> <span class="s2">&quot;OBJECT_TYPECLASS_PATHS&quot;</span><span class="p">)</span>
@@ -187,6 +187,13 @@
             <span class="s2">&quot; 1. Delete any existing `web/static` folder and all its contents (this &quot;</span>
             <span class="s2">&quot;was auto-generated)</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot; 2. Rename your existing `static_overrides` folder to `static` instead.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_SIMULTANEOUS_PUPPETS</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;settings.MULTISESSION_MODE=</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span><span class="si">}</span><span class="s2"> is not compatible with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;settings.MAX_NR_SIMULTANEOUS_PUPPETS=</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_SIMULTANEOUS_PUPPETS</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;To allow multiple simultaneous puppets, the multi-session mode must be higher than 1.&quot;</span>
         <span class="p">)</span></div>
 
 

@@ -311,7 +311,7 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="n">MAX_CHAR_LIMIT</span> <span class="o">=</span> <span class="mi">6000</span>
 <span class="c1"># The warning to echo back to users if they enter a very large string</span>
 <span class="n">MAX_CHAR_LIMIT_WARNING</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;You entered a string that was too long. &quot;</span> <span class="s2">&quot;Please break it up into multiple parts.&quot;</span>
+    <span class="s2">&quot;You entered a string that was too long. Please break it up into multiple parts.&quot;</span>
 <span class="p">)</span>
 <span class="c1"># If this is true, errors and tracebacks from the engine will be</span>
 <span class="c1"># echoed as text in-game as well as to the log. This can speed up</span>
@@ -600,8 +600,6 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1"># is Limbo (#2).</span>
 <span class="n">DEFAULT_HOME</span> <span class="o">=</span> <span class="s2">&quot;#2&quot;</span>
 <span class="c1"># The start position for new characters. Default is Limbo (#2).</span>
-<span class="c1">#  MULTISESSION_MODE = 0, 1 - used by default unloggedin create command</span>
-<span class="c1">#  MULTISESSION_MODE = 2, 3 - used by default character_create command</span>
 <span class="n">START_LOCATION</span> <span class="o">=</span> <span class="s2">&quot;#2&quot;</span>
 <span class="c1"># Lookups of Attributes, Tags, Nicks, Aliases can be aggressively</span>
 <span class="c1"># cached to avoid repeated database hits. This often gives noticeable</span>
@@ -771,21 +769,31 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="c1">######################################################################</span>
 
 <span class="c1"># Different Multisession modes allow a player (=account) to connect to the</span>
-<span class="c1"># game simultaneously with multiple clients (=sessions). In modes 0,1 there is</span>
-<span class="c1"># only one character created to the same name as the account at first login.</span>
-<span class="c1"># In modes 2,3 no default character will be created and the MAX_NR_CHARACTERS</span>
-<span class="c1"># value (below) defines how many characters the default char_create command</span>
-<span class="c1"># allow per account.</span>
-<span class="c1">#  0 - single session, one account, one character, when a new session is</span>
-<span class="c1">#      connected, the old one is disconnected</span>
-<span class="c1">#  1 - multiple sessions, one account, one character, each session getting</span>
-<span class="c1">#      the same data</span>
-<span class="c1">#  2 - multiple sessions, one account, many characters, one session per</span>
-<span class="c1">#      character (disconnects multiplets)</span>
-<span class="c1">#  3 - like mode 2, except multiple sessions can puppet one character, each</span>
+<span class="c1"># game simultaneously with multiple clients (=sessions).</span>
+<span class="c1">#  0 - single session per account (if reconnecting, disconnect old session)</span>
+<span class="c1">#  1 - multiple sessions per account, all sessions share output</span>
+<span class="c1">#  2 - multiple sessions per account, one session allowed per puppet</span>
+<span class="c1">#  3 - multiple sessions per account, multiple sessions per puppet (share output)</span>
 <span class="c1">#      session getting the same data.</span>
 <span class="n">MULTISESSION_MODE</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="c1"># The maximum number of characters allowed by the default ooc char-creation command</span>
+<span class="c1"># Whether we should create a character with the same name as the account when</span>
+<span class="c1"># a new account is created. Together with AUTO_PUPPET_ON_LOGIN, this mimics</span>
+<span class="c1"># a legacy MUD, where there is no difference between account and character.</span>
+<span class="n">AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Whether an account should auto-puppet the last puppeted puppet when logging in. This</span>
+<span class="c1"># will only work if the session/puppet combination can be determined (usually</span>
+<span class="c1"># MULTISESSION_MODE 0 or 1), otherwise, the player will end up OOC. Use</span>
+<span class="c1"># MULTISESSION_MODE=0, AUTO_CREATE_CHARACTER_WITH_ACCOUNT=True and this value to</span>
+<span class="c1"># mimic a legacy mud with minimal difference between Account and Character. Disable</span>
+<span class="c1"># this and AUTO_PUPPET to get a chargen/character select screen on login.</span>
+<span class="n">AUTO_PUPPET_ON_LOGIN</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># How many *different* characters an account can puppet *at the same time*. A value</span>
+<span class="c1"># above 1 only makes a difference together with MULTISESSION_MODE &gt; 1.</span>
+<span class="n">MAX_NR_SIMULTANEOUS_PUPPETS</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># The maximum number of characters allowed by be created by the default ooc</span>
+<span class="c1"># char-creation command. This can be seen as how big of a &#39;stable&#39; of characters</span>
+<span class="c1"># an account can have (not how many you can puppet at the same time). Set to</span>
+<span class="c1"># None for no limit.</span>
 <span class="n">MAX_NR_CHARACTERS</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="c1"># The access hierarchy, in climbing order. A higher permission in the</span>
 <span class="c1"># hierarchy includes access of all levels below it. Used by the perm()/pperm()</span>

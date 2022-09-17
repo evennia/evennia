@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="1. Using commands and building stuff" href="Building-Quickstart.html" />
+    <link rel="next" title="1. Using commands and building stuff" href="Beginner-Tutorial-Building-Quickstart.html" />
     <link rel="prev" title="Beginner Tutorial" href="../Beginner-Tutorial-Intro.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,7 +30,7 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Building-Quickstart.html" title="1. Using commands and building stuff"
+          <a href="Beginner-Tutorial-Building-Quickstart.html" title="1. Using commands and building stuff"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../Beginner-Tutorial-Intro.html" title="Beginner Tutorial"
@@ -76,18 +76,18 @@ these concepts in the context of Evennia before.</p>
 <h2>Lessons<a class="headerlink" href="#lessons" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Building-Quickstart.html">1. Using commands and building stuff</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tutorial-World.html">2. The Tutorial World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Python-basic-introduction.html">3. Intro to using Python with Evennia</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Gamedir-Overview.html">4. Overview of your new Game Dir</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Python-classes-and-objects.html">5. Introduction to Python classes and objects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Evennia-Library-Overview.html">6. Overview of the Evennia library</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Learning-Typeclasses.html">7. Making objects persistent</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Adding-Commands.html">8. Adding custom commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="More-on-Commands.html">9. Parsing Command input</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Creating-Things.html">10. Creating things</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Searching-Things.html">11. Searching for things</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Django-queries.html">12. Advanced searching - Django Database queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html">1. Using commands and building stuff</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html">2. The Tutorial World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html">3. Intro to using Python with Evennia</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Gamedir-Overview.html">4. Overview of your new Game Dir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Python-classes-and-objects.html">5. Introduction to Python classes and objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Evennia-Library-Overview.html">6. Overview of the Evennia library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Learning-Typeclasses.html">7. Making objects persistent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html">8. Adding custom commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-More-on-Commands.html">9. Parsing Command input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Creating-Things.html">10. Creating things</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Searching-Things.html">11. Searching for things</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html">12. Advanced searching - Django Database queries</a></li>
 </ul>
 </div>
 </section>
@@ -95,97 +95,97 @@ these concepts in the context of Evennia before.</p>
 <h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Building-Quickstart.html">1. Using commands and building stuff</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#getting-help">1.1. Getting help</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#looking-around">1.2. Looking around</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#stepping-down-from-godhood">1.3. Stepping Down From Godhood</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#creating-an-object">1.4. Creating an Object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#get-a-personality">1.5. Get a Personality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#pushing-your-buttons">1.6. Pushing Your Buttons</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#making-yourself-a-house">1.7. Making Yourself a House</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#reshuffling-the-world">1.8. Reshuffling the World</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#adding-a-help-entry">1.9. Adding a Help Entry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Building-Quickstart.html#adding-a-world">1.10. Adding a World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html">1. Using commands and building stuff</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#getting-help">1.1. Getting help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#looking-around">1.2. Looking around</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#stepping-down-from-godhood">1.3. Stepping Down From Godhood</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#creating-an-object">1.4. Creating an Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#get-a-personality">1.5. Get a Personality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#pushing-your-buttons">1.6. Pushing Your Buttons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#making-yourself-a-house">1.7. Making Yourself a House</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#reshuffling-the-world">1.8. Reshuffling the World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#adding-a-help-entry">1.9. Adding a Help Entry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html#adding-a-world">1.10. Adding a World</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Tutorial-World.html">2. The Tutorial World</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Tutorial-World.html#gameplay">2.1. Gameplay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tutorial-World.html#once-you-are-done-or-had-enough">2.2. Once you are done (or had enough)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tutorial-World.html#uninstall-the-tutorial-world">2.3. Uninstall the tutorial world</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html">2. The Tutorial World</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html#gameplay">2.1. Gameplay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html#once-you-are-done-or-had-enough">2.2. Once you are done (or had enough)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html#uninstall-the-tutorial-world">2.3. Uninstall the tutorial world</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Python-basic-introduction.html">3. Intro to using Python with Evennia</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#evennia-hello-world">3.1. Evennia Hello world</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#making-some-text-graphics">3.2. Making some text ‘graphics’</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#importing-code-from-other-modules">3.3. Importing code from other modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#sending-text-to-others">3.4. Sending text to others</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#parsing-python-errors">3.5. Parsing Python errors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#passing-arguments-to-functions">3.6. Passing arguments to functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#finding-others-to-send-to">3.7. Finding others to send to</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#multi-line-py">3.8. Multi-line py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#other-ways-to-test-python-code">3.9. Other ways to test Python code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#ipython">3.10. ipython</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-basic-introduction.html#conclusions">3.11. Conclusions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html">3. Intro to using Python with Evennia</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#evennia-hello-world">3.1. Evennia Hello world</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#making-some-text-graphics">3.2. Making some text ‘graphics’</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#importing-code-from-other-modules">3.3. Importing code from other modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#sending-text-to-others">3.4. Sending text to others</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#parsing-python-errors">3.5. Parsing Python errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#passing-arguments-to-functions">3.6. Passing arguments to functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#finding-others-to-send-to">3.7. Finding others to send to</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#multi-line-py">3.8. Multi-line py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#other-ways-to-test-python-code">3.9. Other ways to test Python code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#ipython">3.10. ipython</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html#conclusions">3.11. Conclusions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Gamedir-Overview.html">4. Overview of your new Game Dir</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Gamedir-Overview.html#commands">4.1. commands/</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Gamedir-Overview.html#server">4.2. server/</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Gamedir-Overview.html">4. Overview of your new Game Dir</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Gamedir-Overview.html#commands">4.1. commands/</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Gamedir-Overview.html#server">4.2. server/</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Python-classes-and-objects.html">5. Introduction to Python classes and objects</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Python-classes-and-objects.html#importing-things">5.1. Importing things</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-classes-and-objects.html#on-classes-and-objects">5.2. On classes and objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Python-classes-and-objects.html#summary">5.3. Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Python-classes-and-objects.html">5. Introduction to Python classes and objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-classes-and-objects.html#importing-things">5.1. Importing things</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-classes-and-objects.html#on-classes-and-objects">5.2. On classes and objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Python-classes-and-objects.html#summary">5.3. Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Evennia-Library-Overview.html">6. Overview of the Evennia library</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Evennia-Library-Overview.html#where-is-it">6.1. Where is it?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Evennia-Library-Overview.html#an-example-of-exploring-the-library">6.2. An example of exploring the library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Evennia-Library-Overview.html">6. Overview of the Evennia library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Evennia-Library-Overview.html#where-is-it">6.1. Where is it?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Evennia-Library-Overview.html#an-example-of-exploring-the-library">6.2. An example of exploring the library</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Learning-Typeclasses.html">7. Making objects persistent</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Learning-Typeclasses.html#our-first-persistent-object">7.1. Our first persistent object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Learning-Typeclasses.html#typeclasses">7.2. Typeclasses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Learning-Typeclasses.html#modifying-ourselves">7.3. Modifying ourselves</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Learning-Typeclasses.html#extra-credits">7.4. Extra Credits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Learning-Typeclasses.html#conclusions">7.5. Conclusions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Learning-Typeclasses.html">7. Making objects persistent</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Learning-Typeclasses.html#our-first-persistent-object">7.1. Our first persistent object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Learning-Typeclasses.html#typeclasses">7.2. Typeclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Learning-Typeclasses.html#modifying-ourselves">7.3. Modifying ourselves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Learning-Typeclasses.html#extra-credits">7.4. Extra Credits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Learning-Typeclasses.html#conclusions">7.5. Conclusions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Adding-Commands.html">8. Adding custom commands</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Adding-Commands.html#creating-a-custom-command">8.1. Creating a custom command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Adding-Commands.html#summary">8.2. Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html">8. Adding custom commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html#creating-a-custom-command">8.1. Creating a custom command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html#summary">8.2. Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="More-on-Commands.html">9. Parsing Command input</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="More-on-Commands.html#more-advanced-parsing">9.1. More advanced parsing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="More-on-Commands.html#adding-a-command-to-an-object">9.2. Adding a Command to an object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="More-on-Commands.html#adding-the-command-to-a-default-cmdset">9.3. Adding the Command to a default Cmdset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="More-on-Commands.html#replace-a-default-command">9.4. Replace a default command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="More-on-Commands.html#summary">9.5. Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-More-on-Commands.html">9. Parsing Command input</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-More-on-Commands.html#more-advanced-parsing">9.1. More advanced parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-More-on-Commands.html#adding-a-command-to-an-object">9.2. Adding a Command to an object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-More-on-Commands.html#adding-the-command-to-a-default-cmdset">9.3. Adding the Command to a default Cmdset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-More-on-Commands.html#replace-a-default-command">9.4. Replace a default command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-More-on-Commands.html#summary">9.5. Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Creating-Things.html">10. Creating things</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Creating-Things.html#creating-objects">10.1. Creating Objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Creating-Things.html#creating-accounts">10.2. Creating Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Creating-Things.html">10. Creating things</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Creating-Things.html#creating-objects">10.1. Creating Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Creating-Things.html#creating-accounts">10.2. Creating Accounts</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Searching-Things.html">11. Searching for things</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Searching-Things.html#main-search-functions">11.1. Main search functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Searching-Things.html#searching-using-object-search">11.2. Searching using Object.search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Searching-Things.html#what-can-be-searched-for">11.3. What can be searched for</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Searching-Things.html#finding-objects-relative-each-other">11.4. Finding objects relative each other</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Searching-Things.html#summary">11.5. Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Searching-Things.html">11. Searching for things</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Searching-Things.html#main-search-functions">11.1. Main search functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Searching-Things.html#searching-using-object-search">11.2. Searching using Object.search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Searching-Things.html#what-can-be-searched-for">11.3. What can be searched for</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Searching-Things.html#finding-objects-relative-each-other">11.4. Finding objects relative each other</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Searching-Things.html#summary">11.5. Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Django-queries.html">12. Advanced searching - Django Database queries</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Django-queries.html#queryset-field-lookups">12.1. Queryset field lookups</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Django-queries.html#get-that-werewolf">12.2. Get that werewolf …</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Django-queries.html#complex-queries">12.3. Complex queries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Django-queries.html#annotations">12.4. Annotations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Django-queries.html#f-objects">12.5. F-objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Django-queries.html#grouping-and-returning-only-certain-properties">12.6. Grouping and returning only certain properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Django-queries.html#conclusions">12.7. Conclusions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html">12. Advanced searching - Django Database queries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html#queryset-field-lookups">12.1. Queryset field lookups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html#get-that-werewolf">12.2. Get that werewolf …</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html#complex-queries">12.3. Complex queries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html#annotations">12.4. Annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html#f-objects">12.5. F-objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html#grouping-and-returning-only-certain-properties">12.6. Grouping and returning only certain properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Django-queries.html#conclusions">12.7. Conclusions</a></li>
 </ul>
 </li>
 </ul>
@@ -226,7 +226,7 @@ these concepts in the context of Evennia before.</p>
   <p class="topless"><a href="../Beginner-Tutorial-Intro.html"
                         title="previous chapter">Beginner Tutorial</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Building-Quickstart.html"
+  <p class="topless"><a href="Beginner-Tutorial-Building-Quickstart.html"
                         title="next chapter"><span class="section-number">1. </span>Using commands and building stuff</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
@@ -265,7 +265,7 @@ these concepts in the context of Evennia before.</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Building-Quickstart.html" title="1. Using commands and building stuff"
+          <a href="Beginner-Tutorial-Building-Quickstart.html" title="1. Using commands and building stuff"
              >next</a> |</li>
         <li class="right" >
           <a href="../Beginner-Tutorial-Intro.html" title="Beginner Tutorial"

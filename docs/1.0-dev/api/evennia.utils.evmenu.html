@@ -954,7 +954,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['abort', 'a', 'yes', 'no', 'n', '__nomatch_command', 'y']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['no', 'a', 'y', '__nomatch_command', 'yes', 'n', 'abort']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -980,7 +980,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'abort a yes no n __nomatch_command y', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' abort a yes no n __nomatch_command y', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'no a y __nomatch_command yes n abort', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' no a y __nomatch_command yes n abort', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1036,11 +1036,12 @@ single question.</p>
 <dl class="py function">
 <dt id="evennia.utils.evmenu.ask_yes_no">
 <code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">ask_yes_no</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">prompt</span><span class="o">=</span><span class="default_value">'Yes or No {options}?'</span></em>, <em class="sig-param"><span class="n">yes_action</span><span class="o">=</span><span class="default_value">'Yes'</span></em>, <em class="sig-param"><span class="n">no_action</span><span class="o">=</span><span class="default_value">'No'</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_abort</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#ask_yes_no"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.ask_yes_no" title="Permalink to this definition">¶</a></dt>
-<dd><p>A helper question for asking a simple yes/no question. This will cause
+<dd><p>A helper function for asking a simple yes/no question. This will cause
 the system to pause and wait for input from the player.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em>) – The entity being asked.</p></li>
 <li><p><strong>prompt</strong> (<em>str</em>) – The yes/no question to ask. This takes an optional formatting
 marker <strong>{options}</strong> which will be filled with ‘Y/N’, ‘[Y]/N’ or
 ‘Y/[N]’ depending on the setting of <strong>default</strong>. If <strong>allow_abort</strong> is set,

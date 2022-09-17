@@ -46,6 +46,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">email_login</span>
 
 
@@ -55,17 +56,20 @@
             <span class="n">email_login</span><span class="o">.</span><span class="n">CmdUnconnectedConnect</span><span class="p">(),</span>
             <span class="s2">&quot;mytest@test.com test&quot;</span><span class="p">,</span>
             <span class="s2">&quot;The email &#39;mytest@test.com&#39; does not match any accounts.&quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">email_login</span><span class="o">.</span><span class="n">CmdUnconnectedCreate</span><span class="p">(),</span>
             <span class="s1">&#39;&quot;mytest&quot; mytest@test.com test11111&#39;</span><span class="p">,</span>
             <span class="s2">&quot;A new account &#39;mytest&#39; was created. Welcome!&quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">email_login</span><span class="o">.</span><span class="n">CmdUnconnectedConnect</span><span class="p">(),</span>
             <span class="s2">&quot;mytest@test.com test11111&quot;</span><span class="p">,</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestEmailLogin.test_quit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.email_login.tests.html#evennia.contrib.base_systems.email_login.tests.TestEmailLogin.test_quit">[docs]</a>    <span class="k">def</span> <span class="nf">test_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

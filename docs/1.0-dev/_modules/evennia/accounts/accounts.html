@@ -54,32 +54,32 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">authenticate</span><span class="p">,</span> <span class="n">password_validation</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span><span class="p">,</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.utils.module_loading</span> <span class="kn">import</span> <span class="n">import_string</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.manager</span> <span class="kn">import</span> <span class="n">AccountManager</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripthandler</span> <span class="kn">import</span> <span class="n">ScriptHandler</span>
 <span class="kn">from</span> <span class="nn">evennia.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
-<span class="kn">from</span> <span class="nn">evennia.server.throttle</span> <span class="kn">import</span> <span class="n">Throttle</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">variable_from_module</span>
 <span class="kn">from</span> <span class="nn">evennia.server.signals</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SIGNAL_ACCOUNT_POST_CREATE</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_PUPPET</span><span class="p">,</span>
     <span class="n">SIGNAL_OBJECT_POST_UNPUPPET</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">NickHandler</span><span class="p">,</span> <span class="n">ModelAttributeBackend</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripthandler</span> <span class="kn">import</span> <span class="n">ScriptHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdsethandler</span> <span class="kn">import</span> <span class="n">CmdSetHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.server.throttle</span> <span class="kn">import</span> <span class="n">Throttle</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">ModelAttributeBackend</span><span class="p">,</span> <span class="n">NickHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.optionhandler</span> <span class="kn">import</span> <span class="n">OptionHandler</span>
-
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">getrandbits</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">variable_from_module</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DefaultAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;DefaultGuest&quot;</span><span class="p">)</span>
 
@@ -87,6 +87,9 @@
 
 <span class="n">_AT_SEARCH_RESULT</span> <span class="o">=</span> <span class="n">variable_from_module</span><span class="p">(</span><span class="o">*</span><span class="n">settings</span><span class="o">.</span><span class="n">SEARCH_AT_RESULT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="n">_MULTISESSION_MODE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span>
+<span class="n">_AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span>
+<span class="n">_AUTO_PUPPET_ON_LOGIN</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">AUTO_PUPPET_ON_LOGIN</span>
+<span class="n">_MAX_NR_SIMULTANEOUS_PUPPETS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_SIMULTANEOUS_PUPPETS</span>
 <span class="n">_MAX_NR_CHARACTERS</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_NR_CHARACTERS</span>
 <span class="n">_CMDSET_ACCOUNT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_ACCOUNT</span>
 <span class="n">_MUDINFO_CHANNEL</span> <span class="o">=</span> <span class="kc">None</span>
@@ -279,6 +282,22 @@
 
         <span class="k">return</span> <span class="n">objs</span>
 
+<div class="viewcode-block" id="DefaultAccount.uses_screenreader"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.uses_screenreader">[docs]</a>    <span class="k">def</span> <span class="nf">uses_screenreader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shortcut to determine if a session uses a screenreader. If no session given,</span>
+<span class="sd">        will return true if any of the sessions use a screenreader.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (Session, optional): The session to check for screen reader.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">protocol_flags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCREENREADER&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span></div>
+
 <div class="viewcode-block" id="DefaultAccount.get_display_name"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.get_display_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is used by channels and other OOC communications methods to give a</span>
@@ -364,7 +383,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|c</span><span class="si">{key}</span><span class="s2">|R is already puppeted by another Account.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
                 <span class="k">return</span>
 
-        <span class="c1"># do the puppeting</span>
         <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">puppet</span><span class="p">:</span>
             <span class="c1"># cleanly unpuppet eventual previous object puppeted by this session</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unpuppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
@@ -372,6 +390,21 @@
         <span class="c1"># was left with a lingering account/session reference from an unclean</span>
         <span class="c1"># server kill or similar</span>
 
+        <span class="c1"># check so we are not puppeting too much already</span>
+        <span class="k">if</span> <span class="n">_MAX_NR_SIMULTANEOUS_PUPPETS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">already_puppeted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_puppets</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_permstring</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">already_puppeted</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_all_puppets</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">_MAX_NR_SIMULTANEOUS_PUPPETS</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="n">_</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You cannot control any more puppets (max </span><span class="si">{</span><span class="n">_MAX_NR_SIMULTANEOUS_PUPPETS</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="c1"># do the puppeting</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 
         <span class="c1"># do the connection</span>
@@ -478,7 +511,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">ip</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">username</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
         <span class="c1"># Check IP and/or name bans</span>
@@ -798,6 +834,9 @@
         <span class="n">typeclass</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
 
         <span class="n">ip</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">ip</span> <span class="ow">and</span> <span class="n">CREATION_THROTTLE</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">ip</span><span class="p">):</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">_</span><span class="p">(</span><span class="s2">&quot;You are creating too many accounts. Please log into an existing account.&quot;</span><span class="p">)</span>
@@ -869,7 +908,7 @@
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">MULTISESSION_MODE</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">_AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span><span class="p">:</span>
                 <span class="c1"># Auto-create a character to go with this account</span>
 
                 <span class="n">character</span><span class="p">,</span> <span class="n">errs</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">create_character</span><span class="p">(</span>
@@ -1263,7 +1302,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># set an (empty) attribute holding the characters this account has</span>
-        <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;attrread:perm(Admins);attredit:perm(Admins);&quot;</span> <span class="s2">&quot;attrcreate:perm(Admins);&quot;</span>
+        <span class="n">lockstring</span> <span class="o">=</span> <span class="s2">&quot;attrread:perm(Admins);attredit:perm(Admins);attrcreate:perm(Admins);&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_playable_characters&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">lockstring</span><span class="o">=</span><span class="n">lockstring</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;_saved_protocol_flags&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="n">lockstring</span><span class="o">=</span><span class="n">lockstring</span><span class="p">)</span></div>
 
@@ -1460,7 +1499,7 @@
 <span class="sd">        Notes:</span>
 <span class="sd">            This is called *before* an eventual Character&#39;s</span>
 <span class="sd">            `at_post_login` hook. By default it is used to set up</span>
-<span class="sd">            auto-puppeting based on `MULTISESSION_MODE`.</span>
+<span class="sd">            auto-puppeting based on `MULTISESSION_MODE`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># if we have saved protocol flags on ourselves, load them here.</span>
@@ -1473,23 +1512,15 @@
             <span class="n">session</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">logged_in</span><span class="o">=</span><span class="p">{})</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_to_connect_channel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|G</span><span class="si">{key}</span><span class="s2"> connected|n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># in this mode we should have only one character available. We</span>
-            <span class="c1"># try to auto-connect to our last connected object, if any</span>
+        <span class="k">if</span> <span class="n">_AUTO_PUPPET_ON_LOGIN</span><span class="p">:</span>
+            <span class="c1"># in this mode we try to auto-connect to our last connected object, if any</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">puppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Character does not exist.&quot;</span><span class="p">))</span>
                 <span class="k">return</span>
-        <span class="k">elif</span> <span class="n">_MULTISESSION_MODE</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># in this mode all sessions connect to the same puppet.</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">puppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The Character does not exist.&quot;</span><span class="p">))</span>
-                <span class="k">return</span>
-        <span class="k">elif</span> <span class="n">_MULTISESSION_MODE</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="c1"># In this mode we by default end up at a character selection</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># In this mode we don&#39;t auto-connect but by default end up at a character selection</span>
             <span class="c1"># screen. We execute look on the account.</span>
             <span class="c1"># we make sure to clean up the _playable_characters list in case</span>
             <span class="c1"># any was deleted in the interim.</span>
@@ -1609,6 +1640,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
+    <span class="n">ooc_appearance_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">--------------------------------------------------------------------</span>
+<span class="si">{header}</span><span class="s2"></span>
+
+<span class="si">{sessions}</span><span class="s2"></span>
+
+<span class="s2">  |whelp|n - more commands</span>
+<span class="s2">  |wpublic &lt;text&gt;|n - talk on public channel</span>
+<span class="s2">  |wcharcreate &lt;name&gt; [=description]|n - create new character</span>
+<span class="s2">  |wchardelete &lt;name&gt;|n - delete a character</span>
+<span class="s2">  |wic &lt;name&gt;|n - enter the game as character (|wooc|n to get back here)</span>
+<span class="s2">  |wic|n - enter the game as latest character controlled.</span>
+
+<span class="si">{characters}</span><span class="s2"></span>
+<span class="si">{footer}</span><span class="s2"></span>
+<span class="s2">--------------------------------------------------------------------</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
 <div class="viewcode-block" id="DefaultAccount.at_look"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount.at_look">[docs]</a>    <span class="k">def</span> <span class="nf">at_look</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called when this object executes a look. It allows to customize</span>
@@ -1616,7 +1665,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            target (Object or list, optional): An object or a list</span>
-<span class="sd">                objects to inspect.</span>
+<span class="sd">                objects to inspect. This is normally a list of characters.</span>
 <span class="sd">            session (Session, optional): The session doing this look.</span>
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
 <span class="sd">                overriding the call (unused by default).</span>
@@ -1633,94 +1682,75 @@
                 <span class="k">return</span> <span class="n">target</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> has no in-game appearance.&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># list of targets - make list to disconnect from db</span>
-            <span class="n">characters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tar</span> <span class="k">for</span> <span class="n">tar</span> <span class="ow">in</span> <span class="n">target</span> <span class="k">if</span> <span class="n">tar</span><span class="p">)</span> <span class="k">if</span> <span class="n">target</span> <span class="k">else</span> <span class="p">[]</span>
-            <span class="n">sessions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">sessions</span><span class="p">:</span>
-                <span class="c1"># no sessions, nothing to report</span>
-                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-            <span class="n">is_su</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span>
 
-            <span class="c1"># text shown when looking in the ooc area</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Account |g</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n (you are Out-of-Character)&quot;</span><span class="p">]</span>
+        <span class="c1"># multiple targets - this is a list of characters</span>
+        <span class="n">characters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tar</span> <span class="k">for</span> <span class="n">tar</span> <span class="ow">in</span> <span class="n">target</span> <span class="k">if</span> <span class="n">tar</span><span class="p">)</span> <span class="k">if</span> <span class="n">target</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">ncars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span>
+        <span class="n">sessions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="n">nsess</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">)</span>
 
-            <span class="n">nsess</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">nsess</span> <span class="o">==</span> <span class="mi">1</span>
-                <span class="ow">and</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|wConnected session:|n&quot;</span>
-                <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">|wConnected sessions (</span><span class="si">{</span><span class="n">nsess</span><span class="si">}</span><span class="s2">):|n&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nsess</span><span class="p">:</span>
+            <span class="c1"># no sessions, nothing to report</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># header text</span>
+        <span class="n">txt_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Account |g</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n (you are Out-of-Character)&quot;</span>
+
+        <span class="c1"># sessions</span>
+        <span class="n">sess_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">isess</span><span class="p">,</span> <span class="n">sess</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sessions</span><span class="p">):</span>
+            <span class="n">ip_addr</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">address</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sess</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">sess</span><span class="o">.</span><span class="n">address</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sess</span><span class="o">.</span><span class="n">protocol_key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ip_addr</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">sess_str</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;|w* </span><span class="si">{</span><span class="n">isess</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">|n&quot;</span>
+                <span class="k">if</span> <span class="n">session</span> <span class="ow">and</span> <span class="n">session</span><span class="o">.</span><span class="n">sessid</span> <span class="o">==</span> <span class="n">sess</span><span class="o">.</span><span class="n">sessid</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">isess</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">isess</span><span class="p">,</span> <span class="n">sess</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sessions</span><span class="p">):</span>
-                <span class="n">csessid</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">sessid</span>
-                <span class="n">addr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">sess</span><span class="o">.</span><span class="n">protocol_key</span><span class="p">,</span>
-                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">sess</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">sess</span><span class="o">.</span><span class="n">address</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">sess</span><span class="o">.</span><span class="n">address</span><span class="p">),</span>
-                <span class="p">)</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span>
-                        <span class="n">session</span>
-                        <span class="ow">and</span> <span class="n">session</span><span class="o">.</span><span class="n">sessid</span> <span class="o">==</span> <span class="n">csessid</span>
-                        <span class="ow">and</span> <span class="s2">&quot;|w* </span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">isess</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                        <span class="ow">or</span> <span class="s2">&quot;  </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">isess</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-                        <span class="n">addr</span><span class="p">,</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> |whelp|n - more commands&quot;</span><span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |wpublic &lt;Text&gt;|n - talk on public channel&quot;</span><span class="p">)</span>
 
-            <span class="n">charmax</span> <span class="o">=</span> <span class="n">_MAX_NR_CHARACTERS</span>
+            <span class="n">sess_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sess_str</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">is_su</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">charmax</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">characters</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> You don&#39;t have any characters yet. See |whelp charcreate|n for &quot;</span>
-                        <span class="s2">&quot;creating one.&quot;</span>
-                    <span class="p">)</span>
+        <span class="n">txt_sessions</span> <span class="o">=</span> <span class="s2">&quot;|wConnected session(s):|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sess_strings</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">characters</span><span class="p">:</span>
+            <span class="n">txt_characters</span> <span class="o">=</span> <span class="s2">&quot;You don&#39;t have a character yet. Use |wcharcreate|n.&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_chars</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;unlimited&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span> <span class="ow">or</span> <span class="n">_MAX_NR_CHARACTERS</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">_MAX_NR_CHARACTERS</span>
+            <span class="p">)</span>
+
+            <span class="n">char_strings</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+                <span class="n">csessions</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">csessions</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">csessions</span><span class="p">:</span>
+                        <span class="c1"># character is already puppeted</span>
+                        <span class="n">sid</span> <span class="o">=</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">sessions</span> <span class="ow">and</span> <span class="n">sessions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">sess</span> <span class="ow">and</span> <span class="n">sid</span><span class="p">:</span>
+                            <span class="n">char_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot; - |G</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;(played by you in session </span><span class="si">{</span><span class="n">sid</span><span class="si">}</span><span class="s2">)&quot;</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">char_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot; - |R</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] &quot;</span>
+                                <span class="s2">&quot;(played by someone else)&quot;</span>
+                            <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |wcharcreate &lt;name&gt; [=description]|n - create new character&quot;</span><span class="p">)</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |wchardelete &lt;name&gt;|n - delete a character (cannot be undone!)&quot;</span>
-                    <span class="p">)</span>
+                    <span class="c1"># character is &quot;free to puppet&quot;</span>
+                    <span class="n">char_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">characters</span><span class="p">:</span>
-                <span class="n">string_s_ending</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s2">&quot;s&quot;</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> |wic &lt;character&gt;|n - enter the game (|wooc|n to get back here)&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">is_su</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Available character</span><span class="si">{</span><span class="n">string_s_ending</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">)</span><span class="si">}</span><span class="s2">/unlimited):&quot;</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Available character</span><span class="si">%s%s</span><span class="s2">:&quot;</span>
-                        <span class="o">%</span> <span class="p">(</span>
-                            <span class="n">string_s_ending</span><span class="p">,</span>
-                            <span class="n">charmax</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s2">&quot; (</span><span class="si">%i</span><span class="s2">/</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">characters</span><span class="p">),</span> <span class="n">charmax</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-
-                <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
-                    <span class="n">csessions</span> <span class="o">=</span> <span class="n">char</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">csessions</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">csessions</span><span class="p">:</span>
-                            <span class="c1"># character is already puppeted</span>
-                            <span class="n">sid</span> <span class="o">=</span> <span class="n">sess</span> <span class="ow">in</span> <span class="n">sessions</span> <span class="ow">and</span> <span class="n">sessions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-                            <span class="k">if</span> <span class="n">sess</span> <span class="ow">and</span> <span class="n">sid</span><span class="p">:</span>
-                                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |G</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] &quot;</span>
-                                    <span class="sa">f</span><span class="s2">&quot;(played by you in session </span><span class="si">{</span><span class="n">sid</span><span class="si">}</span><span class="s2">)&quot;</span>
-                                <span class="p">)</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |R</span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">] &quot;</span>
-                                    <span class="s2">&quot;(played by someone else)&quot;</span>
-                                <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># character is &quot;free to puppet&quot;</span>
-                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-            <span class="n">look_string</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">look_string</span></div></div>
+            <span class="n">txt_characters</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Available character(s) (</span><span class="si">{</span><span class="n">ncars</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_chars</span><span class="si">}</span><span class="s2">, |wic &lt;name&gt;|n to play):|n</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char_strings</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ooc_appearance_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">header</span><span class="o">=</span><span class="n">txt_header</span><span class="p">,</span>
+            <span class="n">sessions</span><span class="o">=</span><span class="n">txt_sessions</span><span class="p">,</span>
+            <span class="n">characters</span><span class="o">=</span><span class="n">txt_characters</span><span class="p">,</span>
+            <span class="n">footer</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="DefaultGuest"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest">[docs]</a><span class="k">class</span> <span class="nc">DefaultGuest</span><span class="p">(</span><span class="n">DefaultAccount</span><span class="p">):</span>
@@ -1815,8 +1845,9 @@
 
 <div class="viewcode-block" id="DefaultGuest.at_post_login"><a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultGuest.at_post_login">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        In theory, guests only have one character regardless of which</span>
-<span class="sd">        MULTISESSION_MODE we&#39;re in. They don&#39;t get a choice.</span>
+<span class="sd">        By default, Guests only have one character regardless of which</span>
+<span class="sd">        MAX_NR_CHARACTERS we use. They also always auto-puppet a matching</span>
+<span class="sd">        character and don&#39;t get a choice.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session, optional): Session connecting.</span>

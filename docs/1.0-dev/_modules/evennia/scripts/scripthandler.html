@@ -111,6 +111,9 @@
 <span class="sd">                in script definition and listings)</span>
 <span class="sd">            autostart (bool, optional): Start the script upon adding it.</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            Script: The newly created Script.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;AccountDB&quot;</span><span class="p">:</span>
             <span class="c1"># we add to an Account, not an Object</span>
@@ -118,21 +121,21 @@
                 <span class="n">scriptclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="n">autostart</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># the normal - adding to an Object. We wait to autostart so we can differentiate</span>
+            <span class="c1"># adding to an Object. We wait to autostart so we can differentiate</span>
             <span class="c1"># a failing creation from a script that immediately starts/stops.</span>
             <span class="n">script</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">scriptclass</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">script</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;Script </span><span class="si">%s</span><span class="s2"> failed to be created/started.&quot;</span> <span class="o">%</span> <span class="n">scriptclass</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Script </span><span class="si">{</span><span class="n">scriptclass</span><span class="si">}</span><span class="s2"> failed to be created.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">autostart</span><span class="p">:</span>
             <span class="n">script</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">script</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
             <span class="c1"># this can happen if the script has repeats=1 or calls stop() in at_repeat.</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span>
-                <span class="s2">&quot;Script </span><span class="si">%s</span><span class="s2"> started and then immediately stopped; &quot;</span>
-                <span class="s2">&quot;it could probably be a normal function.&quot;</span> <span class="o">%</span> <span class="n">scriptclass</span>
+                <span class="sa">f</span><span class="s2">&quot;Script </span><span class="si">{</span><span class="n">scriptclass</span><span class="si">}</span><span class="s2"> started and then immediately stopped; &quot;</span>
+                <span class="s2">&quot;it could probably be a normal function.&quot;</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="k">return</span> <span class="n">script</span></div>
 
 <div class="viewcode-block" id="ScriptHandler.start"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -160,12 +163,12 @@
 <span class="sd">            key (str): Search criterion, the script&#39;s key or dbref.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            scripts (list): The found scripts matching `key`.</span>
+<span class="sd">            scripts (queryset): The found scripts matching `key`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_all_scripts_on_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ScriptHandler.delete"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ScriptHandler.remove"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Forcibly delete a script from this object.</span>
 
@@ -188,7 +191,8 @@
             <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">num</span></div>
 
-    <span class="c1"># alias to delete</span>
+    <span class="c1"># legacy aliases to remove</span>
+    <span class="n">delete</span> <span class="o">=</span> <span class="n">remove</span>
     <span class="n">stop</span> <span class="o">=</span> <span class="n">delete</span>
 
 <div class="viewcode-block" id="ScriptHandler.all"><a class="viewcode-back" href="../../../api/evennia.scripts.scripthandler.html#evennia.scripts.scripthandler.ScriptHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

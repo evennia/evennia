@@ -77,7 +77,7 @@ reloading)</p></li>
 Character <a class="reference internal" href="../Components/Command-Sets.html"><span class="doc std std-doc">Command Set</span></a>?</p>
 <p><strong>A:</strong> Go to <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>. Find the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> class. It has one
 method named <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code>. At the end of that method, add the following line:
-<code class="docutils literal notranslate"><span class="pre">self.remove(default_cmds.CmdGet())</span></code>. See the <a class="reference internal" href="Beginner-Tutorial/Part1/Adding-Commands.html"><span class="doc std std-doc">Adding Commands Tutorial</span></a>
+<code class="docutils literal notranslate"><span class="pre">self.remove(default_cmds.CmdGet())</span></code>. See the <a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">Adding Commands Tutorial</span></a>
 for more info.</p>
 </section>
 <section id="preventing-character-from-moving-based-on-a-condition">
@@ -196,7 +196,7 @@ command be available.</p>
         <span class="c1"># ...</span>
 </pre></div>
 </div>
-<p>Add this to the <a class="reference internal" href="Beginner-Tutorial/Part1/Adding-Commands.html"><span class="doc std std-doc">default cmdset as usual</span></a>. The <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> <a class="reference internal" href="../Components/Locks.html#lock-functions"><span class="std std-doc">lock
+<p>Add this to the <a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">default cmdset as usual</span></a>. The <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> <a class="reference internal" href="../Components/Locks.html#lock-functions"><span class="std std-doc">lock
 function</span></a> does not yet exist. We must create that:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/lockfuncs.py</span>
 

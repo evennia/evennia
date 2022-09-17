@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Where do I begin?" href="Planning-Where-Do-I-Begin.html" />
-    <link rel="prev" title="12. Advanced searching - Django Database queries" href="../Part1/Django-queries.html" /> 
+    <link rel="next" title="Where do I begin?" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html" />
+    <link rel="prev" title="12. Advanced searching - Django Database queries" href="../Part1/Beginner-Tutorial-Django-queries.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Planning-Where-Do-I-Begin.html" title="Where do I begin?"
+          <a href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html" title="Where do I begin?"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../Part1/Django-queries.html" title="12. Advanced searching - Django Database queries"
+          <a href="../Part1/Beginner-Tutorial-Django-queries.html" title="12. Advanced searching - Django Database queries"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
@@ -76,10 +76,9 @@ and “what to think about” when creating a multiplayer online text game.</p>
 <h2>Lessons<a class="headerlink" href="#lessons" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Planning-Where-Do-I-Begin.html">Where do I begin?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Game-Planning.html">On Planning a Game</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Planning-Some-Useful-Contribs.html">Planning the use of some useful contribs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Planning-The-Tutorial-Game.html">Planning our tutorial game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html">Where do I begin?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html">On Planning a Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html">Planning our tutorial game</a></li>
 </ul>
 </div>
 </section>
@@ -87,100 +86,89 @@ and “what to think about” when creating a multiplayer online text game.</p>
 <h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Planning-Where-Do-I-Begin.html">Where do I begin?</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Where-Do-I-Begin.html#what-is-your-motivation-for-doing-this">What is your motivation for doing this?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Where-Do-I-Begin.html#what-are-your-skills">What are your skills?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Planning-Where-Do-I-Begin.html#the-game-engine">The game engine</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-Where-Do-I-Begin.html#asset-creation">Asset creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html">Where do I begin?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html#what-is-your-motivation-for-doing-this">What is your motivation for doing this?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html#what-are-your-skills">What are your skills?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html#the-game-engine">The game engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html#asset-creation">Asset creation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Where-Do-I-Begin.html#so-where-do-i-begin-then">So, where do I begin, then?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Where-Do-I-Begin.html#conclusions">Conclusions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html#so-where-do-i-begin-then">So, where do I begin, then?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html#conclusions">Conclusions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Game-Planning.html">On Planning a Game</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Game-Planning.html#the-steps">The steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Game-Planning.html#planning">Planning</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Game-Planning.html#administration">Administration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Game-Planning.html#building">Building</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Game-Planning.html#systems">Systems</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Game-Planning.html#rooms">Rooms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Game-Planning.html#objects-items">Objects / items</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Game-Planning.html#characters">Characters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html">On Planning a Game</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#the-steps">The steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#planning">Planning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#administration">Administration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#building">Building</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#systems">Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#rooms">Rooms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#objects-items">Objects / items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#characters">Characters</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Game-Planning.html#coding-and-tech-demo">Coding and Tech demo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Game-Planning.html#world-building">World Building</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Game-Planning.html#alpha-release">Alpha Release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Game-Planning.html#beta-release-perpetual-beta">Beta Release/Perpetual Beta</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Game-Planning.html#congratulate-yourself">Congratulate yourself!</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Game-Planning.html#planning-our-tutorial-game">Planning our tutorial game</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#coding-and-tech-demo">Coding and Tech demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#world-building">World Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#alpha-release">Alpha Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#beta-release-perpetual-beta">Beta Release/Perpetual Beta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#congratulate-yourself">Congratulate yourself!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Game-Planning.html#planning-our-tutorial-game">Planning our tutorial game</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Planning-Some-Useful-Contribs.html">Planning the use of some useful contribs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#barter-contrib">Barter contrib</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#clothing-contrib">Clothing contrib</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#dice-contrib">Dice contrib</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#extended-room-contrib">Extended room contrib</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#rp-system-contrib">RP-System contrib</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#talking-npc-contrib">Talking NPC contrib</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#traits-contrib">Traits contrib</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#turnbattle-contrib">Turnbattle contrib</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-Some-Useful-Contribs.html#conclusions">Conclusions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html">Planning our tutorial game</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#game-concept">Game concept</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#administration">Administration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters">Should your game rules be enforced by coded systems by human game masters?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else">What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards">Should players be able to post out-of-characters on channels and via other means like bulletin-boards?</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Planning-The-Tutorial-Game.html">Planning our tutorial game</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Planning-The-Tutorial-Game.html#administration">Administration</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters">Should your game rules be enforced by coded systems by human game masters?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else">What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards">Should players be able to post out-of-characters on channels and via other means like bulletin-boards?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#building">Building</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-will-the-world-be-built">How will the world be built?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability">Can only privileged Builders create things or should regular players also have limited build-capability?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-The-Tutorial-Game.html#building">Building</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#how-will-the-world-be-built">How will the world be built?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability">Can only privileged Builders create things or should regular players also have limited build-capability?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#systems">Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own">Do you base your game off an existing RPG system or make up your own?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails">What are the game mechanics? How do you decide if an action succeeds or fails?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons">Does the flow of time matter in your game - does night and day change? What about seasons?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay">Do you want changing, global weather or should weather just be set manually in roleplay?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all">Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-have-concepts-like-reputation-and-influence">Do you have concepts like reputation and influence?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance">Will your characters be known by their name or only by their physical appearance?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-The-Tutorial-Game.html#systems">Systems</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own">Do you base your game off an existing RPG system or make up your own?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails">What are the game mechanics? How do you decide if an action succeeds or fails?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons">Does the flow of time matter in your game - does night and day change? What about seasons?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay">Do you want changing, global weather or should weather just be set manually in roleplay?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all">Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#do-you-have-concepts-like-reputation-and-influence">Do you have concepts like reputation and influence?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance">Will your characters be known by their name or only by their physical appearance?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#rooms">Rooms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#is-a-simple-room-description-enough-or-should-the-description-be-able-to-change">Is a simple room description enough or should the description be able to change?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-the-room-have-different-statuses">Should the room have different statuses?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room">Can objects be hidden in the room? Can a person hide in the room?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-The-Tutorial-Game.html#rooms">Rooms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#is-a-simple-room-description-enough-or-should-the-description-be-able-to-change">Is a simple room description enough or should the description be able to change?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#should-the-room-have-different-statuses">Should the room have different statuses?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room">Can objects be hidden in the room? Can a person hide in the room?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#objects">Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props">How numerous are your objects? Do you want large loot-lists or are objects just role playing props?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value">Is each coin a separate object or do you just store a bank account value?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-multiple-similar-objects-form-stack-and-how-are-those-stacks-handled-in-that-case">Do multiple similar objects form stack and how are those stacks handled in that case?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them">Does an object have weight or volume (so you cannot carry an infinite amount of them)?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-objects-be-broken-can-they-be-repaired">Can objects be broken? Can they be repaired?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing">Can you fight with a chair or a flower or must you use a special ‘weapon’ kind of thing?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#will-characters-be-able-to-craft-new-objects">Will characters be able to craft new objects?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-mobs-npcs-have-some-sort-of-ai">Should mobs/NPCs have some sort of AI?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#are-npcs-and-mobs-different-entities-how-do-they-differ">Are NPCs and mobs different entities? How do they differ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status">_Should there be NPCs giving quests? If so, how do you track Quest status?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-The-Tutorial-Game.html#objects">Objects</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props">How numerous are your objects? Do you want large loot-lists or are objects just role playing props?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value">Is each coin a separate object or do you just store a bank account value?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#do-multiple-similar-objects-form-stacks-and-how-are-those-stacks-handled-in-that-case">Do multiple similar objects form stacks and how are those stacks handled in that case?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them">Does an object have weight or volume (so you cannot carry an infinite amount of them)?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#can-objects-be-broken-can-they-be-repaired">Can objects be broken? Can they be repaired?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing">Can you fight with a chair or a flower or must you use a special ‘weapon’ kind of thing?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#will-characters-be-able-to-craft-new-objects">Will characters be able to craft new objects?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#should-mobs-npcs-have-some-sort-of-ai">Should mobs/NPCs have some sort of AI?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#are-npcs-and-mobs-different-entities-how-do-they-differ">Are NPCs and mobs different entities? How do they differ?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status">_Should there be NPCs giving quests? If so, how do you track Quest status?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#characters">Characters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play">Can players have more than one Character active at a time or are they allowed to multi-play?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-does-the-character-generation-work">How does the character-generation work?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-do-you-implement-different-classes-or-races">How do you implement different “classes” or “races”?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected">If a Character can hide in a room, what skill will decide if they are detected?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying">What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#may-player-characters-attack-each-other-pvp">May player-characters attack each other (PvP)?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison">What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-The-Tutorial-Game.html#characters">Characters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play">Can players have more than one Character active at a time or are they allowed to multi-play?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#how-does-the-character-generation-work">How does the character-generation work?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#how-do-you-implement-different-classes-or-races">How do you implement different “classes” or “races”?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected">If a Character can hide in a room, what skill will decide if they are detected?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying">What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#may-player-characters-attack-each-other-pvp">May player-characters attack each other (PvP)?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Planning-The-Tutorial-Game.html#what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison">What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Planning-The-Tutorial-Game.html#conclusions">Conclusions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Beginner-Tutorial-Planning-The-Tutorial-Game.html#conclusions">Conclusions</a></li>
 </ul>
 </li>
 </ul>
@@ -218,10 +206,10 @@ and “what to think about” when creating a multiplayer online text game.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../Part1/Django-queries.html"
+  <p class="topless"><a href="../Part1/Beginner-Tutorial-Django-queries.html"
                         title="previous chapter"><span class="section-number">12. </span>Advanced searching - Django Database queries</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Planning-Where-Do-I-Begin.html"
+  <p class="topless"><a href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html"
                         title="next chapter">Where do I begin?</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
@@ -260,10 +248,10 @@ and “what to think about” when creating a multiplayer online text game.</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Planning-Where-Do-I-Begin.html" title="Where do I begin?"
+          <a href="Beginner-Tutorial-Planning-Where-Do-I-Begin.html" title="Where do I begin?"
              >next</a> |</li>
         <li class="right" >
-          <a href="../Part1/Django-queries.html" title="12. Advanced searching - Django Database queries"
+          <a href="../Part1/Beginner-Tutorial-Django-queries.html" title="12. Advanced searching - Django Database queries"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>

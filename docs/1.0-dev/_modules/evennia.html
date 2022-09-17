@@ -89,6 +89,10 @@
 <span class="n">ChannelDB</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">Msg</span> <span class="o">=</span> <span class="kc">None</span>
 
+<span class="c1"># Properties</span>
+<span class="n">AttributeProperty</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">TagProperty</span> <span class="o">=</span> <span class="kc">None</span>
+
 <span class="c1"># commands</span>
 <span class="n">Command</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">CmdSet</span> <span class="o">=</span> <span class="kc">None</span>
@@ -147,7 +151,7 @@
 <span class="sd">    Helper function for building the version string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">os</span>
-    <span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">check_output</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">STDOUT</span>
+    <span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">STDOUT</span><span class="p">,</span> <span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">check_output</span>
 
     <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
@@ -194,70 +198,63 @@
     <span class="k">global</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
     <span class="k">global</span> <span class="n">EvMenu</span><span class="p">,</span> <span class="n">EvTable</span><span class="p">,</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvMore</span><span class="p">,</span> <span class="n">EvEditor</span>
     <span class="k">global</span> <span class="n">ANSIString</span>
+    <span class="k">global</span> <span class="n">AttributeProperty</span><span class="p">,</span> <span class="n">TagProperty</span>
 
     <span class="c1"># Parent typeclasses</span>
-    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
-    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultGuest</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultExit</span>
-    <span class="kn">from</span> <span class="nn">.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>
-    <span class="kn">from</span> <span class="nn">.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
-
-    <span class="c1"># Database models</span>
-    <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-    <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-    <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
-    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span>
-    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span>
-
-    <span class="c1"># commands</span>
-    <span class="kn">from</span> <span class="nn">.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
-    <span class="kn">from</span> <span class="nn">.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-
-    <span class="c1"># search functions</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_object</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_script</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_account</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_message</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_channel</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_help</span>
-    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="n">search_tag</span>
-
-    <span class="c1"># create functions</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_account</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_message</span>
-    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
-
     <span class="c1"># utilities</span>
     <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-    <span class="kn">from</span> <span class="nn">.locks</span> <span class="kn">import</span> <span class="n">lockfuncs</span>
-    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">gametime</span>
-    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
-    <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">contrib</span>
-    <span class="kn">from</span> <span class="nn">.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
-    <span class="kn">from</span> <span class="nn">.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
-    <span class="kn">from</span> <span class="nn">.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
-    <span class="kn">from</span> <span class="nn">.utils.evform</span> <span class="kn">import</span> <span class="n">EvForm</span>
-    <span class="kn">from</span> <span class="nn">.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
-    <span class="kn">from</span> <span class="nn">.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
-    <span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">signals</span>
 
-    <span class="c1"># handlers</span>
-    <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
-    <span class="kn">from</span> <span class="nn">.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
-    <span class="kn">from</span> <span class="nn">.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSION_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">contrib</span>
+    <span class="kn">from</span> <span class="nn">.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span><span class="p">,</span> <span class="n">DefaultGuest</span>
+    <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+    <span class="kn">from</span> <span class="nn">.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+    <span class="kn">from</span> <span class="nn">.commands.command</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">InterruptCommand</span>
+    <span class="kn">from</span> <span class="nn">.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>
+    <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
+    <span class="kn">from</span> <span class="nn">.locks</span> <span class="kn">import</span> <span class="n">lockfuncs</span>
+    <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span>
+    <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
+    <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
     <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+    <span class="kn">from</span> <span class="nn">.scripts.taskhandler</span> <span class="kn">import</span> <span class="n">TASK_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.scripts.tickerhandler</span> <span class="kn">import</span> <span class="n">TICKER_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">signals</span>
+    <span class="kn">from</span> <span class="nn">.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSION_HANDLER</span>
+    <span class="kn">from</span> <span class="nn">.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+    <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="kn">import</span> <span class="n">TagProperty</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ansi</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">logger</span>
+    <span class="kn">from</span> <span class="nn">.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 
     <span class="c1"># containers</span>
-    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
-    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="kn">import</span> <span class="n">OPTION_CLASSES</span>
+    <span class="kn">from</span> <span class="nn">.utils.containers</span> <span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span><span class="p">,</span> <span class="n">OPTION_CLASSES</span>
+
+    <span class="c1"># create functions</span>
+    <span class="kn">from</span> <span class="nn">.utils.create</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">create_account</span><span class="p">,</span>
+        <span class="n">create_channel</span><span class="p">,</span>
+        <span class="n">create_help_entry</span><span class="p">,</span>
+        <span class="n">create_message</span><span class="p">,</span>
+        <span class="n">create_object</span><span class="p">,</span>
+        <span class="n">create_script</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
+    <span class="kn">from</span> <span class="nn">.utils.evform</span> <span class="kn">import</span> <span class="n">EvForm</span>
+    <span class="kn">from</span> <span class="nn">.utils.evmenu</span> <span class="kn">import</span> <span class="n">EvMenu</span>
+    <span class="kn">from</span> <span class="nn">.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+    <span class="kn">from</span> <span class="nn">.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
+
+    <span class="c1"># search functions</span>
+    <span class="kn">from</span> <span class="nn">.utils.search</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">search_account</span><span class="p">,</span>
+        <span class="n">search_channel</span><span class="p">,</span>
+        <span class="n">search_help</span><span class="p">,</span>
+        <span class="n">search_message</span><span class="p">,</span>
+        <span class="n">search_object</span><span class="p">,</span>
+        <span class="n">search_script</span><span class="p">,</span>
+        <span class="n">search_tag</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># API containers</span>
 
@@ -293,11 +290,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
         <span class="kn">from</span> <span class="nn">.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-        <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
-        <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">ChannelDB</span>
+        <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
+        <span class="kn">from</span> <span class="nn">.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
         <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+        <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
         <span class="kn">from</span> <span class="nn">.server.models</span> <span class="kn">import</span> <span class="n">ServerConfig</span>
         <span class="kn">from</span> <span class="nn">.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span>
         <span class="kn">from</span> <span class="nn">.typeclasses.tags</span> <span class="kn">import</span> <span class="n">Tag</span>
@@ -329,11 +326,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
         <span class="kn">from</span> <span class="nn">.commands.default.cmdset_account</span> <span class="kn">import</span> <span class="n">AccountCmdSet</span>
-        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_unloggedin</span> <span class="kn">import</span> <span class="n">UnloggedinCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_character</span> <span class="kn">import</span> <span class="n">CharacterCmdSet</span>
         <span class="kn">from</span> <span class="nn">.commands.default.cmdset_session</span> <span class="kn">import</span> <span class="n">SessionCmdSet</span>
-        <span class="kn">from</span> <span class="nn">.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span><span class="p">,</span> <span class="n">MuxAccountCommand</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.cmdset_unloggedin</span> <span class="kn">import</span> <span class="n">UnloggedinCmdSet</span>
+        <span class="kn">from</span> <span class="nn">.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxAccountCommand</span><span class="p">,</span> <span class="n">MuxCommand</span>
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="s2">&quot;populate the object with commands&quot;</span>
@@ -346,12 +343,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmdlist</span><span class="p">]))</span>
 
             <span class="kn">from</span> <span class="nn">.commands.default</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="n">account</span><span class="p">,</span>
                 <span class="n">admin</span><span class="p">,</span>
                 <span class="n">batchprocess</span><span class="p">,</span>
                 <span class="n">building</span><span class="p">,</span>
                 <span class="n">comms</span><span class="p">,</span>
                 <span class="n">general</span><span class="p">,</span>
-                <span class="n">account</span><span class="p">,</span>
                 <span class="n">help</span><span class="p">,</span>
                 <span class="n">system</span><span class="p">,</span>
                 <span class="n">unloggedin</span><span class="p">,</span>

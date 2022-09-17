@@ -209,19 +209,27 @@ except more standard aliases logger.error/info/exception/debug etc can now be us
 warning when using reset mode.</p></li>
 <li><p>Attribute storage support defaultdics (Hendher)</p></li>
 <li><p>Add ObjectParent mixin to default game folder template as an easy, ready-made
-way to override features on all ObjectDB-inheriting objects easily.</p></li>
+way to override features on all ObjectDB-inheriting objects easily.
+source location, mimicking behavior of <code class="docutils literal notranslate"><span class="pre">at_pre_move</span></code> hook - returning False will abort move.</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">TagProperty</span></code>, <code class="docutils literal notranslate"><span class="pre">AliasProperty</span></code> and <code class="docutils literal notranslate"><span class="pre">PermissionProperty</span></code> to assign these
 data in a similar way to django fields.</p></li>
+<li><p>New <code class="docutils literal notranslate"><span class="pre">at_pre_object_receive(obj,</span> <span class="pre">source_location)</span></code> method on Objects. Called on
+destination, mimicking behavior of <code class="docutils literal notranslate"><span class="pre">at_pre_move</span></code> hook - returning False will abort move.</p></li>
+<li><p>New <code class="docutils literal notranslate"><span class="pre">at_pre_object_leave(obj,</span> <span class="pre">destination)</span></code> method on Objects. Called on</p></li>
 <li><p>The db pickle-serializer now checks for methods <code class="docutils literal notranslate"><span class="pre">__serialize_dbobjs__</span></code> and <code class="docutils literal notranslate"><span class="pre">__deserialize_dbobjs__</span></code>
 to allow custom packing/unpacking of nested dbobjs, to allow storing in Attribute.</p></li>
 <li><p>Optimizations to rpsystem contrib performance. Breaking change: <code class="docutils literal notranslate"><span class="pre">.get_sdesc()</span></code> will
 now return <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of <code class="docutils literal notranslate"><span class="pre">.db.desc</span></code> if no sdesc is set; fallback in hook (inspectorCaracal)</p></li>
 <li><p>Reworked text2html parser to avoid problems with stateful color tags (inspectorCaracal)</p></li>
 <li><p>Simplified <code class="docutils literal notranslate"><span class="pre">EvMenu.options_formatter</span></code> hook to use <code class="docutils literal notranslate"><span class="pre">EvColumn</span></code> and f-strings (inspectorcaracal)</p></li>
+<li><p>Allow <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">CODE</span></code>, <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">HEADER</span></code> etc as well as <code class="docutils literal notranslate"><span class="pre">#CODE</span></code>/<code class="docutils literal notranslate"><span class="pre">#HEADER</span></code> in batchcode
+files - this works better with black linting.</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">move_type</span></code> str kwarg to <code class="docutils literal notranslate"><span class="pre">move_to()</span></code> calls, optionally identifying the type of
 move being done (‘teleport’, ‘disembark’, ‘give’ etc). (volund)</p></li>
 <li><p>Made RPSystem contrib msg calls pass <code class="docutils literal notranslate"><span class="pre">pose</span></code> or <code class="docutils literal notranslate"><span class="pre">say</span></code> as msg-<code class="docutils literal notranslate"><span class="pre">type</span></code> for use in
 e.g. webclient pane filtering where desired. (volund)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Account.uses_screenreader(session=None)</span></code> as a quick shortcut for
+finding if a user uses a screenreader (and adjust display accordingly).</p></li>
 <li><p>Fixed bug in <code class="docutils literal notranslate"><span class="pre">cmdset.remove()</span></code> where a command could not be deleted by <code class="docutils literal notranslate"><span class="pre">key</span></code>,
 even though doc suggested one could (ChrisLR)</p></li>
 <li><p>New contrib <code class="docutils literal notranslate"><span class="pre">name_generator</span></code> for building random real-world based or fantasy-names
@@ -236,6 +244,15 @@ exit triggering the hook (volund)</p></li>
 startup modes. Used for more generic overriding (volund)</p></li>
 <li><p>New <code class="docutils literal notranslate"><span class="pre">search</span></code> lock type used to completely hide an object from being found by
 the <code class="docutils literal notranslate"><span class="pre">DefaultObject.search</span></code> (<code class="docutils literal notranslate"><span class="pre">caller.search</span></code>) method. (CloudKeeper)</p></li>
+<li><p>Change setting <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> to now only control sessions, not how many
+characters can be puppeted simultaneously. New settings now control that.</p></li>
+<li><p>Add new setting <code class="docutils literal notranslate"><span class="pre">AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span></code>, a boolean deciding if
+the new account should also get a matching character (legacy MUD style).</p></li>
+<li><p>Add new setting <code class="docutils literal notranslate"><span class="pre">AUTO_PUPPET_ON_LOGIN</span></code>, boolean deciding if one should
+automatically puppet the last/available character on connection (legacy MUD style)</p></li>
+<li><p>Add new setting <code class="docutils literal notranslate"><span class="pre">MAX_NR_SIMULTANEUS_PUPPETS</span></code> - how many puppets the account
+can run at the same time. Used to limit multi-playing.</p></li>
+<li><p>Make setting <code class="docutils literal notranslate"><span class="pre">MAX_NR_CHARACTERS</span></code> interact better with the new settings above.</p></li>
 </ul>
 </section>
 <section id="evennia-0-9-5">

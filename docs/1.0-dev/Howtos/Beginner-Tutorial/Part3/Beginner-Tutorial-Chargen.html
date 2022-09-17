@@ -1,0 +1,808 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Character Generation &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="In-game Rooms" href="Beginner-Tutorial-Rooms.html" />
+    <link rel="prev" title="Handling Equipment" href="Beginner-Tutorial-Equipment.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Rooms.html" title="In-game Rooms"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Equipment.html" title="Handling Equipment"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Character Generation</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="character-generation">
+<h1>Character Generation<a class="headerlink" href="#character-generation" title="Permalink to this headline">¶</a></h1>
+<p>In previous lessons we have established how a character looks. Now we need to give the player a
+chance to create one.</p>
+<section id="how-it-will-work">
+<h2>How it will work<a class="headerlink" href="#how-it-will-work" title="Permalink to this headline">¶</a></h2>
+<p>A fresh Evennia install will automatically create a new Character with the same name as your
+Account when you log in. This is quick and simple and mimics older MUD styles. You could picture
+doing this, and then customizing the Character in-place.</p>
+<p>We will be a little more sophisticated though. We want the user to be able to create a character
+using a menu when they log in.</p>
+<p>We do this by editing <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code> and adding the line</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False 
+</pre></div>
+</div>
+<p>When doing this, connecting with the game with a new account will land you in “OOC” mode. The
+ooc-version of <code class="docutils literal notranslate"><span class="pre">look</span></code> (sitting in the Account cmdset) will show a list of available characters
+if you have any. You can also enter <code class="docutils literal notranslate"><span class="pre">charcreate</span></code> to make a new character. The <code class="docutils literal notranslate"><span class="pre">charcreate</span></code> is a
+simple command coming with Evennia that just lets you make a new character with a given name and
+description. We will later modify that to kick off our chargen. For now we’ll just keep in mind
+that’s how we’ll start off the menu.</p>
+<p>In <em>Knave</em>, most of the character-generation is random. This means this tutorial can be pretty
+compact while still showing the basic idea. What we will create is a menu looking like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Silas</span> 
+
+<span class="n">STR</span> <span class="o">+</span><span class="mi">1</span>
+<span class="n">DEX</span> <span class="o">+</span><span class="mi">2</span>
+<span class="n">CON</span> <span class="o">+</span><span class="mi">1</span>
+<span class="n">INT</span> <span class="o">+</span><span class="mi">3</span>
+<span class="n">WIS</span> <span class="o">+</span><span class="mi">1</span>
+<span class="n">CHA</span> <span class="o">+</span><span class="mi">2</span>
+
+<span class="n">You</span> <span class="n">are</span> <span class="n">lanky</span> <span class="k">with</span> <span class="n">a</span> <span class="n">sunken</span> <span class="n">face</span> <span class="ow">and</span> <span class="n">filthy</span> <span class="n">hair</span><span class="p">,</span> <span class="n">breathy</span> <span class="n">speech</span><span class="p">,</span> <span class="ow">and</span> <span class="n">foreign</span> <span class="n">clothing</span><span class="o">.</span>
+<span class="n">You</span> <span class="n">were</span> <span class="n">a</span> <span class="n">herbalist</span><span class="p">,</span> <span class="n">but</span> <span class="n">you</span> <span class="n">were</span> <span class="n">pursued</span> <span class="ow">and</span> <span class="n">ended</span> <span class="n">up</span> <span class="n">a</span> <span class="n">knave</span><span class="o">.</span> <span class="n">You</span> <span class="n">are</span> <span class="n">honest</span> <span class="n">but</span> <span class="n">also</span> 
+<span class="n">suspicious</span><span class="o">.</span> <span class="n">You</span> <span class="n">are</span> <span class="n">of</span> <span class="n">the</span> <span class="n">neutral</span> <span class="n">alignment</span><span class="o">.</span> 
+
+<span class="n">Your</span> <span class="n">belongings</span><span class="p">:</span> 
+<span class="n">Brigandine</span> <span class="n">armor</span><span class="p">,</span> <span class="n">ration</span><span class="p">,</span> <span class="n">ration</span><span class="p">,</span> <span class="n">sword</span><span class="p">,</span> <span class="n">torch</span><span class="p">,</span> <span class="n">torch</span><span class="p">,</span> <span class="n">torch</span><span class="p">,</span> <span class="n">torch</span><span class="p">,</span> <span class="n">torch</span><span class="p">,</span> 
+<span class="n">tinderbox</span><span class="p">,</span> <span class="n">chisel</span><span class="p">,</span> <span class="n">whistle</span>
+
+<span class="o">----------------------------------------------------------------------------------------</span>
+<span class="mf">1.</span> <span class="n">Change</span> <span class="n">your</span> <span class="n">name</span> 
+<span class="mf">2.</span> <span class="n">Swap</span> <span class="n">two</span> <span class="n">of</span> <span class="n">your</span> <span class="n">ability</span> <span class="n">scores</span> <span class="p">(</span><span class="n">once</span><span class="p">)</span>
+<span class="mf">3.</span> <span class="n">Accept</span> <span class="ow">and</span> <span class="n">create</span> <span class="n">character</span>
+</pre></div>
+</div>
+<p>If you select 1, you get a new menu node:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Your</span> <span class="n">current</span> <span class="n">name</span> <span class="ow">is</span> <span class="n">Silas</span><span class="o">.</span> <span class="n">Enter</span> <span class="n">a</span> <span class="n">new</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">leave</span> <span class="n">empty</span> <span class="n">to</span> <span class="n">abort</span><span class="o">.</span>
+<span class="o">-----------------------------------------------------------------------------------------</span>
+</pre></div>
+</div>
+<p>You can now enter a new name. When pressing return you’ll get back to the first menu node
+showing your character, now with the new name.</p>
+<p>If you select 2, you go to another menu node:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Your current abilities: 
+
+STR +1
+DEX +2
+CON +1
+INT +3
+WIS +1
+CHA +2
+
+You can swap the values of two abilities around.
+You can only do this once, so choose carefully!
+
+To swap the values of e.g. STR and INT, write &#39;STR INT&#39;. Empty to abort.
+------------------------------------------------------------------------------------------
+</pre></div>
+</div>
+<p>If you enter <code class="docutils literal notranslate"><span class="pre">WIS</span> <span class="pre">CHA</span></code> here,  WIS will become <code class="docutils literal notranslate"><span class="pre">+2</span></code> and <code class="docutils literal notranslate"><span class="pre">CHA</span></code> <code class="docutils literal notranslate"><span class="pre">+1</span></code>. You will then again go back
+to the main node to see your new character, but this time the option to swap will no longer be
+available (you can only do it once).</p>
+<p>If you finally select the <code class="docutils literal notranslate"><span class="pre">Accept</span> <span class="pre">and</span> <span class="pre">create</span> <span class="pre">character</span></code> option, the character will be created
+and you’ll leave the menu;</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Character was created! 
+</pre></div>
+</div>
+</section>
+<section id="random-tables">
+<h2>Random tables<a class="headerlink" href="#random-tables" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>Full Knave random tables are found in
+<a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.random_tables.html#evennia-contrib-tutorials-evadventure-random-tables"><span class="std std-ref">evennia/contrib/tutorials/evadventure/random_tables.py</span></a>.</p>
+</aside>
+<blockquote>
+<div><p>Make a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/random_tables.py</span></code>.</p>
+</div></blockquote>
+<p>Since most of <em>Knave</em>’s character generation is random we will need to roll on random tables
+from the <em>Knave</em> rulebook. While we added the ability to roll on a random table back in the
+<a class="reference internal" href="Beginner-Tutorial-Rules.html"><span class="doc std std-doc">Rules Tutorial</span></a>, we haven’t added the relevant tables yet.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/random_tables.py </span>
+
+<span class="n">chargen_tables</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;physique&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;athletic&quot;</span><span class="p">,</span> <span class="s2">&quot;brawny&quot;</span><span class="p">,</span> <span class="s2">&quot;corpulent&quot;</span><span class="p">,</span> <span class="s2">&quot;delicate&quot;</span><span class="p">,</span> <span class="s2">&quot;gaunt&quot;</span><span class="p">,</span> <span class="s2">&quot;hulking&quot;</span><span class="p">,</span> <span class="s2">&quot;lanky&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ripped&quot;</span><span class="p">,</span> <span class="s2">&quot;rugged&quot;</span><span class="p">,</span> <span class="s2">&quot;scrawny&quot;</span><span class="p">,</span> <span class="s2">&quot;short&quot;</span><span class="p">,</span> <span class="s2">&quot;sinewy&quot;</span><span class="p">,</span> <span class="s2">&quot;slender&quot;</span><span class="p">,</span> <span class="s2">&quot;flabby&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;statuesque&quot;</span><span class="p">,</span> <span class="s2">&quot;stout&quot;</span><span class="p">,</span> <span class="s2">&quot;tiny&quot;</span><span class="p">,</span> <span class="s2">&quot;towering&quot;</span><span class="p">,</span> <span class="s2">&quot;willowy&quot;</span><span class="p">,</span> <span class="s2">&quot;wiry&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;face&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;bloated&quot;</span><span class="p">,</span> <span class="s2">&quot;blunt&quot;</span><span class="p">,</span> <span class="s2">&quot;bony&quot;</span><span class="p">,</span> <span class="c1"># ... </span>
+    <span class="p">],</span> <span class="c1"># ... </span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+<p>The tables are just copied from the <em>Knave</em> rules. We group the aspects in a dict
+<code class="docutils literal notranslate"><span class="pre">character_generation</span></code> to separate chargen-only tables from other random tables we’ll also
+keep in here.</p>
+</section>
+<section id="storing-state-of-the-menu">
+<h2>Storing state of the menu<a class="headerlink" href="#storing-state-of-the-menu" title="Permalink to this headline">¶</a></h2>
+<aside class="sidebar">
+<p>There is a full implementation of the chargen in
+<a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.chargen.html#evennia-contrib-tutorials-evadventure-chargen"><span class="std std-ref">evennia/contrib/tutorials/evadventure/chargen.py</span></a>.</p>
+</aside>
+<blockquote>
+<div><p>create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/chargen.py</span></code>.</p>
+</div></blockquote>
+<p>During character generation we will need an entity to store/retain the changes, like a
+‘temporary character sheet’.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
+
+<span class="kn">from</span> <span class="nn">.random_tables</span> <span class="kn">import</span> <span class="n">chargen_tables</span>
+<span class="kn">from</span> <span class="nn">.rules</span> <span class="kn">import</span> <span class="n">dice</span> 
+
+<span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
+    
+    <span class="k">def</span> <span class="nf">_random_ability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">),</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">),</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d6&quot;</span><span class="p">))</span>
+        
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ability_changes</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># how many times we tried swap abilities</span>
+        
+        <span class="c1"># name will likely be modified later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d282&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+
+        <span class="c1"># base attribute values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_ability</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dexterity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_ability</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constitution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_ability</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intelligence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_ability</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wisdom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_ability</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charisma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_ability</span><span class="p">()</span>
+
+        <span class="c1"># physical attributes (only for rp purposes)</span>
+        <span class="n">physique</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;physique&quot;</span><span class="p">])</span>
+        <span class="n">face</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;face&quot;</span><span class="p">])</span>
+        <span class="n">skin</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;skin&quot;</span><span class="p">])</span>
+        <span class="n">hair</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;hair&quot;</span><span class="p">])</span>
+        <span class="n">clothing</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;clothing&quot;</span><span class="p">])</span>
+        <span class="n">speech</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;speech&quot;</span><span class="p">])</span>
+        <span class="n">virtue</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;virtue&quot;</span><span class="p">])</span>
+        <span class="n">vice</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;vice&quot;</span><span class="p">])</span>
+        <span class="n">background</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;background&quot;</span><span class="p">])</span>
+        <span class="n">misfortune</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;misfortune&quot;</span><span class="p">])</span>
+        <span class="n">alignment</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;alignment&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;You are </span><span class="si">{</span><span class="n">physique</span><span class="si">}</span><span class="s2"> with a </span><span class="si">{</span><span class="n">face</span><span class="si">}</span><span class="s2"> face, </span><span class="si">{</span><span class="n">skin</span><span class="si">}</span><span class="s2"> skin, </span><span class="si">{</span><span class="n">hair</span><span class="si">}</span><span class="s2"> hair, </span><span class="si">{</span><span class="n">speech</span><span class="si">}</span><span class="s2"> speech,&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; and </span><span class="si">{</span><span class="n">clothing</span><span class="si">}</span><span class="s2"> clothing. You were a </span><span class="si">{</span><span class="n">background</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">, but you were&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">misfortune</span><span class="si">}</span><span class="s2"> and ended up a knave. You are </span><span class="si">{</span><span class="n">virtue</span><span class="si">}</span><span class="s2"> but also </span><span class="si">{</span><span class="n">vice</span><span class="si">}</span><span class="s2">. You are of the&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">alignment</span><span class="si">}</span><span class="s2"> alignment.&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d8&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xp</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># random equipment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">armor</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;armor&quot;</span><span class="p">])</span>
+
+        <span class="n">_helmet_and_shield</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;helmets and shields&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">helmet</span> <span class="o">=</span> <span class="s2">&quot;helmet&quot;</span> <span class="k">if</span> <span class="s2">&quot;helmet&quot;</span> <span class="ow">in</span> <span class="n">_helmet_and_shield</span> <span class="k">else</span> <span class="s2">&quot;none&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="s2">&quot;shield&quot;</span> <span class="k">if</span> <span class="s2">&quot;shield&quot;</span> <span class="ow">in</span> <span class="n">_helmet_and_shield</span> <span class="k">else</span> <span class="s2">&quot;none&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;starting weapon&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">backpack</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;ration&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ration&quot;</span><span class="p">,</span>
+            <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;dungeoning gear&quot;</span><span class="p">]),</span>
+            <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;dungeoning gear&quot;</span><span class="p">]),</span>
+            <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;general gear 1&quot;</span><span class="p">]),</span>
+            <span class="n">dice</span><span class="o">.</span><span class="n">roll_random_table</span><span class="p">(</span><span class="s2">&quot;1d20&quot;</span><span class="p">,</span> <span class="n">chargen_tables</span><span class="p">[</span><span class="s2">&quot;general gear 2&quot;</span><span class="p">]),</span>
+        <span class="p">]</span>
+</pre></div>
+</div>
+<p>Here we have followed the <em>Knave</em> rulebook to randomize abilities, description and equipment.
+The <code class="docutils literal notranslate"><span class="pre">dice.roll()</span></code> and <code class="docutils literal notranslate"><span class="pre">dice.roll_random_table</span></code> methods now become very useful! Everything here
+should be easy to follow.</p>
+<p>The main difference from baseline <em>Knave</em> is that we make a table of “starting weapon” (in Knave
+you can pick whatever you like).</p>
+<p>We also initialize <code class="docutils literal notranslate"><span class="pre">.ability_changes</span> <span class="pre">=</span> <span class="pre">0</span></code>. Knave only allows us to swap the values of two
+Abilities <em>once</em>. We will use this to know if it has been done or not.</p>
+<section id="showing-the-sheet">
+<h3>Showing the sheet<a class="headerlink" href="#showing-the-sheet" title="Permalink to this headline">¶</a></h3>
+<p>Now that we have our temporary character sheet, we should make it easy to visualize it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
+
+<span class="n">_TEMP_SHEET</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="si">{name}</span><span class="s2"></span>
+
+<span class="s2">STR +</span><span class="si">{strength}</span><span class="s2"></span>
+<span class="s2">DEX +</span><span class="si">{dexterity}</span><span class="s2"></span>
+<span class="s2">CON +</span><span class="si">{constitution}</span><span class="s2"></span>
+<span class="s2">INT +</span><span class="si">{intelligence}</span><span class="s2"></span>
+<span class="s2">WIS +</span><span class="si">{wisdom}</span><span class="s2"></span>
+<span class="s2">CHA +</span><span class="si">{charisma}</span><span class="s2"></span>
+
+<span class="si">{description}</span><span class="s2"></span>
+<span class="s2">    </span>
+<span class="s2">Your belongings:</span>
+<span class="si">{equipment}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span> 
+    
+    <span class="c1"># ... </span>
+    
+    <span class="k">def</span> <span class="nf">show_sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">equipment</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">armor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">backpack</span>
+            <span class="k">if</span> <span class="n">item</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_TEMP_SHEET</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">strength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span>
+            <span class="n">dexterity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dexterity</span><span class="p">,</span>
+            <span class="n">constitution</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constitution</span><span class="p">,</span>
+            <span class="n">intelligence</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">intelligence</span><span class="p">,</span>
+            <span class="n">wisdom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wisdom</span><span class="p">,</span>
+            <span class="n">charisma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">charisma</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span>
+            <span class="n">equipment</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">equipment</span><span class="p">),</span>
+        <span class="p">)</span>
+
+</pre></div>
+</div>
+<p>The new <code class="docutils literal notranslate"><span class="pre">show_sheet</span></code> method collect the data from the temporary sheet and return it in a pretty
+form. Making a ‘template’ string like <code class="docutils literal notranslate"><span class="pre">_TEMP_SHEET</span></code> makes it easier to change things later if you want
+to change how things look.</p>
+</section>
+<section id="apply-character">
+<h3>Apply character<a class="headerlink" href="#apply-character" title="Permalink to this headline">¶</a></h3>
+<p>Once we are happy with our character, we need to actually create it with the stats we chose.
+This is a bit more involved.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="kn">from</span> <span class="nn">.characters</span> <span class="kn">import</span> <span class="n">EvAdventureCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span> 
+
+
+<span class="k">class</span> <span class="nc">TemporaryCharacterSheet</span><span class="p">:</span>
+     
+    <span class="c1"># ...  </span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># create character object with given abilities</span>
+        <span class="n">new_character</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
+            <span class="n">EvAdventureCharacter</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;strength&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">strength</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;dexterity&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dexterity</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;constitution&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constitution</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;intelligence&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">intelligence</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;wisdom&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wisdom</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;charisma&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wisdom</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;hp&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;hp_max&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc</span><span class="p">),</span>     
+            <span class="p">),</span>                           
+        <span class="p">)</span>                                
+        <span class="c1"># spawn equipment (will require prototypes created before it works)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">:</span>                  
+            <span class="n">weapon</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">)</span>  
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">weapon</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="p">:</span>                  
+            <span class="n">shield</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shield</span><span class="p">)</span>  
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">shield</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">armor</span><span class="p">:</span>                   
+            <span class="n">armor</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">armor</span><span class="p">)</span>    
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">armor</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">:</span>                  
+            <span class="n">helmet</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>  
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">helmet</span><span class="p">)</span>
+            
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backpack</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">spawn</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">new_character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                                        
+        <span class="k">return</span> <span class="n">new_character</span>  
+</pre></div>
+</div>
+<p>We use <code class="docutils literal notranslate"><span class="pre">create_object</span></code> to create a new <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code>. We feed it with all relevant data
+from the temporary character sheet. This is when these become an actual character.</p>
+<aside class="sidebar">
+<p>A prototype is basically a <code class="docutils literal notranslate"><span class="pre">dict</span></code> describing how the object should be created. Since
+it’s just a piece of code, it can stored in a Python module and used to quickly <em>spawn</em> (create)
+things from those prototypes.</p>
+</aside>
+<p>Each piece of equipment is an object in in its own right. We will here assume that all game
+items are defined as <a class="reference internal" href="../../../Components/Prototypes.html"><span class="doc std std-doc">Prototypes</span></a> keyed to its name, such as “sword”, “brigandine
+armor” etc.</p>
+<p>We haven’t actually created those prototypes yet, so for now we’ll need to assume they are there.
+Once a piece of equipment has been spawned, we make sure to move it into the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> we
+created in the <a class="reference internal" href="Beginner-Tutorial-Equipment.html"><span class="doc std std-doc">Equipment lesson</span></a>.</p>
+</section>
+</section>
+<section id="initializing-evmenu">
+<h2>Initializing EvMenu<a class="headerlink" href="#initializing-evmenu" title="Permalink to this headline">¶</a></h2>
+<p>Evennia comes with a full menu-generation system based on <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc std std-doc">Command sets</span></a>, called
+<a class="reference internal" href="../../../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvMenu</span> 
+
+<span class="c1"># ...</span>
+
+<span class="c1"># chargen menu </span>
+
+
+<span class="c1"># this goes to the bottom of the module</span>
+
+<span class="k">def</span> <span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a start point for spinning up the chargen from a command later.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">menutree</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># TODO!</span>
+
+    <span class="c1"># this generates all random components of the character</span>
+    <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">TemporaryCharacterSheet</span><span class="p">()</span>
+
+    <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menutree</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">tmp_character</span><span class="o">=</span><span class="n">tmp_character</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>This first function is what we will call from elsewhere (for example from a custom <code class="docutils literal notranslate"><span class="pre">charcreate</span></code>
+command) to kick the menu into gear.</p>
+<p>It takes the <code class="docutils literal notranslate"><span class="pre">caller</span></code> (the one to want to start the menu) and a <code class="docutils literal notranslate"><span class="pre">session</span></code> argument. The latter will help
+track just which client-connection we are using (depending on Evennia settings, you could be
+connecting with multiple clients).</p>
+<p>We create a <code class="docutils literal notranslate"><span class="pre">TemporaryCharacterSheet</span></code> and call <code class="docutils literal notranslate"><span class="pre">.generate()</span></code> to make a random character. We then
+feed all this into <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>.</p>
+<p>The moment this happens, the user will be in the menu, there are no further steps needed.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">menutree</span></code> is what we’ll create next. It describes which menu ‘nodes’ are available to jump
+between.</p>
+</section>
+<section id="main-node-choosing-what-to-do">
+<h2>Main Node: Choosing what to do<a class="headerlink" href="#main-node-choosing-what-to-do" title="Permalink to this headline">¶</a></h2>
+<p>This is the first menu node. It will act as a central hub, from which one can choose different
+actions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="c1"># at the end of the module, but before the `start_chargen` function</span>
+
+<span class="k">def</span> <span class="nf">node_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+
+    <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="n">tmp_character</span><span class="o">.</span><span class="n">show_sheet</span><span class="p">()</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+           <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Change your name&quot;</span><span class="p">,</span> 
+           <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;node_change_name&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">tmp_character</span><span class="o">.</span><span class="n">ability_changes</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> 
+            <span class="p">{</span> 
+                <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Swap two of your ability scores (once)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;node_swap_abilities&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Accept and create character&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;node_apply_character&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>A lot to unpack here! In Evennia, it’s convention to name your node-functions <code class="docutils literal notranslate"><span class="pre">node_*</span></code>. While
+not required, it helps you track what is a node and not.</p>
+<p>Every menu-node, should accept <code class="docutils literal notranslate"><span class="pre">caller,</span> <span class="pre">raw_string,</span> <span class="pre">**kwargs</span></code> as arguments. Here <code class="docutils literal notranslate"><span class="pre">caller</span></code> is the
+<code class="docutils literal notranslate"><span class="pre">caller</span></code> you passed into the <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> call. <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> is the input given by the user in order
+to <em>get to this node</em>, so currently empty. The <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> are all extra keyword arguments passed
+into <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>. They can also be passed between nodes. In this case, we passed the
+keyword <code class="docutils literal notranslate"><span class="pre">tmp_character</span></code> to <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code>. We now have the temporary character sheet available in the
+node!</p>
+<p>An <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> node must always return two things - <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">options</span></code>. The <code class="docutils literal notranslate"><span class="pre">text</span></code> is what will
+show to the user when looking at this node. The <code class="docutils literal notranslate"><span class="pre">options</span></code> are, well, what options should be
+presented to move on from here to some other place.</p>
+<p>For the text, we simply get a pretty-print of the temporary character sheet. A single option is
+defined as a <code class="docutils literal notranslate"><span class="pre">dict</span></code> like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> 
+    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="o">.</span> <span class="s2">&quot;alias1&quot;</span><span class="p">,</span> <span class="s2">&quot;alias2&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">),</span>  <span class="c1"># if skipped, auto-show a number</span>
+    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;text to describe what happens when selecting option&quot;</span><span class="p">,</span><span class="o">.</span>
+    <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;name of node or a callable&quot;</span><span class="p">,</span> <span class="n">kwargs_to_pass_into_next_node_or_callable</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Multiple option-dicts are returned in a list or tuple. The <code class="docutils literal notranslate"><span class="pre">goto</span></code> option-key is important to
+understand. The job of this is to either point directly to another node (by giving its name), or
+by pointing to a Python callable (like a function) <em>that then returns that name</em>. You can also
+pass kwargs (as a dict). This will be made available as <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the callable or next node.</p>
+<p>While an option can have a <code class="docutils literal notranslate"><span class="pre">key</span></code>, you can also skip it to just get a running number.</p>
+<p>In our <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> node, we point to three nodes by name: <code class="docutils literal notranslate"><span class="pre">node_change_name</span></code>,
+<code class="docutils literal notranslate"><span class="pre">node_swap_abilities</span></code>, and <code class="docutils literal notranslate"><span class="pre">node_apply_character</span></code>. We also make sure to pass along <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>
+to each node, since that contains our temporary character sheet.</p>
+<p>The middle of these options only appear if we haven’t already switched two abilities around - to
+know this, we check the <code class="docutils literal notranslate"><span class="pre">.ability_changes</span></code> property to make sure it’s still 0.</p>
+</section>
+<section id="node-changing-your-name">
+<h2>Node: Changing your name<a class="headerlink" href="#node-changing-your-name" title="Permalink to this headline">¶</a></h2>
+<p>This is where you end up if you opted to change your name in <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py</span>
+
+<span class="c1"># ...</span>
+
+<span class="c1"># after previous node </span>
+
+<span class="k">def</span> <span class="nf">_update_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used by node_change_name below to check what user </span>
+<span class="sd">    entered and update the name if appropriate.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">raw_string</span><span class="p">:</span>
+        <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
+        <span class="n">tmp_character</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
+
+
+<span class="k">def</span> <span class="nf">node_change_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Change the random name of the character.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Your current name is |w</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">|n. &quot;</span>
+        <span class="s2">&quot;Enter a new name or leave empty to abort.&quot;</span> 
+    <span class="p">)</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+                   <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span> 
+                   <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_update_name</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+              <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+</pre></div>
+</div>
+<p>There are two functions here - the menu node itself (<code class="docutils literal notranslate"><span class="pre">node_change_name</span></code>) and a
+helper <em>goto_function</em> (<code class="docutils literal notranslate"><span class="pre">_update_name</span></code>) to handle the user’s input.</p>
+<p>For the (single) option, we use a special <code class="docutils literal notranslate"><span class="pre">key</span></code> named <code class="docutils literal notranslate"><span class="pre">_default</span></code>. This makes this option
+a catch-all: If the user enters something that does not match any other option, this is
+the option that will be used.
+Since we have no other options here, we will always use this option no matter what the user enters.</p>
+<p>Also note that the <code class="docutils literal notranslate"><span class="pre">goto</span></code> part of the option points to the <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> callable rather than to
+the name of a node. It’s important we keep passing <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> along to it!</p>
+<p>When a user writes anything at this node, the <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> callable will be called. This has
+the same arguments as a node, but it is <em>not</em> a node - we will only use it to <em>figure out</em> which
+node to go to next.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> we now have a use for the <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> argument - this is what was written by
+the user on the previous node, remember? This is now either an empty string (meaning to ignore
+it) or the new name of the character.</p>
+<p>A goto-function like <code class="docutils literal notranslate"><span class="pre">_update_name</span></code> must return the name of the next node to use. It can also
+optionally return the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> to pass into that node - we want to always do this, so we don’t
+loose our temporary character sheet. Here we will always go back to the <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code>.</p>
+<blockquote>
+<div><p>Hint: If returning <code class="docutils literal notranslate"><span class="pre">None</span></code> from a goto-callable, you will always return to the last node you
+were at.</p>
+</div></blockquote>
+</section>
+<section id="node-swapping-abilities-around">
+<h2>Node: Swapping Abilities around<a class="headerlink" href="#node-swapping-abilities-around" title="Permalink to this headline">¶</a></h2>
+<p>You get here by selecting the second option from the <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> node.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="c1"># after previous node </span>
+
+<span class="n">_ABILITIES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;STR&quot;</span><span class="p">:</span> <span class="s2">&quot;strength&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DEX&quot;</span><span class="p">:</span> <span class="s2">&quot;dexterity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CON&quot;</span><span class="p">:</span> <span class="s2">&quot;constitution&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;INT&quot;</span><span class="p">:</span> <span class="s2">&quot;intelligence&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WIS&quot;</span><span class="p">:</span> <span class="s2">&quot;wisdom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CHA&quot;</span><span class="p">:</span> <span class="s2">&quot;charisma&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used by node_swap_abilities to parse the user&#39;s input and swap ability</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">raw_string</span><span class="p">:</span>
+        <span class="n">abi1</span><span class="p">,</span> <span class="o">*</span><span class="n">abi2</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">abi2</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That doesn&#39;t look right.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
+        <span class="n">abi2</span> <span class="o">=</span> <span class="n">abi2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">abi1</span><span class="p">,</span> <span class="n">abi2</span> <span class="o">=</span> <span class="n">abi1</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">abi2</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">abi1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ABILITIES</span> <span class="ow">or</span> <span class="n">abi2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ABILITIES</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Not a familiar set of abilites.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span>
+        
+        <span class="c1"># looks okay = swap values. We need to convert STR to strength etc</span>
+        <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
+        <span class="n">abi1</span> <span class="o">=</span> <span class="n">_ABILITIES</span><span class="p">[</span><span class="n">abi1</span><span class="p">]</span>
+        <span class="n">abi2</span> <span class="o">=</span> <span class="n">_ABILITIES</span><span class="p">[</span><span class="n">abi2</span><span class="p">]</span>
+        <span class="n">abival1</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">tmp_character</span><span class="p">,</span> <span class="n">abi1</span><span class="p">)</span>
+        <span class="n">abival2</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">tmp_character</span><span class="p">,</span> <span class="n">abi2</span><span class="p">)</span>
+            
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">tmp_character</span><span class="p">,</span> <span class="n">abi1</span><span class="p">,</span> <span class="n">abival2</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">tmp_character</span><span class="p">,</span> <span class="n">abi2</span><span class="p">,</span> <span class="n">abival1</span><span class="p">)</span>
+        
+        <span class="n">tmp_character</span><span class="o">.</span><span class="n">ability_changes</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+    <span class="k">return</span> <span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span> <span class="n">kwargs</span>
+
+            
+<span class="k">def</span> <span class="nf">node_swap_abilities</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    One is allowed to swap the values of two abilities around, once.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Your current abilities:</span>
+
+<span class="s2">STR +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">strength</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">DEX +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">dexterity</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">CON +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">constitution</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">INT +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">intelligence</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">WIS +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">wisdom</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">CHA +</span><span class="si">{</span><span class="n">tmp_character</span><span class="o">.</span><span class="n">charisma</span><span class="si">}</span><span class="s2"></span>
+
+<span class="s2">You can swap the values of two abilities around.</span>
+<span class="s2">You can only do this once, so choose carefully!</span>
+
+<span class="s2">To swap the values of e.g.  STR and INT, write |wSTR INT|n. Empty to abort.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;_default&quot;</span><span class="p">,</span> <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_swap_abilities</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)}</span>
+    
+        <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+</pre></div>
+</div>
+<p>This is more code, but the logic is the same - we have a node (<code class="docutils literal notranslate"><span class="pre">node_swap_abilities</span></code>) and
+and a goto-callable helper (<code class="docutils literal notranslate"><span class="pre">_swap_abilities</span></code>). We catch everything the user writes on the
+node (such as <code class="docutils literal notranslate"><span class="pre">WIS</span> <span class="pre">CON</span></code>) and feed it into the helper.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">_swap_abilities</span></code>, we need to analyze the <code class="docutils literal notranslate"><span class="pre">raw_string</span></code> from the user to see what they
+want to do.</p>
+<p>Most code in the helper is validating the user didn’t enter nonsense. If they did,
+we use <code class="docutils literal notranslate"><span class="pre">caller.msg()</span></code> to tell them and then return <code class="docutils literal notranslate"><span class="pre">None,</span> <span class="pre">kwargs</span></code>, which re-runs the same node (the
+name-selection) all over again.</p>
+<p>Since we want users to be able to write “CON” instead of the longer “constitution”, we need a
+mapping <code class="docutils literal notranslate"><span class="pre">_ABILITIES</span></code> to easily convert between the two (it’s stored as <code class="docutils literal notranslate"><span class="pre">consitution</span></code> on the
+temporary character sheet). Once we know which abilities they want to swap, we do so and tick up
+the <code class="docutils literal notranslate"><span class="pre">.ability_changes</span></code> counter. This means this option will no longer be available from the main
+node.</p>
+<p>Finally, we return to <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> again.</p>
+</section>
+<section id="node-creating-the-character">
+<h2>Node: Creating the Character<a class="headerlink" href="#node-creating-the-character" title="Permalink to this headline">¶</a></h2>
+<p>We get here from the main node by opting to finish chargen.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_apply_character</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;                              </span>
+<span class="sd">    End chargen and create the character. We will also puppet it.</span>
+<span class="sd">                                     </span>
+<span class="sd">    &quot;&quot;&quot;</span>                              
+    <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tmp_character&quot;</span><span class="p">]</span>
+    <span class="n">new_character</span> <span class="o">=</span> <span class="n">tmp_character</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>      
+    
+    <span class="n">caller</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_character</span><span class="p">]</span> 
+    
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Character created!&quot;</span>
+    
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="kc">None</span> 
+</pre></div>
+</div>
+<p>When entering the node, we will take the Temporary character sheet and use its <code class="docutils literal notranslate"><span class="pre">.appy</span></code> method to
+create a new Character with all equipment.</p>
+<p>This is what is called an <em>end node</em>, because it returns <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of options. After this,
+the menu will exit. We will be back to the default character selection screen. The characters
+found on that screen are the ones listed in the <code class="docutils literal notranslate"><span class="pre">_playable_characters</span></code> Attribute, so we need to
+also the new character to it.</p>
+</section>
+<section id="tying-the-nodes-together">
+<h2>Tying the nodes together<a class="headerlink" href="#tying-the-nodes-together" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is a start point for spinning up the chargen from a command later.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">menutree</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># &lt;----- can now add this!</span>
+       <span class="s2">&quot;node_chargen&quot;</span><span class="p">:</span> <span class="n">node_chargen</span><span class="p">,</span> 
+       <span class="s2">&quot;node_change_name&quot;</span><span class="p">:</span> <span class="n">node_change_name</span><span class="p">,</span> 
+       <span class="s2">&quot;node_swap_abilities&quot;</span><span class="p">:</span> <span class="n">node_swap_abilities</span><span class="p">,</span>
+       <span class="s2">&quot;node_apply_character&quot;</span><span class="p">:</span> <span class="n">node_apply_character</span>
+    <span class="p">}</span>
+        
+    <span class="c1"># this generates all random components of the character</span>
+    <span class="n">tmp_character</span> <span class="o">=</span> <span class="n">TemporaryCharacterSheet</span><span class="p">()</span>
+    <span class="n">tmp_character</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+
+    <span class="n">EvMenu</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">menutree</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> 
+           <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;node_chargen&quot;</span><span class="p">,</span>   <span class="c1"># &lt;----- </span>
+           <span class="n">tmp_character</span><span class="o">=</span><span class="n">tmp_character</span><span class="p">)</span>
+          
+</pre></div>
+</div>
+<p>Now that we have all the nodes, we add them to the <code class="docutils literal notranslate"><span class="pre">menutree</span></code> we left empty before. We only add
+the nodes, <em>not</em> the goto-helpers! The keys we set in the <code class="docutils literal notranslate"><span class="pre">menutree</span></code> dictionary are the names we
+should use to point to nodes from inside the menu (and we did).</p>
+<p>We also add a keyword argument <code class="docutils literal notranslate"><span class="pre">startnode</span></code> pointing to the <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> node. This tells EvMenu
+to first jump into that node when the menu is starting up.</p>
+</section>
+<section id="conclusions">
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<p>This lesson taught us how to use <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> to make an interactive character generator. In an RPG
+more complex than <em>Knave</em>, the menu would be bigger and more intricate, but the same principles
+apply.</p>
+<p>Together with the previous lessons we have now fished most of the basics around player
+characters - how they store their stats, handle their equipment and how to create them.</p>
+<p>In the next lesson we’ll address how EvAdventure <em>Rooms</em> work.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Character Generation</a><ul>
+<li><a class="reference internal" href="#how-it-will-work">How it will work</a></li>
+<li><a class="reference internal" href="#random-tables">Random tables</a></li>
+<li><a class="reference internal" href="#storing-state-of-the-menu">Storing state of the menu</a><ul>
+<li><a class="reference internal" href="#showing-the-sheet">Showing the sheet</a></li>
+<li><a class="reference internal" href="#apply-character">Apply character</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#initializing-evmenu">Initializing EvMenu</a></li>
+<li><a class="reference internal" href="#main-node-choosing-what-to-do">Main Node: Choosing what to do</a></li>
+<li><a class="reference internal" href="#node-changing-your-name">Node: Changing your name</a></li>
+<li><a class="reference internal" href="#node-swapping-abilities-around">Node: Swapping Abilities around</a></li>
+<li><a class="reference internal" href="#node-creating-the-character">Node: Creating the Character</a></li>
+<li><a class="reference internal" href="#tying-the-nodes-together">Tying the nodes together</a></li>
+<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Equipment.html"
+                        title="previous chapter">Handling Equipment</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Rooms.html"
+                        title="next chapter">In-game Rooms</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Chargen.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Beginner-Tutorial-Chargen.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Rooms.html" title="In-game Rooms"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Equipment.html" title="Handling Equipment"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Character Generation</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

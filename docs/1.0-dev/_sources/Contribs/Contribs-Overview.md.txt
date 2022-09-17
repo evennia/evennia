@@ -549,6 +549,7 @@ tutorials are found here. Also the home of the Tutorial World demo adventure._
 
 Contrib-Batchprocessor.md
 Contrib-Bodyfunctions.md
+Contrib-Evadventure.md
 Contrib-Mirror.md
 Contrib-Red-Button.md
 Contrib-Talking-Npc.md
@@ -576,6 +577,20 @@ Example script for testing. This adds a simple timer that has your
 character make small verbal observations at irregular intervals.
 
 [Read the documentation](./Contrib-Bodyfunctions.md) - [Browse the Code](evennia.contrib.tutorials.bodyfunctions)
+
+
+
+### Contrib: `evadventure`
+
+_Contrib by Griatch 2022_
+
+A complete example MUD using Evennia. This is the final result of what is
+implemented if you follow the Getting-Started tutorial. It's recommended
+that you follow the tutorial step by step and write your own code. But if
+you prefer you can also pick apart or use this as a starting point for your
+own game.
+
+[Read the documentation](./Contrib-Evadventure.md) - [Browse the Code](evennia.contrib.tutorials.evadventure)
 
 
 

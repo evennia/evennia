@@ -1,0 +1,938 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.tutorials.evadventure.objects &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.tutorials.evadventure.quests" href="evennia.contrib.tutorials.evadventure.quests.html" />
+    <link rel="prev" title="evennia.contrib.tutorials.evadventure.npcs" href="evennia.contrib.tutorials.evadventure.npcs.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.quests.html" title="evennia.contrib.tutorials.evadventure.quests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.npcs.html" title="evennia.contrib.tutorials.evadventure.npcs"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" accesskey="U">evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.objects</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tutorials.evadventure.objects">
+<span id="evennia-contrib-tutorials-evadventure-objects"></span><h1>evennia.contrib.tutorials.evadventure.objects<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.objects" title="Permalink to this headline">¶</a></h1>
+<p>All items in the game inherit from a base object. The properties (what you can do
+with an object, such as wear, wield, eat, drink, kill etc) are all controlled by
+Tags.</p>
+<p>Every object has one of a few <strong>obj_type</strong>-category tags:
+- weapon
+- armor
+- shield
+- helmet
+- consumable  (potions, torches etc)
+- magic (runestones, magic items)
+- quest (quest-items)
+- treasure  (valuable to sell)</p>
+<p>It’s possible for an item to have more than one tag, such as a golden helmet (helmet+treasure) or
+rune sword (weapon+quest).</p>
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
+<p>Base in-game entity.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.inventory_use_slot">
+<code class="sig-name descname">inventory_use_slot</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.size">
+<code class="sig-name descname">size</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'gear'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once, when this object is first created. This is the
+normal hook to overload for most object types.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.get_display_header">
+<code class="sig-name descname">get_display_header</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject.get_display_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.get_display_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ‘header’ component of the object description. Called by <strong>return_appearance</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The header display string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.get_display_desc">
+<code class="sig-name descname">get_display_desc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">looker</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject.get_display_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.get_display_desc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ‘desc’ component of the object description. Called by <strong>return_appearance</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>looker</strong> (<em>Object</em>) – Object doing the looking.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary data for use when overriding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The desc display string..</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.has_obj_type">
+<code class="sig-name descname">has_obj_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject.has_obj_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.has_obj_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if object is of a particular type.</p>
+<p>typeobj_enum (enum.ObjType): A type to check, like enums.TypeObj.TREASURE.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.get_help">
+<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObject.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.get_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get help text for the item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>str</em> – The help text, by default taken from the <strong>.help_text</strong> property.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureObject'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureObject'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureObjectFiller</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureObjectFiller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject</span></code></a></p>
+<p>In _Knave_, the inventory slots act as an extra measure of how you are affected by
+various averse effects. For example, mud or water could fill up some of your inventory
+slots and make the equipment there unusable until you cleaned it. Inventory is also
+used to track how long you can stay under water etc - the fewer empty slots you have,
+the less time you can stay under water due to carrying so much stuff with you.</p>
+<p>This class represents such an effect filling up an empty slot. It has a quality of 0,
+meaning it’s unusable.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'quest'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.quality">
+<code class="sig-name descname">quality</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureObjectFiller'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObjectFiller.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureQuestObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureQuestObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject</span></code></a></p>
+<p>A quest object. These cannot be sold and only be used for quest resolution.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'quest'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureQuestObject'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureQuestObject.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureTreasure</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureTreasure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject</span></code></a></p>
+<p>A ‘treasure’ is mainly useful to sell for coin.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'treasure'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureTreasure'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureTreasure.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureConsumable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureConsumable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject</span></code></a></p>
+<p>Item that can be ‘used up’, like a potion or food. Weapons, armor etc does not
+have a limited usage in this way.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'consumable'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.size">
+<code class="sig-name descname">size</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.uses">
+<code class="sig-name descname">uses</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.uses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_use">
+<code class="sig-name descname">at_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureConsumable.at_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consume a ‘use’ of this item. Once it reaches 0 uses, it should normally
+not be usable anymore and probably be deleted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user</strong> (<em>Object</em>) – The one using the item.</p></li>
+<li><p><strong>*args</strong> – Extra arguments depending on the usage and item.</p></li>
+<li><p><strong>**kwargs</strong> – <p>Extra arguments depending on the usage and item.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_post_use">
+<code class="sig-name descname">at_post_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureConsumable.at_post_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.at_post_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after this item was used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user</strong> (<em>Object</em>) – The one using the item.</p></li>
+<li><p><strong>*args</strong> – Optional arguments.</p></li>
+<li><p><strong>**kwargs</strong> – <p>Optional arguments.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureConsumable'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">WeaponEmptyHand</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#WeaponEmptyHand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a dummy-class loaded when you wield no weapons. We won’t create any db-object for it.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'weapon'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Empty Fists'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.inventory_use_slot">
+<code class="sig-name descname">inventory_use_slot</code><em class="property"> = 'weapon_hand'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.attack_type">
+<code class="sig-name descname">attack_type</code><em class="property"> = 'strength'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.attack_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.defense_type">
+<code class="sig-name descname">defense_type</code><em class="property"> = 'armor'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.defense_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.damage_roll">
+<code class="sig-name descname">damage_roll</code><em class="property"> = '1d4'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.damage_roll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.quality">
+<code class="sig-name descname">quality</code><em class="property"> = 100000</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.WeaponEmptyHand.quality" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureWeapon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureWeapon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject</span></code></a></p>
+<p>Base weapon class for all EvAdventure weapons.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'weapon'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.inventory_use_slot">
+<code class="sig-name descname">inventory_use_slot</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.quality">
+<code class="sig-name descname">quality</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.attack_type">
+<code class="sig-name descname">attack_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.attack_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.defense_type">
+<code class="sig-name descname">defense_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.defense_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.damage_roll">
+<code class="sig-name descname">damage_roll</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.damage_roll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureWeapon'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureRunestone</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureRunestone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable</span></code></a></p>
+<p>Base class for magic runestones. In _Knave_, every spell is represented by a rune stone
+that takes up an inventory slot. It is wielded as a weapon in order to create the specific
+magical effect provided by the stone. Normally each stone can only be used once per day but
+they are quite powerful (and scales with caster level).</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = (&lt;ObjType.WEAPON: 'weapon'&gt;, &lt;ObjType.MAGIC: 'magic'&gt;)</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.inventory_use_slot">
+<code class="sig-name descname">inventory_use_slot</code><em class="property"> = 'two_handed_weapons'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.quality">
+<code class="sig-name descname">quality</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.attack_type">
+<code class="sig-name descname">attack_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.attack_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.defense_type">
+<code class="sig-name descname">defense_type</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.defense_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.damage_roll">
+<code class="sig-name descname">damage_roll</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.damage_roll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.at_post_use">
+<code class="sig-name descname">at_post_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureRunestone.at_post_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.at_post_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after the spell was cast</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.refresh">
+<code class="sig-name descname">refresh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureRunestone.refresh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.refresh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.DoesNotExist</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureWeapon.MultipleObjectsReturned</span></code></a>, <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureConsumable.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureRunestone'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureRunestone.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureArmor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureArmor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject</span></code></a></p>
+<p>Base class for all wearable Armors.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'armor'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.inventory_use_slot">
+<code class="sig-name descname">inventory_use_slot</code><em class="property"> = 'body'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.armor">
+<code class="sig-name descname">armor</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.armor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.quality">
+<code class="sig-name descname">quality</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureArmor'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureShield">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureShield</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureShield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureShield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor</span></code></a></p>
+<p>Base class for all Shields.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'shield'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.inventory_use_slot">
+<code class="sig-name descname">inventory_use_slot</code><em class="property"> = 'shield_hand'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureShield'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureShield'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureShield.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.objects.</code><code class="sig-name descname">EvAdventureHelmet</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/objects.html#EvAdventureHelmet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor</span></code></a></p>
+<p>Base class for all Helmets.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'helmet'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.inventory_use_slot">
+<code class="sig-name descname">inventory_use_slot</code><em class="property"> = 'head'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.inventory_use_slot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.DoesNotExist" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.MultipleObjectsReturned" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.objects.EvAdventureArmor.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureHelmet'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.objects.EvAdventureHelmet.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.npcs.html"
+                        title="previous chapter">evennia.contrib.tutorials.evadventure.npcs</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.quests.html"
+                        title="next chapter">evennia.contrib.tutorials.evadventure.quests</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tutorials.evadventure.objects.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.tutorials.evadventure.objects.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.quests.html" title="evennia.contrib.tutorials.evadventure.quests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.npcs.html" title="evennia.contrib.tutorials.evadventure.npcs"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" >evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.objects</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
