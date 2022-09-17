@@ -10,19 +10,19 @@ calculations anew each time.
 
 ## Installation:
 
-Adding the `BasicMapCmdSet` to the default character cmdset will add the `map` command.
+Adding the `MapDisplayCmdSet` to the default character cmdset will add the `map` command.
 
 Specifically, in `mygame/commands/default_cmdsets.py`:
 
 ```python
 ...
-from evennia.contrib.grid.basicmap import basicmap   # <---
+from evennia.contrib.grid.ingame_map_display import ingame_map_display   # <---
 
 class CharacterCmdset(default_cmds.Character_CmdSet):
     ...
     def at_cmdset_creation(self):
         ...
-        self.add(basicmap.BasicMapCmdSet)  # <---
+        self.add(ingame_map_display.MapDisplayCmdSet)  # <---
 
 ```
 
