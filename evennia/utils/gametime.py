@@ -246,15 +246,14 @@ def schedule(
         day (int or None): Number of absolute days.
         month (int or None): Number of absolute months.
         year (int or None): Number of absolute years.
-        *args, **kwargs: Will be passed into the callable. These must be possible
-            to store in Attributes on the generated scheduling Script.
+        *args: Passed into the callable. Must be possible to store in Attribute.
+        **kwargs: Passed into the callable. Must be possible to store in Attribute.
 
     Returns:
         Script: The created Script handling the scheduling.
 
     Examples:
         ::
-
             schedule(func, min=5, sec=0)  # Will call 5 minutes past the next (in-game) hour.
             schedule(func, hour=2, min=30, sec=0)  # Will call the next (in-game) day at 02:30.
 
