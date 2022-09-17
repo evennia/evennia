@@ -46,19 +46,19 @@ The `FuncParser` also accepts a direct dict mapping of `{'name': callable, ...}`
 import dataclasses
 import inspect
 import random
+
 from django.conf import settings
-from evennia.utils import logger
+from evennia.utils import logger, search
 from evennia.utils.utils import (
-    make_iter,
     callables_from_module,
-    variable_from_module,
-    pad,
     crop,
+    int2str,
     justify,
+    make_iter,
+    pad,
     safe_convert_to_types,
-    int2str
+    variable_from_module,
 )
-from evennia.utils import search
 from evennia.utils.verb_conjugation.conjugate import verb_actor_stance_components
 from evennia.utils.verb_conjugation.pronouns import pronoun_to_viewpoints
 
@@ -243,7 +243,7 @@ class FuncParser:
             if raise_errors:
                 available = ", ".join(f"'{key}'" for key in self.callables)
                 raise ParsingError(
-                    f"Unknown parsed function '{str(parsedfunc)}' " f"(available: {available})"
+                    f"Unknown parsed function '{str(parsedfunc)}' (available: {available})"
                 )
             return str(parsedfunc)
 
@@ -679,6 +679,7 @@ def funcparser_callable_toint(*args, **kwargs):
     except TypeError:
         return inp
 
+
 def funcparser_callable_int2str(*args, **kwargs):
     """
     Usage: $int2str(1) -> 'one' etc, up to 12->twelve.
@@ -1049,6 +1050,7 @@ def funcparser_callable_clr(*args, **kwargs):
     endclr = "|" + endclr if endclr else ("|n" if startclr else "")
     return f"{startclr}{text}{endclr}"
 
+
 def funcparser_callable_pluralize(*args, **kwargs):
     """
     FuncParser callable. Handles pluralization of a word.
@@ -1059,7 +1061,7 @@ def funcparser_callable_pluralize(*args, **kwargs):
             otherwise use plural form.
         plural_word (str, optional): If given, this will be used if `number`
             is greater than one. If not given, we simply add 's' to the end of
-            `singular_word'.
+            `singular_word`.
 
     Example:
         - `$pluralize(thing, 2)` -> "things"

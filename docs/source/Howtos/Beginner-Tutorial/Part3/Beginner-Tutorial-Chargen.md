@@ -123,8 +123,8 @@ keep in here.
 ## Storing state of the menu 
 
 ```{sidebar}
-There is a full implementation of the chargen in [evennia/contrib/tutorials/evadventure/chargen.
-py](evennia.contrib.tutorials.evadventure.chargen).
+There is a full implementation of the chargen in 
+[evennia/contrib/tutorials/evadventure/chargen.py](evennia.contrib.tutorials.evadventure.chargen).
 ```
 > create a new module `mygame/evadventure/chargen.py`.
 

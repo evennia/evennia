@@ -1,7 +1,7 @@
 # Player Characters
 
-In the [previous lesson about rules and dice rolling](Beginner-Gutorial-Rules) we made some assumptions
-about the "Player Character" entity: 
+In the [previous lesson about rules and dice rolling](./Beginner-Tutorial-Rules.md) we made some 
+assumptions about the "Player Character" entity: 
 
 - It should store Abilities on itself as `character.strength`, `character.constitution` etc.
 - It should have a `.heal(amount)`  method.
@@ -237,7 +237,8 @@ Remember that `self` is the Character instance here. So `self.location.msg_conte
 message to everything inside my current location". In other words, send a message to everyone 
 in the same place as the character.
 
-The `$You() $conj(collapse)` are [Funcparser inlines](Funcparser). These are functions that execute 
+The `$You() $conj(collapse)` are [FuncParser inlines](../../../Components/FuncParser.md). These are functions that 
+execute 
 in the string. The resulting string may look different for different audiences. The `$You()` inline 
 function will use `from_obj` to figure out who 'you' are and either show your name or 'You'. 
 The `$conj()` (verb conjugator) will tweak the (English) verb to match.
