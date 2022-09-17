@@ -13,7 +13,7 @@
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="description" content="
-        Latest Evennia dev blog:  Tutorial-writing and Attributes galore: It has been a while since I wrote anything for the dev blog of Evennia, the MU creation system - so it's about time! ...
+        Latest Evennia dev blog:  Project plans and Splitting a Setting in two: As those following Evennia development should be aware of for now, we are approaching the 1.0 release of Evennia, the MU*-building framework. ...
         ---
         Evennia is a modern Python library and server for creating text-based
         multi-player games and virtual worlds (also known as MUD, MUSH, MU,
@@ -49,10 +49,16 @@
                     <ul>
                         
                             <li>
-                                <a href="2022.html"> 2022 (2)
+                                <a href="2022.html"> 2022 (3)
                                     
                                         <ul class="devblog-calendar-open">
                                     
+                                        
+                                                <li class="devblog-calendar-post devblog-calendar-tooltip">
+                                                    <a href="2022.html#2022-09-17-project-plans-and-splitting-a-setting-in-two">Sep 17
+                                                        <span class="devblog-calendar-tooltip-text"> Project plans and Splitting a Setting in two</span>
+                                                   </a>
+                                                </li>
                                         
                                                 <li class="devblog-calendar-post devblog-calendar-tooltip">
                                                     <a href="2022.html#2022-07-05-tutorial-writing-and-attributes-galore">Jul  5
@@ -608,6 +614,96 @@
 
                 
                     
+                    <div class="blog_post">
+                    <h1 id=2022-09-17-project-plans-and-splitting-a-setting-in-two>
+     Project plans and Splitting a Setting in two
+    <a class="devblog-headerlink" href="2022.html#2022-09-17-project-plans-and-splitting-a-setting-in-two" title="Permalink to this blog post">¶</a>
+    <div class="devblog-title-date">- September 17, 2022</div>
+</h1>
+<p><img src="images/pause_break_key.jpg" alt="Pause/Break button" /></p>
+<p>As those following Evennia development should be aware of for now, we are approaching the 1.0 release of Evennia, the MU*-building framework.</p>
+<p>Thing is, that release has been coming 'soon' for quite a while now. Since some time you can already test Evennia 1.0-dev by checking out the  Evennia <code>develop</code> branch (<a href="https://github.com/evennia/evennia/discussions/2640">here</a> for help on how). Evennia 1.0-dev is still changing, but it's already stable enough that It's gotten to the point that people in chat now recommend new users to start fresh with 1.0-dev rather than the 'stable' version 0.9.5, which is now 1.5 years old and is not seeing more updates.</p>
+<h2>Changes to 1.0 release plans</h2>
+<h3>In short:</h3>
+<p>I plan to pause the work on the new beginner tutorial and release 1.0 with that piece of the documentation unfinished. It still has a large swathes of useful info, but the new from-scratch game will not be ready.</p>
+<h3>Longer:</h3>
+<p>One of the reasons for 1.0 not being released is that I have been working on a new beginner-tutorial to go with the new system. This involves making a full little MUD game from scratch, and I'm making a full system you can both follow lesson-per-lesson as well as implementing it for those that prefer to pull apart code.</p>
+<p>Writing good code as well as full tutorial lessons is however a big, full-time job (next to my actual real-life full-time job) and thus I expect it will take a good while longer before the new tutorial is done. Worse, in the meantime I can't spend much time resolving the 1.0-dev bugs that has been reported by community testers and also block release.</p>
+<p>So I will map out the remaining pieces of the tutorial with informational &quot;Work in progress&quot; markers, merge what I have, and stop work on it for now.</p>
+<p>I'll continue finishing the tutorial in smaller sub-releases after the main 1.0 release.</p>
+<h3>What's left for 1.0-dev</h3>
+<p>So, with the main bulk of work (the beginner tutorial) on hold, what's left to do?</p>
+<ul>
+<li>
+<p>Cleanup the rest of the docs! There's still much to do there, including removing old tutorials that are now covered in the parts of the beginner-tutorial already finished. Also need to connect all pages and structure the docs better.</p>
+</li>
+<li>
+<p>Get into the bug backlog of Evennia 1.0-dev that people have reported. Also work to merge some outstanding PRs. I'll need to triage issues more, but hopefully I can get some help fixing simpler bugs during October's <a href="https://github.com/evennia/evennia/discussions/2858">Hacktoberfest</a>.</p>
+</li>
+</ul>
+<h2>MULTISESSION_MODE changes (this will affect your current game!)</h2>
+<p>That said, now to some recent changes in 1.0-dev. This one is important since it affects your existing game.</p>
+<h3>In short:</h3>
+<p>The functionality of  <code>MULTISESSION_MODE</code> has been broken into smaller sub-settings. This makes it a lot more flexible, but if you used the 'side-effects' of a higher <code>MULTISESSION_MODE</code> in your game, you now need to set a few other settings to get that back.</p>
+<h3>Longer:</h3>
+<p>The <code>MULTISESSION_MODE</code> is a long-standing Evennia setting. It controls how many sessions you can connect to the game at a time. In other words, how many game clients you can open against the same accoung login at the same time.</p>
+<ul>
+<li>
+<p>Mode 0: A single session. Connecting a new one will disconnect the previous one.</p>
+</li>
+<li>
+<p>Mode 1: Multiple sessions can be connected. When you puppet a Character, each session will see the same output.</p>
+</li>
+<li>
+<p>Mode 2: Multiple sessions can be connected. Each session can puppet one Character each.</p>
+</li>
+<li>
+<p>Mode 3: Multiple sessions can be connected. Multiple sessions can puppet a Character, each session will see the same output.</p>
+</li>
+</ul>
+<p>Thing is that for the longest time, this setting has <em>also</em> controlled other things:</p>
+<ul>
+<li>
+<p>Mode 0,1: A Character of the same name as the Account is auto-created when first connecting.</p>
+</li>
+<li>
+<p>Mode 0,1: You auto-connect to your last character whenever you log in.</p>
+</li>
+<li>
+<p>Mode 2,3: You don't get an auto-created character and end up in and OOC 'character' select screen when logging in.</p>
+</li>
+</ul>
+<p>These things don't really belong together. For example, if you want players to be able to choose between multiple characters (a character selection screen) but only play one at a time (<code>MULTISESSION_MODE</code> 0 or 1), you'd need to work around Evennia's default.</p>
+<p>As of today, I've merged a change to Evennia 1.0-dev (<code>develop</code> branch) which changes this.</p>
+<ul>
+<li>
+<p><code>MULTISESSION_MODE</code> now <em>only</em> controls how sessions connect and how they can puppet characters.</p>
+</li>
+<li>
+<p><code>MAX_NR_SIMULTANEOUS_PUPPETS</code> is a new setting that controls how many puppets you can control for <code>MULTISESSION_MODE</code> 2 and 3. This will not change anything for modes 0 and 1 (always acts as 1 due to how those modes work).</p>
+</li>
+<li>
+<p><code>AUTO_CREATE_CHARACTERS_WITH_ACCOUNT</code> allows you to turn off the auto-creation of a character with the same name as the Account when you register. This used to be enforced as a part of <code>MULTISESSION_MODE</code> 0 or 1.</p>
+</li>
+<li>
+<p><code>AUTO_PUPPET_ON_LOGIN</code> controls if you will auto-connect to the last thing you puppet when you login, of if you'll end up OOC (by default at a character selection screen). Again, this used to be enforced by <code>MULTISESSION_MODE</code> 0 or 1.</p>
+</li>
+<li>
+<p><code>MAX_NR_CHARACTERS</code> existed before. It controls how many characters the default <code>charcreate</code> command will allow you to create.</p>
+</li>
+</ul>
+<p>By default these settings are all setup to mimic the old <code>MULTISESSION_MODE</code> 0, so you should not notice any difference in a fresh game.</p>
+<p>The drawback is that if you use a higher <code>MULTISESSION_MODE</code> in your existing game, you will need to tweak these settings to get back what you had before. Also, if you overrode <code>Account</code> or the default login commands, you may need to tweak things to match the new upstream default.</p>
+
+<footer class="devblog-footer">
+    <span class="devblog-copyrights">
+        
+    </span>
+    <a class="devblog-to-toplink" href="2022.html#2022-09-17-project-plans-and-splitting-a-setting-in-two" title="Link to top of post">⇬(top)</a>
+</footer>
+                    </div>
+                
+                    <hr>
                     <div class="blog_post">
                     <h1 id=2022-07-05-tutorial-writing-and-attributes-galore>
      Tutorial-writing and Attributes galore
