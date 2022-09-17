@@ -114,7 +114,7 @@ something like `call:false()`.
     in Commands). This is how to create entirely 'undetectable' in-game objects.
     If not setting this lock excplicitly, all objects are assumed searchable.
     Note that if you are aiming to make some _permanently invisible game system,
-    using a [Script](Scripts) is a better bet.
+    using a [Script](./Scripts.md) is a better bet.
   - `get`- who may pick up the object and carry it around.
   - `puppet` - who may "become" this object and control it as their "character".
   - `attrcreate` - who may create new attributes on the object (default True)

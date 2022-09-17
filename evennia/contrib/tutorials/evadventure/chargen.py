@@ -1,10 +1,12 @@
 """
-EvAdventure character generation
+EvAdventure character generation.
 
 """
+from evennia import create_object
 from evennia.prototypes.spawner import spawn
 from evennia.utils.evmenu import EvMenu
 
+from .characters import EvAdventureCharacter
 from .random_tables import chargen_table
 from .rules import dice
 
@@ -34,7 +36,7 @@ Your belongings:
 """
 
 
-class EvAdventureChargenStorage:
+class TemporaryCharacterSheet:
     """
     This collects all the rules for generating a new character. An instance of this class is used
     to pass around the current character state during character generation and also applied to
@@ -92,17 +94,15 @@ class EvAdventureChargenStorage:
         alignment = dice.roll_random_table("1d20", chargen_table["alignment"])
 
         self.desc = (
-            f"You are {physique} with a {face} face and {hair} hair, {speech} speech, "
-            f"and {clothing} clothing. "
-            f"You were a {background.title()}, but you were {misfortune} and ended up a knave. "
-            f"You are {virtue} but also {vice}. You are of the {alignment} alignment."
+            f"You are {physique} with a {face} face, {skin} skin, {hair} hair, {speech} speech,"
+            f" and {clothing} clothing. You were a {background.title()}, but you were"
+            f" {misfortune} and ended up a knave. You are {virtue} but also {vice}. You are of the"
+            f" {alignment} alignment."
         )
 
         # same for all
         self.hp_max = max(5, dice.roll("1d8"))
         self.hp = self.hp_max
-        self.xp = 0
-        self.level = 1
 
         # random equipment
         self.armor = dice.roll_random_table("1d20", chargen_table["armor"])
@@ -145,77 +145,47 @@ class EvAdventureChargenStorage:
             equipment=", ".join(equipment),
         )
 
-    def adjust_attribute(self, source_attribute, target_attribute, value):
+    def apply(self):
         """
-        Redistribute bonus from one attribute to another. The resulting values
-        must not be lower than +1 and not above +6.
-
-        Args:
-            source_attribute (enum.Ability): The name of the attribute to deduct bonus from,
-                like 'strength'
-            target_attribute (str): The attribute to give the bonus to, like 'dexterity'.
-            value (int): How much to change. This is always 1 for the current chargen.
-
-        Raises:
-            ValueError: On input error, using invalid values etc.
-
-        Notes:
-            We assume the strings are provided by the chargen, so we don't do
-            much input validation here, we do make sure we don't overcharge ourselves though.
+        Once the chargen is complete, call this create and set up the character.
 
         """
-        if source_attribute == target_attribute:
-            return
 
-        # we use getattr() to fetch the Ability of e.g. the .strength property etc
-        source_current = getattr(self, source_attribute.value, 1)
-        target_current = getattr(self, target_attribute.value, 1)
-
-        if source_current - value < 1:
-            raise ValueError(f"You can't reduce the {source_attribute} bonus below +1.")
-        if target_current + value > 6:
-            raise ValueError(f"You can't increase the {target_attribute} bonus above +6.")
-
-        # all is good, apply the change.
-        setattr(self, source_attribute.value, source_current - value)
-        setattr(self, target_attribute.value, target_current + value)
-
-    def apply(self, character):
-        """
-        Once the chargen is complete, call this to transfer all the data to the character
-        permanently.
-
-        """
-        character.key = self.name
-        character.strength = self.strength
-        character.dexterity = self.dexterity
-        character.constitution = self.constitution
-        character.intelligence = self.intelligence
-        character.wisdom = self.wisdom
-        character.charisma = self.charisma
-
-        character.hp = self.hp
-        character.level = self.level
-        character.xp = self.xp
-
-        character.db.desc = self.build_desc()
-
+        # creating character with given abilities
+        new_character = create_object(
+            EvAdventureCharacter,
+            key=self.name,
+            attrs=(
+                ("strength", self.strength),
+                ("dexterity", self.dexterity),
+                ("constitution", self.constitution),
+                ("intelligence", self.intelligence),
+                ("wisdom", self.wisdom),
+                ("charisma", self.wisdom),
+                ("hp", self.hp),
+                ("hp_max", self.hp_max),
+                ("desc", self.desc),
+            ),
+        )
+        # spawn equipment
         if self.weapon:
             weapon = spawn(self.weapon)
-            character.equipment.move(weapon)
+            new_character.equipment.move(weapon)
         if self.shield:
             shield = spawn(self.shield)
-            character.equipment.move(shield)
+            new_character.equipment.move(shield)
         if self.armor:
             armor = spawn(self.armor)
-            character.equipment.move(armor)
+            new_character.equipment.move(armor)
         if self.helmet:
             helmet = spawn(self.helmet)
-            character.equipment.move(helmet)
+            new_character.equipment.move(helmet)
 
         for item in self.backpack:
             item = spawn(item)
-            character.equipment.store(item)
+            new_character.equipment.store(item)
+
+        return new_character
 
 
 # chargen menu
@@ -266,8 +236,9 @@ def node_change_name(caller, raw_string, **kwargs):
     """
     tmp_character = kwargs["tmp_character"]
 
-    text = (f"Your current name is |w{tmp_character.name}|n. "
-            "Enter a new name or leave empty to abort."
+    text = (
+        f"Your current name is |w{tmp_character.name}|n. Enter a new name or leave empty to abort."
+    )
 
     options = {"key": "_default", "goto": (_update_name, kwargs)}
 
@@ -300,6 +271,8 @@ def _swap_abilities(caller, raw_string, **kwargs):
 
         setattr(tmp_character, abi1, abival2)
         setattr(tmp_character, abi2, abival1)
+
+        tmp_character.ability_changes += 1
 
     return "node_chargen", kwargs
 
@@ -339,9 +312,13 @@ def node_apply_character(caller, raw_string, **kwargs):
     """
     tmp_character = kwargs["tmp_character"]
 
-    tmp_character.apply(caller)
+    new_character = tmp_character.apply(caller)
 
-    caller.msg("Character created!")
+    caller.account.db._playble_characters = [new_character]
+
+    text = "Character created!"
+
+    return text, None
 
 
 def start_chargen(caller, session=None):
@@ -357,6 +334,6 @@ def start_chargen(caller, session=None):
     }
 
     # this generates all random components of the character
-    tmp_character = EvAdventureChargenStorage()
+    tmp_character = TemporaryCharacterSheet()
 
     EvMenu(caller, menutree, startnode="node_chargen", session=session, tmp_character=tmp_character)
