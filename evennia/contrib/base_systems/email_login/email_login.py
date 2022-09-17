@@ -31,19 +31,14 @@ after this change. The login splashscreen is taken from strings in
 the module given by settings.CONNECTION_SCREEN_MODULE.
 
 """
-import re
+
 from django.conf import settings
 from evennia.accounts.models import AccountDB
-from evennia.objects.models import ObjectDB
-from evennia.server.models import ServerConfig
-
-from evennia.commands.cmdset import CmdSet
-from evennia.utils import logger, utils, ansi
-from evennia.commands.default.muxcommand import MuxCommand
 from evennia.commands.cmdhandler import CMD_LOGINSTART
-from evennia.commands.default import (
-    unloggedin as default_unloggedin,
-)  # Used in CmdUnconnectedCreate
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.server.models import ServerConfig
+from evennia.utils import ansi, class_from_module, utils
 
 # limit symbol import for API
 __all__ = (
@@ -54,7 +49,6 @@ __all__ = (
     "CmdUnconnectedHelp",
 )
 
-MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 CONNECTION_SCREEN = ""
 try:
@@ -162,21 +156,24 @@ class CmdUnconnectedCreate(MuxCommand):
             # this means we have a multi_word accountname. pop from the back.
             password = self.arglist.pop()
             email = self.arglist.pop()
-            # what remains is the accountname.
-            accountname = " ".join(self.arglist)
+            # what remains is the username.
+            username = " ".join(self.arglist)
         else:
-            accountname, email, password = self.arglist
+            username, email, password = self.arglist
 
-        accountname = accountname.replace('"', "")  # remove "
-        accountname = accountname.replace("'", "")
-        self.accountinfo = (accountname, email, password)
+        username = username.replace('"', "")  # remove "
+        username = username.replace("'", "")
+        self.accountinfo = (username, email, password)
 
     def func(self):
         """Do checks and create account"""
 
+        Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
+        address = self.session.address
+
         session = self.caller
         try:
-            accountname, email, password = self.accountinfo
+            username, email, password = self.accountinfo
         except ValueError:
             string = '\n\r Usage (without <>): create "<accountname>" <email> <password>'
             session.msg(string)
@@ -188,85 +185,41 @@ class CmdUnconnectedCreate(MuxCommand):
             # check so the email at least looks ok.
             session.msg("'%s' is not a valid e-mail address." % email)
             return
-        # sanity checks
-        if not re.findall(r"^[\w. @+\-']+$", accountname) or not (0 < len(accountname) <= 30):
-            # this echoes the restrictions made by django's auth
-            # module (except not allowing spaces, for convenience of
-            # logging in).
-            string = "\n\r Accountname can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_/' only."
-            session.msg(string)
-            return
-        # strip excessive spaces in accountname
-        accountname = re.sub(r"\s+", " ", accountname).strip()
-        if AccountDB.objects.filter(username__iexact=accountname):
-            # account already exists (we also ignore capitalization here)
-            session.msg("Sorry, there is already an account with the name '%s'." % accountname)
-            return
-        if AccountDB.objects.get_account_from_email(email):
-            # email already set on an account
-            session.msg("Sorry, there is already an account with that email address.")
-            return
-        # Reserve accountnames found in GUEST_LIST
-        if settings.GUEST_LIST and accountname.lower() in (
-            guest.lower() for guest in settings.GUEST_LIST
-        ):
-            string = "\n\r That name is reserved. Please choose another Accountname."
-            session.msg(string)
-            return
-        if not re.findall(r"^[\w. @+\-']+$", password) or not (3 < len(password)):
-            string = (
-                "\n\r Password should be longer than 3 characters. Letters, spaces, digits and @/./+/-/_/' only."
-                "\nFor best security, make it longer than 8 characters. You can also use a phrase of"
-                "\nmany words if you enclose the password in double quotes."
-            )
-            session.msg(string)
-            return
 
-        # Check IP and/or name bans
-        bans = ServerConfig.objects.conf("server_bans")
-        if bans and (
-            any(tup[0] == accountname.lower() for tup in bans)
-            or any(tup[2].match(session.address) for tup in bans if tup[2])
-        ):
-            # this is a banned IP or name!
-            string = (
-                "|rYou have been banned and cannot continue from here."
-                "\nIf you feel this ban is in error, please email an admin.|x"
+        # pre-normalize username so the user know what they get
+        non_normalized_username = username
+        username = Account.normalize_username(username)
+        if non_normalized_username != username:
+            session.msg(
+                "Note: your username was normalized to strip spaces and remove characters "
+                "that could be visually confusing."
             )
-            session.msg(string)
-            session.sessionhandler.disconnect(session, "Good bye! Disconnecting.")
+
+        # have the user verify their new account was what they intended
+        answer = yield (
+            f"You want to create an account '{username}' with email '{email}' and password "
+            f"'{password}'.\nIs this what you intended? [Y]/N?"
+        )
+        if answer.lower() in ("n", "no"):
+            session.msg("Aborted. If your user name contains spaces, surround it by quotes.")
             return
 
         # everything's ok. Create the new player account.
-        try:
-            permissions = settings.PERMISSION_ACCOUNT_DEFAULT
-            typeclass = settings.BASE_CHARACTER_TYPECLASS
-            new_account = default_unloggedin._create_account(
-                session, accountname, password, permissions, email=email
-            )
-            if new_account:
-                if MULTISESSION_MODE < 2:
-                    default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
-                    default_unloggedin._create_character(
-                        session, new_account, typeclass, default_home, permissions
-                    )
-                # tell the caller everything went well.
-                string = "A new account '%s' was created. Welcome!"
-                if " " in accountname:
-                    string += (
-                        "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
-                    )
-                else:
-                    string += "\n\nYou can now log with the command 'connect %s <your password>'."
-                session.msg(string % (accountname, email))
-
-        except Exception:
-            # We are in the middle between logged in and -not, so we have
-            # to handle tracebacks ourselves at this point. If we don't,
-            # we won't see any errors at all.
-            session.msg("An error occurred. Please e-mail an admin if the problem persists.")
-            logger.log_trace()
-            raise
+        account, errors = Account.create(
+            username=username, email=email, password=password, ip=address, session=session
+        )
+        if account:
+            # tell the caller everything went well.
+            string = "A new account '%s' was created. Welcome!"
+            if " " in username:
+                string += (
+                    "\n\nYou can now log in with the command 'connect \"%s\" <your password>'."
+                )
+            else:
+                string += "\n\nYou can now log with the command 'connect %s <your password>'."
+            session.msg(string % (username, username))
+        else:
+            session.msg("|R%s|n" % "\n".join(errors))
 
 
 class CmdUnconnectedQuit(MuxCommand):
