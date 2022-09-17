@@ -2745,7 +2745,7 @@ def int2str(number, adjective=False):
         str: The number expressed as a string.
 
     """
-    number = int(adjective)
+    number = int(number)
     if adjective:
         return _INT2STR_MAP_ADJ.get(number, f"{number}th")
     return _INT2STR_MAP_NOUN.get(number, str(number))
