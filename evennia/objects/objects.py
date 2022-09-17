@@ -882,14 +882,18 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 return False
             # check if source location lets us go
             try:
-                if not source_location.at_pre_object_leave(self, destination, **kwargs):
+                if source_location and not source_location.at_pre_object_leave(
+                    self, destination, **kwargs
+                ):
                     return False
             except Exception as err:
                 logerr(errtxt.format(err="at_pre_object_leave()"), err)
                 return False
             # check if destination accepts us
             try:
-                if not self.at_pre_object_receive(self, source_location, **kwargs):
+                if destination and not destination.at_pre_object_receive(
+                    self, source_location, **kwargs
+                ):
                     return False
             except Exception as err:
                 logerr(errtxt.format(err="at_pre_object_receive()"), err)

@@ -465,7 +465,7 @@ class EvAdventureDungeonStartRoom(EvAdventureDungeonRoom):
     branch_max_life = 60 * 60 * 24 * 7  # 1 week
 
     # allow for a custom room_generator function
-    room_generator = AttributeProperty(room_generator, autocreate=False)
+    room_generator = AttributeProperty(lambda: room_generator, autocreate=False)
 
     def get_display_footer(self, looker, **kwargs):
         return (

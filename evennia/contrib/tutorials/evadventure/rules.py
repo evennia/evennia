@@ -24,11 +24,7 @@ This module presents several singletons to import
 """
 from random import randint
 
-from evennia.utils.evform import EvForm
-from evennia.utils.evtable import EvTable
-
 from .enums import Ability
-from .random_tables import character_generation as chargen_table
 from .random_tables import death_and_dismemberment as death_table
 
 # Basic rolls
@@ -68,7 +64,7 @@ class EvAdventureRollEngine:
         roll_string = roll_string.lower()
         if "d" not in roll_string:
             raise TypeError(
-                f"Dice roll '{roll_string}' was not recognized. " "Must be `<number>d<dicesize>`."
+                f"Dice roll '{roll_string}' was not recognized. Must be `<number>d<dicesize>`."
             )
         number, diesize = roll_string.split("d", 1)
         try:
@@ -296,9 +292,6 @@ class EvAdventureRollEngine:
         Args:
             character (Character): The one resting.
 
-        Returns:
-            int: How much HP was healed. This is never more than how damaged we are.
-
         """
         character.heal(self.roll("1d8") + character.constitution)
 
@@ -334,13 +327,16 @@ class EvAdventureRollEngine:
                 character.at_death()
             else:
                 # refresh health, but get permanent ability loss
-                self.heal(character, self.roll("1d4"))
+                new_hp = self.roll("1d4")
+                character.heal(new_hp)
                 setattr(character, abi, current_abi)
 
                 character.msg(
-                    "~" * 78 + "\n|yYou survive your brush with death, "
+                    "~" * 78
+                    + "\n|yYou survive your brush with death, "
                     f"but are |r{result.upper()}|y and permanently |rlose {loss} {abi}|y.|n\n"
-                    f"|GYou recover |g{new_hp}|G health|.\n" + "~" * 78
+                    f"|GYou recover |g{new_hp}|G health|.\n"
+                    + "~" * 78
                 )
 
 

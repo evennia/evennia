@@ -357,7 +357,7 @@ class CombatActionStunt(CombatAction):
             if self.give_advantage:
                 self.combathandler.gain_advantage(attacker, defender)
                 self.msg(
-                    f"%You() $conj(gain) advantage against $You(defender.key! "
+                    "%You() $conj(gain) advantage against $You(defender.key! "
                     f"You must use it within {stunt_duration} turns."
                 )
             else:
@@ -398,15 +398,6 @@ class CombatActionUseItem(CombatAction):
     def get_help(self, item, *args):
         return item.get_help(*args)
 
-    def pre_use(self, item, *args, **kwargs):
-        """
-        We tie into the `item.at_pre_use` hook here, which returns False if
-        the item is not usable (that is, has .uses > 0).
-
-        """
-        if item.at_pre_use(self.combatant, *args, **kwargs):
-            item.at_use(self.combatant, *args, **kwargs)
-
     def use(self, item, target, *args, **kwargs):
         item.at_use(self.combatant, target, *args, **kwargs)
 
@@ -442,7 +433,7 @@ class CombatActionSwapWieldedWeaponOrSpell(CombatAction):
 
     def use(self, _, item, *args, **kwargs):
         # this will make use of the item
-        self.combatant.equipment.use(item)
+        self.combatant.equipment.move(item)
 
 
 class CombatActionFlee(CombatAction):

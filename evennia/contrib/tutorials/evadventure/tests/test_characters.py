@@ -43,4 +43,4 @@ class TestCharacters(BaseEvenniaTest):
         # can't get more coins than we have
         result = self.character.at_pay(100)
         self.assertEqual(result, 40)
-        self.assertEqual(self.characer.coins, 0)
+        self.assertEqual(self.character.coins, 0)

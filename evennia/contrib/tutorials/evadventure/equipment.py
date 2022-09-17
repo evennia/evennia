@@ -270,13 +270,15 @@ class EquipmentHandler:
             # it belongs in backpack, so goes back to it
             to_backpack = [obj]
         else:
-            # for others (body, head), just replace whatever's there
-            replaced = [obj]
+            # for others (body, head), just replace whatever's there and put the old
+            # thing in the backpack
+            to_backpack = [slots[use_slot]]
             slots[use_slot] = obj
 
         for to_backpack_obj in to_backpack:
             # put stuff in backpack
-            slots[use_slot].append(to_backpack_obj)
+            if to_backpack_obj:
+                slots[WieldLocation.BACKPACK].append(to_backpack_obj)
 
         # store new state
         self._save()

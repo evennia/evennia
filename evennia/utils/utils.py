@@ -2732,7 +2732,7 @@ _INT2STR_MAP_NOUN = {
 _INT2STR_MAP_ADJ = {1: "1st", 2: "2nd", 3: "3rd"}  # rest is Xth.
 
 
-def int2str(self, number, adjective=False):
+def int2str(number, adjective=False):
     """
     Convert a number to an English string for better display; so 1 -> one, 2 -> two etc
     up until 12, after which it will be '13', '14' etc.
