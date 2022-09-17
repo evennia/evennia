@@ -233,7 +233,8 @@ You should get back a nice string about yourself! If that works, great! But you'
 doing that test when you change this code later. 
 
 ```{sidebar}
-In [evennia/contrib/evadventure/tests/test_utils.py](evennia.contrib.evadventure.tests.test_utils)
+In [evennia/contrib/tutorials/evadventure/tests/test_utils.py](evennia.contrib.tutorials.
+evadventure.tests.test_utils)
 is an example of the testing module. To dive deeper into unit testing in Evennia, see the 
 [Unit testing](../../../Coding/Unit-Testing.md) documentation.
 ```

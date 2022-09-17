@@ -1,5 +1,11 @@
 # Part 3: How we get there
 
+```{warning}
+The tutorial game is under development and is not yet complete, nor tested. Use the existing 
+lessons as inspiration and to help get you going, but don't expect out-of-the-box perfection 
+from it at this time.
+```
+
 ```{eval-rst}
 .. sidebar:: Beginner Tutorial Parts
 
@@ -35,6 +41,7 @@ Fully coded examples of all code we make in this part can be found in the
 [evennia/contrib/tutorials/evadventure](evennia.contrib.tutorials.evadventure) package.
 
 ## Lessons 
+
 
 ```{toctree} 
 :maxdepth: 1

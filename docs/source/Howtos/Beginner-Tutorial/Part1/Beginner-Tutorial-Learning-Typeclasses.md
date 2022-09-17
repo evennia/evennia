@@ -2,7 +2,7 @@
 
 Now that we have learned a little about how to find things in the Evennia library, let's use it. 
 
-In the [Python classes and objects](./Python-classes-and-objects.md) lesson we created the dragons Fluffy, Cuddly 
+In the [Python classes and objects](./Beginner-Tutorial-Python-classes-and-objects.md) lesson we created the dragons Fluffy, Cuddly 
 and Smaug and made them fly and breathe fire. So far our dragons are short-lived - whenever we `restart`
 the server or `quit()` out of python mode they are gone. 
 

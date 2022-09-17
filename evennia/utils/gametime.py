@@ -10,8 +10,8 @@ total runtime of the server and the current uptime.
 import time
 from datetime import datetime, timedelta
 
-from django.db.utils import OperationalError
 from django.conf import settings
+from django.db.utils import OperationalError
 from evennia import DefaultScript
 from evennia.server.models import ServerConfig
 from evennia.utils.create import create_script
@@ -236,7 +236,7 @@ def schedule(
     Args:
         callback (function): The callback function that will be called. Note
             that the callback must be a module-level function, since the script will
-            be persistent. The callable should be on form `callable(*args, **kwargs)`
+            be persistent. The callable should be on the form `callable(*args, **kwargs)`
             where args/kwargs are passed into this schedule.
         repeat (bool, optional): Defines if the callback should be called regularly
             at the specified time.
