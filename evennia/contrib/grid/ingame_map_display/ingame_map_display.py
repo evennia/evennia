@@ -28,19 +28,19 @@ An example map:
 
 Installation:
 
-Adding the `BasicMapCmdSet` to the default character cmdset will add the `map` command.
+Adding the `MapDisplayCmdSet` to the default character cmdset will add the `map` command.
 
 Specifically, in `mygame/commands/default_cmdsets.py`:
 
 ```
 ...
-from evennia.contrib.grid.basicmap import basicmap  # <---
+from evennia.contrib.grid.ingame_map_display import ingame_map_display  # <---
 
 class CharacterCmdset(default_cmds.Character_CmdSet):
     ...
     def at_cmdset_creation(self):
         ...
-        self.add(basicmap.BasicMapCmdSet)  # <---
+        self.add(ingame_map_display.MapDisplayCmdSet)  # <---
 
 ```
 
@@ -81,6 +81,14 @@ _COMPASS_DIRECTIONS = {
 
 class Map(object):
     def __init__(self, caller, size=_BASIC_MAP_SIZE, location=None):
+        """
+        Initializes the map.
+
+        Args:
+            caller (object): Any object, though generally a puppeted character
+            size (int): The seed size of the map, which will be multiplied to get the final grid size
+            location (object): The location at the map's center (will default to caller.location if none provided)
+        """
         self.start_time = time.time()
         self.caller = caller
         self.max_width = int(size * 2 + 1) * 5   # This must be an odd number
@@ -92,7 +100,12 @@ class Map(object):
         self.location = location or caller.location
 
     def create_grid(self):
-        # Create an empty grid of the configured size
+        """
+        Create the empty grid for the map based on the configured size
+
+        Returns:
+            The created grid, a list of lists
+        """
         board = []
         for row in range(self.max_length):
             board.append([])
@@ -101,6 +114,14 @@ class Map(object):
         return board
 
     def exit_name_as_ordinal(self, ex):
+        """
+        Get the exit name as a compass direction if possible
+
+        Args:
+            ex (Exit): The current exit being mapped
+        Returns:
+            exit_name (String): The exit name as a compass direction or an empty string
+        """
         exit_name = ex.name
         if exit_name not in _COMPASS_DIRECTIONS:
             compass_aliases = [direction in ex.aliases.all() for direction in _COMPASS_DIRECTIONS.keys()]
@@ -111,6 +132,16 @@ class Map(object):
         return exit_name
 
     def update_pos(self, room, exit_name):
+        """
+        Update the position pointer.
+
+        Args:
+            room (Room): The current location.
+            exit_name (str): The name of the exit to to use in this room. This must
+                be a valid compass direction, or an error will be raised.
+        Raises:
+            KeyError: If providing a non-compass exit name.
+        """
         # Update the pointer
         self.curX, self.curY = self.has_mapped[room][0], self.has_mapped[room][1]
 
@@ -120,9 +151,24 @@ class Map(object):
         self.curX += _COMPASS_DIRECTIONS[exit_name][1]
 
     def has_drawn(self, room):
+        """
+        Checks if the given room has already been drawn or not
+
+        Args:
+            room (Room) - Room to check
+        Returns:
+            bool
+        """
         return True if room in self.has_mapped.keys() else False
 
     def draw_room_on_map(self, room, max_distance):
+        """
+        Draw the room and its exits on the map recursively
+
+        Args:
+            room (Room) - The room to draw out
+            max_distance (int) - How extensive the map is
+        """
         self.draw(room)
         self.draw_exits(room)
 
@@ -142,10 +188,15 @@ class Map(object):
             self.draw_room_on_map(ex.destination, max_distance - 1)
 
     def draw_exits(self, room):
+        """
+        Draw a given room's exit paths
+
+        Args:
+            room (Room) - The room to draw exits of
+        """
         x, y = self.curX, self.curY
         for ex in room.exits:
             ex_name = self.exit_name_as_ordinal(ex)
-
             if not ex_name:
                 continue
 
@@ -168,6 +219,12 @@ class Map(object):
                 self.grid[x + delta_x][y + delta_y] = ex_character
 
     def draw(self, room):
+        """
+        Draw the map starting from a given room and add it to the cache of mapped rooms
+
+        Args:
+            room (Room) - The room to render
+        """
         # draw initial caller location on map first!
         if room == self.location:
             self.start_loc_on_grid(room)
@@ -178,6 +235,17 @@ class Map(object):
             self.render_room(room, self.curX, self.curY)
 
     def render_room(self, room, x, y, p1='[', p2=']', here=None):
+        """
+        Draw a given room with ascii characters
+
+        Args:
+            room (Room) - The room to render
+            x (int) - The x-value of the room on the grid (horizontally, east/west)
+            y (int) - The y-value of the room on the grid (vertically, north/south)
+            p1 (char) - The first character of the 3-character room depiction
+            p2 (char) - The last character of the 3-character room depiction
+            here (str) - Defaults to none, a special character depicting the room
+        """
         # Note: This is where you would set colors, symbols etc.
         # Render the room
         you = list("[ ]")
@@ -191,6 +259,12 @@ class Map(object):
         self.grid[x][y] = "".join(you)
 
     def start_loc_on_grid(self, room):
+        """
+        Set the starting location on the grid based on the maximum width and length
+
+        Args:
+            room (Room) - The room to begin with
+        """
         x = int((self.max_width * 0.6 - 1) / 2)
         y = int((self.max_length - 1) / 2)
 
@@ -198,6 +272,12 @@ class Map(object):
         self.curX, self.curY = x, y
 
     def show_map(self, debug=False):
+        """
+        Create and show the map, piecing it all together in the end
+
+        Args:
+            debug (bool) - Whether or not to return the time taken to build the map
+        """
         map_string = ""
         self.grid = self.create_grid()
         self.draw_room_on_map(self.location, self.size)
@@ -233,7 +313,7 @@ class CmdMap(MuxCommand):
 
 
 # CmdSet for easily install all commands
-class BasicMapCmdSet(CmdSet):
+class MapDisplayCmdSet(CmdSet):
     """
     The map command.
     """
