@@ -28,6 +28,7 @@ class TestDungeon(EvAdventureMixin, BaseEvenniaTest):
         super().setUp()
         droomclass = dungeon.EvAdventureDungeonStartRoom
         droomclass.recycle_time = 0  # disable the tick
+        droomclass.branch_check_time = 0
 
         self.start_room = create_object(droomclass, key="bottom of well")
 
