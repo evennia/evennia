@@ -5,7 +5,7 @@ Random tables - adopted from _Knave_.
 
 # Character generation tables
 
-character_generation = {
+chargen_tables = {
     "physique": [
         "athletic",
         "brawny",

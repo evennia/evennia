@@ -7,7 +7,7 @@ from evennia.prototypes.spawner import spawn
 from evennia.utils.evmenu import EvMenu
 
 from .characters import EvAdventureCharacter
-from .random_tables import chargen_table
+from .random_tables import chargen_tables
 from .rules import dice
 
 _ABILITIES = {
@@ -56,21 +56,12 @@ class TemporaryCharacterSheet:
 
     """
 
-    def __init__(self):
-        # you are only allowed to tweak abilities once
-        self.ability_changes = 0
-
     def _random_ability(self):
         return min(dice.roll("1d6"), dice.roll("1d6"), dice.roll("1d6"))
 
-    def generate(self):
-        """
-        Generate random values for character.
-
-        """
-
+    def __init__(self):
         # name will likely be modified later
-        self.name = dice.roll_random_table("1d282", chargen_table["name"])
+        self.name = dice.roll_random_table("1d282", chargen_tables["name"])
 
         # base attribute values
         self.strength = self._random_ability()
@@ -81,23 +72,22 @@ class TemporaryCharacterSheet:
         self.charisma = self._random_ability()
 
         # physical attributes (only for rp purposes)
-        physique = dice.roll_random_table("1d20", chargen_table["physique"])
-        face = dice.roll_random_table("1d20", chargen_table["face"])
-        skin = dice.roll_random_table("1d20", chargen_table["skin"])
-        hair = dice.roll_random_table("1d20", chargen_table["hair"])
-        clothing = dice.roll_random_table("1d20", chargen_table["clothing"])
-        speech = dice.roll_random_table("1d20", chargen_table["speech"])
-        virtue = dice.roll_random_table("1d20", chargen_table["virtue"])
-        vice = dice.roll_random_table("1d20", chargen_table["vice"])
-        background = dice.roll_random_table("1d20", chargen_table["background"])
-        misfortune = dice.roll_random_table("1d20", chargen_table["misfortune"])
-        alignment = dice.roll_random_table("1d20", chargen_table["alignment"])
+        physique = dice.roll_random_table("1d20", chargen_tables["physique"])
+        face = dice.roll_random_table("1d20", chargen_tables["face"])
+        skin = dice.roll_random_table("1d20", chargen_tables["skin"])
+        hair = dice.roll_random_table("1d20", chargen_tables["hair"])
+        clothing = dice.roll_random_table("1d20", chargen_tables["clothing"])
+        speech = dice.roll_random_table("1d20", chargen_tables["speech"])
+        virtue = dice.roll_random_table("1d20", chargen_tables["virtue"])
+        vice = dice.roll_random_table("1d20", chargen_tables["vice"])
+        background = dice.roll_random_table("1d20", chargen_tables["background"])
+        misfortune = dice.roll_random_table("1d20", chargen_tables["misfortune"])
+        alignment = dice.roll_random_table("1d20", chargen_tables["alignment"])
 
         self.desc = (
-            f"You are {physique} with a {face} face, {skin} skin, {hair} hair, {speech} speech,"
-            f" and {clothing} clothing. You were a {background.title()}, but you were"
-            f" {misfortune} and ended up a knave. You are {virtue} but also {vice}. You are of the"
-            f" {alignment} alignment."
+            f"You are {physique} with a {face} face, {skin} skin, {hair} hair, {speech} speech, and"
+            f" {clothing} clothing. You were a {background.title()}, but you were {misfortune} and"
+            f" ended up a knave. You are {virtue} but also {vice}. You tend towards {alignment}."
         )
 
         # same for all
@@ -105,21 +95,21 @@ class TemporaryCharacterSheet:
         self.hp = self.hp_max
 
         # random equipment
-        self.armor = dice.roll_random_table("1d20", chargen_table["armor"])
+        self.armor = dice.roll_random_table("1d20", chargen_tables["armor"])
 
-        _helmet_and_shield = dice.roll_random_table("1d20", chargen_table["helmets and shields"])
+        _helmet_and_shield = dice.roll_random_table("1d20", chargen_tables["helmets and shields"])
         self.helmet = "helmet" if "helmet" in _helmet_and_shield else "none"
         self.shield = "shield" if "shield" in _helmet_and_shield else "none"
 
-        self.weapon = dice.roll_random_table("1d20", chargen_table["starting weapon"])
+        self.weapon = dice.roll_random_table("1d20", chargen_tables["starting weapon"])
 
         self.backpack = [
             "ration",
             "ration",
-            dice.roll_random_table("1d20", chargen_table["dungeoning gear"]),
-            dice.roll_random_table("1d20", chargen_table["dungeoning gear"]),
-            dice.roll_random_table("1d20", chargen_table["general gear 1"]),
-            dice.roll_random_table("1d20", chargen_table["general gear 2"]),
+            dice.roll_random_table("1d20", chargen_tables["dungeoning gear"]),
+            dice.roll_random_table("1d20", chargen_tables["dungeoning gear"]),
+            dice.roll_random_table("1d20", chargen_tables["general gear 1"]),
+            dice.roll_random_table("1d20", chargen_tables["general gear 2"]),
         ]
 
     def show_sheet(self):
@@ -155,7 +145,7 @@ class TemporaryCharacterSheet:
         new_character = create_object(
             EvAdventureCharacter,
             key=self.name,
-            attrs=(
+            attributes=(
                 ("strength", self.strength),
                 ("dexterity", self.dexterity),
                 ("constitution", self.constitution),
@@ -183,7 +173,7 @@ class TemporaryCharacterSheet:
 
         for item in self.backpack:
             item = spawn(item)
-            new_character.equipment.store(item)
+            new_character.equipment.move(item)
 
         return new_character
 
