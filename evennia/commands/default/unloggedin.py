@@ -1,15 +1,16 @@
 """
 Commands that are available from the connect screen.
+
 """
-import re
 import datetime
+import re
 from codecs import lookup as codecs_lookup
+
 from django.conf import settings
+from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.comms.models import ChannelDB
 from evennia.server.sessionhandler import SESSIONS
-
-from evennia.utils import class_from_module, create, logger, utils, gametime
-from evennia.commands.cmdhandler import CMD_LOGINSTART
+from evennia.utils import class_from_module, create, gametime, logger, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -25,7 +26,6 @@ __all__ = (
     "CmdUnconnectedScreenreader",
 )
 
-MULTISESSION_MODE = settings.MULTISESSION_MODE
 CONNECTION_SCREEN_MODULE = settings.CONNECTION_SCREEN_MODULE
 
 
@@ -215,7 +215,7 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             session.msg("Aborted. If your user name contains spaces, surround it by quotes.")
             return
 
-        # everything's ok. Create the new account account.
+        # everything's ok. Create the new player account.
         account, errors = Account.create(
             username=username, password=password, ip=address, session=session
         )
@@ -447,7 +447,8 @@ class CmdUnconnectedInfo(COMMAND_DEFAULT_CLASS):
 
     def func(self):
         self.caller.msg(
-            "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END INFO"
+            "## BEGIN INFO 1.1\nName: %s\nUptime: %s\nConnected: %d\nVersion: Evennia %s\n## END"
+            " INFO"
             % (
                 settings.SERVERNAME,
                 datetime.datetime.fromtimestamp(gametime.SERVER_START_TIME).ctime(),
@@ -468,8 +469,8 @@ def _create_account(session, accountname, password, permissions, typeclass=None,
 
     except Exception as e:
         session.msg(
-            "There was an error creating the Account:\n%s\n If this problem persists, contact an admin."
-            % e
+            "There was an error creating the Account:\n%s\n If this problem persists, contact an"
+            " admin." % e
         )
         logger.log_trace()
         return False
@@ -490,7 +491,7 @@ def _create_account(session, accountname, password, permissions, typeclass=None,
 def _create_character(session, new_account, typeclass, home, permissions):
     """
     Helper function, creates a character based on an account's name.
-    This is meant for Guest and MULTISESSION_MODE < 2 situations.
+    This is meant for Guest and AUTO_CREATRE_CHARACTER_WITH_ACCOUNT=True situations.
     """
     try:
         new_character = create.create_object(
@@ -512,7 +513,7 @@ def _create_character(session, new_account, typeclass, home, permissions):
         new_account.db._last_puppet = new_character
     except Exception as e:
         session.msg(
-            "There was an error creating the Character:\n%s\n If this problem persists, contact an admin."
-            % e
+            "There was an error creating the Character:\n%s\n If this problem persists, contact an"
+            " admin." % e
         )
         logger.log_trace()
