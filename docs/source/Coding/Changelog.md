@@ -192,7 +192,17 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Contrib `buffs` for managing temporary and permanent RPG status buffs effects (tegiminis)
 - New `at_server_init()` hook called before all other startup hooks for all
   startup modes. Used for more generic overriding (volund)
-
+- New `search` lock type used to completely hide an object from being found by
+  the `DefaultObject.search` (`caller.search`) method. (CloudKeeper)
+- Change setting `MULTISESSION_MODE` to now only control sessions, not how many
+  characters can be puppeted simultaneously. New settings now control that.
+- Add new setting `AUTO_CREATE_CHARACTER_WITH_ACCOUNT`, a boolean deciding if
+  the new account should also get a matching character (legacy MUD style).
+- Add new setting `AUTO_PUPPET_ON_LOGIN`, boolean deciding if one should
+  automatically puppet the last/available character on connection (legacy MUD style)
+- Add new setting `MAX_NR_SIMULTANEUS_PUPPETS` - how many puppets the account
+  can run at the same time. Used to limit multi-playing.
+- Make setting `MAX_NR_CHARACTERS` interact better with the new settings above.
 
 ## Evennia 0.9.5
 

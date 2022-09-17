@@ -268,7 +268,7 @@ EXTRA_LAUNCHER_COMMANDS = {}
 MAX_CHAR_LIMIT = 6000
 # The warning to echo back to users if they enter a very large string
 MAX_CHAR_LIMIT_WARNING = (
-    "You entered a string that was too long. " "Please break it up into multiple parts."
+    "You entered a string that was too long. Please break it up into multiple parts."
 )
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
@@ -557,8 +557,6 @@ BASE_SCRIPT_TYPECLASS = "typeclasses.scripts.Script"
 # is Limbo (#2).
 DEFAULT_HOME = "#2"
 # The start position for new characters. Default is Limbo (#2).
-#  MULTISESSION_MODE = 0, 1 - used by default unloggedin create command
-#  MULTISESSION_MODE = 2, 3 - used by default character_create command
 START_LOCATION = "#2"
 # Lookups of Attributes, Tags, Nicks, Aliases can be aggressively
 # cached to avoid repeated database hits. This often gives noticeable
@@ -728,21 +726,31 @@ GLOBAL_SCRIPTS = {
 ######################################################################
 
 # Different Multisession modes allow a player (=account) to connect to the
-# game simultaneously with multiple clients (=sessions). In modes 0,1 there is
-# only one character created to the same name as the account at first login.
-# In modes 2,3 no default character will be created and the MAX_NR_CHARACTERS
-# value (below) defines how many characters the default char_create command
-# allow per account.
-#  0 - single session, one account, one character, when a new session is
-#      connected, the old one is disconnected
-#  1 - multiple sessions, one account, one character, each session getting
-#      the same data
-#  2 - multiple sessions, one account, many characters, one session per
-#      character (disconnects multiplets)
-#  3 - like mode 2, except multiple sessions can puppet one character, each
+# game simultaneously with multiple clients (=sessions).
+#  0 - single session per account (if reconnecting, disconnect old session)
+#  1 - multiple sessions per account, all sessions share output
+#  2 - multiple sessions per account, one session allowed per puppet
+#  3 - multiple sessions per account, multiple sessions per puppet (share output)
 #      session getting the same data.
 MULTISESSION_MODE = 0
-# The maximum number of characters allowed by the default ooc char-creation command
+# Whether we should create a character with the same name as the account when
+# a new account is created. Together with AUTO_PUPPET_ON_LOGIN, this mimics
+# a legacy MUD, where there is no difference between account and character.
+AUTO_CREATE_CHARACTER_WITH_ACCOUNT = True
+# Whether an account should auto-puppet the last puppeted puppet when logging in. This
+# will only work if the session/puppet combination can be determined (usually
+# MULTISESSION_MODE 0 or 1), otherwise, the player will end up OOC. Use
+# MULTISESSION_MODE=0, AUTO_CREATE_CHARACTER_WITH_ACCOUNT=True and this value to
+# mimic a legacy mud with minimal difference between Account and Character. Disable
+# this and AUTO_PUPPET to get a chargen/character select screen on login.
+AUTO_PUPPET_ON_LOGIN = True
+# How many *different* characters an account can puppet *at the same time*. A value
+# above 1 only makes a difference together with MULTISESSION_MODE > 1.
+MAX_NR_SIMULTANEOUS_PUPPETS = 1
+# The maximum number of characters allowed by be created by the default ooc
+# char-creation command. This can be seen as how big of a 'stable' of characters
+# an account can have (not how many you can puppet at the same time). Set to
+# None for no limit.
 MAX_NR_CHARACTERS = 1
 # The access hierarchy, in climbing order. A higher permission in the
 # hierarchy includes access of all levels below it. Used by the perm()/pperm()

@@ -15,6 +15,7 @@ evennia.contrib.tutorials.evadventure
    evennia.contrib.tutorials.evadventure.build_techdemo
    evennia.contrib.tutorials.evadventure.build_world
    evennia.contrib.tutorials.evadventure.characters
+   evennia.contrib.tutorials.evadventure.chargen
    evennia.contrib.tutorials.evadventure.combat_turnbased
    evennia.contrib.tutorials.evadventure.commands
    evennia.contrib.tutorials.evadventure.dungeon
