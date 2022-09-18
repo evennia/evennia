@@ -151,7 +151,13 @@ class TestRPSystem(BaseEvenniaTest):
         id2 = f"#{self.receiver2.id}"
         candidates = (self.receiver1, self.receiver2)
         result = (
-            'With a flair, {'+id0+'} looks at {'+id1+'} and {'+id2+'}. She says "This is a test."',
+            "With a flair, {"
+            + id0
+            + "} looks at {"
+            + id1
+            + "} and {"
+            + id2
+            + '}. She says "This is a test."',
             {
                 id2: self.receiver2,
                 id1: self.receiver1,
@@ -178,7 +184,7 @@ class TestRPSystem(BaseEvenniaTest):
         id2 = f"#{self.receiver2.id}"
         candidates = (self.receiver1, self.receiver2)
         result = (
-            "{"+id0+"} frowns at {"+id1+"} for trying to steal {"+id0+"}'s test.",
+            "{" + id0 + "} frowns at {" + id1 + "} for trying to steal {" + id0 + "}'s test.",
             {
                 id1: self.receiver1,
                 id0: speaker,

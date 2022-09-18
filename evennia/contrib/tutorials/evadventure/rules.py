@@ -332,11 +332,9 @@ class EvAdventureRollEngine:
                 setattr(character, abi, current_abi)
 
                 character.msg(
-                    "~" * 78
-                    + "\n|yYou survive your brush with death, "
+                    "~" * 78 + "\n|yYou survive your brush with death, "
                     f"but are |r{result.upper()}|y and permanently |rlose {loss} {abi}|y.|n\n"
-                    f"|GYou recover |g{new_hp}|G health|.\n"
-                    + "~" * 78
+                    f"|GYou recover |g{new_hp}|G health|.\n" + "~" * 78
                 )
 
 
