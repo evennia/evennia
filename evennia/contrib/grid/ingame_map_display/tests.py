@@ -27,9 +27,9 @@ class TestIngameMap(BaseEvenniaCommandTest):
     def test_west_room_map_room(self):
         self.char1.location = self.west_room
         map_here = ingame_map_display.Map(self.char1).show_map()
-        self.assertEqual(map_here.strip(), "[|[x|co|n]--[ ]")
+        self.assertEqual(map_here.strip(), '[|n|[x|co|n]|n--[|n ]|n')
 
     def test_east_room_map_room(self):
         self.char1.location = self.east_room
         map_here = ingame_map_display.Map(self.char1).show_map()
-        self.assertEqual(map_here.strip(), "[ ]--[|[x|co|n]")
+        self.assertEqual(map_here.strip(), '[|n ]|n--[|n|[x|co|n]|n')
