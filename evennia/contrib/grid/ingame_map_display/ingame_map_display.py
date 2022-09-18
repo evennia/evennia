@@ -2,14 +2,13 @@
 Basic Map - helpme 2022
 
 This adds an ascii `map` to a given room which can be viewed with the `map` command.
-You can easily alter it to add special characters, room colors etc.
+You can easily alter it to add special characters, room colors etc. The map shown is
+dynamically generated on use, and supports all compass directions and up/down. Other
+directions are ignored.
 
 If you don't expect the map to be updated frequently, you could choose to save the
 calculated map as a .ndb value on the room and render that instead of running mapping
 calculations anew each time.
-
-This ignores non-ordinal exits (i.e. exits must be compass directions or up/down to be
-shown on the map).
 
 An example map:
 ```
@@ -34,13 +33,13 @@ Specifically, in `mygame/commands/default_cmdsets.py`:
 
 ```
 ...
-from evennia.contrib.grid.ingame_map_display import ingame_map_display  # <---
+from evennia.contrib.grid.ingame_map_display import MapDisplayCmdSet  # <---
 
 class CharacterCmdset(default_cmds.Character_CmdSet):
     ...
     def at_cmdset_creation(self):
         ...
-        self.add(ingame_map_display.MapDisplayCmdSet)  # <---
+        self.add(MapDisplayCmdSet)  # <---
 
 ```
 
@@ -63,6 +62,7 @@ from evennia import CmdSet
 from evennia.commands.default.muxcommand import MuxCommand
 
 _BASIC_MAP_SIZE = settings.BASIC_MAP_SIZE if hasattr(settings, 'BASIC_MAP_SIZE') else 2
+_MAX_MAP_SIZE = settings.BASIC_MAP_SIZE if hasattr(settings, 'MAX_MAP_SIZE') else 10
 
 # _COMPASS_DIRECTIONS specifies which way to move the pointer on the x/y axes and what characters to use to depict the exits on the map.
 _COMPASS_DIRECTIONS = {
@@ -85,9 +85,9 @@ class Map(object):
         Initializes the map.
 
         Args:
-            caller (object): Any object, though generally a puppeted character
-            size (int): The seed size of the map, which will be multiplied to get the final grid size
-            location (object): The location at the map's center (will default to caller.location if none provided)
+            caller (object): Any object, though generally a puppeted character.
+            size (int): The seed size of the map, which will be multiplied to get the final grid size.
+            location (object): The location at the map's center (will default to caller.location if none provided).
         """
         self.start_time = time.time()
         self.caller = caller
@@ -104,7 +104,7 @@ class Map(object):
         Create the empty grid for the map based on the configured size
 
         Returns:
-            The created grid, a list of lists
+            list: The created grid, a list of lists.
         """
         board = []
         for row in range(self.max_length):
@@ -118,9 +118,9 @@ class Map(object):
         Get the exit name as a compass direction if possible
 
         Args:
-            ex (Exit): The current exit being mapped
+            ex (Exit): The current exit being mapped.
         Returns:
-            exit_name (String): The exit name as a compass direction or an empty string
+            string: The exit name as a compass direction or an empty string.
         """
         exit_name = ex.name
         if exit_name not in _COMPASS_DIRECTIONS:
@@ -155,9 +155,9 @@ class Map(object):
         Checks if the given room has already been drawn or not
 
         Args:
-            room (Room) - Room to check
+            room (Room): Room to check.
         Returns:
-            bool
+            bool: Whether or not the room has been drawn.
         """
         return True if room in self.has_mapped.keys() else False
 
@@ -166,8 +166,8 @@ class Map(object):
         Draw the room and its exits on the map recursively
 
         Args:
-            room (Room) - The room to draw out
-            max_distance (int) - How extensive the map is
+            room (Room): The room to draw out.
+            max_distance (int): How extensive the map is.
         """
         self.draw(room)
         self.draw_exits(room)
@@ -192,7 +192,7 @@ class Map(object):
         Draw a given room's exit paths
 
         Args:
-            room (Room) - The room to draw exits of
+            room (Room): The room to draw exits of.
         """
         x, y = self.curX, self.curY
         for ex in room.exits:
@@ -223,7 +223,7 @@ class Map(object):
         Draw the map starting from a given room and add it to the cache of mapped rooms
 
         Args:
-            room (Room) - The room to render
+            room (Room): The room to render.
         """
         # draw initial caller location on map first!
         if room == self.location:
@@ -239,12 +239,12 @@ class Map(object):
         Draw a given room with ascii characters
 
         Args:
-            room (Room) - The room to render
-            x (int) - The x-value of the room on the grid (horizontally, east/west)
-            y (int) - The y-value of the room on the grid (vertically, north/south)
-            p1 (char) - The first character of the 3-character room depiction
-            p2 (char) - The last character of the 3-character room depiction
-            here (str) - Defaults to none, a special character depicting the room
+            room (Room): The room to render.
+            x (int): The x-value of the room on the grid (horizontally, east/west).
+            y (int): The y-value of the room on the grid (vertically, north/south).
+            p1 (str): The first character of the 3-character room depiction.
+            p2 (str): The last character of the 3-character room depiction.
+            here (str): Defaults to none, a special character depicting the room.
         """
         # Note: This is where you would set colors, symbols etc.
         # Render the room
@@ -263,7 +263,7 @@ class Map(object):
         Set the starting location on the grid based on the maximum width and length
 
         Args:
-            room (Room) - The room to begin with
+            room (Room): The room to begin with.
         """
         x = int((self.max_width * 0.6 - 1) / 2)
         y = int((self.max_length - 1) / 2)
@@ -276,7 +276,7 @@ class Map(object):
         Create and show the map, piecing it all together in the end
 
         Args:
-            debug (bool) - Whether or not to return the time taken to build the map
+            debug (bool): Whether or not to return the time taken to build the map.
         """
         map_string = ""
         self.grid = self.create_grid()
@@ -304,8 +304,9 @@ class CmdMap(MuxCommand):
 
     def func(self):
         size = _BASIC_MAP_SIZE
+        max_size = _MAX_MAP_SIZE
         if self.args.isnumeric():
-            size = int(self.args)
+            size = min(max_size, int(self.args))
 
         # You can run show_map(debug=True) to see how long it takes.
         map_here = Map(self.caller, size=size).show_map()
