@@ -2,8 +2,11 @@
 
 Contribution - helpme 2022
 
-This adds a `map` to a given room which can be viewed with the `map` command. You can
-easily alter it to add special characters denoting environments, room colors and so on.
+This adds an ascii `map` to a given room which can be viewed with the `map` command.
+You can easily alter it to add special characters, room colors etc. The map shown is
+dynamically generated on use, and supports all compass directions and up/down. Other
+directions are ignored.
+
 If you don't expect the map to be updated frequently, you could choose to save the
 calculated map as a .ndb value on the room and render that instead of running mapping
 calculations anew each time.
@@ -16,13 +19,13 @@ Specifically, in `mygame/commands/default_cmdsets.py`:
 
 ```python
 ...
-from evennia.contrib.grid.ingame_map_display import ingame_map_display   # <---
+from evennia.contrib.grid.ingame_map_display import MapDisplayCmdSet   # <---
 
 class CharacterCmdset(default_cmds.Character_CmdSet):
     ...
     def at_cmdset_creation(self):
         ...
-        self.add(ingame_map_display.MapDisplayCmdSet)  # <---
+        self.add(MapDisplayCmdSet)  # <---
 
 ```
 

@@ -24,12 +24,12 @@ class TestIngameMap(BaseEvenniaCommandTest):
         create_object(exits.Exit, key="east", aliases=["e"], location=self.west_room, destination=self.east_room)
         create_object(exits.Exit, key="west", aliases=["w"], location=self.east_room, destination=self.west_room)
 
-    def west_room_map_room(self):
+    def test_west_room_map_room(self):
         self.char1.location = self.west_room
         map_here = ingame_map_display.Map(self.char1).show_map()
         self.assertEqual(map_here.strip(), "[|[x|co|n]--[ ]")
 
-    def east_room_map_room(self):
+    def test_east_room_map_room(self):
         self.char1.location = self.east_room
         map_here = ingame_map_display.Map(self.char1).show_map()
         self.assertEqual(map_here.strip(), "[ ]--[|[x|co|n]")
