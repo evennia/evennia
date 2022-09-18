@@ -2,8 +2,7 @@ from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import DefaultObject
 from evennia.typeclasses.attributes import AttributeProperty
-from evennia.typeclasses.tags import (AliasProperty, PermissionProperty,
-                                      TagProperty)
+from evennia.typeclasses.tags import AliasProperty, PermissionProperty, TagProperty
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 
@@ -240,13 +239,15 @@ class SubAttributeProperty(AttributeProperty):
 class SubTagProperty(TagProperty):
     pass
 
+
 class CustomizedProperty(AttributeProperty):
     def at_set(self, value, obj):
         obj.settest = value
         return value
-    
+
     def at_get(self, value, obj):
         return value + obj.awaretest
+
 
 class TestObjectPropertiesClass(DefaultObject):
     attr1 = AttributeProperty(default="attr1")
@@ -266,6 +267,7 @@ class TestObjectPropertiesClass(DefaultObject):
     def base_property(self):
         self.property_initialized = True
 
+
 class TestProperties(EvenniaTestCase):
     """
     Test Properties.
@@ -273,7 +275,9 @@ class TestProperties(EvenniaTestCase):
     """
 
     def setUp(self):
-        self.obj: TestObjectPropertiesClass = create.create_object(TestObjectPropertiesClass, key="testobj")
+        self.obj: TestObjectPropertiesClass = create.create_object(
+            TestObjectPropertiesClass, key="testobj"
+        )
 
     def tearDown(self):
         self.obj.delete()
@@ -317,7 +321,7 @@ class TestProperties(EvenniaTestCase):
         self.assertFalse(hasattr(obj, "property_initialized"))
 
     def test_object_awareness(self):
-        '''Test the "object-awareness" of customized AttributeProperty getter/setters'''
+        """Test the "object-awareness" of customized AttributeProperty getter/setters"""
         obj = self.obj
 
         # attribute properties receive on obj ref in the getter/setter that can customize return

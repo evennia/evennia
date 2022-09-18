@@ -275,8 +275,7 @@ class CharacterPuppetView(EvenniaWebTest):
         self.assertTrue(
             response.status_code >= 400,
             "Invalid access should return a 4xx code-- either obj not found or permission denied!"
-            " (Returned %s)"
-            % response.status_code,
+            " (Returned %s)" % response.status_code,
         )
 
 

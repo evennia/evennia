@@ -17,11 +17,13 @@ at_server_cold_stop()
 
 """
 
+
 def at_server_init():
     """
     This is called first as the server is starting up, regardless of how.
     """
     pass
+
 
 def at_server_start():
     """

@@ -41,7 +41,7 @@ PATH_REMAP_PREFIX = {
     "auditing": "evennia.contrib.utils",
     "fieldfill": "evennia.contrib.utils",
     "random_string_generator": "evennia.contrib.utils",
-    "tree_select": "evennia.contrib.utils"
+    "tree_select": "evennia.contrib.utils",
 }
 
 
@@ -52,43 +52,45 @@ def convert_contrib_typeclass_paths(apps, schema_editor):
         try:
             package_path = obj.db_typeclass_path.split(".")[2:]
             package_name = package_path[0]
-            if package_path[0] == 'security':
+            if package_path[0] == "security":
                 # renamed package and changed path
-                package_name = 'auditing'
+                package_name = "auditing"
                 package_path.pop(0)  # no longer security/auditing
             if package_path[-1] == ".Clothing":
                 # renamed Clothing class to ContribClothing
                 package_path[-1] = "ContribClothing"
-            package_path = '.'.join(package_path)
+            package_path = ".".join(package_path)
 
         except IndexError:
-            print(f"obj.db_typeclass_path={obj.db_typeclass_path} could not be parsed "
-                  "for converting to the new contrib location.")
+            print(
+                f"obj.db_typeclass_path={obj.db_typeclass_path} could not be parsed "
+                "for converting to the new contrib location."
+            )
             continue
         if package_name in PATH_REMAP_PREFIX:
             obj.db_typeclass_path = f"{PATH_REMAP_PREFIX[package_name]}.{package_path}"
-            obj.save(update_fields=['db_typeclass_path'])
+            obj.save(update_fields=["db_typeclass_path"])
 
     for obj in ObjectDB.objects.filter(db_cmdset_storage__startswith="evennia.contrib."):
         try:
             package_path = obj.db_cmdset_storage.split(".")[2:]
             package_name = package_path[0]
-            package_path = '.'.join(package_path)
+            package_path = ".".join(package_path)
         except IndexError:
-            print(f"obj.db_cmdset_storage={obj.db_cmdset_storage} could not be parsed "
-                  "for converting to the new contrib location.")
+            print(
+                f"obj.db_cmdset_storage={obj.db_cmdset_storage} could not be parsed "
+                "for converting to the new contrib location."
+            )
             continue
         if package_name in PATH_REMAP_PREFIX:
             obj.db_cmdset_storage = f"{PATH_REMAP_PREFIX[package_name]}.{package_path}"
-            obj.save(update_fields=['db_cmdset_storage'])
+            obj.save(update_fields=["db_cmdset_storage"])
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('objects', '0011_auto_20191025_0831'),
+        ("objects", "0011_auto_20191025_0831"),
     ]
 
-    operations = [
-        migrations.RunPython(convert_contrib_typeclass_paths, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(convert_contrib_typeclass_paths, migrations.RunPython.noop)]

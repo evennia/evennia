@@ -1950,7 +1950,12 @@ class CmdSetAttribute(ObjManipCommand):
             if self.rhs is None:
                 # no = means we inspect the attribute(s)
                 if not attrs:
-                    attrs = [attr.key for attr in obj.attributes.get(category=None, return_obj=True, return_list=True)]
+                    attrs = [
+                        attr.key
+                        for attr in obj.attributes.get(
+                            category=None, return_obj=True, return_list=True
+                        )
+                    ]
                 for attr in attrs:
                     if not self.check_attr(obj, attr, category):
                         continue
@@ -2001,7 +2006,9 @@ class CmdSetAttribute(ObjManipCommand):
                 result.append(self.set_attr(obj, attr, value, category))
         # check if anything was done
         if not result:
-            caller.msg("No valid attributes were found. Usage: set obj/attr[:category] = value. Use empty value to clear.")
+            caller.msg(
+                "No valid attributes were found. Usage: set obj/attr[:category] = value. Use empty value to clear."
+            )
         else:
             # send feedback
             caller.msg("".join(result).strip("\n"))
@@ -3732,7 +3739,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             quiet="quiet" in self.switches,
             emit_to_obj=caller,
             use_destination="intoexit" not in self.switches,
-            move_type="teleport"
+            move_type="teleport",
         ):
 
             if obj_to_teleport == caller:

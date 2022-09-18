@@ -41,7 +41,7 @@ PATH_REMAP_PREFIX = {
     "auditing": "evennia.contrib.utils",
     "fieldfill": "evennia.contrib.utils",
     "random_string_generator": "evennia.contrib.utils",
-    "tree_select": "evennia.contrib.utils"
+    "tree_select": "evennia.contrib.utils",
 }
 
 
@@ -52,30 +52,30 @@ def convert_contrib_typeclass_paths(apps, schema_editor):
         try:
             package_path = obj.db_typeclass_path.split(".")[2:]
             package_name = package_path[0]
-            if package_path[0] == 'security':
+            if package_path[0] == "security":
                 # renamed package and changed path
-                package_name = 'auditing'
+                package_name = "auditing"
                 package_path.pop(0)  # no longer security/auditing
             if package_path[-1] == ".Clothing":
                 # renamed Clothing class to ContribClothing
                 package_path[-1] = "ContribClothing"
-            package_path = '.'.join(package_path)
+            package_path = ".".join(package_path)
 
         except IndexError:
-            print(f"obj.db_typeclass_path={obj.db_typeclass_path} could not be parsed "
-                  "for converting to the new contrib location.")
+            print(
+                f"obj.db_typeclass_path={obj.db_typeclass_path} could not be parsed "
+                "for converting to the new contrib location."
+            )
             continue
         if package_name in PATH_REMAP_PREFIX:
             obj.db_typeclass_path = f"{PATH_REMAP_PREFIX[package_name]}.{package_path}"
-            obj.save(update_fields=['db_typeclass_path'])
+            obj.save(update_fields=["db_typeclass_path"])
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('scripts', '0014_auto_20210520_2137'),
+        ("scripts", "0014_auto_20210520_2137"),
     ]
 
-    operations = [
-        migrations.RunPython(convert_contrib_typeclass_paths, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(convert_contrib_typeclass_paths, migrations.RunPython.noop)]

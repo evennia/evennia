@@ -47,8 +47,11 @@ _SA = object.__setattr__
 SERVER_RESTART = os.path.join(settings.GAME_DIR, "server", "server.restart")
 
 # modules containing hook methods called during start_stop
-SERVER_STARTSTOP_MODULES = [mod_import(mod) for mod in make_iter(settings.AT_SERVER_STARTSTOP_MODULE)
-                            if isinstance(mod, str)]
+SERVER_STARTSTOP_MODULES = [
+    mod_import(mod)
+    for mod in make_iter(settings.AT_SERVER_STARTSTOP_MODULE)
+    if isinstance(mod, str)
+]
 
 # modules containing plugin services
 SERVER_SERVICES_PLUGIN_MODULES = make_iter(settings.SERVER_SERVICES_PLUGIN_MODULES)
