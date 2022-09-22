@@ -1860,7 +1860,7 @@ def percentile(iterable, percent, key=lambda x: x):
     return d0 + d1
 
 
-def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
+def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefix=""):
     """
     This helper function makes a 'grid' output, where it distributes the given
     string-elements as evenly as possible to fill out the given width.
@@ -1878,6 +1878,8 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
             by padding unless filling the entire line. This is useful for embedding
             decorations in the grid, such as horizontal bars.
         ignore_ansi (bool, optional): Ignore ansi markups when calculating white spacing.
+        line_prefix (str, optional): A prefix to add at the beginning of each line.
+            This can e.g. be used to preserve line color across line breaks.
 
     Returns:
         list: The grid as a list of ready-formatted rows. We return it
@@ -1988,10 +1990,14 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
 
     if sum(display_len((element)) for element in elements) <= width:
         # grid fits in one line
-        return _minimal_rows(elements)
+        rows = _minimal_rows(elements)
     else:
         # full multi-line grid
-        return _weighted_rows(elements)
+        rows = _weighted_rows(elements)
+
+    if line_prefix:
+        return [line_prefix + row for row in rows]
+    return rows
 
 
 def get_evennia_pids():

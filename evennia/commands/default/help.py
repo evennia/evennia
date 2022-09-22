@@ -8,19 +8,18 @@ outside the game in modules given by ``settings.FILE_HELP_ENTRY_MODULES``.
 
 """
 
-import re
-from itertools import chain
-from dataclasses import dataclass
-from django.conf import settings
 from collections import defaultdict
-from evennia.utils.utils import dedent
+from dataclasses import dataclass
+from itertools import chain
+
+from django.conf import settings
+from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.help.models import HelpEntry
+from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
 from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
-from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.utils import class_from_module, inherits_from, format_grid, pad
-from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
+from evennia.utils.utils import class_from_module, dedent, format_grid, inherits_from, pad
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -174,7 +173,11 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             else:
                 subtopics = [f"|w{topic}/{subtop}|n" for subtop in subtopics]
             subtopics = "\n|CSubtopics:|n\n  {}".format(
-                "\n  ".join(format_grid(subtopics, width=self.client_width()))
+                "\n  ".join(
+                    format_grid(
+                        subtopics, width=self.client_width(), line_prefix=self.index_topic_clr
+                    )
+                )
             )
         else:
             subtopics = ""
@@ -186,7 +189,11 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             else:
                 suggested = [f"|w{sug}|n" for sug in suggested]
             suggested = "\n|COther topic suggestions:|n\n{}".format(
-                "\n  ".join(format_grid(suggested, width=self.client_width()))
+                "\n  ".join(
+                    format_grid(
+                        suggested, width=self.client_width(), line_prefix=self.index_topic_clr
+                    )
+                )
             )
         else:
             suggested = ""
@@ -280,7 +287,13 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 + self.index_topic_clr
             )
             grid, verbatim_elements = _group_by_category(cmd_help_dict)
-            gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
+            gridrows = format_grid(
+                grid,
+                width,
+                sep="  ",
+                verbatim_elements=verbatim_elements,
+                line_prefix=self.index_topic_clr,
+            )
             cmd_grid = ANSIString("\n").join(gridrows) if gridrows else ""
 
         if any(db_help_dict.values()):
@@ -291,7 +304,13 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 + self.index_topic_clr
             )
             grid, verbatim_elements = _group_by_category(db_help_dict)
-            gridrows = format_grid(grid, width, sep="  ", verbatim_elements=verbatim_elements)
+            gridrows = format_grid(
+                grid,
+                width,
+                sep="  ",
+                verbatim_elements=verbatim_elements,
+                line_prefix=self.index_topic_clr,
+            )
             db_grid = ANSIString("\n").join(gridrows) if gridrows else ""
 
         # only show the main separators if there are actually both cmd and db-based help
