@@ -6,23 +6,23 @@ System commands
 
 
 import code
-import traceback
-import os
 import datetime
+import os
 import sys
+import time
+import traceback
+
 import django
 import twisted
-import time
-
 from django.conf import settings
-from evennia.server.sessionhandler import SESSIONS
 from evennia.accounts.models import AccountDB
-from evennia.utils import logger, utils, gametime, search
-from evennia.utils.eveditor import EvEditor
-from evennia.utils.evtable import EvTable
-from evennia.utils.evmenu import ask_yes_no
-from evennia.utils.utils import class_from_module, iter_to_str
 from evennia.scripts.taskhandler import TaskHandlerTask
+from evennia.server.sessionhandler import SESSIONS
+from evennia.utils import gametime, logger, search, utils
+from evennia.utils.eveditor import EvEditor
+from evennia.utils.evmenu import ask_yes_no
+from evennia.utils.evtable import EvTable
+from evennia.utils.utils import class_from_module, iter_to_str
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 _TASK_HANDLER = None
@@ -201,7 +201,10 @@ def _run_code_snippet(
                 self.caller = caller
 
             def write(self, string):
-                self.caller.msg(string.rsplit("\n", 1)[0])
+                if string.endswith("\n"):
+                    self.caller.msg(string[:-1])
+                else:
+                    self.caller.msg(string)
 
         fake_std = FakeStd(caller)
         sys.stdout = fake_std
