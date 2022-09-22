@@ -11,23 +11,23 @@ Run the script with the -h flag to see usage information.
 
 """
 
-import os
-import sys
-import re
-import signal
-import shutil
-import importlib
-import pickle
-from distutils.version import LooseVersion
-from argparse import ArgumentParser
 import argparse
-from subprocess import Popen, check_output, call, CalledProcessError, STDOUT
+import importlib
+import os
+import pickle
+import re
+import shutil
+import signal
+import sys
+from argparse import ArgumentParser
+from distutils.version import LooseVersion
+from subprocess import STDOUT, CalledProcessError, Popen, call, check_output
 
-from twisted.protocols import amp
-from twisted.internet import reactor, endpoints
 import django
 from django.core.management import execute_from_command_line
 from django.db.utils import ProgrammingError
+from twisted.internet import endpoints, reactor
+from twisted.protocols import amp
 
 # Signal processing
 SIG = signal.SIGINT
@@ -1147,8 +1147,9 @@ def tail_log_files(filename1, filename2, start_lines1=20, start_lines2=20, rate=
         if new_linecount < old_linecount:
             # this happens if the file was cycled or manually deleted/edited.
             print(
-                " ** Log file {filename} has cycled or been edited. "
-                "Restarting log. ".format(filename=filehandle.name)
+                " ** Log file {filename} has cycled or been edited. Restarting log. ".format(
+                    filename=filehandle.name
+                )
             )
             new_linecount = 0
             old_linecount = 0
@@ -1614,8 +1615,9 @@ def kill(pidfile, component="Server", callback=None, errback=None, killsignal=SI
             errback()
         else:
             print(
-                "Could not send kill signal - {component} does "
-                "not appear to be running.".format(component=component)
+                "Could not send kill signal - {component} does not appear to be running.".format(
+                    component=component
+                )
             )
 
 
@@ -1631,6 +1633,7 @@ def show_version_info(about=False):
 
     """
     import sys
+
     import twisted
 
     return VERSION_INFO.format(
@@ -1894,6 +1897,7 @@ def list_settings(keys):
 
     """
     from importlib import import_module
+
     from evennia.utils import evtable
 
     evsettings = import_module(SETTINGS_DOTPATH)
@@ -1938,8 +1942,9 @@ def run_custom_commands(option, *args):
             evennia mycmd foo bar
 
     """
-    from django.conf import settings
     import importlib
+
+    from django.conf import settings
 
     try:
         # a dict of {option: callable(*args), ...}
@@ -2078,7 +2083,7 @@ def main():
         action="store",
         dest="listsetting",
         metavar="all|<key>",
-        help=("list settings, use 'all' to list all available keys"),
+        help="list settings, use 'all' to list all available keys",
     )
     parser.add_argument(
         "--settings",
@@ -2104,7 +2109,9 @@ def main():
         action="store_true",
         dest="initmissing",
         default=False,
-        help="checks for missing secret_settings or server logs\n directory, and adds them if needed",
+        help=(
+            "checks for missing secret_settings or server logs\n directory, and adds them if needed"
+        ),
     )
     parser.add_argument(
         "--profiler",
@@ -2339,6 +2346,14 @@ def main():
             if not check_database(always_return=True):
                 django.core.management.call_command(*([option] + unknown_args))
                 sys.exit(0)
+
+        if option in ("createsuperuser",):
+            print(
+                "Note: Don't create an additional superuser this way. It will not be set up "
+                "correctly.\n Instead, use the web admin or the in-game `py` command to "
+                "set `is_superuser=True` on a existing Account."
+            )
+            sys.exit()
 
         if run_custom_commands(option, *unknown_args):
             # run any custom commands
