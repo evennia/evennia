@@ -18,10 +18,11 @@ import os
 import time
 from datetime import datetime
 from traceback import format_exc
+
 from twisted import logger as twisted_logger
+from twisted.internet.threads import deferToThread
 from twisted.python import logfile
 from twisted.python import util as twisted_util
-from twisted.internet.threads import deferToThread
 
 log = twisted_logger.Logger()
 
@@ -347,6 +348,12 @@ class WeeklyLogFile(logfile.DailyLogFile):
             else:
                 break
         return suffix
+
+    def rotate(self):
+        try:
+            self.rotate()
+        except Exception:
+            log_trace(f"Could not rotate the log file {self.name}.")
 
     def write(self, data):
         """
