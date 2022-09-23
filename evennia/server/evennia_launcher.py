@@ -38,7 +38,7 @@ EVENNIA_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 
 import evennia  # noqa
 
-EVENNIA_LIB = os.path.join(os.path.dirname(os.path.abspath(evennia.__file__)))
+EVENNIA_LIB = os.path.join(EVENNIA_ROOT, "evennia")
 EVENNIA_SERVER = os.path.join(EVENNIA_LIB, "server")
 EVENNIA_TEMPLATE = os.path.join(EVENNIA_LIB, "game_template")
 EVENNIA_PROFILING = os.path.join(EVENNIA_SERVER, "profiling")
@@ -1226,7 +1226,7 @@ def evennia_version():
     version = "Unknown"
     try:
         version = evennia.__version__
-    except ImportError:
+    except (ImportError, AttributeError):
         # even if evennia is not found, we should not crash here.
         pass
     try:
