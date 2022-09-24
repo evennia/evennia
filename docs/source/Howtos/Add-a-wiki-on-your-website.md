@@ -17,7 +17,7 @@ has passed.)
 The [Django-wiki](https://django-wiki.readthedocs.io/) offers a lot of features associated with
 wikis, is
 actively maintained (at this time, anyway), and isn't too difficult to install in Evennia.  You can
-see a [demonstration of Django-wiki here](https://demo.django.wiki).
+see a [demonstration of Django-wiki here](https://demo.django-wiki.org).
 
 ## Basic installation
 
