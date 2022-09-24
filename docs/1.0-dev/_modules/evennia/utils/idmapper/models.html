@@ -49,19 +49,20 @@
 <span class="sd">Also adds `cache_size()` for monitoring the size of the cache.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">weakref</span> <span class="kn">import</span> <span class="n">WeakValueDictionary</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.reactor</span> <span class="kn">import</span> <span class="n">callFromThread</span>
-<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span><span class="p">,</span> <span class="n">FieldError</span>
-<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">post_save</span>
+
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">FieldError</span><span class="p">,</span> <span class="n">ObjectDoesNotExist</span>
 <span class="kn">from</span> <span class="nn">django.db.models.base</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ModelBase</span>
-<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">pre_delete</span><span class="p">,</span> <span class="n">post_migrate</span>
+<span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">post_migrate</span><span class="p">,</span> <span class="n">post_save</span><span class="p">,</span> <span class="n">pre_delete</span>
+<span class="kn">from</span> <span class="nn">django.db.transaction</span> <span class="kn">import</span> <span class="n">atomic</span>
 <span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">DatabaseError</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">get_evennia_pids</span><span class="p">,</span> <span class="n">to_str</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.reactor</span> <span class="kn">import</span> <span class="n">callFromThread</span>
 
 <span class="kn">from</span> <span class="nn">.manager</span> <span class="kn">import</span> <span class="n">SharedMemoryManager</span>
 
@@ -486,13 +487,15 @@
         <span class="k">if</span> <span class="n">_IS_MAIN_THREAD</span><span class="p">:</span>
             <span class="c1"># in main thread - normal operation</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">atomic</span><span class="p">():</span>
+                    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">DatabaseError</span><span class="p">:</span>
                 <span class="c1"># we handle the &#39;update_fields did not update any rows&#39; error that</span>
                 <span class="c1"># may happen due to timing issues with attributes</span>
                 <span class="n">ufields_removed</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;update_fields&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">ufields_removed</span><span class="p">:</span>
-                    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="n">atomic</span><span class="p">():</span>
+                        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span>
         <span class="k">else</span><span class="p">:</span>
@@ -665,8 +668,8 @@
     <span class="k">if</span> <span class="p">((</span><span class="n">now</span> <span class="o">-</span> <span class="n">LAST_FLUSH</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">AUTO_FLUSH_MIN_INTERVAL</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
         <span class="c1"># too soon after last flush.</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span>
-            <span class="s2">&quot;Warning: Idmapper flush called more than &quot;</span>
-            <span class="s2">&quot;once in </span><span class="si">%s</span><span class="s2"> min interval. Check memory usage.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">AUTO_FLUSH_MIN_INTERVAL</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">)</span>
+            <span class="s2">&quot;Warning: Idmapper flush called more than once in </span><span class="si">%s</span><span class="s2"> min interval. Check memory usage.&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">AUTO_FLUSH_MIN_INTERVAL</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">return</span>
 

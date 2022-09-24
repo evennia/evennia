@@ -49,9 +49,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Something</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTestCase</span><span class="p">,</span> <span class="n">EvenniaTest</span>
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTestCase</span>
+
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">traits</span>
 
 
@@ -1082,6 +1085,25 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="n">obj2</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">strength</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TraitContribTestingChar"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitContribTestingChar">[docs]</a><span class="k">class</span> <span class="nc">TraitContribTestingChar</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">HP</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TraitPropertyTestCase"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase">[docs]</a><span class="k">class</span> <span class="nc">TraitPropertyTestCase</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test atomic updating.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">character_typeclass</span> <span class="o">=</span> <span class="n">TraitContribTestingChar</span>
+
+<div class="viewcode-block" id="TraitPropertyTestCase.test_round1"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.test_round1">[docs]</a>    <span class="k">def</span> <span class="nf">test_round1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">HP</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="TraitPropertyTestCase.test_round2"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.test_round2">[docs]</a>    <span class="k">def</span> <span class="nf">test_round2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">HP</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">2</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
