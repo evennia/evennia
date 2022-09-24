@@ -77,7 +77,7 @@ the <strong>caller.msg()</strong> construct every time the page is updated.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmore.CmdMore.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['q', 'b', 'top', 'quit', 'back', 'abort', 'next', 'e', 'n', 'a', 'end', 't']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['next', 'a', 'abort', 'n', 'top', 'end', 'q', 'quit', 'back', 'e', 't', 'b']</em><a class="headerlink" href="#evennia.utils.evmore.CmdMore.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -210,7 +210,7 @@ to determine the screen width and will receive all output.</p></li>
 <li><p><strong>justify</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, auto-justify long lines. This must be turned
 off for fixed-width or formatted output, like tables. It’s force-disabled
 if <strong>inp</strong> is an EvTable.</p></li>
-<li><p><strong>justify_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keywords for the justifiy function. Used only
+<li><p><strong>justify_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keywords for the justify function. Used only
 if <strong>justify</strong> is True. If this is not set, default arguments will be used.</p></li>
 <li><p><strong>exit_on_lastpage</strong> (<em>bool</em><em>, </em><em>optional</em>) – If reaching the last page without the
 page being completely filled, exit pager immediately. If unset,
@@ -418,7 +418,7 @@ depending on supported inputs.</p>
 <dt id="evennia.utils.evmore.EvMore.page_formatter">
 <code class="sig-name descname">page_formatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">page</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmore.html#EvMore.page_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmore.EvMore.page_formatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Page formatter. Every page passes through this method. Override
-it to customize behvaior per-page. A common use is to generate a new
+it to customize behavior per-page. A common use is to generate a new
 EvTable for every page (this is more efficient than to generate one huge
 EvTable across many pages and feed it into EvMore all at once).</p>
 <dl class="field-list simple">

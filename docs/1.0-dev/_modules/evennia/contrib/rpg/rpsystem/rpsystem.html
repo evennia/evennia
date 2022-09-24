@@ -278,6 +278,7 @@
 <div class="viewcode-block" id="LanguageError"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.LanguageError">[docs]</a><span class="k">class</span> <span class="nc">LanguageError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
+
 <span class="k">def</span> <span class="nf">_get_case_ref</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function which parses capitalization and</span>
@@ -298,6 +299,7 @@
         <span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span>
 
     <span class="k">return</span> <span class="n">case</span>
+
 
 <span class="c1"># emoting mechanisms</span>
 <div class="viewcode-block" id="parse_language"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.parse_language">[docs]</a><span class="k">def</span> <span class="nf">parse_language</span><span class="p">(</span><span class="n">speaker</span><span class="p">,</span> <span class="n">emote</span><span class="p">):</span>
@@ -447,7 +449,7 @@
         <span class="n">match_index</span> <span class="o">=</span> <span class="n">marker_match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="c1"># split the emote string at the reference marker, to process everything after it</span>
         <span class="n">head</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">match_index</span><span class="p">]</span>
-        <span class="n">tail</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">match_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="n">match_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
 
         <span class="k">if</span> <span class="n">search_mode</span><span class="p">:</span>
             <span class="c1"># match the candidates against the whole search string after the marker</span>
@@ -493,7 +495,7 @@
             <span class="c1"># save search string</span>
             <span class="n">matched_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tail</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">iend</span><span class="p">])</span>
             <span class="c1"># recombine remainder of emote back into a string</span>
-            <span class="n">tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tail</span><span class="p">[</span><span class="n">iend</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
+            <span class="n">tail</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tail</span><span class="p">[</span><span class="n">iend</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span>
 
         <span class="n">nmatches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bestmatches</span><span class="p">)</span>
 
@@ -1317,19 +1319,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Something&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ContribRPObject.search"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.ContribRPObject.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">searchdata</span><span class="p">,</span>
-            <span class="n">global_search</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">use_nicks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">attribute_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">nofound_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">multimatch_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">searchdata</span><span class="p">,</span>
+        <span class="n">global_search</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_nicks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">typeclass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">attribute_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nofound_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">multimatch_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_dbref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an Object matching a search string/condition, taking</span>
@@ -1413,10 +1415,10 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">global_search</span> <span class="ow">or</span> <span class="p">(</span>
-                <span class="n">is_string</span>
-                <span class="ow">and</span> <span class="n">searchdata</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
-                <span class="ow">and</span> <span class="n">searchdata</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
+            <span class="n">is_string</span>
+            <span class="ow">and</span> <span class="n">searchdata</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">searchdata</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="n">searchdata</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="c1"># only allow exact matching if searching the entire database</span>
             <span class="c1"># or unique #dbrefs</span>

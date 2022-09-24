@@ -50,19 +50,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">dedent</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.help.filehelp</span> <span class="kn">import</span> <span class="n">FILE_HELP_ENTRIES</span>
 <span class="kn">from</span> <span class="nn">evennia.help.models</span> <span class="kn">import</span> <span class="n">HelpEntry</span>
+<span class="kn">from</span> <span class="nn">evennia.help.utils</span> <span class="kn">import</span> <span class="n">help_search_with_index</span><span class="p">,</span> <span class="n">parse_entry_for_subcategories</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">evmore</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
-<span class="kn">from</span> <span class="nn">evennia.help.filehelp</span> <span class="kn">import</span> <span class="n">FILE_HELP_ENTRIES</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">format_grid</span><span class="p">,</span> <span class="n">pad</span>
-<span class="kn">from</span> <span class="nn">evennia.help.utils</span> <span class="kn">import</span> <span class="n">help_search_with_index</span><span class="p">,</span> <span class="n">parse_entry_for_subcategories</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">format_grid</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">pad</span>
 
 <span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
@@ -216,7 +215,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">subtopics</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">subtop</span><span class="si">}</span><span class="s2">|n&quot;</span> <span class="k">for</span> <span class="n">subtop</span> <span class="ow">in</span> <span class="n">subtopics</span><span class="p">]</span>
             <span class="n">subtopics</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|CSubtopics:|n</span><span class="se">\n</span><span class="s2">  </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">format_grid</span><span class="p">(</span><span class="n">subtopics</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">()))</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">format_grid</span><span class="p">(</span>
+                        <span class="n">subtopics</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">(),</span> <span class="n">line_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index_topic_clr</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">subtopics</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -228,7 +231,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">suggested</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">sug</span><span class="si">}</span><span class="s2">|n&quot;</span> <span class="k">for</span> <span class="n">sug</span> <span class="ow">in</span> <span class="n">suggested</span><span class="p">]</span>
             <span class="n">suggested</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|COther topic suggestions:|n</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">format_grid</span><span class="p">(</span><span class="n">suggested</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">()))</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">format_grid</span><span class="p">(</span>
+                        <span class="n">suggested</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_width</span><span class="p">(),</span> <span class="n">line_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index_topic_clr</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">suggested</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -322,7 +329,13 @@
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_topic_clr</span>
             <span class="p">)</span>
             <span class="n">grid</span><span class="p">,</span> <span class="n">verbatim_elements</span> <span class="o">=</span> <span class="n">_group_by_category</span><span class="p">(</span><span class="n">cmd_help_dict</span><span class="p">)</span>
-            <span class="n">gridrows</span> <span class="o">=</span> <span class="n">format_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="n">verbatim_elements</span><span class="p">)</span>
+            <span class="n">gridrows</span> <span class="o">=</span> <span class="n">format_grid</span><span class="p">(</span>
+                <span class="n">grid</span><span class="p">,</span>
+                <span class="n">width</span><span class="p">,</span>
+                <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span>
+                <span class="n">verbatim_elements</span><span class="o">=</span><span class="n">verbatim_elements</span><span class="p">,</span>
+                <span class="n">line_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index_topic_clr</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">cmd_grid</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gridrows</span><span class="p">)</span> <span class="k">if</span> <span class="n">gridrows</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">db_help_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
@@ -333,7 +346,13 @@
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_topic_clr</span>
             <span class="p">)</span>
             <span class="n">grid</span><span class="p">,</span> <span class="n">verbatim_elements</span> <span class="o">=</span> <span class="n">_group_by_category</span><span class="p">(</span><span class="n">db_help_dict</span><span class="p">)</span>
-            <span class="n">gridrows</span> <span class="o">=</span> <span class="n">format_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="n">verbatim_elements</span><span class="p">)</span>
+            <span class="n">gridrows</span> <span class="o">=</span> <span class="n">format_grid</span><span class="p">(</span>
+                <span class="n">grid</span><span class="p">,</span>
+                <span class="n">width</span><span class="p">,</span>
+                <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span>
+                <span class="n">verbatim_elements</span><span class="o">=</span><span class="n">verbatim_elements</span><span class="p">,</span>
+                <span class="n">line_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index_topic_clr</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">db_grid</span> <span class="o">=</span> <span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gridrows</span><span class="p">)</span> <span class="k">if</span> <span class="n">gridrows</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
         <span class="c1"># only show the main separators if there are actually both cmd and db-based help</span>

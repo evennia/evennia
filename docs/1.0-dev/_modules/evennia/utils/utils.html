@@ -1902,7 +1902,7 @@
     <span class="k">return</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">d1</span></div>
 
 
-<div class="viewcode-block" id="format_grid"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.format_grid">[docs]</a><span class="k">def</span> <span class="nf">format_grid</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="format_grid"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.format_grid">[docs]</a><span class="k">def</span> <span class="nf">format_grid</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">78</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="n">verbatim_elements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">line_prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function makes a &#39;grid&#39; output, where it distributes the given</span>
 <span class="sd">    string-elements as evenly as possible to fill out the given width.</span>
@@ -1920,6 +1920,8 @@
 <span class="sd">            by padding unless filling the entire line. This is useful for embedding</span>
 <span class="sd">            decorations in the grid, such as horizontal bars.</span>
 <span class="sd">        ignore_ansi (bool, optional): Ignore ansi markups when calculating white spacing.</span>
+<span class="sd">        line_prefix (str, optional): A prefix to add at the beginning of each line.</span>
+<span class="sd">            This can e.g. be used to preserve line color across line breaks.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list: The grid as a list of ready-formatted rows. We return it</span>
@@ -2030,10 +2032,14 @@
 
     <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">display_len</span><span class="p">((</span><span class="n">element</span><span class="p">))</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
         <span class="c1"># grid fits in one line</span>
-        <span class="k">return</span> <span class="n">_minimal_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">_minimal_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># full multi-line grid</span>
-        <span class="k">return</span> <span class="n">_weighted_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span></div>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">_weighted_rows</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">line_prefix</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">line_prefix</span> <span class="o">+</span> <span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">rows</span></div>
 
 
 <div class="viewcode-block" id="get_evennia_pids"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.get_evennia_pids">[docs]</a><span class="k">def</span> <span class="nf">get_evennia_pids</span><span class="p">():</span>

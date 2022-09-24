@@ -105,7 +105,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">orig_string</span> <span class="o">=</span> <span class="n">raw_string</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">include_prefixes</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">raw_string</span>  <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span>
+            <span class="n">raw_string</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">_CMD_IGNORE_PREFIXES</span><span class="p">)</span>
         <span class="n">search_string</span> <span class="o">=</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmdset</span><span class="p">:</span>
             <span class="n">cmdname</span><span class="p">,</span> <span class="n">raw_cmdname</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">search_string</span><span class="p">,</span> <span class="n">include_prefixes</span><span class="o">=</span><span class="n">include_prefixes</span><span class="p">)</span>

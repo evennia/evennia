@@ -60,10 +60,11 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
+
 <span class="kn">from</span> <span class="nn">twisted</span> <span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">twisted_logger</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.threads</span> <span class="kn">import</span> <span class="n">deferToThread</span>
 <span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">logfile</span>
 <span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">util</span> <span class="k">as</span> <span class="n">twisted_util</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.threads</span> <span class="kn">import</span> <span class="n">deferToThread</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">twisted_logger</span><span class="o">.</span><span class="n">Logger</span><span class="p">()</span>
 
@@ -389,6 +390,12 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">suffix</span></div>
+
+<div class="viewcode-block" id="WeeklyLogFile.rotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not rotate the log file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WeeklyLogFile.write"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.WeeklyLogFile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

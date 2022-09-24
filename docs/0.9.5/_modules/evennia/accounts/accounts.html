@@ -703,7 +703,7 @@
 <span class="sd">            typeclass (str, optional): Typeclass to use for this character. If</span>
 <span class="sd">                not given, use settings.BASE_CHARACTER_TYPECLASS.</span>
 <span class="sd">            permissions (list, optional): If not given, use the account&#39;s permissions.</span>
-<span class="sd">            ip (str, optiona): The client IP creating this character. Will fall back to the</span>
+<span class="sd">            ip (str, optional): The client IP creating this character. Will fall back to the</span>
 <span class="sd">                one stored for the account if not given.</span>
 <span class="sd">            kwargs (any): Other kwargs will be used in the create_call.</span>
 <span class="sd">        Returns:</span>
@@ -970,7 +970,7 @@
 <span class="sd">            kwargs (any): Other keyword arguments will be added to the</span>
 <span class="sd">                found command object instance as variables before it</span>
 <span class="sd">                executes. This is unused by default Evennia but may be</span>
-<span class="sd">                used to set flags and change operating paramaters for</span>
+<span class="sd">                used to set flags and change operating parameters for</span>
 <span class="sd">                commands at run-time.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1350,7 +1350,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_to_connect_channel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;|G</span><span class="si">{key}</span><span class="s2"> connected|n&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">_MULTISESSION_MODE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># in this mode we should have only one character available. We</span>
-            <span class="c1"># try to auto-connect to our last conneted object, if any</span>
+            <span class="c1"># try to auto-connect to our last connected object, if any</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">puppet_object</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
@@ -1377,7 +1377,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by the login process if a user account is targeted correctly</span>
 <span class="sd">        but provided with an invalid password. By default it does nothing,</span>
-<span class="sd">        but exists to be overriden.</span>
+<span class="sd">        but exists to be overridden.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (session): Session logging in.</span>
@@ -1617,7 +1617,7 @@
 <span class="sd">        Gets or creates a Guest account object.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            ip (str, optional): IP address of requestor; used for ban checking,</span>
+<span class="sd">            ip (str, optional): IP address of requester; used for ban checking,</span>
 <span class="sd">                throttling and logging</span>
 
 <span class="sd">        Returns:</span>

@@ -40,8 +40,7 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.utils.name_generator.tests</h1><div class="highlight"><pre>
-<span></span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Tests for the Random Name Generator</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -50,35 +49,36 @@
 
 <span class="n">_INVALID_STYLES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;missing_keys&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">],</span>
-        <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+        <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
     <span class="p">},</span>
     <span class="s2">&quot;invalid_vowels&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;syllable&quot;</span><span class="p">:</span> <span class="s2">&quot;CVC&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">],</span>
+        <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">],</span>
         <span class="s2">&quot;vowels&quot;</span><span class="p">:</span> <span class="s2">&quot;aeiou&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+        <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
     <span class="p">},</span>
     <span class="s2">&quot;invalid_length&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;syllable&quot;</span><span class="p">:</span> <span class="s2">&quot;CVC&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">],</span>
-        <span class="s2">&quot;vowels&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">],</span>
+        <span class="s2">&quot;consonants&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;vowels&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">],</span>
         <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">}</span>
 
 <span class="n">namegen</span><span class="o">.</span><span class="n">_FANTASY_NAME_STRUCTURES</span> <span class="o">|=</span> <span class="n">_INVALID_STYLES</span>
 
+
 <div class="viewcode-block" id="TestNameGenerator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator">[docs]</a><span class="k">class</span> <span class="nc">TestNameGenerator</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestNameGenerator.test_fantasy_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_fantasy_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_fantasy_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify output types and lengths.</span>
-<span class="sd">        </span>
+
 <span class="sd">        fantasy_name()       - str</span>
 <span class="sd">        fantasy_name(style=&quot;fluid&quot;) - str</span>
 <span class="sd">        fantasy_name(num=3)  - list of length 3</span>
 <span class="sd">        fantasy_name(return_list=True) - list of length 1</span>
-<span class="sd">        </span>
+
 <span class="sd">        raises KeyError on missing style or ValueError on num</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">single_name</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">()</span>
@@ -97,27 +97,27 @@
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
             <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">num</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        
+
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
             <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="TestNameGenerator.test_structure_validation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_structure_validation">[docs]</a>    <span class="k">def</span> <span class="nf">test_structure_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that validation raises the correct errors for invalid inputs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
-          <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;missing_keys&quot;</span><span class="p">)</span>
+            <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;missing_keys&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
-          <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;invalid_vowels&quot;</span><span class="p">)</span>
+            <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;invalid_vowels&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-          <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;invalid_length&quot;</span><span class="p">)</span></div>
+            <span class="n">namegen</span><span class="o">.</span><span class="n">fantasy_name</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;invalid_length&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestNameGenerator.test_first_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_first_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_first_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify output types and lengths.</span>
-<span class="sd">        </span>
+
 <span class="sd">        first_name()       - str</span>
 <span class="sd">        first_name(num=3)  - list of length 3</span>
 <span class="sd">        first_name(gender=&#39;f&#39;) - str</span>
@@ -130,7 +130,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">three_names</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">three_names</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
 
-        <span class="n">gendered_name</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">gender</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+        <span class="n">gendered_name</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">gender</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">gendered_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
 
         <span class="n">single_list</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -138,7 +138,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">single_list</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-            <span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">gender</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+            <span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">gender</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
             <span class="n">namegen</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="n">num</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
@@ -146,7 +146,7 @@
 <div class="viewcode-block" id="TestNameGenerator.test_last_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_last_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_last_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify output types and lengths.</span>
-<span class="sd">        </span>
+
 <span class="sd">        last_name()       - str</span>
 <span class="sd">        last_name(num=3)  - list of length 3</span>
 <span class="sd">        last_name(return_list=True) - list of length 1</span>
@@ -168,7 +168,7 @@
 <div class="viewcode-block" id="TestNameGenerator.test_full_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.name_generator.tests.html#evennia.contrib.utils.name_generator.tests.TestNameGenerator.test_full_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify output types and lengths.</span>
-<span class="sd">        </span>
+
 <span class="sd">        full_name()       - str</span>
 <span class="sd">        full_name(num=3)  - list of length 3</span>
 <span class="sd">        full_name(gender=&#39;f&#39;) - str</span>
@@ -181,7 +181,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">three_names</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">three_names</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
 
-        <span class="n">gendered_name</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">full_name</span><span class="p">(</span><span class="n">gender</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">)</span>
+        <span class="n">gendered_name</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">full_name</span><span class="p">(</span><span class="n">gender</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">gendered_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">)</span>
 
         <span class="n">single_list</span> <span class="o">=</span> <span class="n">namegen</span><span class="o">.</span><span class="n">full_name</span><span class="p">(</span><span class="n">return_list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

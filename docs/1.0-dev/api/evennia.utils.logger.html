@@ -571,6 +571,14 @@ server.log.2020_01_29__2</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.utils.logger.WeeklyLogFile.rotate">
+<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the file and create a new one.</p>
+<p>If it’s not possible to open new logfile, this will fail silently,
+and continue logging to old logfile.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.utils.logger.WeeklyLogFile.write">
 <code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/logger.html#WeeklyLogFile.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.logger.WeeklyLogFile.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write data to log file</p>

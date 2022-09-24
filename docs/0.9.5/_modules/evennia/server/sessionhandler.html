@@ -101,7 +101,7 @@
 <span class="n">SSYNC</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># server session sync</span>
 <span class="n">SCONN</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>  <span class="c1"># server portal connection (for bots)</span>
 <span class="n">PCONNSYNC</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="c1"># portal post-syncing session</span>
-<span class="n">PDISCONNALL</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>  <span class="c1"># portal session discnnect all</span>
+<span class="n">PDISCONNALL</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>  <span class="c1"># portal session disconnect all</span>
 <span class="n">SRELOAD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>  <span class="c1"># server reloading (have portal start a new server)</span>
 <span class="n">SSTART</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>  <span class="c1"># server start (portal must already be running anyway)</span>
 <span class="n">PSHUTD</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>  <span class="c1"># portal (+server) shutdown</span>
@@ -722,7 +722,7 @@
 <span class="sd">        Get a unique list of connected and logged-in Accounts.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            accounts (list): All conected Accounts (which may be fewer than the</span>
+<span class="sd">            accounts (list): All connected Accounts (which may be fewer than the</span>
 <span class="sd">                amount of Sessions due to multi-playing).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>

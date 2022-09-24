@@ -193,7 +193,13 @@
         <span class="n">id2</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">candidates</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s1">&#39;With a flair, {&#39;</span><span class="o">+</span><span class="n">id0</span><span class="o">+</span><span class="s1">&#39;} looks at {&#39;</span><span class="o">+</span><span class="n">id1</span><span class="o">+</span><span class="s1">&#39;} and {&#39;</span><span class="o">+</span><span class="n">id2</span><span class="o">+</span><span class="s1">&#39;}. She says &quot;This is a test.&quot;&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;With a flair, {&quot;</span>
+            <span class="o">+</span> <span class="n">id0</span>
+            <span class="o">+</span> <span class="s2">&quot;} looks at {&quot;</span>
+            <span class="o">+</span> <span class="n">id1</span>
+            <span class="o">+</span> <span class="s2">&quot;} and {&quot;</span>
+            <span class="o">+</span> <span class="n">id2</span>
+            <span class="o">+</span> <span class="s1">&#39;}. She says &quot;This is a test.&quot;&#39;</span><span class="p">,</span>
             <span class="p">{</span>
                 <span class="n">id2</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="p">,</span>
                 <span class="n">id1</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">,</span>
@@ -220,7 +226,7 @@
         <span class="n">id2</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">candidates</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;{&quot;</span><span class="o">+</span><span class="n">id0</span><span class="o">+</span><span class="s2">&quot;} frowns at {&quot;</span><span class="o">+</span><span class="n">id1</span><span class="o">+</span><span class="s2">&quot;} for trying to steal {&quot;</span><span class="o">+</span><span class="n">id0</span><span class="o">+</span><span class="s2">&quot;}&#39;s test.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="n">id0</span> <span class="o">+</span> <span class="s2">&quot;} frowns at {&quot;</span> <span class="o">+</span> <span class="n">id1</span> <span class="o">+</span> <span class="s2">&quot;} for trying to steal {&quot;</span> <span class="o">+</span> <span class="n">id0</span> <span class="o">+</span> <span class="s2">&quot;}&#39;s test.&quot;</span><span class="p">,</span>
             <span class="p">{</span>
                 <span class="n">id1</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span><span class="p">,</span>
                 <span class="n">id0</span><span class="p">:</span> <span class="n">speaker</span><span class="p">,</span>

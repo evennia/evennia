@@ -216,7 +216,7 @@
 <span class="sd">            justify (bool, optional): If set, auto-justify long lines. This must be turned</span>
 <span class="sd">                off for fixed-width or formatted output, like tables. It&#39;s force-disabled</span>
 <span class="sd">                if `inp` is an EvTable.</span>
-<span class="sd">            justify_kwargs (dict, optional): Keywords for the justifiy function. Used only</span>
+<span class="sd">            justify_kwargs (dict, optional): Keywords for the justify function. Used only</span>
 <span class="sd">                if `justify` is True. If this is not set, default arguments will be used.</span>
 <span class="sd">            exit_on_lastpage (bool, optional): If reaching the last page without the</span>
 <span class="sd">                page being completely filled, exit pager immediately. If unset,</span>
@@ -561,7 +561,7 @@
 <div class="viewcode-block" id="EvMore.page_formatter"><a class="viewcode-back" href="../../../api/evennia.utils.evmore.html#evennia.utils.evmore.EvMore.page_formatter">[docs]</a>    <span class="k">def</span> <span class="nf">page_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Page formatter. Every page passes through this method. Override</span>
-<span class="sd">        it to customize behvaior per-page. A common use is to generate a new</span>
+<span class="sd">        it to customize behavior per-page. A common use is to generate a new</span>
 <span class="sd">        EvTable for every page (this is more efficient than to generate one huge</span>
 <span class="sd">        EvTable across many pages and feed it into EvMore all at once).</span>
 

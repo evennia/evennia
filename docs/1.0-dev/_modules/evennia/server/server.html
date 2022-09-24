@@ -89,8 +89,11 @@
 <span class="n">SERVER_RESTART</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;server.restart&quot;</span><span class="p">)</span>
 
 <span class="c1"># modules containing hook methods called during start_stop</span>
-<span class="n">SERVER_STARTSTOP_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="n">mod_import</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">AT_SERVER_STARTSTOP_MODULE</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+<span class="n">SERVER_STARTSTOP_MODULES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">mod_import</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">AT_SERVER_STARTSTOP_MODULE</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+<span class="p">]</span>
 
 <span class="c1"># modules containing plugin services</span>
 <span class="n">SERVER_SERVICES_PLUGIN_MODULES</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SERVER_SERVICES_PLUGIN_MODULES</span><span class="p">)</span>
