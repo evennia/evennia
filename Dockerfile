@@ -53,7 +53,7 @@ COPY . /usr/src/evennia
 
 # add the game source when rebuilding a new docker image from inside
 # a game dir
-ONBUILD COPY . /usr/src/game
+ONBUILD COPY --chown=evennia . /usr/src/game
 
 # make the game source hierarchy persistent with a named volume.
 # mount on-disk game location here when using the container
