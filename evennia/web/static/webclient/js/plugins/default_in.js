@@ -17,6 +17,14 @@ let defaultInPlugin = (function () {
             inputfield = $("#inputfield:focus");
         }
 
+        // Allows you to copy from panels.
+        // Ignore textfocus if Ctrl + C (Or Mac Command Key + C Pressed.)
+        if ((event.ctrlKey || event.metaKey) && event.keyCode == 67) {
+            return;
+        } else {
+            // Continue
+        }
+        
         // check for important keys
         switch (event.which) {
             case  9:  // ignore tab key -- allows normal focus control
