@@ -1629,8 +1629,6 @@ class EvTable(object):
         htable = self.nrows
         excess = len(row) - wtable
 
-        print(" len(row):", len(row), "wtable:", wtable, "excess:", excess)
-
         if excess > 0:
             # we need to add new empty columns to table
             empty_rows = ["" for _ in range(htable)]

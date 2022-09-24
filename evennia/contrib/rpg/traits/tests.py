@@ -7,9 +7,12 @@ Unit test module for Trait classes.
 """
 
 from copy import copy
+
 from anything import Something
+from evennia.objects.objects import DefaultCharacter
+from evennia.utils.test_resources import BaseEvenniaTestCase, EvenniaTest
 from mock import MagicMock, patch
-from evennia.utils.test_resources import BaseEvenniaTestCase
+
 from . import traits
 
 
@@ -1040,3 +1043,22 @@ class TestTraitFields(BaseEvenniaTestCase):
 
         self.assertEqual(13, obj2.strength.value)
         self.assertEqual(20, obj.strength.value)
+
+
+class TraitContribTestingChar(DefaultCharacter):
+    HP = traits.TraitProperty("health", trait_type="trait", value=5)
+
+
+class TraitPropertyTestCase(EvenniaTest):
+    """
+    Test atomic updating.
+
+    """
+
+    character_typeclass = TraitContribTestingChar
+
+    def test_round1(self):
+        self.char1.HP.value = 1
+
+    def test_round2(self):
+        self.char1.HP.value = 2
