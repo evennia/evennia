@@ -27,6 +27,15 @@ more than one. The example has a requirement of choosing exactly 3 options,
 but you can change it to a maximum or minimum number of required options - 
 or remove the requirement check entirely.
 
+## Simple List Options
+
+If you just want a straightforward list of options, without any of the back-and-forth
+navigation or modifying of option text, evennia has an  easy to use decorator
+available: `@list_node`
+
+For an example of how to use it, check out the documentation for evennia.utils.evmenu
+- there's lots of other useful EvMenu tools too!
+
 ## Starting Objects
 
 Allows players to choose from a selection of starting objects.
@@ -298,18 +307,6 @@ def _set_multichoice(caller, raw_string, selected=[], **kwargs):
 
     # pass the list back so we don't need to retrieve it again
     return ("menunode_multi_choice", {"selected": selected})
-
-
-#########################################################
-#                  Simple List Options
-#########################################################
-
-# If you just want a straightforward list of options, without any of the
-# back-and-forth navigation or modifying of option text, evennia has an 
-# easy to use decorator available: `@list_node`
-
-# For an example of how to use it, check out the documentation for 
-# evennia.utils.evmenu - there's lots of other useful EvMenu tools too!
 
 
 #########################################################
