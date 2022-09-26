@@ -31,7 +31,7 @@ class Account(ContribChargenAccount):
 ```
 
 By default, the new `charcreate` command will reference the example menu provided by the contrib, so you can test it
-out before building your own menu. You can reference [the example menu here]() for ideas on how to build your own.
+out before building your own menu. You can reference [the example menu here](/evennia/contrib/rpg/character_creator/example_menu.py) for ideas on how to build your own.
 
 Once you have your own menu, just add it to your settings to use it. e.g. if your menu is in mygame/word/chargen_menu.py,
 you'd add the following to your settings file:
