@@ -27,7 +27,11 @@ from evennia.objects.models import ObjectDB
 from evennia.utils import create, search
 from evennia.utils.evmenu import EvMenu
 
-_CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS 
+_CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
+try:
+	_CHARGEN_MENU = settings.CHARGEN_MENU
+except AttributeError:
+	_CHARGEN_MENU = "evennia.contrib.rpg.character_creator.example_menu"
 
 class ContribCmdCharCreate(MuxAccountCommand):
     """
@@ -97,7 +101,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
                 account.execute_cmd("ic {}".format(char.key))
 
         EvMenu(session,
-               settings.CHARGEN_MENU,
+               _CHARGEN_MENU,
                startnode=startnode,
                cmd_on_exit=finish_char_callback)
 
