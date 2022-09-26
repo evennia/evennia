@@ -76,7 +76,7 @@ def menunode_welcome(caller):
         game wiki if you have one.
     """)
     help = "You can explain the commands for exiting and resuming more specifically here."
-    options = [{"desc": "Let's begin!", "goto": "menunode_info_base"}]
+    options = {"desc": "Let's begin!", "goto": "menunode_info_base"}
     return (text, help), options
 
 
@@ -231,7 +231,6 @@ def _set_category_opt(caller, raw_string, category, value, **kwargs):
     # go back to the base node for the categories choice to pick another
     return "menunode_categories"
 
-
 #########################################################
 #                  Multiple Choice
 #########################################################
@@ -299,6 +298,18 @@ def _set_multichoice(caller, raw_string, selected=[], **kwargs):
 
     # pass the list back so we don't need to retrieve it again
     return ("menunode_multi_choice", {"selected": selected})
+
+
+#########################################################
+#                  Simple List Options
+#########################################################
+
+# If you just want a straightforward list of options, without any of the
+# back-and-forth navigation or modifying of option text, evennia has an 
+# easy to use decorator available: `@list_node`
+
+# For an example of how to use it, check out the documentation for 
+# evennia.utils.evmenu - there's lots of other useful EvMenu tools too!
 
 
 #########################################################
@@ -381,47 +392,69 @@ def menunode_choose_name(caller, raw_string, **kwargs):
 
     # another decision, so save the resume point
     char.db.chargen_step = "menunode_choose_name"
-    
-    text = dedent("""\
+
+    # check if an error message was passed to the node. if so, you'll want to include it
+    # into your "name prompt" at the end of the node text.
+    if error := kwargs.get("error"):
+      prompt_text = f"{error}. Enter a different name."
+    else:
+      # there was no error, so just ask them to enter a name.
+      prompt_text = "Enter a name here to check if it's available."
+
+    # this will print every time the player is prompted to choose a name,
+    # including the prompt text defined above
+    text = dedent(f"""\
         |wChoosing a Name|n
         
         Especially for roleplaying-centric games, being able to choose your
         character's name after deciding everything else, instead of before,
         is really useful.
         
-        Enter a name here to check if it's available.
+        {prompt_text}
         """)
+
     help = "You'll have a chance to change your mind before confirming, even if the name is free."
     # since this is a free-text field, we just have the one
-    options = [ { "key": "_default", "goto": "menunode_check_charname" } ]
+    options = { "key": "_default", "goto": "_check_charname" }
     return (text, help), options
 
-def menunode_check_charname(caller, raw_string, **kwargs):
+def _check_charname(caller, raw_string, **kwargs):
     """Check and confirm name choice"""
     
     # strip any extraneous whitespace from the raw text
     # if you want to do any other validation on the name, e.g. no punctuation allowed, this is the place!
     charname = raw_string.strip()
 
+    # aside from validation, the built-in normalization function from the caller's Account does
+    # some useful cleanup on the input, just in case they try something sneaky
+    charname = caller.account.normalize_username(charname)
+
     # check to make sure that the name doesn't already exist
     candidates = Character.objects.filter_family(db_key__iexact=charname)
     if len(candidates):
-        # the name is already taken - loop this node with new input to enter another name
-        text = f"|w{charname}|n is unavailable.\n\nEnter a different name."
-        options = [ { "key": "_default", "goto": "menunode_check_charname" } ]
-        return text, options
+        # the name is already taken - report back with the error
+        return ("menunode_choose_name", {"error": f"|w{charname}|n is unavailable.\n\nEnter a different name."})
     else:
         # it's free! set the character's key to the name to reserve it
         caller.new_char.key = charname
-        text = f"|w{charname}|n is available! Confirm?"
-        # let players change their mind and go back to the name choice, if they want
-        options = [
-                { "key": ("Yes", "y"), "goto": "menunode_end" },
-                { "key": ("No", "n"), "goto": "menunode_choose_name" },
-            ]
-        return text, options
+        # continue on to the confirmation node
+        return "menunode_confirm_name"
 
-    
+def menunode_confirm_name(caller, raw_string, **kwargs):
+    """Confirm the name choice"""
+    char = caller.new_char
+
+    # since we reserved the name by assigning it, you can reference the character key
+    # if you have any extra validation or normalization that changed the player's input
+    # this also serves to show the player exactly what name they'll get
+    text = f"|w{char.key}|n is available! Confirm?"
+    # let players change their mind and go back to the name choice, if they want
+    options = [
+            { "key": ("Yes", "y"), "goto": "menunode_end" },
+            { "key": ("No", "n"), "goto": "menunode_choose_name" },
+        ]
+    return text, options
+
 
 #########################################################
 #                     The End

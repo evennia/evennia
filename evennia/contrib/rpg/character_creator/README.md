@@ -8,8 +8,8 @@ This contrib is designed to be used in MULTISESSION_MODE = 2 or higher, where ch
 In your game folder `commands/default_cmdsets.py`, import and add `ContribCmdCharCreate` to your `AccountCmdSet`.
 
 Example:
-```py
-from evennia.contrib.base_systems.character_creator.character_creator import ContribCmdCharCreate
+```python
+from evennia.contrib.rpg.character_creator.character_creator import ContribCmdCharCreate
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
     
@@ -23,18 +23,21 @@ In your game folder `typeclasses/accounts.py`, import and inherit from `ContribC
 (Alternatively, you can copy the `at_look` method directly into your own class.)
 
 Example:
-```py
-from evennia.contrib.base_systems.character_creator.character_creator import ContribChargenAccount
+```python
+from evennia.contrib.rpg.character_creator.character_creator import ContribChargenAccount
 
 class Account(ContribChargenAccount):
     # your Account class code
 ```
 
-Lastly, in your `settings.py` file, define `CHARGEN_MENU` to your character creation menu module's location.
+By default, the new `charcreate` command will reference the example menu provided by the contrib, so you can test it
+out before building your own menu. You can reference [the example menu here]() for ideas on how to build your own.
 
-Example:
-```py
-CHARGEN_MENU = "evennia.contrib.base_systems.character_creator.example_menu"
+Once you have your own menu, just add it to your settings to use it. e.g. if your menu is in mygame/word/chargen_menu.py,
+you'd add the following to your settings file:
+
+```python
+CHARGEN_MENU = "world.chargen_menu"
 ```
 
 ## Usage
@@ -75,7 +78,7 @@ The contrib overrides the character creation command - `charcreate` - to use a c
 ### Changes to `Account.at_look`
 
 The contrib version works mostly the same as core evennia, but adds an additional check to recognize an in-progress character. If you've modified your own `at_look` hook, it's an easy addition to make: just add this section to the playable character list loop.
-```py
+```python
     for char in characters:
         # contrib code starts here
         if char.db.chargen_step:
