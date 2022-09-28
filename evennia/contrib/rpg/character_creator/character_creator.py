@@ -1,9 +1,6 @@
 """
 Character Creator contrib, by InspectorCaracal
 
-This contrib is designed to be used in MULTISESSION_MODE = 2 or higher,
-where characters are not automatically created to match the account.
-
 # Features
 
 The primary feature of this contrib is defining the name and attributes
@@ -29,9 +26,9 @@ from evennia.utils.evmenu import EvMenu
 
 _CHARACTER_TYPECLASS = settings.BASE_CHARACTER_TYPECLASS
 try:
-	_CHARGEN_MENU = settings.CHARGEN_MENU
+    _CHARGEN_MENU = settings.CHARGEN_MENU
 except AttributeError:
-	_CHARGEN_MENU = "evennia.contrib.rpg.character_creator.example_menu"
+    _CHARGEN_MENU = "evennia.contrib.rpg.character_creator.example_menu"
 
 class ContribCmdCharCreate(MuxAccountCommand):
     """
@@ -60,7 +57,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
             new_character = in_progress[0]
         else:
             # we're making a new character
-            charmax = settings.MAX_NR_CHARACTERS if settings.MULTISESSION_MODE > 1 else 1
+            charmax = settings.MAX_NR_CHARACTERS
             
             if not account.is_superuser and (
                 account.db._playable_characters and len(account.db._playable_characters) >= charmax

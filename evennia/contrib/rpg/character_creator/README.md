@@ -1,8 +1,6 @@
 # Character Creator contrib
 by InspectorCaracal
 
-This contrib is designed to be used in MULTISESSION_MODE = 2 or higher, where characters are not automatically created to match the account. To use this with lower modes, you'll need to implement your own solution for preventing the built-in automatic character creation.
-
 ## Installation
 
 In your game folder `commands/default_cmdsets.py`, import and add `ContribCmdCharCreate` to your `AccountCmdSet`.
@@ -29,6 +27,14 @@ from evennia.contrib.rpg.character_creator.character_creator import ContribCharg
 class Account(ContribChargenAccount):
     # your Account class code
 ```
+
+In your settings file `server/conf/settings.py`, add the following settings:
+```python
+AUTO_CREATE_CHARACTER_WITH_ACCOUNT = False
+AUTO_PUPPET_ON_LOGIN = False
+```
+
+(If you want to allow players to create more than one character, you can customize that with the setting `MAX_NR_CHARACTERS`.)
 
 By default, the new `charcreate` command will reference the example menu provided by the contrib, so you can test it
 out before building your own menu. You can reference [the example menu here](/evennia/contrib/rpg/character_creator/example_menu.py) for ideas on how to build your own.
