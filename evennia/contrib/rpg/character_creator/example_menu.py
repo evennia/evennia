@@ -412,7 +412,7 @@ def menunode_choose_name(caller, raw_string, **kwargs):
 
     help = "You'll have a chance to change your mind before confirming, even if the name is free."
     # since this is a free-text field, we just have the one
-    options = { "key": "_default", "goto": "_check_charname" }
+    options = { "key": "_default", "goto": _check_charname }
     return (text, help), options
 
 def _check_charname(caller, raw_string, **kwargs):
