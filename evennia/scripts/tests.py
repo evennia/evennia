@@ -16,6 +16,7 @@ class TestScript(BaseEvenniaTest):
             self.assertTrue(obj, errors)
             self.assertFalse(errors, errors)
             mockinit.assert_called()
+            self.assertTrue(False)
 
 
 class TestScriptDB(TestCase):
