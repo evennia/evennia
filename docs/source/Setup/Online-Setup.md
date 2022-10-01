@@ -85,6 +85,10 @@ WEBSOCKET_CLIENT_PORT = 4002
 WEBSERVER_PORTS = [(4001, 4005)]
 AMP_PORT = 4006
 
+# This needs to be set to your website address for django or you'll receive a
+# CSRF error when trying to log on to the web portal
+CSRF_TRUSTED_ORIGINS = ['https://mymudgame.com']
+
 # Optional - security measures limiting interface access
 # (don't set these before you know things work without them)
 TELNET_INTERFACES = ['203.0.113.0']
