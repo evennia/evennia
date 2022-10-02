@@ -112,10 +112,7 @@ class CharacterViewSet(ObjectDBViewSet):
 
     """
 
-    queryset = DefaultCharacter.objects.typeclass_search(
-        DefaultCharacter.path, include_children=True
-    )
-    list_serializer_class = serializers.ObjectListSerializer
+    queryset = DefaultCharacter.objects.all_family()
 
 
 class RoomViewSet(ObjectDBViewSet):
@@ -124,8 +121,7 @@ class RoomViewSet(ObjectDBViewSet):
 
     """
 
-    queryset = DefaultRoom.objects.typeclass_search(DefaultRoom.path, include_children=True)
-    list_serializer_class = serializers.ObjectListSerializer
+    queryset = DefaultRoom.objects.all_family()
 
 
 class ExitViewSet(ObjectDBViewSet):
@@ -135,8 +131,7 @@ class ExitViewSet(ObjectDBViewSet):
 
     """
 
-    queryset = DefaultExit.objects.typeclass_search(DefaultExit.path, include_children=True)
-    list_serializer_class = serializers.ObjectListSerializer
+    queryset = DefaultExit.objects.all_family()
 
 
 class AccountDBViewSet(TypeclassViewSetMixin, ModelViewSet):
