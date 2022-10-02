@@ -58,21 +58,21 @@ the server to activate i18n.
 
 ```{important}
 
-    Even for a 'fully translated' language you will still see English text
-    in many places when you start Evennia. This is because we expect you (the
-    developer) to know English (you are reading this manual after all). So we
-    translate *hard-coded strings that the end player may see* - things you
-    can't easily change from your mygame/ folder. Outputs from Commands and
-    Typeclasses are generally *not* translated, nor are console/log outputs.
+Even for a 'fully translated' language you will still see English text
+in many places when you start Evennia. This is because we expect you (the
+developer) to know English (you are reading this manual after all). So we
+translate *hard-coded strings that the end player may see* - things you
+can't easily change from your mygame/ folder. Outputs from Commands and
+Typeclasses are generally *not* translated, nor are console/log outputs.
 
 ```
 
 ```{sidebar} Windows users
 
-    If you get errors concerning `gettext` or `xgettext` on Windows,
-    see the `Django documentation <https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows>`_
-    A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
-    available on `Github <https://github.com/mlocati/gettext-iconv-windows>`_
+If you get errors concerning `gettext` or `xgettext` on Windows,
+see the [Django documentation](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows).
+A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
+available on Github as [gettext-iconv-windows](https://github.com/mlocati/gettext-iconv-windows).
 
 ```
 
@@ -150,10 +150,9 @@ sentence delimiter (if that makes sense in your language).
 
 Finally, try to get a feel for who a string is for. If a special technical term
 is used it may be more confusing than helpful to translate it, even if it's
-outside of a `{...}` tag. Even though the result is a mix of your language and
-English, clarity is more important. Many languages may also use the English term
-normally and reaching for a translation may make the result sound awkward
-instead.
+outside of a `{...}` tag. A mix of English and your language may be clearer
+than you forcing some ad-hoc translation for a term everyone usually reads in
+English anyway.
 
     Original: "\nError loading cmdset: No cmdset class '{classname}' in '{path}'.
                \n(Traceback was logged {timestamp})"

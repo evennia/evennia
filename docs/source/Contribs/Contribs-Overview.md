@@ -363,6 +363,7 @@ contribs related to rooms, exits and map building._
 :maxdepth: 1
 
 Contrib-Extended-Room.md
+Contrib-Ingame-Map-Display.md
 Contrib-Mapbuilder.md
 Contrib-Simpledoor.md
 Contrib-Slow-Exit.md
@@ -381,6 +382,19 @@ in the room (without having to create a new in-game object for each). The room i
 supported by new `look` and `desc` commands.
 
 [Read the documentation](./Contrib-Extended-Room.md) - [Browse the Code](evennia.contrib.grid.extended_room)
+
+
+
+### Contrib: `ingame_map_display`
+
+_Contribution - helpme 2022_
+
+This adds an ascii `map` to a given room which can be viewed with the `map` command.
+You can easily alter it to add special characters, room colors etc. The map shown is
+dynamically generated on use, and supports all compass directions and up/down. Other
+directions are ignored.
+
+[Read the documentation](./Contrib-Ingame-Map-Display.md) - [Browse the Code](evennia.contrib.grid.ingame_map_display)
 
 
 
@@ -459,6 +473,7 @@ and rule implementation like character traits, dice rolling and emoting._
 :maxdepth: 1
 
 Contrib-Buffs.md
+Contrib-Character-Creator.md
 Contrib-Dice.md
 Contrib-Health-Bar.md
 Contrib-RPSystem.md
@@ -474,6 +489,16 @@ A buff is a timed object, attached to a game entity. It is capable of modifying 
 It is a common design pattern in RPGs, particularly action games.
 
 [Read the documentation](./Contrib-Buffs.md) - [Browse the Code](evennia.contrib.rpg.buffs)
+
+
+
+### Contrib: `character_creator`
+
+_Commands for managing and initiating an in-game character-creation menu._
+
+Contribution by InspectorCaracal, 2022
+
+[Read the documentation](./Contrib-Character-Creator.md) - [Browse the Code](evennia.contrib.rpg.character_creator)
 
 
 
