@@ -473,6 +473,7 @@ and rule implementation like character traits, dice rolling and emoting._
 :maxdepth: 1
 
 Contrib-Buffs.md
+Contrib-Character-Creator.md
 Contrib-Dice.md
 Contrib-Health-Bar.md
 Contrib-RPSystem.md
@@ -488,6 +489,16 @@ A buff is a timed object, attached to a game entity. It is capable of modifying 
 It is a common design pattern in RPGs, particularly action games.
 
 [Read the documentation](./Contrib-Buffs.md) - [Browse the Code](evennia.contrib.rpg.buffs)
+
+
+
+### Contrib: `character_creator`
+
+_Commands for managing and initiating an in-game character-creation menu._
+
+Contribution by InspectorCaracal, 2022
+
+[Read the documentation](./Contrib-Character-Creator.md) - [Browse the Code](evennia.contrib.rpg.character_creator)
 
 
 

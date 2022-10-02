@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Character Creator contrib &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dice roller" href="Contrib-Dice.html" />
+    <link rel="prev" title="Buffs" href="Contrib-Buffs.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Dice.html" title="Dice roller"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Buffs.html" title="Buffs"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Character Creator contrib</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="character-creator-contrib">
+<h1>Character Creator contrib<a class="headerlink" href="#character-creator-contrib" title="Permalink to this headline">¶</a></h1>
+<p>Commands for managing and initiating an in-game character-creation menu.</p>
+<p>Contribution by InspectorCaracal, 2022</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>In your game folder <code class="docutils literal notranslate"><span class="pre">commands/default_cmdsets.py</span></code>, import and add
+<code class="docutils literal notranslate"><span class="pre">ContribCmdCharCreate</span></code> to your <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.character_creator.character_creator</span> <span class="kn">import</span> <span class="n">ContribCmdCharCreate</span>
+
+<span class="k">class</span> <span class="nc">AccountCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">AccountCmdSet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ContribCmdCharCreate</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In your game folder <code class="docutils literal notranslate"><span class="pre">typeclasses/accounts.py</span></code>, import and inherit from <code class="docutils literal notranslate"><span class="pre">ContribChargenAccount</span></code>
+on your Account class.</p>
+<p>(Alternatively, you can copy the <code class="docutils literal notranslate"><span class="pre">at_look</span></code> method directly into your own class.)</p>
+<section id="example">
+<h3>Example:<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.contrib.rpg.character_creator.character_creator</span> <span class="kn">import</span> <span class="n">ContribChargenAccount</span>
+
+<span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">ContribChargenAccount</span><span class="p">):</span>
+    <span class="c1"># your Account class code</span>
+</pre></div>
+</div>
+<p>In your settings file <code class="docutils literal notranslate"><span class="pre">server/conf/settings.py</span></code>, add the following settings:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">AUTO_PUPPET_ON_LOGIN</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>(If you want to allow players to create more than one character, you can
+customize that with the setting <code class="docutils literal notranslate"><span class="pre">MAX_NR_CHARACTERS</span></code>.)</p>
+<p>By default, the new <code class="docutils literal notranslate"><span class="pre">charcreate</span></code> command will reference the example menu
+provided by the contrib, so you can test it out before building your own menu.
+You can reference
+<a class="reference external" href="https://github.com/evennia/evennia/blob/develop/evennia/contrib/rpg/character_creator/example_menu.py">the example menu here</a> for
+ideas on how to build your own.</p>
+<p>Once you have your own menu, just add it to your settings to use it. e.g. if your menu is in
+<code class="docutils literal notranslate"><span class="pre">mygame/word/chargen_menu.py</span></code>, you’d add the following to your settings file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CHARGEN_MENU</span> <span class="o">=</span> <span class="s2">&quot;world.chargen_menu&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<section id="the-evmenu">
+<h3>The EvMenu<a class="headerlink" href="#the-evmenu" title="Permalink to this headline">¶</a></h3>
+<p>In order to use the contrib, you will need to create your own chargen EvMenu.
+The included <code class="docutils literal notranslate"><span class="pre">example_menu.py</span></code> gives a number of useful menu node techniques
+with basic attribute examples for you to reference. It can be run as-is as a
+tutorial for yourself/your devs, or used as base for your own menu.</p>
+<p>The example menu includes code, tips, and instructions for the following types
+of decision nodes:</p>
+<section id="informational-pages">
+<h4>Informational Pages<a class="headerlink" href="#informational-pages" title="Permalink to this headline">¶</a></h4>
+<p>A small set of nodes that let you page through information on different choices before committing to one.</p>
+</section>
+<section id="option-categories">
+<h4>Option Categories<a class="headerlink" href="#option-categories" title="Permalink to this headline">¶</a></h4>
+<p>A pair of nodes which let you divide an arbitrary number of options into separate categories.</p>
+<p>The base node has a list of categories as the options, and the child node displays the actual character choices.</p>
+</section>
+<section id="multiple-choice">
+<h4>Multiple Choice<a class="headerlink" href="#multiple-choice" title="Permalink to this headline">¶</a></h4>
+<p>Allows players to select and deselect options from the list in order to choose more than one.</p>
+</section>
+<section id="starting-objects">
+<h4>Starting Objects<a class="headerlink" href="#starting-objects" title="Permalink to this headline">¶</a></h4>
+<p>Allows players to choose from a selection of starting objects, which are then created on chargen completion.</p>
+</section>
+<section id="choosing-a-name">
+<h4>Choosing a Name<a class="headerlink" href="#choosing-a-name" title="Permalink to this headline">¶</a></h4>
+<p>The contrib assumes the player will choose their name during character creation,
+so the necessary code for doing so is of course included!</p>
+</section>
+</section>
+<section id="charcreate-command">
+<h3><code class="docutils literal notranslate"><span class="pre">charcreate</span></code> command<a class="headerlink" href="#charcreate-command" title="Permalink to this headline">¶</a></h3>
+<p>The contrib overrides the character creation command - <code class="docutils literal notranslate"><span class="pre">charcreate</span></code> - to use a
+character creator menu, as well as supporting exiting/resuming the process. In
+addition, unlike the core command, it’s designed for the character name to be
+chosen later on via the menu, so it won’t parse any arguments passed to it.</p>
+</section>
+<section id="changes-to-account-at-look">
+<h3>Changes to <code class="docutils literal notranslate"><span class="pre">Account.at_look</span></code><a class="headerlink" href="#changes-to-account-at-look" title="Permalink to this headline">¶</a></h3>
+<p>The contrib version works mostly the same as core evennia, but adds an
+additional check to recognize an in-progress character. If you’ve modified your
+own <code class="docutils literal notranslate"><span class="pre">at_look</span></code> hook, it’s an easy addition to make: just add this section to the
+playable character list loop.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+        <span class="c1"># contrib code starts here</span>
+        <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">chargen_step</span><span class="p">:</span>
+            <span class="c1"># currently in-progress character; don&#39;t display placeholder names</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> - |Yin progress|n (|wcharcreate|n to continue)&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="c1"># the rest of your code continues here</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/rpg/character_creator/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<p><h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Character Creator contrib</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#example">Example:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#the-evmenu">The EvMenu</a><ul>
+<li><a class="reference internal" href="#informational-pages">Informational Pages</a></li>
+<li><a class="reference internal" href="#option-categories">Option Categories</a></li>
+<li><a class="reference internal" href="#multiple-choice">Multiple Choice</a></li>
+<li><a class="reference internal" href="#starting-objects">Starting Objects</a></li>
+<li><a class="reference internal" href="#choosing-a-name">Choosing a Name</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#charcreate-command"><code class="docutils literal notranslate"><span class="pre">charcreate</span></code> command</a></li>
+<li><a class="reference internal" href="#changes-to-account-at-look">Changes to <code class="docutils literal notranslate"><span class="pre">Account.at_look</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Buffs.html"
+                        title="previous chapter">Buffs</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Dice.html"
+                        title="next chapter">Dice roller</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Character-Creator.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Character-Creator.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Dice.html" title="Dice roller"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Buffs.html" title="Buffs"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Character Creator contrib</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

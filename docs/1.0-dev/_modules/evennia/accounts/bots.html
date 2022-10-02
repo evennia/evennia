@@ -47,12 +47,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">time</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts.accounts</span> <span class="kn">import</span> <span class="n">DefaultAccount</span>
 <span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
 
 <span class="n">_IDLE_TIMEOUT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDLE_TIMEOUT</span>
 
@@ -580,9 +580,8 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">from_obj</span> <span class="ow">or</span> <span class="n">from_obj</span> <span class="o">!=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]:</span>
                 <span class="c1"># send outputfunc channel(msg, chan, sender)</span>
 
-                <span class="c1"># TODO we should refactor channel formatting to operate on the</span>
-                <span class="c1"># account/object level instead. For now, remove the channel/name</span>
-                <span class="c1"># prefix since we pass that explicitly anyway</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="k">else</span> <span class="n">text</span>
+
                 <span class="n">prefix</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
