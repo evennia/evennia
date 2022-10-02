@@ -207,7 +207,7 @@ class GlobalScriptContainer(Container):
                     typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
                     self.typeclass_storage[key] = class_from_module(typeclass)
                 except Exception:
-                    logger.log_err(
+                    logger.log_trace(
                         f"GlobalScriptContainer could not start import global script {key}. "
                         "It will be removed (skipped)."
                     )
