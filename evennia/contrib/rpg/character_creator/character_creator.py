@@ -15,10 +15,11 @@ and examples, including how to allow players to choose and confirm
 character names from within the menu.
 
 """
-from random import choices
 import string
+from random import choices
 
 from django.conf import settings
+from evennia import DefaultAccount
 from evennia.commands.default.muxcommand import MuxAccountCommand
 from evennia.objects.models import ObjectDB
 from evennia.utils import create, search
@@ -30,16 +31,18 @@ try:
 except AttributeError:
     _CHARGEN_MENU = "evennia.contrib.rpg.character_creator.example_menu"
 
+
 class ContribCmdCharCreate(MuxAccountCommand):
     """
     create a new character
 
     Begin creating a new character, or resume character creation for
     an existing in-progress character.
-    
+
     You can stop character creation at any time and resume where
     you left off later.
     """
+
     key = "charcreate"
     locks = "cmd:pperm(Player) and is_ooc()"
     help_category = "General"
@@ -48,17 +51,17 @@ class ContribCmdCharCreate(MuxAccountCommand):
         "create the new character"
         account = self.account
         session = self.session
-        
+
         # only one character should be in progress at a time, so we check for WIPs first
         in_progress = [chara for chara in account.db._playable_characters if chara.db.chargen_step]
-        
+
         if len(in_progress):
             # we're continuing chargen for a WIP character
             new_character = in_progress[0]
         else:
             # we're making a new character
             charmax = settings.MAX_NR_CHARACTERS
-            
+
             if not account.is_superuser and (
                 account.db._playable_characters and len(account.db._playable_characters) >= charmax
             ):
@@ -67,18 +70,22 @@ class ContribCmdCharCreate(MuxAccountCommand):
                 return
 
             # create the new character object, with default settings
-            start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
+            # start_location = ObjectDB.objects.get_id(settings.START_LOCATION)
             default_home = ObjectDB.objects.get_id(settings.DEFAULT_HOME)
             permissions = settings.PERMISSION_ACCOUNT_DEFAULT
             # generate a randomized key so the player can choose a character name later
-            key = ''.join(choices(string.ascii_letters + string.digits, k=10))
-            new_character = create.create_object(_CHARACTER_TYPECLASS, key=key,
-                               location=None,
-                               home=default_home,
-                               permissions=permissions)
+            key = "".join(choices(string.ascii_letters + string.digits, k=10))
+            new_character = create.create_object(
+                _CHARACTER_TYPECLASS,
+                key=key,
+                location=None,
+                home=default_home,
+                permissions=permissions,
+            )
             # only allow creator (and developers) to puppet this char
             new_character.locks.add(
-                f"puppet:pid({account.id}) or perm(Developer) or pperm(Developer);delete:id({account.id}) or perm(Admin)"
+                f"puppet:pid({account.id}) or perm(Developer) or"
+                f" pperm(Developer);delete:id({account.id}) or perm(Admin)"
             )
             # initalize the new character to the beginning of the chargen menu
             new_character.db.chargen_step = "menunode_welcome"
@@ -97,14 +104,7 @@ class ContribCmdCharCreate(MuxAccountCommand):
                 # execute the ic command to start puppeting the character
                 account.execute_cmd("ic {}".format(char.key))
 
-        EvMenu(session,
-               _CHARGEN_MENU,
-               startnode=startnode,
-               cmd_on_exit=finish_char_callback)
-
-
-from django.conf import settings
-from evennia import DefaultAccount
+        EvMenu(session, _CHARGEN_MENU, startnode=startnode, cmd_on_exit=finish_char_callback)
 
 
 class ContribChargenAccount(DefaultAccount):
@@ -147,7 +147,9 @@ class ContribChargenAccount(DefaultAccount):
             csessid = sess.sessid
             addr = "{protocol} ({address})".format(
                 protocol=sess.protocol_key,
-                address=isinstance(sess.address, tuple) and str(sess.address[0]) or str(sess.address),
+                address=isinstance(sess.address, tuple)
+                and str(sess.address[0])
+                or str(sess.address),
             )
             if session.sessid == csessid:
                 result.append(f"\n |w* {isess+1}|n {addr}")
@@ -163,19 +165,13 @@ class ContribChargenAccount(DefaultAccount):
             result.append("\n |wcharcreate|n - create a new character")
 
         if characters:
-            result.append(
-                "\n |wchardelete <name>|n - delete a character (cannot be undone!)"
-            )
+            result.append("\n |wchardelete <name>|n - delete a character (cannot be undone!)")
         plural = "" if len(characters) == 1 else "s"
         result.append("\n |wic <character>|n - enter the game (|wooc|n to return here)")
         if is_su:
-            result.append(
-                f"\n\nAvailable character{plural} ({len(characters)}/unlimited):"
-            )
+            result.append(f"\n\nAvailable character{plural} ({len(characters)}/unlimited):")
         else:
-            result.append(
-                f"\n\nAvailable character{plural} ({len(characters)}/{charmax}):"
-            )
+            result.append(f"\n\nAvailable character{plural} ({len(characters)}/{charmax}):")
 
         for char in characters:
             if char.db.chargen_step:
@@ -189,11 +185,13 @@ class ContribChargenAccount(DefaultAccount):
                     sid = sess in sessions and sessions.index(sess) + 1
                     if sess and sid:
                         result.append(
-                            f"\n - |G{char.key}|n [{', '.join(char.permissions.all())}] (played by you in session {sid})"
+                            f"\n - |G{char.key}|n [{', '.join(char.permissions.all())}] (played by"
+                            f" you in session {sid})"
                         )
                     else:
                         result.append(
-                            f"\n - |R{char.key}|n [{', '.join(char.permissions.all())}] (played by someone else)"
+                            f"\n - |R{char.key}|n [{', '.join(char.permissions.all())}] (played by"
+                            " someone else)"
                         )
             else:
                 # character is available
