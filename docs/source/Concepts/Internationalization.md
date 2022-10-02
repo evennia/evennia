@@ -8,7 +8,7 @@ to edit the source code.
 Language-translations are done by volunteers, so support can vary a lot
 depending on when a given language was last updated. Below are all languages
 (besides English) with some level of support. Generally, any language not
-updated after May 2021 will be missing some translations.
+updated after Sept 2022 will be missing some translations.
 
 ```{eval-rst}
 
@@ -31,7 +31,7 @@ updated after May 2021 will be missing some translations.
 +---------------+----------------------+--------------+
 | ru            | Russian              | Apr 2020     |
 +---------------+----------------------+--------------+
-| sv            | Swedish              | June 2021    |
+| sv            | Swedish              | Sept 2022    |
 +---------------+----------------------+--------------+
 | zh            | Chinese (simplified) | May 2019     |
 +---------------+----------------------+--------------+
