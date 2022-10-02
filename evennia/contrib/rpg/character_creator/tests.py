@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.test import override_settings
 from evennia import DefaultCharacter
+from evennia.commands.default import account
 from evennia.utils import inherits_from
 from evennia.utils.test_resources import BaseEvenniaCommandTest
-from evennia.commands.default import account
+
 from . import character_creator
+
 
 class TestAccount(BaseEvenniaCommandTest):
     def test_ooc_look(self):
@@ -33,4 +35,4 @@ class TestAccount(BaseEvenniaCommandTest):
         )
         menu = self.session.ndb._menutree
         self.assertNotEqual(menu, None)
-        self.assertTrue(inherits_from(self.session.new_char, DefaultCharacter) )
+        self.assertTrue(inherits_from(self.session.new_char, DefaultCharacter))

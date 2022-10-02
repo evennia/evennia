@@ -24,7 +24,7 @@ allows the player to choose one.
 
 Allows players to select and deselect options from the list in order to choose
 more than one. The example has a requirement of choosing exactly 3 options,
-but you can change it to a maximum or minimum number of required options - 
+but you can change it to a maximum or minimum number of required options -
 or remove the requirement check entirely.
 
 ## Simple List Options
@@ -58,32 +58,34 @@ the decisions players made earlier. Initializing skills, creating starting gear,
 and other one-time method calls and set-up should be put here.
 """
 
-from evennia import create_object
+import inflect
+from evennia.prototypes.spawner import spawn
 from evennia.utils import dedent
 from evennia.utils.evtable import EvTable
-from evennia.prototypes.spawner import spawn
+from typeclasses.characters import Character
 
-import inflect
 _INFLECT = inflect.engine()
 
-from typeclasses.characters import Character
 
 #########################################################
 #                   Welcome Page
 #########################################################
 
+
 def menunode_welcome(caller):
     """Starting page."""
-    text = dedent("""\
+    text = dedent(
+        """\
         |wWelcome to Character Creation!|n
 
         This is the starting node for all brand new characters. It's a good place to
         remind players that they can exit the character creator and resume later,
         especially if you're going to have a really long chargen process.
-        
+
         A brief overview of the game could be a good idea here, too, or a link to your
         game wiki if you have one.
-    """)
+    """
+    )
     help = "You can explain the commands for exiting and resuming more specifically here."
     options = {"desc": "Let's begin!", "goto": "menunode_info_base"}
     return (text, help), options
@@ -98,44 +100,57 @@ def menunode_welcome(caller):
 # e.g. wherever you have the classes actually defined, so later updates only happen in one place.
 _CLASS_INFO_DICT = {
     # The keys here are the different options you can choose, and the values are the info pages
-    "warrior": dedent("""\
+    "warrior": dedent(
+        """\
         Most warriors specialize in melee weapons, although ranged combat
         is not unheard of.
 
         Warriors like to compete by beating each other up for fun.
-        """),
-    "mage": dedent("""\
+        """
+    ),
+    "mage": dedent(
+        """\
         Mages prefer less combative lines of work, such as showmanship or
         selling enchanted charms. Those who choose to be a battle mage are
         highly sought after by adventuring parties.
-            
+
         Mage schools, being led by the most academic-minded of mages, are
         notorious for intellectual snobbery.
-        """),
+        """
+    ),
 }
+
 
 def menunode_info_base(caller):
     """Base node for the informational choices."""
     # this is a base node for a decision, so we want to save the character's progress here
     caller.new_char.db.chargen_step = "menunode_info_base"
-    
-    text = dedent("""\
+
+    text = dedent(
+        """\
         |wInformational Pages|n
-        
+
         Sometimes you'll want to let players read more about options before choosing
         one of them. This is especially useful for big choices like race or class.
-    """)
+    """
+    )
     help = "A link to your wiki for more information on classes could be useful here."
     options = []
     # Build your options from your info dict so you don't need to update this to add new options
     for pclass in _CLASS_INFO_DICT.keys():
-        options.append({"desc": f"Learn about the |c{pclass}|n class", "goto": ("menunode_info_class", { "selected_class": pclass })})
+        options.append(
+            {
+                "desc": f"Learn about the |c{pclass}|n class",
+                "goto": ("menunode_info_class", {"selected_class": pclass}),
+            }
+        )
     return (text, help), options
+
 
 # putting your kwarg in the menu declaration helps keep track of what variables the node needs
 def menunode_info_class(caller, raw_string, selected_class=None, **kwargs):
     """Informational overview of a particular class"""
-    
+
     # sometimes weird bugs happen - it's best to check for them rather than let the game break
     if not selected_class:
         # reset back to the previous step
@@ -149,13 +164,23 @@ def menunode_info_class(caller, raw_string, selected_class=None, **kwargs):
     options = []
 
     # set an option for players to choose this class
-    options.append({"desc": f"Become {_INFLECT.an(selected_class)}", "goto": (_set_class, { "selected_class": selected_class })})
+    options.append(
+        {
+            "desc": f"Become {_INFLECT.an(selected_class)}",
+            "goto": (_set_class, {"selected_class": selected_class}),
+        }
+    )
 
     # once again build your options from the same info dict
     for pclass in _CLASS_INFO_DICT.keys():
         # make sure you don't print the currently displayed page as an option
         if pclass != selected_class:
-            options.append({"desc": f"Learn about the |c{pclass}|n class", "goto": ("menunode_info_class", { "selected_class": pclass })})
+            options.append(
+                {
+                    "desc": f"Learn about the |c{pclass}|n class",
+                    "goto": ("menunode_info_class", {"selected_class": pclass}),
+                }
+            )
     return (text, help), options
 
 
@@ -181,35 +206,70 @@ def _set_class(caller, raw_string, selected_class=None, **kwargs):
 # for these subcategory options, we make a dict of categories and option lists
 _APPEARANCE_DICT = {
     # the key is your category; the value is a list of options, in the order you want them to appear
-    "body type": [ "skeletal", "skinny", "slender", "slim", "athletic", "muscular", "broad", "round", "curvy", "stout", "chubby" ],
-    "height": [ "diminutive", "short", "average", "tall", "towering" ],
-    }
+    "body type": [
+        "skeletal",
+        "skinny",
+        "slender",
+        "slim",
+        "athletic",
+        "muscular",
+        "broad",
+        "round",
+        "curvy",
+        "stout",
+        "chubby",
+    ],
+    "height": ["diminutive", "short", "average", "tall", "towering"],
+}
+
 
 def menunode_categories(caller, **kwargs):
     """Base node for categorized options."""
     # this is a new decision step, so save your resume point here
     caller.new_char.db.chargen_step = "menunode_categories"
 
-    text = dedent("""\
+    text = dedent(
+        """\
         |wOption Categories|n
 
         Some character attributes are part of the same mechanic or decision,
         but need to be divided up into sub-categories. Character appearance
         details are an example of where this can be useful.
-        """)
+        """
+    )
 
     help = "Some helpful extra information on what's affected by these choices works well here."
     options = []
 
-    # just like for informational categories, build the options off of a dictionary to make it easier to manage
+    # just like for informational categories, build the options off of a dictionary to make it
+    # easier to manage
     for category in _APPEARANCE_DICT.keys():
-        options.append({"desc": f"Choose your |c{category}|n", "goto": ("menunode_category_options", { "category": category })})
+        options.append(
+            {
+                "desc": f"Choose your |c{category}|n",
+                "goto": ("menunode_category_options", {"category": category}),
+            }
+        )
 
     # since this node goes in and out of sub-nodes, you need an option to proceed to the next step
-    options.append({"key": ("(Next)", "next", "n"), "desc": "Continue to the next step.", "goto": "menunode_multi_choice"})
-    # once past the first decision, it's also a good idea to include a "back to previous step" option
-    options.append({"key": ("(Back)", "back", "b"), "desc": "Go back to the previous step", "goto": "menunode_info_base"})
+    options.append(
+        {
+            "key": ("(Next)", "next", "n"),
+            "desc": "Continue to the next step.",
+            "goto": "menunode_multi_choice",
+        }
+    )
+    # once past the first decision, it's also a good idea to include a "back to previous step"
+    # option
+    options.append(
+        {
+            "key": ("(Back)", "back", "b"),
+            "desc": "Go back to the previous step",
+            "goto": "menunode_info_base",
+        }
+    )
     return (text, help), options
+
 
 def menunode_category_options(caller, raw_string, category=None, **kwargs):
     """Choosing an option within the categories."""
@@ -225,14 +285,23 @@ def menunode_category_options(caller, raw_string, category=None, **kwargs):
     options = []
     # build the list of options from the right category of your dictionary
     for option in _APPEARANCE_DICT[category]:
-        options.append({"desc": option, "goto": (_set_category_opt, { "category": category, "value": option})})
+        options.append(
+            {"desc": option, "goto": (_set_category_opt, {"category": category, "value": option})}
+        )
     # always include a "back" option in case they aren't ready to pick yet
-    options.append({"key": ("(Back)", "back", "b"), "desc": f"Don't change {category}", "goto": "menunode_categories"})
+    options.append(
+        {
+            "key": ("(Back)", "back", "b"),
+            "desc": f"Don't change {category}",
+            "goto": "menunode_categories",
+        }
+    )
     return (text, help), options
+
 
 def _set_category_opt(caller, raw_string, category, value, **kwargs):
     """Set the option for a category"""
-    
+
     # this is where you would put any more complex code involved in setting the option,
     # but we're just doing simple attributes
     caller.new_char.attributes.add(category, value)
@@ -240,18 +309,30 @@ def _set_category_opt(caller, raw_string, category, value, **kwargs):
     # go back to the base node for the categories choice to pick another
     return "menunode_categories"
 
+
 #########################################################
 #                  Multiple Choice
 #########################################################
 
 # it's not as important to make this a separate list, but like all the others,
 # it's easier to read and to update if you do!
-_SKILL_OPTIONS = [ "alchemy", "archery", "blacksmithing", "brawling", "dancing", "fencing", "pottery", "tailoring", "weaving" ]
+_SKILL_OPTIONS = [
+    "alchemy",
+    "archery",
+    "blacksmithing",
+    "brawling",
+    "dancing",
+    "fencing",
+    "pottery",
+    "tailoring",
+    "weaving",
+]
+
 
 def menunode_multi_choice(caller, raw_string, **kwargs):
     """A multiple-choice menu node."""
     char = caller.new_char
-    
+
     # another decision, so save the resume point
     char.db.chargen_step = "menunode_multi_choice"
 
@@ -260,17 +341,22 @@ def menunode_multi_choice(caller, raw_string, **kwargs):
     # this is again just a simple attribute, but you could retrieve this list however
     selected = kwargs.get("selected") or char.attributes.get("skill_list", [])
 
-    text = dedent("""\
+    text = dedent(
+        """\
         |wMultiple Choice|n
 
         Sometimes you want players to be able to pick more than one option -
         for example, starting skills.
-        
+
         You can easily define it as a minimum, maximum, or exact number of
         selected options.
-    """)
+    """
+    )
 
-    help = "This is a good place to specify how many choices are allowed or required. This example requires exactly 3."
+    help = (
+        "This is a good place to specify how many choices are allowed or required. This example"
+        " requires exactly 3."
+    )
 
     options = []
     for option in _SKILL_OPTIONS:
@@ -280,15 +366,31 @@ def menunode_multi_choice(caller, raw_string, **kwargs):
             opt_desc = f"|y{option} (selected)|n"
         else:
             opt_desc = option
-        options.append({"desc": opt_desc, "goto": ( _set_multichoice, {"selected": selected, "option": option})})
+        options.append(
+            {"desc": opt_desc, "goto": (_set_multichoice, {"selected": selected, "option": option})}
+        )
 
     # only display the Next option if the requirements are met!
-    # for this example, you need exactly 3 choices, but you can use an inequality for "no more than X", or "at least X"
+    # for this example, you need exactly 3 choices, but you can use an inequality
+    # for "no more than X", or "at least X"
     if len(selected) == 3:
-        options.append({"key": ("(Next)", "next", "n"), "desc": "Continue to the next step", "goto": "menunode_choose_objects"})
-    options.append({"key": ("(Back)", "back", "b"), "desc": "Go back to the previous step", "goto": "menunode_categories"})
+        options.append(
+            {
+                "key": ("(Next)", "next", "n"),
+                "desc": "Continue to the next step",
+                "goto": "menunode_choose_objects",
+            }
+        )
+    options.append(
+        {
+            "key": ("(Back)", "back", "b"),
+            "desc": "Go back to the previous step",
+            "goto": "menunode_categories",
+        }
+    )
 
     return (text, help), options
+
 
 def _set_multichoice(caller, raw_string, selected=[], **kwargs):
     """saves the current choices to the character"""
@@ -326,9 +428,10 @@ _EXAMPLE_PROTOTYPES = [
     {
         "key": "basic staff",
         "desc": "You could hit things with it, or maybe use it as a spell focus.",
-        "tags": [("staff", "weapon"),("staff", "focus")],
-    }
+        "tags": [("staff", "weapon"), ("staff", "focus")],
+    },
 ]
+
 
 # this method will be run to create the starting objects
 def create_objects(character):
@@ -339,7 +442,7 @@ def create_objects(character):
     proto["location"] = character
     # create the object
     spawn(proto)
-    
+
 
 def menunode_choose_objects(caller, raw_string, **kwargs):
     """Selecting objects to start with"""
@@ -347,34 +450,52 @@ def menunode_choose_objects(caller, raw_string, **kwargs):
 
     # another decision, so save the resume point
     char.db.chargen_step = "menunode_choose_objects"
-    
-    text = dedent("""\
+
+    text = dedent(
+        """\
         |wStarting Objects|n
-        
+
         Whether it's a cosmetic outfit, a starting weapon, or a professional
         tool kit, you probably want to let your players have a choice in
         what objects they start out with.
-        """)
+        """
+    )
 
-    help = "An overview of what the choice affects - whether it's purely aesthetic or mechanical, and whether you can change it later - are good here."
-    
+    help = (
+        "An overview of what the choice affects - whether it's purely aesthetic or mechanical, and"
+        " whether you can change it later - are good here."
+    )
+
     options = []
-    
+
     for proto in _EXAMPLE_PROTOTYPES:
         # use the key as the option description, but pass the whole prototype
-        options.append({"desc": f"Choose {_INFLECT.an(proto['key'])}", "goto": ( _set_object_choice, {"proto": proto})})
+        options.append(
+            {
+                "desc": f"Choose {_INFLECT.an(proto['key'])}",
+                "goto": (_set_object_choice, {"proto": proto}),
+            }
+        )
 
-    options.append({"key": ("(Back)", "back", "b"), "desc": "Go back to the previous step", "goto": "menunode_multi_choice"})
+    options.append(
+        {
+            "key": ("(Back)", "back", "b"),
+            "desc": "Go back to the previous step",
+            "goto": "menunode_multi_choice",
+        }
+    )
 
     return (text, help), options
 
+
 def _set_object_choice(caller, raw_string, proto, **kwargs):
     """Save the selected starting object(s)"""
-    
-    # we DON'T want to actually create the object, yet! that way players can still go back and change their mind
-    # instead, we save what object was chosen - in this case, by saving the prototype dict to the character
+
+    # we DON'T want to actually create the object, yet! that way players can still go back and
+    # change their mind instead, we save what object was chosen - in this case, by saving the
+    # prototype dict to the character
     caller.new_char.db.starter_weapon = proto
-    
+
     # continue to the next step
     return "menunode_choose_name"
 
@@ -382,6 +503,7 @@ def _set_object_choice(caller, raw_string, proto, **kwargs):
 #########################################################
 #                Choosing a Name
 #########################################################
+
 
 def menunode_choose_name(caller, raw_string, **kwargs):
     """Name selection"""
@@ -393,33 +515,37 @@ def menunode_choose_name(caller, raw_string, **kwargs):
     # check if an error message was passed to the node. if so, you'll want to include it
     # into your "name prompt" at the end of the node text.
     if error := kwargs.get("error"):
-      prompt_text = f"{error}. Enter a different name."
+        prompt_text = f"{error}. Enter a different name."
     else:
-      # there was no error, so just ask them to enter a name.
-      prompt_text = "Enter a name here to check if it's available."
+        # there was no error, so just ask them to enter a name.
+        prompt_text = "Enter a name here to check if it's available."
 
     # this will print every time the player is prompted to choose a name,
     # including the prompt text defined above
-    text = dedent(f"""\
+    text = dedent(
+        f"""\
         |wChoosing a Name|n
-        
+
         Especially for roleplaying-centric games, being able to choose your
         character's name after deciding everything else, instead of before,
         is really useful.
-        
+
         {prompt_text}
-        """)
+        """
+    )
 
     help = "You'll have a chance to change your mind before confirming, even if the name is free."
     # since this is a free-text field, we just have the one
-    options = { "key": "_default", "goto": _check_charname }
+    options = {"key": "_default", "goto": _check_charname}
     return (text, help), options
+
 
 def _check_charname(caller, raw_string, **kwargs):
     """Check and confirm name choice"""
-    
+
     # strip any extraneous whitespace from the raw text
-    # if you want to do any other validation on the name, e.g. no punctuation allowed, this is the place!
+    # if you want to do any other validation on the name, e.g. no punctuation allowed, this
+    # is the place!
     charname = raw_string.strip()
 
     # aside from validation, the built-in normalization function from the caller's Account does
@@ -430,12 +556,16 @@ def _check_charname(caller, raw_string, **kwargs):
     candidates = Character.objects.filter_family(db_key__iexact=charname)
     if len(candidates):
         # the name is already taken - report back with the error
-        return ("menunode_choose_name", {"error": f"|w{charname}|n is unavailable.\n\nEnter a different name."})
+        return (
+            "menunode_choose_name",
+            {"error": f"|w{charname}|n is unavailable.\n\nEnter a different name."},
+        )
     else:
         # it's free! set the character's key to the name to reserve it
         caller.new_char.key = charname
         # continue on to the confirmation node
         return "menunode_confirm_name"
+
 
 def menunode_confirm_name(caller, raw_string, **kwargs):
     """Confirm the name choice"""
@@ -447,15 +577,16 @@ def menunode_confirm_name(caller, raw_string, **kwargs):
     text = f"|w{char.key}|n is available! Confirm?"
     # let players change their mind and go back to the name choice, if they want
     options = [
-            { "key": ("Yes", "y"), "goto": "menunode_end" },
-            { "key": ("No", "n"), "goto": "menunode_choose_name" },
-        ]
+        {"key": ("Yes", "y"), "goto": "menunode_end"},
+        {"key": ("No", "n"), "goto": "menunode_choose_name"},
+    ]
     return text, options
 
 
 #########################################################
 #                     The End
 #########################################################
+
 
 def menunode_end(caller, raw_string):
     """End-of-chargen cleanup."""
@@ -465,10 +596,11 @@ def menunode_end(caller, raw_string):
 
     # clear in-progress status
     caller.new_char.attributes.remove("chargen_step")
-    text = dedent("""
+    text = dedent(
+        """
         Congratulations!
 
         You have completed character creation. Enjoy the game!
-    """)
+    """
+    )
     return text, None
-
