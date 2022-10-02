@@ -129,23 +129,19 @@ of the supported languages found in <code class="docutils literal notranslate"><
 the server to activate i18n.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Even for a &#39;fully translated&#39; language you will still see English text
+<p>Even for a ‘fully translated’ language you will still see English text
 in many places when you start Evennia. This is because we expect you (the
 developer) to know English (you are reading this manual after all). So we
-translate *hard-coded strings that the end player may see* - things you
-can&#39;t easily change from your mygame/ folder. Outputs from Commands and
-Typeclasses are generally *not* translated, nor are console/log outputs.
-</pre></div>
-</div>
+translate <em>hard-coded strings that the end player may see</em> - things you
+can’t easily change from your mygame/ folder. Outputs from Commands and
+Typeclasses are generally <em>not</em> translated, nor are console/log outputs.</p>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Windows users</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>If you get errors concerning `gettext` or `xgettext` on Windows,
-see the `Django documentation &lt;https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows&gt;`_
+<p>If you get errors concerning <code class="docutils literal notranslate"><span class="pre">gettext</span></code> or <code class="docutils literal notranslate"><span class="pre">xgettext</span></code> on Windows,
+see the <a class="reference external" href="https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#gettext-on-windows">Django documentation</a>.
 A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
-available on `Github &lt;https://github.com/mlocati/gettext-iconv-windows&gt;`_
-</pre></div>
-</div>
+available on Github as <a class="reference external" href="https://github.com/mlocati/gettext-iconv-windows">gettext-iconv-windows</a>.</p>
 </aside>
 </section>
 <section id="translating-evennia">
@@ -216,10 +212,9 @@ Swedish: &quot;\nMisslyckades med att nå &#39;{path}&#39;).&quot;
 </div>
 <p>Finally, try to get a feel for who a string is for. If a special technical term
 is used it may be more confusing than helpful to translate it, even if it’s
-outside of a <code class="docutils literal notranslate"><span class="pre">{...}</span></code> tag. Even though the result is a mix of your language and
-English, clarity is more important. Many languages may also use the English term
-normally and reaching for a translation may make the result sound awkward
-instead.</p>
+outside of a <code class="docutils literal notranslate"><span class="pre">{...}</span></code> tag. A mix of English and your language may be clearer
+than you forcing some ad-hoc translation for a term everyone usually reads in
+English anyway.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Original: &quot;\nError loading cmdset: No cmdset class &#39;{classname}&#39; in &#39;{path}&#39;.
            \n(Traceback was logged {timestamp})&quot;
 Swedish:  &quot;Fel medan cmdset laddades: Ingen cmdset-klass med namn &#39;{classname}&#39; i {path}.
