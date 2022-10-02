@@ -154,10 +154,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span>
-        <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
-    <span class="n">list_serializer_class</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectListSerializer</span></div>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultCharacter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="RoomViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.RoomViewSet">[docs]</a><span class="k">class</span> <span class="nc">RoomViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
@@ -166,8 +163,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span><span class="n">DefaultRoom</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">list_serializer_class</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectListSerializer</span></div>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultRoom</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ExitViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.ExitViewSet">[docs]</a><span class="k">class</span> <span class="nc">ExitViewSet</span><span class="p">(</span><span class="n">ObjectDBViewSet</span><span class="p">):</span>
@@ -177,8 +173,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">typeclass_search</span><span class="p">(</span><span class="n">DefaultExit</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">list_serializer_class</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectListSerializer</span></div>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">DefaultExit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all_family</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="AccountDBViewSet"><a class="viewcode-back" href="../../../../api/evennia.web.api.views.html#evennia.web.api.views.AccountDBViewSet">[docs]</a><span class="k">class</span> <span class="nc">AccountDBViewSet</span><span class="p">(</span><span class="n">TypeclassViewSetMixin</span><span class="p">,</span> <span class="n">ModelViewSet</span><span class="p">):</span>

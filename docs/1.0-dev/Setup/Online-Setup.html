@@ -133,6 +133,10 @@ continue to assume that our server address is <code class="docutils literal notr
 <span class="n">WEBSERVER_PORTS</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">4001</span><span class="p">,</span> <span class="mi">4005</span><span class="p">)]</span>
 <span class="n">AMP_PORT</span> <span class="o">=</span> <span class="mi">4006</span>
 
+<span class="c1"># This needs to be set to your website address for django or you&#39;ll receive a</span>
+<span class="c1"># CSRF error when trying to log on to the web portal</span>
+<span class="n">CSRF_TRUSTED_ORIGINS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://mymudgame.com&#39;</span><span class="p">]</span>
+
 <span class="c1"># Optional - security measures limiting interface access</span>
 <span class="c1"># (don&#39;t set these before you know things work without them)</span>
 <span class="n">TELNET_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;203.0.113.0&#39;</span><span class="p">]</span>
