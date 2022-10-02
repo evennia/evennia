@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-20 14:48+0000\n"
+"POT-Creation-Date: 2022-10-02 09:27+0000\n"
 "PO-Revision-Date: 2022-03-20 19:55+0100\n"
 "Last-Translator: Christophe Petry <toktoktheeo@outlook.com>\n"
 "Language-Team: \n"
@@ -18,18 +18,24 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: accounts/accounts.py:322
+#: accounts/accounts.py:341
 #, python-brace-format
 msgid "|c{key}|R is already puppeted by another Account."
 msgstr "|c{key}|R est déjà contrôlé par un autre compte."
 
-#: accounts/accounts.py:516
+#: accounts/accounts.py:361
+#, python-brace-format
+msgid ""
+"You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})"
+msgstr ""
+
+#: accounts/accounts.py:552
 msgid "Too many login failures; please try again in a few minutes."
 msgstr ""
 "Trop d'échecs de tentatives de connexion; veuillez réessayer dans quelques "
 "minutes."
 
-#: accounts/accounts.py:529 accounts/accounts.py:790
+#: accounts/accounts.py:565 accounts/accounts.py:829
 msgid ""
 "|rYou have been banned and cannot continue from here.\n"
 "If you feel this ban is in error, please email an admin.|x"
@@ -38,21 +44,21 @@ msgstr ""
 "Si vous pensez que c'est une erreur, veuillez contacter un admin par e-mail.|"
 "x"
 
-#: accounts/accounts.py:541
+#: accounts/accounts.py:577
 msgid "Username and/or password is incorrect."
 msgstr "Nom d'utilisateur et/ou mot de passe incorrect(s)."
 
-#: accounts/accounts.py:548
+#: accounts/accounts.py:584
 msgid "Too many authentication failures."
 msgstr "Trop d'échecs de tentatives de connexion."
 
-#: accounts/accounts.py:761
+#: accounts/accounts.py:800
 msgid ""
 "You are creating too many accounts. Please log into an existing account."
 msgstr ""
 "Vous créez trop de comptes. Veuillez vous connecter à un compte existant."
 
-#: accounts/accounts.py:807
+#: accounts/accounts.py:846
 msgid ""
 "There was an error creating the Account. If this problem persists, contact "
 "an admin."
@@ -60,36 +66,36 @@ msgstr ""
 "Il y a eu une erreur lors de la création du compte. Si le problème persiste "
 "veuillez contacter un admin."
 
-#: accounts/accounts.py:843 accounts/accounts.py:1766
+#: accounts/accounts.py:882 accounts/accounts.py:1798
 msgid "An error occurred. Please e-mail an admin if the problem persists."
 msgstr ""
 "Une erreur s'est produite. Veuillez contacter un admin par e-mail si le "
 "problème persiste."
 
-#: accounts/accounts.py:876
+#: accounts/accounts.py:915
 #, fuzzy
 msgid "Account being deleted."
 msgstr "Suppression du compte."
 
-#: accounts/accounts.py:1431 accounts/accounts.py:1783
+#: accounts/accounts.py:1472 accounts/accounts.py:1816
 #, python-brace-format
 msgid "|G{key} connected|n"
 msgstr "|G{key} s'est connecté(e)|n"
 
-#: accounts/accounts.py:1438 accounts/accounts.py:1445
+#: accounts/accounts.py:1478
 msgid "The Character does not exist."
 msgstr "Ce personnage n'existe pas."
 
-#: accounts/accounts.py:1484
+#: accounts/accounts.py:1517
 #, python-brace-format
 msgid "|R{key} disconnected{reason}|n"
 msgstr "|R{key} s'est déconnecté(e){reason}|n"
 
-#: accounts/accounts.py:1719
+#: accounts/accounts.py:1751
 msgid "Guest accounts are not enabled on this server."
 msgstr "Les comptes visiteurs ne sont pas actifs sur ce serveur."
 
-#: accounts/accounts.py:1729
+#: accounts/accounts.py:1761
 msgid "All guest accounts are in use. Please try again later."
 msgstr ""
 "Tous les comptes visiteurs sont utilisés. Veuillez réessayer plus tard."
@@ -296,7 +302,7 @@ msgstr ""
 msgid "custom {mergetype} on cmdset '{cmdset}'"
 msgstr "{mergetype} personnalisé sur le set de commandes '{cmdset}'"
 
-#: commands/cmdsethandler.py:459
+#: commands/cmdsethandler.py:457
 msgid "Only CmdSets can be added to the cmdsethandler!"
 msgstr "Seuls des sets de commandes peuvent être ajoutés au cmdsethandler !"
 
@@ -342,65 +348,65 @@ msgstr "Verrou: '{lockdef}' comporte des parenthèses non concordantes."
 msgid "Lock: '{lockdef}' has no valid lock functions."
 msgstr "Verrou: '{lockdef}' ne possède pas de fonction de verrouillage valide."
 
-#: objects/objects.py:891
+#: objects/objects.py:855
 #, python-brace-format
 msgid "Couldn't perform move ({err}). Contact an admin."
 msgstr ""
 "Impossible d'effectuer le déplacement ({err}). Veuillez contacter un admin."
 
-#: objects/objects.py:901
+#: objects/objects.py:865
 msgid "The destination doesn't exist."
 msgstr "La destination n'existe pas."
 
-#: objects/objects.py:993
+#: objects/objects.py:977
 #, python-brace-format
 msgid "Could not find default home '(#{dbid})'."
 msgstr "Impossible de trouver le foyer par défaut '(#{dbid})'."
 
-#: objects/objects.py:1007
+#: objects/objects.py:991
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
 msgstr ""
 "Quelque chose a mal tourné ! Vous vous trouvez au milieu de nulle part. "
 "Veuillez contacter un admin."
 
-#: objects/objects.py:1159
+#: objects/objects.py:1144
 #, python-brace-format
 msgid "Your character {key} has been destroyed."
 msgstr "Votre personnage {key} a été détruit."
 
-#: objects/objects.py:1570
+#: objects/objects.py:1852
 #, python-brace-format
 msgid "You now have {name} in your possession."
 msgstr "Vous avez maintenant {name} en votre possession."
 
-#: objects/objects.py:1580
+#: objects/objects.py:1862
 #, python-brace-format
 msgid "{object} arrives to {destination} from {origin}."
 msgstr ""
 
-#: objects/objects.py:1582
+#: objects/objects.py:1864
 #, python-brace-format
 msgid "{object} arrives to {destination}."
 msgstr ""
 
-#: objects/objects.py:2279
+#: objects/objects.py:2529
 msgid "Invalid character name."
 msgstr "Nom de personnage invalide."
 
-#: objects/objects.py:2298
+#: objects/objects.py:2548
 msgid "There are too many characters associated with this account."
 msgstr "Il y a trop de personnages associés à ce compte."
 
-#: objects/objects.py:2324
+#: objects/objects.py:2574
 msgid "This is a character."
 msgstr "C'est un personnage."
 
-#: objects/objects.py:2413
+#: objects/objects.py:2663
 #, python-brace-format
 msgid "|r{obj} has no location and no home is set.|n"
 msgstr "|r{obj} n'a pas de localisation et aucun foyer n'est déterminé.|n"
 
-#: objects/objects.py:2431
+#: objects/objects.py:2681
 #, python-brace-format
 msgid ""
 "\n"
@@ -409,25 +415,25 @@ msgstr ""
 "\n"
 "Vous contrôlez maintenant |c{name}|n.\n"
 
-#: objects/objects.py:2436
+#: objects/objects.py:2686
 #, python-brace-format
 msgid "{name} has entered the game."
 msgstr "{name} est entré(e) dans le jeu."
 
-#: objects/objects.py:2462
+#: objects/objects.py:2712
 #, python-brace-format
 msgid "{name} has left the game."
 msgstr "{name} est sorti(e) du jeu."
 
-#: objects/objects.py:2581
+#: objects/objects.py:2831
 msgid "This is a room."
 msgstr "C'est une pièce."
 
-#: objects/objects.py:2788
+#: objects/objects.py:3038
 msgid "This is an exit."
 msgstr "C'est une sortie."
 
-#: objects/objects.py:2885
+#: objects/objects.py:3135
 msgid "You cannot go there."
 msgstr "Vous ne pouvez pas aller là."
 
@@ -444,7 +450,7 @@ msgid "Prototype requires a prototype_key"
 msgstr "Le prototype requiert  prototype_key"
 
 #: prototypes/prototypes.py:398 prototypes/prototypes.py:467
-#: prototypes/prototypes.py:1085
+#: prototypes/prototypes.py:1087
 #, python-brace-format
 msgid "{protkey} is a read-only prototype (defined as code in {module})."
 msgstr ""
@@ -452,7 +458,7 @@ msgstr ""
 "{module})."
 
 #: prototypes/prototypes.py:400 prototypes/prototypes.py:469
-#: prototypes/prototypes.py:1087
+#: prototypes/prototypes.py:1089
 #, python-brace-format
 msgid "{protkey} is a read-only prototype (passed directly as a dict)."
 msgstr ""
@@ -473,25 +479,25 @@ msgstr ""
 "{caller} a besoin de la permission explicite 'edit' pour supprimer le "
 "prototype {prototype_key}."
 
-#: prototypes/prototypes.py:604
+#: prototypes/prototypes.py:606
 #, python-brace-format
 msgid "Found {num} matching prototypes among {module_prototypes}."
 msgstr "Trouvé {num} prototypes correspondants parmi {module_prototypes}."
 
-#: prototypes/prototypes.py:764
+#: prototypes/prototypes.py:766
 msgid "No prototypes found."
 msgstr "Aucun prototype trouvé."
 
-#: prototypes/prototypes.py:815
+#: prototypes/prototypes.py:817
 msgid "Prototype lacks a 'prototype_key'."
 msgstr "Le prototype n'a pas de 'prototype_key'."
 
-#: prototypes/prototypes.py:824
+#: prototypes/prototypes.py:826
 #, python-brace-format
 msgid "Prototype {protkey} requires `typeclass` or 'prototype_parent'."
 msgstr "Le prototype {protkey} requiert `typeclass` ou 'prototype_parent'."
 
-#: prototypes/prototypes.py:831
+#: prototypes/prototypes.py:833
 #, python-brace-format
 msgid ""
 "Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' "
@@ -500,7 +506,7 @@ msgstr ""
 "Le prototype {protkey} ne peut être utilisé qu'en tant que mixin car il n'a "
 "pas de clé 'typeclass' ou 'prototype_parent'."
 
-#: prototypes/prototypes.py:842
+#: prototypes/prototypes.py:844
 #, python-brace-format
 msgid ""
 "{err}: Prototype {protkey} is based on typeclass {typeclass}, which could "
@@ -509,12 +515,12 @@ msgstr ""
 "{err} : Le prototype {protkey} est basé sur la typeclass {typeclass}, qui "
 "n'a pas pu être importée !"
 
-#: prototypes/prototypes.py:861
+#: prototypes/prototypes.py:863
 #, python-brace-format
 msgid "Prototype {protkey} tries to parent itself."
 msgstr "Le prototype {protkey} essaie d'être son propre parent."
 
-#: prototypes/prototypes.py:867
+#: prototypes/prototypes.py:869
 #, python-brace-format
 msgid ""
 "Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
@@ -522,12 +528,12 @@ msgstr ""
 "Le `prototype_parent` du prototype {protkey} (nommé '{parent}') n'a pas été "
 "trouvé."
 
-#: prototypes/prototypes.py:875
+#: prototypes/prototypes.py:877
 #, python-brace-format
 msgid "{protkey} has infinite nesting of prototypes."
 msgstr "{protkey} a une imbrication infinie de prototypes."
 
-#: prototypes/prototypes.py:900
+#: prototypes/prototypes.py:902
 #, python-brace-format
 msgid ""
 "Prototype {protkey} has no `typeclass` defined anywhere in its parent\n"
@@ -600,23 +606,23 @@ msgstr ""
 "La protection DoS de {servername} est active. Vous êtes en attente de "
 "connexion dans {num} secondes ..."
 
-#: server/server.py:153
+#: server/server.py:157
 msgid "idle timeout exceeded"
 msgstr "délai d'inactivité dépassé"
 
-#: server/sessionhandler.py:43
+#: server/sessionhandler.py:41
 msgid "Your client sent an incorrect UTF-8 sequence."
 msgstr "Votre client a envoyé une séquence UTF-8 incorrecte."
 
-#: server/sessionhandler.py:407
+#: server/sessionhandler.py:410
 msgid " ... Server restarted."
 msgstr " ... Serveur redémarré."
 
-#: server/sessionhandler.py:631
+#: server/sessionhandler.py:634
 msgid "Logged in from elsewhere. Disconnecting."
 msgstr "Connexion d'une autre session. Déconnexion de celle-ci."
 
-#: server/sessionhandler.py:659
+#: server/sessionhandler.py:662
 msgid "Idle timeout exceeded, disconnecting."
 msgstr "Délai d'inactivité dépassé, déconnexion."
 
@@ -1005,31 +1011,31 @@ msgstr "Utilisez une des commandes : help, quit"
 msgid "Commands: help"
 msgstr "Utilisez la commande : help"
 
-#: utils/evmenu.py:311 utils/evmenu.py:1861
+#: utils/evmenu.py:311 utils/evmenu.py:1850
 msgid "Choose an option or try 'help'."
 msgstr "Choisissez une option ou entrez la commande 'help'."
 
-#: utils/evmenu.py:1387
+#: utils/evmenu.py:1375
 msgid "|rInvalid choice.|n"
 msgstr "|rChoix invalide.|n"
 
-#: utils/evmenu.py:1451
+#: utils/evmenu.py:1439
 msgid "|Wcurrent|n"
 msgstr ""
 
-#: utils/evmenu.py:1459
+#: utils/evmenu.py:1447
 msgid "|wp|Wrevious page|n"
 msgstr ""
 
-#: utils/evmenu.py:1466
+#: utils/evmenu.py:1454
 msgid "|wn|Wext page|n"
 msgstr ""
 
-#: utils/evmenu.py:1701
+#: utils/evmenu.py:1689
 msgid "Aborted."
 msgstr "Abandonné."
 
-#: utils/evmenu.py:1724
+#: utils/evmenu.py:1712
 msgid "|rError in ask_yes_no. Choice not confirmed (report to admin)|n"
 msgstr "|rErreur dans ask_yes_no. Choix non confirmé (signaler à l'admin)|n"
 
@@ -1053,7 +1059,7 @@ msgstr "Plusieurs correspondances possibles:"
 msgid "Please be more specific."
 msgstr "Veuillez être plus précis."
 
-#: utils/utils.py:2115
+#: utils/utils.py:2121
 #, python-brace-format
 msgid ""
 "{obj}.{handlername} is a handler and can't be set directly. To add values, "
@@ -1062,7 +1068,7 @@ msgstr ""
 "{obj}.{handlername} est un handler et ne peut pas être défini directement. "
 "Pour ajouter des valeurs, utilisez `{obj}.{handlername}.add()` à la place."
 
-#: utils/utils.py:2125
+#: utils/utils.py:2131
 #, python-brace-format
 msgid ""
 "{obj}.{handlername} is a handler and can't be deleted directly. To remove "
@@ -1071,12 +1077,12 @@ msgstr ""
 "{obj}.{handlername} est un handler et ne peut pas être supprimé directement. "
 "Pour supprimer des valeurs, utilisez plutôt `{obj}.{handlername}.remove()` ."
 
-#: utils/utils.py:2266
+#: utils/utils.py:2272
 #, python-brace-format
 msgid "Could not find '{query}'."
 msgstr "Impossible de trouver '{query}'."
 
-#: utils/utils.py:2273
+#: utils/utils.py:2279
 #, python-brace-format
 msgid "More than one match for '{query}' (please narrow target):\n"
 msgstr ""
