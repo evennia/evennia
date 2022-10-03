@@ -690,3 +690,10 @@ class TestCraftCommand(BaseEvenniaCommandTest):
             "testrecipe using tool1, tool2",
             _MockRecipe.error_consumable_missing_message.format(outputs="Result1", missing="cons1"),
         )
+
+    def test_craft__unknown_recipe__failure(self):
+        self.call(
+            crafting.CmdCraft(),
+            "nonexistent from cons1, cons2, cons3 using tool1, tool2",
+            "Unknown recipe 'nonexistent'",
+        )
