@@ -14,6 +14,7 @@ evennia.contrib.tutorials.evadventure.tests
 
    evennia.contrib.tutorials.evadventure.tests.mixins
    evennia.contrib.tutorials.evadventure.tests.test_characters
+   evennia.contrib.tutorials.evadventure.tests.test_chargen
    evennia.contrib.tutorials.evadventure.tests.test_combat
    evennia.contrib.tutorials.evadventure.tests.test_commands
    evennia.contrib.tutorials.evadventure.tests.test_dungeon
