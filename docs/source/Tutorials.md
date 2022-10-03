@@ -44,8 +44,7 @@ understanding of [object-oriented programming](http://www.tutorialspoint.com/pyt
 external link with tutorials for those not familiar with coding in general or Python in particular.
 - [Tutorial: Version Control](./Version-Control.md) - use GIT to organize your code both for your own
 game project and for contributing to Evennia.
-- MIT offers free courses in many subjects.  Their [Introduction to Computer Science and Programming](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-00sc-
-introduction-to-computer-science-and-programming-spring-2011/) uses Python as its language of
+- MIT offers free courses in many subjects.  Their [Introduction to Computer Science and Programming](https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/) uses Python as its language of
 choice.  Longer path, but more in-depth.  Definitely worth a look.
 
 ### Coding - First Step tutorials
@@ -77,10 +76,9 @@ _Examples of designing new objects for your game world_
 - [Tutorial: Listening NPC's](./Tutorial-NPCs-listening.md)
 - [Tutorial: Creating a vehicle](./Tutorial-Vehicles.md)
 - [Tutorial: Making an NPC shop](./NPC-shop-Tutorial.md) (also advanced [EvMenu](./EvMenu.md) usage)
-- [Tutorial: Implementing a Static In Game Map](./Static-In-Game-Map.md) (also [Batch Code](Batch-Code-
-Processor) usage)
+- [Tutorial: Implementing a Static In Game Map](./Static-In-Game-Map.md) (also [Batch Code](Batch-Code-Processor) usage)
 - [Tutorial: Implementing a Dynamic In Game Map](./Dynamic-In-Game-Map.md)
-- [Tutorial: Writing your own unit tests](./Unit-Testing.md#testing-for-game-development-mini-tutorial)
+- [Tutorial: Writing your own unit tests](Unit-Testing.md#testing-for-game-development-mini-tutorial)
 
 ### Game mechanics tutorials
 
