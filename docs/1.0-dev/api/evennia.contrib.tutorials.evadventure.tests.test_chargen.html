@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>evennia.contrib.tutorials.evadventure.tests.test_characters &#8212; Evennia 1.0-dev documentation</title>
+    <title>evennia.contrib.tutorials.evadventure.tests.test_chargen &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="evennia.contrib.tutorials.evadventure.tests.test_chargen" href="evennia.contrib.tutorials.evadventure.tests.test_chargen.html" />
-    <link rel="prev" title="evennia.contrib.tutorials.evadventure.tests.mixins" href="evennia.contrib.tutorials.evadventure.tests.mixins.html" /> 
+    <link rel="next" title="evennia.contrib.tutorials.evadventure.tests.test_combat" href="evennia.contrib.tutorials.evadventure.tests.test_combat.html" />
+    <link rel="prev" title="evennia.contrib.tutorials.evadventure.tests.test_characters" href="evennia.contrib.tutorials.evadventure.tests.test_characters.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.tutorials.evadventure.tests.test_chargen.html" title="evennia.contrib.tutorials.evadventure.tests.test_chargen"
+          <a href="evennia.contrib.tutorials.evadventure.tests.test_combat.html" title="evennia.contrib.tutorials.evadventure.tests.test_combat"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.tutorials.evadventure.tests.mixins.html" title="evennia.contrib.tutorials.evadventure.tests.mixins"
+          <a href="evennia.contrib.tutorials.evadventure.tests.test_characters.html" title="evennia.contrib.tutorials.evadventure.tests.test_characters"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
@@ -43,7 +43,7 @@
           <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
           <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" >evennia.contrib.tutorials.evadventure</a> &#187;</li>
           <li class="nav-item nav-item-7"><a href="evennia.contrib.tutorials.evadventure.tests.html" accesskey="U">evennia.contrib.tutorials.evadventure.tests</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.tests.test_characters</a></li> 
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.tests.test_chargen</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -53,38 +53,33 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.tutorials.evadventure.tests.test_characters">
-<span id="evennia-contrib-tutorials-evadventure-tests-test-characters"></span><h1>evennia.contrib.tutorials.evadventure.tests.test_characters<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.tests.test_characters" title="Permalink to this headline">¶</a></h1>
-<p>Test characters.</p>
+  <section id="module-evennia.contrib.tutorials.evadventure.tests.test_chargen">
+<span id="evennia-contrib-tutorials-evadventure-tests-test-chargen"></span><h1>evennia.contrib.tutorials.evadventure.tests.test_chargen<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.tests.test_chargen" title="Permalink to this headline">¶</a></h1>
+<p>Test chargen.</p>
 <dl class="py class">
-<dt id="evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.tests.test_characters.</code><code class="sig-name descname">TestCharacters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_characters.html#TestCharacters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.tests.test_chargen.</code><code class="sig-name descname">EvAdventureCharacterGenerationTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_chargen.html#EvAdventureCharacterGenerationTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a></p>
+<p>Test the Character generator in the rule engine.</p>
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.setUp">
-<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_characters.html#TestCharacters.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.setUp" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_randint</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_chargen.html#EvAdventureCharacterGenerationTest.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up testing environment</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.test_abilities">
-<code class="sig-name descname">test_abilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_characters.html#TestCharacters.test_abilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.test_abilities" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.test_base_chargen">
+<code class="sig-name descname">test_base_chargen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_chargen.html#EvAdventureCharacterGenerationTest.test_base_chargen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.test_base_chargen" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.test_heal">
-<code class="sig-name descname">test_heal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_characters.html#TestCharacters.test_heal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.test_heal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure we don’t heal too much</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.test_at_damage">
-<code class="sig-name descname">test_at_damage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_characters.html#TestCharacters.test_at_damage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.test_at_damage" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.test_build_desc">
+<code class="sig-name descname">test_build_desc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_chargen.html#EvAdventureCharacterGenerationTest.test_build_desc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.test_build_desc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.test_at_pay">
-<code class="sig-name descname">test_at_pay</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_characters.html#TestCharacters.test_at_pay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_characters.TestCharacters.test_at_pay" title="Permalink to this definition">¶</a></dt>
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.test_apply">
+<code class="sig-name descname">test_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_spawn</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_chargen.html#EvAdventureCharacterGenerationTest.test_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_chargen.EvAdventureCharacterGenerationTest.test_apply" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -112,15 +107,15 @@
 </div>
 <script>$('#searchbox').show(0);</script>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.tests.mixins.html"
-                        title="previous chapter">evennia.contrib.tutorials.evadventure.tests.mixins</a></p>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.tests.test_characters.html"
+                        title="previous chapter">evennia.contrib.tutorials.evadventure.tests.test_characters</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.tests.test_chargen.html"
-                        title="next chapter">evennia.contrib.tutorials.evadventure.tests.test_chargen</a></p>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.tests.test_combat.html"
+                        title="next chapter">evennia.contrib.tutorials.evadventure.tests.test_combat</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.contrib.tutorials.evadventure.tests.test_characters.md.txt"
+      <li><a href="../_sources/api/evennia.contrib.tutorials.evadventure.tests.test_chargen.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -136,7 +131,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="evennia.contrib.tutorials.evadventure.tests.test_characters.html">1.0-dev (develop branch)</a></li>
+  <li><a href="evennia.contrib.tutorials.evadventure.tests.test_chargen.html">1.0-dev (develop branch)</a></li>
   <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 </ul>
 
@@ -154,10 +149,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.tutorials.evadventure.tests.test_chargen.html" title="evennia.contrib.tutorials.evadventure.tests.test_chargen"
+          <a href="evennia.contrib.tutorials.evadventure.tests.test_combat.html" title="evennia.contrib.tutorials.evadventure.tests.test_combat"
              >next</a> |</li>
         <li class="right" >
-          <a href="evennia.contrib.tutorials.evadventure.tests.mixins.html" title="evennia.contrib.tutorials.evadventure.tests.mixins"
+          <a href="evennia.contrib.tutorials.evadventure.tests.test_characters.html" title="evennia.contrib.tutorials.evadventure.tests.test_characters"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
@@ -167,7 +162,7 @@
           <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
           <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" >evennia.contrib.tutorials.evadventure</a> &#187;</li>
           <li class="nav-item nav-item-7"><a href="evennia.contrib.tutorials.evadventure.tests.html" >evennia.contrib.tutorials.evadventure.tests</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.tests.test_characters</a></li> 
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.tests.test_chargen</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>
