@@ -200,7 +200,7 @@ in-game command:
 In code we would do
 
 ```python
-from evennia.contrub.crafting.crafting import craft
+from evennia.contrib.crafting.crafting import craft
 puppet = craft(crafter, "wooden puppet", knife, wood)
 
 ```
