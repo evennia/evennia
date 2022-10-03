@@ -103,8 +103,9 @@ class TextToHTMLparser(object):
     )
     re_dblspace = re.compile(r" {2,}", re.M)
     re_url = re.compile(
-        r'((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
+        r'(\b(?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
     )
+    re_protocol = re.compile(r'^(?:ftp|https?)://')
     re_mxplink = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
 
     def _sub_bgfg(self, colormatch):
@@ -259,9 +260,19 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        # -> added target to output prevent the web browser from attempting to
-        # change pages (and losing our webclient session).
-        return self.re_url.sub(r'<a href="\1" target="_blank">\1</a>\2', text)
+        m = self.re_url.search(text)
+        if m:
+          href = m.group(1)
+          label = href
+          # if there is no protocol (i.e. starts with www) prefix with // so the link isn't treated as relative
+          if not self.re_protocol.match(href):
+            href = "//" + href
+          rest = m.group(2)
+          # -> added target to output prevent the web browser from attempting to
+          # change pages (and losing our webclient session).
+          return text[:m.start()] + f'<a href="{href}" target="_blank">{label}</a>{rest}' + text[m.end():]
+        else:
+          return text
 
     def re_double_space(self, text):
         """
