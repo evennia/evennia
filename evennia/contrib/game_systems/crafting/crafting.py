@@ -119,6 +119,7 @@ a full example of the components for creating a sword from base components.
 
 """
 
+import functools
 from copy import copy
 from evennia.utils.utils import iter_to_str, callables_from_module, inherits_from, make_iter
 from evennia.commands.cmdset import CmdSet
@@ -338,6 +339,21 @@ class CraftingRecipeBase:
         if craft_result is None and raise_exception:
             raise CraftingError(f"Crafting of {self.name} failed.")
         return craft_result
+
+
+class NonExistentRecipe(CraftingRecipeBase):
+    """A recipe that does not exist and never produces anything."""
+    allow_craft = True
+    allow_reuse = True
+
+    def __init__(self, crafter, *inputs, name="", **kwargs):
+        super().__init__(crafter, *inputs, **kwargs)
+        self.name = name
+
+    def pre_craft(self, **kwargs):
+        msg = f"Unknown recipe '{self.name}'"
+        self.msg(msg)
+        raise CraftingError(msg)
 
 
 class CraftingRecipe(CraftingRecipeBase):
@@ -927,9 +943,12 @@ def craft(crafter, recipe_name, *inputs, raise_exception=False, **kwargs):
             RecipeClass = matches[0]
 
     if not RecipeClass:
-        raise KeyError(
-            f"No recipe in settings.CRAFT_RECIPE_MODULES has a name matching {recipe_name}"
-        )
+        if raise_exception:
+            raise KeyError(
+                f"No recipe in settings.CRAFT_RECIPE_MODULES has a name matching {recipe_name}"
+            )
+        else:
+            RecipeClass = functools.partial(NonExistentRecipe, name=recipe_name)
     recipe = RecipeClass(crafter, *inputs, **kwargs)
     return recipe.craft(raise_exception=raise_exception)
 
