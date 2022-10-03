@@ -238,26 +238,63 @@ to have helper functions that are not protfuncs on their own), name your functio
 with <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p>
 <p>The default protfuncs available out of the box are defined in <code class="docutils literal notranslate"><span class="pre">evennia/prototypes/profuncs.py</span></code>. To
 override the ones available, just add the same-named function in your own protfunc module.</p>
-<p>| Protfunc | Description |</p>
-<p>| <code class="docutils literal notranslate"><span class="pre">$random()</span></code> | Returns random value in range [0, 1) |
-| <code class="docutils literal notranslate"><span class="pre">$randint(start,</span> <span class="pre">end)</span></code> | Returns random value in range [start, end] |
-| <code class="docutils literal notranslate"><span class="pre">$left_justify(&lt;text&gt;)</span></code> | Left-justify text |
-| <code class="docutils literal notranslate"><span class="pre">$right_justify(&lt;text&gt;)</span></code> | Right-justify text to screen width |
-| <code class="docutils literal notranslate"><span class="pre">$center_justify(&lt;text&gt;)</span></code> | Center-justify text to screen width |
-| <code class="docutils literal notranslate"><span class="pre">$full_justify(&lt;text&gt;)</span></code> | Spread text across screen width by adding spaces |
-| <code class="docutils literal notranslate"><span class="pre">$protkey(&lt;name&gt;)</span></code> | Returns value of another key in this prototype (self-reference) |
-| <code class="docutils literal notranslate"><span class="pre">$add(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code> | Returns value1 + value2. Can also be lists, dicts etc |
-| <code class="docutils literal notranslate"><span class="pre">$sub(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code> | Returns value1 - value2 |
-| <code class="docutils literal notranslate"><span class="pre">$mult(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code> | Returns value1 * value2 |
-| <code class="docutils literal notranslate"><span class="pre">$div(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code> | Returns value2 / value1 |
-| <code class="docutils literal notranslate"><span class="pre">$toint(&lt;value&gt;)</span></code> | Returns value converted to integer (or value if not possible) |
-| <code class="docutils literal notranslate"><span class="pre">$eval(&lt;code&gt;)</span></code> | Returns result of <a class="reference external" href="https://docs.python.org/2/library/ast.html#ast.literal_eval">literal-
-eval</a> of code string. Only simple
-python expressions. |
-| <code class="docutils literal notranslate"><span class="pre">$obj(&lt;query&gt;)</span></code> | Returns object #dbref searched globally by key, tag or #dbref. Error if more
-than one found.” |
-| <code class="docutils literal notranslate"><span class="pre">$objlist(&lt;query&gt;)</span></code> | Like <code class="docutils literal notranslate"><span class="pre">$obj</span></code>, except always returns a list of zero, one or more results. |
-| <code class="docutils literal notranslate"><span class="pre">$dbref(dbref)</span></code> | Returns argument if it is formed as a #dbref (e.g. #1234), otherwise error.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Protfunc</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$random()</span></code></p></td>
+<td><p>Returns random value in range [0, 1)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$randint(start,</span> <span class="pre">end)</span></code></p></td>
+<td><p>Returns random value in range [start, end]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$left_justify(&lt;text&gt;)</span></code></p></td>
+<td><p>Left-justify text</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$right_justify(&lt;text&gt;)</span></code></p></td>
+<td><p>Right-justify text to screen width</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$center_justify(&lt;text&gt;)</span></code></p></td>
+<td><p>Center-justify text to screen width</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$full_justify(&lt;text&gt;)</span></code></p></td>
+<td><p>Spread text across screen width by adding spaces</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$protkey(&lt;name&gt;)</span></code></p></td>
+<td><p>Returns value of another key in this prototype (self-reference)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$add(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code></p></td>
+<td><p>Returns value1 + value2. Can also be lists, dicts etc</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$sub(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code></p></td>
+<td><p>Returns value1 - value2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$mult(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code></p></td>
+<td><p>Returns value1 * value2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$div(&lt;value1&gt;,</span> <span class="pre">&lt;value2&gt;)</span></code></p></td>
+<td><p>Returns value2 / value1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$toint(&lt;value&gt;)</span></code></p></td>
+<td><p>Returns value converted to integer (or value if not possible)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$eval(&lt;code&gt;)</span></code></p></td>
+<td><p>Returns result of <a class="reference external" href="https://docs.python.org/2/library/ast.html#ast.literal_eval">literal-eval</a> of code string. Only simple python expressions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$obj(&lt;query&gt;)</span></code></p></td>
+<td><p>Returns object #dbref searched globally by key, tag or #dbref. Error if more than one found.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$objlist(&lt;query&gt;)</span></code></p></td>
+<td><p>Like <code class="docutils literal notranslate"><span class="pre">$obj</span></code>, except always returns a list of zero, one or more results.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$dbref(dbref)</span></code></p></td>
+<td><p>Returns argument if it is formed as a #dbref (e.g. #1234), otherwise error.</p></td>
+</tr>
+</tbody>
+</table>
 <p>For developers with access to Python, using protfuncs in prototypes is generally not useful. Passing
 real Python functions is a lot more powerful and flexible. Their main use is to allow in-game
 builders to

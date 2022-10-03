@@ -111,7 +111,7 @@ aliases to an already joined channel.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['aliaschan', 'chanalias']</em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['chanalias', 'aliaschan']</em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -142,7 +142,7 @@ aliases to an already joined channel.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'aliaschan chanalias', 'category': 'comms', 'key': 'addcom', 'no_prefix': ' aliaschan chanalias', 'tags': '', 'text': '\n    Add a channel alias and/or subscribe to a channel\n\n    Usage:\n       addcom [alias=] &lt;channel&gt;\n\n    Joins a given channel. If alias is given, this will allow you to\n    refer to the channel by this alias rather than the full channel\n    name. Subsequent calls of this command can be used to add multiple\n    aliases to an already joined channel.\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'chanalias aliaschan', 'category': 'comms', 'key': 'addcom', 'no_prefix': ' chanalias aliaschan', 'tags': '', 'text': '\n    Add a channel alias and/or subscribe to a channel\n\n    Usage:\n       addcom [alias=] &lt;channel&gt;\n\n    Joins a given channel. If alias is given, this will allow you to\n    refer to the channel by this alias rather than the full channel\n    name. Subsequent calls of this command can be used to add multiple\n    aliases to an already joined channel.\n    '}</em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -168,7 +168,7 @@ for that channel.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['delchanalias', 'delaliaschan']</em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['delaliaschan', 'delchanalias']</em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -199,7 +199,7 @@ for that channel.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'delchanalias delaliaschan', 'category': 'comms', 'key': 'delcom', 'no_prefix': ' delchanalias delaliaschan', 'tags': '', 'text': &quot;\n    remove a channel alias and/or unsubscribe from channel\n\n    Usage:\n       delcom &lt;alias or channel&gt;\n       delcom/all &lt;channel&gt;\n\n    If the full channel name is given, unsubscribe from the\n    channel. If an alias is given, remove the alias but don't\n    unsubscribe. If the 'all' switch is used, remove all aliases\n    for that channel.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'delaliaschan delchanalias', 'category': 'comms', 'key': 'delcom', 'no_prefix': ' delaliaschan delchanalias', 'tags': '', 'text': &quot;\n    remove a channel alias and/or unsubscribe from channel\n\n    Usage:\n       delcom &lt;alias or channel&gt;\n       delcom/all &lt;channel&gt;\n\n    If the full channel name is given, unsubscribe from the\n    channel. If an alias is given, remove the alias but don't\n    unsubscribe. If the 'all' switch is used, remove all aliases\n    for that channel.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
