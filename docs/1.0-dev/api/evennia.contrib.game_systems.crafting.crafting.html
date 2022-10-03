@@ -328,6 +328,59 @@ would return <strong>None</strong> and raise_exception** is set.</p></li>
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.crafting.</code><code class="sig-name descname">NonExistentRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/crafting.html#NonExistentRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase" title="evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase</span></code></a></p>
+<p>A recipe that does not exist and never produces anything.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.allow_craft">
+<code class="sig-name descname">allow_craft</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.allow_craft" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.allow_reuse">
+<code class="sig-name descname">allow_reuse</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.allow_reuse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/crafting.html#NonExistentRecipe.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the recipe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>crafter</strong> (<em>Object</em>) – The one doing the crafting.</p></li>
+<li><p><strong>*inputs</strong> (<em>any</em>) – The ingredients of the recipe to use.</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Any other parameters that are relevant for
+this recipe.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.pre_craft">
+<code class="sig-name descname">pre_craft</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/crafting.html#NonExistentRecipe.pre_craft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.pre_craft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook to override.</p>
+<p>This is called just before crafting operation and is normally
+responsible for validating the inputs, storing data on
+<strong>self.validated_inputs</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>**kwargs</strong> – Optional extra flags passed during initialization or</p></li>
+<li><p><strong>**.craft</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#evennia.contrib.game_systems.crafting.crafting.CraftingValidationError" title="evennia.contrib.game_systems.crafting.crafting.CraftingValidationError"><strong>CraftingValidationError</strong></a> – If validation fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.contrib.game_systems.crafting.crafting.CraftingRecipe">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.crafting.</code><code class="sig-name descname">CraftingRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/crafting.html#CraftingRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase" title="evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase</span></code></a></p>

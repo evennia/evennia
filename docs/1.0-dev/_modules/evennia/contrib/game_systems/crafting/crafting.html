@@ -161,6 +161,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">iter_to_str</span><span class="p">,</span> <span class="n">callables_from_module</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">make_iter</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
@@ -380,6 +381,21 @@
         <span class="k">if</span> <span class="n">craft_result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raise_exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">CraftingError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Crafting of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> failed.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">craft_result</span></div></div>
+
+
+<div class="viewcode-block" id="NonExistentRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe">[docs]</a><span class="k">class</span> <span class="nc">NonExistentRecipe</span><span class="p">(</span><span class="n">CraftingRecipeBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A recipe that does not exist and never produces anything.&quot;&quot;&quot;</span>
+    <span class="n">allow_craft</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">allow_reuse</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="NonExistentRecipe.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crafter</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="NonExistentRecipe.pre_craft"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.pre_craft">[docs]</a>    <span class="k">def</span> <span class="nf">pre_craft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown recipe &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">CraftingError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CraftingRecipe"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe">[docs]</a><span class="k">class</span> <span class="nc">CraftingRecipe</span><span class="p">(</span><span class="n">CraftingRecipeBase</span><span class="p">):</span>
@@ -969,9 +985,12 @@
             <span class="n">RecipeClass</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">RecipeClass</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No recipe in settings.CRAFT_RECIPE_MODULES has a name matching </span><span class="si">{</span><span class="n">recipe_name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">raise_exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No recipe in settings.CRAFT_RECIPE_MODULES has a name matching </span><span class="si">{</span><span class="n">recipe_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">RecipeClass</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">NonExistentRecipe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">recipe_name</span><span class="p">)</span>
     <span class="n">recipe</span> <span class="o">=</span> <span class="n">RecipeClass</span><span class="p">(</span><span class="n">crafter</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">recipe</span><span class="o">.</span><span class="n">craft</span><span class="p">(</span><span class="n">raise_exception</span><span class="o">=</span><span class="n">raise_exception</span><span class="p">)</span></div>
 

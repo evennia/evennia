@@ -731,6 +731,13 @@
             <span class="n">crafting</span><span class="o">.</span><span class="n">CmdCraft</span><span class="p">(),</span>
             <span class="s2">&quot;testrecipe using tool1, tool2&quot;</span><span class="p">,</span>
             <span class="n">_MockRecipe</span><span class="o">.</span><span class="n">error_consumable_missing_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="s2">&quot;Result1&quot;</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="s2">&quot;cons1&quot;</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCraftCommand.test_craft__unknown_recipe__failure"><a class="viewcode-back" href="../../../../../api/evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__unknown_recipe__failure">[docs]</a>    <span class="k">def</span> <span class="nf">test_craft__unknown_recipe__failure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">crafting</span><span class="o">.</span><span class="n">CmdCraft</span><span class="p">(),</span>
+            <span class="s2">&quot;nonexistent from cons1, cons2, cons3 using tool1, tool2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Unknown recipe &#39;nonexistent&#39;&quot;</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 </pre></div>
 
