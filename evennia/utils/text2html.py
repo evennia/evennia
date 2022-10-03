@@ -88,8 +88,9 @@ class TextToHTMLparser(object):
         re.S | re.M | re.I,
     )
     re_url = re.compile(
-        r'(?<!=")((?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
+        r'(?<!=")(\b(?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
     )
+    re_protocol = re.compile(r'^(?:ftp|https?)://')
     re_mxplink = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
     re_mxpurl = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
 
@@ -147,9 +148,19 @@ class TextToHTMLparser(object):
             text (str): Processed text.
 
         """
-        # -> added target to output prevent the web browser from attempting to
-        # change pages (and losing our webclient session).
-        return self.re_url.sub(r'<a href="\1" target="_blank">\1</a>\2', text)
+        m = self.re_url.search(text)
+        if m:
+          href = m.group(1)
+          label = href
+          # if there is no protocol (i.e. starts with www) prefix with // so the link isn't treated as relative
+          if not self.re_protocol.match(href):
+            href = "//" + href
+          rest = m.group(2)
+          # -> added target to output prevent the web browser from attempting to
+          # change pages (and losing our webclient session).
+          return text[:m.start()] + f'<a href="{href}" target="_blank">{label}</a>{rest}' + text[m.end():]
+        else:
+          return text
 
     def sub_mxp_links(self, match):
         """

@@ -250,13 +250,13 @@ class TestTextToHTMLparser(TestCase):
     def test_url_scheme_ftp(self):
         self.assertEqual(
             self.parser.convert_urls("ftp.example.com"),
-            '<a href="ftp.example.com" target="_blank">ftp.example.com</a>',
+            '<a href="//ftp.example.com" target="_blank">ftp.example.com</a>',
         )
 
     def test_url_scheme_www(self):
         self.assertEqual(
             self.parser.convert_urls("www.example.com"),
-            '<a href="www.example.com" target="_blank">www.example.com</a>',
+            '<a href="//www.example.com" target="_blank">www.example.com</a>',
         )
 
     def test_url_scheme_ftpproto(self):
@@ -280,7 +280,7 @@ class TestTextToHTMLparser(TestCase):
     def test_url_chars_slash(self):
         self.assertEqual(
             self.parser.convert_urls("www.example.com/homedir"),
-            '<a href="www.example.com/homedir" target="_blank">www.example.com/homedir</a>',
+            '<a href="//www.example.com/homedir" target="_blank">www.example.com/homedir</a>',
         )
 
     def test_url_chars_colon(self):
@@ -313,22 +313,16 @@ class TestTextToHTMLparser(TestCase):
             ' target="_blank">https://groups.google.com/forum/?fromgroups#!categories/evennia/ainneve</a>',
         )
 
-    def test_url_edge_leadingw(self):
-        self.assertEqual(
-            self.parser.convert_urls("wwww.example.com"),
-            'w<a href="www.example.com" target="_blank">www.example.com</a>',
-        )
-
     def test_url_edge_following_period_eol(self):
         self.assertEqual(
             self.parser.convert_urls("www.example.com."),
-            '<a href="www.example.com" target="_blank">www.example.com</a>.',
+            '<a href="//www.example.com" target="_blank">www.example.com</a>.',
         )
 
     def test_url_edge_following_period(self):
         self.assertEqual(
             self.parser.convert_urls("see www.example.com. "),
-            'see <a href="www.example.com" target="_blank">www.example.com</a>. ',
+            'see <a href="//www.example.com" target="_blank">www.example.com</a>. ',
         )
 
     def test_url_edge_brackets(self):
@@ -355,4 +349,10 @@ class TestTextToHTMLparser(TestCase):
             self.parser.convert_urls('</span>http://example.com/<span class="red">'),
             '</span><a href="http://example.com/" target="_blank">'
             'http://example.com/</a><span class="red">',
+        )
+
+    def test_non_url_with_www(self):
+        self.assertEqual(
+            self.parser.convert_urls('Awwww.this should not be highlighted'),
+            'Awwww.this should not be highlighted'
         )
