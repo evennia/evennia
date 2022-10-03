@@ -23,7 +23,6 @@ body {
     color: #555;
     margin: 0;
     padding: 0;
-    height:88
 }
 
 div.documentwrapper {
@@ -456,9 +455,6 @@ code.descname {
 
   .search {
     visibility: visible;
-    position: absolute;
-    top: -7px;
-    right: 200px;
   }
 
   #top-link {
@@ -476,16 +472,18 @@ code.descname {
     visibility: visible;
   }
 
-  .search {
-    right: 10px;
-  }
-
 }
 
 @media print, screen and (max-width: 480px) {
 
   div.body {
     padding-left: 2px;
+  }
+
+  div.body {
+    min-width: auto;
+    max-width: none;
+    width: 100%;
   }
 
 }
