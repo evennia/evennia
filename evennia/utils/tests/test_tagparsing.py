@@ -356,3 +356,9 @@ class TestTextToHTMLparser(TestCase):
             self.parser.convert_urls('Awwww.this should not be highlighted'),
             'Awwww.this should not be highlighted'
         )
+
+    def test_invalid_www_url(self):
+        self.assertEqual(
+            self.parser.convert_urls('www.t'),
+            'www.t'
+        )

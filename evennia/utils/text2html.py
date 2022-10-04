@@ -91,6 +91,7 @@ class TextToHTMLparser(object):
         r'(?<!=")(\b(?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
     )
     re_protocol = re.compile(r'^(?:ftp|https?)://')
+    re_valid_no_protocol = re.compile(r'^(?:www|ftp)\.[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*')
     re_mxplink = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
     re_mxpurl = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
 
@@ -152,8 +153,11 @@ class TextToHTMLparser(object):
         if m:
           href = m.group(1)
           label = href
-          # if there is no protocol (i.e. starts with www) prefix with // so the link isn't treated as relative
+          # if there is no protocol (i.e. starts with www or ftp)
+          # prefix with // so the link isn't treated as relative
           if not self.re_protocol.match(href):
+            if not self.re_valid_no_protocol.match(href):
+              return text
             href = "//" + href
           rest = m.group(2)
           # -> added target to output prevent the web browser from attempting to
