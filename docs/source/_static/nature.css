@@ -26,12 +26,13 @@ body {
 }
 
 div.documentwrapper {
-    float: left;
-    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 div.bodywrapper {
-    margin: 0 0 0 230px;
+    width: 79%;
+    box-sizing: border-box;
 }
 
 hr {
@@ -434,7 +435,9 @@ code.descname {
 @media print, screen and (max-width: 960px) {
 
   div.body {
-    width: auto;
+    min-width: auto;
+    max-width: none;
+    padding: 0 30px 30px 30px;
   }
 
   div.bodywrapper {
@@ -445,21 +448,16 @@ code.descname {
   div.document,
   div.documentwrapper,
   div.bodywrapper {
-      margin: 0 !important;
-      width: 100%;
-  }
+    margin: 0 !important;
 
-  div.sphinxsidebar {
-    display: none;
   }
 
   #top-link {
-      display: none;
+    display: none;
   }
 }
 
 @media print, screen and (max-width: 720px) {
-
   div.related>ul {
     visibility: hidden;
   }
@@ -471,15 +469,22 @@ code.descname {
 }
 
 @media print, screen and (max-width: 480px) {
-
   div.body {
-    padding-left: 2px;
+    box-sizing: border-box;
+    padding: 5px;
   }
 
-  div.body {
-    min-width: auto;
-    max-width: none;
+  /*
+   * At screen sizes this small, the sidebar stacks on top
+   * of the main content, so they both are 100% width.
+   */
+  div.sphinxsidebar {
     width: 100%;
   }
 
+  div.document,
+  div.documentwrapper,
+  div.bodywrapper {
+    width: 100%;
+  }
 }
