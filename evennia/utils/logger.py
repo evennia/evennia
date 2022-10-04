@@ -351,7 +351,7 @@ class WeeklyLogFile(logfile.DailyLogFile):
 
     def rotate(self):
         try:
-            self.rotate()
+            super().rotate()
         except Exception:
             log_trace(f"Could not rotate the log file {self.name}.")
 
