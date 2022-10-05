@@ -587,7 +587,9 @@ class FuncParser:
 
         return fullstr
 
-    def parse_to_any(self, string, raise_errors=False, **reserved_kwargs):
+    def parse_to_any(
+        self, string, raise_errors=False, escape=False, strip=False, **reserved_kwargs
+    ):
         """
         This parses a string and if the string only contains a "$func(...)",
         the return will be the return value of that function, even if it's not
@@ -599,6 +601,10 @@ class FuncParser:
             raise_errors (bool, optional): If unset, leave a failing (or
                 unrecognized) inline function as unparsed in the string. If set,
                 raise an ParsingError.
+            escape (bool, optional): If set, escape all found functions so they
+                are not executed by later parsing.
+            strip (bool, optional): If set, strip any inline funcs from string
+                as if they were not there.
             **reserved_kwargs: If given, these are guaranteed to _always_ pass
                 as part of each parsed callable's **kwargs. These  override
                 same-named default options given in `__init__` as well as any
@@ -635,9 +641,9 @@ class FuncParser:
         """
         return self.parse(
             string,
-            raise_errors=False,
-            escape=False,
-            strip=False,
+            raise_errors=raise_errors,
+            escape=escape,
+            strip=strip,
             return_str=False,
             **reserved_kwargs,
         )
@@ -873,6 +879,8 @@ def funcparser_callable_choice(*args, **kwargs):
     if not args:
         return ""
     args, _ = safe_convert_to_types(("py", {}), *args, **kwargs)
+    if not args[0]:
+        return ""
     try:
         return random.choice(args[0])
     except Exception:

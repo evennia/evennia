@@ -132,7 +132,7 @@ def homogenize_prototype(prototype, custom_keys=None):
                     # attrs must be on form [(key, value, category, lockstr)]
                     if not is_iter(attr):
                         logger.log_error(
-                            "Prototype's 'attr' field must " f"be a list of tuples: {prototype}"
+                            f"Prototype's 'attr' field must be a list of tuples: {prototype}"
                         )
                     elif attr:
                         nattr = len(attr)
@@ -237,8 +237,7 @@ def load_module_prototypes(*mod_or_prototypes, override=True):
             for prot in prototype_list:
                 if not isinstance(prot, dict):
                     logger.log_err(
-                        f"Prototype read from {mod}.PROTOTYPE_LIST "
-                        f"is not a dict (skipping): {prot}"
+                        f"Prototype read from {mod}.PROTOTYPE_LIST is not a dict (skipping): {prot}"
                     )
                     continue
                 elif "prototype_key" not in prot:
@@ -823,7 +822,7 @@ def validate_prototype(
     if strict and not (typeclass or prototype_parent):
         if is_prototype_base:
             _flags["errors"].append(
-                _("Prototype {protkey} requires `typeclass` " "or 'prototype_parent'.").format(
+                _("Prototype {protkey} requires `typeclass` or 'prototype_parent'.").format(
                     protkey=protkey
                 )
             )
@@ -866,8 +865,7 @@ def validate_prototype(
             if not protparent:
                 _flags["errors"].append(
                     _(
-                        "Prototype {protkey}'s `prototype_parent` (named '{parent}') "
-                        "was not found."
+                        "Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
                     ).format(protkey=protkey, parent=protstring)
                 )
 
@@ -959,7 +957,7 @@ def protfunc_parser(
     if not isinstance(value, str):
         return value
 
-    result = FUNC_PARSER.parse(value, raise_errors=True, return_str=False, caller=caller, **kwargs)
+    result = FUNC_PARSER.parse_to_any(value, raise_errors=True, caller=caller, **kwargs)
 
     return result
 
