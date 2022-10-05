@@ -119,27 +119,27 @@ PRONOUN_MAPPING = {
 PRONOUN_TABLE = {
     "I": (
             "1st person",
-            GENDERS,
+            ("neutral", "male", "female"),
             "subject pronoun"
         ),
     "me": (
             "1st person",
-            GENDERS,
+            ("neutral", "male", "female"),
             "object pronoun"
         ),
     "my": (
             "1st person",
-            GENDERS,
+            ("neutral", "male", "female"),
             "possessive adjective"
         ),
     "mine": (
             "1st person",
-            GENDERS,
+            ("neutral", "male", "female"),
             "possessive pronoun"
         ),
     "myself": (
             "1st person",
-            GENDERS,
+            ("neutral", "male", "female"),
             "reflexive pronoun"
         ),
 
@@ -170,17 +170,17 @@ PRONOUN_TABLE = {
         ),
     "you": (
             "2nd person",
-            GENDERS,
+            ("neutral", "male", "female", "plural"),
             ("subject pronoun", "object pronoun")
         ),
     "your": (
             "2nd person",
-            GENDERS,
+            ("neutral", "male", "female", "plural"),
             "possessive adjective"
         ),
     "yours": (
             "2nd person",
-            GENDERS,
+            ("neutral", "male", "female", "plural"),
             "possessive pronoun"
         ),
     "yourself": (
