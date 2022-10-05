@@ -318,9 +318,9 @@ let goldenlayout = (function () {
     //
     var onTabCreate = function (tab) {
         //HTML for the typeDropdown
-        let renameDropdownControl = $("<span class='lm_title' style='font-size: 1.5em;width: 0.5em;'>&#129170;</span>");
-        let typeDropdownControl   = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#11201;</span>");
-        let updateDropdownControl = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#11208;</span>");
+        let renameDropdownControl = $("<span class='lm_title' style='font-size: 1.5em;width: 0.5em;'>&#9656;</span>");
+        let typeDropdownControl   = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#9670;</span>");
+        let updateDropdownControl = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#9656;</span>");
         let splitControl          = $("<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>");
         // track dropdowns when the associated control is clicked
         renameDropdownControl.click( tab, renameDropdown ); 
