@@ -27,7 +27,7 @@ viewpoint/pronouns    Subject  Object    Possessive  Possessive  Reflexive
 """
 from evennia.utils.utils import copy_word_case, is_iter
 
-DEFAULT_PRONOUN_TYPE = "object pronoun"
+DEFAULT_PRONOUN_TYPE = "subject pronoun"
 DEFAULT_VIEWPOINT = "2nd person"
 DEFAULT_GENDER = "neutral"
 
@@ -99,7 +99,7 @@ PRONOUN_MAPPING = {
             "male": "his",
             "female": "her",
             "neutral": "its",
-            "plural": "theirs"
+            "plural": "their"
         },
         "possessive pronoun": {
             "male": "his",
@@ -185,7 +185,7 @@ PRONOUN_TABLE = {
         ),
     "yourself": (
             "2nd person",
-            GENDERS,
+            ("neutral", "male", "female"),
             "reflexive pronoun"
         ),
     "yourselves": (
@@ -304,7 +304,7 @@ ALIASES = {
 
 
 def pronoun_to_viewpoints(
-    pronoun, options=None, pronoun_type="object pronoun", gender="neutral", viewpoint="2nd person"
+    pronoun, options=None, pronoun_type=DEFAULT_PRONOUN_TYPE, gender=DEFAULT_GENDER, viewpoint=DEFAULT_VIEWPOINT
 ):
     """
     Access function for determining the forms of a pronount from different viewpoints.
@@ -404,7 +404,6 @@ def pronoun_to_viewpoints(
         pronouns = viewpoint_map[pronoun_type]
     else:
         pronouns = viewpoint_map[DEFAULT_PRONOUN_TYPE]
-
     if gender in pronouns:
         mapped_pronoun = pronouns[gender]
     else:

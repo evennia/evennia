@@ -279,7 +279,7 @@ class TestPronounMapping(TestCase):
             ("you", "m", "you", "he"),
             ("you", "f op", "you", "her"),
             ("I", "", "I", "it"),
-            ("I", "p", "I", "it"),  # plural is invalid
+            ("I", "p", "I", "they"),
             ("I", "m", "I", "he"),
             ("Me", "n", "Me", "It"),
             ("your", "p", "your", "their"),
@@ -294,7 +294,6 @@ class TestPronounMapping(TestCase):
             ("he", "1 p", "we", "he"),
             ("her", "p", "you", "her"),
             ("her", "pa", "your", "her"),
-            ("their", "pa", "your", "their"),
             ("their", "pa", "your", "their"),
             ("itself", "", "yourself", "itself"),
             ("themselves", "", "yourselves", "themselves"),
@@ -311,6 +310,5 @@ class TestPronounMapping(TestCase):
         received_1st_or_2nd_person, received_3rd_person = pronouns.pronoun_to_viewpoints(
             pronoun, options
         )
-
         self.assertEqual(expected_1st_or_2nd_person, received_1st_or_2nd_person)
         self.assertEqual(expected_3rd_person, received_3rd_person)
