@@ -1124,7 +1124,7 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         for key, value in kwargs.items()
         if key not in ("funcparser", "raise_errors", "type", "return_list")
     }
-    return_list = kwargs.pop("return_list", "false").lower() == "true"
+    return_list = str(kwargs.pop("return_list", "false")).lower() == "true"
 
     if not args:
         return [] if return_list else None
