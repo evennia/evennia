@@ -10,21 +10,20 @@ the 3rd person case and back. In some cases, the mapping is not unique; it is as
 differentiate between the options in some other way.
 
 
-====================    =======    ========    ==========    ==========    ===========
-viewpoint/pronouns      Subject    Object      Possessive    Possessive    Reflexive
-                        Pronoun    Pronoun     Adjective     Pronoun       Pronoun
-====================    =======    ========    ==========    ==========    ===========
-1st person                I          me          my           mine         myself
-1st person plural         we         us          our          ours         ourselves
-2nd person                you        you         your         yours        yourself
-2nd person plural         you        you         your         yours        yourselves
+====================  =======  ========  ==========  ==========  ===========
+viewpoint/pronouns    Subject  Object    Possessive  Possessive  Reflexive
+                      Pronoun  Pronoun   Adjective   Pronoun     Pronoun
+====================  =======  ========  ==========  ==========  ===========
+1st person              I        me        my         mine       myself
+1st person plural       we       us        our        ours       ourselves
+2nd person              you      you       your       yours      yourself
+2nd person plural       you      you       your       yours      yourselves
 
-3rd person male           he         him         his          his          himself
-3rd person female         she        her         her          hers         herself
-3rd person neutral        it         it          its          its          itself
-3rd person plural         they       them        their        theirs       themselves
-====================    =======    ========    ==========    ==========    ===========
-
+3rd person male         he       him       his        his        himself
+3rd person female       she      her       her        hers       herself
+3rd person neutral      it       it        its        its        itself
+3rd person plural       they     them      their      theirs     themselves
+====================  =======  ========  ==========  ==========  ===========
 """
 from evennia.utils.utils import copy_word_case, is_iter
 
@@ -320,9 +319,9 @@ def pronoun_to_viewpoints(
             Values are
 
             - `subject pronoun`/`subject`/`sp` (I, you, he, they)
-            - `object pronoun`/`object/`/`op`    (me, you, him, them)
+            - `object pronoun`/`object/`/`op`  (me, you, him, them)
             - `possessive adjective`/`adjective`/`pa` (my, your, his, their)
-            - `possessive pronoun`/`pronoun`/`pp`    (mine, yours, his, theirs)
+            - `possessive pronoun`/`pronoun`/`pp` (mine, yours, his, theirs)
 
         gender (str, optional): Specific gender to use (plural counts a gender for this purpose).
             A gender specified in `options` takes precedence. Values and aliases are:
@@ -398,7 +397,7 @@ def pronoun_to_viewpoints(
     else:
         viewpoint = target_viewpoint
 
-    # step down into the mapping, using differentiators if necessary
+    # step down into the mapping
     viewpoint_map = PRONOUN_MAPPING[viewpoint]
     
     if pronoun_type in viewpoint_map:
