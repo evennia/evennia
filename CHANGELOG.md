@@ -203,6 +203,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Add new setting `MAX_NR_SIMULTANEUS_PUPPETS` - how many puppets the account
   can run at the same time. Used to limit multi-playing.
 - Make setting `MAX_NR_CHARACTERS` interact better with the new settings above.
+- Allow `$search` funcparser func to search tags and to accept kwargs for more
+  powerful searches passed into the regular search functions.
 
 ## Evennia 0.9.5
 

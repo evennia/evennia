@@ -1088,7 +1088,9 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
     security. If called without session, the call is aborted.
 
     Args:
-        query (str): The key or dbref to search for.
+        query (str): The key or dbref to search for. This can consist of any args used
+            for one of the regular search methods. Also kwargs will be passed into
+            the search (except the kwargs given below)
 
     Keyword Args:
         return_list (bool): If set, return a list of objects with
@@ -1099,6 +1101,7 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
             The 'control' permission is required.
         access (str): Which locktype access to check. Unset to disable the
             security check.
+        **kwargs: Will be passed into the main search.
 
     Returns:
         any: An entity match or None if no match or a list if `return_list` is set.
@@ -1111,25 +1114,33 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         - "$search(#233)"
         - "$search(Tom, type=account)"
         - "$search(meadow, return_list=True)"
+        - "$search(beach, category=outdoors, type=tag)
 
     """
-    return_list = kwargs.get("return_list", "false").lower() == "true"
+    # clean out funcparser-specific kwargs so we can use the kwargs for
+    # searching
+    search_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if key not in ("funcparser", "raise_errors", "type", "return_list")
+    }
+    return_list = kwargs.pop("return_list", "false").lower() == "true"
 
     if not args:
         return [] if return_list else None
     if not caller:
         raise ParsingError("$search requires a `caller` passed to the parser.")
 
-    query = str(args[0])
-
     typ = kwargs.get("type", "obj")
     targets = []
     if typ == "obj":
-        targets = search.search_object(query)
+        targets = search.search_object(*args, **search_kwargs)
     elif typ == "account":
-        targets = search.search_account(query)
+        targets = search.search_account(*args, **search_kwargs)
     elif typ == "script":
-        targets = search.search_script(query)
+        targets = search.search_script(*args, **search_kwargs)
+    elif typ == "tag":
+        targets = search.search_object_by_tag(*args, **search_kwargs)
 
     if not targets:
         if return_list:
