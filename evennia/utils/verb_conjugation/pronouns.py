@@ -383,10 +383,6 @@ def pronoun_to_viewpoints(
 
     # check if pronoun maps to multiple options and differentiate
     # but don't allow invalid differentiators
-    if is_iter(source_gender):
-        gender = gender if gender in source_gender else source_gender[0]
-    else:
-        gender = source_gender
     if is_iter(source_type):
         pronoun_type = pronoun_type if pronoun_type in source_type else source_type[0]
     else:
@@ -396,6 +392,18 @@ def pronoun_to_viewpoints(
         viewpoint = viewpoint if viewpoint in target_viewpoint else target_viewpoint[0]
     else:
         viewpoint = target_viewpoint
+
+    # special handling for the royal "we"
+    if is_iter(source_gender):
+      gender_opts = list(source_gender)
+    else:
+      gender_opts = [source_gender]
+    if viewpoint == "1st person":
+        # make sure plural is always an option when converting to 1st person
+        # it doesn't matter if it's in the list twice, so don't bother checking
+        gender_opts.append("plural")
+    # if the gender is still not in the extended options, fall back to source pronoun's default
+    gender = gender if gender in gender_opts else gender_opts[0]
 
     # step down into the mapping
     viewpoint_map = PRONOUN_MAPPING[viewpoint]
