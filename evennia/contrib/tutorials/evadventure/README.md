@@ -2,6 +2,13 @@
 
 Contrib by Griatch 2022
 
+
+```{warning}
+NOTE - this tutorial is WIP and NOT complete! It was put on hold to focus on
+releasing Evennia 1.0. You will still learn things from it, but don't expect
+perfection.
+```
+
 A complete example MUD using Evennia. This is the final result of what is
 implemented if you follow the Getting-Started tutorial. It's recommended
 that you follow the tutorial step by step and write your own code. But if
