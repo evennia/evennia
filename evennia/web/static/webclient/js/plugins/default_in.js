@@ -47,7 +47,7 @@ let defaultInPlugin = (function () {
 
                     // enter key by itself should toggle focus
                     if( inputfield.length < 1 ) {
-                        inputfield = $(".inputfield:last");
+                        inputfield = $(".inputfield.focused");
                         inputfield.focus();
                         if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
                             $("#inputfield").focus();
@@ -64,9 +64,9 @@ let defaultInPlugin = (function () {
                 if( focusOnKeydown ) {
                     // is an inputfield actually focused?
                     if( inputfield.length < 1 ) {
-                        // Nope, focus the last .inputfield found in the DOM (or #inputfield)
-                        //     :last only matters if multi-input plugins are in use
-                        inputfield = $(".inputfield:last");
+                        // Nope, focus the most recently used input field (or #inputfield)
+                        //     .focused only matters if multi-input plugins are in use
+                        inputfield = $(".inputfield.focused");
                         inputfield.focus();
                         if( inputfield.length < 1 ) { // non-goldenlayout backwards compatibility
                             $("#inputfield").focus();
