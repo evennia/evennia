@@ -22,3 +22,6 @@ django-extensions >= 3.1.0
 
 # xyzroom contrib
 scipy<1.9
+
+# Git contrib
+gitpython >= 3.1.27
