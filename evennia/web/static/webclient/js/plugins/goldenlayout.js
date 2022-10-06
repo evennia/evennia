@@ -247,10 +247,28 @@ let goldenlayout = (function () {
         }
     }
 
+    //
+    // ensure only one handler is set up on the parent with _.once
+    var registerInputTabChangeHandler = _.once(function (tab) {
+      tab.header.parent.on( "activeContentItemChanged", onActiveInputTabChange );
+    });
 
     //
+    // Handle when the active input tab changes
+    var onActiveInputTabChange = function (tab) {
+      $('.inputfield').removeClass('focused');
+      $('.inputfield', tab.tab.contentItem.element).addClass('focused');
+    }
+
     //
-    var onActiveTabChange = function (tab) {
+    // ensure only one handler is set up on the parent with _.once
+    var registerMainTabChangeHandler = _.once(function (tab) {
+      tab.header.parent.on( "activeContentItemChanged", onActiveMainTabChange );
+    });
+
+    //
+    // Handle when the active main tab changes
+    var onActiveMainTabChange = function (tab) {
         let renamebox  = document.getElementById("renamebox");
         let typelist   = document.getElementById("typelist");
         let updatelist = document.getElementById("updatelist");
@@ -267,7 +285,6 @@ let goldenlayout = (function () {
             closeUpdatelistDropdown();
         }
     }
-
 
     //
     // Save the GoldenLayout state to localstorage whenever it changes.
@@ -344,7 +361,7 @@ let goldenlayout = (function () {
             tab.element.prepend( $("#optionsbutton").clone(true).addClass("lm_title") );
         }
 
-        tab.header.parent.on( "activeContentItemChanged", onActiveTabChange );
+        registerMainTabChangeHandler(tab);
     }
 
 
@@ -352,7 +369,9 @@ let goldenlayout = (function () {
     //
     var onInputCreate = function (tab) {
         //HTML for the typeDropdown
-        let splitControl          = $("<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>");
+        let splitControl = $(
+            "<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>"
+        );
 
         // track adding a new tab
         splitControl.click( tab, function (evnt) {
@@ -362,7 +381,7 @@ let goldenlayout = (function () {
         // Add the typeDropdown to the header
         tab.element.append(  splitControl );
 
-        tab.header.parent.on( "activeContentItemChanged", onActiveTabChange );
+        registerInputTabChangeHandler(tab);
     }
 
 
