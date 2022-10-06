@@ -106,6 +106,7 @@ class GlobalScriptContainer(Container):
         callables from settings but a custom dict of tuples.
 
     """
+    __BASE_SCRIPT_TYPECLASS = class_from_module(settings.BASE_SCRIPT_TYPECLASS)
 
     def __init__(self):
         """
@@ -202,14 +203,19 @@ class GlobalScriptContainer(Container):
         """
         if self.typeclass_storage is None:
             self.typeclass_storage = {}
-            for key, data in self.loaded_data.items():
+            for key, data in list(self.loaded_data.items()):
                 try:
                     typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
-                    self.typeclass_storage[key] = class_from_module(typeclass)
+                    script_typeclass = class_from_module(typeclass)
+                    assert issubclass(script_typeclass, self.__BASE_SCRIPT_TYPECLASS)
+                    self.typeclass_storage[key] = script_typeclass
                 except Exception:
                     logger.log_trace(
-                        f"GlobalScriptContainer could not start import global script {key}."
+                        f"GlobalScriptContainer could not start import global script {key}. "
+                        "It will be removed (skipped)."
                     )
+                    # Let's remove this key/value. We want to let other scripts load.
+                    self.loaded_data.pop(key)
 
     def get(self, key, default=None):
         """
