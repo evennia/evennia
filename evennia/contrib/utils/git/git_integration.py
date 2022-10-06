@@ -7,11 +7,29 @@ from evennia.server.sessionhandler import SESSIONS
 import git
 import datetime
 
+class CmdGit(MuxCommand):
+    """
+    Pull the latest code from your repository or checkout a different branch.
 
-class GitCommand(MuxCommand):
+    Usage:
+        git status        - View an overview of your git repository.
+        git branch        - View available branches.
+        git checkout main - Checkout the main branch of your code.
+        git pull          - Pull the latest code from your current branch.
+
+    For updating evennia code, the same commands are available with 'git evennia':
+        git evennia status
+        git evennia branch
+        git evennia checkout <branch>
+        git evennia pull
+        
+    If there are any conflicts encountered, the command will abort. The command will reload your game after pulling new code automatically, but for changes involving persistent scripts etc, you may need to manually restart.
     """
-    Parent class for Git commands.
-    """
+
+    key = "@git"
+    aliases = ["@git evennia"]
+    locks = "cmd:pperm(Developer)"
+    help_category = "System"
 
     def parse(self):
         """
@@ -59,33 +77,11 @@ class GitCommand(MuxCommand):
         """
         short_sha = repo.git.rev_parse(hexsha, short=True)
         return short_sha
-
-
-class CmdGit(GitCommand):
-    """
-    Pull the latest code from your repository or checkout a different branch.
-
-    Usage:
-        git status        - View an overview of your git repository.
-        git branch        - View available branches.
-        git checkout main - Checkout the main branch of your code.
-        git pull          - Pull the latest code from your current branch.
-
-    For updating evennia code, the same commands are available with 'git evennia':
-        git evennia status
-        git evennia branch
-        git evennia checkout <branch>
-        git evennia pull
         
-    If there are any conflicts encountered, the command will abort. The command will reload your game after pulling new code automatically, but for changes involving persistent scripts etc, you may need to manually restart.
-    """
-
-    key = "@git"
-    aliases = ["@git evennia"]
-    locks = "cmd:pperm(Developer)"
-    help_category = "System"
-
     def get_status(self):
+        """
+        Retrieves the status of the active git repository, displaying unstaged changes/untracked files.
+        """
         time_of_commit = datetime.datetime.fromtimestamp(self.commit.committed_date)
         status_msg = '\n'.join([f"Branch: |w{self.branch}|n ({self.repo.git.rev_parse(self.commit.hexsha, short=True)}) ({time_of_commit})",
         f"By {self.commit.author.email}: {self.commit.message}"])
@@ -98,11 +94,17 @@ class CmdGit(GitCommand):
         return status_msg
 
     def get_branches(self):
+        """
+        Display current and available branches.
+        """
         remote_refs = self.repo.remote().refs
         branch_msg = f"Current branch: |w{self.branch}|n. Branches available: {list_to_string(remote_refs)}"
         return branch_msg
 
     def checkout(self):
+        """
+        Check out a specific branch.
+        """
         remote_refs = self.repo.remote().refs
         to_branch = self.args.strip().removeprefix('origin/')  # Slightly hacky, but git tacks on the origin/
 
@@ -122,6 +124,9 @@ class CmdGit(GitCommand):
             return True
     
     def pull(self):
+        """
+        Attempt to pull new code.
+        """
         old_commit = self.commit
         try:
             self.repo.remotes.origin.pull()
@@ -159,7 +164,7 @@ class CmdGit(GitCommand):
 # CmdSet for easily install all commands
 class GitCmdSet(CmdSet):
     """
-    The map command.
+    The git command.
     """
 
     def at_cmdset_creation(self):
