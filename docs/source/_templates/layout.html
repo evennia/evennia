@@ -179,13 +179,14 @@
 
     <div class="document">
   {%- block document %}
+
       <div class="documentwrapper">
       {%- if render_sidebar %}
+        {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
         <div class="bodywrapper">
       {%- endif %}
           <div class="body" role="main">
             {% block body %} {% endblock %}
-            <div class="clearer"></div>
           </div>
       {%- if render_sidebar %}
         </div>
@@ -193,8 +194,6 @@
       </div>
   {%- endblock %}
 
-  {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
-      <div class="clearer"></div>
     </div>
 {%- endblock %}
 
