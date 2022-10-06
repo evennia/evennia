@@ -53,12 +53,16 @@ By default, the git commands are only available to those with Developer permissi
 
 The supported commands are:
 * git status: An overview of your git repository, which files have been changed locally, and the commit you're on.
-* git status evennia: An overview of your evennia repository and the commit you're on. 
 * git branch: What branches are available for you to check out.
-* git checkout: Checkout a branch.
+* git checkout 'branch': Checkout a branch.
 * git pull: Pull the latest code from your current branch.
+
+* All of these commands are also available with 'evennia', to serve the same functionality related to your evennia directory. So:
+* git status evennia
+* git branch evennia
+* git checkout evennia 'branch'
 * git pull evennia: Pull the latest evennia code.
 
 ## Settings Used
 
-The utility uses the existing GAME_DIR and EVENNIA_DIR settings from settings.py. You should not need to alter these if you have a standard directory setup.
+The utility uses the existing GAME_DIR and EVENNIA_DIR settings from settings.py. You should not need to alter these if you have a standard directory setup, they ought to exist without any setup required from you.
