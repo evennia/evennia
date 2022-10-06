@@ -2,7 +2,7 @@
 
 Contribution by helpme (2022)
 
-A module to integrate a stripped-down version of git within the game, allowing developers to keep their evennia version updated, commit code to their git repository, change branches, and pull updated code. After a successful pull or checkout, the git command will reload the game: You may need to restart manually to apply certain changes that would impact persistent scripts etc. 
+A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local game and evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc. 
 
 Once the contrib is set up, integrating remote changes is as simple as entering the following into your game:
 
@@ -10,7 +10,7 @@ Once the contrib is set up, integrating remote changes is as simple as entering 
 git pull
 ```
 
-Of course, your game directory must be a git directory to begin with for this command to function. 
+Of course, your game directory must be a git directory to begin with for this command to function. [Get started with version control here.](https://www.evennia.com/docs/1.0-dev/Coding/Version-Control.html)
 
 ## Dependencies
 
@@ -46,7 +46,7 @@ This utility will only work if your game and evennia directories are git directo
 
 ```
 git init
-git remote add origin [link to your repository]
+git remote add origin 'link to your repository'
 ```
 
 By default, the git commands are only available to those with Developer permissions and higher. You can change this by overriding the command and setting its locks from "cmd:pperm(Developer)" to the lock of your choice.
