@@ -32,6 +32,20 @@ let goldenlayout = (function () {
         id: "inputComponent",
     };
 
+    // helper function: only allow a function to be called once
+    function once(func) {
+      function _f() {
+        if (!_f.isCalled) {
+          _f.isCalled = true;
+          _f.res = func.apply(this, arguments);
+        }
+        return _f.res;
+      }
+      _f.prototype = func.prototype;
+      _f.isCalled = false;
+      return _f;
+    }
+
     // helper function:  filter vals out of array
     function filter (vals, array) {
         if( Array.isArray( vals ) && Array.isArray( array ) ) {
@@ -248,8 +262,8 @@ let goldenlayout = (function () {
     }
 
     //
-    // ensure only one handler is set up on the parent with _.once
-    var registerInputTabChangeHandler = _.once(function (tab) {
+    // ensure only one handler is set up on the parent with once
+    var registerInputTabChangeHandler = once(function (tab) {
       tab.header.parent.on( "activeContentItemChanged", onActiveInputTabChange );
     });
 
@@ -261,8 +275,8 @@ let goldenlayout = (function () {
     }
 
     //
-    // ensure only one handler is set up on the parent with _.once
-    var registerMainTabChangeHandler = _.once(function (tab) {
+    // ensure only one handler is set up on the parent with once
+    var registerMainTabChangeHandler = once(function (tab) {
       tab.header.parent.on( "activeContentItemChanged", onActiveMainTabChange );
     });
 
