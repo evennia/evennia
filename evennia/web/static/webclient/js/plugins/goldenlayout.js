@@ -264,7 +264,19 @@ let goldenlayout = (function () {
     //
     // ensure only one handler is set up on the parent with once
     var registerInputTabChangeHandler = once(function (tab) {
-      tab.header.parent.on( "activeContentItemChanged", onActiveInputTabChange );
+        // Set up the control to add new tabs
+        let splitControl = $(
+          "<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>"
+        );
+
+        // Handler for adding a new tab
+        splitControl.click( tab, function (evnt) {
+            evnt.data.header.parent.addChild( newInputConfig );
+        });
+
+        // Position it after the tab list
+        $('ul.lm_tabs', tab.header.element).after(splitControl).css("position", "relative");
+        tab.header.parent.on( "activeContentItemChanged", onActiveInputTabChange );
     });
 
     //
@@ -382,19 +394,6 @@ let goldenlayout = (function () {
     //
     //
     var onInputCreate = function (tab) {
-        //HTML for the typeDropdown
-        let splitControl = $(
-            "<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>"
-        );
-
-        // track adding a new tab
-        splitControl.click( tab, function (evnt) {
-            evnt.data.header.parent.addChild( newInputConfig );
-        });
-
-        // Add the typeDropdown to the header
-        tab.element.append(  splitControl );
-
         registerInputTabChangeHandler(tab);
     }
 
