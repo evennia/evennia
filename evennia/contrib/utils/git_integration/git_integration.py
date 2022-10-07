@@ -7,34 +7,17 @@ from evennia.server.sessionhandler import SESSIONS
 import git
 import datetime
 
-class CmdGit(MuxCommand):
+class GitCommand(MuxCommand):
     """
-    Pull the latest code from your repository or checkout a different branch.
-
-    Usage:
-        git status        - View an overview of your git repository.
-        git branch        - View available branches.
-        git checkout main - Checkout the main branch of your code.
-        git pull          - Pull the latest code from your current branch.
-
-    For updating evennia code, the same commands are available with 'git evennia':
-        git evennia status
-        git evennia branch
-        git evennia checkout <branch>
-        git evennia pull
-        
-    If there are any conflicts encountered, the command will abort. The command will reload your game after pulling new code automatically, but for changes involving persistent scripts etc, you may need to manually restart.
+    The shared functionality between git/git evennia
     """
-
-    key = "@git"
-    aliases = ["@git evennia"]
-    locks = "cmd:pperm(Developer)"
-    help_category = "System"
 
     def parse(self):
         """
-        Parse the arguments and ensure git repositories exist. Fail with InterruptCommand if git repositories not found.
+        Parse the arguments, set default arg to 'status' and check for existence of currently targeted repo
         """
+        super().parse()
+        
         if self.args:
             split_args = self.args.strip().split(" ", 1)
             self.action = split_args[0]
@@ -45,26 +28,17 @@ class CmdGit(MuxCommand):
         else:
             self.action = "status"
             self.args = ""
-
-        err_msgs = ["|rInvalid Git Repository|n:",
+        
+        self.err_msgs = ["|rInvalid Git Repository|n:",
             "The {repo_type} repository is not recognized as a git directory.",
             "In order to initialize it as a git directory, you will need to access your terminal and run the following commands from within your directory:",
             "    git init",
             "    git remote add origin {remote_link}"]
-
-        if self.cmdstring == "git evennia":
-            directory = settings.EVENNIA_DIR
-            repo_type = "Evennia"
-            remote_link = "https://github.com/evennia/evennia.git"
-        else:
-            directory = settings.GAME_DIR
-            repo_type = "game"
-            remote_link = "[your remote link]"
-
+        
         try:
-            self.repo = git.Repo(directory, search_parent_directories=True)
+            self.repo = git.Repo(self.directory, search_parent_directories=True)
         except git.exc.InvalidGitRepositoryError:
-            err_msg = '\n'.join(err_msgs).format(repo_type=repo_type, remote_link=remote_link)
+            err_msg = '\n'.join(self.err_msgs).format(repo_type=self.repo_type, remote_link=self.remote_link)
             self.caller.msg(err_msg)
             raise InterruptCommand
         
@@ -160,6 +134,51 @@ class CmdGit(MuxCommand):
             caller.msg("You can only git status, git branch, git checkout, or git pull.")
             return
 
+class CmdGitEvennia(GitCommand):
+    """
+    Pull the latest code from the evennia core or checkout a different branch.
+    
+    Usage:
+        git evennia status - View an overview of the evennia repository status.
+        git evennia branch - View available branches in evennia.
+        git evennia checkout <branch> - Checkout a different branch in evennia.
+        git evennia pull - Pull the latest evennia code.
+    
+    For updating your local mygame repository, the same commands are available with 'git'.
+        
+    If there are any conflicts encountered, the command will abort. The command will reload your game after pulling new code automatically, but for some changes involving persistent scripts etc, you may need to manually restart.
+    """
+
+    key = "git evennia"
+    locks = "cmd:pperm(Developer)"
+    help_category = "System"
+    directory = settings.EVENNIA_DIR
+    repo_type = "Evennia"
+    remote_link = "https://github.com/evennia/evennia.git"
+
+
+class CmdGit(GitCommand):
+    """
+    Pull the latest code from your repository or checkout a different branch.
+
+    Usage:
+        git status        - View an overview of your git repository.
+        git branch        - View available branches.
+        git checkout main - Checkout the main branch of your code.
+        git pull          - Pull the latest code from your current branch.
+
+    For updating evennia code, the same commands are available with 'git evennia'.
+        
+    If there are any conflicts encountered, the command will abort. The command will reload your game after pulling new code automatically, but for changes involving persistent scripts etc, you may need to manually restart.
+    """
+
+    key = "git"
+    locks = "cmd:pperm(Developer)"
+    help_category = "System"
+    directory = settings.GAME_DIR
+    repo_type = "game"
+    remote_link = "[your remote link]"
+
 
 # CmdSet for easily install all commands
 class GitCmdSet(CmdSet):
@@ -169,3 +188,4 @@ class GitCmdSet(CmdSet):
 
     def at_cmdset_creation(self):
         self.add(CmdGit)
+        self.add(CmdGitEvennia)
