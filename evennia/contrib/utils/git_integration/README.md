@@ -2,7 +2,7 @@
 
 Contribution by helpme (2022)
 
-A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local game and evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc. 
+A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local mygame repo and Evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc. 
 
 Once the contrib is set up, integrating remote changes is as simple as entering the following into your game:
 
@@ -10,7 +10,7 @@ Once the contrib is set up, integrating remote changes is as simple as entering 
 git pull
 ```
 
-Of course, your game directory must be a git directory to begin with for this command to function. [Get started with version control here.](https://www.evennia.com/docs/1.0-dev/Coding/Version-Control.html)
+The repositories you want to work with, be it only your local mygame repo, only Evennia core, or both, must be git directories for the command to function. If you are only interested in using this to get upstream Evennia changes, only the Evennia repository needs to be a git repository. [Get started with version control here.](https://www.evennia.com/docs/1.0-dev/Coding/Version-Control.html)
 
 ## Dependencies
 
@@ -42,7 +42,7 @@ Then `reload` to make the git command available.
 
 ## Usage
 
-This utility will only work if your game and evennia directories are git directories. If they are not, you will be prompted to initiate your directory as a git repository using the following commands in your terminal:
+This utility will only work if the directory you wish to work with is a git directory. If they are not, you will be prompted to initiate your directory as a git repository using the following commands in your terminal:
 
 ```
 git init
@@ -57,11 +57,11 @@ The supported commands are:
 * git checkout 'branch': Checkout a branch.
 * git pull: Pull the latest code from your current branch.
 
-* All of these commands are also available with 'evennia', to serve the same functionality related to your evennia directory. So:
-* git status evennia
-* git branch evennia
-* git checkout evennia 'branch'
-* git pull evennia: Pull the latest evennia code.
+* All of these commands are also available with 'evennia', to serve the same functionality related to your Evennia directory. So:
+* git evennia status
+* git evennia branch
+* git evennia checkout 'branch'
+* git evennia pull: Pull the latest Evennia code.
 
 ## Settings Used
 

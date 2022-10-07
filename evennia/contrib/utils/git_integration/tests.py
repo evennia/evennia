@@ -3,10 +3,10 @@ Tests of git.
 
 """
 
-from evennia import InterruptCommand
+from django.conf import settings
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import EvenniaTest
-from evennia.contrib.utils.git.git_integration import CmdGit
+from evennia.contrib.utils.git_integration.git_integration import CmdGit, CmdGitEvennia
 from evennia.utils.utils import list_to_string
 
 import git
@@ -16,7 +16,7 @@ import datetime
 class TestCmdGit(CmdGit):
     pass
 
-class TestGit(EvenniaTest):
+class TestGitIntegration(EvenniaTest):
     @mock.patch("git.Repo")
     @mock.patch("git.Git")
     @mock.patch("git.Actor")
@@ -72,4 +72,34 @@ class TestGit(EvenniaTest):
         self.test_cmd_git.pull()
         repo = self.test_cmd_git.repo
         self.char1.msg.assert_called_with(f"You have pulled new code. Server restart initiated.|/Head now at {repo.git.rev_parse(repo.head.commit.hexsha, short=True)}.|/Author: {repo.head.commit.author.name} ({repo.head.commit.author.email})|/{repo.head.commit.message.strip()}")
-            
+    
+class TestGitEvennia(BaseEvenniaCommandTest):
+    def setUp(self):
+        super().setUp()
+        try:
+            self.repo = git.Repo(settings.EVENNIA_DIR, search_parent_directories=True)
+        except git.exc.InvalidGitRepositoryError:
+            print("Test TestGitEvennia failed, unable to find Evennia directory.")        
+        self.commit = self.repo.head.commit
+        self.branch = self.repo.active_branch.name
+
+    def test_git_evennia_status(self):
+        # View current git evennia status
+        time_of_commit = datetime.datetime.fromtimestamp(self.commit.committed_date)
+        status_msg = '\n'.join([f"Branch: {self.branch} ({self.repo.git.rev_parse(self.commit.hexsha, short=True)}) ({time_of_commit})",
+        f"By {self.commit.author.email}: {self.commit.message}"])
+        self.call(
+            CmdGitEvennia(),
+            "status",
+            status_msg
+        )
+
+    def test_git_evennia_branch(self):
+        # View current branch & branches available
+        remote_refs = self.repo.remote().refs
+        branch_msg = f"Current branch: {self.branch}. Branches available: {list_to_string(remote_refs)}"
+        self.call(
+            CmdGitEvennia(),
+            "branch",
+            branch_msg
+        )
