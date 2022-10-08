@@ -154,11 +154,11 @@ class TextToHTMLparser(object):
           href = m.group(1)
           label = href
           # if there is no protocol (i.e. starts with www or ftp)
-          # prefix with // so the link isn't treated as relative
+          # prefix with http:// so the link isn't treated as relative
           if not self.re_protocol.match(href):
             if not self.re_valid_no_protocol.match(href):
               return text
-            href = "//" + href
+            href = "http://" + href
           rest = m.group(2)
           # -> added target to output prevent the web browser from attempting to
           # change pages (and losing our webclient session).
