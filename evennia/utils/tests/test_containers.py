@@ -78,6 +78,9 @@ class TestGlobalScriptContainer(unittest.TestCase):
 
   @override_settings(GLOBAL_SCRIPTS={'script_name': {'typeclass': 'evennia.utils.tests.test_containers.QuestionableScript'}})
   def test_start_with_questionably_subclassed_script_skips_it(self):
+    # Make sure _BASE_SCRIPT_TYPECLASS is NOT DefaultScript but it's a subclass
+    assert issubclass(_BASE_SCRIPT_TYPECLASS, DefaultScript) and _BASE_SCRIPT_TYPECLASS != DefaultScript
+
     gsc = containers.GlobalScriptContainer()
 
     gsc.start()
