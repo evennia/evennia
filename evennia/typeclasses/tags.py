@@ -419,7 +419,7 @@ class TagHandler(object):
         if key:
             for tag_str in make_iter(key):
                 tag_str = tag_str.strip().lower()
-                ret.extend(bool(tag) for tag in self._getcache(tag_str, category))
+                ret.append(bool(self._getcache(tag_str, category)))
         elif category:
             ret.extend(bool(tag) for tag in self._getcache(category=category))
         else:
