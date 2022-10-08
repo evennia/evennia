@@ -4,6 +4,7 @@ from evennia.utils import containers
 from django.conf import settings
 from django.test import override_settings
 from evennia.utils.utils import class_from_module
+from evennia.scripts.scripts import DefaultScript
 
 _BASE_SCRIPT_TYPECLASS = class_from_module(settings.BASE_SCRIPT_TYPECLASS)
 
@@ -19,6 +20,10 @@ class WorseScript(_BASE_SCRIPT_TYPECLASS):
   @property
   def objects(self):
     from evennia import module_that_doesnt_exist
+
+class QuestionableScript(DefaultScript):
+  """Does NOT derive from settings.BASE_SCRIPT_TYPECLASS so it would fail."""
+  pass
 
 class TestGlobalScriptContainer(unittest.TestCase):
 
@@ -64,6 +69,15 @@ class TestGlobalScriptContainer(unittest.TestCase):
 
   @override_settings(GLOBAL_SCRIPTS={'script_name': {'typeclass': 'evennia.utils.tests.test_containers.BadScript'}})
   def test_start_with_bad_typeclassed_script_skips_it(self):
+    gsc = containers.GlobalScriptContainer()
+
+    gsc.start()
+
+    self.assertEqual(len(gsc.typeclass_storage), 0)
+    self.assertNotIn('script_name', gsc.typeclass_storage)
+
+  @override_settings(GLOBAL_SCRIPTS={'script_name': {'typeclass': 'evennia.utils.tests.test_containers.QuestionableScript'}})
+  def test_start_with_questionably_subclassed_script_skips_it(self):
     gsc = containers.GlobalScriptContainer()
 
     gsc.start()
