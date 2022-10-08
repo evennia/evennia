@@ -1425,6 +1425,34 @@ class TestXyzExit(xyzroom.XYZExit):
   def at_object_creation(self):
     breakpoint()
 
+MAP_DATA = {
+  "map": """
+
+    + 0 1
+
+    0 #-#
+
+    + 0 1
+
+  """,
+  "zcoord": "map1",
+  "prototypes": {
+     ("*", "*"): {
+       "key": "room",
+       "desc": "A room.",
+       "prototype_parent": "xyz_room",
+     },
+     ("*", "*", "*"): {
+       "desc": "A passage.",
+       "prototype_parent": "xyz_exit",
+     }
+  },
+  "options": {
+    "map_visual_range": 1,
+    "map_mode": "scan",
+  }
+}
+
 # @override_settings(
 #   XYZEXIT_PROTOTYPE_OVERRIDE= {
 #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzExit",
@@ -1434,62 +1462,54 @@ class TestXyzExit(xyzroom.XYZExit):
 #   }
 # )
 class TestCallbacks(BaseEvenniaTest):
-    @override_settings(
-      XYZEXIT_PROTOTYPE_OVERRIDE={
-        "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzExit",
-      },
-      XYZROOM_PROTOTYPE_OVERRIDE={
-        "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
-      })
-    def setUp(self):
-        super().setUp()
+    # @override_settings(
+    #   XYZEXIT_PROTOTYPE_OVERRIDE={
+    #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzExit",
+    #   },
+    #   XYZROOM_PROTOTYPE_OVERRIDE={
+    #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
+    #   })
+    # def setUp(self):
+    #     super().setUp()
+    #     self.setup_grid(MAP_DATA)
         
-        from evennia.prototypes import prototypes as protlib
-        for prototype_key in ('xyz_room', 'xyz_exit', 'xyzroom', 'xyzexit'):
-          proto = protlib.search_prototype(
-              prototype_key,
-              # require_single=True,
-              # no_db=True
-          )
-          print(prototype_key, 'found?', proto)
+    def setup_grid(self, map_data):
+        # from evennia.prototypes import prototypes as protlib
+        # for prototype_key in ('xyz_room', 'xyz_exit', 'xyzroom', 'xyzexit'):
+        #   proto = protlib.search_prototype(
+        #       prototype_key,
+        #       # require_single=True,
+        #       # no_db=True
+        #   )
+        #   print(prototype_key, 'found?', proto)
 
-        self.map_data = {
-          "map": """
-
-            + 0 1
-
-            0 #-#
-
-            + 0 1
-
-          """,
-          "zcoord": "map1",
-          "prototypes": {
-             ("*", "*"): {
-               "key": "room",
-               "desc": "A room.",
-               "prototype_parent": "xyz_room",
-             },
-             ("*", "*", "*"): {
-               "desc": "A passage.",
-               "prototype_parent": "xyz_exit",
-             }
-          },
-          "options": {
-            "map_visual_range": 1,
-            "map_mode": "scan",
-          }
-        }
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
 
         def _log(msg):
              print(msg)
         self.grid.log = _log
 
-        self.grid.add_maps(self.map_data)
+        self.map_data = map_data
+        self.grid.add_maps(map_data)
 
     def tearDown(self):
         self.grid.delete()
 
+    # @override_settings(
+    #   XYZEXIT_PROTOTYPE_OVERRIDE={
+    #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzExit",
+    #   },
+    #   XYZROOM_PROTOTYPE_OVERRIDE={
+    #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
+    #   })
     def test_dummy(self):
+        map_data = dict(MAP_DATA)
+        for prototype_key, prototype_value in map_data["prototypes"].items():
+            if len(prototype_key) == 2:
+                prototype_value["typeclass"] = "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom"
+            if len(prototype_key) == 3:
+                prototype_value["typeclass"] = "evennia.contrib.grid.xyzgrid.tests.TestXyzExit"
+        print(map_data)
+        self.setup_grid(map_data)
+
         self.grid.spawn()
