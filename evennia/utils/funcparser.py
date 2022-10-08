@@ -1162,7 +1162,7 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         )
 
     for target in targets:
-        if not target.access(caller, target, access):
+        if not target.access(caller, access):
             raise ParsingError("$search Cannot add found entity - access failure.")
 
     return list(targets) if return_list else targets[0]
