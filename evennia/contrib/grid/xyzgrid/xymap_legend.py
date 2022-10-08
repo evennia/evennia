@@ -302,6 +302,7 @@ class MapNode:
         to their destinations.
 
         """
+        # breakpoint()
         global NodeTypeclass
         if not NodeTypeclass:
             from .xyzroom import XYZRoom as NodeTypeclass
