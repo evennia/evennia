@@ -262,12 +262,12 @@ class TestFuncParser(TestCase):
         _MAX_NESTING value, which means you can nest 4 values with a value of
         2, as demonstrated by this test.
         """
-        string = "$add(1, $add(1, $add(1, $add(1, $toint(42)))))"
+        string = "$add(1, $add(1, $add(1, $toint(42))))"
         ret = self.parser.parse(string)
 
         # TODO: Does this return value actually make sense?
         # It removed the spaces from the calls.
-        self.assertEqual("$add(1,$add(1,$add(1,$add(1,$toint(42)))))", ret)
+        self.assertEqual("$add(1,$add(1,$add(1,$toint(42))))", ret)
 
         with self.assertRaises(funcparser.ParsingError):
             self.parser.parse(string, raise_errors=True)
