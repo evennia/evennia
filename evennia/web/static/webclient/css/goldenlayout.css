@@ -46,6 +46,7 @@ label {
 .lm_title {
     text-align: center;
     margin-right: 2px;
+    padding-right: 8px;
 }
 
 .lm_tab.lm_active {
