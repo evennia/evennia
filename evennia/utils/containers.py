@@ -208,18 +208,8 @@ class GlobalScriptContainer(Container):
         if self.typeclass_storage is None:
             self.typeclass_storage = {}
             for key, data in list(self.loaded_data.items()):
-                try:
-                    typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
-                    script_typeclass = class_from_module(typeclass)
-                    assert issubclass(script_typeclass, _BASE_SCRIPT_TYPECLASS)
-                    self.typeclass_storage[key] = script_typeclass
-                except Exception:
-                    logger.log_trace(
-                        f"GlobalScriptContainer could not start import global script {key}. "
-                        "It will be removed (skipped)."
-                    )
-                    # Let's remove this key/value. We want to let other scripts load.
-                    self.loaded_data.pop(key)
+                typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
+                self.typeclass_storage[key] = class_from_module(typeclass, fallback=settings.BASE_SCRIPT_TYPECLASS)
 
     def get(self, key, default=None):
         """
