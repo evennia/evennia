@@ -79,7 +79,7 @@ def _lsum_callable(*args, **kwargs):
 
 
 def _raises_callable(*args, **kwargs):
-    raise funcparser.ParsingError("Test exception raised by test callable")
+    raise RuntimeError("Test exception raised by test callable")
 
 
 _test_callables = {
@@ -280,7 +280,7 @@ class TestFuncParser(TestCase):
         # It completed the first function call.
         self.assertEqual("test 2 $raise()", ret)
 
-        with self.assertRaises(funcparser.ParsingError):
+        with self.assertRaises(RuntimeError):
             self.parser.parse(string, raise_errors=True)
 
     def test_parse_strip(self):
