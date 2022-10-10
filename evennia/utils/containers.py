@@ -19,8 +19,6 @@ from evennia.utils import logger
 from evennia.utils.utils import callables_from_module, class_from_module
 
 SCRIPTDB = None
-_BASE_SCRIPT_TYPECLASS = None
-
 
 class Container:
     """
@@ -201,10 +199,6 @@ class GlobalScriptContainer(Container):
         initialized.
 
         """
-        global _BASE_SCRIPT_TYPECLASS
-        if not _BASE_SCRIPT_TYPECLASS:
-            _BASE_SCRIPT_TYPECLASS = class_from_module(settings.BASE_SCRIPT_TYPECLASS)
-
         if self.typeclass_storage is None:
             self.typeclass_storage = {}
             for key, data in list(self.loaded_data.items()):
