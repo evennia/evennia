@@ -2755,3 +2755,61 @@ def int2str(number, adjective=False):
     if adjective:
         return _INT2STR_MAP_ADJ.get(number, f"{number}th")
     return _INT2STR_MAP_NOUN.get(number, str(number))
+
+_STR2INT_MAP = {
+	"one":        1, "two":        2, "three":      3,
+	"four":       4, "five":       5, "six":        6,
+	"seven":      7, "eight":      8, "nine":       9,
+	"ten":       10, "eleven":    11, "twelve":    12,
+	"thirteen":  13, "fourteen":  14, "fifteen":   15,
+	"sixteen":   16, "seventeen": 17, "eighteen":  18,
+	"nineteen":  19, "twenty":    20, "thirty":    30,
+	"forty":     40, "fifty":     50, "sixty":     60,
+	"seventy":   70, "eighty":    80, "ninety":    90,
+	"hundred":  100, "thousand": 1000,
+}
+def str2int(number):
+    """
+    Converts a string to an integer.
+    
+    Args:
+        number (str): The string to convert. It can be a digit such as "1", or a number word such as "one".
+    
+    Returns:
+        int: The string represented as an integer.
+    """
+    number = str(number)
+    try:
+        # it's a digit already
+        return int(number)
+    except:
+        pass
+    
+    if i := _STR2INT_MAP.get(number):
+        # it's a single number, return it
+        return i
+
+    number = number.replace(" and "," ")
+    # split number words by spaces, hyphens and commas, to accommodate multiple styles
+    numbers = [ word.lower() for word in re.split(r'[-\s\,]',number) if word ]
+    sums = []
+    for word in numbers:
+        # check if it's a known number-word
+        if i := _STR2INT_MAP.get(word):
+            if not len(sums):
+                # initialize the list with the current value
+                sums = [i]
+            else:
+                # if the previous number was smaller, it's a multiplier
+                # e.g. the "two" in "two hundred"
+                if sums[-1] < i:
+                    sums[-1] = sums[-1]*i
+                # otherwise, it's added on, like the "five" in "twenty five"
+                else:
+                    sums.append(i)
+            else:
+        else:
+            # invalid number-word, return None to error
+            return None
+    return sum(sums)
+
