@@ -2808,7 +2808,7 @@ def str2int(number):
             # e.g. twentieth, fortieth
             number = number[:-2] + "y"
         # custom case for ninth
-        elif number[-3:] == "nin"
+        elif number[-3:] == "nin":
             number += "e"
     
     # split number words by spaces, hyphens and commas, to accommodate multiple styles
@@ -2828,8 +2828,7 @@ def str2int(number):
                 # otherwise, it's added on, like the "five" in "twenty five"
                 else:
                     sums.append(i)
-            else:
-        elif i := STR2INT_ADJS.get(word):
+        elif i := _STR2INT_ADJS.get(word):
             # it's a special adj word; ordinal case will never be a multiplier
             sums.append(i)
         else:
