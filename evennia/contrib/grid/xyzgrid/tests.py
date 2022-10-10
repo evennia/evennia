@@ -4,7 +4,6 @@ Tests for the XYZgrid system.
 
 """
 from unittest import mock
-from unittest.mock import patch
 
 from random import randint
 from parameterized import parameterized
@@ -1419,13 +1418,16 @@ class TestBuildExampleGrid(BaseEvenniaTest):
         self.assertTrue(room2b.db.desc.startswith("Sunlight sifts down"))
 
 
+mock_room_callbacks = mock.MagicMock()
+mock_exit_callbacks = mock.MagicMock()
+
 class TestXyzRoom(xyzroom.XYZRoom):
   def at_object_creation(self):
-    pass
+    mock_room_callbacks.at_object_creation()
 
 class TestXyzExit(xyzroom.XYZExit):
   def at_object_creation(self):
-    pass
+    mock_exit_callbacks.at_object_creation()
 
 MAP_DATA = {
   "map": """
@@ -1473,7 +1475,8 @@ class TestCallbacks(BaseEvenniaTest):
     #   })
     def setUp(self):
         super().setUp()
-    #     self.setup_grid(MAP_DATA)
+        mock_room_callbacks.reset_mock()
+        mock_exit_callbacks.reset_mock()
         
     def setup_grid(self, map_data):
         # from evennia.prototypes import prototypes as protlib
@@ -1505,9 +1508,7 @@ class TestCallbacks(BaseEvenniaTest):
     #   XYZROOM_PROTOTYPE_OVERRIDE={
     #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
     #   })
-    # @patch('evennia.contrib.grid.xyzgrid.tests.TestXyzRoom')
-    # def test_dummy(self, MockTestXyzRoom):
-    def test_dummy(self):
+    def test_typeclassed_xyzroom_and_xyzexit_with_at_object_creation_are_called(self):
         map_data = dict(MAP_DATA)
         for prototype_key, prototype_value in map_data["prototypes"].items():
             if len(prototype_key) == 2:
@@ -1518,3 +1519,7 @@ class TestCallbacks(BaseEvenniaTest):
         self.setup_grid(map_data)
 
         self.grid.spawn()
+
+        # Two rooms and 2 exits.
+        self.assertEqual(mock_room_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
+        # self.assertEqual(mock_exit_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
