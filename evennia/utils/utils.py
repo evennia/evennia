@@ -2793,10 +2793,6 @@ def str2int(number):
         except:
             pass
     
-    if i := _STR2INT_MAP.get(number):
-        # it's a single number, return it
-        return i
-
     # convert sound changes for generic ordinal numbers
     if number[-2:] == "th":
         # remove "th"
@@ -2810,6 +2806,10 @@ def str2int(number):
         # custom case for ninth
         elif number[-3:] == "nin":
             number += "e"
+
+    if i := _STR2INT_MAP.get(number):
+        # it's a single number, return it
+        return i
     
     # split number words by spaces, hyphens and commas, to accommodate multiple styles
     numbers = [ word.lower() for word in re.split(r'[-\s\,]',number) if word ]
