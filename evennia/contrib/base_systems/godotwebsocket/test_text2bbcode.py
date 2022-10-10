@@ -6,7 +6,7 @@ from evennia.contrib.base_systems.godotwebsocket import text2bbcode
 import mock
 
 
-class TestText2Html(TestCase):
+class TestText2Bbcode(TestCase):
     def test_format_styles(self):
         parser = text2bbcode.BBCODE_PARSER
         self.assertEqual("foo", parser.format_styles("foo"))
