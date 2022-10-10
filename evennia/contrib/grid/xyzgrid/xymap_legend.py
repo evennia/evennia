@@ -401,6 +401,7 @@ class MapNode:
                     continue
 
                 exitnode = self.links[direction]
+                # TODO: Use specified Typeclass
                 exi, err = ExitTypeclass.create(
                     key,
                     xyz=xyz,
