@@ -3,18 +3,13 @@ Tests of git.
 
 """
 
-from django.conf import settings
-from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import EvenniaTest
-from evennia.contrib.utils.git_integration.git_integration import CmdGit, CmdGitEvennia
+from evennia.contrib.utils.git_integration.git_integration import GitCommand
 from evennia.utils.utils import list_to_string
 
 import git
 import mock
 import datetime
-
-class TestCmdGit(CmdGit):
-    pass
 
 class TestGitIntegration(EvenniaTest):
     @mock.patch("git.Repo")
@@ -43,10 +38,10 @@ class TestGitIntegration(EvenniaTest):
             commit_date=commit_date,
         )
 
-        test_cmd_git = TestCmdGit()
-        test_cmd_git.repo = mock_repo
-        test_cmd_git.commit = mock_git.head.commit
-        test_cmd_git.branch = mock_git.active_branch.name
+        test_cmd_git = GitCommand()
+        self.repo = test_cmd_git.repo = mock_repo
+        self.commit = test_cmd_git.commit = mock_git.head.commit
+        self.branch = test_cmd_git.branch = mock_git.active_branch.name
         test_cmd_git.caller = self.char1
         test_cmd_git.args = "nonexistent_branch"
         self.test_cmd_git = test_cmd_git
@@ -70,32 +65,5 @@ class TestGitIntegration(EvenniaTest):
         
     def test_git_pull(self):
         self.test_cmd_git.pull()
-        repo = self.test_cmd_git.repo
-        self.char1.msg.assert_called_with(f"You have pulled new code. Server restart initiated.|/Head now at {repo.git.rev_parse(repo.head.commit.hexsha, short=True)}.|/Author: {repo.head.commit.author.name} ({repo.head.commit.author.email})|/{repo.head.commit.message.strip()}")
+        self.char1.msg.assert_called_with(f"You have pulled new code. Server restart initiated.|/Head now at {self.repo.git.rev_parse(self.repo.head.commit.hexsha, short=True)}.|/Author: {self.repo.head.commit.author.name} ({self.repo.head.commit.author.email})|/{self.repo.head.commit.message.strip()}")
     
-class TestGitEvennia(BaseEvenniaCommandTest):
-    def setUp(self):
-        super().setUp()   
-        self.commit = self.repo.head.commit
-        self.branch = self.repo.active_branch.name
-
-    def test_git_evennia_status(self):
-        # View current git evennia status
-        time_of_commit = datetime.datetime.fromtimestamp(self.commit.committed_date)
-        status_msg = '\n'.join([f"Branch: {self.branch} ({self.repo.git.rev_parse(self.commit.hexsha, short=True)}) ({time_of_commit})",
-        f"By {self.commit.author.email}: {self.commit.message}"])
-        self.call(
-            CmdGitEvennia(),
-            "status",
-            status_msg
-        )
-
-    def test_git_evennia_branch(self):
-        # View current branch & branches available
-        remote_refs = self.repo.remote().refs
-        branch_msg = f"Current branch: {self.branch}. Branches available: {list_to_string(remote_refs)}"
-        self.call(
-            CmdGitEvennia(),
-            "branch",
-            branch_msg
-        )
