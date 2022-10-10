@@ -2810,6 +2810,9 @@ def str2int(number):
     if i := _STR2INT_MAP.get(number):
         # it's a single number, return it
         return i
+
+    # remove optional "and"s
+    number = number.replace(" and "," ")
     
     # split number words by spaces, hyphens and commas, to accommodate multiple styles
     numbers = [ word.lower() for word in re.split(r'[-\s\,]',number) if word ]
