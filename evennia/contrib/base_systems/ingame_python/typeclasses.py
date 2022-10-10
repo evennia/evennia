@@ -234,7 +234,9 @@ class EventCharacter(DefaultCharacter):
         if not string:
             return
 
-        super().announce_move_from(destination, msg=string, move_type=move_type, mapping=mapping, **kwargs)
+        super().announce_move_from(
+            destination, msg=string, move_type=move_type, mapping=mapping, **kwargs
+        )
 
     def announce_move_to(self, source_location, msg=None, move_type="move", mapping=None, **kwargs):
         """
@@ -292,7 +294,9 @@ class EventCharacter(DefaultCharacter):
         if not string:
             return
 
-        super().announce_move_to(source_location, msg=string, move_type=move_type, mapping=mapping, **kwargs)
+        super().announce_move_to(
+            source_location, msg=string, move_type=move_type, mapping=mapping, **kwargs
+        )
 
     def at_pre_move(self, destination, move_type="move", **kwargs):
         """

@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('typeclasses', '0014_alter_tag_db_category'),
+        ("typeclasses", "0014_alter_tag_db_category"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='attribute',
-            options={'verbose_name': 'Attribute'},
+            name="attribute",
+            options={"verbose_name": "Attribute"},
         ),
     ]

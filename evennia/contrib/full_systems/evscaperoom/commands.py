@@ -236,7 +236,9 @@ class CmdGiveUp(CmdEvscapeRoom):
             # manually call move hooks
             self.room.msg_room(self.caller, f"|r{self.caller.key} gave up and was whisked away!|n")
             self.room.at_object_leave(self.caller, self.caller.home)
-            self.caller.move_to(self.caller.home, quiet=True, move_hooks=False, move_type="teleport")
+            self.caller.move_to(
+                self.caller.home, quiet=True, move_hooks=False, move_type="teleport"
+            )
 
             # back to menu
             run_evscaperoom_menu(self.caller)

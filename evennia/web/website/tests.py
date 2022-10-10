@@ -1,11 +1,11 @@
 from django.conf import settings
-from django.utils.text import slugify
 from django.test import Client, override_settings
 from django.urls import reverse
+from django.utils.text import slugify
+from evennia.help import filehelp
 from evennia.utils import class_from_module
 from evennia.utils.create import create_help_entry
 from evennia.utils.test_resources import BaseEvenniaTest
-from evennia.help import filehelp
 
 _FILE_HELP_ENTRIES = None
 
@@ -216,7 +216,7 @@ class CharacterCreateView(EvenniaWebTest):
     url_name = "character-create"
     unauthenticated_response = 302
 
-    @override_settings(MULTISESSION_MODE=0)
+    @override_settings(MAX_NR_CHARACTERS=1)
     def test_valid_access_multisession_0(self):
         "Account1 with no characters should be able to create a new one"
         self.account.db._playable_characters = []
@@ -237,10 +237,9 @@ class CharacterCreateView(EvenniaWebTest):
             % self.account.db._playable_characters,
         )
 
-    @override_settings(MULTISESSION_MODE=2)
-    @override_settings(MAX_NR_CHARACTERS=10)
+    @override_settings(MAX_NR_CHARACTERS=5)
     def test_valid_access_multisession_2(self):
-        "Account1 should be able to create a new character"
+        "Account1 should be able to create multiple new characters"
         # Login account
         self.login()
 
@@ -275,8 +274,8 @@ class CharacterPuppetView(EvenniaWebTest):
         response = self.client.get(reverse(self.url_name, kwargs=kwargs), follow=True)
         self.assertTrue(
             response.status_code >= 400,
-            "Invalid access should return a 4xx code-- either obj not found or permission denied! (Returned %s)"
-            % response.status_code,
+            "Invalid access should return a 4xx code-- either obj not found or permission denied!"
+            " (Returned %s)" % response.status_code,
         )
 
 

@@ -49,7 +49,7 @@ connect to the demo via your telnet client you can do so at `demo.evennia.com`, 
 
 Once you installed Evennia yourself it comes with its own tutorial - this shows off some of the
 possibilities _and_ gives you a small single-player quest to play. The tutorial takes only one
-single in-game command to install as explained [here](Howtos/Beginner-Tutorial/Part1/Tutorial-World.md).
+single in-game command to install as explained [here](Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Tutorial-World.md).
 
 ## What you need to know to work with Evennia
 
@@ -72,7 +72,7 @@ online](https://github.com/evennia/evennia). We also have a comprehensive [onlin
 manual](https://evennia.com/docs) with lots of examples. But while Python is
 considered a very easy programming language to get into, you do have a learning curve to climb if
 you are new to programming. Evennia's [Starting-tutorial](Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.md) has a [basic introduction
-to Python](Howtos/Beginner-Tutorial/Part1/Python-basic-introduction.md) but you should probably also sit down 
+to Python](Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Python-basic-introduction.md) but you should probably also sit down 
 with a full Python beginner's tutorial at some point (there are plenty of them on
 the web if you look around). See also our [link
 page](./Links.md) for some reading suggestions. To efficiently code your dream game in
@@ -124,7 +124,7 @@ chat](https://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE
 on IRC. This allows you to chat directly with other developers new and old as well as with the devs
 of Evennia itself. This chat is logged (you can find links on https://www.evennia.com) and can also
 be searched from the same place for discussion topics you are interested in.
-2. Read the [Game Planning](Howtos/Beginner-Tutorial/Part2/Game-Planning.md) wiki page. It gives some ideas for your work flow and the
+2. Read the [Game Planning](Howtos/Beginner-Tutorial/Part2/Beginner-Tutorial-Game-Planning.md) wiki page. It gives some ideas for your work flow and the
 state of mind you should aim for - including cutting down the scope of your game for its first
 release.
 3. Do the [Tutorial for basic MUSH-like game](Howtos/Tutorial-for-basic-MUSH-like-game.md) carefully from

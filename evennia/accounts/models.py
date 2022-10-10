@@ -16,21 +16,15 @@ account info and OOC account configuration variables etc.
 
 """
 from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.utils.encoding import smart_str
-
 from evennia.accounts.manager import AccountDBManager
+from evennia.server.signals import SIGNAL_ACCOUNT_POST_RENAME
 from evennia.typeclasses.models import TypedObject
 from evennia.utils.utils import make_iter
-from evennia.server.signals import SIGNAL_ACCOUNT_POST_RENAME
 
 __all__ = ("AccountDB",)
-
-# _ME = _("me")
-# _SELF = _("self")
-
-_MULTISESSION_MODE = settings.MULTISESSION_MODE
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -94,8 +88,10 @@ class AccountDB(TypedObject, AbstractUser):
         "cmdset",
         max_length=255,
         null=True,
-        help_text="optional python path to a cmdset class. If creating a Character, this will "
-        "default to settings.CMDSET_CHARACTER.",
+        help_text=(
+            "optional python path to a cmdset class. If creating a Character, this will "
+            "default to settings.CMDSET_CHARACTER."
+        ),
     )
     # marks if this is a "virtual" bot account object
     db_is_bot = models.BooleanField(

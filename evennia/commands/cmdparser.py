@@ -63,7 +63,7 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
     try:
         orig_string = raw_string
         if not include_prefixes and len(raw_string) > 1:
-            raw_string  = raw_string.lstrip(_CMD_IGNORE_PREFIXES)
+            raw_string = raw_string.lstrip(_CMD_IGNORE_PREFIXES)
         search_string = raw_string.lower()
         for cmd in cmdset:
             cmdname, raw_cmdname = cmd.match(search_string, include_prefixes=include_prefixes)

@@ -10,8 +10,8 @@ total runtime of the server and the current uptime.
 import time
 from datetime import datetime, timedelta
 
-from django.db.utils import OperationalError
 from django.conf import settings
+from django.db.utils import OperationalError
 from evennia import DefaultScript
 from evennia.server.models import ServerConfig
 from evennia.utils.create import create_script
@@ -236,7 +236,7 @@ def schedule(
     Args:
         callback (function): The callback function that will be called. Note
             that the callback must be a module-level function, since the script will
-            be persistent. The callable should be on form `callable(*args, **kwargs)`
+            be persistent. The callable should be on the form `callable(*args, **kwargs)`
             where args/kwargs are passed into this schedule.
         repeat (bool, optional): Defines if the callback should be called regularly
             at the specified time.
@@ -246,15 +246,14 @@ def schedule(
         day (int or None): Number of absolute days.
         month (int or None): Number of absolute months.
         year (int or None): Number of absolute years.
-        *args, **kwargs: Will be passed into the callable. These must be possible
-            to store in Attributes on the generated scheduling Script.
+        *args: Passed into the callable. Must be possible to store in Attribute.
+        **kwargs: Passed into the callable. Must be possible to store in Attribute.
 
     Returns:
         Script: The created Script handling the scheduling.
 
     Examples:
         ::
-
             schedule(func, min=5, sec=0)  # Will call 5 minutes past the next (in-game) hour.
             schedule(func, hour=2, min=30, sec=0)  # Will call the next (in-game) day at 02:30.
 

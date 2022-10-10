@@ -5,13 +5,13 @@ Test the funcparser module.
 """
 
 import time
-from unittest.mock import MagicMock, patch
 from ast import literal_eval
-from simpleeval import simple_eval
-from parameterized import parameterized
-from django.test import TestCase, override_settings
+from unittest.mock import MagicMock, patch
 
+from django.test import TestCase, override_settings
 from evennia.utils import funcparser, test_resources
+from parameterized import parameterized
+from simpleeval import simple_eval
 
 
 def _test_callable(*args, **kwargs):
@@ -20,9 +20,7 @@ def _test_callable(*args, **kwargs):
     argstr = ", ".join(args)
     kwargstr = ""
     if kwargs:
-        kwargstr = (", " if args else "") + (
-            ", ".join(f"{key}={val}" for key, val in kwargs.items())
-        )
+        kwargstr = (", " if args else "") + ", ".join(f"{key}={val}" for key, val in kwargs.items())
     return f"_test({argstr}{kwargstr})"
 
 
@@ -402,6 +400,19 @@ class TestDefaultCallables(TestCase):
             ("Some $rjust(Hello, 30)", "Some                          Hello"),
             ("Some $rjust(Hello, width=30)", "Some                          Hello"),
             ("Some $cjust(Hello, 30)", "Some             Hello             "),
+            (
+                "There $pluralize(is, 1, are) one $pluralize(goose, 1, geese) here.",
+                "There is one goose here.",
+            ),
+            (
+                "There $pluralize(is, 2, are) two $pluralize(goose, 2, geese) here.",
+                "There are two geese here.",
+            ),
+            (
+                "There is $int2str(1) murderer, but $int2str(12) suspects.",
+                "There is one murderer, but twelve suspects.",
+            ),
+            ("There is $an(thing) here", "There is a thing here"),
             ("Some $eval(\"'-'*20\")Hello", "Some --------------------Hello"),
             ('$crop("spider\'s silk", 5)', "spide"),
         ]
@@ -466,14 +477,22 @@ class TestDefaultCallables(TestCase):
     def test_escaped(self):
         self.assertEqual(
             self.parser.parse(
-                "this should be $pad('''escaped,''' and '''instead,''' cropped $crop(with a long,5) text., 80)"
+                "this should be $pad('''escaped,''' and '''instead,''' cropped $crop(with a long,5)"
+                " text., 80)"
             ),
-            "this should be                    escaped, and instead, cropped with  text.                    ",
+            "this should be                    escaped, and instead, cropped with  text.           "
+            "         ",
         )
 
     def test_escaped2(self):
-        raw_str = 'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5) text., 80)'
-        expected = "this should be                    escaped, and instead, cropped with  text.                    "
+        raw_str = (
+            'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5)'
+            " text., 80)"
+        )
+        expected = (
+            "this should be                    escaped, and instead, cropped with  text.           "
+            "         "
+        )
         result = self.parser.parse(raw_str)
         self.assertEqual(
             result,

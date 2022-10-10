@@ -12,6 +12,7 @@ evennia.contrib.grid
    :maxdepth: 6
 
    evennia.contrib.grid.extended_room
+   evennia.contrib.grid.ingame_map_display
    evennia.contrib.grid.mapbuilder
    evennia.contrib.grid.simpledoor
    evennia.contrib.grid.slow_exit

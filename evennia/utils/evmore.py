@@ -37,14 +37,14 @@ the `caller.msg()` construct every time the page is updated.
 
 """
 from django.conf import settings
-from django.db.models.query import QuerySet
 from django.core.paginator import Paginator
-from evennia.commands.command import Command
-from evennia.commands.cmdset import CmdSet
-from evennia.commands import cmdhandler
-from evennia.utils.ansi import ANSIString
-from evennia.utils.utils import make_iter, inherits_from, justify, dedent
+from django.db.models.query import QuerySet
 from django.utils.translation import gettext as _
+from evennia.commands import cmdhandler
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.command import Command
+from evennia.utils.ansi import ANSIString
+from evennia.utils.utils import dedent, inherits_from, justify, make_iter
 
 _CMD_NOMATCH = cmdhandler.CMD_NOMATCH
 _CMD_NOINPUT = cmdhandler.CMD_NOINPUT
@@ -60,7 +60,7 @@ _LBR = ANSIString("\n")
 # text
 
 _DISPLAY = """{text}
-(|wPage|n [{pageno}/{pagemax}] |wn|next|n || |wp|nrevious || |wt|nop || |we|nnd || |wq|nuit)"""
+|n(|wPage|n [{pageno}/{pagemax}] |wn|next|n || |wp|nrevious || |wt|nop || |we|nnd || |wq|nuit)"""
 
 
 class CmdMore(Command):

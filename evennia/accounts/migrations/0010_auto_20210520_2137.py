@@ -7,13 +7,13 @@ import evennia.accounts.manager
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0009_auto_20191025_0831'),
+        ("accounts", "0009_auto_20191025_0831"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='accountdb',
-            name='first_name',
-            field=models.CharField(blank=True, max_length=150, verbose_name='first name'),
+            model_name="accountdb",
+            name="first_name",
+            field=models.CharField(blank=True, max_length=150, verbose_name="first name"),
         ),
     ]

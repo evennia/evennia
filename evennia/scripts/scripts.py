@@ -5,13 +5,13 @@ ability to run timers.
 
 """
 
+from django.utils.translation import gettext as _
+from evennia.scripts.manager import ScriptManager
+from evennia.scripts.models import ScriptDB
+from evennia.typeclasses.models import TypeclassBase
+from evennia.utils import create, logger
 from twisted.internet.defer import Deferred, maybeDeferred
 from twisted.internet.task import LoopingCall
-from django.utils.translation import gettext as _
-from evennia.typeclasses.models import TypeclassBase
-from evennia.scripts.models import ScriptDB
-from evennia.scripts.manager import ScriptManager
-from evennia.utils import create, logger
 
 __all__ = ["DefaultScript", "DoNothing", "Store"]
 
@@ -366,7 +366,11 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
             return
 
         # call hook
-        self.at_repeat()
+        try:
+            self.at_repeat()
+        except Exception:
+            logger.log_trace()
+            raise
 
         # check repeats
         if self.ndb._task:

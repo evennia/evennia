@@ -80,7 +80,9 @@ class TestListToString(TestCase):
         self.assertEqual("1, 2 and 3", utils.list_to_string([1, 2, 3], endsep="and"))
         self.assertEqual("1, 2 3", utils.list_to_string([1, 2, 3], endsep=""))
         self.assertEqual("1; 2; 3", utils.list_to_string([1, 2, 3], sep=";", endsep=";"))
-        self.assertEqual('"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep=",", addquote=True))
+        self.assertEqual(
+            '"1", "2", "3"', utils.list_to_string([1, 2, 3], endsep=",", addquote=True)
+        )
         self.assertEqual(
             '"1", "2" and "3"', utils.list_to_string([1, 2, 3], endsep="and", addquote=True)
         )

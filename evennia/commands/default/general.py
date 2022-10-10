@@ -2,9 +2,10 @@
 General Character commands usually available to all characters
 """
 import re
+
 from django.conf import settings
-from evennia.utils import utils
 from evennia.typeclasses.attributes import NickTemplateInvalid
+from evennia.utils import utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -390,7 +391,7 @@ class CmdInventory(COMMAND_DEFAULT_CLASS):
                     "{}|n".format(utils.crop(raw_ansi(item.db.desc or ""), width=50) or ""),
                 )
             string = f"|wYou are carrying:\n{table}"
-        self.caller.msg(string)
+        self.caller.msg(text=(string, {"type": "inventory"}))
 
 
 class CmdGet(COMMAND_DEFAULT_CLASS):
@@ -501,7 +502,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
     Usage:
       give <inventory obj> <to||=> <target>
 
-    Gives an items from your inventory to another character,
+    Gives an item from your inventory to another person,
     placing it in their inventory.
     """
 
@@ -538,7 +539,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
             return
 
         # give object
-        success = to_give.move_to(target, quiet=True, move_type="get")
+        success = to_give.move_to(target, quiet=True, move_type="give")
         if not success:
             caller.msg("This could not be given.")
         else:

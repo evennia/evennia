@@ -6,21 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('comms', '0019_auto_20210514_2032'),
+        ("comms", "0019_auto_20210514_2032"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='msg',
-            name='db_hide_from_channels',
+            model_name="msg",
+            name="db_hide_from_channels",
         ),
         migrations.RemoveField(
-            model_name='msg',
-            name='db_receivers_channels',
+            model_name="msg",
+            name="db_receivers_channels",
         ),
         migrations.AddField(
-            model_name='msg',
-            name='db_receiver_external',
-            field=models.CharField(blank=True, db_index=True, help_text='identifier for single external receiver, for use with receivers without a database existence.', max_length=1024, null=True, verbose_name='external receiver'),
+            model_name="msg",
+            name="db_receiver_external",
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                help_text="identifier for single external receiver, for use with receivers without a database existence.",
+                max_length=1024,
+                null=True,
+                verbose_name="external receiver",
+            ),
         ),
     ]

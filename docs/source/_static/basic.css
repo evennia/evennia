@@ -48,9 +48,7 @@ div.sphinxsidebarwrapper {
 }
 
 div.sphinxsidebar {
-    float: left;
-    width: 230px;
-    margin-left: -100%;
+    width: 21%;
     font-size: 90%;
     word-wrap: break-word;
     overflow-wrap : break-word;
@@ -72,7 +70,7 @@ div.sphinxsidebar ul ul {
 }
 
 div.sphinxsidebar form {
-    margin-top: 10px;
+    margin: 10px 0;
 }
 
 div.sphinxsidebar input {

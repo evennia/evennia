@@ -7,19 +7,20 @@ leave caching unexpectedly (no use of WeakRefs).
 Also adds `cache_size()` for monitoring the size of the cache.
 """
 
+import gc
 import os
 import threading
-import gc
 import time
 from weakref import WeakValueDictionary
-from twisted.internet.reactor import callFromThread
-from django.core.exceptions import ObjectDoesNotExist, FieldError
-from django.db.models.signals import post_save
+
+from django.core.exceptions import FieldError, ObjectDoesNotExist
 from django.db.models.base import Model, ModelBase
-from django.db.models.signals import pre_delete, post_migrate
+from django.db.models.signals import post_migrate, post_save, pre_delete
+from django.db.transaction import atomic
 from django.db.utils import DatabaseError
 from evennia.utils import logger
 from evennia.utils.utils import dbref, get_evennia_pids, to_str
+from twisted.internet.reactor import callFromThread
 
 from .manager import SharedMemoryManager
 
@@ -444,13 +445,15 @@ class SharedMemoryModel(Model, metaclass=SharedMemoryModelBase):
         if _IS_MAIN_THREAD:
             # in main thread - normal operation
             try:
-                super().save(*args, **kwargs)
+                with atomic():
+                    super().save(*args, **kwargs)
             except DatabaseError:
                 # we handle the 'update_fields did not update any rows' error that
                 # may happen due to timing issues with attributes
                 ufields_removed = kwargs.pop("update_fields", None)
                 if ufields_removed:
-                    super().save(*args, **kwargs)
+                    with atomic():
+                        super().save(*args, **kwargs)
                 else:
                     raise
         else:
@@ -623,8 +626,8 @@ def conditional_flush(max_rmem, force=False):
     if ((now - LAST_FLUSH) < AUTO_FLUSH_MIN_INTERVAL) and not force:
         # too soon after last flush.
         logger.log_warn(
-            "Warning: Idmapper flush called more than "
-            "once in %s min interval. Check memory usage." % (AUTO_FLUSH_MIN_INTERVAL / 60.0)
+            "Warning: Idmapper flush called more than once in %s min interval. Check memory usage."
+            % (AUTO_FLUSH_MIN_INTERVAL / 60.0)
         )
         return
 

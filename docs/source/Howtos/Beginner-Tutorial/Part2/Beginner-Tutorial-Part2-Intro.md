@@ -29,18 +29,16 @@ and "what to think about" when creating a multiplayer online text game.
 ```{toctree}
 :maxdepth: 1
 
-Planning-Where-Do-I-Begin.md
-Game-Planning.md
-Planning-Some-Useful-Contribs.md
-Planning-The-Tutorial-Game.md
+Beginner-Tutorial-Planning-Where-Do-I-Begin.md
+Beginner-Tutorial-Game-Planning.md
+Beginner-Tutorial-Planning-The-Tutorial-Game.md
 ```
 
 ## Table of Contents
 
 ```{toctree}
 
-Planning-Where-Do-I-Begin.md
-Game-Planning.md
-Planning-Some-Useful-Contribs.md
-Planning-The-Tutorial-Game.md
+Beginner-Tutorial-Planning-Where-Do-I-Begin.md
+Beginner-Tutorial-Game-Planning.md
+Beginner-Tutorial-Planning-The-Tutorial-Game.md
 ```

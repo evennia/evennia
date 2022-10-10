@@ -5,12 +5,12 @@ Account that are  controlled by the server.
 """
 
 import time
+
 from django.conf import settings
+from django.utils.translation import gettext as _
 from evennia.accounts.accounts import DefaultAccount
 from evennia.scripts.scripts import DefaultScript
-from evennia.utils import search
-from evennia.utils import utils
-from django.utils.translation import gettext as _
+from evennia.utils import search, utils
 
 _IDLE_TIMEOUT = settings.IDLE_TIMEOUT
 
@@ -538,9 +538,8 @@ class GrapevineBot(Bot):
             if not from_obj or from_obj != [self]:
                 # send outputfunc channel(msg, chan, sender)
 
-                # TODO we should refactor channel formatting to operate on the
-                # account/object level instead. For now, remove the channel/name
-                # prefix since we pass that explicitly anyway
+                text = text[0] if isinstance(text, (tuple, list)) else text
+
                 prefix, text = text.split(":", 1)
 
                 super().msg(

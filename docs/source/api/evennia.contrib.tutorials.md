@@ -13,6 +13,7 @@ evennia.contrib.tutorials
 
    evennia.contrib.tutorials.batchprocessor
    evennia.contrib.tutorials.bodyfunctions
+   evennia.contrib.tutorials.evadventure
    evennia.contrib.tutorials.mirror
    evennia.contrib.tutorials.red_button
    evennia.contrib.tutorials.talking_npc

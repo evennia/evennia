@@ -4,19 +4,17 @@ The base Command class.
 All commands in Evennia inherit from the 'Command' class in this module.
 
 """
-import re
-import math
 import inspect
+import math
+import re
 
 from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
-
 from evennia.locks.lockhandler import LockHandler
-from evennia.utils.utils import is_iter, fill, lazy_property, make_iter
-from evennia.utils.evtable import EvTable
 from evennia.utils.ansi import ANSIString
-
+from evennia.utils.evtable import EvTable
+from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 
@@ -361,11 +359,15 @@ class Command(metaclass=CommandMeta):
         """
         if include_prefixes:
             for cmd_key in self._keyaliases:
-                if cmdname.startswith(cmd_key) and (not self.arg_regex or self.arg_regex.match(cmdname[len(cmd_key) :])):
+                if cmdname.startswith(cmd_key) and (
+                    not self.arg_regex or self.arg_regex.match(cmdname[len(cmd_key) :])
+                ):
                     return cmd_key, cmd_key
         else:
             for k, v in self._noprefix_aliases.items():
-                if cmdname.startswith(k) and (not self.arg_regex or self.arg_regex.match(cmdname[len(k) :])):
+                if cmdname.startswith(k) and (
+                    not self.arg_regex or self.arg_regex.match(cmdname[len(k) :])
+                ):
                     return k, v
         return None, None
 

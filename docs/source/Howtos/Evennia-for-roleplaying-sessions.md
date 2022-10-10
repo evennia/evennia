@@ -686,7 +686,7 @@ implemented.
 ## Rooms
 
 Evennia comes with rooms out of the box, so no extra work needed. A GM will automatically have all
-needed building commands available. A fuller go-through is found in the [Building tutorial](Beginner-Tutorial/Part1/Building-Quickstart.md).
+needed building commands available. A fuller go-through is found in the [Building tutorial](Beginner-Tutorial/Part1/Beginner-Tutorial-Building-Quickstart.md).
 Here are some useful highlights:
 
 * `@dig roomname;alias = exit_there;alias, exit_back;alias` - this is the basic command for digging
