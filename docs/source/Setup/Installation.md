@@ -111,7 +111,7 @@ beforehand to make sure you don't pick a game name that is already taken - be ni
 
 You are good to go! 
 
-Evennia comes with a small [Tutorial World](../Howtos/Beginner-Tutorial/Part1/Tutorial-World.md) to experiment and learn from. After logging 
+Evennia comes with a small [Tutorial World](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Tutorial-World.md) to experiment and learn from. After logging 
 in, you can create it by running 
 
     batchcommand tutorial_world.build

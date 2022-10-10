@@ -2,6 +2,7 @@
 
 from django.db import migrations
 
+
 def update_help_entries(apps, schema_editor):
     """
     Change all help-entry files that use view: locks to read: locks
@@ -11,8 +12,10 @@ def update_help_entries(apps, schema_editor):
     HelpEntry = apps.get_model("help", "HelpEntry")
     for help_entry in HelpEntry.objects.all():
         lock_storage = help_entry.db_lock_storage
-        lock_storage = dict(lstring.split(":", 1) if ":" in lstring else (lstring, "")
-                            for lstring in str(lock_storage).split(";"))
+        lock_storage = dict(
+            lstring.split(":", 1) if ":" in lstring else (lstring, "")
+            for lstring in str(lock_storage).split(";")
+        )
         if "read" in lock_storage:
             # already in place - skip
             continue
@@ -26,9 +29,7 @@ def update_help_entries(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('help', '0004_auto_20210520_2137'),
+        ("help", "0004_auto_20210520_2137"),
     ]
 
-    operations = [
-        migrations.RunPython(update_help_entries)
-    ]
+    operations = [migrations.RunPython(update_help_entries)]

@@ -32,6 +32,20 @@ let goldenlayout = (function () {
         id: "inputComponent",
     };
 
+    // helper function: only allow a function to be called once
+    function once(func) {
+      function _f() {
+        if (!_f.isCalled) {
+          _f.isCalled = true;
+          _f.res = func.apply(this, arguments);
+        }
+        return _f.res;
+      }
+      _f.prototype = func.prototype;
+      _f.isCalled = false;
+      return _f;
+    }
+
     // helper function:  filter vals out of array
     function filter (vals, array) {
         if( Array.isArray( vals ) && Array.isArray( array ) ) {
@@ -247,10 +261,40 @@ let goldenlayout = (function () {
         }
     }
 
+    //
+    // ensure only one handler is set up on the parent with once
+    var registerInputTabChangeHandler = once(function (tab) {
+        // Set up the control to add new tabs
+        let splitControl = $(
+          "<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>"
+        );
+
+        // Handler for adding a new tab
+        splitControl.click( tab, function (evnt) {
+            evnt.data.header.parent.addChild( newInputConfig );
+        });
+
+        // Position it after the tab list
+        $('ul.lm_tabs', tab.header.element).after(splitControl).css("position", "relative");
+        tab.header.parent.on( "activeContentItemChanged", onActiveInputTabChange );
+    });
 
     //
+    // Handle when the active input tab changes
+    var onActiveInputTabChange = function (tab) {
+      $('.inputfield').removeClass('focused');
+      $('.inputfield', tab.tab.contentItem.element).addClass('focused');
+    }
+
     //
-    var onActiveTabChange = function (tab) {
+    // ensure only one handler is set up on the parent with once
+    var registerMainTabChangeHandler = once(function (tab) {
+      tab.header.parent.on( "activeContentItemChanged", onActiveMainTabChange );
+    });
+
+    //
+    // Handle when the active main tab changes
+    var onActiveMainTabChange = function (tab) {
         let renamebox  = document.getElementById("renamebox");
         let typelist   = document.getElementById("typelist");
         let updatelist = document.getElementById("updatelist");
@@ -267,7 +311,6 @@ let goldenlayout = (function () {
             closeUpdatelistDropdown();
         }
     }
-
 
     //
     // Save the GoldenLayout state to localstorage whenever it changes.
@@ -318,9 +361,9 @@ let goldenlayout = (function () {
     //
     var onTabCreate = function (tab) {
         //HTML for the typeDropdown
-        let renameDropdownControl = $("<span class='lm_title' style='font-size: 1.5em;width: 0.5em;'>&#129170;</span>");
-        let typeDropdownControl   = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#11201;</span>");
-        let updateDropdownControl = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#11208;</span>");
+        let renameDropdownControl = $("<span class='lm_title' style='font-size: 1.5em;width: 0.5em;'>&#9656;</span>");
+        let typeDropdownControl   = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#9670;</span>");
+        let updateDropdownControl = $("<span class='lm_title' style='font-size: 1.0em;width: 1em;'>&#9656;</span>");
         let splitControl          = $("<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>");
         // track dropdowns when the associated control is clicked
         renameDropdownControl.click( tab, renameDropdown ); 
@@ -344,25 +387,14 @@ let goldenlayout = (function () {
             tab.element.prepend( $("#optionsbutton").clone(true).addClass("lm_title") );
         }
 
-        tab.header.parent.on( "activeContentItemChanged", onActiveTabChange );
+        registerMainTabChangeHandler(tab);
     }
 
 
     //
     //
     var onInputCreate = function (tab) {
-        //HTML for the typeDropdown
-        let splitControl          = $("<span class='lm_title' style='font-size: 1.5em;width: 1em;'>+</span>");
-
-        // track adding a new tab
-        splitControl.click( tab, function (evnt) {
-            evnt.data.header.parent.addChild( newInputConfig );
-        });
-
-        // Add the typeDropdown to the header
-        tab.element.append(  splitControl );
-
-        tab.header.parent.on( "activeContentItemChanged", onActiveTabChange );
+        registerInputTabChangeHandler(tab);
     }
 
 

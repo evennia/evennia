@@ -114,11 +114,13 @@ appear on both sides of the table string.
 
 """
 
-from django.conf import settings
+from copy import copy, deepcopy
 from textwrap import TextWrapper
-from copy import deepcopy, copy
-from evennia.utils.utils import is_iter, display_len as d_len
+
+from django.conf import settings
 from evennia.utils.ansi import ANSIString
+from evennia.utils.utils import display_len as d_len
+from evennia.utils.utils import is_iter
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
@@ -1028,7 +1030,7 @@ class EvColumn(object):
         self.column[index].reformat(**kwargs)
 
     def __repr__(self):
-        return "<EvColumn\n  %s>" % ("\n  ".join([repr(cell) for cell in self.column]))
+        return "<EvColumn\n  %s>" % "\n  ".join([repr(cell) for cell in self.column])
 
     def __len__(self):
         return len(self.column)
@@ -1631,11 +1633,10 @@ class EvTable(object):
             # we need to add new empty columns to table
             empty_rows = ["" for _ in range(htable)]
             self.table.extend([EvColumn(*empty_rows, **options) for _ in range(excess)])
-            self.ncols += excess
         elif excess < 0:
             # we need to add more cells to row
             row.extend(["" for _ in range(abs(excess))])
-            self.ncols -= excess
+        self.ncols = len(self.table)
 
         if ypos is None or ypos > htable - 1:
             # add new row to the end

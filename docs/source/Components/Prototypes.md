@@ -211,7 +211,7 @@ The default protfuncs available out of the box are defined in `evennia/prototype
 override the ones available, just add the same-named function in your own protfunc module.
 
 | Protfunc | Description |
-
+| --- | --- |
 | `$random()` | Returns random value in range [0, 1) |
 | `$randint(start, end)` | Returns random value in range [start, end] |
 | `$left_justify(<text>)` | Left-justify text |
@@ -224,13 +224,10 @@ override the ones available, just add the same-named function in your own protfu
 | `$mult(<value1>, <value2>)` | Returns value1 * value2 |
 | `$div(<value1>, <value2>)` | Returns value2 / value1 |
 | `$toint(<value>)` | Returns value converted to integer (or value if not possible) |
-| `$eval(<code>)` | Returns result of [literal-
-eval](https://docs.python.org/2/library/ast.html#ast.literal_eval) of code string. Only simple
-python expressions. |
-| `$obj(<query>)` | Returns object #dbref searched globally by key, tag or #dbref. Error if more
-than one found." |
+| `$eval(<code>)` | Returns result of [literal-eval](https://docs.python.org/2/library/ast.html#ast.literal_eval) of code string. Only simple python expressions. |
+| `$obj(<query>)` | Returns object #dbref searched globally by key, tag or #dbref. Error if more than one found. |
 | `$objlist(<query>)` | Like `$obj`, except always returns a list of zero, one or more results. |
-| `$dbref(dbref)` | Returns argument if it is formed as a #dbref (e.g. #1234), otherwise error.
+| `$dbref(dbref)` | Returns argument if it is formed as a #dbref (e.g. #1234), otherwise error. |
 
 For developers with access to Python, using protfuncs in prototypes is generally not useful. Passing
 real Python functions is a lot more powerful and flexible. Their main use is to allow in-game

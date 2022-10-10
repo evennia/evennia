@@ -35,7 +35,7 @@ unexpected bug.
 If you have implemented your own tests for your game you can run them from your game dir
 with
 
-    evennia test .
+    evennia test --settings settings.py .
 
 The period (`.`) means to run all tests found in the current directory and all subdirectories. You
 could also specify, say, `typeclasses` or `world` if you wanted to just run tests in those subdirs.

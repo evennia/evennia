@@ -46,18 +46,19 @@ The `FuncParser` also accepts a direct dict mapping of `{'name': callable, ...}`
 import dataclasses
 import inspect
 import random
+
 from django.conf import settings
-from evennia.utils import logger
+from evennia.utils import logger, search
 from evennia.utils.utils import (
-    make_iter,
     callables_from_module,
-    variable_from_module,
-    pad,
     crop,
+    int2str,
     justify,
+    make_iter,
+    pad,
     safe_convert_to_types,
+    variable_from_module,
 )
-from evennia.utils import search
 from evennia.utils.verb_conjugation.conjugate import verb_actor_stance_components
 from evennia.utils.verb_conjugation.pronouns import pronoun_to_viewpoints
 
@@ -242,7 +243,7 @@ class FuncParser:
             if raise_errors:
                 available = ", ".join(f"'{key}'" for key in self.callables)
                 raise ParsingError(
-                    f"Unknown parsed function '{str(parsedfunc)}' " f"(available: {available})"
+                    f"Unknown parsed function '{str(parsedfunc)}' (available: {available})"
                 )
             return str(parsedfunc)
 
@@ -586,7 +587,9 @@ class FuncParser:
 
         return fullstr
 
-    def parse_to_any(self, string, raise_errors=False, **reserved_kwargs):
+    def parse_to_any(
+        self, string, raise_errors=False, escape=False, strip=False, **reserved_kwargs
+    ):
         """
         This parses a string and if the string only contains a "$func(...)",
         the return will be the return value of that function, even if it's not
@@ -598,6 +601,10 @@ class FuncParser:
             raise_errors (bool, optional): If unset, leave a failing (or
                 unrecognized) inline function as unparsed in the string. If set,
                 raise an ParsingError.
+            escape (bool, optional): If set, escape all found functions so they
+                are not executed by later parsing.
+            strip (bool, optional): If set, strip any inline funcs from string
+                as if they were not there.
             **reserved_kwargs: If given, these are guaranteed to _always_ pass
                 as part of each parsed callable's **kwargs. These  override
                 same-named default options given in `__init__` as well as any
@@ -634,9 +641,9 @@ class FuncParser:
         """
         return self.parse(
             string,
-            raise_errors=False,
-            escape=False,
-            strip=False,
+            raise_errors=raise_errors,
+            escape=escape,
+            strip=strip,
             return_str=False,
             **reserved_kwargs,
         )
@@ -671,12 +678,45 @@ def funcparser_callable_eval(*args, **kwargs):
 
 
 def funcparser_callable_toint(*args, **kwargs):
-    """Usage: toint(43.0) -> 43"""
+    """Usage: $toint(43.0) -> 43"""
     inp = funcparser_callable_eval(*args, **kwargs)
     try:
         return int(inp)
     except TypeError:
         return inp
+
+
+def funcparser_callable_int2str(*args, **kwargs):
+    """
+    Usage: $int2str(1) -> 'one' etc, up to 12->twelve.
+
+    Args:
+        number (int): The number. If not an int, will be converted.
+
+    Uses the int2str utility function.
+    """
+    if not args:
+        return ""
+    try:
+        number = int(args[0])
+    except ValueError:
+        return args[0]
+    return int2str(number)
+
+
+def funcparser_callable_an(*args, **kwargs):
+    """
+    Usage: $an(thing) -> a thing
+
+    Adds a/an depending on if the first letter of the given word is a consonant or not.
+
+    """
+    if not args:
+        return ""
+    item = str(args[0])
+    if item and item[0] in "aeiouy":
+        return f"an {item}"
+    return f"a {item}"
 
 
 def _apply_operation_two_elements(*args, operator="+", **kwargs):
@@ -839,6 +879,8 @@ def funcparser_callable_choice(*args, **kwargs):
     if not args:
         return ""
     args, _ = safe_convert_to_types(("py", {}), *args, **kwargs)
+    if not args[0]:
+        return ""
     try:
         return random.choice(args[0])
     except Exception:
@@ -1017,6 +1059,36 @@ def funcparser_callable_clr(*args, **kwargs):
     return f"{startclr}{text}{endclr}"
 
 
+def funcparser_callable_pluralize(*args, **kwargs):
+    """
+    FuncParser callable. Handles pluralization of a word.
+
+    Args:
+        singular_word (str): The base (singular) word to optionally pluralize
+        number (int): The number of elements; if 1 (or 0), use `singular_word` as-is,
+            otherwise use plural form.
+        plural_word (str, optional): If given, this will be used if `number`
+            is greater than one. If not given, we simply add 's' to the end of
+            `singular_word`.
+
+    Example:
+        - `$pluralize(thing, 2)` -> "things"
+        - `$pluralize(goose, 18, geese)` -> "geese"
+
+    """
+    if not args:
+        return ""
+    nargs = len(args)
+    if nargs > 2:
+        singular_word, number, plural_word = args[:3]
+    elif nargs > 1:
+        singular_word, number = args[:2]
+        plural_word = f"{singular_word}s"
+    else:
+        singular_word, number = args[0], 1
+    return singular_word if abs(int(number)) in (0, 1) else plural_word
+
+
 def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
     """
     FuncParser callable. Finds an object based on name or #dbref. Note that
@@ -1024,7 +1096,9 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
     security. If called without session, the call is aborted.
 
     Args:
-        query (str): The key or dbref to search for.
+        query (str): The key or dbref to search for. This can consist of any args used
+            for one of the regular search methods. Also kwargs will be passed into
+            the search (except the kwargs given below)
 
     Keyword Args:
         return_list (bool): If set, return a list of objects with
@@ -1035,6 +1109,7 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
             The 'control' permission is required.
         access (str): Which locktype access to check. Unset to disable the
             security check.
+        **kwargs: Will be passed into the main search.
 
     Returns:
         any: An entity match or None if no match or a list if `return_list` is set.
@@ -1047,25 +1122,33 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         - "$search(#233)"
         - "$search(Tom, type=account)"
         - "$search(meadow, return_list=True)"
+        - "$search(beach, category=outdoors, type=tag)
 
     """
-    return_list = kwargs.get("return_list", "false").lower() == "true"
+    # clean out funcparser-specific kwargs so we can use the kwargs for
+    # searching
+    search_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if key not in ("funcparser", "raise_errors", "type", "return_list")
+    }
+    return_list = str(kwargs.pop("return_list", "false")).lower() == "true"
 
     if not args:
         return [] if return_list else None
     if not caller:
         raise ParsingError("$search requires a `caller` passed to the parser.")
 
-    query = str(args[0])
-
     typ = kwargs.get("type", "obj")
     targets = []
     if typ == "obj":
-        targets = search.search_object(query)
+        targets = search.search_object(*args, **search_kwargs)
     elif typ == "account":
-        targets = search.search_account(query)
+        targets = search.search_account(*args, **search_kwargs)
     elif typ == "script":
-        targets = search.search_script(query)
+        targets = search.search_script(*args, **search_kwargs)
+    elif typ == "tag":
+        targets = search.search_object_by_tag(*args, **search_kwargs)
 
     if not targets:
         if return_list:
@@ -1382,6 +1465,9 @@ FUNCPARSER_CALLABLES = {
     "justify_center": funcparser_callable_center_justify,
     "space": funcparser_callable_space,
     "clr": funcparser_callable_clr,
+    "pluralize": funcparser_callable_pluralize,
+    "int2str": funcparser_callable_int2str,
+    "an": funcparser_callable_an,
 }
 
 SEARCHING_CALLABLES = {

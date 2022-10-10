@@ -56,6 +56,7 @@ Tutorial-Vehicles.md
 ```{toctree}
 :maxdepth: 1
 
+Tutorial-Persistent-Handler.md
 Gametime-Tutorial.md
 Help-System-Tutorial.md
 Mass-and-weight-for-objects.md
@@ -88,4 +89,18 @@ Evennia-for-roleplaying-sessions.md
 Evennia-for-Diku-Users.md
 Evennia-for-MUSH-Users.md
 Tutorial-for-basic-MUSH-like-game.md
+```
+
+## Old tutorials
+
+These will be replaced by the Beginner Tutorial, but remain here until that is complete. 
+
+```{toctree}
+:maxdepth: 1
+
+Implementing-a-game-rule-system.md
+Turn-based-Combat-System.md
+A-Sittable-Object.md
+
+
 ```

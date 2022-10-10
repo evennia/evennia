@@ -6,38 +6,38 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
-import os
 import gc
-import sys
-import types
-import math
-import threading
-import re
-import textwrap
-import random
-import inspect
-import traceback
 import importlib
-import importlib.util
 import importlib.machinery
+import importlib.util
+import inspect
+import math
+import os
+import random
+import re
+import sys
+import textwrap
+import threading
+import traceback
+import types
 from ast import literal_eval
-from simpleeval import simple_eval
-from unicodedata import east_asian_width
-from twisted.internet.task import deferLater
-from twisted.internet.defer import returnValue  # noqa - used as import target
-from twisted.internet import threads, reactor
+from collections import OrderedDict, defaultdict
+from inspect import getmembers, getmodule, getmro, ismodule, trace
 from os.path import join as osjoin
-from inspect import ismodule, trace, getmembers, getmodule, getmro
-from collections import defaultdict, OrderedDict
+from unicodedata import east_asian_width
+
+from django.apps import apps
 from django.conf import settings
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.validators import validate_email as django_validate_email
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
-from django.apps import apps
-from django.core.validators import validate_email as django_validate_email
-from django.core.exceptions import ValidationError as DjangoValidationError
-
 from evennia.utils import logger
+from simpleeval import simple_eval
+from twisted.internet import reactor, threads
+from twisted.internet.defer import returnValue  # noqa - used as import target
+from twisted.internet.task import deferLater
 
 _MULTIMATCH_TEMPLATE = settings.SEARCH_MULTIMATCH_TEMPLATE
 _EVENNIA_DIR = settings.EVENNIA_DIR
@@ -386,22 +386,22 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
     Examples:
 
         ```python
-        >>> list_to_string([1,2,3], endsep=',')
+        >>> iter_to_string([1,2,3], endsep=',')
         '1, 2, 3'
-        >>> list_to_string([1,2,3], endsep='')
+        >>> iter_to_string([1,2,3], endsep='')
         '1, 2 3'
-        >>> list_to_string([1,2,3], ensdep='and')
+        >>> iter_to_string([1,2,3], ensdep='and')
         '1, 2 and 3'
-        >>> list_to_string([1,2,3], sep=';', endsep=';')
+        >>> iter_to_string([1,2,3], sep=';', endsep=';')
         '1; 2; 3'
-        >>> list_to_string([1,2,3], addquote=True)
+        >>> iter_to_string([1,2,3], addquote=True)
         '"1", "2", and "3"'
         ```
 
     """
+    iterable = list(make_iter(iterable))
     if not iterable:
         return ""
-    iterable = list(make_iter(iterable))
     len_iter = len(iterable)
 
     if addquote:
@@ -1860,7 +1860,7 @@ def percentile(iterable, percent, key=lambda x: x):
     return d0 + d1
 
 
-def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
+def format_grid(elements, width=78, sep="  ", verbatim_elements=None, line_prefix=""):
     """
     This helper function makes a 'grid' output, where it distributes the given
     string-elements as evenly as possible to fill out the given width.
@@ -1878,6 +1878,8 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
             by padding unless filling the entire line. This is useful for embedding
             decorations in the grid, such as horizontal bars.
         ignore_ansi (bool, optional): Ignore ansi markups when calculating white spacing.
+        line_prefix (str, optional): A prefix to add at the beginning of each line.
+            This can e.g. be used to preserve line color across line breaks.
 
     Returns:
         list: The grid as a list of ready-formatted rows. We return it
@@ -1988,10 +1990,14 @@ def format_grid(elements, width=78, sep="  ", verbatim_elements=None):
 
     if sum(display_len((element)) for element in elements) <= width:
         # grid fits in one line
-        return _minimal_rows(elements)
+        rows = _minimal_rows(elements)
     else:
         # full multi-line grid
-        return _weighted_rows(elements)
+        rows = _weighted_rows(elements)
+
+    if line_prefix:
+        return [line_prefix + row for row in rows]
+    return rows
 
 
 def get_evennia_pids():
@@ -2712,3 +2718,40 @@ def run_in_main_thread(function_or_method, *args, **kwargs):
         return function_or_method(*args, **kwargs)
     else:
         return threads.blockingCallFromThread(reactor, function_or_method, *args, **kwargs)
+
+
+_INT2STR_MAP_NOUN = {
+    0: "no",
+    1: "one",
+    2: "two",
+    3: "three",
+    4: "four",
+    5: "five",
+    6: "six",
+    7: "seven",
+    8: "eight",
+    9: "nine",
+    10: "ten",
+    11: "eleven",
+    12: "twelve",
+}
+_INT2STR_MAP_ADJ = {1: "1st", 2: "2nd", 3: "3rd"}  # rest is Xth.
+
+
+def int2str(number, adjective=False):
+    """
+    Convert a number to an English string for better display; so 1 -> one, 2 -> two etc
+    up until 12, after which it will be '13', '14' etc.
+
+    Args:
+        number (int): The number to convert. Floats will be converted to ints.
+        adjective (int): If set, map 1->1st, 2->2nd etc. If unset, map 1->one, 2->two etc.
+            up to twelve.
+    Return:
+        str: The number expressed as a string.
+
+    """
+    number = int(number)
+    if adjective:
+        return _INT2STR_MAP_ADJ.get(number, f"{number}th")
+    return _INT2STR_MAP_NOUN.get(number, str(number))

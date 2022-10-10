@@ -211,7 +211,7 @@ for-roleplaying-sessions) that can be of interest.
 An important aspect of making things more familiar for *Players* is adding new and tweaking existing
 commands. How this is done is covered by the [Tutorial on adding new commands](Adding-Command-
 Tutorial). You may also find it useful to shop through the `evennia/contrib/` folder. The 
-[Tutorial world](Beginner-Tutorial/Part1/Tutorial-World.md) is a small single-player quest you can try (it’s not very MUSH-
+[Tutorial world](Beginner-Tutorial/Part1/Beginner-Tutorial-Tutorial-World.md) is a small single-player quest you can try (it’s not very MUSH-
 like but it does show many Evennia concepts in action). Beyond that there are [many more tutorials](./Howtos-Overview.md) 
 to try out. If you feel you want a more visual overview you can also look at
 [Evennia in pictures](https://evennia.blogspot.se/2016/05/evennia-in-pictures.html).

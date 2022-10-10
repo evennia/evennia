@@ -13,9 +13,8 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.db import models
-from evennia.utils.utils import to_str, make_iter
 from evennia.locks.lockfuncs import perm as perm_lockfunc
-
+from evennia.utils.utils import make_iter, to_str
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 
@@ -104,6 +103,10 @@ class TagProperty:
     created/assigned along with the object. Make sure the property/tagname does not collide
     with an existing method/property on the class. If it does, you must use tags.add()
     instead.
+
+    Note that while you _can_ check e.g. `obj.tagname,this will give an AttributeError
+    if the Tag is not set. Most often you want to use `obj.tags.get("tagname")` to check
+    if a tag is set on an object.
 
     Example:
     ::
@@ -416,7 +419,7 @@ class TagHandler(object):
         if key:
             for tag_str in make_iter(key):
                 tag_str = tag_str.strip().lower()
-                ret.extend(bool(tag) for tag in self._getcache(tag_str, category))
+                ret.append(bool(self._getcache(tag_str, category)))
         elif category:
             ret.extend(bool(tag) for tag in self._getcache(category=category))
         else:

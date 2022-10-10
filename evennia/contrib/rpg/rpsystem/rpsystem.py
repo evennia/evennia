@@ -236,6 +236,7 @@ class RecogError(Exception):
 class LanguageError(Exception):
     pass
 
+
 def _get_case_ref(string):
     """
     Helper function which parses capitalization and
@@ -256,6 +257,7 @@ def _get_case_ref(string):
         case = "v"
 
     return case
+
 
 # emoting mechanisms
 def parse_language(speaker, emote):
@@ -405,7 +407,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
         match_index = marker_match.start()
         # split the emote string at the reference marker, to process everything after it
         head = string[:match_index]
-        tail = string[match_index + 1:]
+        tail = string[match_index + 1 :]
 
         if search_mode:
             # match the candidates against the whole search string after the marker
@@ -451,7 +453,7 @@ def parse_sdescs_and_recogs(sender, candidates, string, search_mode=False, case_
             # save search string
             matched_text = "".join(tail[1:iend])
             # recombine remainder of emote back into a string
-            tail = "".join(tail[iend + 1:])
+            tail = "".join(tail[iend + 1 :])
 
         nmatches = len(bestmatches)
 
@@ -1275,19 +1277,19 @@ class ContribRPObject(DefaultObject):
         self.sdesc.add("Something")
 
     def search(
-            self,
-            searchdata,
-            global_search=False,
-            use_nicks=True,
-            typeclass=None,
-            location=None,
-            attribute_name=None,
-            quiet=False,
-            exact=False,
-            candidates=None,
-            nofound_string=None,
-            multimatch_string=None,
-            use_dbref=None,
+        self,
+        searchdata,
+        global_search=False,
+        use_nicks=True,
+        typeclass=None,
+        location=None,
+        attribute_name=None,
+        quiet=False,
+        exact=False,
+        candidates=None,
+        nofound_string=None,
+        multimatch_string=None,
+        use_dbref=None,
     ):
         """
         Returns an Object matching a search string/condition, taking
@@ -1371,10 +1373,10 @@ class ContribRPObject(DefaultObject):
             )
 
         if global_search or (
-                is_string
-                and searchdata.startswith("#")
-                and len(searchdata) > 1
-                and searchdata[1:].isdigit()
+            is_string
+            and searchdata.startswith("#")
+            and len(searchdata) > 1
+            and searchdata[1:].isdigit()
         ):
             # only allow exact matching if searching the entire database
             # or unique #dbrefs

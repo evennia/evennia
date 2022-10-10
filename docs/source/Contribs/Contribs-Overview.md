@@ -363,6 +363,7 @@ contribs related to rooms, exits and map building._
 :maxdepth: 1
 
 Contrib-Extended-Room.md
+Contrib-Ingame-Map-Display.md
 Contrib-Mapbuilder.md
 Contrib-Simpledoor.md
 Contrib-Slow-Exit.md
@@ -381,6 +382,19 @@ in the room (without having to create a new in-game object for each). The room i
 supported by new `look` and `desc` commands.
 
 [Read the documentation](./Contrib-Extended-Room.md) - [Browse the Code](evennia.contrib.grid.extended_room)
+
+
+
+### Contrib: `ingame_map_display`
+
+_Contribution - helpme 2022_
+
+This adds an ascii `map` to a given room which can be viewed with the `map` command.
+You can easily alter it to add special characters, room colors etc. The map shown is
+dynamically generated on use, and supports all compass directions and up/down. Other
+directions are ignored.
+
+[Read the documentation](./Contrib-Ingame-Map-Display.md) - [Browse the Code](evennia.contrib.grid.ingame_map_display)
 
 
 
@@ -458,11 +472,34 @@ and rule implementation like character traits, dice rolling and emoting._
 ```{toctree}
 :maxdepth: 1
 
+Contrib-Buffs.md
+Contrib-Character-Creator.md
 Contrib-Dice.md
 Contrib-Health-Bar.md
 Contrib-RPSystem.md
 Contrib-Traits.md
 ```
+
+
+### Contrib: `buffs`
+
+_Contribution by Tegiminis 2022_
+
+A buff is a timed object, attached to a game entity. It is capable of modifying values, triggering code, or both. 
+It is a common design pattern in RPGs, particularly action games.
+
+[Read the documentation](./Contrib-Buffs.md) - [Browse the Code](evennia.contrib.rpg.buffs)
+
+
+
+### Contrib: `character_creator`
+
+_Commands for managing and initiating an in-game character-creation menu._
+
+Contribution by InspectorCaracal, 2022
+
+[Read the documentation](./Contrib-Character-Creator.md) - [Browse the Code](evennia.contrib.rpg.character_creator)
+
 
 
 ### Contrib: `dice`
@@ -537,6 +574,7 @@ tutorials are found here. Also the home of the Tutorial World demo adventure._
 
 Contrib-Batchprocessor.md
 Contrib-Bodyfunctions.md
+Contrib-Evadventure.md
 Contrib-Mirror.md
 Contrib-Red-Button.md
 Contrib-Talking-Npc.md
@@ -564,6 +602,20 @@ Example script for testing. This adds a simple timer that has your
 character make small verbal observations at irregular intervals.
 
 [Read the documentation](./Contrib-Bodyfunctions.md) - [Browse the Code](evennia.contrib.tutorials.bodyfunctions)
+
+
+
+### Contrib: `evadventure`
+
+_Contrib by Griatch 2022_
+
+A complete example MUD using Evennia. This is the final result of what is
+implemented if you follow the Getting-Started tutorial. It's recommended
+that you follow the tutorial step by step and write your own code. But if
+you prefer you can also pick apart or use this as a starting point for your
+own game.
+
+[Read the documentation](./Contrib-Evadventure.md) - [Browse the Code](evennia.contrib.tutorials.evadventure)
 
 
 
@@ -628,6 +680,7 @@ and more._
 
 Contrib-Auditing.md
 Contrib-Fieldfill.md
+Contrib-Name-Generator.md
 Contrib-Random-String-Generator.md
 Contrib-Tree-Select.md
 ```
@@ -658,6 +711,19 @@ function. Once the form is submitted, the form's data is submitted as a dictiona
 to any callable of your choice.
 
 [Read the documentation](./Contrib-Fieldfill.md) - [Browse the Code](evennia.contrib.utils.fieldfill)
+
+
+
+### Contrib: `name_generator`
+
+_Contribution by InspectorCaracal (2022)_
+
+A module for generating random names, both real-world and fantasy. Real-world
+names can be generated either as first (personal) names, family (last) names, or
+full names (first, optional middles, and last). The name data is from [Behind the Name](https://www.behindthename.com/)
+and used under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).
+
+[Read the documentation](./Contrib-Name-Generator.md) - [Browse the Code](evennia.contrib.utils.name_generator)
 
 
 

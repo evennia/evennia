@@ -268,7 +268,7 @@ after
    start node as if it was entered on a fictional previous node. This can be very useful in order to
    start a menu differently depending on the Command's arguments in which it was initialized.
  - `session` (Session): Useful when calling the menu from an [Account](./Accounts.md) in
-   `MULTISESSION_MODDE` higher than 2, to make sure only the right Session sees the menu output.
+   `MULTISESSION_MODE` higher than 2, to make sure only the right Session sees the menu output.
  - `debug` (bool): If set, the `menudebug` command will be made available in the menu. Use it to
    list the current state of the menu and use `menudebug <variable>` to inspect a specific state
    variable from the list.

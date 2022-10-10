@@ -105,7 +105,16 @@ something like `call:false()`.
   - `examine` - who may examine this object's properties.
   - `delete` - who may delete the object.
   - `edit` - who may edit properties and attributes of the object.
-  - `view` - if the `look` command will display/list this object
+  - `view` - if the `look` command will display/list this object in descriptions
+    and if you will be able to see its description. Note that if
+    you target it specifically by name, the system will still find it, just
+    not be able to look at it. See `search` lock to completely hide the item.
+  - `search` - this controls if the object can be found with the
+    `DefaultObject.search` method (usually referred to with `caller.search`
+    in Commands). This is how to create entirely 'undetectable' in-game objects.
+    If not setting this lock excplicitly, all objects are assumed searchable.
+    Note that if you are aiming to make some _permanently invisible game system,
+    using a [Script](./Scripts.md) is a better bet.
   - `get`- who may pick up the object and carry it around.
   - `puppet` - who may "become" this object and control it as their "character".
   - `attrcreate` - who may create new attributes on the object (default True)

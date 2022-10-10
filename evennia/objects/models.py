@@ -14,15 +14,15 @@ the database object. Like everything else, they can be accessed
 transparently through the decorating TypeClass.
 """
 from collections import defaultdict
+
 from django.conf import settings
-from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import validate_comma_separated_integer_list
-
-from evennia.typeclasses.models import TypedObject
+from django.db import models
 from evennia.objects.manager import ObjectDBManager
+from evennia.typeclasses.models import TypedObject
 from evennia.utils import logger
-from evennia.utils.utils import make_iter, dbref, lazy_property
+from evennia.utils.utils import dbref, lazy_property, make_iter
 
 
 class ContentsHandler:
