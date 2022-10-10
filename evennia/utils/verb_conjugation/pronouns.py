@@ -407,15 +407,8 @@ def pronoun_to_viewpoints(
 
     # step down into the mapping
     viewpoint_map = PRONOUN_MAPPING[viewpoint]
-    
-    if pronoun_type in viewpoint_map:
-        pronouns = viewpoint_map[pronoun_type]
-    else:
-        pronouns = viewpoint_map[DEFAULT_PRONOUN_TYPE]
-    if gender in pronouns:
-        mapped_pronoun = pronouns[gender]
-    else:
-        mapped_pronoun = pronouns[DEFAULT_GENDER]
+    pronouns = viewpoint_map.get(pronoun_type) or viewpoint_map.get(DEFAULT_PRONOUN_TYPE)
+    mapped_pronoun = pronouns.get(gender) or pronouns.get(DEFAULT_GENDER)
     
     # keep the same capitalization as the original
     if pronoun != "I":
