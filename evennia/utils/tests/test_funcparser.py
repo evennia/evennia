@@ -292,6 +292,12 @@ class TestFuncParser(TestCase):
         ret = self.parser.parse(string, strip=True)
         self.assertEqual("Test  and  things", ret)
 
+    @unittest.skip("broken due to https://github.com/evennia/evennia/issues/2927")
+    def test_parse_whitespace_preserved(self):
+        string = "The answer is $add(1, x)"
+        ret = self.parser.parse(string)
+        self.assertEqual("The answer is $add(1, x)", ret)
+
     def test_parse_escape(self):
         """
         Test the parser's escape functionality.
