@@ -2757,16 +2757,19 @@ def int2str(number, adjective=False):
     return _INT2STR_MAP_NOUN.get(number, str(number))
 
 _STR2INT_MAP = {
-	"one":        1, "two":        2, "three":      3,
-	"four":       4, "five":       5, "six":        6,
-	"seven":      7, "eight":      8, "nine":       9,
-	"ten":       10, "eleven":    11, "twelve":    12,
-	"thirteen":  13, "fourteen":  14, "fifteen":   15,
-	"sixteen":   16, "seventeen": 17, "eighteen":  18,
-	"nineteen":  19, "twenty":    20, "thirty":    30,
-	"forty":     40, "fifty":     50, "sixty":     60,
-	"seventy":   70, "eighty":    80, "ninety":    90,
-	"hundred":  100, "thousand": 1000,
+  "one":        1, "two":        2, "three":      3,
+  "four":       4, "five":       5, "six":        6,
+  "seven":      7, "eight":      8, "nine":       9,
+  "ten":       10, "eleven":    11, "twelve":    12,
+  "thirteen":  13, "fourteen":  14, "fifteen":   15,
+  "sixteen":   16, "seventeen": 17, "eighteen":  18,
+  "nineteen":  19, "twenty":    20, "thirty":    30,
+  "forty":     40, "fifty":     50, "sixty":     60,
+  "seventy":   70, "eighty":    80, "ninety":    90,
+  "hundred":  100, "thousand": 1000,
+}
+_STR2INT_ADJS = {
+  "first": 1, "second": 2, "third": 3,
 }
 def str2int(number):
     """
@@ -2779,17 +2782,35 @@ def str2int(number):
         int: The string represented as an integer.
     """
     number = str(number)
+    original_input = number
     try:
         # it's a digit already
         return int(number)
     except:
-        pass
+        # if it's an ordinal number such as "1st", it'll convert to int with the last two characters chopped off
+        try:
+            return int(number[:-2])
+        except:
+            pass
     
     if i := _STR2INT_MAP.get(number):
         # it's a single number, return it
         return i
 
-    number = number.replace(" and "," ")
+    # convert sound changes for generic ordinal numbers
+    if number[-2:] == "th":
+        # remove "th"
+        number = number[:-2]
+        if number[-1] == "f":
+            # e.g. twelfth, fifth
+            number = number[:-1] + "ve"
+        elif number[-2:] == "ie":
+            # e.g. twentieth, fortieth
+            number = number[:-2] + "y"
+        # custom case for ninth
+        elif number[-3:] == "nin"
+            number += "e"
+    
     # split number words by spaces, hyphens and commas, to accommodate multiple styles
     numbers = [ word.lower() for word in re.split(r'[-\s\,]',number) if word ]
     sums = []
@@ -2808,8 +2829,11 @@ def str2int(number):
                 else:
                     sums.append(i)
             else:
+        elif i := STR2INT_ADJS.get(word):
+            # it's a special adj word; ordinal case will never be a multiplier
+            sums.append(i)
         else:
-            # invalid number-word, return None to error
-            return None
+            # invalid number-word, raise ValueError
+            raise ValueError(f"String {original_input} cannot be converted to int.")
     return sum(sums)
 
