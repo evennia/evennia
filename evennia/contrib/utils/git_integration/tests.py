@@ -75,11 +75,7 @@ class TestGitIntegration(EvenniaTest):
     
 class TestGitEvennia(BaseEvenniaCommandTest):
     def setUp(self):
-        super().setUp()
-        try:
-            self.repo = git.Repo(settings.EVENNIA_DIR, search_parent_directories=True)
-        except git.exc.InvalidGitRepositoryError:
-            print("Test TestGitEvennia failed, unable to find Evennia directory.")        
+        super().setUp()   
         self.commit = self.repo.head.commit
         self.branch = self.repo.active_branch.name
 

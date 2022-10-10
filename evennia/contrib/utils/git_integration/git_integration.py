@@ -1,3 +1,4 @@
+from resource import error
 from django.conf import settings
 from evennia import CmdSet, InterruptCommand
 from evennia.utils.utils import list_to_string
@@ -43,7 +44,12 @@ class GitCommand(MuxCommand):
             raise InterruptCommand
         
         self.commit = self.repo.head.commit
-        self.branch = self.repo.active_branch.name
+
+        try:
+            self.branch = self.repo.active_branch.name
+        except TypeError as type_err:
+            self.caller.msg(type_err)
+            raise InterruptCommand
 
     def short_sha(self, repo, hexsha):
         """
