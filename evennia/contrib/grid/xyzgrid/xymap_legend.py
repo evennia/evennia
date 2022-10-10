@@ -22,6 +22,7 @@ from collections import defaultdict
 
 from django.core import exceptions as django_exceptions
 from evennia.prototypes import spawner
+from evennia.utils.utils import class_from_module
 
 from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL
 
@@ -302,7 +303,6 @@ class MapNode:
         to their destinations.
 
         """
-        # breakpoint()
         global NodeTypeclass
         if not NodeTypeclass:
             from .xyzroom import XYZRoom as NodeTypeclass
@@ -317,13 +317,13 @@ class MapNode:
         try:
             nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
         except django_exceptions.ObjectDoesNotExist:
-            # create a new entity with proper coordinates etc
-            tclass = self.prototype["typeclass"]
-            tclass = (
-                f" ({tclass})" if tclass != "evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom" else ""
-            )
-            self.log(f"  spawning room at xyz={xyz}{tclass}")
-            nodeobj, err = NodeTypeclass.create(self.prototype.get("key", "An empty room"), xyz=xyz)
+            # create a new entity, using the specified typeclass (if there's one) and
+            # with proper coordinates etc
+            typeclass = self.prototype.get("typeclass", "")
+            self.log(f"  spawning room at xyz={xyz} ({typeclass})")
+            Typeclass = class_from_module(typeclass,
+                fallback="evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom")
+            nodeobj, err = Typeclass.create(self.prototype.get("key", "An empty room"), xyz=xyz)
             if err:
                 raise RuntimeError(err)
         else:

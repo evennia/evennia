@@ -3,6 +3,8 @@
 Tests for the XYZgrid system.
 
 """
+from unittest import mock
+from unittest.mock import patch
 
 from random import randint
 from parameterized import parameterized
@@ -1419,11 +1421,11 @@ class TestBuildExampleGrid(BaseEvenniaTest):
 
 class TestXyzRoom(xyzroom.XYZRoom):
   def at_object_creation(self):
-    breakpoint()
+    pass
 
 class TestXyzExit(xyzroom.XYZExit):
   def at_object_creation(self):
-    breakpoint()
+    pass
 
 MAP_DATA = {
   "map": """
@@ -1469,8 +1471,8 @@ class TestCallbacks(BaseEvenniaTest):
     #   XYZROOM_PROTOTYPE_OVERRIDE={
     #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
     #   })
-    # def setUp(self):
-    #     super().setUp()
+    def setUp(self):
+        super().setUp()
     #     self.setup_grid(MAP_DATA)
         
     def setup_grid(self, map_data):
@@ -1493,6 +1495,7 @@ class TestCallbacks(BaseEvenniaTest):
         self.grid.add_maps(map_data)
 
     def tearDown(self):
+        super().tearDown()
         self.grid.delete()
 
     # @override_settings(
@@ -1502,6 +1505,8 @@ class TestCallbacks(BaseEvenniaTest):
     #   XYZROOM_PROTOTYPE_OVERRIDE={
     #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
     #   })
+    # @patch('evennia.contrib.grid.xyzgrid.tests.TestXyzRoom')
+    # def test_dummy(self, MockTestXyzRoom):
     def test_dummy(self):
         map_data = dict(MAP_DATA)
         for prototype_key, prototype_value in map_data["prototypes"].items():
