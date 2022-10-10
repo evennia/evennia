@@ -717,7 +717,7 @@ class TestIntConversions(TestCase):
         self.assertEqual(20, utils.str2int("twenty"))
         
         # multi-place numbers
-        self.assertEqual(2345, utils.str2int("two thousand, three hundred and thirty-five"))
+        self.assertEqual(2345, utils.str2int("two thousand, three hundred and forty-five"))
         
         # ordinal numbers
         self.assertEqual(1, utils.str2int("1st"))
