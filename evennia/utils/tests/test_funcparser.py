@@ -528,6 +528,7 @@ class TestCallableSearch(test_resources.BaseEvenniaTest):
         """
         string = "$search(TestAccount, type=account)"
         expected = self.account
+        self.account.locks.add("control:id(%s)" % self.char1.dbref)
 
         ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
         self.assertEqual(expected, ret)
@@ -539,6 +540,7 @@ class TestCallableSearch(test_resources.BaseEvenniaTest):
         """
         string = "$search(Script, type=script)"
         expected = self.script
+        self.script.locks.add("control:id(%s)" % self.char1.dbref)
 
         ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
         self.assertEqual(expected, ret)
