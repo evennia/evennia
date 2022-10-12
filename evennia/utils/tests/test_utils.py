@@ -696,3 +696,36 @@ class TestDelay(BaseEvenniaTest):
             timedelay
         )  # Clock must advance to trigger, even if past timedelay
         self.assertEqual(self.char1.ndb.dummy_var, "dummy_func ran")
+
+
+class TestIntConversions(TestCase):
+    def test_int2str(self):
+        self.assertEqual("three", utils.int2str(3))
+        # special adjective conversion
+        self.assertEqual("3rd", utils.int2str(3, adjective=True))
+        # generic adjective conversion
+        self.assertEqual("5th", utils.int2str(5, adjective=True))
+        # No mapping return int as str
+        self.assertEqual("15", utils.int2str(15))
+
+    def test_str2int(self):
+        # simple conversions
+        self.assertEqual(5, utils.str2int("5"))
+
+        # basic mapped numbers
+        self.assertEqual(3, utils.str2int("three"))
+        self.assertEqual(20, utils.str2int("twenty"))
+        
+        # multi-place numbers
+        self.assertEqual(2345, utils.str2int("two thousand, three hundred and forty-five"))
+        
+        # ordinal numbers
+        self.assertEqual(1, utils.str2int("1st"))
+        self.assertEqual(1, utils.str2int("first"))
+        self.assertEqual(4, utils.str2int("fourth"))
+        # ordinal sound-change conversions
+        self.assertEqual(5, utils.str2int("fifth"))
+        self.assertEqual(20, utils.str2int("twentieth"))
+
+        with self.assertRaises(ValueError):
+            utils.str2int("not a number")
