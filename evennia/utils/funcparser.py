@@ -799,7 +799,7 @@ def funcparser_callable_round(*args, **kwargs):
     num, *significant = args
     significant = significant[0] if significant else 0
     try:
-        round(num, significant)
+        return round(num, significant)
     except Exception:
         if kwargs.get("raise_errors"):
             raise
