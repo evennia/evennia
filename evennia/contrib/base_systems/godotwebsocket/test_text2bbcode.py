@@ -1,9 +1,10 @@
-"""Tests for text2html """
+"""Tests for text2bbcode """
 
-from django.test import TestCase
-from evennia.utils import ansi
-from evennia.contrib.base_systems.godotwebsocket import text2bbcode
 import mock
+from django.test import TestCase
+
+from evennia.contrib.base_systems.godotwebsocket import text2bbcode
+from evennia.utils import ansi
 
 
 class TestText2Bbcode(TestCase):
