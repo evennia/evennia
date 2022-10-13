@@ -866,22 +866,33 @@ def funcparser_callable_choice(*args, **kwargs):
     Args:
         listing (list): A list of items to randomly choose between.
             This will be converted from a string to a real list.
+        *args: If multiple args are given, will pick one randomly from them.
 
     Returns:
         any: The randomly chosen element.
 
     Example:
-        - `$choice([key, flower, house])`
+        - `$choice(key, flower, house)`
         - `$choice([1, 2, 3, 4])`
 
     """
     if not args:
         return ""
-    args, _ = safe_convert_to_types(("py", {}), *args, **kwargs)
-    if not args[0]:
+
+    nargs = len(args)
+    if nargs == 1:
+        # this needs to be a list/tuple for this to make sense
+        args, _ = safe_convert_to_types(("py", {}), args[0], **kwargs)
+        args = make_iter(args[0]) if args else None
+    else:
+        # separate arg per entry
+        converters = ["py" for _ in range(nargs)]
+        args, _ = safe_convert_to_types((converters, {}), *args, **kwargs)
+
+    if not args:
         return ""
     try:
-        return random.choice(args[0])
+        return random.choice(args)
     except Exception:
         if kwargs.get("raise_errors"):
             raise
