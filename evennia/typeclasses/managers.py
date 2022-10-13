@@ -535,7 +535,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         stats = self.get_typeclass_totals().order_by("typeclass")
         return {x.get("typeclass"): x.get("count") for x in stats}
 
-    def typeclass_search(self, typeclass, include_children=False, include_parents=False):
+    def xxx_typeclass_search(self, typeclass, include_children=False, include_parents=False):
         """
         Searches through all objects returning those which has a
         certain typeclass. If location is set, limit search to objects
