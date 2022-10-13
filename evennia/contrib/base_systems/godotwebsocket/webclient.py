@@ -1,3 +1,8 @@
+"""
+Godot Websocket - ChrisLR 2022
+
+This file contains the code necessary to dedicate a port to communicate with Godot via Websockets.
+"""
 import json
 
 from autobahn.twisted import WebSocketServerFactory
@@ -11,6 +16,11 @@ from evennia.settings_default import LOCKDOWN_MODE
 
 
 class GodotWebSocketClient(webclient.WebSocketClient):
+    """
+    Implements the server-side of the Websocket connection specific to Godot.
+    It inherits from the basic Websocket implementation and changes only what is necessary.
+
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol_key = "godotclient/websocket"
@@ -18,17 +28,15 @@ class GodotWebSocketClient(webclient.WebSocketClient):
     def send_text(self, *args, **kwargs):
         """
         Send text data. This will pre-process the text for
-        color-replacement, conversion to html etc.
+        color-replacement, conversion to bbcode etc.
 
         Args:
             text (str): Text to send.
 
         Keyword Args:
             options (dict): Options-dict with the following keys understood:
-                - raw (bool): No parsing at all (leave ansi-to-html markers unparsed).
                 - nocolor (bool): Clean out all color.
-                - screenreader (bool): Use Screenreader mode.
-                - send_prompt (bool): Send a prompt with parsed html
+                - send_prompt (bool): Send a prompt with parsed bbcode
 
         """
         if args:
@@ -42,24 +50,11 @@ class GodotWebSocketClient(webclient.WebSocketClient):
         flags = self.protocol_flags
 
         options = kwargs.pop("options", {})
-        raw = options.get("raw", flags.get("RAW", False))
-        client_raw = options.get("client_raw", False)
         nocolor = options.get("nocolor", flags.get("NOCOLOR", False))
-        screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
 
-        if screenreader:
-            # screenreader mode cleans up output
-            text = webclient.parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
-            text = webclient._RE_SCREENREADER_REGEX.sub("", text)
         cmd = "prompt" if prompt else "text"
-        if raw:
-            if client_raw:
-                args[0] = text
-            else:
-                args[0] = webclient.html.escape(text)  # escape html!
-        else:
-            args[0] = parse_to_bbcode(text, strip_ansi=nocolor)
+        args[0] = parse_to_bbcode(text, strip_ansi=nocolor)
 
         # send to client on required form [cmdname, args, kwargs]
         self.sendLine(json.dumps([cmd, args, kwargs]))
