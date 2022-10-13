@@ -401,8 +401,13 @@ class MapNode:
                     continue
 
                 exitnode = self.links[direction]
-                # TODO: Use specified Typeclass
-                exi, err = ExitTypeclass.create(
+                prot = maplinks[key.lower()][3].prototype
+                typeclass = prot.get("typeclass", "")
+                self.log(f"  spawning/updating exit xyz={xyz}, direction={key} ({typeclass})")
+
+                Typeclass = class_from_module(typeclass,
+                    fallback="evennia.contrib.grid.xyzgrid.xyzroom.XYZExit")
+                exi, err = Typeclass.create(
                     key,
                     xyz=xyz,
                     xyz_destination=exitnode.get_spawn_xyz(),
@@ -410,15 +415,8 @@ class MapNode:
                 )
                 if err:
                     raise RuntimeError(err)
+
                 linkobjs[key.lower()] = exi
-                prot = maplinks[key.lower()][3].prototype
-                tclass = prot["typeclass"]
-                tclass = (
-                    f" ({tclass})"
-                    if tclass != "evennia.contrib.grid.xyzgrid.xyzroom.XYZExit"
-                    else ""
-                )
-                self.log(f"  spawning/updating exit xyz={xyz}, direction={key}{tclass}")
 
         # apply prototypes to catch any changes
         for key, linkobj in linkobjs.items():
