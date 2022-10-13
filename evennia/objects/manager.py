@@ -35,7 +35,6 @@ class ObjectDBManager(TypedObjectManager):
     dbref_search
     get_dbref_range
     object_totals
-    typeclass_search
     get_object_with_account
     get_objs_with_key_and_typeclass
     get_objs_with_attr

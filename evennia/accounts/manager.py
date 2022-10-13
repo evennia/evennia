@@ -31,7 +31,6 @@ class AccountDBManager(TypedObjectManager, UserManager):
     dbref_search
     get_dbref_range
     object_totals
-    typeclass_search
     num_total_accounts
     get_connected_accounts
     get_recently_created_accounts

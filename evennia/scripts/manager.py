@@ -31,7 +31,6 @@ class ScriptDBManager(TypedObjectManager):
     dbref_search
     get_dbref_range
     object_totals
-    typeclass_search
     get_all_scripts_on_obj
     get_all_scripts
     delete_script
