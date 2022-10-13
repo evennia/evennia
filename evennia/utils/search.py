@@ -41,6 +41,7 @@ __all__ = (
     "search_script_tag",
     "search_account_tag",
     "search_channel_tag",
+    "search_typeclass",
 )
 
 
@@ -362,3 +363,35 @@ def search_channel_tag(key=None, category=None, tagtype=None, **kwargs):
 
 # search for tag objects (not the objects they are attached to
 search_tag_object = ObjectDB.objects.get_tag
+
+
+# Locate Objects by Typeclass
+
+# search_objects_by_typeclass(typeclass="", include_children=False, include_parents=False) (also search_typeclass works)
+# This returns the objects of the given typeclass
+
+
+def search_objects_by_typeclass(typeclass, include_children=False, include_parents=False):
+    """
+    Searches through all objects returning those of a certain typeclass.
+
+    Args:
+        typeclass (str or class): A typeclass class or a python path to a typeclass.
+        include_children (bool, optional): Return objects with
+            given typeclass *and* all children inheriting from this
+            typeclass. Mutuall exclusive to `include_parents`.
+        include_parents (bool, optional): Return objects with
+            given typeclass *and* all parents to this typeclass.
+            Mutually exclusive to `include_children`.
+
+    Returns:
+        objects (list): The objects found with the given typeclasses.
+    """
+    return ObjectDB.objects.typeclass_search(
+        typeclass=typeclass,
+        include_children=include_children,
+        include_parents=include_parents,
+    )
+
+
+search_typeclass = search_objects_by_typeclass
