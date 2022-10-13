@@ -535,54 +535,6 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         stats = self.get_typeclass_totals().order_by("typeclass")
         return {x.get("typeclass"): x.get("count") for x in stats}
 
-    def xxx_typeclass_search(self, typeclass, include_children=False, include_parents=False):
-        """
-        Searches through all objects returning those which has a
-        certain typeclass. If location is set, limit search to objects
-        in that location.
-
-        Args:
-            typeclass (str or class): A typeclass class or a python path to a typeclass.
-            include_children (bool, optional): Return objects with
-                given typeclass *and* all children inheriting from this
-                typeclass. Mutuall exclusive to `include_parents`.
-            include_parents (bool, optional): Return objects with
-                given typeclass *and* all parents to this typeclass.
-                Mutually exclusive to `include_children`.
-
-        Returns:
-            objects (list): The objects found with the given typeclasses.
-
-        """
-
-        if callable(typeclass):
-            cls = typeclass.__class__
-            typeclass = "%s.%s" % (cls.__module__, cls.__name__)
-        elif not isinstance(typeclass, str) and hasattr(typeclass, "path"):
-            typeclass = typeclass.path
-
-        # query objects of exact typeclass
-        query = Q(db_typeclass_path__exact=typeclass)
-
-        if include_children:
-            # build requests for child typeclass objects
-            clsmodule, clsname = typeclass.rsplit(".", 1)
-            cls = variable_from_module(clsmodule, clsname)
-            subclasses = cls.__subclasses__()
-            if subclasses:
-                for child in (child for child in subclasses if hasattr(child, "path")):
-                    query = query | Q(db_typeclass_path__exact=child.path)
-        elif include_parents:
-            # build requests for parent typeclass objects
-            clsmodule, clsname = typeclass.rsplit(".", 1)
-            cls = variable_from_module(clsmodule, clsname)
-            parents = cls.__mro__
-            if parents:
-                for parent in (parent for parent in parents if hasattr(parent, "path")):
-                    query = query | Q(db_typeclass_path__exact=parent.path)
-        # actually query the database
-        return super().filter(query)
-
 
 class TypeclassManager(TypedObjectManager):
     """
