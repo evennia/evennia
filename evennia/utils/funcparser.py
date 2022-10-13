@@ -354,7 +354,7 @@ class FuncParser:
 
                 if curr_func:
                     # we are starting a nested funcdef
-                    return_str = True
+                    # return_str = True
                     if len(callstack) > _MAX_NESTING:
                         # stack full - ignore this function
                         if raise_errors:

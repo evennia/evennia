@@ -5,8 +5,8 @@ Test the funcparser module.
 """
 
 import time
-from ast import literal_eval
 import unittest
+from ast import literal_eval
 from unittest.mock import MagicMock, patch
 
 from django.test import TestCase, override_settings
@@ -765,3 +765,32 @@ class TestCallableSearch(test_resources.BaseEvenniaTest):
 
         ret = self.parser.parse(string, caller=self.char1, return_list=True, raise_errors=True)
         self.assertEqual("[]", ret)
+
+    def test_search_nested__issue2902(self):
+        """
+        Search for objects by-tag, check that the result is a valid object
+
+        """
+        # we
+        parser = funcparser.FuncParser(
+            {**funcparser.SEARCHING_CALLABLES, **funcparser.FUNCPARSER_CALLABLES}
+        )
+
+        # set up search targets
+        self.obj1.tags.add("beach", category="zone")
+        self.obj2.tags.add("beach", category="zone")
+
+        # first a plain search
+        string = "$objlist(beach,category=zone,type=tag)"
+        ret = parser.parse_to_any(string, caller=self.char1, raise_errors=True)
+
+        self.assertEqual(ret, [self.obj1, self.obj2])
+
+        # get random result from the possible matches
+        string = "$choice($objlist(beach,category=zone,type=tag))"
+        from evennia import set_trace
+
+        set_trace()
+        ret = parser.parse_to_any(string, caller=self.char1, raise_errors=True)
+
+        self.assertIn(ret, [self.obj1, self.obj2])
