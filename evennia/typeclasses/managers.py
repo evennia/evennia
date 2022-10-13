@@ -553,6 +553,10 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Returns:
             objects (list): The objects found with the given typeclasses.
 
+        Raises:
+            ImportError: If the provided `typeclass` is not a valid typeclass or the
+                path to an existing typeclass.
+
         """
         if not callable(typeclass):
             typeclass = class_from_module(typeclass)
