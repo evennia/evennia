@@ -85,7 +85,7 @@ msgstr "|G{key} connesso|n"
 #, fuzzy
 #| msgid "The destination doesn't exist."
 msgid "The Character does not exist."
-msgstr "Destinazione inesistente."
+msgstr "Personaggio inesistente."
 
 #: accounts/accounts.py:1360
 #, python-brace-format
