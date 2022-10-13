@@ -1522,4 +1522,4 @@ class TestCallbacks(BaseEvenniaTest):
 
         # Two rooms and 2 exits.
         self.assertEqual(mock_room_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
-        # self.assertEqual(mock_exit_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
+        self.assertEqual(mock_exit_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
