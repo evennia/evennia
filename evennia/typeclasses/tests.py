@@ -4,7 +4,7 @@ Unit tests for typeclass base system
 """
 
 from django.test import override_settings
-from evennia.typeclasses import attributes
+from evennia.objects.objects import DefaultObject
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTestCase
 from mock import patch
 from parameterized import parameterized
@@ -211,6 +211,82 @@ class TestTypedObjectManager(BaseEvenniaTest):
         self.assertEqual(tagobj.db_key, "tag4")
         self.assertEqual(tagobj.db_category, "category4")
         self.assertEqual(tagobj.db_data, "data4")
+
+
+# setting up testing typeclass with child- and parent class
+class TestSearchManagerTypeclassParent(DefaultObject):
+    pass
+
+
+class TestSearchManagerTypeclass(TestSearchManagerTypeclassParent):
+    pass
+
+
+class TestSearchManagerTypeclassChild(TestSearchManagerTypeclass):
+    pass
+
+
+class TestSearchTypeclassFamily(EvenniaTestCase):
+    """
+    Test the manager method for searching for inheriting typeclasses.
+
+    """
+
+    def setUp(self):
+        self.obj_parent, _ = TestSearchManagerTypeclassParent.create(key="obj_parent")
+        self.obj1, _ = TestSearchManagerTypeclass.create(key="obj1")
+        self.obj2, _ = TestSearchManagerTypeclass.create(key="obj2")
+        self.obj_child, _ = TestSearchManagerTypeclassChild.create(key="obj_child")
+
+    def test_typeclass_search__inputs(self):
+        """Test basic functionality"""
+
+        res1 = self.obj1.__class__.objects.typeclass_search(self.obj1.__class__)
+        res2 = self.obj1.__class__.objects.typeclass_search(
+            "evennia.typeclasses.tests.TestSearchManagerTypeclass"
+        )
+        self.assertEqual(list(res1), [self.obj1, self.obj2])
+        self.assertEqual(list(res2), [self.obj1, self.obj2])
+
+    def test_typeclass_search__children_and_parents(self):
+        """Test getting parents/child classes"""
+
+        # just the objects of this typeclass
+        res1 = self.obj1.__class__.objects.typeclass_search(self.obj1.__class__)
+        res2 = self.obj2.__class__.objects.typeclass_search(self.obj2.__class__)
+
+        # these objects + children
+        res3 = self.obj1.__class__.objects.typeclass_search(
+            self.obj1.__class__, include_children=True
+        )
+        # these objects + parents
+        res4 = self.obj1.__class__.objects.typeclass_search(
+            self.obj1.__class__, include_parents=True
+        )
+        # these objects + parents + children
+        res5 = self.obj1.__class__.objects.typeclass_search(
+            self.obj1.__class__, include_children=True, include_parents=True
+        )
+
+        self.assertEqual(set(res1), {self.obj1, self.obj2})
+        self.assertEqual(set(res2), {self.obj1, self.obj2})
+        self.assertEqual(set(res3), {self.obj1, self.obj2, self.obj_child})
+        self.assertEqual(set(res4), {self.obj1, self.obj2, self.obj_parent})
+        self.assertEqual(set(res5), {self.obj1, self.obj2, self.obj_child, self.obj_parent})
+
+    def test_typeclass_search__nested(self):
+        """Test several levels deep searches"""
+        # check all children of the parent
+        res1 = self.obj1.__class__.objects.typeclass_search(
+            self.obj_parent.__class__, include_children=True
+        )
+        # check all parents of the child
+        res2 = self.obj1.__class__.objects.typeclass_search(
+            self.obj_child.__class__, include_parents=True
+        )
+
+        self.assertEqual(set(res1), {self.obj_parent, self.obj1, self.obj2, self.obj_child})
+        self.assertEqual(set(res2), {self.obj_parent, self.obj1, self.obj2, self.obj_child})
 
 
 class TestTags(BaseEvenniaTest):
