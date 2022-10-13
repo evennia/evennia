@@ -2563,6 +2563,14 @@ def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
             # ...
 
     """
+    container_end_char = {"(": ")", "[": "]", "{": "}"}  # tuples, lists, sets
+
+    def _manual_parse_containers(inp):
+        startchar = inp[0]
+        endchar = inp[-1]
+        if endchar != container_end_char.get(startchar):
+            return
+        return [str(part).strip() for part in inp[1:-1].split(",")]
 
     def _safe_eval(inp):
         if not inp:
@@ -2570,16 +2578,21 @@ def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
         if not isinstance(inp, str):
             # already converted
             return inp
-
         try:
-            return literal_eval(inp)
+            try:
+                return literal_eval(inp)
+            except ValueError:
+                parts = _manual_parse_containers(inp)
+                if not parts:
+                    raise
+                return parts
+
         except Exception as err:
             literal_err = f"{err.__class__.__name__}: {err}"
             try:
                 return simple_eval(inp)
             except Exception as err:
                 simple_err = f"{str(err.__class__.__name__)}: {err}"
-                pass
 
         if raise_errors:
             from evennia.utils.funcparser import ParsingError
@@ -2590,6 +2603,9 @@ def safe_convert_to_types(converters, *args, raise_errors=True, **kwargs):
                 f"simple_eval raised {simple_err}"
             )
             raise ParsingError(err)
+        else:
+            # fallback - convert to str
+            return str(inp)
 
     # handle an incomplete/mixed set of input converters
     if not converters:
@@ -2756,28 +2772,52 @@ def int2str(number, adjective=False):
         return _INT2STR_MAP_ADJ.get(number, f"{number}th")
     return _INT2STR_MAP_NOUN.get(number, str(number))
 
+
 _STR2INT_MAP = {
-  "one":        1, "two":        2, "three":      3,
-  "four":       4, "five":       5, "six":        6,
-  "seven":      7, "eight":      8, "nine":       9,
-  "ten":       10, "eleven":    11, "twelve":    12,
-  "thirteen":  13, "fourteen":  14, "fifteen":   15,
-  "sixteen":   16, "seventeen": 17, "eighteen":  18,
-  "nineteen":  19, "twenty":    20, "thirty":    30,
-  "forty":     40, "fifty":     50, "sixty":     60,
-  "seventy":   70, "eighty":    80, "ninety":    90,
-  "hundred":  100, "thousand": 1000,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "sixteen": 16,
+    "seventeen": 17,
+    "eighteen": 18,
+    "nineteen": 19,
+    "twenty": 20,
+    "thirty": 30,
+    "forty": 40,
+    "fifty": 50,
+    "sixty": 60,
+    "seventy": 70,
+    "eighty": 80,
+    "ninety": 90,
+    "hundred": 100,
+    "thousand": 1000,
 }
 _STR2INT_ADJS = {
-  "first": 1, "second": 2, "third": 3,
+    "first": 1,
+    "second": 2,
+    "third": 3,
 }
+
+
 def str2int(number):
     """
     Converts a string to an integer.
-    
+
     Args:
         number (str): The string to convert. It can be a digit such as "1", or a number word such as "one".
-    
+
     Returns:
         int: The string represented as an integer.
     """
@@ -2792,7 +2832,7 @@ def str2int(number):
             return int(number[:-2])
         except:
             pass
-    
+
     # convert sound changes for generic ordinal numbers
     if number[-2:] == "th":
         # remove "th"
@@ -2812,10 +2852,10 @@ def str2int(number):
         return i
 
     # remove optional "and"s
-    number = number.replace(" and "," ")
-    
+    number = number.replace(" and ", " ")
+
     # split number words by spaces, hyphens and commas, to accommodate multiple styles
-    numbers = [ word.lower() for word in re.split(r'[-\s\,]',number) if word ]
+    numbers = [word.lower() for word in re.split(r"[-\s\,]", number) if word]
     sums = []
     for word in numbers:
         # check if it's a known number-word
@@ -2827,7 +2867,7 @@ def str2int(number):
                 # if the previous number was smaller, it's a multiplier
                 # e.g. the "two" in "two hundred"
                 if sums[-1] < i:
-                    sums[-1] = sums[-1]*i
+                    sums[-1] = sums[-1] * i
                 # otherwise, it's added on, like the "five" in "twenty five"
                 else:
                     sums.append(i)
@@ -2838,4 +2878,3 @@ def str2int(number):
             # invalid number-word, raise ValueError
             raise ValueError(f"String {original_input} cannot be converted to int.")
     return sum(sums)
-

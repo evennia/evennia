@@ -587,18 +587,34 @@ class TestDefaultCallables(TestCase):
         with self.assertRaises(TypeError):
             ret = self.parser.parse_to_any(string, raise_errors=True)
 
-    @unittest.skip("underlying function seems broken")
+    # @unittest.skip("underlying function seems broken")
     def test_choice(self):
         """
         Test choice callable, where output could be either choice.
         """
         string = "$choice(red, green) apple"
-        ret = self.parser.parse(string, raise_errors=True)
+        ret = self.parser.parse(string)
         self.assertIn(ret, ("red apple", "green apple"))
 
         string = "$choice([red, green]) apple"
-        ret = self.parser.parse(string, raise_errors=True)
+        ret = self.parser.parse(string)
         self.assertIn(ret, ("red apple", "green apple"))
+
+        string = "$choice(['red', 'green']) apple"
+        ret = self.parser.parse(string)
+        self.assertIn(ret, ("red apple", "green apple"))
+
+        string = "$choice([1, 2])"
+        ret = self.parser.parse(string)
+        self.assertIn(ret, ("1", "2"))
+        ret = self.parser.parse_to_any(string)
+        self.assertIn(ret, (1, 2))
+
+        string = "$choice(1, 2)"
+        ret = self.parser.parse(string)
+        self.assertIn(ret, ("1", "2"))
+        ret = self.parser.parse_to_any(string)
+        self.assertIn(ret, (1, 2))
 
     def test_randint(self):
         string = "$randint(1.0, 3.0)"
@@ -726,7 +742,6 @@ class TestCallableSearch(test_resources.BaseEvenniaTest):
         ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
         self.assertEqual(expected, ret)
 
-    @unittest.skip("broken, see https://github.com/evennia/evennia/issues/2916")
     def test_search_not_found(self):
         string = "$search(foo)"
         with self.assertRaises(funcparser.ParsingError):
@@ -735,10 +750,11 @@ class TestCallableSearch(test_resources.BaseEvenniaTest):
         ret = self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=False)
         self.assertEqual("$search(foo)", ret)
 
-        ret = self.parser.parse(string, caller=self.char1, return_list=True, raise_errors=False)
+        ret = self.parser.parse_to_any(
+            string, caller=self.char1, return_list=True, raise_errors=False
+        )
         self.assertEqual([], ret)
 
-    @unittest.skip("broken, see https://github.com/evennia/evennia/issues/2916")
     def test_search_multiple_results_no_list(self):
         """
         Test exception when search returns multiple results but list is not requested
@@ -747,7 +763,6 @@ class TestCallableSearch(test_resources.BaseEvenniaTest):
         with self.assertRaises(funcparser.ParsingError):
             self.parser.parse(string, caller=self.char1, return_str=False, raise_errors=True)
 
-    @unittest.skip("broken, see https://github.com/evennia/evennia/issues/2917")
     def test_search_no_access(self):
         string = "Go to $search(Room)"
         with self.assertRaises(funcparser.ParsingError):
