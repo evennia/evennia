@@ -788,9 +788,12 @@ class TestCallableSearch(test_resources.BaseEvenniaTest):
 
         # get random result from the possible matches
         string = "$choice($objlist(beach,category=zone,type=tag))"
-        from evennia import set_trace
+        ret = parser.parse_to_any(string, caller=self.char1, raise_errors=True)
 
-        set_trace()
+        self.assertIn(ret, [self.obj1, self.obj2])
+
+        # test wrapping in $obj(), should just pass object through
+        string = "$obj($choice($objlist(beach,category=zone,type=tag)))"
         ret = parser.parse_to_any(string, caller=self.char1, raise_errors=True)
 
         self.assertIn(ret, [self.obj1, self.obj2])
