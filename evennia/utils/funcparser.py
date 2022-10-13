@@ -1153,7 +1153,7 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
     if not targets:
         if return_list:
             return []
-        raise ParsingError(f"$search: Query '{query}' gave no matches.")
+        raise ParsingError(f"$search: Query '{args[0]}' gave no matches.")
 
     if len(targets) > 1 and not return_list:
         raise ParsingError(
