@@ -1457,37 +1457,13 @@ MAP_DATA = {
   }
 }
 
-# @override_settings(
-#   XYZEXIT_PROTOTYPE_OVERRIDE= {
-#     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzExit",
-#   },
-#   XYZROOM_PROTOTYPE_OVERRIDE= {
-#     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
-#   }
-# )
 class TestCallbacks(BaseEvenniaTest):
-    # @override_settings(
-    #   XYZEXIT_PROTOTYPE_OVERRIDE={
-    #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzExit",
-    #   },
-    #   XYZROOM_PROTOTYPE_OVERRIDE={
-    #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
-    #   })
     def setUp(self):
         super().setUp()
         mock_room_callbacks.reset_mock()
         mock_exit_callbacks.reset_mock()
         
     def setup_grid(self, map_data):
-        # from evennia.prototypes import prototypes as protlib
-        # for prototype_key in ('xyz_room', 'xyz_exit', 'xyzroom', 'xyzexit'):
-        #   proto = protlib.search_prototype(
-        #       prototype_key,
-        #       # require_single=True,
-        #       # no_db=True
-        #   )
-        #   print(prototype_key, 'found?', proto)
-
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
 
         def _log(msg):
@@ -1515,11 +1491,10 @@ class TestCallbacks(BaseEvenniaTest):
                 prototype_value["typeclass"] = "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom"
             if len(prototype_key) == 3:
                 prototype_value["typeclass"] = "evennia.contrib.grid.xyzgrid.tests.TestXyzExit"
-        print(map_data)
         self.setup_grid(map_data)
 
         self.grid.spawn()
 
-        # Two rooms and 2 exits.
+        # Two rooms and 2 exits, Each one should have gotten one `at_object_creation` callback.
         self.assertEqual(mock_room_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
         self.assertEqual(mock_exit_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
