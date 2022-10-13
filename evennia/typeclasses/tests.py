@@ -245,8 +245,8 @@ class TestSearchTypeclassFamily(EvenniaTestCase):
         res2 = self.obj1.__class__.objects.typeclass_search(
             "evennia.typeclasses.tests.TestSearchManagerTypeclass"
         )
-        self.assertEqual(list(res1), [self.obj1, self.obj2])
-        self.assertEqual(list(res2), [self.obj1, self.obj2])
+        self.assertEqual(set(res1), {self.obj1, self.obj2})
+        self.assertEqual(set(res2), {self.obj1, self.obj2})
 
     def test_typeclass_search__children_and_parents(self):
         """Test getting parents/child classes"""
