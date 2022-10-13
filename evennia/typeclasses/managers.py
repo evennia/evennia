@@ -538,13 +538,14 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     def typeclass_search(self, typeclass, include_children=False, include_parents=False):
         """
-        Searches through all objects returning those which has a certain typeclass.
+        Searches through all objects returning those which are of the
+        specified typeclass.
 
         Args:
             typeclass (str or class): A typeclass class or a python path to a typeclass.
             include_children (bool, optional): Return objects with
                 given typeclass *and* all children inheriting from this
-                typeclass. Mutuall exclusive to `include_parents`.
+                typeclass. Mutually exclusive to `include_parents`.
             include_parents (bool, optional): Return objects with
                 given typeclass *and* all parents to this typeclass.
                 Mutually exclusive to `include_children`.
