@@ -1,4 +1,3 @@
-from resource import error
 from django.conf import settings
 from evennia import CmdSet, InterruptCommand
 from evennia.utils.utils import list_to_string
