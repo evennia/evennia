@@ -874,6 +874,9 @@ GRAPEVINE_CHANNELS = ["gossip", "testing"]
 # them. These are secret and should thus be overridden in secret_settings file
 GRAPEVINE_CLIENT_ID = ""
 GRAPEVINE_CLIENT_SECRET = ""
+# Discord integration
+# TODO: add doc comments here
+DISCORD_ENABLED = False
 
 ######################################################################
 # Django web features

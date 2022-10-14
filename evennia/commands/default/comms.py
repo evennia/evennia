@@ -3,7 +3,7 @@ Communication commands:
 
 - channel
 - page
-- irc/rss/grapevine linking
+- irc/rss/grapevine/discord linking
 
 """
 
@@ -14,7 +14,7 @@ from evennia.accounts.models import AccountDB
 from evennia.comms.comms import DefaultChannel
 from evennia.comms.models import Msg
 from evennia.locks.lockhandler import LockException
-from evennia.utils import create, logger, utils
+from evennia.utils import create, logger, search, utils
 from evennia.utils.evmenu import ask_yes_no
 from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import class_from_module, strip_unsafe_input
@@ -34,6 +34,7 @@ __all__ = (
     "CmdIRCStatus",
     "CmdRSS2Chan",
     "CmdGrapevine2Chan",
+    "CmdDiscord2Chan",
 )
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
@@ -1908,3 +1909,181 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
 
         bot.start(ev_channel=channel, grapevine_channel=grapevine_channel)
         self.msg(f"Grapevine connection created {channel} <-> {grapevine_channel}.")
+
+
+class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
+    """
+    Link an Evennia channel to an external Discord channel
+
+    Usage:
+      discord2chan[/switches]
+      discord2chan[/switches] <evennia_channel> [= <discord_channel_id>]
+      discord2chan/name <bot_name>
+
+    Switches:
+        /name    - Assign a name for the Discord bot to use on Evennia channels
+        /list    - (or no switch) show existing Evennia <-> Discord links
+        /remove  - remove an existing link by link ID
+        /delete  - alias to remove
+        /guild   - toggle the Discord server tag on/off
+        /channel - toggle the Evennia/Discord channel tags on/off
+
+    Example:
+        discord2chan mydiscord = 555555555555555
+
+    This creates a link between an in-game Evennia channel and an external
+    Discord channel. You must have a valid Discord bot application
+    (https://discord.com/developers/applications)) and your DISCORD_BOT_TOKEN
+    must be added to settings. (Please put it in secret_settings !)
+    """
+
+    key = "discord2chan"
+    aliases = ("discord",)
+    switch_options = (
+        "available",
+        "channel",
+        "delete",
+        "guild",
+        "list",
+        "name",
+        "remove",
+    )
+    locks = "cmd:serversetting(DISCORD_ENABLED) and pperm(Developer)"
+    help_category = "Comms"
+
+    def func(self):
+        """Manage the Evennia<->Discord channel links"""
+
+        if not settings.DISCORD_BOT_TOKEN:
+            self.msg(
+                "You must add your Discord bot application token to settings as DISCORD_BOT_TOKEN"
+            )
+            return
+
+        discord_bot = bots.DiscordBot.objects.filter_family()
+        if not discord_bot:
+            if "name" in self.switches:
+                # create a new discord bot
+                # TODO: reference settings for custom typeclass
+                discord_bot = create.create_account(self.lhs, None, None, typeclass=bots.DiscordBot)
+                discord_bot.start()
+            else:
+                self.msg("Please set up your Discord bot first: discord2chan/name <bot_name>")
+                return
+
+        else:
+            discord_bot = discord_bot[0]
+
+        if "name" in self.switches:
+            new_name = self.args.strip()
+            if bots.DiscordBot.validate_username(new_name):
+                discord_bot.name = new_name
+                self.msg(f"The Discord relay account is now named {new_name} in-game.")
+                return
+
+        if "guild" in self.switches:
+            discord_bot.db.tag_guild = not discord_bot.db.tag_guild
+            self.msg(
+                f"Messages to Evennia |wwill {'' if discord_bot.db.tag_guild else 'not '}|ninclude the Discord server."
+            )
+            return
+        if "channel" in self.switches:
+            discord_bot.db.tag_channel = not discord_bot.db.tag_channel
+            self.msg(
+                f"Relayed messages |wwill {'' if discord_bot.db.tag_channel else 'not '}|ninclude the originating channel."
+            )
+            return
+
+        if "list" in self.switches or not self.args:
+            # show all connections
+            if channel_list := discord_bot.db.channels:
+                table = self.styled_table(
+                    "|wLink ID|n",
+                    "|wEvennia|n",
+                    "|wDiscord|n",
+                    border="cells",
+                    maxwidth=_DEFAULT_WIDTH,
+                )
+                # iterate through the channel links
+                # load in the pretty names for the discord channels from cache
+                dc_chan_names = discord_bot.attributes.get("discord_channels", {})
+                for i, (evchan, dcchan) in enumerate(channel_list):
+                    dc_info = dc_chan_names.get(dcchan, {"name": "unknown", "guild": "unknown"})
+                    table.add_row(
+                        i, evchan, f"#{dc_info.get('name','?')}@{dc_info.get('guild','?')}"
+                    )
+                self.msg(table)
+            else:
+                self.msg("No Discord connections found.")
+            return
+
+        if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
+            if channel_list := discord_bot.db.channels:
+                try:
+                    lid = int(self.args.strip())
+                except ValueError:
+                    self.msg("Usage: discord2chan/remove <link id>")
+                    return
+                if lid < len(channel_list):
+                    ev_chan, dc_chan = discord_bot.db.channels.pop(lid)
+                    dc_chan_names = discord_bot.attributes.get("discord_channels", {})
+                    dc_info = dc_chan_names.get(dc_chan, {"name": "unknown", "guild": "unknown"})
+                    self.msg(
+                        f"Removed link between {ev_chan} and #{dc_info.get('name','?')}@{dc_info.get('guild','?')}"
+                    )
+                    return
+            else:
+                self.msg("There are no active connections to Discord.")
+                return
+
+        ev_channel = self.lhs
+        dc_channel = self.rhs
+
+        if ev_channel and not dc_channel:
+            # show all discord channels linked to self.lhs
+            if channel_list := discord_bot.db.channels:
+                table = self.styled_table(
+                    "|wLink ID|n",
+                    "|wEvennia|n",
+                    "|wDiscord|n",
+                    border="cells",
+                    maxwidth=_DEFAULT_WIDTH,
+                )
+                # iterate through the channel links
+                # load in the pretty names for the discord channels from cache
+                dc_chan_names = discord_bot.attributes.get("discord_channels", {})
+                results = False
+                for i, (evchan, dcchan) in enumerate(channel_list):
+                    if evchan.lower() == ev_channel.lower():
+                        dc_info = dc_chan_names.get(dcchan, {"name": "unknown", "guild": "unknown"})
+                        table.add_row(
+                            i, evchan, f"#{dc_info.get('name','?')}@{dc_info.get('guild','?')}"
+                        )
+                        results = True
+                if results:
+                    self.msg(table)
+                else:
+                    self.msg(f"There are no Discord channels connected to {ev_channel}.")
+            else:
+                self.msg("There are no active connections to Discord.")
+            return
+
+        # check if link already exists
+        if channel_list := discord_bot.db.channels:
+            if (ev_channel, dc_channel) in channel_list:
+                self.msg(f"Those channels are already linked.")
+                return
+        else:
+            discord_bot.db.channels = []
+        # create the new link
+        channel_obj = search.search_channel(ev_channel)
+        if not channel_obj:
+            self.msg(f"There is no channel '{ev_channel}'")
+            return
+        channel_obj = channel_obj[0]
+        discord_bot.db.channels.append((channel_obj.name, dc_channel))
+        if dc_chans := discord_bot.db.discord_channels:
+            dc_channel_name = dc_chans.get(dc_channel, {}).get("name", dc_channel)
+        else:
+            dc_channel_name = dc_channel
+        self.msg(f"Discord connection created: {channel_obj.name} <-> #{dc_channel_name}.")
