@@ -25,6 +25,7 @@ from collections import OrderedDict, defaultdict
 from inspect import getmembers, getmodule, getmro, ismodule, trace
 from os.path import join as osjoin
 from unicodedata import east_asian_width
+from string import punctuation
 
 from django.apps import apps
 from django.conf import settings
@@ -403,18 +404,23 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
     if not iterable:
         return ""
     len_iter = len(iterable)
-
+    
     if addquote:
         iterable = tuple(f'"{val}"' for val in iterable)
     else:
         iterable = tuple(str(val) for val in iterable)
 
-    if endsep.startswith(sep):
-        # oxford comma alternative
-        endsep = endsep[1:] if len_iter < 3 else endsep
-    elif endsep:
-        # normal space-separated end separator
-        endsep = " " + str(endsep).strip()
+    if endsep:
+        if endsep.startswith(sep):
+            # oxford comma alternative
+            endsep = endsep[1:] if len_iter < 3 else endsep
+        elif endsep[0] not in punctuation:
+            # add a leading space if endsep is a word
+            endsep = " " + str(endsep).strip()
+
+    # also add a leading space if separator is a word
+    if sep not in punctuation:
+        sep = " "+sep
 
     if len_iter == 1:
         return str(iterable[0])
