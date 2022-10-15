@@ -7,7 +7,7 @@ from unittest import mock
 
 from random import randint
 from parameterized import parameterized
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from evennia.utils.test_resources import BaseEvenniaTest
 from . import xymap, xyzgrid, xymap_legend, xyzroom
 
@@ -1477,13 +1477,6 @@ class TestCallbacks(BaseEvenniaTest):
         super().tearDown()
         self.grid.delete()
 
-    # @override_settings(
-    #   XYZEXIT_PROTOTYPE_OVERRIDE={
-    #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzExit",
-    #   },
-    #   XYZROOM_PROTOTYPE_OVERRIDE={
-    #     "typeclass": "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom",
-    #   })
     def test_typeclassed_xyzroom_and_xyzexit_with_at_object_creation_are_called(self):
         map_data = dict(MAP_DATA)
         for prototype_key, prototype_value in map_data["prototypes"].items():
