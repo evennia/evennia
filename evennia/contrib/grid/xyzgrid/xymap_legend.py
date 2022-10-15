@@ -24,7 +24,7 @@ from django.core import exceptions as django_exceptions
 from evennia.prototypes import spawner
 from evennia.utils.utils import class_from_module
 
-from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL
+from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL, MapError
 
 NodeTypeclass = None
 ExitTypeclass = None
@@ -402,11 +402,12 @@ class MapNode:
 
                 exitnode = self.links[direction]
                 prot = maplinks[key.lower()][3].prototype
-                typeclass = prot.get("typeclass", "")
+                typeclass = prot.get("typeclass")
+                if typeclass is None:
+                    raise MapError(f"The prototype {self.prototype} for this node has no 'typeclass' key.", self)
                 self.log(f"  spawning/updating exit xyz={xyz}, direction={key} ({typeclass})")
 
-                Typeclass = class_from_module(typeclass,
-                    fallback="evennia.contrib.grid.xyzgrid.xyzroom.XYZExit")
+                Typeclass = class_from_module(typeclass)
                 exi, err = Typeclass.create(
                     key,
                     xyz=xyz,
