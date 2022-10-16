@@ -605,7 +605,7 @@ OPTIONS_ACCOUNT_DEFAULT = {
     "column_names_color": ("Table column header text.", "Color", "w"),
     "help_category_color": ("Help category names.", "Color", "n"),
     "help_entry_color": ("Help entry names.", "Color", "n"),
-    "timezone": ("Timezone for dates. @tz for a list.", "Timezone", "UTC"),
+    "timezone": ("Timezone for dates.", "Timezone", "UTC"),
 }
 # Modules holding Option classes, responsible for serializing the option and
 # calling validator functions on it. Same-named functions in modules added
