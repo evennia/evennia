@@ -319,10 +319,11 @@ class MapNode:
         except django_exceptions.ObjectDoesNotExist:
             # create a new entity, using the specified typeclass (if there's one) and
             # with proper coordinates etc
-            typeclass = self.prototype.get("typeclass", "")
+            typeclass = self.prototype.get("typeclass")
+            if typeclass is None:
+                raise MapError(f"The prototype {self.prototype} for this node has no 'typeclass' key.", self)
             self.log(f"  spawning room at xyz={xyz} ({typeclass})")
-            Typeclass = class_from_module(typeclass,
-                fallback="evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom")
+            Typeclass = class_from_module(typeclass)
             nodeobj, err = Typeclass.create(self.prototype.get("key", "An empty room"), xyz=xyz)
             if err:
                 raise RuntimeError(err)
