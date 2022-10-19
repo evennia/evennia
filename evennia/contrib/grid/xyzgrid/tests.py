@@ -3,6 +3,7 @@
 Tests for the XYZgrid system.
 
 """
+from unittest import mock
 
 from random import randint
 from parameterized import parameterized
@@ -1415,3 +1416,78 @@ class TestBuildExampleGrid(BaseEvenniaTest):
         self.assertTrue(room2a.db.desc.startswith("This is the entrance to"))
         self.assertEqual(room2b.key, "North-west corner of the atrium")
         self.assertTrue(room2b.db.desc.startswith("Sunlight sifts down"))
+
+
+mock_room_callbacks = mock.MagicMock()
+mock_exit_callbacks = mock.MagicMock()
+
+class TestXyzRoom(xyzroom.XYZRoom):
+  def at_object_creation(self):
+    mock_room_callbacks.at_object_creation()
+
+class TestXyzExit(xyzroom.XYZExit):
+  def at_object_creation(self):
+    mock_exit_callbacks.at_object_creation()
+
+MAP_DATA = {
+  "map": """
+
+    + 0 1
+
+    0 #-#
+
+    + 0 1
+
+  """,
+  "zcoord": "map1",
+  "prototypes": {
+     ("*", "*"): {
+       "key": "room",
+       "desc": "A room.",
+       "prototype_parent": "xyz_room",
+     },
+     ("*", "*", "*"): {
+       "desc": "A passage.",
+       "prototype_parent": "xyz_exit",
+     }
+  },
+  "options": {
+    "map_visual_range": 1,
+    "map_mode": "scan",
+  }
+}
+
+class TestCallbacks(BaseEvenniaTest):
+    def setUp(self):
+        super().setUp()
+        mock_room_callbacks.reset_mock()
+        mock_exit_callbacks.reset_mock()
+        
+    def setup_grid(self, map_data):
+        self.grid, err = xyzgrid.XYZGrid.create("testgrid")
+
+        def _log(msg):
+             print(msg)
+        self.grid.log = _log
+
+        self.map_data = map_data
+        self.grid.add_maps(map_data)
+
+    def tearDown(self):
+        super().tearDown()
+        self.grid.delete()
+
+    def test_typeclassed_xyzroom_and_xyzexit_with_at_object_creation_are_called(self):
+        map_data = dict(MAP_DATA)
+        for prototype_key, prototype_value in map_data["prototypes"].items():
+            if len(prototype_key) == 2:
+                prototype_value["typeclass"] = "evennia.contrib.grid.xyzgrid.tests.TestXyzRoom"
+            if len(prototype_key) == 3:
+                prototype_value["typeclass"] = "evennia.contrib.grid.xyzgrid.tests.TestXyzExit"
+        self.setup_grid(map_data)
+
+        self.grid.spawn()
+
+        # Two rooms and 2 exits, Each one should have gotten one `at_object_creation` callback.
+        self.assertEqual(mock_room_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
+        self.assertEqual(mock_exit_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])

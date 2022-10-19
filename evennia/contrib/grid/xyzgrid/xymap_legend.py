@@ -22,8 +22,9 @@ from collections import defaultdict
 
 from django.core import exceptions as django_exceptions
 from evennia.prototypes import spawner
+from evennia.utils.utils import class_from_module
 
-from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL
+from .utils import MAPSCAN, REVERSE_DIRECTIONS, MapParserError, BIGVAL, MapError
 
 NodeTypeclass = None
 ExitTypeclass = None
@@ -316,13 +317,14 @@ class MapNode:
         try:
             nodeobj = NodeTypeclass.objects.get_xyz(xyz=xyz)
         except django_exceptions.ObjectDoesNotExist:
-            # create a new entity with proper coordinates etc
-            tclass = self.prototype["typeclass"]
-            tclass = (
-                f" ({tclass})" if tclass != "evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom" else ""
-            )
-            self.log(f"  spawning room at xyz={xyz}{tclass}")
-            nodeobj, err = NodeTypeclass.create(self.prototype.get("key", "An empty room"), xyz=xyz)
+            # create a new entity, using the specified typeclass (if there's one) and
+            # with proper coordinates etc
+            typeclass = self.prototype.get("typeclass")
+            if typeclass is None:
+                raise MapError(f"The prototype {self.prototype} for this node has no 'typeclass' key.", self)
+            self.log(f"  spawning room at xyz={xyz} ({typeclass})")
+            Typeclass = class_from_module(typeclass)
+            nodeobj, err = Typeclass.create(self.prototype.get("key", "An empty room"), xyz=xyz)
             if err:
                 raise RuntimeError(err)
         else:
@@ -400,7 +402,14 @@ class MapNode:
                     continue
 
                 exitnode = self.links[direction]
-                exi, err = ExitTypeclass.create(
+                prot = maplinks[key.lower()][3].prototype
+                typeclass = prot.get("typeclass")
+                if typeclass is None:
+                    raise MapError(f"The prototype {self.prototype} for this node has no 'typeclass' key.", self)
+                self.log(f"  spawning/updating exit xyz={xyz}, direction={key} ({typeclass})")
+
+                Typeclass = class_from_module(typeclass)
+                exi, err = Typeclass.create(
                     key,
                     xyz=xyz,
                     xyz_destination=exitnode.get_spawn_xyz(),
@@ -408,15 +417,8 @@ class MapNode:
                 )
                 if err:
                     raise RuntimeError(err)
+
                 linkobjs[key.lower()] = exi
-                prot = maplinks[key.lower()][3].prototype
-                tclass = prot["typeclass"]
-                tclass = (
-                    f" ({tclass})"
-                    if tclass != "evennia.contrib.grid.xyzgrid.xyzroom.XYZExit"
-                    else ""
-                )
-                self.log(f"  spawning/updating exit xyz={xyz}, direction={key}{tclass}")
 
         # apply prototypes to catch any changes
         for key, linkobj in linkobjs.items():
