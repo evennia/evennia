@@ -135,7 +135,7 @@ jobs:
             --parallel 4 \
             --timing \
             evennia
-        coverage xml
+        coverage lcov
         coverage report | grep TOTAL
 
     - name: Run test suite
@@ -159,6 +159,7 @@ jobs:
       uses: coverallsapp/github-action@master
       with: 
         base-path: testing_mygame
+        path-to-lcov: ./coverage.lcov
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
         # - name: Send data to Coveralls
