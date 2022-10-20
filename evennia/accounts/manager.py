@@ -211,7 +211,7 @@ class AccountDBManager(TypedObjectManager, UserManager):
 
         Keyword Args:
             typeclass (str): The typeclass to use for the account.
-            is_superuser (bool): Wether or not this account is to be a superuser
+            is_superuser (bool): Whether or not this account is to be a superuser
             locks (str): Lockstring.
             permission (list): List of permission strings.
             tags (list): List of Tags on form `(key, category[, data])`
