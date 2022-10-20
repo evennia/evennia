@@ -3133,3 +3133,25 @@ class DefaultExit(DefaultObject):
 
         """
         traversing_object.msg(_("You cannot go there."))
+
+    def matching_exit(self, as_list=False):
+        """
+        Get the exits that pair with this one in its destination room
+        (i.e. returns to its location)
+
+        Args:
+            as_list (bool): Whether to return available results as a
+                            list or single matching exit.
+
+        Returns:
+            list, exit (Exit), or None: The matching exit(s).
+        """
+        no_match = [] if as_list else None
+        if not self.destination:
+            return no_match
+        matching_exits = [x for x in self.destination.exits if x.destination == self.location]
+        if not matching_exits:
+            return no_match
+        if as_list:
+            return matching_exits
+        return matching_exits[0]
