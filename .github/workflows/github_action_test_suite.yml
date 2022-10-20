@@ -107,7 +107,6 @@ jobs:
         pip install psycopg2-binary==2.8.6   # fix issue for Django 2.2
         pip install mysqlclient
         pip install coveralls
-        pip install codacy-coverage
         pip install tblib
         pip install -e .
 
@@ -131,7 +130,6 @@ jobs:
           --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
           ../bin/unix/evennia test \
             --settings=settings \
-            --keepdb \
             --parallel 4 \
             --timing \
             evennia
