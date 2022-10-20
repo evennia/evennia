@@ -135,7 +135,7 @@ jobs:
             --parallel 4 \
             --timing \
             evennia
-        coverage lcov
+        coverage xml
         coverage report | grep TOTAL
 
     - name: Run test suite
@@ -152,24 +152,14 @@ jobs:
     # we only want to run coverall once, so we only do it for one of the matrix combinations
     # it's also not critical if pushing to either service fails (happens for PRs since env is not
     # available outside of the evennia org)
-
     - name: Send data to Coveralls
       if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' }}
       continue-on-error: true
-      uses: coverallsapp/github-action@master
-      with: 
-        base-path: testing_mygame
-        path-to-lcov: ./coverage.lcov
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
-        # - name: Send data to Coveralls
-        #   if: ${{ matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10' }}
-        #   continue-on-error: true
-        #   env:
-        #       COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        #   run: |
-        #     cd testing_mygame
-        #     coveralls
+      env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        cd testing_mygame
+        coveralls
 
     # docker setup and push
     -
