@@ -3133,3 +3133,20 @@ class DefaultExit(DefaultObject):
 
         """
         traversing_object.msg(_("You cannot go there."))
+
+    def get_return_exit(self, return_all=False):
+        """
+        Get the exits that pair with this one in its destination room
+        (i.e. returns to its location)
+
+        Args:
+            return_all (bool): Whether to return available results as a
+                               list or single matching exit.
+
+        Returns:
+            queryset or exit (Exit): The matching exit(s).
+        """
+        query = ObjectDB.objects.filter(db_location=self.destination, db_destination=self.location)
+        if return_all:
+            return query
+        return query.first()
