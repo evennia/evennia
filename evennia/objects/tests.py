@@ -69,6 +69,23 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
 
+    def test_exit_get_return_exit(self):
+        ex1, _ = DefaultExit.create("north", self.room1, self.room2, account=self.account)
+        single_return_exit = ex1.get_return_exit()
+        all_return_exit = ex1.get_return_exit(return_all=True)
+        self.assertEqual(single_return_exit, None)
+        self.assertEqual(len(all_return_exit), 0)
+
+        ex2, _ = DefaultExit.create("south", self.room2, self.room1, account=self.account)
+        single_return_exit = ex1.get_return_exit()
+        all_return_exit = ex1.get_return_exit(return_all=True)
+        self.assertEqual(single_return_exit, ex2)
+        self.assertEqual(len(all_return_exit), 1)
+
+        ex3, _ = DefaultExit.create("also_south", self.room2, self.room1, account=self.account)
+        all_return_exit = ex1.get_return_exit(return_all=True)
+        self.assertEqual(len(all_return_exit), 2)
+
     def test_urls(self):
         "Make sure objects are returning URLs"
         self.assertTrue(self.char1.get_absolute_url())
