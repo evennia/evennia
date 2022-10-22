@@ -135,6 +135,7 @@ jobs:
             evennia
         coverage xml
         coverage report
+        coverage --version
 
     - name: Run test suite
       if: matrix.TESTING_DB != 'sqlite3' || matrix.python-version != '3.10'
