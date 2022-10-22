@@ -121,6 +121,8 @@ jobs:
         evennia migrate
         evennia collectstatic --noinput
 
+    # OBS - it's important to not run the coverage tests with --parallel, it messes up the coverage
+    # calculation! 
     - name: Run test suite with coverage
       if: matrix.TESTING_DB == 'sqlite3' && matrix.python-version == '3.10'
       working-directory: testing_mygame
@@ -130,13 +132,13 @@ jobs:
           --omit=*/migrations/*,*/urls.py,*/test*.py,*.sh,*.txt,*.md,*.pyc,*.service \
           ../bin/unix/evennia test \
             --settings=settings \
-            --parallel 4 \
             --timing \
             evennia
         coverage xml
-        coverage report
         coverage --version
+        coverage report | grep TOTAL
 
+    # For other runs, run tests in parallel
     - name: Run test suite
       if: matrix.TESTING_DB != 'sqlite3' || matrix.python-version != '3.10'
       working-directory: testing_mygame
