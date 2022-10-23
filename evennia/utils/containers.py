@@ -201,9 +201,11 @@ class GlobalScriptContainer(Container):
         initialized.
 
         """
-        global _BASE_SCRIPT_TYPECLASS
-        if not _BASE_SCRIPT_TYPECLASS:
-            _BASE_SCRIPT_TYPECLASS = class_from_module(settings.BASE_SCRIPT_TYPECLASS)
+        if self.loaded_data:
+            # we don't always load this, it collides with doc generation
+            global _BASE_SCRIPT_TYPECLASS
+            if not _BASE_SCRIPT_TYPECLASS:
+                _BASE_SCRIPT_TYPECLASS = class_from_module(settings.BASE_SCRIPT_TYPECLASS)
 
         if self.typeclass_storage is None:
             self.typeclass_storage = {}
