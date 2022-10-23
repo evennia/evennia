@@ -137,21 +137,19 @@ import copy
 import hashlib
 import time
 
+import evennia
 from django.conf import settings
 from django.utils.translation import gettext as _
-
-import evennia
 from evennia.objects.models import ObjectDB
-from evennia.utils import logger
-from evennia.utils.utils import make_iter, is_iter
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.prototypes import (
+    PROTOTYPE_TAG_CATEGORY,
+    init_spawn_value,
     value_to_obj,
     value_to_obj_or_any,
-    init_spawn_value,
-    PROTOTYPE_TAG_CATEGORY,
 )
-
+from evennia.utils import logger
+from evennia.utils.utils import is_iter, make_iter
 
 _CREATE_OBJECT_KWARGS = ("key", "location", "home", "destination")
 _PROTOTYPE_META_NAMES = (
@@ -634,7 +632,7 @@ def format_diff(diff, minimal=True):
 
 
 def batch_update_objects_with_prototype(
-    prototype, diff=None, objects=None, exact=False, caller=None
+    prototype, diff=None, objects=None, exact=False, caller=None, protfunc_raise_errors=True
 ):
     """
     Update existing objects with the latest version of the prototype.
@@ -653,6 +651,8 @@ def batch_update_objects_with_prototype(
             objects will be removed if they exist. This will lead to a more accurate 1:1 correlation
             between the  object and the prototype but is usually impractical.
         caller (Object or Account, optional): This may be used by protfuncs to do permission checks.
+        protfunc_raise_errors (bool): Have protfuncs raise explicit errors if malformed/not found.
+            This is highly recommended.
     Returns:
         changed (int): The number of objects that had changes applied to them.
 
@@ -704,7 +704,13 @@ def batch_update_objects_with_prototype(
                     do_save = True
 
                     def _init(val, typ):
-                        return init_spawn_value(val, str, caller=caller, prototype=new_prototype)
+                        return init_spawn_value(
+                            val,
+                            str,
+                            caller=caller,
+                            prototype=new_prototype,
+                            protfunc_raise_errors=protfunc_raise_errors,
+                        )
 
                     if key == "key":
                         obj.db_key = _init(val, str)
@@ -892,6 +898,8 @@ def spawn(*prototypes, caller=None, **kwargs):
             custom `prototype_parents` are given to this function.
         only_validate (bool): Only run validation of prototype/parents
             (no object creation) and return the create-kwargs.
+        protfunc_raise_errors (bool): Raise explicit exceptions on a malformed/not-found
+            protfunc. Defaults to True.
 
     Returns:
         object (Object, dict or list): Spawned object(s). If `only_validate` is given, return
@@ -938,57 +946,55 @@ def spawn(*prototypes, caller=None, **kwargs):
         # extract the keyword args we need to create the object itself. If we get a callable,
         # call that to get the value (don't catch errors)
         create_kwargs = {}
+        init_spawn_kwargs = dict(
+            caller=caller,
+            prototype=prototype,
+            protfunc_raise_errors=kwargs.get("protfunc_raise_errors", True),
+        )
+
         # we must always add a key, so if not given we use a shortened md5 hash. There is a (small)
         # chance this is not unique but it should usually not be a problem.
         val = prot.pop(
             "key",
             "Spawned-{}".format(hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]),
         )
-        create_kwargs["db_key"] = init_spawn_value(val, str, caller=caller, prototype=prototype)
+        create_kwargs["db_key"] = init_spawn_value(val, str, **init_spawn_kwargs)
 
         val = prot.pop("location", None)
-        create_kwargs["db_location"] = init_spawn_value(
-            val, value_to_obj, caller=caller, prototype=prototype
-        )
+        create_kwargs["db_location"] = init_spawn_value(val, value_to_obj, **init_spawn_kwargs)
 
         val = prot.pop("home", None)
         if val:
-            create_kwargs["db_home"] = init_spawn_value(
-                val, value_to_obj, caller=caller, prototype=prototype
-            )
+            create_kwargs["db_home"] = init_spawn_value(val, value_to_obj, **init_spawn_kwargs)
         else:
             try:
                 create_kwargs["db_home"] = init_spawn_value(
-                    settings.DEFAULT_HOME, value_to_obj, caller=caller, prototype=prototype
+                    settings.DEFAULT_HOME, value_to_obj, **init_spawn_kwargs
                 )
             except ObjectDB.DoesNotExist:
                 # settings.DEFAULT_HOME not existing is common for unittests
                 pass
 
         val = prot.pop("destination", None)
-        create_kwargs["db_destination"] = init_spawn_value(
-            val, value_to_obj, caller=caller, prototype=prototype
-        )
+        create_kwargs["db_destination"] = init_spawn_value(val, value_to_obj, **init_spawn_kwargs)
 
         val = prot.pop("typeclass", settings.BASE_OBJECT_TYPECLASS)
-        create_kwargs["db_typeclass_path"] = init_spawn_value(
-            val, str, caller=caller, prototype=prototype
-        )
+        create_kwargs["db_typeclass_path"] = init_spawn_value(val, str, **init_spawn_kwargs)
 
         # extract calls to handlers
         val = prot.pop("permissions", [])
-        permission_string = init_spawn_value(val, make_iter, caller=caller, prototype=prototype)
+        permission_string = init_spawn_value(val, make_iter, **init_spawn_kwargs)
         val = prot.pop("locks", "")
-        lock_string = init_spawn_value(val, str, caller=caller, prototype=prototype)
+        lock_string = init_spawn_value(val, str, **init_spawn_kwargs)
         val = prot.pop("aliases", [])
-        alias_string = init_spawn_value(val, make_iter, caller=caller, prototype=prototype)
+        alias_string = init_spawn_value(val, make_iter, **init_spawn_kwargs)
 
         val = prot.pop("tags", [])
         tags = []
         for (tag, category, *data) in val:
             tags.append(
                 (
-                    init_spawn_value(tag, str, caller=caller, prototype=prototype),
+                    init_spawn_value(tag, str, **init_spawn_kwargs),
                     category,
                     data[0] if data else None,
                 )
@@ -1000,13 +1006,13 @@ def spawn(*prototypes, caller=None, **kwargs):
             tags.append((prototype_key, PROTOTYPE_TAG_CATEGORY))
 
         val = prot.pop("exec", "")
-        execs = init_spawn_value(val, make_iter, caller=caller, prototype=prototype)
+        execs = init_spawn_value(val, make_iter, **init_spawn_kwargs)
 
         # extract ndb assignments
         nattributes = dict(
             (
                 key.split("_", 1)[1],
-                init_spawn_value(val, value_to_obj, caller=caller, prototype=prototype),
+                init_spawn_value(val, value_to_obj, **init_spawn_kwargs),
             )
             for key, val in prot.items()
             if key.startswith("ndb_")
@@ -1019,7 +1025,7 @@ def spawn(*prototypes, caller=None, **kwargs):
             attributes.append(
                 (
                     attrname,
-                    init_spawn_value(value, caller=caller, prototype=prototype),
+                    init_spawn_value(value, **init_spawn_kwargs),
                     rest[0] if rest else None,
                     rest[1] if len(rest) > 1 else None,
                 )
@@ -1036,9 +1042,7 @@ def spawn(*prototypes, caller=None, **kwargs):
                 simple_attributes.append(
                     (
                         key,
-                        init_spawn_value(
-                            value, value_to_obj_or_any, caller=caller, prototype=prototype
-                        ),
+                        init_spawn_value(value, value_to_obj_or_any, **init_spawn_kwargs),
                         None,
                         None,
                     )
