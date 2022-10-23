@@ -314,6 +314,23 @@ class TestTags(BaseEvenniaTest):
         self.obj1.tags.add("tagC", "categoryC")
         self.assertFalse(self.obj1.tags.has(category="categoryD"))
 
+    def test_tag_add_no_category__issue_2688(self):
+        """
+        Adding a tag without a category should create a new tag:None tag
+        rather than trying to update an existing tag:category tag.
+        """
+        # adding tag+category, creates tag+category entry
+        self.obj1.tags.add("testing", category="testing_category")
+        self.assertEqual(
+            self.obj1.tags.all(return_key_and_category=True), [("testing", "testing_category")]
+        )
+        # adding a new tag with no category should create a tag+None entry
+        self.obj1.tags.add("testing")
+        self.assertEqual(
+            self.obj1.tags.all(return_key_and_category=True),
+            [("testing", "testing_category"), ("testing", None)],
+        )
+
 
 class TestNickHandler(BaseEvenniaTest):
     """

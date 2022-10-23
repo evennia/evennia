@@ -197,6 +197,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 query.append(("db_key", key))
             if category:
                 query.append(("db_category", category))
+            else:
+                query.append(("db_category", None))
             return _Tag.objects.filter(**dict(query))
         else:
             # search only among tags stored on on this model
