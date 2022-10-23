@@ -609,11 +609,12 @@ character make small verbal observations at irregular intervals.
 
 _Contrib by Griatch 2022_
 
-A complete example MUD using Evennia. This is the final result of what is
-implemented if you follow the Getting-Started tutorial. It's recommended
-that you follow the tutorial step by step and write your own code. But if
-you prefer you can also pick apart or use this as a starting point for your
-own game.
+
+```{warning}
+NOTE - this tutorial is WIP and NOT complete! It was put on hold to focus on
+releasing Evennia 1.0. You will still learn things from it, but don't expect
+perfection.
+```
 
 [Read the documentation](./Contrib-Evadventure.md) - [Browse the Code](evennia.contrib.tutorials.evadventure)
 
@@ -680,6 +681,7 @@ and more._
 
 Contrib-Auditing.md
 Contrib-Fieldfill.md
+Contrib-Git-Integration.md
 Contrib-Name-Generator.md
 Contrib-Random-String-Generator.md
 Contrib-Tree-Select.md
@@ -711,6 +713,16 @@ function. Once the form is submitted, the form's data is submitted as a dictiona
 to any callable of your choice.
 
 [Read the documentation](./Contrib-Fieldfill.md) - [Browse the Code](evennia.contrib.utils.fieldfill)
+
+
+
+### Contrib: `git_integration`
+
+_Contribution by helpme (2022)_
+
+A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local mygame repo and Evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc. 
+
+[Read the documentation](./Contrib-Git-Integration.md) - [Browse the Code](evennia.contrib.utils.git_integration)
 
 
 
