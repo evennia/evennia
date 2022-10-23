@@ -8,10 +8,10 @@ assignees: ''
 ---
 
 #### Existing page / new
-(Link to existing documentation page or proposed name of new page)
+<!--(Link to existing documentation page or proposed name of new page)-->
 
 #### Documentation issue
-(Replace with the description of what the issue is or motivate a changes/additions)
+<!--(Replace with the description of what the issue is or motivate a changes/additions)-->
 
 #### Suggested change
-(Enter the suggested change here)
+<!--(Enter the suggested change here)-->
