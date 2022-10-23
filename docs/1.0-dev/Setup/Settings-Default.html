@@ -262,7 +262,8 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
 <span class="n">LOCKWARNING_LOG_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LOG_DIR</span><span class="p">,</span> <span class="s2">&quot;lockwarnings.log&quot;</span><span class="p">)</span>
 <span class="c1"># Number of lines to append to rotating channel logs when they rotate</span>
 <span class="n">CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="c1"># Max size (in bytes) of channel log files before they rotate</span>
+<span class="c1"># Max size (in bytes) of channel log files before they rotate.</span>
+<span class="c1"># Minimum is 1000 (1kB) but should usually be larger.</span>
 <span class="n">CHANNEL_LOG_ROTATE_SIZE</span> <span class="o">=</span> <span class="mi">1000000</span>
 <span class="c1"># Unused by default, but used by e.g. the MapSystem contrib. A place for storing</span>
 <span class="c1"># semi-permanent data and avoid it being rebuilt over and over. It is created</span>

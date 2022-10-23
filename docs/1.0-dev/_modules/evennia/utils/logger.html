@@ -460,7 +460,7 @@
         <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
         <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_LOG_NUM_TAIL_LINES</span>
-    <span class="n">num_lines_to_append</span> <span class="o">=</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span>
+    <span class="n">num_lines_to_append</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">_CHANNEL_LOG_NUM_TAIL_LINES</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EvenniaLogFile.rotate"><a class="viewcode-back" href="../../../api/evennia.utils.logger.html#evennia.utils.logger.EvenniaLogFile.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_lines_to_append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -539,7 +539,7 @@
         <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 
         <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LOG_DIR</span>
-        <span class="n">_LOG_ROTATE_SIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_LOG_ROTATE_SIZE</span>
+        <span class="n">_LOG_ROTATE_SIZE</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">CHANNEL_LOG_ROTATE_SIZE</span><span class="p">)</span>
 
     <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_LOGDIR</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">_LOG_FILE_HANDLES</span><span class="p">:</span>

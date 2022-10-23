@@ -1,8 +1,8 @@
 # Installing with GIT
 
-This installs and runs Evennia from its sources. This is required if you want to contribute to Evennia 
-itself or have an easier time exploring the code. See the basic [Installation](./Installation.md) for 
-a quick installation of the library. See the [troubleshooting](./Installation-Troubleshooting.md) if you run 
+This installs and runs Evennia from its sources. This is required if you want to contribute to Evennia
+itself or have an easier time exploring the code. See the basic [Installation](./Installation.md) for
+a quick installation of the library. See the [troubleshooting](./Installation-Troubleshooting.md) if you run
 into trouble.
 
 ```{important}
@@ -13,6 +13,12 @@ If you are converting an existing game from a previous version, [see here](./Ins
 
 For the impatient. If you have trouble with a step, you should jump on to the
 more detailed instructions for your platform.
+
+```{warning}
+Currently, these instructions will install 'latest' (stable) Evennia, which is
+the 0.9.5 version. To install 1.0-dev, you need to add a step `git checkout develop` between steps
+3 and 4 below.
+```
 
 1. Install Python, GIT and python-virtualenv. Start a Console/Terminal.
 2. `cd` to some place you want to do your development (like a folder
@@ -25,7 +31,7 @@ more detailed instructions for your platform.
 8. `cd mygame`
 9. `evennia migrate`
 10. `evennia start` (make sure to make a  superuser when asked)
- 
+
 Evennia should now be running and you can connect to it by pointing a web browser to
 `http://localhost:4001` or a MUD telnet client to `localhost:4000` (use `127.0.0.1` if your OS does
 not recognize `localhost`).
@@ -99,12 +105,12 @@ Next you can continue initializing your game from the regular [Installation inst
 The Evennia server is a terminal program. Open the terminal e.g. from
 *Applications->Utilities->Terminal*. [Here is an introduction to the Mac
 terminal](https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line)
-if you are unsure how it works. 
+if you are unsure how it works.
 
-* Python should already be installed but you must make sure it's a high enough version - go for 
+* Python should already be installed but you must make sure it's a high enough version - go for
  3.10.
 ([This](https://docs.python-guide.org/en/latest/starting/install/osx/) discusses
- how you may upgrade it). 
+ how you may upgrade it).
 * GIT can be obtained with
 [git-osx-installer](https://code.google.com/p/git-osx-installer/) or via MacPorts [as described
 here](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
@@ -133,7 +139,7 @@ Python practice to install into a _virtualenv_. If you are unsure about what a
 virtualenv is and why it's useful, see the [Glossary entry on virtualenv](../Glossary.md#virtualenv).
 
 ```
-python3.10 -m venv evenv 
+python3.10 -m venv evenv
 ```
 A new folder `evenv` will appear (we could have called it anything). This
 folder will hold a self-contained setup of Python packages without interfering
@@ -221,7 +227,7 @@ Python practice to install into a _virtualenv_. If you are unsure about what a
 virtualenv is and why it's useful, see the [Glossary entry on virtualenv](../Glossary.md#virtualenv).
 
 ```
-python3.10 -m venv evenv 
+python3.10 -m venv evenv
 ```
 A new folder `evenv` will appear (we could have called it anything). This
 folder will hold a self-contained setup of Python packages without interfering
