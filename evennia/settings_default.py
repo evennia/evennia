@@ -153,7 +153,8 @@ HTTP_LOG_FILE = os.path.join(LOG_DIR, "http_requests.log")
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, "lockwarnings.log")
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
-# Max size (in bytes) of channel log files before they rotate
+# Max size (in bytes) of channel log files before they rotate.
+# Minimum is 1000 (1kB) but should usually be larger.
 CHANNEL_LOG_ROTATE_SIZE = 1000000
 # Unused by default, but used by e.g. the MapSystem contrib. A place for storing
 # semi-permanent data and avoid it being rebuilt over and over. It is created
