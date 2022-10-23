@@ -411,7 +411,7 @@ of the olc _format_diff_text_and_options without the options.</p>
 
 <dl class="py function">
 <dt id="evennia.prototypes.spawner.batch_update_objects_with_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">batch_update_objects_with_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">diff</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#batch_update_objects_with_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.batch_update_objects_with_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.spawner.</code><code class="sig-name descname">batch_update_objects_with_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">diff</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">protfunc_raise_errors</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/spawner.html#batch_update_objects_with_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.spawner.batch_update_objects_with_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update existing objects with the latest version of the prototype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -429,6 +429,8 @@ if it’s not set in the prototype. With <strong>exact=True</strong>, all un-spe
 objects will be removed if they exist. This will lead to a more accurate 1:1 correlation
 between the  object and the prototype but is usually impractical.</p></li>
 <li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – This may be used by protfuncs to do permission checks.</p></li>
+<li><p><strong>protfunc_raise_errors</strong> (<em>bool</em>) – Have protfuncs raise explicit errors if malformed/not found.
+This is highly recommended.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -523,6 +525,8 @@ merged result between the globally found protparents and whatever
 custom <strong>prototype_parents</strong> are given to this function.</p></li>
 <li><p><strong>only_validate</strong> (<em>bool</em>) – Only run validation of prototype/parents
 (no object creation) and return the create-kwargs.</p></li>
+<li><p><strong>protfunc_raise_errors</strong> (<em>bool</em>) – Raise explicit exceptions on a malformed/not-found
+protfunc. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>

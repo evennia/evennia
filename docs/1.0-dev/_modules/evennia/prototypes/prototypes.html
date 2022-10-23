@@ -83,29 +83,29 @@
 
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">time</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">check_lockstring</span><span class="p">,</span> <span class="n">validate_lockstring</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">all_from_module</span><span class="p">,</span>
-    <span class="n">variable_from_module</span><span class="p">,</span>
-    <span class="n">make_iter</span><span class="p">,</span>
-    <span class="n">is_iter</span><span class="p">,</span>
-    <span class="n">dbid_to_obj</span><span class="p">,</span>
-    <span class="n">justify</span><span class="p">,</span>
     <span class="n">class_from_module</span><span class="p">,</span>
+    <span class="n">dbid_to_obj</span><span class="p">,</span>
+    <span class="n">is_iter</span><span class="p">,</span>
+    <span class="n">justify</span><span class="p">,</span>
+    <span class="n">make_iter</span><span class="p">,</span>
+    <span class="n">variable_from_module</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">validate_lockstring</span><span class="p">,</span> <span class="n">check_lockstring</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">FuncParser</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
 
 <span class="n">_MODULE_PROTOTYPE_MODULES</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">_MODULE_PROTOTYPES</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1001,7 +1001,13 @@
 
 
 <div class="viewcode-block" id="protfunc_parser"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.protfunc_parser">[docs]</a><span class="k">def</span> <span class="nf">protfunc_parser</span><span class="p">(</span>
-    <span class="n">value</span><span class="p">,</span> <span class="n">available_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">value</span><span class="p">,</span>
+    <span class="n">available_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">stacktrace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a prototype value string for a protfunc and process it.</span>
@@ -1015,6 +1021,7 @@
 <span class="sd">        available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.</span>
 <span class="sd">            If not set, use default sources.</span>
 <span class="sd">        stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.</span>
+<span class="sd">        raise_errors (bool, optional): Raise explicit errors from malformed/not found protfunc calls.</span>
 
 <span class="sd">    Keyword Args:</span>
 <span class="sd">        session (Session): Passed to protfunc. Session of the entity spawning the prototype.</span>
@@ -1033,7 +1040,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">FUNC_PARSER</span><span class="o">.</span><span class="n">parse_to_any</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">FUNC_PARSER</span><span class="o">.</span><span class="n">parse_to_any</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="n">raise_errors</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
 
@@ -1176,7 +1183,9 @@
     <span class="k">return</span> <span class="n">default</span></div>
 
 
-<div class="viewcode-block" id="init_spawn_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.init_spawn_value">[docs]</a><span class="k">def</span> <span class="nf">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="init_spawn_value"><a class="viewcode-back" href="../../../api/evennia.prototypes.prototypes.html#evennia.prototypes.prototypes.init_spawn_value">[docs]</a><span class="k">def</span> <span class="nf">init_spawn_value</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">protfunc_raise_errors</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyze the prototype value and produce a value useful at the point of spawning.</span>
 
@@ -1204,7 +1213,9 @@
         <span class="n">value</span> <span class="o">=</span> <span class="n">validator</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="o">*</span><span class="n">make_iter</span><span class="p">(</span><span class="n">args</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">validator</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">protfunc_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">protfunc_parser</span><span class="p">(</span>
+        <span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="n">protfunc_raise_errors</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">validator</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span></div>

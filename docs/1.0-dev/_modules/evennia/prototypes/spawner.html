@@ -213,21 +213,19 @@
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
+<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
-<span class="kn">import</span> <span class="nn">evennia</span>
 <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">is_iter</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
 <span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">,</span>
+    <span class="n">init_spawn_value</span><span class="p">,</span>
     <span class="n">value_to_obj</span><span class="p">,</span>
     <span class="n">value_to_obj_or_any</span><span class="p">,</span>
-    <span class="n">init_spawn_value</span><span class="p">,</span>
-    <span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">,</span>
 <span class="p">)</span>
-
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">make_iter</span>
 
 <span class="n">_CREATE_OBJECT_KWARGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="s2">&quot;home&quot;</span><span class="p">,</span> <span class="s2">&quot;destination&quot;</span><span class="p">)</span>
 <span class="n">_PROTOTYPE_META_NAMES</span> <span class="o">=</span> <span class="p">(</span>
@@ -710,7 +708,7 @@
 
 
 <div class="viewcode-block" id="batch_update_objects_with_prototype"><a class="viewcode-back" href="../../../api/evennia.prototypes.spawner.html#evennia.prototypes.spawner.batch_update_objects_with_prototype">[docs]</a><span class="k">def</span> <span class="nf">batch_update_objects_with_prototype</span><span class="p">(</span>
-    <span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">prototype</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">protfunc_raise_errors</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Update existing objects with the latest version of the prototype.</span>
@@ -729,6 +727,8 @@
 <span class="sd">            objects will be removed if they exist. This will lead to a more accurate 1:1 correlation</span>
 <span class="sd">            between the  object and the prototype but is usually impractical.</span>
 <span class="sd">        caller (Object or Account, optional): This may be used by protfuncs to do permission checks.</span>
+<span class="sd">        protfunc_raise_errors (bool): Have protfuncs raise explicit errors if malformed/not found.</span>
+<span class="sd">            This is highly recommended.</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        changed (int): The number of objects that had changes applied to them.</span>
 
@@ -780,7 +780,13 @@
                     <span class="n">do_save</span> <span class="o">=</span> <span class="kc">True</span>
 
                     <span class="k">def</span> <span class="nf">_init</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">typ</span><span class="p">):</span>
-                        <span class="k">return</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">new_prototype</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">init_spawn_value</span><span class="p">(</span>
+                            <span class="n">val</span><span class="p">,</span>
+                            <span class="nb">str</span><span class="p">,</span>
+                            <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+                            <span class="n">prototype</span><span class="o">=</span><span class="n">new_prototype</span><span class="p">,</span>
+                            <span class="n">protfunc_raise_errors</span><span class="o">=</span><span class="n">protfunc_raise_errors</span><span class="p">,</span>
+                        <span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;key&quot;</span><span class="p">:</span>
                         <span class="n">obj</span><span class="o">.</span><span class="n">db_key</span> <span class="o">=</span> <span class="n">_init</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
@@ -968,6 +974,8 @@
 <span class="sd">            custom `prototype_parents` are given to this function.</span>
 <span class="sd">        only_validate (bool): Only run validation of prototype/parents</span>
 <span class="sd">            (no object creation) and return the create-kwargs.</span>
+<span class="sd">        protfunc_raise_errors (bool): Raise explicit exceptions on a malformed/not-found</span>
+<span class="sd">            protfunc. Defaults to True.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        object (Object, dict or list): Spawned object(s). If `only_validate` is given, return</span>
@@ -1014,57 +1022,55 @@
         <span class="c1"># extract the keyword args we need to create the object itself. If we get a callable,</span>
         <span class="c1"># call that to get the value (don&#39;t catch errors)</span>
         <span class="n">create_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">init_spawn_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+            <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">,</span>
+            <span class="n">protfunc_raise_errors</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;protfunc_raise_errors&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="p">)</span>
+
         <span class="c1"># we must always add a key, so if not given we use a shortened md5 hash. There is a (small)</span>
         <span class="c1"># chance this is not unique but it should usually not be a problem.</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
             <span class="s2">&quot;key&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Spawned-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">6</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span>
-            <span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span>
-        <span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
-            <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span>
-                <span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span>
-            <span class="p">)</span>
+            <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_home&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span>
-                    <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span>
+                    <span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
                 <span class="c1"># settings.DEFAULT_HOME not existing is common for unittests</span>
                 <span class="k">pass</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;destination&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_destination&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span>
-            <span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span>
-        <span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_destination&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">)</span>
-        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span>
-            <span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span>
-        <span class="p">)</span>
+        <span class="n">create_kwargs</span><span class="p">[</span><span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
 
         <span class="c1"># extract calls to handlers</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="p">[])</span>
-        <span class="n">permission_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">)</span>
+        <span class="n">permission_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;locks&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">lock_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">)</span>
+        <span class="n">lock_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="p">[])</span>
-        <span class="n">alias_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">)</span>
+        <span class="n">alias_string</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
             <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">),</span>
+                    <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">),</span>
                     <span class="n">category</span><span class="p">,</span>
                     <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -1076,13 +1082,13 @@
             <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prototype_key</span><span class="p">,</span> <span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">))</span>
 
         <span class="n">val</span> <span class="o">=</span> <span class="n">prot</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">execs</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">)</span>
+        <span class="n">execs</span> <span class="o">=</span> <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">)</span>
 
         <span class="c1"># extract ndb assignments</span>
         <span class="n">nattributes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">),</span>
+                <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">value_to_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ndb_&quot;</span><span class="p">)</span>
@@ -1095,7 +1101,7 @@
             <span class="n">attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">attrname</span><span class="p">,</span>
-                    <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span><span class="p">),</span>
+                    <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">),</span>
                     <span class="n">rest</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">rest</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">rest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -1112,9 +1118,7 @@
                 <span class="n">simple_attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">(</span>
                         <span class="n">key</span><span class="p">,</span>
-                        <span class="n">init_spawn_value</span><span class="p">(</span>
-                            <span class="n">value</span><span class="p">,</span> <span class="n">value_to_obj_or_any</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">prototype</span><span class="o">=</span><span class="n">prototype</span>
-                        <span class="p">),</span>
+                        <span class="n">init_spawn_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value_to_obj_or_any</span><span class="p">,</span> <span class="o">**</span><span class="n">init_spawn_kwargs</span><span class="p">),</span>
                         <span class="kc">None</span><span class="p">,</span>
                         <span class="kc">None</span><span class="p">,</span>
                     <span class="p">)</span>

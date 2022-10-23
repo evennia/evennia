@@ -205,6 +205,8 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Make setting `MAX_NR_CHARACTERS` interact better with the new settings above.
 - Allow `$search` funcparser func to search tags and to accept kwargs for more
   powerful searches passed into the regular search functions.
+- `spawner.spawn` and linked methods now has a kwarg `protfunc_raise_errors`
+  (default True) to disable strict errors on malformed/not-found protfuncs
 
 ## Evennia 0.9.5
 
