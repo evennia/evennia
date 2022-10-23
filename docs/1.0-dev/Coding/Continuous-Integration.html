@@ -43,50 +43,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="continuous-integration">
-<h1>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Permalink to this headline">¶</a></h1>
-<p>One of the advantages of Evennia over traditional MU* development systems is that Evennia can
-integrate into enterprise-level integration environments and source control.</p>
-<section id="what-is-continuous-integration-ci">
-<h2>What is Continuous Integration (CI)?<a class="headerlink" href="#what-is-continuous-integration-ci" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://www.thoughtworks.com/continuous-integration">Continuous Integration (CI)</a> is a development
-practice that requires developers to integrate code into a shared repository.
-Each check-in is then verified by an automated build, allowing teams to detect problems early. This
-can be set up to safely deploy data to a production server only after tests have passed, for example.</p>
-<p>For Evennia, continuous integration allows an automated build process to:</p>
-<ul class="simple">
-<li><p>Pull down a latest build from Source Control.</p></li>
-<li><p>Run migrations on the backing SQL database.</p></li>
-<li><p>Automate additional unique tasks for that project.</p></li>
-<li><p>Run unit tests.</p></li>
-<li><p>Publish those files to the server directory</p></li>
-<li><p>Reload the game.</p></li>
-</ul>
-</section>
-<section id="list-of-continuous-integration-tools">
-<h2>List of continuous integration tools<a class="headerlink" href="#list-of-continuous-integration-tools" title="Permalink to this headline">¶</a></h2>
-<p>There are a lot of tools and services providing CI functionality. Here are a few that people have used
-with Evennia:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Continuous-Integration-Travis.html">Continuous integration with Travis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Continuous-Integration-TeamCity.html">Continuous Integration - TeamCity (linux)</a></li>
-</ul>
-</div>
-<p><a class="reference external" href="https://www.atlassian.com/continuous-delivery/continuous-integration/tools">This is an overview of other tools</a>
-(external link).</p>
-</section>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -102,7 +60,7 @@ with Evennia:</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-<p><h3><a href="../index.html">Table of Contents</a></h3>
+<h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Continuous Integration</a><ul>
 <li><a class="reference internal" href="#what-is-continuous-integration-ci">What is Continuous Integration (CI)?</a></li>
@@ -142,7 +100,49 @@ with Evennia:</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="continuous-integration">
+<h1>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Permalink to this headline">¶</a></h1>
+<p>One of the advantages of Evennia over traditional MU* development systems is that Evennia can
+integrate into enterprise-level integration environments and source control.</p>
+<section id="what-is-continuous-integration-ci">
+<h2>What is Continuous Integration (CI)?<a class="headerlink" href="#what-is-continuous-integration-ci" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.thoughtworks.com/continuous-integration">Continuous Integration (CI)</a> is a development
+practice that requires developers to integrate code into a shared repository.
+Each check-in is then verified by an automated build, allowing teams to detect problems early. This
+can be set up to safely deploy data to a production server only after tests have passed, for example.</p>
+<p>For Evennia, continuous integration allows an automated build process to:</p>
+<ul class="simple">
+<li><p>Pull down a latest build from Source Control.</p></li>
+<li><p>Run migrations on the backing SQL database.</p></li>
+<li><p>Automate additional unique tasks for that project.</p></li>
+<li><p>Run unit tests.</p></li>
+<li><p>Publish those files to the server directory</p></li>
+<li><p>Reload the game.</p></li>
+</ul>
+</section>
+<section id="list-of-continuous-integration-tools">
+<h2>List of continuous integration tools<a class="headerlink" href="#list-of-continuous-integration-tools" title="Permalink to this headline">¶</a></h2>
+<p>There are a lot of tools and services providing CI functionality. Here are a few that people have used
+with Evennia:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Continuous-Integration-Travis.html">Continuous integration with Travis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Continuous-Integration-TeamCity.html">Continuous Integration - TeamCity (linux)</a></li>
+</ul>
+</div>
+<p><a class="reference external" href="https://www.atlassian.com/continuous-delivery/continuous-integration/tools">This is an overview of other tools</a>
+(external link).</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

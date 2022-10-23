@@ -48,34 +48,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.contrib.base_systems.email_login.connection_screens">
-<span id="evennia-contrib-base-systems-email-login-connection-screens"></span><h1>evennia.contrib.base_systems.email_login.connection_screens<a class="headerlink" href="#module-evennia.contrib.base_systems.email_login.connection_screens" title="Permalink to this headline">¶</a></h1>
-<p>Connection screen</p>
-<p>This is the text to show the user when they first connect to the game (before
-they log in).</p>
-<p>To change the login screen in this module, do one of the following:</p>
-<ul class="simple">
-<li><p>Define a function <strong>connection_screen()</strong>, taking no arguments. This will be
-called first and must return the full string to act as the connection screen.
-This can be used to produce more dynamic screens.</p></li>
-<li><p>Alternatively, define a string variable in the outermost scope of this module
-with the connection string that should be displayed. If more than one such
-variable is given, Evennia will pick one of them at random.</p></li>
-</ul>
-<p>The commands available to the user when the connection screen is shown
-are defined in evennia.default_cmds.UnloggedinCmdSet. The parsing and display
-of the screen is done by the unlogged-in “look” command.</p>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -122,7 +96,33 @@ of the screen is done by the unlogged-in “look” command.</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.base_systems.email_login.connection_screens">
+<span id="evennia-contrib-base-systems-email-login-connection-screens"></span><h1>evennia.contrib.base_systems.email_login.connection_screens<a class="headerlink" href="#module-evennia.contrib.base_systems.email_login.connection_screens" title="Permalink to this headline">¶</a></h1>
+<p>Connection screen</p>
+<p>This is the text to show the user when they first connect to the game (before
+they log in).</p>
+<p>To change the login screen in this module, do one of the following:</p>
+<ul class="simple">
+<li><p>Define a function <strong>connection_screen()</strong>, taking no arguments. This will be
+called first and must return the full string to act as the connection screen.
+This can be used to produce more dynamic screens.</p></li>
+<li><p>Alternatively, define a string variable in the outermost scope of this module
+with the connection string that should be displayed. If more than one such
+variable is given, Evennia will pick one of them at random.</p></li>
+</ul>
+<p>The commands available to the user when the connection screen is shown
+are defined in evennia.default_cmds.UnloggedinCmdSet. The parsing and display
+of the screen is done by the unlogged-in “look” command.</p>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

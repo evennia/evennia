@@ -43,41 +43,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="evennia-multidescer">
-<h1>Evennia Multidescer<a class="headerlink" href="#evennia-multidescer" title="Permalink to this headline">¶</a></h1>
-<p>Contribution by Griatch 2016</p>
-<p>A “multidescer” is a concept from the MUSH world. It allows for
-creating, managing and switching between multiple character
-descriptions and is a way for quickly managing your look (such as when
-changing clothes) in more free-form roleplaying systems. This will also
-work well together with the <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code> contrib.</p>
-<p>This multidescer will not
-require any changes to the Character class, rather it will use the <code class="docutils literal notranslate"><span class="pre">multidescs</span></code>
-Attribute (a list) and create it if it does not exist.</p>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Edit <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add
-<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.contrib.game_systems.multidescer</span> <span class="pre">import</span> <span class="pre">CmdMultiDesc</span></code> to the top.</p>
-<p>Next, look up the <code class="docutils literal notranslate"><span class="pre">at_cmdset_create</span></code> method of the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>
-class and add a line <code class="docutils literal notranslate"><span class="pre">self.add(CmdMultiDesc())</span></code> to the end
-of it.</p>
-<p>Reload the server and you should have the +desc command available (it
-will replace the default <code class="docutils literal notranslate"><span class="pre">desc</span></code> command).</p>
-<hr class="docutils" />
-<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/multidescer/README.md</span></code>. Changes to this
-file will be overwritten, so edit that file rather than this one.</small></p>
-</section>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -93,7 +60,7 @@ file will be overwritten, so edit that file rather than this one.</small></p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-<p><h3><a href="../index.html">Table of Contents</a></h3>
+<h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Evennia Multidescer</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
@@ -132,7 +99,40 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-multidescer">
+<h1>Evennia Multidescer<a class="headerlink" href="#evennia-multidescer" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Griatch 2016</p>
+<p>A “multidescer” is a concept from the MUSH world. It allows for
+creating, managing and switching between multiple character
+descriptions and is a way for quickly managing your look (such as when
+changing clothes) in more free-form roleplaying systems. This will also
+work well together with the <code class="docutils literal notranslate"><span class="pre">rpsystem</span></code> contrib.</p>
+<p>This multidescer will not
+require any changes to the Character class, rather it will use the <code class="docutils literal notranslate"><span class="pre">multidescs</span></code>
+Attribute (a list) and create it if it does not exist.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Edit <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code> and add
+<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.contrib.game_systems.multidescer</span> <span class="pre">import</span> <span class="pre">CmdMultiDesc</span></code> to the top.</p>
+<p>Next, look up the <code class="docutils literal notranslate"><span class="pre">at_cmdset_create</span></code> method of the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>
+class and add a line <code class="docutils literal notranslate"><span class="pre">self.add(CmdMultiDesc())</span></code> to the end
+of it.</p>
+<p>Reload the server and you should have the +desc command available (it
+will replace the default <code class="docutils literal notranslate"><span class="pre">desc</span></code> command).</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/game_systems/multidescer/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

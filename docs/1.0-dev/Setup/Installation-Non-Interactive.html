@@ -43,34 +43,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="non-interactive-setup">
-<h1>Non-interactive setup<a class="headerlink" href="#non-interactive-setup" title="Permalink to this headline">¶</a></h1>
-<p>The first ime you run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> (just after having created the database), you will be asked
-to interactively insert the superuser username, email and password. If you are deploying Evennia
-as part of an automatic build script, you don’t want to enter this information manually.</p>
-<p>You can have the superuser be created automatically by passing environment variables to your
-build script:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">EVENNIA_SUPERUSER_USERNAME</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EVENNIA_SUPERUSER_PASSWORD</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EVENNIA_SUPERUSER_EMAIL</span></code> is optional. If not given, empty string is used.</p></li>
-</ul>
-<p>These envvars will only be used on the <em>very first</em> server start and then ignored. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EVENNIA_SUPERUSER_USERNAME</span><span class="o">=</span><span class="n">myname</span> <span class="n">EVENNIA_SUPERUSER_PASSWORD</span><span class="o">=</span><span class="n">mypwd</span> <span class="n">evennia</span> <span class="n">start</span>
-
-</pre></div>
-</div>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -117,7 +91,33 @@ build script:</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="non-interactive-setup">
+<h1>Non-interactive setup<a class="headerlink" href="#non-interactive-setup" title="Permalink to this headline">¶</a></h1>
+<p>The first ime you run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> (just after having created the database), you will be asked
+to interactively insert the superuser username, email and password. If you are deploying Evennia
+as part of an automatic build script, you don’t want to enter this information manually.</p>
+<p>You can have the superuser be created automatically by passing environment variables to your
+build script:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EVENNIA_SUPERUSER_USERNAME</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EVENNIA_SUPERUSER_PASSWORD</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EVENNIA_SUPERUSER_EMAIL</span></code> is optional. If not given, empty string is used.</p></li>
+</ul>
+<p>These envvars will only be used on the <em>very first</em> server start and then ignored. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EVENNIA_SUPERUSER_USERNAME</span><span class="o">=</span><span class="n">myname</span> <span class="n">EVENNIA_SUPERUSER_PASSWORD</span><span class="o">=</span><span class="n">mypwd</span> <span class="n">evennia</span> <span class="n">start</span>
+
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

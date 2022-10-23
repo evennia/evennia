@@ -43,36 +43,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="clickable-links">
-<h1>Clickable links<a class="headerlink" href="#clickable-links" title="Permalink to this headline">¶</a></h1>
-<p>Evennia supports clickable links for clients that supports it. This marks certain text so it can be
-clicked by a mouse and either trigger a given Evennia command, or open a URL in an external web
-browser. To support clickable links, Evennia requires the webclient or an third-party telnet client
-with <a class="reference external" href="http://www.zuggsoft.com/zmud/mxp.htm">MXP</a> support (<em>Note: Evennia only supports clickable links, no other MXP features</em>).</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">|lc</span></code> to start the link, by defining the command to execute.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">|lu</span></code> to start the link, by defining the URL to open.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">|lt</span></code> to continue with the text to show to the user (the link text).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">|le</span></code> to end the link text and the link definition.</p></li>
-</ul>
-<p>All elements must appear in exactly this order to make a valid link. For example,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;If you go |lcnorth|ltto the north|le you will find a cottage.&quot;</span>
-</pre></div>
-</div>
-<p>This will display as “If you go <strong>to the north</strong> you will find a cottage.” where clicking the link
-will execute the command <code class="docutils literal notranslate"><span class="pre">north</span></code>. If the client does not support clickable links, only the link text
-will be shown.</p>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -119,7 +91,35 @@ will be shown.</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="clickable-links">
+<h1>Clickable links<a class="headerlink" href="#clickable-links" title="Permalink to this headline">¶</a></h1>
+<p>Evennia supports clickable links for clients that supports it. This marks certain text so it can be
+clicked by a mouse and either trigger a given Evennia command, or open a URL in an external web
+browser. To support clickable links, Evennia requires the webclient or an third-party telnet client
+with <a class="reference external" href="http://www.zuggsoft.com/zmud/mxp.htm">MXP</a> support (<em>Note: Evennia only supports clickable links, no other MXP features</em>).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">|lc</span></code> to start the link, by defining the command to execute.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|lu</span></code> to start the link, by defining the URL to open.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|lt</span></code> to continue with the text to show to the user (the link text).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">|le</span></code> to end the link text and the link definition.</p></li>
+</ul>
+<p>All elements must appear in exactly this order to make a valid link. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;If you go |lcnorth|ltto the north|le you will find a cottage.&quot;</span>
+</pre></div>
+</div>
+<p>This will display as “If you go <strong>to the north</strong> you will find a cottage.” where clicking the link
+will execute the command <code class="docutils literal notranslate"><span class="pre">north</span></code>. If the client does not support clickable links, only the link text
+will be shown.</p>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

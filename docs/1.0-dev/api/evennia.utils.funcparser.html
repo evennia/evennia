@@ -46,7 +46,54 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.utils.evtable.html"
+                        title="previous chapter">evennia.utils.evtable</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.utils.gametime.html"
+                        title="next chapter">evennia.utils.gametime</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.funcparser.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.utils.funcparser.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
         <div class="bodywrapper">
           <div class="body" role="main">
             
@@ -235,7 +282,7 @@ callable (like the current Session object for inlinefuncs).</p></li>
 
 <dl class="py method">
 <dt id="evennia.utils.funcparser.FuncParser.parse_to_any">
-<code class="sig-name descname">parse_to_any</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">raise_errors</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">reserved_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#FuncParser.parse_to_any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.FuncParser.parse_to_any" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parse_to_any</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em>, <em class="sig-param"><span class="n">raise_errors</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">escape</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">strip</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">reserved_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/funcparser.html#FuncParser.parse_to_any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.funcparser.FuncParser.parse_to_any" title="Permalink to this definition">¶</a></dt>
 <dd><p>This parses a string and if the string only contains a “$func(…)”,
 the return will be the return value of that function, even if it’s not
 a string. If mixed in with other strings, the result will still always
@@ -247,6 +294,10 @@ be a string.</p>
 <li><p><strong>raise_errors</strong> (<em>bool</em><em>, </em><em>optional</em>) – If unset, leave a failing (or
 unrecognized) inline function as unparsed in the string. If set,
 raise an ParsingError.</p></li>
+<li><p><strong>escape</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, escape all found functions so they
+are not executed by later parsing.</p></li>
+<li><p><strong>strip</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, strip any inline funcs from string
+as if they were not there.</p></li>
 <li><p><strong>**reserved_kwargs</strong> – If given, these are guaranteed to _always_ pass
 as part of each parsed callable’s <strong>kwargs. These  override
 same-named default options given in **__init__</strong> as well as any
@@ -424,8 +475,11 @@ integer value in the given range.</p>
 <dd><p>FuncParser callable. Picks a random choice from a list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>listing</strong> (<em>list</em>) – A list of items to randomly choose between.
-This will be converted from a string to a real list.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>listing</strong> (<em>list</em>) – A list of items to randomly choose between.
+This will be converted from a string to a real list.</p></li>
+<li><p><strong>*args</strong> – If multiple args are given, will pick one randomly from them.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>any</em> – The randomly chosen element.</p>
@@ -433,7 +487,7 @@ This will be converted from a string to a real list.</p>
 </dl>
 <p class="rubric">Example</p>
 <ul class="simple">
-<li><p><strong>$choice([key, flower, house])</strong></p></li>
+<li><p><strong>$choice(key, flower, house)</strong></p></li>
 <li><p><strong>$choice([1, 2, 3, 4])</strong></p></li>
 </ul>
 </dd></dl>
@@ -588,7 +642,9 @@ this requries the parser be called with the caller’s Session for proper
 security. If called without session, the call is aborted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>query</strong> (<em>str</em>) – The key or dbref to search for.</p>
+<dd class="field-odd"><p><strong>query</strong> (<em>str</em>) – The key or dbref to search for. This can consist of any args used
+for one of the regular search methods. Also kwargs will be passed into
+the search (except the kwargs given below)</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
@@ -600,6 +656,7 @@ be passed into the access check for the entity being searched for.
 The ‘control’ permission is required.</p></li>
 <li><p><strong>access</strong> (<em>str</em>) – Which locktype access to check. Unset to disable the
 security check.</p></li>
+<li><p><strong>**kwargs</strong> – Will be passed into the main search.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -615,6 +672,7 @@ passed into parser.</p>
 <li><p>“$search(#233)”</p></li>
 <li><p>“$search(Tom, type=account)”</p></li>
 <li><p>“$search(meadow, return_list=True)”</p></li>
+<li><p>“$search(beach, category=outdoors, type=tag)</p></li>
 </ul>
 </dd></dl>
 
@@ -919,57 +977,10 @@ and the mapping can always be auto-detected.</p>
 </section>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
-            </a></p>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="evennia.utils.evtable.html"
-                        title="previous chapter">evennia.utils.evtable</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="evennia.utils.gametime.html"
-                        title="next chapter">evennia.utils.gametime</a></p>
-  <div role="note" aria-label="source link">
-    <!--h3>This Page</h3-->
-    <ul class="this-page-menu">
-      <li><a href="../_sources/api/evennia.utils.funcparser.md.txt"
-            rel="nofollow">Show Page Source</a></li>
-    </ul>
-   </div><h3>Links</h3>
-<ul>
-  <li><a href="https://www.evennia.com">Home page</a> </li>
-  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
-  <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
-  </li>
-</ul>
-<h3>Versions</h3>
-<ul>
-  <li><a href="evennia.utils.funcparser.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-</ul>
 
-        </div>
-      </div>
-      <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

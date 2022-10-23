@@ -48,46 +48,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.contrib.utils.auditing.tests">
-<span id="evennia-contrib-utils-auditing-tests"></span><h1>evennia.contrib.utils.auditing.tests<a class="headerlink" href="#module-evennia.contrib.utils.auditing.tests" title="Permalink to this headline">¶</a></h1>
-<p>Module containing the test cases for the Audit system.</p>
-<dl class="py class">
-<dt id="evennia.contrib.utils.auditing.tests.AuditingTest">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.utils.auditing.tests.</code><code class="sig-name descname">AuditingTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a></p>
-<dl class="py method">
-<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.setup_session">
-<code class="sig-name descname">setup_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.setup_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.setup_session" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overrides default one in EvenniaTest</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.test_mask">
-<code class="sig-name descname">test_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.test_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.test_mask" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure the ‘mask’ function is properly masking potentially sensitive
-information from strings.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.test_audit">
-<code class="sig-name descname">test_audit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.test_audit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.test_audit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure the ‘audit’ function is returning a dictionary based on values
-parsed from the Session object.</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -134,7 +96,45 @@ parsed from the Session object.</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.utils.auditing.tests">
+<span id="evennia-contrib-utils-auditing-tests"></span><h1>evennia.contrib.utils.auditing.tests<a class="headerlink" href="#module-evennia.contrib.utils.auditing.tests" title="Permalink to this headline">¶</a></h1>
+<p>Module containing the test cases for the Audit system.</p>
+<dl class="py class">
+<dt id="evennia.contrib.utils.auditing.tests.AuditingTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.utils.auditing.tests.</code><code class="sig-name descname">AuditingTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.setup_session">
+<code class="sig-name descname">setup_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.setup_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.setup_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides default one in EvenniaTest</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.test_mask">
+<code class="sig-name descname">test_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.test_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.test_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure the ‘mask’ function is properly masking potentially sensitive
+information from strings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.utils.auditing.tests.AuditingTest.test_audit">
+<code class="sig-name descname">test_audit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/utils/auditing/tests.html#AuditingTest.test_audit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.utils.auditing.tests.AuditingTest.test_audit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure the ‘audit’ function is returning a dictionary based on values
+parsed from the Session object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

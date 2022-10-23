@@ -35,42 +35,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for evennia.contrib.utils.random_string_generator.tests</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Random string tests.</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">random_string_generator</span>
-
-<span class="n">SIMPLE_GENERATOR</span> <span class="o">=</span> <span class="n">random_string_generator</span><span class="o">.</span><span class="n">RandomStringGenerator</span><span class="p">(</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span> <span class="s2">&quot;[01]</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="TestRandomStringGenerator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.random_string_generator.tests.html#evennia.contrib.utils.random_string_generator.tests.TestRandomStringGenerator">[docs]</a><span class="k">class</span> <span class="nc">TestRandomStringGenerator</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestRandomStringGenerator.test_generate"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.random_string_generator.tests.html#evennia.contrib.utils.random_string_generator.tests.TestRandomStringGenerator.test_generate">[docs]</a>    <span class="k">def</span> <span class="nf">test_generate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generate and fail when exhausted.&quot;&quot;&quot;</span>
-        <span class="n">generated</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-            <span class="n">generated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SIMPLE_GENERATOR</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
-
-        <span class="n">generated</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">generated</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;00&quot;</span><span class="p">,</span> <span class="s2">&quot;01&quot;</span><span class="p">,</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span> <span class="s2">&quot;11&quot;</span><span class="p">])</span>
-
-        <span class="c1"># At this point, we have generated 4 strings.</span>
-        <span class="c1"># We can&#39;t generate one more</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">random_string_generator</span><span class="o">.</span><span class="n">ExhaustedGenerator</span><span class="p">):</span>
-            <span class="n">SIMPLE_GENERATOR</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div></div>
-</pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../../../../index.html">
@@ -104,7 +70,41 @@
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.utils.random_string_generator.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Random string tests.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">random_string_generator</span>
+
+<span class="n">SIMPLE_GENERATOR</span> <span class="o">=</span> <span class="n">random_string_generator</span><span class="o">.</span><span class="n">RandomStringGenerator</span><span class="p">(</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span> <span class="s2">&quot;[01]</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TestRandomStringGenerator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.random_string_generator.tests.html#evennia.contrib.utils.random_string_generator.tests.TestRandomStringGenerator">[docs]</a><span class="k">class</span> <span class="nc">TestRandomStringGenerator</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRandomStringGenerator.test_generate"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.random_string_generator.tests.html#evennia.contrib.utils.random_string_generator.tests.TestRandomStringGenerator.test_generate">[docs]</a>    <span class="k">def</span> <span class="nf">test_generate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate and fail when exhausted.&quot;&quot;&quot;</span>
+        <span class="n">generated</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">generated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SIMPLE_GENERATOR</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+
+        <span class="n">generated</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">generated</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;00&quot;</span><span class="p">,</span> <span class="s2">&quot;01&quot;</span><span class="p">,</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span> <span class="s2">&quot;11&quot;</span><span class="p">])</span>
+
+        <span class="c1"># At this point, we have generated 4 strings.</span>
+        <span class="c1"># We can&#39;t generate one more</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">random_string_generator</span><span class="o">.</span><span class="n">ExhaustedGenerator</span><span class="p">):</span>
+            <span class="n">SIMPLE_GENERATOR</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

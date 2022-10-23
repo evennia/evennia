@@ -43,47 +43,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="email-based-login-system">
-<h1>Email-based login system<a class="headerlink" href="#email-based-login-system" title="Permalink to this headline">¶</a></h1>
-<p>Contrib by Griatch, 2012</p>
-<p>This is a variant of the login system that asks for an email-address
-instead of a username to login. Note that it does not verify the email,
-it just uses it as the identifier rather than a username.</p>
-<p>This used to be the default Evennia login before replacing it with a
-more standard username + password system (having to supply an email
-for some reason caused a lot of confusion when people wanted to expand
-on it. The email is not strictly needed internally, nor is any
-confirmation email sent out anyway).</p>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>To your settings file, add/edit the line:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CMDSET_UNLOGGEDIN</span> <span class="o">=</span> <span class="s2">&quot;contrib.base_systems.email_login.UnloggedinCmdSet&quot;</span>
-<span class="n">CONNECTION_SCREEN_MODULE</span> <span class="o">=</span> <span class="s2">&quot;contrib.base_systems.email_login.connection_screens&quot;</span>
-
-</pre></div>
-</div>
-<p>That’s it. Reload the server and reconnect to see it.</p>
-</section>
-<section id="notes">
-<h2>Notes:<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
-<p>If you want to modify the way the connection screen looks, point
-<code class="docutils literal notranslate"><span class="pre">CONNECTION_SCREEN_MODULE</span></code> to your own module. Use the default as a
-guide (see also Evennia docs).</p>
-<hr class="docutils" />
-<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/email_login/README.md</span></code>. Changes to this
-file will be overwritten, so edit that file rather than this one.</small></p>
-</section>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -99,7 +60,7 @@ file will be overwritten, so edit that file rather than this one.</small></p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-<p><h3><a href="../index.html">Table of Contents</a></h3>
+<h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Email-based login system</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
@@ -139,7 +100,46 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="email-based-login-system">
+<h1>Email-based login system<a class="headerlink" href="#email-based-login-system" title="Permalink to this headline">¶</a></h1>
+<p>Contrib by Griatch, 2012</p>
+<p>This is a variant of the login system that asks for an email-address
+instead of a username to login. Note that it does not verify the email,
+it just uses it as the identifier rather than a username.</p>
+<p>This used to be the default Evennia login before replacing it with a
+more standard username + password system (having to supply an email
+for some reason caused a lot of confusion when people wanted to expand
+on it. The email is not strictly needed internally, nor is any
+confirmation email sent out anyway).</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To your settings file, add/edit the line:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CMDSET_UNLOGGEDIN</span> <span class="o">=</span> <span class="s2">&quot;contrib.base_systems.email_login.UnloggedinCmdSet&quot;</span>
+<span class="n">CONNECTION_SCREEN_MODULE</span> <span class="o">=</span> <span class="s2">&quot;contrib.base_systems.email_login.connection_screens&quot;</span>
+
+</pre></div>
+</div>
+<p>That’s it. Reload the server and reconnect to see it.</p>
+</section>
+<section id="notes">
+<h2>Notes:<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>If you want to modify the way the connection screen looks, point
+<code class="docutils literal notranslate"><span class="pre">CONNECTION_SCREEN_MODULE</span></code> to your own module. Use the default as a
+guide (see also Evennia docs).</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/email_login/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

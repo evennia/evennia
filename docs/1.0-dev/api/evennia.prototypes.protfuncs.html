@@ -46,56 +46,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.prototypes.protfuncs">
-<span id="evennia-prototypes-protfuncs"></span><h1>evennia.prototypes.protfuncs<a class="headerlink" href="#module-evennia.prototypes.protfuncs" title="Permalink to this headline">¶</a></h1>
-<p>Protfuncs are FuncParser-callables that can be embedded in a prototype to
-provide custom logic without having access to Python. The protfunc is parsed at
-the time of spawning, using the creating object’s session as input. If the
-protfunc returns a non-string, this is what will be added to the prototype.</p>
-<p>In the prototype dict, the protfunc is specified as a string inside the prototype, e.g.:</p>
-<blockquote>
-<div><p>{ …</p>
-<p>“key”: “$funcname(args, kwargs)”</p>
-<p>…  }</p>
-</div></blockquote>
-<p>Available protfuncs are either all callables in one of the modules of <strong>settings.PROT_FUNC_MODULES</strong>
-or all callables added to a dict FUNCPARSER_CALLABLES in such a module.</p>
-<blockquote>
-<div><p>def funcname (<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
-</div></blockquote>
-<p>At spawn-time the spawner passes the following extra kwargs into each callable (in addition to
-what is added in the call itself):</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>session (Session): The Session of the entity spawning using this prototype.</p></li>
-<li><p>prototype (dict): The dict this protfunc is a part of.</p></li>
-<li><p>current_key (str): The active key this value belongs to in the prototype.</p></li>
-</ul>
-</div></blockquote>
-<p>Any traceback raised by this function will be handled at the time of spawning and abort the spawn
-before any object is created/updated. It must otherwise return the value to store for the specified
-prototype key (this value must be possible to serialize in an Attribute).</p>
-<dl class="py function">
-<dt id="evennia.prototypes.protfuncs.protfunc_callable_protkey">
-<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">protfunc_callable_protkey</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#protfunc_callable_protkey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.protfunc_callable_protkey" title="Permalink to this definition">¶</a></dt>
-<dd><p>Usage: $protkey(keyname)
-Returns the value of another key in this prototoype. Will raise an error if</p>
-<blockquote>
-<div><p>the key is not found in this prototype.</p>
-</div></blockquote>
-</dd></dl>
-
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -142,7 +94,55 @@ Returns the value of another key in this prototoype. Will raise an error if</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.prototypes.protfuncs">
+<span id="evennia-prototypes-protfuncs"></span><h1>evennia.prototypes.protfuncs<a class="headerlink" href="#module-evennia.prototypes.protfuncs" title="Permalink to this headline">¶</a></h1>
+<p>Protfuncs are FuncParser-callables that can be embedded in a prototype to
+provide custom logic without having access to Python. The protfunc is parsed at
+the time of spawning, using the creating object’s session as input. If the
+protfunc returns a non-string, this is what will be added to the prototype.</p>
+<p>In the prototype dict, the protfunc is specified as a string inside the prototype, e.g.:</p>
+<blockquote>
+<div><p>{ …</p>
+<p>“key”: “$funcname(args, kwargs)”</p>
+<p>…  }</p>
+</div></blockquote>
+<p>Available protfuncs are either all callables in one of the modules of <strong>settings.PROT_FUNC_MODULES</strong>
+or all callables added to a dict FUNCPARSER_CALLABLES in such a module.</p>
+<blockquote>
+<div><p>def funcname (<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
+</div></blockquote>
+<p>At spawn-time the spawner passes the following extra kwargs into each callable (in addition to
+what is added in the call itself):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>session (Session): The Session of the entity spawning using this prototype.</p></li>
+<li><p>prototype (dict): The dict this protfunc is a part of.</p></li>
+<li><p>current_key (str): The active key this value belongs to in the prototype.</p></li>
+</ul>
+</div></blockquote>
+<p>Any traceback raised by this function will be handled at the time of spawning and abort the spawn
+before any object is created/updated. It must otherwise return the value to store for the specified
+prototype key (this value must be possible to serialize in an Attribute).</p>
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.protfunc_callable_protkey">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">protfunc_callable_protkey</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#protfunc_callable_protkey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.protfunc_callable_protkey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $protkey(keyname)
+Returns the value of another key in this prototoype. Will raise an error if</p>
+<blockquote>
+<div><p>the key is not found in this prototype.</p>
+</div></blockquote>
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

@@ -35,44 +35,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for evennia.web.admin.frontpage</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Admin views.</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">django.contrib.admin.sites</span> <span class="kn">import</span> <span class="n">site</span>
-<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">django.contrib.admin.views.decorators</span> <span class="kn">import</span> <span class="n">staff_member_required</span>
-
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
-
-
-<div class="viewcode-block" id="evennia_admin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.frontpage.html#evennia.web.admin.frontpage.evennia_admin">[docs]</a><span class="nd">@staff_member_required</span>
-<span class="k">def</span> <span class="nf">evennia_admin</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helpful Evennia-specific admin page.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;admin/frontpage.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;accountdb&quot;</span><span class="p">:</span> <span class="n">AccountDB</span><span class="p">})</span></div>
-
-
-<div class="viewcode-block" id="admin_wrapper"><a class="viewcode-back" href="../../../../api/evennia.web.admin.frontpage.html#evennia.web.admin.frontpage.admin_wrapper">[docs]</a><span class="k">def</span> <span class="nf">admin_wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrapper that allows us to properly use the base Django admin site, if needed.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">staff_member_required</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">index</span><span class="p">)(</span><span class="n">request</span><span class="p">)</span></div>
-</pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../../../index.html">
@@ -106,7 +70,43 @@
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.web.admin.frontpage</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Admin views.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.admin.sites</span> <span class="kn">import</span> <span class="n">site</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+<span class="kn">from</span> <span class="nn">django.contrib.admin.views.decorators</span> <span class="kn">import</span> <span class="n">staff_member_required</span>
+
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+
+
+<div class="viewcode-block" id="evennia_admin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.frontpage.html#evennia.web.admin.frontpage.evennia_admin">[docs]</a><span class="nd">@staff_member_required</span>
+<span class="k">def</span> <span class="nf">evennia_admin</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helpful Evennia-specific admin page.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;admin/frontpage.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;accountdb&quot;</span><span class="p">:</span> <span class="n">AccountDB</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="admin_wrapper"><a class="viewcode-back" href="../../../../api/evennia.web.admin.frontpage.html#evennia.web.admin.frontpage.admin_wrapper">[docs]</a><span class="k">def</span> <span class="nf">admin_wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper that allows us to properly use the base Django admin site, if needed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">staff_member_required</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">index</span><span class="p">)(</span><span class="n">request</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

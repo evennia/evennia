@@ -44,50 +44,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="continuous-integration-with-travis">
-<h1>Continuous integration with Travis<a class="headerlink" href="#continuous-integration-with-travis" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://travis-ci.org/">Travis CI</a> is an online service for checking, validating and potentially
-deploying code automatically. It can check that every commit is building successfully after every
-commit to its Github repository.</p>
-<p>If your game is open source on Github you may use Travis for free.
-See [the Travis docs](<a class="reference external" href="https://docs.travis-ci.com/user/getting-">https://docs.travis-ci.com/user/getting-</a> started/) for how to get started.</p>
-<p>After logging in you will get to point Travis to your repository on github. One further thing you
-need to set up yourself is a Travis config file named <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> (note the initial period <code class="docutils literal notranslate"><span class="pre">.</span></code>).
-This should be created in the root of your game directory. The idea with this file is that it
-describes what Travis needs to import and build in order to create an instance of Evennia from
-scratch and then run validation tests on it. Here is an example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span><span class="w"></span>
-<span class="nt">python</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3.10&quot;</span><span class="w"></span>
-<span class="nt">install</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git clone https://github.com/evennia/evennia.git</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cd evennia</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install -e .</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cd $TRAVIS_BUILD_DIR</span><span class="w"></span>
-<span class="nt">script</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">evennia migrate</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">evennia test --settings settings.py .</span><span class="w"></span>
-</pre></div>
-</div>
-<p>This will tell travis how to download Evennia, install it, set up a database and then run
-your own test suite (inside the game dir). Use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">test</span> <span class="pre">evennia</span></code> if you also want to
-run the Evennia full test suite.</p>
-<p>You need to add this file to git (<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">.travis.yml</span></code>) and then commit your changes before Travis
-will be able to see it.</p>
-<p>For properly testing your game you of course also need to write unittests.
-The <a class="reference internal" href="Unit-Testing.html"><span class="doc std std-doc">Unit testing</span></a> doc page gives some ideas on how to set those up for Evennia.
-You should be able to refer to that for making tests fitting your game.</p>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -134,7 +92,49 @@ You should be able to refer to that for making tests fitting your game.</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="continuous-integration-with-travis">
+<h1>Continuous integration with Travis<a class="headerlink" href="#continuous-integration-with-travis" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://travis-ci.org/">Travis CI</a> is an online service for checking, validating and potentially
+deploying code automatically. It can check that every commit is building successfully after every
+commit to its Github repository.</p>
+<p>If your game is open source on Github you may use Travis for free.
+See [the Travis docs](<a class="reference external" href="https://docs.travis-ci.com/user/getting-">https://docs.travis-ci.com/user/getting-</a> started/) for how to get started.</p>
+<p>After logging in you will get to point Travis to your repository on github. One further thing you
+need to set up yourself is a Travis config file named <code class="docutils literal notranslate"><span class="pre">.travis.yml</span></code> (note the initial period <code class="docutils literal notranslate"><span class="pre">.</span></code>).
+This should be created in the root of your game directory. The idea with this file is that it
+describes what Travis needs to import and build in order to create an instance of Evennia from
+scratch and then run validation tests on it. Here is an example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span><span class="w"></span>
+<span class="nt">python</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3.10&quot;</span><span class="w"></span>
+<span class="nt">install</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git clone https://github.com/evennia/evennia.git</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cd evennia</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install -e .</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cd $TRAVIS_BUILD_DIR</span><span class="w"></span>
+<span class="nt">script</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">evennia migrate</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">evennia test --settings settings.py .</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This will tell travis how to download Evennia, install it, set up a database and then run
+your own test suite (inside the game dir). Use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">test</span> <span class="pre">evennia</span></code> if you also want to
+run the Evennia full test suite.</p>
+<p>You need to add this file to git (<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">.travis.yml</span></code>) and then commit your changes before Travis
+will be able to see it.</p>
+<p>For properly testing your game you of course also need to write unittests.
+The <a class="reference internal" href="Unit-Testing.html"><span class="doc std std-doc">Unit testing</span></a> doc page gives some ideas on how to set those up for Evennia.
+You should be able to refer to that for making tests fitting your game.</p>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

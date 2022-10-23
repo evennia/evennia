@@ -35,44 +35,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for evennia.contrib.grid.slow_exit.tests</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Slow exit tests.</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">slow_exit</span>
-
-<span class="n">slow_exit</span><span class="o">.</span><span class="n">MOVE_DELAY</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;stroll&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;walk&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;sprint&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
-
-
-<span class="k">def</span> <span class="nf">_cancellable_mockdelay</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Mock</span><span class="p">()</span>
-
-
-<div class="viewcode-block" id="TestSlowExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.tests.html#evennia.contrib.grid.slow_exit.tests.TestSlowExit">[docs]</a><span class="k">class</span> <span class="nc">TestSlowExit</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestSlowExit.test_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.tests.html#evennia.contrib.grid.slow_exit.tests.TestSlowExit.test_exit">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.delay&quot;</span><span class="p">,</span> <span class="n">_cancellable_mockdelay</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">exi</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
-            <span class="n">slow_exit</span><span class="o">.</span><span class="n">SlowExit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;slowexit&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room2</span>
-        <span class="p">)</span>
-        <span class="n">exi</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">slow_exit</span><span class="o">.</span><span class="n">CmdSetSpeed</span><span class="p">(),</span> <span class="s2">&quot;walk&quot;</span><span class="p">,</span> <span class="s2">&quot;You are now walking.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">slow_exit</span><span class="o">.</span><span class="n">CmdStop</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You stop moving.&quot;</span><span class="p">)</span></div></div>
-</pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../../../../index.html">
@@ -106,7 +70,43 @@
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.grid.slow_exit.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Slow exit tests.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">slow_exit</span>
+
+<span class="n">slow_exit</span><span class="o">.</span><span class="n">MOVE_DELAY</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;stroll&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;walk&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;sprint&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_cancellable_mockdelay</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Mock</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="TestSlowExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.tests.html#evennia.contrib.grid.slow_exit.tests.TestSlowExit">[docs]</a><span class="k">class</span> <span class="nc">TestSlowExit</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSlowExit.test_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.slow_exit.tests.html#evennia.contrib.grid.slow_exit.tests.TestSlowExit.test_exit">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.delay&quot;</span><span class="p">,</span> <span class="n">_cancellable_mockdelay</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">exi</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
+            <span class="n">slow_exit</span><span class="o">.</span><span class="n">SlowExit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;slowexit&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">room2</span>
+        <span class="p">)</span>
+        <span class="n">exi</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">slow_exit</span><span class="o">.</span><span class="n">CmdSetSpeed</span><span class="p">(),</span> <span class="s2">&quot;walk&quot;</span><span class="p">,</span> <span class="s2">&quot;You are now walking.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">slow_exit</span><span class="o">.</span><span class="n">CmdStop</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;You stop moving.&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

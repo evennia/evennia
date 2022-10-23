@@ -35,43 +35,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for evennia.contrib.base_systems.components</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Components - ChrisLR 2022</span>
-
-<span class="sd">This is a basic Component System.</span>
-<span class="sd">It allows you to use components on typeclasses using a simple syntax.</span>
-<span class="sd">This helps writing isolated code and reusing it over multiple objects.</span>
-
-<span class="sd">See the docs for more information.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components.dbfield</span> <span class="kn">import</span> <span class="n">DBField</span><span class="p">,</span> <span class="n">NDBField</span><span class="p">,</span> <span class="n">TagField</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components.holder</span> <span class="kn">import</span> <span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">ComponentProperty</span>
-
-
-<div class="viewcode-block" id="get_component_class"><a class="viewcode-back" href="../../../../api/evennia.contrib.base_systems.components.html#evennia.contrib.base_systems.components.get_component_class">[docs]</a><span class="k">def</span> <span class="nf">get_component_class</span><span class="p">(</span><span class="n">component_name</span><span class="p">):</span>
-    <span class="n">subclasses</span> <span class="o">=</span> <span class="n">Component</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
-    <span class="n">component_class</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">sc</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">subclasses</span> <span class="k">if</span> <span class="n">sc</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">component_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">component_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Component named </span><span class="si">{</span><span class="n">component_name</span><span class="si">}</span><span class="s2"> has not been found. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Make sure it has been imported before being used.&quot;</span>
-        <span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">component_class</span></div>
-</pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../../../index.html">
@@ -105,7 +70,42 @@
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.base_systems.components</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Components - ChrisLR 2022</span>
+
+<span class="sd">This is a basic Component System.</span>
+<span class="sd">It allows you to use components on typeclasses using a simple syntax.</span>
+<span class="sd">This helps writing isolated code and reusing it over multiple objects.</span>
+
+<span class="sd">See the docs for more information.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components.dbfield</span> <span class="kn">import</span> <span class="n">DBField</span><span class="p">,</span> <span class="n">NDBField</span><span class="p">,</span> <span class="n">TagField</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.components.holder</span> <span class="kn">import</span> <span class="n">ComponentHolderMixin</span><span class="p">,</span> <span class="n">ComponentProperty</span>
+
+
+<div class="viewcode-block" id="get_component_class"><a class="viewcode-back" href="../../../../api/evennia.contrib.base_systems.components.html#evennia.contrib.base_systems.components.get_component_class">[docs]</a><span class="k">def</span> <span class="nf">get_component_class</span><span class="p">(</span><span class="n">component_name</span><span class="p">):</span>
+    <span class="n">subclasses</span> <span class="o">=</span> <span class="n">Component</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
+    <span class="n">component_class</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">sc</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">subclasses</span> <span class="k">if</span> <span class="n">sc</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">component_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">component_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Component named </span><span class="si">{</span><span class="n">component_name</span><span class="si">}</span><span class="s2"> has not been found. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Make sure it has been imported before being used.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">component_class</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

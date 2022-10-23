@@ -35,40 +35,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for evennia.contrib.rpg.dice.tests</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Testing of TestDice.</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dice</span>
-
-
-<div class="viewcode-block" id="TestDice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.tests.html#evennia.contrib.rpg.dice.tests.TestDice">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.dice.dice.randint&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">TestDice</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
-<div class="viewcode-block" id="TestDice.test_roll_dice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.tests.html#evennia.contrib.rpg.dice.tests.TestDice.test_roll_dice">[docs]</a>    <span class="k">def</span> <span class="nf">test_roll_dice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_randint</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll_dice</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">mocked_randint</span><span class="p">()</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll_dice</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="mi">35</span><span class="p">)),</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll_dice</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="mi">33</span><span class="p">)),</span> <span class="kc">False</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestDice.test_cmddice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.tests.html#evennia.contrib.rpg.dice.tests.TestDice.test_cmddice">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmddice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_randint</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">dice</span><span class="o">.</span><span class="n">CmdDice</span><span class="p">(),</span> <span class="s2">&quot;3d6 + 4&quot;</span><span class="p">,</span> <span class="s2">&quot;You roll 3d6 + 4.| Roll(s): 5, 5 and 5. Total result is 19.&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">CmdDice</span><span class="p">(),</span> <span class="s2">&quot;100000d1000&quot;</span><span class="p">,</span> <span class="s2">&quot;The maximum roll allowed is 10000d10000.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">CmdDice</span><span class="p">(),</span> <span class="s2">&quot;/secret 3d6 + 4&quot;</span><span class="p">,</span> <span class="s2">&quot;You roll 3d6 + 4 (secret, not echoed).&quot;</span><span class="p">)</span></div></div>
-</pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../../../../index.html">
@@ -102,7 +70,39 @@
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.rpg.dice.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Testing of TestDice.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dice</span>
+
+
+<div class="viewcode-block" id="TestDice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.tests.html#evennia.contrib.rpg.dice.tests.TestDice">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.dice.dice.randint&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TestDice</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestDice.test_roll_dice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.tests.html#evennia.contrib.rpg.dice.tests.TestDice.test_roll_dice">[docs]</a>    <span class="k">def</span> <span class="nf">test_roll_dice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_randint</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll_dice</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">modifier</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">mocked_randint</span><span class="p">()</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll_dice</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="mi">35</span><span class="p">)),</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">roll_dice</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">conditional</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="mi">33</span><span class="p">)),</span> <span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestDice.test_cmddice"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.dice.tests.html#evennia.contrib.rpg.dice.tests.TestDice.test_cmddice">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmddice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_randint</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">dice</span><span class="o">.</span><span class="n">CmdDice</span><span class="p">(),</span> <span class="s2">&quot;3d6 + 4&quot;</span><span class="p">,</span> <span class="s2">&quot;You roll 3d6 + 4.| Roll(s): 5, 5 and 5. Total result is 19.&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">CmdDice</span><span class="p">(),</span> <span class="s2">&quot;100000d1000&quot;</span><span class="p">,</span> <span class="s2">&quot;The maximum roll allowed is 10000d10000.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">CmdDice</span><span class="p">(),</span> <span class="s2">&quot;/secret 3d6 + 4&quot;</span><span class="p">,</span> <span class="s2">&quot;You roll 3d6 + 4 (secret, not echoed).&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

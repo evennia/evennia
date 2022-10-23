@@ -43,7 +43,89 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Online Setup</a><ul>
+<li><a class="reference internal" href="#connecting-from-the-outside">Connecting from the outside</a><ul>
+<li><a class="reference internal" href="#settings-example">Settings example</a></li>
+<li><a class="reference internal" href="#telnet">Telnet</a></li>
+<li><a class="reference internal" href="#web-server">Web server</a></li>
+<li><a class="reference internal" href="#web-client">Web client</a></li>
+<li><a class="reference internal" href="#other-ports">Other ports</a></li>
+<li><a class="reference internal" href="#lockdown-mode">Lockdown mode</a></li>
+<li><a class="reference internal" href="#registering-with-the-evennia-game-directory">Registering with the Evennia game directory</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ssl">SSL</a><ul>
+<li><a class="reference internal" href="#lets-encrypt">Let’s Encrypt</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#relevant-ssl-proxy-setup-information">Relevant SSL Proxy Setup Information</a></li>
+<li><a class="reference internal" href="#hosting-locally-or-remotely">Hosting locally or remotely?</a><ul>
+<li><a class="reference internal" href="#using-your-own-computer-as-a-server">Using your own computer as a server</a><ul>
+<li><a class="reference internal" href="#setting-up-your-own-machine-as-a-server">Setting up your own machine as a server</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#remote-hosting">Remote hosting</a><ul>
+<li><a class="reference internal" href="#installing-evennia-on-a-remote-server">Installing Evennia on a remote server</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hosting-options">Hosting options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cloud9">Cloud9</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Client-Support-Grid.html"
+                        title="previous chapter">Client Support Grid</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Security.html"
+                        title="next chapter">Security</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Setup/Online-Setup.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Online-Setup.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
         <div class="bodywrapper">
           <div class="body" role="main">
             
@@ -511,92 +593,10 @@ sufficient resources to operate a Cloud9 development environment without charge.
 </section>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
-            </a></p>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-<p><h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Online Setup</a><ul>
-<li><a class="reference internal" href="#connecting-from-the-outside">Connecting from the outside</a><ul>
-<li><a class="reference internal" href="#settings-example">Settings example</a></li>
-<li><a class="reference internal" href="#telnet">Telnet</a></li>
-<li><a class="reference internal" href="#web-server">Web server</a></li>
-<li><a class="reference internal" href="#web-client">Web client</a></li>
-<li><a class="reference internal" href="#other-ports">Other ports</a></li>
-<li><a class="reference internal" href="#lockdown-mode">Lockdown mode</a></li>
-<li><a class="reference internal" href="#registering-with-the-evennia-game-directory">Registering with the Evennia game directory</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#ssl">SSL</a><ul>
-<li><a class="reference internal" href="#lets-encrypt">Let’s Encrypt</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#relevant-ssl-proxy-setup-information">Relevant SSL Proxy Setup Information</a></li>
-<li><a class="reference internal" href="#hosting-locally-or-remotely">Hosting locally or remotely?</a><ul>
-<li><a class="reference internal" href="#using-your-own-computer-as-a-server">Using your own computer as a server</a><ul>
-<li><a class="reference internal" href="#setting-up-your-own-machine-as-a-server">Setting up your own machine as a server</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#remote-hosting">Remote hosting</a><ul>
-<li><a class="reference internal" href="#installing-evennia-on-a-remote-server">Installing Evennia on a remote server</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#hosting-options">Hosting options</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cloud9">Cloud9</a></li>
-</ul>
-</li>
-</ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="Client-Support-Grid.html"
-                        title="previous chapter">Client Support Grid</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="Security.html"
-                        title="next chapter">Security</a></p>
-  <div role="note" aria-label="source link">
-    <!--h3>This Page</h3-->
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Setup/Online-Setup.md.txt"
-            rel="nofollow">Show Page Source</a></li>
-    </ul>
-   </div><h3>Links</h3>
-<ul>
-  <li><a href="https://www.evennia.com">Home page</a> </li>
-  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
-  <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
-  </li>
-</ul>
-<h3>Versions</h3>
-<ul>
-  <li><a href="Online-Setup.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-</ul>
-
-        </div>
-      </div>
-      <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

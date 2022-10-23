@@ -47,36 +47,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.web.utils.general_context">
-<span id="evennia-web-utils-general-context"></span><h1>evennia.web.utils.general_context<a class="headerlink" href="#module-evennia.web.utils.general_context" title="Permalink to this headline">¶</a></h1>
-<p>This file defines global variables that will always be available in a view
-context without having to repeatedly include it.</p>
-<p>For this to work, this file is included in the settings file, in the
-TEMPLATES[“OPTIONS”][“context_processors”] list.</p>
-<dl class="py function">
-<dt id="evennia.web.utils.general_context.load_game_settings">
-<code class="sig-prename descclassname">evennia.web.utils.general_context.</code><code class="sig-name descname">load_game_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/general_context.html#load_game_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.general_context.load_game_settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load and cache game settings.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="evennia.web.utils.general_context.general_context">
-<code class="sig-prename descclassname">evennia.web.utils.general_context.</code><code class="sig-name descname">general_context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/general_context.html#general_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.general_context.general_context" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns common Evennia-related context stuff, which is automatically added
-to context of all views.</p>
-</dd></dl>
-
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -123,7 +95,35 @@ to context of all views.</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.utils.general_context">
+<span id="evennia-web-utils-general-context"></span><h1>evennia.web.utils.general_context<a class="headerlink" href="#module-evennia.web.utils.general_context" title="Permalink to this headline">¶</a></h1>
+<p>This file defines global variables that will always be available in a view
+context without having to repeatedly include it.</p>
+<p>For this to work, this file is included in the settings file, in the
+TEMPLATES[“OPTIONS”][“context_processors”] list.</p>
+<dl class="py function">
+<dt id="evennia.web.utils.general_context.load_game_settings">
+<code class="sig-prename descclassname">evennia.web.utils.general_context.</code><code class="sig-name descname">load_game_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/general_context.html#load_game_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.general_context.load_game_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and cache game settings.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.web.utils.general_context.general_context">
+<code class="sig-prename descclassname">evennia.web.utils.general_context.</code><code class="sig-name descname">general_context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/general_context.html#general_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.general_context.general_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns common Evennia-related context stuff, which is automatically added
+to context of all views.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

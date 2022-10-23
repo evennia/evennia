@@ -48,57 +48,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.contrib.base_systems.components.dbfield">
-<span id="evennia-contrib-base-systems-components-dbfield"></span><h1>evennia.contrib.base_systems.components.dbfield<a class="headerlink" href="#module-evennia.contrib.base_systems.components.dbfield" title="Permalink to this headline">¶</a></h1>
-<p>Components - ChrisLR 2022</p>
-<p>This file contains the Descriptors used to set Fields in Components</p>
-<dl class="py class">
-<dt id="evennia.contrib.base_systems.components.dbfield.DBField">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.dbfield.</code><code class="sig-name descname">DBField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#DBField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.DBField" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty" title="evennia.typeclasses.attributes.AttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.AttributeProperty</span></code></a></p>
-<p>Component Attribute Descriptor.
-Allows you to set attributes related to a component on the class.
-It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.contrib.base_systems.components.dbfield.NDBField">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.dbfield.</code><code class="sig-name descname">NDBField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#NDBField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.NDBField" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NAttributeProperty" title="evennia.typeclasses.attributes.NAttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.NAttributeProperty</span></code></a></p>
-<p>Component In-Memory Attribute Descriptor.
-Allows you to set in-memory attributes related to a component on the class.
-It uses NAttributeProperty under the hood but prefixes the key with the component name.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.contrib.base_systems.components.dbfield.TagField">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.dbfield.</code><code class="sig-name descname">TagField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">enforce_single</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#TagField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.TagField" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Component Tags Descriptor.
-Allows you to set Tags related to a component on the class.
-The tags are set with a prefixed category, so it can support
-multiple tags or enforce a single one.</p>
-<p>Default value of a tag is added when the component is registered.
-Tags are removed if the component itself is removed.</p>
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.components.dbfield.TagField.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">enforce_single</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#TagField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.TagField.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -145,7 +96,56 @@ Tags are removed if the component itself is removed.</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.base_systems.components.dbfield">
+<span id="evennia-contrib-base-systems-components-dbfield"></span><h1>evennia.contrib.base_systems.components.dbfield<a class="headerlink" href="#module-evennia.contrib.base_systems.components.dbfield" title="Permalink to this headline">¶</a></h1>
+<p>Components - ChrisLR 2022</p>
+<p>This file contains the Descriptors used to set Fields in Components</p>
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.dbfield.DBField">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.dbfield.</code><code class="sig-name descname">DBField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#DBField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.DBField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.AttributeProperty" title="evennia.typeclasses.attributes.AttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.AttributeProperty</span></code></a></p>
+<p>Component Attribute Descriptor.
+Allows you to set attributes related to a component on the class.
+It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.dbfield.NDBField">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.dbfield.</code><code class="sig-name descname">NDBField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">category</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">strattr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lockstring</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">autocreate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#NDBField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.NDBField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.attributes.html#evennia.typeclasses.attributes.NAttributeProperty" title="evennia.typeclasses.attributes.NAttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.attributes.NAttributeProperty</span></code></a></p>
+<p>Component In-Memory Attribute Descriptor.
+Allows you to set in-memory attributes related to a component on the class.
+It uses NAttributeProperty under the hood but prefixes the key with the component name.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.dbfield.TagField">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.dbfield.</code><code class="sig-name descname">TagField</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">enforce_single</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#TagField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.TagField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Component Tags Descriptor.
+Allows you to set Tags related to a component on the class.
+The tags are set with a prefixed category, so it can support
+multiple tags or enforce a single one.</p>
+<p>Default value of a tag is added when the component is registered.
+Tags are removed if the component itself is removed.</p>
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.dbfield.TagField.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">enforce_single</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/dbfield.html#TagField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.dbfield.TagField.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

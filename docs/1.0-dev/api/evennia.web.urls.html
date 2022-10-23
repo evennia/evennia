@@ -46,34 +46,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.web.urls">
-<span id="evennia-web-urls"></span><h1>evennia.web.urls<a class="headerlink" href="#module-evennia.web.urls" title="Permalink to this headline">¶</a></h1>
-<p>File that determines what each URL points to. This uses Python regular expressions.
-This is the starting point when a user enters an URL.</p>
-<ol class="arabic simple">
-<li><p>The URL is matched with a regex, tying it to a given view. Note that this central url.py
-file includes url.py from all the various web-components found in views/ so the search
-space is much larger than what is shown here.</p></li>
-<li><p>The view (a Python function or class is executed)</p></li>
-<li><p>The view uses a template (a HTML file which may contain template markers for dynamically
-modifying its contents; the locations of such templates are given by
-<strong>settings.TEMPLATES[0][‘DIRS’]</strong>) and which may in turn may include static
-assets (CSS, images etc).</p></li>
-<li><p>The view ‘renders’ the template into a finished HTML page, replacing all
-dynamic content as appropriate.</p></li>
-<li><p>The HTML page is returned to the user.</p></li>
-</ol>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -120,7 +94,33 @@ dynamic content as appropriate.</p></li>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.urls">
+<span id="evennia-web-urls"></span><h1>evennia.web.urls<a class="headerlink" href="#module-evennia.web.urls" title="Permalink to this headline">¶</a></h1>
+<p>File that determines what each URL points to. This uses Python regular expressions.
+This is the starting point when a user enters an URL.</p>
+<ol class="arabic simple">
+<li><p>The URL is matched with a regex, tying it to a given view. Note that this central url.py
+file includes url.py from all the various web-components found in views/ so the search
+space is much larger than what is shown here.</p></li>
+<li><p>The view (a Python function or class is executed)</p></li>
+<li><p>The view uses a template (a HTML file which may contain template markers for dynamically
+modifying its contents; the locations of such templates are given by
+<strong>settings.TEMPLATES[0][‘DIRS’]</strong>) and which may in turn may include static
+assets (CSS, images etc).</p></li>
+<li><p>The view ‘renders’ the template into a finished HTML page, replacing all
+dynamic content as appropriate.</p></li>
+<li><p>The HTML page is returned to the user.</p></li>
+</ol>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

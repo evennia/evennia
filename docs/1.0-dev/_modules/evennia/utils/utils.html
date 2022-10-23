@@ -35,7 +35,41 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="utils.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
         <div class="bodywrapper">
           <div class="body" role="main">
             
@@ -67,6 +101,7 @@
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getmembers</span><span class="p">,</span> <span class="n">getmodule</span><span class="p">,</span> <span class="n">getmro</span><span class="p">,</span> <span class="n">ismodule</span><span class="p">,</span> <span class="n">trace</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">osjoin</span>
 <span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
 
 <span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
@@ -445,18 +480,23 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">iterable</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
     <span class="n">len_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
-
+    
     <span class="k">if</span> <span class="n">addquote</span><span class="p">:</span>
         <span class="n">iterable</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">iterable</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">endsep</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">sep</span><span class="p">):</span>
-        <span class="c1"># oxford comma alternative</span>
-        <span class="n">endsep</span> <span class="o">=</span> <span class="n">endsep</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">len_iter</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">endsep</span>
-    <span class="k">elif</span> <span class="n">endsep</span><span class="p">:</span>
-        <span class="c1"># normal space-separated end separator</span>
-        <span class="n">endsep</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">endsep</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">endsep</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">endsep</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">sep</span><span class="p">):</span>
+            <span class="c1"># oxford comma alternative</span>
+            <span class="n">endsep</span> <span class="o">=</span> <span class="n">endsep</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">len_iter</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">endsep</span>
+        <span class="k">elif</span> <span class="n">endsep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">punctuation</span><span class="p">:</span>
+            <span class="c1"># add a leading space if endsep is a word</span>
+            <span class="n">endsep</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">endsep</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c1"># also add a leading space if separator is a word</span>
+    <span class="k">if</span> <span class="n">sep</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">punctuation</span><span class="p">:</span>
+        <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">sep</span>
 
     <span class="k">if</span> <span class="n">len_iter</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">iterable</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -2605,6 +2645,14 @@
 <span class="sd">            # ...</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">container_end_char</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;(&quot;</span><span class="p">:</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="s2">&quot;[&quot;</span><span class="p">:</span> <span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="s2">&quot;{&quot;</span><span class="p">:</span> <span class="s2">&quot;}&quot;</span><span class="p">}</span>  <span class="c1"># tuples, lists, sets</span>
+
+    <span class="k">def</span> <span class="nf">_manual_parse_containers</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
+        <span class="n">startchar</span> <span class="o">=</span> <span class="n">inp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">endchar</span> <span class="o">=</span> <span class="n">inp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">endchar</span> <span class="o">!=</span> <span class="n">container_end_char</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">startchar</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">part</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">inp</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
 
     <span class="k">def</span> <span class="nf">_safe_eval</span><span class="p">(</span><span class="n">inp</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">inp</span><span class="p">:</span>
@@ -2612,16 +2660,21 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># already converted</span>
             <span class="k">return</span> <span class="n">inp</span>
-
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">_manual_parse_containers</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">parts</span><span class="p">:</span>
+                    <span class="k">raise</span>
+                <span class="k">return</span> <span class="n">parts</span>
+
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="n">literal_err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">simple_eval</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                 <span class="n">simple_err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="k">pass</span>
 
         <span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">evennia.utils.funcparser</span> <span class="kn">import</span> <span class="n">ParsingError</span>
@@ -2632,6 +2685,9 @@
                 <span class="sa">f</span><span class="s2">&quot;simple_eval raised </span><span class="si">{</span><span class="n">simple_err</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">ParsingError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># fallback - convert to str</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
 
     <span class="c1"># handle an incomplete/mixed set of input converters</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">converters</span><span class="p">:</span>
@@ -2797,46 +2853,119 @@
     <span class="k">if</span> <span class="n">adjective</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_INT2STR_MAP_ADJ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">th&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_INT2STR_MAP_NOUN</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">))</span></div>
+
+
+<span class="n">_STR2INT_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;one&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;two&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;three&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;four&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;five&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;six&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;seven&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;eight&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;nine&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;ten&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;eleven&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+    <span class="s2">&quot;twelve&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">&quot;thirteen&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="s2">&quot;fourteen&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+    <span class="s2">&quot;fifteen&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="s2">&quot;sixteen&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="s2">&quot;seventeen&quot;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
+    <span class="s2">&quot;eighteen&quot;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+    <span class="s2">&quot;nineteen&quot;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+    <span class="s2">&quot;twenty&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;thirty&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s2">&quot;forty&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s2">&quot;fifty&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="s2">&quot;sixty&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="s2">&quot;seventy&quot;</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span>
+    <span class="s2">&quot;eighty&quot;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
+    <span class="s2">&quot;ninety&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+    <span class="s2">&quot;hundred&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="s2">&quot;thousand&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_STR2INT_ADJS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;third&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="str2int"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.str2int">[docs]</a><span class="k">def</span> <span class="nf">str2int</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a string to an integer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        number (str): The string to convert. It can be a digit such as &quot;1&quot;, or a number word such as &quot;one&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The string represented as an integer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+    <span class="n">original_input</span> <span class="o">=</span> <span class="n">number</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># it&#39;s a digit already</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="c1"># if it&#39;s an ordinal number such as &quot;1st&quot;, it&#39;ll convert to int with the last two characters chopped off</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c1"># convert sound changes for generic ordinal numbers</span>
+    <span class="k">if</span> <span class="n">number</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;th&quot;</span><span class="p">:</span>
+        <span class="c1"># remove &quot;th&quot;</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="n">number</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">number</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span>
+            <span class="c1"># e.g. twelfth, fifth</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="n">number</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;ve&quot;</span>
+        <span class="k">elif</span> <span class="n">number</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;ie&quot;</span><span class="p">:</span>
+            <span class="c1"># e.g. twentieth, fortieth</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="n">number</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;y&quot;</span>
+        <span class="c1"># custom case for ninth</span>
+        <span class="k">elif</span> <span class="n">number</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;nin&quot;</span><span class="p">:</span>
+            <span class="n">number</span> <span class="o">+=</span> <span class="s2">&quot;e&quot;</span>
+
+    <span class="k">if</span> <span class="n">i</span> <span class="o">:=</span> <span class="n">_STR2INT_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+        <span class="c1"># it&#39;s a single number, return it</span>
+        <span class="k">return</span> <span class="n">i</span>
+
+    <span class="c1"># remove optional &quot;and&quot;s</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="n">number</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; and &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+    <span class="c1"># split number words by spaces, hyphens and commas, to accommodate multiple styles</span>
+    <span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[-\s\,]&quot;</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span> <span class="k">if</span> <span class="n">word</span><span class="p">]</span>
+    <span class="n">sums</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
+        <span class="c1"># check if it&#39;s a known number-word</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">:=</span> <span class="n">_STR2INT_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">sums</span><span class="p">):</span>
+                <span class="c1"># initialize the list with the current value</span>
+                <span class="n">sums</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># if the previous number was smaller, it&#39;s a multiplier</span>
+                <span class="c1"># e.g. the &quot;two&quot; in &quot;two hundred&quot;</span>
+                <span class="k">if</span> <span class="n">sums</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">sums</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sums</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">i</span>
+                <span class="c1"># otherwise, it&#39;s added on, like the &quot;five&quot; in &quot;twenty five&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">i</span> <span class="o">:=</span> <span class="n">_STR2INT_ADJS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+            <span class="c1"># it&#39;s a special adj word; ordinal case will never be a multiplier</span>
+            <span class="n">sums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># invalid number-word, raise ValueError</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;String </span><span class="si">{</span><span class="n">original_input</span><span class="si">}</span><span class="s2"> cannot be converted to int.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sums</span><span class="p">)</span></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../../index.html">
-              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
-            </a></p>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script><h3>Links</h3>
-<ul>
-  <li><a href="https://www.evennia.com">Home page</a> </li>
-  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
-  <li><a href="http://games.evennia.com">Game Index</a> </li>
-  <li>
-    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
-     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
-      <a href="https://evennia.blogspot.com/">Blog</a>
-  </li>
-</ul>
-<h3>Versions</h3>
-<ul>
-  <li><a href="utils.html">1.0-dev (develop branch)</a></li>
-  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
-</ul>
 
-        </div>
-      </div>
-      <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

@@ -47,45 +47,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.web.utils.backends">
-<span id="evennia-web-utils-backends"></span><h1>evennia.web.utils.backends<a class="headerlink" href="#module-evennia.web.utils.backends" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="evennia.web.utils.backends.CaseInsensitiveModelBackend">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.backends.</code><code class="sig-name descname">CaseInsensitiveModelBackend</code><a class="reference internal" href="../_modules/evennia/web/utils/backends.html#CaseInsensitiveModelBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.backends.CaseInsensitiveModelBackend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.backends.ModelBackend</span></code></p>
-<p>By default ModelBackend does case _sensitive_ username
-authentication, which isn’t what is generally expected.  This
-backend supports case insensitive username authentication.</p>
-<dl class="py method">
-<dt id="evennia.web.utils.backends.CaseInsensitiveModelBackend.authenticate">
-<code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">username</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">autologin</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/backends.html#CaseInsensitiveModelBackend.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.backends.CaseInsensitiveModelBackend.authenticate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Custom authenticate with bypass for auto-logins</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<em>Request</em>) – Request object.</p></li>
-<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of user to authenticate.</p></li>
-<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – Password of user</p></li>
-<li><p><strong>autologin</strong> (<em>Account</em><em>, </em><em>optional</em>) – If given, assume this is
-an already authenticated account and bypass authentication.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -132,7 +95,44 @@ an already authenticated account and bypass authentication.</p></li>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.utils.backends">
+<span id="evennia-web-utils-backends"></span><h1>evennia.web.utils.backends<a class="headerlink" href="#module-evennia.web.utils.backends" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="evennia.web.utils.backends.CaseInsensitiveModelBackend">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.utils.backends.</code><code class="sig-name descname">CaseInsensitiveModelBackend</code><a class="reference internal" href="../_modules/evennia/web/utils/backends.html#CaseInsensitiveModelBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.backends.CaseInsensitiveModelBackend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.backends.ModelBackend</span></code></p>
+<p>By default ModelBackend does case _sensitive_ username
+authentication, which isn’t what is generally expected.  This
+backend supports case insensitive username authentication.</p>
+<dl class="py method">
+<dt id="evennia.web.utils.backends.CaseInsensitiveModelBackend.authenticate">
+<code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">username</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">autologin</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/backends.html#CaseInsensitiveModelBackend.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.backends.CaseInsensitiveModelBackend.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom authenticate with bypass for auto-logins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>) – Request object.</p></li>
+<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of user to authenticate.</p></li>
+<li><p><strong>password</strong> (<em>str</em><em>, </em><em>optional</em>) – Password of user</p></li>
+<li><p><strong>autologin</strong> (<em>Account</em><em>, </em><em>optional</em>) – If given, assume this is
+an already authenticated account and bypass authentication.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

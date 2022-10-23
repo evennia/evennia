@@ -35,44 +35,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for evennia.commands.default.cmdset_unloggedin</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module describes the unlogged state of the default game.</span>
-<span class="sd">The setting STATE_UNLOGGED should be set to the python path</span>
-<span class="sd">of the state instance in this module.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
-<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">unloggedin</span>
-
-
-<div class="viewcode-block" id="UnloggedinCmdSet"><a class="viewcode-back" href="../../../../api/evennia.commands.default.cmdset_unloggedin.html#evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet">[docs]</a><span class="k">class</span> <span class="nc">UnloggedinCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sets up the unlogged cmdset.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultUnloggedin&quot;</span>
-    <span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
-
-<div class="viewcode-block" id="UnloggedinCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.commands.default.cmdset_unloggedin.html#evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Populate the cmdset&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedConnect</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedCreate</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedQuit</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedLook</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedHelp</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedEncoding</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedScreenreader</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedInfo</span><span class="p">())</span></div></div>
-</pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../../../index.html">
@@ -106,7 +70,43 @@
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.commands.default.cmdset_unloggedin</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module describes the unlogged state of the default game.</span>
+<span class="sd">The setting STATE_UNLOGGED should be set to the python path</span>
+<span class="sd">of the state instance in this module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.cmdset</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default</span> <span class="kn">import</span> <span class="n">unloggedin</span>
+
+
+<div class="viewcode-block" id="UnloggedinCmdSet"><a class="viewcode-back" href="../../../../api/evennia.commands.default.cmdset_unloggedin.html#evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet">[docs]</a><span class="k">class</span> <span class="nc">UnloggedinCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets up the unlogged cmdset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultUnloggedin&quot;</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="UnloggedinCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../api/evennia.commands.default.cmdset_unloggedin.html#evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Populate the cmdset&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedConnect</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedCreate</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedQuit</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedLook</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedHelp</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedEncoding</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedScreenreader</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unloggedin</span><span class="o">.</span><span class="n">CmdUnconnectedInfo</span><span class="p">())</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

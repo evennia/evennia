@@ -47,48 +47,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.commands.default.cmdset_session">
-<span id="evennia-commands-default-cmdset-session"></span><h1>evennia.commands.default.cmdset_session<a class="headerlink" href="#module-evennia.commands.default.cmdset_session" title="Permalink to this headline">¶</a></h1>
-<p>This module stores session-level commands.</p>
-<dl class="py class">
-<dt id="evennia.commands.default.cmdset_session.SessionCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.cmdset_session.</code><code class="sig-name descname">SessionCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_session.html#SessionCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
-<p>Sets up the unlogged cmdset.</p>
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_session.SessionCmdSet.key">
-<code class="sig-name descname">key</code><em class="property"> = 'DefaultSession'</em><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_session.SessionCmdSet.priority">
-<code class="sig-name descname">priority</code><em class="property"> = -20</em><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet.priority" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.cmdset_session.SessionCmdSet.at_cmdset_creation">
-<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_session.html#SessionCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Populate the cmdset</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_session.SessionCmdSet.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.commands.default.cmdset_session.SessionCmdSet'</em><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet.path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -135,7 +95,47 @@
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.commands.default.cmdset_session">
+<span id="evennia-commands-default-cmdset-session"></span><h1>evennia.commands.default.cmdset_session<a class="headerlink" href="#module-evennia.commands.default.cmdset_session" title="Permalink to this headline">¶</a></h1>
+<p>This module stores session-level commands.</p>
+<dl class="py class">
+<dt id="evennia.commands.default.cmdset_session.SessionCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.cmdset_session.</code><code class="sig-name descname">SessionCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_session.html#SessionCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Sets up the unlogged cmdset.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_session.SessionCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'DefaultSession'</em><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_session.SessionCmdSet.priority">
+<code class="sig-name descname">priority</code><em class="property"> = -20</em><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.cmdset_session.SessionCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_session.html#SessionCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate the cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_session.SessionCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.commands.default.cmdset_session.SessionCmdSet'</em><a class="headerlink" href="#evennia.commands.default.cmdset_session.SessionCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

@@ -43,41 +43,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="menu-based-login-system">
-<h1>Menu-based login system<a class="headerlink" href="#menu-based-login-system" title="Permalink to this headline">¶</a></h1>
-<p>Contribution by Vincent-lg 2016. Reworked for modern EvMenu by Griatch, 2019.</p>
-<p>This changes the Evennia login to ask for the account name and password as a series
-of questions instead of requiring you to enter both at once. It uses Evennia’s
-menu system <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> under the hood.</p>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>To install, add this to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CMDSET_UNLOGGEDIN = &quot;evennia.contrib.base_systems.menu_login.UnloggedinCmdSet&quot;
-CONNECTION_SCREEN_MODULE = &quot;contrib.base_systems.menu_login.connection_screens&quot;
-</pre></div>
-</div>
-<p>Reload the server and reconnect to see the changes.</p>
-</section>
-<section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
-<p>If you want to modify the way the connection screen looks, point
-<code class="docutils literal notranslate"><span class="pre">CONNECTION_SCREEN_MODULE</span></code> to your own module. Use the default as a
-guide (see also Evennia docs).</p>
-<hr class="docutils" />
-<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/menu_login/README.md</span></code>. Changes to this
-file will be overwritten, so edit that file rather than this one.</small></p>
-</section>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -93,7 +60,7 @@ file will be overwritten, so edit that file rather than this one.</small></p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-<p><h3><a href="../index.html">Table of Contents</a></h3>
+<h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Menu-based login system</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
@@ -133,7 +100,40 @@ file will be overwritten, so edit that file rather than this one.</small></p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="menu-based-login-system">
+<h1>Menu-based login system<a class="headerlink" href="#menu-based-login-system" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Vincent-lg 2016. Reworked for modern EvMenu by Griatch, 2019.</p>
+<p>This changes the Evennia login to ask for the account name and password as a series
+of questions instead of requiring you to enter both at once. It uses Evennia’s
+menu system <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> under the hood.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To install, add this to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CMDSET_UNLOGGEDIN = &quot;evennia.contrib.base_systems.menu_login.UnloggedinCmdSet&quot;
+CONNECTION_SCREEN_MODULE = &quot;contrib.base_systems.menu_login.connection_screens&quot;
+</pre></div>
+</div>
+<p>Reload the server and reconnect to see the changes.</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>If you want to modify the way the connection screen looks, point
+<code class="docutils literal notranslate"><span class="pre">CONNECTION_SCREEN_MODULE</span></code> to your own module. Use the default as a
+guide (see also Evennia docs).</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/base_systems/menu_login/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

@@ -43,30 +43,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section class="tex2jax_ignore mathjax_ignore" id="in-text-tags-parsed-by-evennia">
-<h1>In-text tags parsed by Evennia<a class="headerlink" href="#in-text-tags-parsed-by-evennia" title="Permalink to this headline">¶</a></h1>
-<p>Evennia understands various extra information embedded in text:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="Colors.html"><span class="doc std std-doc">Colors</span></a> - Using <code class="docutils literal notranslate"><span class="pre">|r</span></code>, <code class="docutils literal notranslate"><span class="pre">|n</span></code> etc can be used to mark parts of text with a color. The color will
-become ANSI/XTerm256 color tags for Telnet connections and CSS information for the webclient.</p></li>
-<li><p><a class="reference internal" href="Clickable-Links.html"><span class="doc std std-doc">Clickable links</span></a> - This allows you to provide a text the user can click to execute an
-in-game command. This is on the form <code class="docutils literal notranslate"><span class="pre">|lc</span> <span class="pre">command</span> <span class="pre">|lt</span> <span class="pre">text</span> <span class="pre">|le</span></code>.</p></li>
-<li><p><a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser callables</span></a> - These are full-fledged function calls on the form <code class="docutils literal notranslate"><span class="pre">$funcname(args,</span> <span class="pre">kwargs)</span></code>
-that lead to calls to Python functions. The parser can be run with different available callables in different
-circumstances. The parser is run on all outgoing messages if <code class="docutils literal notranslate"><span class="pre">settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED=True</span></code>
-(disabled by default).</p></li>
-</ul>
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -113,7 +91,29 @@ circumstances. The parser is run on all outgoing messages if <code class="docuti
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="in-text-tags-parsed-by-evennia">
+<h1>In-text tags parsed by Evennia<a class="headerlink" href="#in-text-tags-parsed-by-evennia" title="Permalink to this headline">¶</a></h1>
+<p>Evennia understands various extra information embedded in text:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="Colors.html"><span class="doc std std-doc">Colors</span></a> - Using <code class="docutils literal notranslate"><span class="pre">|r</span></code>, <code class="docutils literal notranslate"><span class="pre">|n</span></code> etc can be used to mark parts of text with a color. The color will
+become ANSI/XTerm256 color tags for Telnet connections and CSS information for the webclient.</p></li>
+<li><p><a class="reference internal" href="Clickable-Links.html"><span class="doc std std-doc">Clickable links</span></a> - This allows you to provide a text the user can click to execute an
+in-game command. This is on the form <code class="docutils literal notranslate"><span class="pre">|lc</span> <span class="pre">command</span> <span class="pre">|lt</span> <span class="pre">text</span> <span class="pre">|le</span></code>.</p></li>
+<li><p><a class="reference internal" href="../Components/FuncParser.html"><span class="doc std std-doc">FuncParser callables</span></a> - These are full-fledged function calls on the form <code class="docutils literal notranslate"><span class="pre">$funcname(args,</span> <span class="pre">kwargs)</span></code>
+that lead to calls to Python functions. The parser can be run with different available callables in different
+circumstances. The parser is run on all outgoing messages if <code class="docutils literal notranslate"><span class="pre">settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED=True</span></code>
+(disabled by default).</p></li>
+</ul>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

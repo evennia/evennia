@@ -47,51 +47,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.commands.default.cmdset_character">
-<span id="evennia-commands-default-cmdset-character"></span><h1>evennia.commands.default.cmdset_character<a class="headerlink" href="#module-evennia.commands.default.cmdset_character" title="Permalink to this headline">¶</a></h1>
-<p>This module ties together all the commands default Character objects have
-available (i.e. IC commands). Note that some commands, such as
-communication-commands are instead put on the account level, in the
-Account cmdset. Account commands remain available also to Characters.</p>
-<dl class="py class">
-<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.cmdset_character.</code><code class="sig-name descname">CharacterCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_character.html#CharacterCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
-<p>Implements the default command set.</p>
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet.key">
-<code class="sig-name descname">key</code><em class="property"> = 'DefaultCharacter'</em><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet.priority">
-<code class="sig-name descname">priority</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet.priority" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet.at_cmdset_creation">
-<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_character.html#CharacterCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Populates the cmdset</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.commands.default.cmdset_character.CharacterCmdSet'</em><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet.path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -138,7 +95,50 @@ Account cmdset. Account commands remain available also to Characters.</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.commands.default.cmdset_character">
+<span id="evennia-commands-default-cmdset-character"></span><h1>evennia.commands.default.cmdset_character<a class="headerlink" href="#module-evennia.commands.default.cmdset_character" title="Permalink to this headline">¶</a></h1>
+<p>This module ties together all the commands default Character objects have
+available (i.e. IC commands). Note that some commands, such as
+communication-commands are instead put on the account level, in the
+Account cmdset. Account commands remain available also to Characters.</p>
+<dl class="py class">
+<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.cmdset_character.</code><code class="sig-name descname">CharacterCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_character.html#CharacterCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Implements the default command set.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'DefaultCharacter'</em><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet.priority">
+<code class="sig-name descname">priority</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_character.html#CharacterCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populates the cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_character.CharacterCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.commands.default.cmdset_character.CharacterCmdSet'</em><a class="headerlink" href="#evennia.commands.default.cmdset_character.CharacterCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>

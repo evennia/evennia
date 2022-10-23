@@ -47,53 +47,8 @@
     </div>  
 
     <div class="document">
+
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="module-evennia.commands.default.cmdset_account">
-<span id="evennia-commands-default-cmdset-account"></span><h1>evennia.commands.default.cmdset_account<a class="headerlink" href="#module-evennia.commands.default.cmdset_account" title="Permalink to this headline">¶</a></h1>
-<p>This is the cmdset for Account (OOC) commands.  These are
-stored on the Account object and should thus be able to handle getting
-an Account object as caller rather than a Character.</p>
-<p>Note - in order for session-rerouting (in MULTISESSION_MODE=2) to
-function, all commands in this cmdset should use the self.msg()
-command method rather than caller.msg().</p>
-<dl class="py class">
-<dt id="evennia.commands.default.cmdset_account.AccountCmdSet">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.cmdset_account.</code><code class="sig-name descname">AccountCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_account.html#AccountCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
-<p>Implements the account command set.</p>
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_account.AccountCmdSet.key">
-<code class="sig-name descname">key</code><em class="property"> = 'DefaultAccount'</em><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet.key" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_account.AccountCmdSet.priority">
-<code class="sig-name descname">priority</code><em class="property"> = -10</em><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet.priority" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="evennia.commands.default.cmdset_account.AccountCmdSet.at_cmdset_creation">
-<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_account.html#AccountCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Populates the cmdset</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="evennia.commands.default.cmdset_account.AccountCmdSet.path">
-<code class="sig-name descname">path</code><em class="property"> = 'evennia.commands.default.cmdset_account.AccountCmdSet'</em><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet.path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../index.html">
@@ -140,7 +95,52 @@ command method rather than caller.msg().</p>
 
         </div>
       </div>
-      <div class="clearer"></div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.commands.default.cmdset_account">
+<span id="evennia-commands-default-cmdset-account"></span><h1>evennia.commands.default.cmdset_account<a class="headerlink" href="#module-evennia.commands.default.cmdset_account" title="Permalink to this headline">¶</a></h1>
+<p>This is the cmdset for Account (OOC) commands.  These are
+stored on the Account object and should thus be able to handle getting
+an Account object as caller rather than a Character.</p>
+<p>Note - in order for session-rerouting (in MULTISESSION_MODE=2) to
+function, all commands in this cmdset should use the self.msg()
+command method rather than caller.msg().</p>
+<dl class="py class">
+<dt id="evennia.commands.default.cmdset_account.AccountCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.commands.default.cmdset_account.</code><code class="sig-name descname">AccountCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_account.html#AccountCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>Implements the account command set.</p>
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_account.AccountCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'DefaultAccount'</em><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_account.AccountCmdSet.priority">
+<code class="sig-name descname">priority</code><em class="property"> = -10</em><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.commands.default.cmdset_account.AccountCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/cmdset_account.html#AccountCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populates the cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.commands.default.cmdset_account.AccountCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.commands.default.cmdset_account.AccountCmdSet'</em><a class="headerlink" href="#evennia.commands.default.cmdset_account.AccountCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
