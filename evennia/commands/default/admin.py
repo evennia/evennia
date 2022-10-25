@@ -405,7 +405,7 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
 
         account.set_password(newpass)
         account.save()
-        self.msg(f"{account.name} - new password set to '{new pass}'.")
+        self.msg(f"{account.name} - new password set to '{newpass}'.")
         if account.character != caller:
             account.msg(f"{caller.name} has changed your password to '{newpass}'.")
         logger.log_sec(
