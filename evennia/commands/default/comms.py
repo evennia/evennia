@@ -547,7 +547,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if message:
             channel.msg(message, senders=caller, bypass_mute=True)
         channel.delete()
-        logger.log_sec("Channel {} was deleted by {}".format(channel_key, caller))
+        logger.log_sec("fChannel {channel_key} was deleted by {caller}")
 
     def set_lock(self, channel, lockstring):
         """
@@ -1390,9 +1390,9 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                     self.msg("Who do you want page?")
                     return
 
-            header = "|wAccount|n |c%s|n |wpages:|n" % caller.key
+            header = f"|wAccount|n |c{caller.key}|n |wpages:|n"
             if message.startswith(":"):
-                message = "%s %s" % (caller.key, message.strip(":").strip())
+                message = f"{caller.key} {message.strip(':').strip()}" 
 
             # create the persistent message object
             create.create_message(caller, message, receivers=targets)
@@ -1468,7 +1468,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
             lastpages = "\n ".join(listing)
 
             if lastpages:
-                string = "Your latest pages:\n %s" % lastpages
+                string = f"Your latest pages:\n {lastpages}"
             else:
                 string = "You haven't paged anyone yet."
             self.msg(string)
@@ -1565,7 +1565,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
-            botname = "ircbot-%s" % self.lhs
+            botname = f"ircbot-{self.lhs}" 
             matches = AccountDB.objects.filter(db_is_bot=True, username=botname)
             dbref = utils.dbref(self.lhs)
             if not matches and dbref:
@@ -1592,7 +1592,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             irc_network, irc_port, irc_channel, irc_botname = [
                 part.strip() for part in self.rhs.split(None, 4)
             ]
-            irc_channel = "#%s" % irc_channel
+            irc_channel = f"#{irc_channel}"
         except Exception:
             string = "IRC bot definition '%s' is not valid." % self.rhs
             self.msg(string)
@@ -1601,7 +1601,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
         botclass = None
         if ":" in irc_botname:
             irc_botname, botclass = [part.strip() for part in irc_botname.split(":", 2)]
-        botname = "ircbot-%s" % irc_botname
+        botname = f"ircbot-{irc_botname}"
         # If path given, use custom bot otherwise use default.
         botclass = botclass if botclass else bots.IRCBot
         irc_ssl = "ssl" in self.switches
@@ -1612,13 +1612,13 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             # re-use an existing bot
             bot = bot[0]
             if not bot.is_bot:
-                self.msg("Account '%s' already exists and is not a bot." % botname)
+                self.msg(f"Account '{botname}' already exists and is not a bot.")
                 return
         else:
             try:
                 bot = create.create_account(botname, None, None, typeclass=botclass)
             except Exception as err:
-                self.msg("|rError, could not create the bot:|n '%s'." % err)
+                self.msg(f"|rError, could not create the bot:|n '{err}'.")
                 return
         bot.start(
             ev_channel=channel,
@@ -1681,26 +1681,21 @@ class CmdIRCStatus(COMMAND_DEFAULT_CLASS):
         channel = ircbot.db.irc_channel
         network = ircbot.db.irc_network
         port = ircbot.db.irc_port
-        chtext = "IRC bot '%s' on channel %s (%s:%s)" % (
-            ircbot.db.irc_botname,
-            channel,
-            network,
-            port,
-        )
+        chtext = f"IRC bot '{ircbot.db.irc_botname}' on channel {channel} ({network}:{port})"
         if option == "ping":
             # check connection by sending outself a ping through the server.
-            self.caller.msg("Pinging through %s." % chtext)
+            self.caller.msg(f"Pinging through {chtext}.")
             ircbot.ping(self.caller)
         elif option in ("users", "nicklist", "who"):
             # retrieve user list. The bot must handles the echo since it's
             # an asynchronous call.
-            self.caller.msg("Requesting nicklist from %s (%s:%s)." % (channel, network, port))
+            self.caller.msg(f"Requesting nicklist from {channel} ({network}:{port}).")
             ircbot.get_nicklist(self.caller)
         elif self.caller.locks.check_lockstring(
             self.caller, "dummy:perm(ircstatus) or perm(Developer)"
         ):
             # reboot the client
-            self.caller.msg("Forcing a disconnect + reconnect of %s." % chtext)
+            self.caller.msg(f"Forcing a disconnect + reconnect of {chtext}.")
             ircbot.reconnect()
         else:
             self.caller.msg("You don't have permission to force-reload the IRC bot.")
@@ -1782,7 +1777,7 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
-            botname = "rssbot-%s" % self.lhs
+            botname = f"rssbot-{self.lhs}"
             matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
             if not matches:
                 # try dbref match
@@ -1801,13 +1796,13 @@ class CmdRSS2Chan(COMMAND_DEFAULT_CLASS):
         channel = self.lhs
         url = self.rhs
 
-        botname = "rssbot-%s" % url
+        botname = f"rssbot-{url}"
         bot = AccountDB.objects.filter(username__iexact=botname)
         if bot:
             # re-use existing bot
             bot = bot[0]
             if not bot.is_bot:
-                self.msg("Account '%s' already exists and is not a bot." % botname)
+                self.msg("Account '{botname}' already exists and is not a bot.")
                 return
         else:
             # create a new bot
@@ -1875,7 +1870,7 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
-            botname = "grapevinebot-%s" % self.lhs
+            botname = f"grapevinebot-{self.lhs}" 
             matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
 
             if not matches:
@@ -1902,10 +1897,10 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
             # re-use existing bot
             bot = bot[0]
             if not bot.is_bot:
-                self.msg("Account '%s' already exists and is not a bot." % botname)
+                self.msg(f"Account '{botname}' already exists and is not a bot.")
                 return
             else:
-                self.msg("Reusing bot '%s' (%s)" % (botname, bot.dbref))
+                self.msg(f"Reusing bot '{botname}' ({bot.dbref})")
         else:
             # create a new bot
             bot = create.create_account(botname, None, None, typeclass=bots.GrapevineBot)
