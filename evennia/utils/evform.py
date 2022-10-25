@@ -61,8 +61,9 @@ Use as follows:
     # create a new form from the template
     form = EvForm("path/to/testform.py")
 
-    (EvForm can also take a dictionary holding
-     the required keys FORMCHAR, TABLECHAR and FORM)
+    # EvForm can also take a dictionary instead of a filepath, as long
+    # as the dict contains the keys FORMCHAR, TABLECHAR and FORM
+    # form = EvForm(form=form_dict)
 
     # add data to each tagged form cell
     form.map(cells={1: "Tom the Bouncer",
