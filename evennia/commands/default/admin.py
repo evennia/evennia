@@ -76,12 +76,11 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
             # Boot by account object
             pobj = search.account_search(args)
             if not pobj:
-                caller.msg("Account %s was not found." % args)
+                caller.msg(f"Account {args} was not found.")
                 return
             pobj = pobj[0]
             if not pobj.access(caller, "boot"):
-                string = "You don't have the permission to boot %s." % (pobj.key,)
-                caller.msg(string)
+                caller.msg(f"You don't have the permission to boot {pobj.key,}.")
                 return
             # we have a bootable object with a connected user
             matches = SESSIONS.sessions_from_account(pobj)
@@ -96,9 +95,9 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
 
         feedback = None
         if "quiet" not in self.switches:
-            feedback = "You have been disconnected by %s.\n" % caller.name
+            feedback = f"You have been disconnected by {caller.name}.\n"
             if reason:
-                feedback += "\nReason given: %s" % reason
+                feedback += "f\nReason given: {reason}"
 
         for session in boot_list:
             session.msg(feedback)
@@ -106,8 +105,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
 
         if pobj and boot_list:
             logger.log_sec(
-                "Booted: %s (Reason: %s, Caller: %s, IP: %s)."
-                % (pobj, reason, caller, self.session.address)
+                f"Booted: {pobj} (Reason: {reason}, Caller: {caller}, IP: {self.session.address})."
             )
 
 
@@ -130,7 +128,7 @@ def list_bans(cmd, banlist):
     table = cmd.styled_table("|wid", "|wname/ip", "|wdate", "|wreason")
     for inum, ban in enumerate(banlist):
         table.add_row(str(inum + 1), ban[0] and ban[0] or ban[1], ban[3], ban[4])
-    return "|wActive bans:|n\n%s" % table
+    return f"|wActive bans:|n\n{table}"
 
 
 class CmdBan(COMMAND_DEFAULT_CLASS):
@@ -227,7 +225,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
         ServerConfig.objects.conf("server_bans", banlist)
         self.caller.msg(f"{typ}-ban '|w{ban}|n' was added. Use |wunban|n to reinstate.")
         logger.log_sec(
-            "Banned {typ}: {ban.strip()} (Caller: {self.caller}, IP: {self.session.address})."
+            f"Banned {typ}: {ban.strip()} (Caller: {self.caller}, IP: {self.session.address})."
         )
 
 
@@ -267,7 +265,7 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
         if not banlist:
             self.caller.msg("There are no bans to clear.")
         elif not (0 < num < len(banlist) + 1):
-            self.caller.msg("Ban id |w%s|x was not found." % self.args)
+            self.caller.msg(f"Ban id |w{self.args}|n was not found.")
         else:
             # all is ok, ask, then clear ban
             ban = banlist[num - 1]
@@ -282,7 +280,7 @@ class CmdUnban(COMMAND_DEFAULT_CLASS):
             ServerConfig.objects.conf("server_bans", banlist)
             self.caller.msg(f"Cleared ban {num}: '{value}'")
             logger.log_sec(
-                "Unbanned: {value.strip()} (Caller: {self.caller}, IP: {self.session.address})."
+                f"Unbanned: {value.strip()} (Caller: {self.caller}, IP: {self.session.address})."
             )
 
 
@@ -351,20 +349,20 @@ class CmdEmit(COMMAND_DEFAULT_CLASS):
             if not obj:
                 return
             if rooms_only and obj.location is not None:
-                caller.msg("%s is not a room. Ignored." % objname)
+                caller.msg(f"{objname} is not a room. Ignored.")
                 continue
             if accounts_only and not obj.has_account:
-                caller.msg("%s has no active account. Ignored." % objname)
+                caller.msg(f"{objname} has no active account. Ignored.")
                 continue
             if obj.access(caller, "tell"):
                 obj.msg(message)
                 if send_to_contents and hasattr(obj, "msg_contents"):
                     obj.msg_contents(message)
-                    caller.msg("Emitted to %s and contents:\n%s" % (objname, message))
+                    caller.msg(f"Emitted to {objname} and contents:\n{message}")
                 else:
-                    caller.msg("Emitted to %s:\n%s" % (objname, message))
+                    caller.msg(f"Emitted to {objname}:\n{message}")
             else:
-                caller.msg("You are not allowed to emit to %s." % objname)
+                caller.msg(f"You are not allowed to emit to {objname}.")
 
 
 class CmdNewPassword(COMMAND_DEFAULT_CLASS):
@@ -407,11 +405,11 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
 
         account.set_password(newpass)
         account.save()
-        self.msg("%s - new password set to '%s'." % (account.name, newpass))
+        self.msg(f"{account.name} - new password set to '{new pass}'.")
         if account.character != caller:
-            account.msg("%s has changed your password to '%s'." % (caller.name, newpass))
+            account.msg(f"{caller.name} has changed your password to '{newpass}'.")
         logger.log_sec(
-            "Password Changed: %s (Caller: %s, IP: %s)." % (account, caller, self.session.address)
+            f"Password Changed: {account} (Caller: {caller}, IP: {self.session.address})."
         )
 
 
@@ -464,7 +462,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 caller.msg("You are not allowed to examine this object.")
                 return
 
-            string = "Permissions on |w%s|n: " % obj.key
+            string = f"Permissions on |{obj.key}s|n: "
             if not obj.permissions.all():
                 string += "<None>"
             else:
@@ -483,8 +481,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
         locktype = "edit" if accountmode else "control"
         if not obj.access(caller, locktype):
             caller.msg(
-                "You are not allowed to edit this %s's permissions."
-                % ("account" if accountmode else "object")
+                f"You are not allowed to edit this {'account' if accountmode else 'object'}'s permissions."
             )
             return
 
@@ -496,18 +493,17 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 obj.permissions.remove(perm)
                 if obj.permissions.get(perm):
                     caller_result.append(
-                        "\nPermissions %s could not be removed from %s." % (perm, obj.name)
+                        f"\nPermissions {perm} could not be removed from {obj.name}."
                     )
                 else:
                     caller_result.append(
-                        "\nPermission %s removed from %s (if they existed)." % (perm, obj.name)
+                        f"\nPermission {perm} removed from {obj.name} (if they existed)."
                     )
                     target_result.append(
-                        "\n%s revokes the permission(s) %s from you." % (caller.name, perm)
+                        f"\n{caller.name} revokes the permission(s) {perm} from you."
                     )
                     logger.log_sec(
-                        "Permissions Deleted: %s, %s (Caller: %s, IP: %s)."
-                        % (perm, obj, caller, self.session.address)
+                        f"Permissions Deleted: {perm}, {obj} (Caller: {caller}, IP: {self.session.address})."
                     )
         else:
             # add a new permission
@@ -518,7 +514,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 # don't allow to set a permission higher in the hierarchy than
                 # the one the caller has (to prevent self-escalation)
                 if perm.lower() in PERMISSION_HIERARCHY and not obj.locks.check_lockstring(
-                    caller, "dummy:perm(%s)" % perm
+                    caller, f"dummy:perm({perm})"
                 ):
                     caller.msg(
                         "You cannot assign a permission higher than the one you have yourself."
@@ -527,21 +523,19 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
 
                 if perm in permissions:
                     caller_result.append(
-                        "\nPermission '%s' is already defined on %s." % (perm, obj.name)
+                        f"\nPermission '{perm}' is already defined on {obj.name}."
                     )
                 else:
                     obj.permissions.add(perm)
                     plystring = "the Account" if accountmode else "the Object/Character"
                     caller_result.append(
-                        "\nPermission '%s' given to %s (%s)." % (perm, obj.name, plystring)
+                        f"\nPermission '{perm}' given to {obj.name} ({plystring})."
                     )
                     target_result.append(
-                        "\n%s gives you (%s, %s) the permission '%s'."
-                        % (caller.name, obj.name, plystring, perm)
+                        f"\n{caller.name} gives you ({obj.name}, {plystring}) the permission '{perm}'."
                     )
                     logger.log_sec(
-                        "Permissions Added: %s, %s (Caller: %s, IP: %s)."
-                        % (obj, perm, caller, self.session.address)
+                        f"Permissions Added: {perm}, {obj} (Caller: {caller}, IP: {self.session.address})."
                     )
 
         caller.msg("".join(caller_result).strip())
@@ -569,7 +563,7 @@ class CmdWall(COMMAND_DEFAULT_CLASS):
         if not self.args:
             self.caller.msg("Usage: wall <message>")
             return
-        message = '%s shouts "%s"' % (self.caller.name, self.args)
+        message = f'{self.caller.name} shouts "{self.args}"'
         self.msg("Announcing to all connected sessions ...")
         SESSIONS.announce_all(message)
 
@@ -599,7 +593,7 @@ class CmdForce(COMMAND_DEFAULT_CLASS):
         if not targ:
             return
         if not targ.access(self.caller, self.perm_used):
-            self.caller.msg("You don't have permission to force them to execute commands.")
+            self.caller.msg(f"You don't have permission to force {targ} to execute commands.")
             return
         targ.execute_cmd(self.rhs)
-        self.caller.msg("You have forced %s to: %s" % (targ, self.rhs))
+        self.caller.msg(f"You have forced {targ} to: {self.rhs}")
