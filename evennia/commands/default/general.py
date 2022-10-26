@@ -221,9 +221,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     _, _, old_nickstring, old_replstring = oldnick.value
                     caller.nicks.remove(old_nickstring, category=nicktype)
                     caller.msg(
-                        "%s removed: '|w%s|n' -> |w%s|n."
-                        % (nicktypestr, old_nickstring, old_replstring)
-                    )
+                        f"{nicktypestr} removed: '|w{old_nickstring}|n' -> |w{old_replstring}|n.")
             else:
                 caller.msg("No matching nicks to remove.")
             return
@@ -245,12 +243,12 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
                         strings.append(
-                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
+                            f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'"
                         )
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg("No nicks found matching '{}'".format(self.lhs))
+                caller.msg(f"No nicks found matching '{self,lhs}'")
             return
 
         if not self.rhs and self.lhs:
@@ -268,12 +266,12 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
                         strings.append(
-                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
+                            f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'"
                         )
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg("No nicks found matching '{}'".format(self.lhs))
+                caller.msg(f"No nicks found matching '{self.lhs}'")
             return
 
         if not self.rhs and self.lhs:
@@ -291,12 +289,12 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
                         strings.append(
-                            "{}-nick: '{}' -> '{}'".format(nicktype.capitalize(), nick, repl)
+                            f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'"
                         )
             if strings:
                 caller.msg("\n".join(strings))
             else:
-                caller.msg("No nicks found matching '{}'".format(self.lhs))
+                caller.msg(f"No nicks found matching '{self.lhs}'")
             return
 
         if not self.args or not self.lhs:
@@ -316,7 +314,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         errstring = ""
         string = ""
         for nicktype in nicktypes:
-            nicktypestr = "%s-nick" % nicktype.capitalize()
+            nicktypestr = f"{nicktype.capitalize()}-nick"
             old_nickstring = None
             old_replstring = None
 
@@ -328,19 +326,11 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 errstring = ""
                 if oldnick:
                     if replstring == old_replstring:
-                        string += "\nIdentical %s already set." % nicktypestr.lower()
+                        string += f"\nIdentical {nicktypestr.lower()} already set."
                     else:
-                        string += "\n%s '|w%s|n' updated to map to '|w%s|n'." % (
-                            nicktypestr,
-                            old_nickstring,
-                            replstring,
-                        )
+                        string += f"\n{nicktypestr} '|w{old_nickstring}|n' updated to map to '|w{replstring}|n'."
                 else:
-                    string += "\n%s '|w%s|n' mapped to '|w%s|n'." % (
-                        nicktypestr,
-                        nickstring,
-                        replstring,
-                    )
+                    string += f"\n{nicktypestr} '|w{nickstring}|n' mapped to '|w{replstring}|n'."
                 try:
                     caller.nicks.add(nickstring, replstring, category=nicktype)
                 except NickTemplateInvalid:
@@ -350,11 +340,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     return
             elif old_nickstring and old_replstring:
                 # just looking at the nick
-                string += "\n%s '|w%s|n' maps to '|w%s|n'." % (
-                    nicktypestr,
-                    old_nickstring,
-                    old_replstring,
-                )
+                string += f"\n{nicktypestr} '|w{old_nickstring}|n' maps to '|w{old_replstring}|n'."
                 errstring = ""
         string = errstring if errstring else string
         caller.msg(_cy(string))
@@ -439,10 +425,8 @@ class CmdGet(COMMAND_DEFAULT_CLASS):
         if not success:
             caller.msg("This can't be picked up.")
         else:
-            caller.msg("You pick up %s." % obj.name)
-            caller.location.msg_contents(
-                "%s picks up %s." % (caller.name, obj.name), exclude=caller
-            )
+            caller.msg(f"You pick up {obj.name}.")
+            caller.location.msg_contents(f"{caller.name} picks up {obj,name}.", exclude=caller)
             # calling at_get hook method
             obj.at_get(caller)
 
@@ -475,8 +459,8 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
         obj = caller.search(
             self.args,
             location=caller,
-            nofound_string="You aren't carrying %s." % self.args,
-            multimatch_string="You carry more than one %s:" % self.args,
+            nofound_string=f"You aren't carrying {self.args}.",
+            multimatch_string=f"You carry more than one {self.args}:",
         )
         if not obj:
             return
@@ -490,7 +474,7 @@ class CmdDrop(COMMAND_DEFAULT_CLASS):
             caller.msg("This couldn't be dropped.")
         else:
             caller.msg("You drop %s." % (obj.name,))
-            caller.location.msg_contents("%s drops %s." % (caller.name, obj.name), exclude=caller)
+            caller.location.msg_contents(f"{caller.name} drops {obj.name}.", exclude=caller)
             # Call the object script's at_drop() method.
             obj.at_drop(caller)
 
@@ -521,17 +505,17 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         to_give = caller.search(
             self.lhs,
             location=caller,
-            nofound_string="You aren't carrying %s." % self.lhs,
-            multimatch_string="You carry more than one %s:" % self.lhs,
+            nofound_string=f"You aren't carrying {self.lhs}.",
+            multimatch_string=f"You carry more than one {self.lhs}:",
         )
         target = caller.search(self.rhs)
         if not (to_give and target):
             return
         if target == caller:
-            caller.msg("You keep %s to yourself." % to_give.key)
+            caller.msg(f"You keep {to_give.key} to yourself.")
             return
         if not to_give.location == caller:
-            caller.msg("You are not holding %s." % to_give.key)
+            caller.msg(f"You are not holding {to_give.key}.")
             return
 
         # calling at_pre_give hook method
@@ -541,10 +525,10 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         # give object
         success = to_give.move_to(target, quiet=True, move_type="give")
         if not success:
-            caller.msg("This could not be given.")
+            caller.msg(f"You could not give {to_give.key}.")
         else:
-            caller.msg("You give %s to %s." % (to_give.key, target.key))
-            target.msg("%s gives you %s." % (caller.key, to_give.key))
+            caller.msg(f"You give {to_give.key} to {target.key}.")
+            target.msg(f"{caller.key} gives you {to_give.key}.")
             # Call the object script's at_give() method.
             to_give.at_give(caller, target)
 
@@ -702,7 +686,7 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
             msg = "What do you want to do?"
             self.caller.msg(msg)
         else:
-            msg = "%s%s" % (self.caller.name, self.args)
+            msg = f"{self.caller.name}{self.args}"
             self.caller.location.msg_contents(text=(msg, {"type": "pose"}), from_obj=self.caller)
 
 
@@ -737,7 +721,7 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
             pperms = ", ".join(caller.account.permissions.all())
 
         string += "\n|wYour access|n:"
-        string += "\nCharacter |c%s|n: %s" % (caller.key, cperms)
+        string += f"\nCharacter |c{caller.key}|n: {cperms}"
         if hasattr(caller, "account"):
-            string += "\nAccount |c%s|n: %s" % (caller.account.key, pperms)
+            string += f"\nAccount |c{caller.account.key}|n: {pperms}"
         caller.msg(string)

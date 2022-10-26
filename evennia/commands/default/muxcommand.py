@@ -216,30 +216,30 @@ Command {self} has no defined `func()` - showing on-command variables: No child 
         self.caller.msg(string)
         # a simple test command to show the available properties
         string = "-" * 50
-        string += "\n|w%s|n - Command variables from evennia:\n" % self.key
+        string += f"\n|w{self.key}|n - Command variables from evennia:\n"
         string += "-" * 50
-        string += "\nname of cmd (self.key): |w%s|n\n" % self.key
-        string += "cmd aliases (self.aliases): |w%s|n\n" % self.aliases
-        string += "cmd locks (self.locks): |w%s|n\n" % self.locks
-        string += "help category (self.help_category): |w%s|n\n" % self.help_category
-        string += "object calling (self.caller): |w%s|n\n" % self.caller
-        string += "object storing cmdset (self.obj): |w%s|n\n" % self.obj
-        string += "command string given (self.cmdstring): |w%s|n\n" % self.cmdstring
+        string += f"\nname of cmd (self.key): |w{self.key}|n\n"
+        string += f"cmd aliases (self.aliases): |w{self.aliases}|n\n"
+        string += f"cmd locks (self.locks): |w{self.locks}|n\n"
+        string += f"help category (self.help_category): |w{self.help_category}|n\n"
+        string += f"object calling (self.caller): |w{self.caller}|n\n"
+        string += f"object storing cmdset (self.obj): |w{self.obj}|n\n"
+        string += f"command string given (self.cmdstring): |w{self.cmdstring}|n\n"
         # show cmdset.key instead of cmdset to shorten output
-        string += utils.fill("current cmdset (self.cmdset): |w%s|n\n" % self.cmdset)
+        string += utils.fill(f"current cmdset (self.cmdset): |w{self.cmdset}|n\n")
         string += "\n" + "-" * 50
         string += "\nVariables from MuxCommand baseclass\n"
         string += "-" * 50
-        string += "\nraw argument (self.raw): |w%s|n \n" % self.raw
-        string += "cmd args (self.args): |w%s|n\n" % self.args
-        string += "cmd switches (self.switches): |w%s|n\n" % self.switches
-        string += "cmd options (self.switch_options): |w%s|n\n" % self.switch_options
-        string += "cmd parse left/right using (self.rhs_split): |w%s|n\n" % self.rhs_split
-        string += "space-separated arg list (self.arglist): |w%s|n\n" % self.arglist
-        string += "lhs, left-hand side of '=' (self.lhs): |w%s|n\n" % self.lhs
-        string += "lhs, comma separated (self.lhslist): |w%s|n\n" % self.lhslist
-        string += "rhs, right-hand side of '=' (self.rhs): |w%s|n\n" % self.rhs
-        string += "rhs, comma separated (self.rhslist): |w%s|n\n" % self.rhslist
+        string += f"\nraw argument (self.raw): |w{self.raw}|n \n"
+        string += f"cmd args (self.args): |w{self.args}|n\n"
+        string += f"cmd switches (self.switches): |w{self.switches}|n\n"
+        string += f"cmd options (self.switch_options): |w{self.switch_options}|n\n"
+        string += f"cmd parse left/right using (self.rhs_split): |w{self.rhs_split}|n\n"
+        string += f"space-separated arg list (self.arglist): |w{self.arglist}|n\n"
+        string += f"lhs, left-hand side of '=' (self.lhs): |w{self.lhs}|n\n"
+        string += f"lhs, comma separated (self.lhslist): |w{self.lhslist}|n\n"
+        string += f"rhs, right-hand side of '=' (self.rhs): |w{self.rhs}|n\n"
+        string += f"rhs, comma separated (self.rhslist): |w{self.rhslist}|n\n"
         string += "-" * 50
         self.caller.msg(string)
 
