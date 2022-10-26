@@ -2116,9 +2116,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                     caller.msg(f"No object or typeclass path found to match '{oquery}'")
                 else:
                     # one match found
-                    caller.msg(
-                        f"Docstring for typeclass '{oquery}':\n{matches[0][1].__doc__}")
-                    )
+                    caller.msg(f"Docstring for typeclass '{oquery}':\n{matches[0][1].__doc__}")
             else:
                 # do the search again to get the error handling in case of multi-match
                 obj = caller.search(oquery)
