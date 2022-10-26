@@ -221,7 +221,7 @@ class CmdSetObjAlias(COMMAND_DEFAULT_CLASS):
                     )
                 )
             else:
-                caller.msg("No aliases exist for '%s'." % obj.get_display_name(caller))
+                caller.msg(f"No aliases exist for '{obj.get_display_name(caller)}'.")
             return
 
         if not (obj.access(caller, "control") or obj.access(caller, "edit")):
@@ -350,13 +350,9 @@ class CmdCopy(ObjManipCommand):
                     new_aliases=to_obj_aliases,
                 )
                 if copiedobj:
-                    string = "Copied %s to '%s' (aliases: %s)." % (
-                        from_obj_name,
-                        to_obj_name,
-                        to_obj_aliases,
-                    )
+                    string = f"Copied {from_obj_name} to '{to_obj_name}' (aliases: {to_obj_aliases})."
                 else:
-                    string = "There was an error copying %s to '%s'." % (from_obj_name, to_obj_name)
+                    string = f"There was an error copying {from_obj_name} to '{to_obj_name}'."
         # we are done, echo to user
         caller.msg(string)
 
@@ -415,7 +411,7 @@ class CmdCpAttr(ObjManipCommand):
         required and verify an object has an attribute.
         """
         if not obj.attributes.has(attr):
-            self.caller.msg("%s doesn't have an attribute %s." % (obj.name, attr))
+            self.caller.msg(f"{obj.name} doesn't have an attribute {attr}.")
             return False
         return True
 
@@ -479,7 +475,7 @@ class CmdCpAttr(ObjManipCommand):
             to_obj_attrs = to_obj["attrs"]
             to_obj = caller.search(to_obj_name)
             if not to_obj:
-                result.append("\nCould not find object '%s'" % to_obj_name)
+                result.append(f"\nCould not find object '{to_obj_name}'")
                 continue
             for inum, from_attr in enumerate(from_obj_attrs):
                 try:
@@ -495,13 +491,11 @@ class CmdCpAttr(ObjManipCommand):
                 if clear and not (from_obj == to_obj and from_attr == to_attr):
                     from_obj.attributes.remove(from_attr)
                     result.append(
-                        "\nMoved %s.%s -> %s.%s. (value: %s)"
-                        % (from_obj.name, from_attr, to_obj_name, to_attr, repr(value))
+                        f"\nMoved {from_obj.name}.{from_attr} -> {to_obj_name}.{to_attr}. (value: {repr(value)})"
                     )
                 else:
                     result.append(
-                        "\nCopied %s.%s -> %s.%s. (value: %s)"
-                        % (from_obj.name, from_attr, to_obj_name, to_attr, repr(value))
+                        f"\nCopied {from_obj.name}.{from_attr} -> {to_obj.name}.{to_attr}. (value: {repr(value)})"
                     )
         caller.msg("".join(result))
 
@@ -615,11 +609,9 @@ class CmdCreate(ObjManipCommand):
             if not obj:
                 continue
             if aliases:
-                string = "You create a new %s: %s (aliases: %s)."
-                string = string % (obj.typename, obj.name, ", ".join(aliases))
+                string = f"You create a new {obj.typename}: {obj.name} (aliases: {', '.join(aliases)})."
             else:
-                string = "You create a new %s: %s."
-                string = string % (obj.typename, obj.name)
+                string = f"You create a new {obj.typename}: {obj.name}."
             # set a default desc
             if not obj.db.desc:
                 obj.db.desc = "You see nothing special."
@@ -681,7 +673,7 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             return
 
         if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
-            self.caller.msg("You don't have permission to edit the description of %s." % obj.key)
+            self.caller.msg(f"You don't have permission to edit the description of {obj.key}.")
             return
 
         self.caller.db.evmenu_target = obj
@@ -721,9 +713,9 @@ class CmdDesc(COMMAND_DEFAULT_CLASS):
             desc = self.args
         if obj.access(self.caller, "control") or obj.access(self.caller, "edit"):
             obj.db.desc = desc
-            caller.msg("The description was set on %s." % obj.get_display_name(caller))
+            caller.msg(f"The description was set on {obj.get_display_name(caller)}.")
         else:
-            caller.msg("You don't have permission to edit the description of %s." % obj.key)
+            caller.msg(f"You don't have permission to edit the description of {obj.key}.")
 
 
 class CmdDestroy(COMMAND_DEFAULT_CLASS):
@@ -771,21 +763,20 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
             # helper function for deleting a single object
             string = ""
             if not obj.pk:
-                string = "\nObject %s was already deleted." % obj.db_key
+                string = f"\nObject {obj.db_key} was already deleted."
             else:
                 objname = obj.name
                 if not (obj.access(caller, "control") or obj.access(caller, "delete")):
-                    return "\nYou don't have permission to delete %s." % objname
+                    return f"\nYou don't have permission to delete {objname}."
                 if obj.account and "override" not in self.switches:
                     return (
-                        "\nObject %s is controlled by an active account. Use /override to delete anyway."
-                        % objname
+                        f"\nObject {objname} is controlled by an active account. Use /override to delete anyway."
                     )
                 if obj.dbid == int(settings.DEFAULT_HOME.lstrip("#")):
                     return (
-                        "\nYou are trying to delete |c%s|n, which is set as DEFAULT_HOME. "
+                        f"\nYou are trying to delete |c{objname}|n, which is set as DEFAULT_HOME. "
                         "Re-point settings.DEFAULT_HOME to another "
-                        "object before continuing." % objname
+                        "object before continuing."
                     )
 
                 had_exits = hasattr(obj, "exits") and obj.exits
@@ -798,15 +789,14 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                 okay = obj.delete()
                 if not okay:
                     string += (
-                        "\nERROR: %s not deleted, probably because delete() returned False."
-                        % objname
+                        f"\nERROR: {objname} not deleted, probably because delete() returned False."
                     )
                 else:
-                    string += "\n%s was destroyed." % objname
+                    string += f"\n{objname} was destroyed."
                     if had_exits:
-                        string += " Exits to and from %s were destroyed as well." % objname
+                        string += f" Exits to and from {objname} were destroyed as well."
                     if had_objs:
-                        string += " Objects inside %s were moved to their homes." % objname
+                        string += f" Objects inside {objname} were moved to their homes."
             return string
 
         objs = []
@@ -936,12 +926,7 @@ class CmdDig(ObjManipCommand):
         alias_string = ""
         if new_room.aliases.all():
             alias_string = " (%s)" % ", ".join(new_room.aliases.all())
-        room_string = "Created room %s(%s)%s of type %s." % (
-            new_room,
-            new_room.dbref,
-            alias_string,
-            typeclass,
-        )
+        room_string = f"Created room {new_room}({new_room.dbref}){alias_string} of type {typeclass}."
 
         # create exit to room
 
@@ -972,14 +957,7 @@ class CmdDig(ObjManipCommand):
                 alias_string = ""
                 if new_to_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_to_exit.aliases.all())
-                exit_to_string = "\nCreated Exit from %s to %s: %s(%s)%s."
-                exit_to_string = exit_to_string % (
-                    location.name,
-                    new_room.name,
-                    new_to_exit,
-                    new_to_exit.dbref,
-                    alias_string,
-                )
+                exit_to_string = "\nCreated Exit from {location.name} to {new_room.name}: {new_to_exit}({new_to_exit.dbref}){alias_string}."
 
         # Create exit back from new room
 
@@ -1006,15 +984,8 @@ class CmdDig(ObjManipCommand):
                 alias_string = ""
                 if new_back_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_back_exit.aliases.all())
-                exit_back_string = "\nCreated Exit back from %s to %s: %s(%s)%s."
-                exit_back_string = exit_back_string % (
-                    new_room.name,
-                    location.name,
-                    new_back_exit,
-                    new_back_exit.dbref,
-                    alias_string,
-                )
-        caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
+                exit_back_string = f"\nCreated Exit back from {new_room.name} to {location.name}: {new_back_exit}({new_back_exit.dbref}){alias_string}."
+        caller.msg(f"{room_string}{exit_to_string}{exit_back_string}")
         if new_room and "teleport" in self.switches:
             caller.move_to(new_room, move_type="teleport")
 
@@ -1112,10 +1083,10 @@ class CmdTunnel(COMMAND_DEFAULT_CLASS):
             telswitch = "/teleport"
         backstring = ""
         if "oneway" not in self.switches:
-            backstring = ", %s;%s" % (backname, backshort)
+            backstring = f", {backname};{backshort}"
 
         # build the string we will use to call dig
-        digstring = "dig%s %s = %s;%s%s" % (telswitch, roomname, exitname, exitshort, backstring)
+        digstring = f"dig{telswitch} {roomname} = {exitname};{exitshort}{backstring}"
         self.execute_cmd(digstring)
 
 
@@ -1182,10 +1153,7 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                 string = note % (obj.name, obj.dbref)
             if "twoway" in self.switches:
                 if not (target.location and obj.location):
-                    string = "To create a two-way link, %s and %s must both have a location" % (
-                        obj,
-                        target,
-                    )
+                    string = f"To create a two-way link, {obj} and {target} must both have a location"
                     string += " (i.e. they cannot be rooms, but should be exits)."
                     self.caller.msg(string)
                     return
@@ -1193,15 +1161,10 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
                     string += note % (target.name, target.dbref)
                 obj.destination = target.location
                 target.destination = obj.location
-                string += "\nLink created %s (in %s) <-> %s (in %s) (two-way)." % (
-                    obj.name,
-                    obj.location,
-                    target.name,
-                    target.location,
-                )
+                string += f"\nLink created {obj.name} (in {obj.location}) <-> {target.name} (in {target.location}) (two-way)."
             else:
                 obj.destination = target
-                string += "\nLink created %s -> %s (one way)." % (obj.name, target)
+                string += f"\nLink created {obj.name} -> {target} (one way)."
 
         elif self.rhs is None:
             # this means that no = was given (otherwise rhs
@@ -1209,18 +1172,18 @@ class CmdLink(COMMAND_DEFAULT_CLASS):
             # the home/destination on object
             dest = obj.destination
             if dest:
-                string = "%s is an exit to %s." % (obj.name, dest.name)
+                string = f"{obj.name} is an exit to {dest.name}."
             else:
-                string = "%s is not an exit. Its home location is %s." % (obj.name, obj.home)
+                string = f"{obj.name} is not an exit. Its home location is {obj.home}."
 
         else:
             # We gave the command link 'obj = ' which means we want to
             # clear destination.
             if obj.destination:
                 obj.destination = None
-                string = "Former exit %s no longer links anywhere." % obj.name
+                string = f"Former exit {obj.name} no longer links anywhere."
             else:
-                string = "%s had no destination to unlink." % obj.name
+                string = f"{obj.name} had no destination to unlink."
         # give feedback
         caller.msg(string.strip())
 
@@ -1297,7 +1260,7 @@ class CmdSetHome(CmdLink):
             if not home:
                 string = "This object has no home location set!"
             else:
-                string = "%s's current home is %s(%s)." % (obj, home, home.dbref)
+                string = f"{obj}'s current home is {home}({home.dbref})."
         else:
             # set a home location
             new_home = self.caller.search(self.rhs, global_search=True)
@@ -1306,15 +1269,9 @@ class CmdSetHome(CmdLink):
             old_home = obj.home
             obj.home = new_home
             if old_home:
-                string = "Home location of %s was changed from %s(%s) to %s(%s)." % (
-                    obj,
-                    old_home,
-                    old_home.dbref,
-                    new_home,
-                    new_home.dbref,
-                )
+                string = f"Home location of {home} was changed from {old_home}({old_home.dbref} to {new_home}({new_home.dbref})."
             else:
-                string = "Home location of %s was set to %s(%s)." % (obj, new_home, new_home.dbref)
+                string = f"Home location of {obj} was set to {new_home}({new_home.dbref})."
         self.caller.msg(string)
 
 
@@ -1343,7 +1300,7 @@ class CmdListCmdSets(COMMAND_DEFAULT_CLASS):
                 return
         else:
             obj = caller
-        string = "%s" % obj.cmdset
+        string = f"{obj.cmdset}"
         caller.msg(string)
 
 
@@ -1387,11 +1344,11 @@ class CmdName(ObjManipCommand):
                         caller.msg("No name defined!")
                         return
                     if not (obj.access(caller, "control") or obj.access(caller, "edit")):
-                        caller.msg("You don't have right to edit this account %s." % obj)
+                        caller.msg(f"You don't have right to edit this account {obj}.")
                         return
                     obj.username = newname
                     obj.save()
-                    caller.msg("Account's name changed to '%s'." % newname)
+                    caller.msg(f"Account's name changed to '{newname}'.")
                     return
             # object search, also with *
             obj = caller.search(objname)
@@ -1407,7 +1364,7 @@ class CmdName(ObjManipCommand):
             caller.msg("No names or aliases defined!")
             return
         if not (obj.access(caller, "control") or obj.access(caller, "edit")):
-            caller.msg("You don't have the right to edit %s." % obj)
+            caller.msg(f"You don't have the right to edit {obj}.")
             return
         # change the name and set aliases:
         if newname:
@@ -1419,7 +1376,7 @@ class CmdName(ObjManipCommand):
         # fix for exits - we need their exit-command to change name too
         if obj.destination:
             obj.flush_from_cache(force=True)
-        caller.msg("Object's name changed to '%s'%s." % (newname, astring))
+        caller.msg(f"Object's name changed to '{newname}'{astring}.")
 
 
 class CmdOpen(ObjManipCommand):
@@ -1463,25 +1420,20 @@ class CmdOpen(ObjManipCommand):
             exit_obj = exit_obj[0]
             if not exit_obj.destination:
                 # we are trying to link a non-exit
-                string = "'%s' already exists and is not an exit!\nIf you want to convert it "
-                string += (
-                    "to an exit, you must assign an object to the 'destination' property first."
-                )
-                caller.msg(string % exit_name)
+                caller.msg(f"'{exit_name}' already exists and is not an exit!\nIf you want to convert it "
+                            "to an exit, you must assign an object to the 'destination' property first."
+                          )
                 return None
             # we are re-linking an old exit.
             old_destination = exit_obj.destination
             if old_destination:
-                string = "Exit %s already exists." % exit_name
+                string = f"Exit {exit_name} already exists."
                 if old_destination.id != destination.id:
                     # reroute the old exit.
                     exit_obj.destination = destination
                     if exit_aliases:
                         [exit_obj.aliases.add(alias) for alias in exit_aliases]
-                    string += " Rerouted its old destination '%s' to '%s' and changed aliases." % (
-                        old_destination.name,
-                        destination.name,
-                    )
+                    string += f" Rerouted its old destination '{old_destination.name}' to '{destination.name}' and changed aliases."
                 else:
                     string += " It already points to the correct place."
 
@@ -1506,14 +1458,9 @@ class CmdOpen(ObjManipCommand):
                     if not exit_aliases
                     else " (aliases: %s)" % (", ".join([str(e) for e in exit_aliases]))
                 )
-                string = "Created new Exit '%s' from %s to %s%s." % (
-                    exit_name,
-                    location.name,
-                    destination.name,
-                    string,
-                )
+                string = f"Created new Exit '{exit_name}' from {location.name} to {destination.name}{string}."
             else:
-                string = "Error: Exit '%s' not created." % exit_name
+                string = f"Error: Exit '{exit.name}' not created."
         # emit results
         caller.msg(string)
         return exit_obj
@@ -1596,13 +1543,13 @@ def _convert_from_string(cmd, strobj):
         # treat as string
         strobj = utils.to_str(strobj)
         string = (
-            '|RNote: name "|r%s|R" was converted to a string. '
-            "Make sure this is acceptable." % strobj
+            f'|RNote: name "|r{strobj}|R" was converted to a string. '
+            "Make sure this is acceptable."
         )
         cmd.caller.msg(string)
         return strobj
     except Exception as err:
-        string = "|RUnknown error in evaluating Attribute: {}".format(err)
+        string = f"|RUnknown error in evaluating Attribute: {err}"
         return string
 
 
@@ -1853,7 +1800,7 @@ class CmdSetAttribute(ObjManipCommand):
         def save(caller, buf):
             """Called when editor saves its buffer."""
             obj.attributes.add(attr, buf)
-            caller.msg("Saved Attribute %s." % attr)
+            caller.msg(f"Saved Attribute {attr}.")
 
         # check non-strings before activating editor
         try:
@@ -1931,7 +1878,7 @@ class CmdSetAttribute(ObjManipCommand):
         if "edit" in self.switches:
             # edit in the line editor
             if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
-                caller.msg("You don't have permission to edit %s." % obj.key)
+                caller.msg(f"You don't have permission to edit {obj.key}.")
                 return
 
             if len(attrs) > 1:
@@ -1963,7 +1910,7 @@ class CmdSetAttribute(ObjManipCommand):
             else:
                 # deleting the attribute(s)
                 if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
-                    caller.msg("You don't have permission to edit %s." % obj.key)
+                    caller.msg(f"You don't have permission to edit {obj.key}.")
                     return
                 for attr in attrs:
                     if not self.check_attr(obj, attr, category):
@@ -1982,7 +1929,7 @@ class CmdSetAttribute(ObjManipCommand):
                 )
 
             if not (obj.access(self.caller, "control") or obj.access(self.caller, "edit")):
-                caller.msg("You don't have permission to edit %s." % obj.key)
+                caller.msg(f"You don't have permission to edit {obj.key}.")
                 return
             for attr in attrs:
                 if not self.check_attr(obj, attr, category):
@@ -1997,7 +1944,7 @@ class CmdSetAttribute(ObjManipCommand):
                         or parsed_value.access(self.caller, "edit")
                     ):
                         caller.msg(
-                            "You don't have permission to set " f"object with identifier '{value}'."
+                            f"You don't have permission to set object with identifier '{value}'."
                         )
                         continue
                     value = parsed_value
@@ -2166,21 +2113,17 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                         )
                     )
                 elif not matches:
-                    caller.msg("No object or typeclass path found to match '{}'".format(oquery))
+                    caller.msg(f"No object or typeclass path found to match '{oquery}'")
                 else:
                     # one match found
-                    caller.msg(
-                        "Docstring for typeclass '{}':\n{}".format(oquery, matches[0][1].__doc__)
-                    )
+                    caller.msg(f"Docstring for typeclass '{oquery}': \n{matches[0][1].__doc__}")
             else:
                 # do the search again to get the error handling in case of multi-match
                 obj = caller.search(oquery)
                 if not obj:
                     return
                 caller.msg(
-                    "{}'s current typeclass is '{}.{}'".format(
-                        obj.name, obj.__class__.__module__, obj.__class__.__name__
-                    )
+                    f"{obj.name}'s current typeclass is '{obj.__class__.__module__}.{obj.__class__.__name__}'"
                 )
             return
 
@@ -2211,14 +2154,13 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 prototype = prototype[0]
             else:
                 # no match
-                caller.msg("No prototype '{}' was found.".format(key))
+                caller.msg(f"No prototype '{key}' was found.")
                 return
             new_typeclass = prototype["typeclass"]
             self.switches.append("force")
 
         if "show" in self.switches or "examine" in self.switches:
-            string = "%s's current typeclass is %s." % (obj.name, obj.__class__)
-            caller.msg(string)
+            caller.msg(f"{obj.name}'s current typeclass is '{obj.__class__}'")
             return
 
         if self.cmdstring in ("swap", "@swap"):
@@ -2267,8 +2209,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 diff, _ = spawner.prototype_diff_from_object(prototype, obj)
                 txt = spawner.format_diff(diff)
                 prompt = (
-                    "Applying prototype '%s' over '%s' will cause the follow changes:\n%s\n"
-                    % (prototype["key"], obj.name, txt)
+                    f"Applying prototype '{prototype['key']}' over '{obj.name}' will cause the follow changes:\n{txt}\n"
                 )
                 if not reset:
                     prompt += "\n|yWARNING:|n Use the /reset switch to apply the prototype over a blank state."
@@ -2289,16 +2230,12 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 )
                 prototype_success = modified > 0
                 if not prototype_success:
-                    caller.msg("Prototype %s failed to apply." % prototype["key"])
+                    caller.msg(f"Prototype {prototype['key']} failed to apply.")
 
             if is_same:
-                string = "%s updated its existing typeclass (%s).\n" % (obj.name, obj.path)
+                string = f"{obj.name} updated its existing typeclass ({obj.path}).\n"
             else:
-                string = "%s changed typeclass from %s to %s.\n" % (
-                    obj.name,
-                    old_typeclass_path,
-                    obj.typeclass_path,
-                )
+                string = f"{obj.name} changed typeclass from {old_typeclass_path} to {obj.typeclass_path}.\n"
             if update:
                 string += "Only the at_object_creation hook was run (update mode)."
             else:
@@ -2309,8 +2246,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
                 string += " Attributes set before swap were not removed\n(use `swap` or `type/reset` to clear all)."
             if "prototype" in self.switches and prototype_success:
                 string += (
-                    " Prototype '%s' was successfully applied over the object type."
-                    % prototype["key"]
+                    f" Prototype '{prototype['key']}' was successfully applied over the object type."
                 )
 
         caller.msg(string)
@@ -2359,12 +2295,11 @@ class CmdWipe(ObjManipCommand):
         if not attrs:
             # wipe everything
             obj.attributes.clear()
-            string = "Wiped all attributes on %s." % obj.name
+            string = f"Wiped all attributes on {obj.name}."
         else:
             for attrname in attrs:
                 obj.attributes.remove(attrname)
-            string = "Wiped attributes %s on %s."
-            string = string % (",".join(attrs), obj.name)
+            string = f"Wiped attributes {','.join(attrs)} on {obj.name}."
         caller.msg(string)
 
 
@@ -2445,7 +2380,7 @@ class CmdLock(ObjManipCommand):
                 else:
                     string = lockdef
             else:
-                string = "%s has no lock of access type '%s'." % (obj, access_type)
+                string = f"{obj} has no lock of access type '{access_type}'."
             caller.msg(string)
             return
 
@@ -2454,9 +2389,9 @@ class CmdLock(ObjManipCommand):
             if self.switches:
                 swi = ", ".join(self.switches)
                 caller.msg(
-                    "Switch(es) |w%s|n can not be used with a "
+                    f"Switch(es) |w{swi}|n can not be used with a "
                     "lock assignment. Use e.g. "
-                    "|wlock/del objname/locktype|n instead." % swi
+                    "|wlock/del objname/locktype|n instead." 
                 )
                 return
 
@@ -2484,7 +2419,7 @@ class CmdLock(ObjManipCommand):
                 # update on them unless their cmdsets are rebuilt.
                 obj.at_init()
             if ok:
-                caller.msg("Added lock '%s' to %s." % (lockdef, obj))
+                caller.msg(f"Added lock '{lockdef}' to {obj}.")
             return
 
         # if we get here, we are just viewing all locks on obj
@@ -3167,14 +3102,12 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             if not result:
                 string += "\n   |RNo match found.|n"
             elif not low <= int(result[0].id) <= high:
-                string += "\n   |RNo match found for '%s' in #dbref interval.|n" % searchstring
+                string += f"\n   |RNo match found for '{searchstring}' in #dbref interval.|n"
             else:
                 result = result[0]
-                string += "\n|g   %s - %s|n" % (result.get_display_name(caller), result.path)
+                string += f"\n|g   {result.get_display_name(caller)} - {result.path}|n"
                 if "loc" in self.switches and not is_account and result.location:
-                    string += " (|wlocation|n: |g{}|n)".format(
-                        result.location.get_display_name(caller)
-                    )
+                    string += f" (|wlocation|n: |g{result.location.get_display_name(caller)}|n)"
         else:
             # Not an account/dbref search but a wider search; build a queryset.
             # Searches for key and aliases
@@ -3675,14 +3608,13 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             if obj_to_teleport.has_account:
                 caller.msg(
                     "Cannot teleport a puppeted object "
-                    "(%s, puppeted by %s) to a None-location."
-                    % (obj_to_teleport.key, obj_to_teleport.account)
+                    f"({obj_to_teleport.key}, puppeted by {obj_to_teleport.account}) to a None-location."
                 )
                 return
-            caller.msg("Teleported %s -> None-location." % obj_to_teleport)
+            caller.msg(f"Teleported {obj_to_teleport} -> None-location.")
             if obj_to_teleport.location and "quiet" not in self.switches:
                 obj_to_teleport.location.msg_contents(
-                    "%s teleported %s into nothingness." % (caller, obj_to_teleport), exclude=caller
+                    f"{caller} teleported {obj_to_teleport} into nothingness.", exclude=caller
                 )
             obj_to_teleport.location = None
             return
@@ -3710,7 +3642,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             return
 
         if obj_to_teleport.location and obj_to_teleport.location == destination:
-            caller.msg("%s is already at %s." % (obj_to_teleport, destination))
+            caller.msg(f"{obj_to_teleport} is already at {destination}.")
             return
 
         # check any locks
@@ -3886,7 +3818,7 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
                     ", ".join(sorted("'%s'%s" % (tags[i], categories[i]) for i in range(ntags))),
                 )
             else:
-                string = "No tags attached to %s." % obj
+                string = f"No tags attached to {obj}."
             self.caller.msg(string)
 
 
@@ -4049,7 +3981,7 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
                         "funcparser callables ($funcs) in the strings."
                     )
                 else:
-                    string = "Expected {}, got {}.".format(expect, type(prototype))
+                    string = f"Expected {expect}, got {type(prototype)}."
                 self.caller.msg(string)
                 return
 
