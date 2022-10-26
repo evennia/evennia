@@ -316,10 +316,10 @@ displaying them differently. See next section.</p>
 <p>As pointed out earlier, the <code class="docutils literal notranslate"><span class="pre">&#64;time</span></code> command is meant to be used with a standard calendar, not a
 custom one.  We can easily create a new command though.  We’ll call it <code class="docutils literal notranslate"><span class="pre">time</span></code>, as is often the case
 on other MU*.  Here’s an example of how we could write it (for the example, you can create a file
-<code class="docutils literal notranslate"><span class="pre">showtime.py</span></code> in your <code class="docutils literal notranslate"><span class="pre">commands</span></code> directory and paste this code in it):</p>
+<code class="docutils literal notranslate"><span class="pre">gametime.py</span></code> in your <code class="docutils literal notranslate"><span class="pre">commands</span></code> directory and paste this code in it):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in a file mygame/commands/gametime.py</span>
 
-<span class="kn">from</span> <span class="nn">evennia.contrib</span> <span class="kn">import</span> <span class="n">custom_gametime</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems</span> <span class="kn">import</span> <span class="n">custom_gametime</span>
 
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 

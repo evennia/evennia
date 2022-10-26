@@ -137,8 +137,9 @@
 <span class="sd">    # create a new form from the template</span>
 <span class="sd">    form = EvForm(&quot;path/to/testform.py&quot;)</span>
 
-<span class="sd">    (EvForm can also take a dictionary holding</span>
-<span class="sd">     the required keys FORMCHAR, TABLECHAR and FORM)</span>
+<span class="sd">    # EvForm can also take a dictionary instead of a filepath, as long</span>
+<span class="sd">    # as the dict contains the keys FORMCHAR, TABLECHAR and FORM</span>
+<span class="sd">    # form = EvForm(form=form_dict)</span>
 
 <span class="sd">    # add data to each tagged form cell</span>
 <span class="sd">    form.map(cells={1: &quot;Tom the Bouncer&quot;,</span>
