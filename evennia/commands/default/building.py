@@ -984,8 +984,7 @@ class CmdDig(ObjManipCommand):
                 alias_string = ""
                 if new_back_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_back_exit.aliases.all())
-                exit_back_string = f"\nCreated Exit back from {new_room.name} to {location.name}: "
-                                    "{new_back_exit}({new_back_exit.dbref}){alias_string}."
+                exit_back_string = f"\nCreated Exit back from {new_room.name} to {location.name}: {new_back_exit}({new_back_exit.dbref}){alias_string}."
         caller.msg(f"{room_string}{exit_to_string}{exit_back_string}"
         if new_room and "teleport" in self.switches:
             caller.move_to(new_room, move_type="teleport")
