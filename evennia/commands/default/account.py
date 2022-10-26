@@ -169,7 +169,7 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
             # check if this Character already exists. Note that we are only
             # searching the base character typeclass here, not any child
             # classes.
-            self.msg("|rA character named '|w%s|r' already exists.|n" % key)
+            self.msg(f"|rA character named '|w{key}|r' already exists.|n")
             return
 
         # create the character
@@ -190,12 +190,10 @@ class CmdCharCreate(COMMAND_DEFAULT_CLASS):
         elif not new_character.db.desc:
             new_character.db.desc = "This is a character."
         self.msg(
-            "Created new character %s. Use |wic %s|n to enter the game as this character."
-            % (new_character.key, new_character.key)
+            f"Created new character {new_character.key}. Use |wic {new_character.key}|n to enter the game as this character."
         )
         logger.log_sec(
-            "Character Created: %s (Caller: %s, IP: %s)."
-            % (new_character, account, self.session.address)
+            f"Character Created: {new_character} (Caller: {account}, IP: {self.session.address})."
         )
 
 
@@ -248,10 +246,9 @@ class CmdCharDelete(COMMAND_DEFAULT_CLASS):
                         pc for pc in caller.db._playable_characters if pc != delobj
                     ]
                     delobj.delete()
-                    self.msg("Character '%s' was permanently deleted." % key)
+                    self.msg(f"Character '{key}' was permanently deleted.")
                     logger.log_sec(
-                        "Character Deleted: %s (Caller: %s, IP: %s)."
-                        % (key, account, self.session.address)
+                        f"Character Deleted: {key} (Caller: {account}, IP: {self.session.address})."
                     )
                 else:
                     self.msg("Deletion was aborted.")
@@ -372,14 +369,12 @@ class CmdIC(COMMAND_DEFAULT_CLASS):
             account.puppet_object(session, new_character)
             account.db._last_puppet = new_character
             logger.log_sec(
-                "Puppet Success: (Caller: %s, Target: %s, IP: %s)."
-                % (account, new_character, self.session.address)
+                f"Puppet Success: (Caller: {account}, Target: {new_character}, IP: {self.session.address})."
             )
         except RuntimeError as exc:
-            self.msg("|rYou cannot become |C%s|n: %s" % (new_character.name, exc))
+            self.msg(f"|rYou cannot become |C{new_character.name}|n: {exc}")
             logger.log_sec(
-                "Puppet Failed: %s (Caller: %s, Target: %s, IP: %s)."
-                % (exc, account, new_character, self.session.address)
+                f"Puppet Failed: %s (Caller: {account}, Target: {new_character}, IP: {self.session.address})."
             )
 
 
@@ -432,7 +427,7 @@ class CmdOOC(MuxAccountLookCommand):
             self.msg(account.at_look(target=self.playable, session=session))
 
         except RuntimeError as exc:
-            self.msg("|rCould not unpuppet from |c%s|n: %s" % (old_char, exc))
+            self.msg(f"|rCould not unpuppet from |c{old_char}|n: {exc}")
 
 
 class CmdSessions(COMMAND_DEFAULT_CLASS):
@@ -469,7 +464,7 @@ class CmdSessions(COMMAND_DEFAULT_CLASS):
                 char and str(char) or "None",
                 char and str(char.location) or "N/A",
             )
-            self.msg("|wYour current session(s):|n\n%s" % table)
+            self.msg(f"|wYour current session(s):|n\n{table}")
 
 
 class CmdWho(COMMAND_DEFAULT_CLASS):
@@ -640,7 +635,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     )
                     row.append("%s%s" % (saved, changed))
                 table.add_row(*row)
-            self.msg("|wClient settings (%s):|n\n%s|n" % (self.session.protocol_key, table))
+            self.msg(f"|wClient settings ({self.session.protocol_key}):|n\n{table}|n")
 
             return
 
@@ -655,7 +650,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             try:
                 codecs_lookup(new_encoding)
             except LookupError:
-                raise RuntimeError("The encoding '|w%s|n' is invalid. " % new_encoding)
+                raise RuntimeError(f"The encoding '|w{new_encoding}|n' is invalid. ")
             return val
 
         def validate_size(new_size):
@@ -670,16 +665,13 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 old_val = flags.get(new_name, False)
                 new_val = validator(new_val)
                 if old_val == new_val:
-                    self.msg("Option |w%s|n was kept as '|w%s|n'." % (new_name, old_val))
+                    self.msg(f"Option |w{new_name}|n was kept as '|w{old_val}|n'.")
                 else:
                     flags[new_name] = new_val
-                    self.msg(
-                        "Option |w%s|n was changed from '|w%s|n' to '|w%s|n'."
-                        % (new_name, old_val, new_val)
-                    )
+                    self.msg(f"Option |w{new_name}|n was changed from '|w{old_val}|n' to '|w{new_val}|n'.")
                 return {new_name: new_val}
             except Exception as err:
-                self.msg("|rCould not set option |w%s|r:|n %s" % (new_name, err))
+                self.msg(f"|rCould not set option |w{new_name}|r:|n {err}")
                 return False
 
         validators = {
@@ -719,12 +711,12 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                 saved_options.update(optiondict)
                 self.account.attributes.add("_saved_protocol_flags", saved_options)
                 for key in optiondict:
-                    self.msg("|gSaved option %s.|n" % key)
+                    self.msg(f"|gSaved option {key}.|n")
             if "clear" in self.switches:
                 # clear this save
                 for key in optiondict:
                     self.account.attributes.get("_saved_protocol_flags", {}).pop(key, None)
-                    self.msg("|gCleared saved %s." % key)
+                    self.msg(f"|gCleared saved {key}.")
             self.session.update_flags(**optiondict)
 
 
@@ -767,10 +759,7 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
             account.set_password(newpass)
             account.save()
             self.msg("Password changed.")
-            logger.log_sec(
-                "Password Changed: %s (Caller: %s, IP: %s)."
-                % (account, account, self.session.address)
-            )
+            logger.log_sec(f"Password Changed: {account} (Caller: {account}, IP: {self.session.address}).")
 
 
 class CmdQuit(COMMAND_DEFAULT_CLASS):
@@ -997,27 +986,27 @@ class CmdQuell(COMMAND_DEFAULT_CLASS):
         )
         if self.cmdstring in ("unquell", "unquell"):
             if not account.attributes.get("_quell"):
-                self.msg("Already using normal Account permissions %s." % permstr)
+                self.msg(f"Already using normal Account permissions {permstr}.")
             else:
                 account.attributes.remove("_quell")
-                self.msg("Account permissions %s restored." % permstr)
+                self.msg(f"Account permissions {permstr} restored.")
         else:
             if account.attributes.get("_quell"):
-                self.msg("Already quelling Account %s permissions." % permstr)
+                self.msg(f"Already quelling Account {permstr} permissions.")
                 return
             account.attributes.add("_quell", True)
             puppet = self.session.puppet if self.session else None
             if puppet:
                 cpermstr = "(%s)" % ", ".join(puppet.permissions.all())
-                cpermstr = "Quelling to current puppet's permissions %s." % cpermstr
+                cpermstr = f"Quelling to current puppet's permissions {cpermstr}."
                 cpermstr += (
-                    "\n(Note: If this is higher than Account permissions %s,"
-                    " the lowest of the two will be used.)" % permstr
+                    f"\n(Note: If this is higher than Account permissions {permstr},"
+                    " the lowest of the two will be used.)"
                 )
                 cpermstr += "\nUse unquell to return to normal permission usage."
                 self.msg(cpermstr)
             else:
-                self.msg("Quelling Account permissions%s. Use unquell to get them back." % permstr)
+                self.msg(f"Quelling Account permissions{permstr}. Use unquell to get them back.")
         self._recache_locks(account)
 
 
@@ -1058,4 +1047,4 @@ class CmdStyle(COMMAND_DEFAULT_CLASS):
         except ValueError as e:
             self.msg(str(e))
             return
-        self.msg("Style %s set to %s" % (self.lhs, result))
+        self.msg(f"Style {self.lhs} set to {result}")
