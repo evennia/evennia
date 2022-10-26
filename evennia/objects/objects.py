@@ -739,7 +739,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
                 char.location.msg_contents(
                     "{attacker} attacks {defender}.",
-                    mapping={"attacker:player1, "defender":player2})
+                    mapping={"attacker":player1, "defender":player2})
 
             - player1 will see: 'Player1 attacks The Second girl.'
             - player2 will see: 'The First girl attacks Player2'
@@ -1691,8 +1691,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             access_type (str): The type of access that was requested.
 
         Keyword Args:
-            Not used by default, added for possible expandability in a
-            game.
+            Unused by default, added for possible expandability in a game.
 
         """
         pass
