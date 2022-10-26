@@ -73,7 +73,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
         if _BROADCAST_SERVER_RESTART_MESSAGES:
-            SESSIONS.announce_all(" Server restart initiated %s..." % reason)
+            SESSIONS.announce_all(f" Server restart initiated {reason}...")
         SESSIONS.portal_restart_server()
 
 
@@ -135,7 +135,7 @@ class CmdShutdown(COMMAND_DEFAULT_CLASS):
         announcement = "\nServer is being SHUT DOWN!\n"
         if self.args:
             announcement += "%s\n" % self.args
-        logger.log_info("Server shutdown by %s." % self.caller.name)
+        logger.log_info(f"Server shutdown by {self.caller.name}.")
         SESSIONS.announce_all(announcement)
         SESSIONS.portal_shutdown()
 
@@ -482,13 +482,12 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
 
             # Boot the account then delete it.
             self.msg("Informing and disconnecting account ...")
-            string = "\nYour account '%s' is being *permanently* deleted.\n" % username
+            string = f"\nYour account '{username}' is being *permanently* deleted.\n"
             if reason:
                 string += " Reason given:\n  '%s'" % reason
             account.msg(string)
             logger.log_sec(
-                "Account Deleted: %s (Reason: %s, Caller: %s, IP: %s)."
-                % (account, reason, caller, self.session.address)
+                f"Account Deleted: {account} (Reason: {reason}, Caller: {caller}, IP: {self.session.address})."
             )
             account.delete()
             self.msg("Account %s was successfully deleted." % username)
@@ -519,8 +518,8 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
                 utils.datetime_format(ply.date_created), ply.dbref, ply.key, ply.path
             )
 
-        string = "\n|wAccount typeclass distribution:|n\n%s" % typetable
-        string += "\n|wLast %s Accounts created:|n\n%s" % (min(naccounts, nlim), latesttable)
+        string = f"\n|wAccount typeclass distribution:|n\n{typetable}"
+        string += f"\n|wLast {min(naccounts, nlim)} Accounts created:|n\n{latesttable}"
         caller.msg(string)
 
 
@@ -610,7 +609,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
             if delmode:
                 service.stopService()
                 service_collection.removeService(service)
-                caller.msg("|gStopped and removed service '%s'.|n" % self.args)
+                caller.msg(f"|gStopped and removed service '{self.args}'.|n")
             else:
                 caller.msg(f"Stopping service '{self.args}'...")
                 try:
@@ -621,7 +620,7 @@ class CmdService(COMMAND_DEFAULT_CLASS):
                         "If there are remaining problems, try reloading "
                         "or rebooting the server."
                     )
-                caller.msg("|g... Stopped service '%s'.|n" % self.args)
+                caller.msg(f"|g... Stopped service '{self.args}'.|n")
             return
 
         if switches[0] == "start":
