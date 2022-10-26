@@ -1,4 +1,4 @@
-# Custom gameime
+# Custom gametime
 
 Contrib by vlgeoff, 2017 - based on Griatch's core original
 
