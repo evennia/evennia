@@ -507,7 +507,7 @@ class CmdGive(COMMAND_DEFAULT_CLASS):
         to_give = caller.search(
             self.lhs,
             location=caller,
-            nofound_string=f"You aren't carrying {se;f.lhs}.",
+            nofound_string=f"You aren't carrying {self.lhs}.",
             multimatch_string=f"You carry more than one {self.lhs}:",
         )
         target = caller.search(self.rhs)
