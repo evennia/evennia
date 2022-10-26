@@ -763,7 +763,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         for receiver in contents:
 
             # actor-stance replacements
-            inmessage = _MSG_CONTENTS_PARSER.parse(
+            outmessage = _MSG_CONTENTS_PARSER.parse(
                 inmessage,
                 raise_errors=raise_funcparse_errors,
                 return_string=True,
@@ -773,7 +773,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             )
 
             # director-stance replacements
-            outmessage = inmessage.format_map(
+            outmessage = outmessage.format_map(
                 {
                     key: obj.get_display_name(looker=receiver)
                     if hasattr(obj, "get_display_name")
