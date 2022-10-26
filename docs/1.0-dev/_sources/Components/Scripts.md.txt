@@ -377,7 +377,7 @@ Here's how to tell Evennia to manage the script in settings:
 
 GLOBAL_SCRIPTS = {
     "my_script": {
-        "typeclass": "scripts.Weather",
+        "typeclass": "typeclasses.scripts.Weather",
         "repeats": -1,
         "interval": 50,
         "desc": "Weather script"

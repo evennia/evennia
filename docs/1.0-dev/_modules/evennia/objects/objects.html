@@ -765,13 +765,13 @@
 <span class="sd">            exclude (list, optional): A list of objects not to send to.</span>
 <span class="sd">            from_obj (Object, optional): An object designated as the</span>
 <span class="sd">                &quot;sender&quot; of the message. See `DefaultObject.msg()` for</span>
-<span class="sd">                more info.</span>
+<span class="sd">                more info. This will be used for `$You/you` if using funcparser inlines.</span>
 <span class="sd">            mapping (dict, optional): A mapping of formatting keys</span>
 <span class="sd">                `{&quot;key&quot;:&lt;object&gt;, &quot;key2&quot;:&lt;object2&gt;,...}.</span>
 <span class="sd">                The keys must either match `{key}` or `$You(key)/$you(key)` markers</span>
 <span class="sd">                in the `text` string. If `&lt;object&gt;` doesn&#39;t have a `get_display_name`</span>
-<span class="sd">                method, it will be returned as a string. If not set, a key `you` will</span>
-<span class="sd">                be auto-added to point to `from_obj` if given, otherwise to `self`.</span>
+<span class="sd">                method, it will be returned as a string. Pass &quot;you&quot; to represent the caller,</span>
+<span class="sd">                this can be skipped if `from_obj` is provided (that will then act as &#39;you&#39;).</span>
 <span class="sd">            raise_funcparse_errors (bool, optional): If set, a failing `$func()` will</span>
 <span class="sd">                lead to an outright error. If unset (default), the failing `$func()`</span>
 <span class="sd">                will instead appear in output unparsed.</span>
@@ -804,6 +804,7 @@
 
 <span class="sd">                char.location.msg_contents(</span>
 <span class="sd">                    &quot;$You() $conj(attack) $you(defender).&quot;,</span>
+<span class="sd">                    from_obj=player1,</span>
 <span class="sd">                    mapping={&quot;defender&quot;: player2})</span>
 
 <span class="sd">            - player1 will see `You attack The Second girl.`</span>

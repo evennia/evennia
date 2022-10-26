@@ -562,13 +562,13 @@ for that key for every recipient of the string.</p></li>
 <li><p><strong>exclude</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of objects not to send to.</p></li>
 <li><p><strong>from_obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – An object designated as the
 “sender” of the message. See <strong>DefaultObject.msg()</strong> for
-more info.</p></li>
+more info. This will be used for <strong>$You/you</strong> if using funcparser inlines.</p></li>
 <li><p><strong>mapping</strong> (<em>dict</em><em>, </em><em>optional</em>) – A mapping of formatting keys
 <strong>{“key”:&lt;object&gt;, “key2”:&lt;object2&gt;,…}.
 The keys must either match **{key}</strong> or <strong>$You(key)/$you(key)</strong> markers
 in the <strong>text</strong> string. If <strong>&lt;object&gt;</strong> doesn’t have a <strong>get_display_name</strong>
-method, it will be returned as a string. If not set, a key <strong>you</strong> will
-be auto-added to point to <strong>from_obj</strong> if given, otherwise to <strong>self</strong>.</p></li>
+method, it will be returned as a string. Pass “you” to represent the caller,
+this can be skipped if <strong>from_obj</strong> is provided (that will then act as ‘you’).</p></li>
 <li><p><strong>raise_funcparse_errors</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, a failing <strong>$func()</strong> will
 lead to an outright error. If unset (default), the failing <strong>$func()</strong>
 will instead appear in output unparsed.</p></li>
@@ -600,6 +600,7 @@ depending on who the recipient is.</p>
 <p>Actor-stance:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">char</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
     <span class="s2">&quot;$You() $conj(attack) $you(defender).&quot;</span><span class="p">,</span>
+    <span class="n">from_obj</span><span class="o">=</span><span class="n">player1</span><span class="p">,</span>
     <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;defender&quot;</span><span class="p">:</span> <span class="n">player2</span><span class="p">})</span>
 </pre></div>
 </div>
