@@ -2160,7 +2160,7 @@ class CmdTypeclass(COMMAND_DEFAULT_CLASS):
             self.switches.append("force")
 
         if "show" in self.switches or "examine" in self.switches:
-            caller.msg(f"{obj.name}'s current typeclass is {obj.__class__}")
+            caller.msg(f"{obj.name}'s current typeclass is '{obj.__class__}'")
             return
 
         if self.cmdstring in ("swap", "@swap"):
