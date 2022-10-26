@@ -689,13 +689,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             exclude (list, optional): A list of objects not to send to.
             from_obj (Object, optional): An object designated as the
                 "sender" of the message. See `DefaultObject.msg()` for
-                more info.
+                more info. This will be used for `$You/you` if using funcparser inlines.
             mapping (dict, optional): A mapping of formatting keys
                 `{"key":<object>, "key2":<object2>,...}.
                 The keys must either match `{key}` or `$You(key)/$you(key)` markers
                 in the `text` string. If `<object>` doesn't have a `get_display_name`
-                method, it will be returned as a string. If not set, a key `you` will
-                be auto-added to point to `from_obj` if given, otherwise to `self`.
+                method, it will be returned as a string. Pass "you" to represent the caller,
+                this can be skipped if `from_obj` is provided (that will then act as 'you').
             raise_funcparse_errors (bool, optional): If set, a failing `$func()` will
                 lead to an outright error. If unset (default), the failing `$func()`
                 will instead appear in output unparsed.
@@ -728,6 +728,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
                 char.location.msg_contents(
                     "$You() $conj(attack) $you(defender).",
+                    from_obj=player1,
                     mapping={"defender": player2})
 
             - player1 will see `You attack The Second girl.`
