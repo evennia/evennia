@@ -635,7 +635,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     )
                     row.append("%s%s" % (saved, changed))
                 table.add_row(*row)
-            self.msg(f"|wClient settings ({self.session.protocal_key}):|n\n{table}|n")
+            self.msg(f"|wClient settings ({self.session.protocol_key}):|n\n{table}|n")
 
             return
 
