@@ -24,8 +24,8 @@ from ast import literal_eval
 from collections import OrderedDict, defaultdict
 from inspect import getmembers, getmodule, getmro, ismodule, trace
 from os.path import join as osjoin
-from unicodedata import east_asian_width
 from string import punctuation
+from unicodedata import east_asian_width
 
 from django.apps import apps
 from django.conf import settings
@@ -404,7 +404,7 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
     if not iterable:
         return ""
     len_iter = len(iterable)
-    
+
     if addquote:
         iterable = tuple(f'"{val}"' for val in iterable)
     else:
@@ -420,7 +420,7 @@ def iter_to_str(iterable, sep=",", endsep=", and", addquote=False):
 
     # also add a leading space if separator is a word
     if sep not in punctuation:
-        sep = " "+sep
+        sep = " " + sep
 
     if len_iter == 1:
         return str(iterable[0])
@@ -2287,14 +2287,17 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
             )
 
         for num, result in enumerate(matches):
-            # we need to consider Commands, where .aliases is a list
-            aliases = result.aliases.all() if hasattr(result.aliases, "all") else result.aliases
-            # remove any pluralization aliases
-            aliases = [
-                alias
-                for alias in aliases
-                if hasattr(alias, "category") and alias.category not in ("plural_key",)
-            ]
+            # we need to consider that result could be a Command, where .aliases
+            # is a list of strings
+            if hasattr(result.aliases, "all"):
+                # result is a typeclassed entity where `.aliases` is an AliasHandler.
+                aliases = result.aliases.all(return_objs=True)
+                # remove pluralization aliases
+                aliases = [alias for alias in aliases if alias.category not in ("plural_key",)]
+            else:
+                # result is likely a Command, where `.aliases` is a list of strings.
+                aliases = result.aliases
+
             error += _MULTIMATCH_TEMPLATE.format(
                 number=num + 1,
                 name=result.get_display_name(caller)
