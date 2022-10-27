@@ -481,7 +481,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
         locktype = "edit" if accountmode else "control"
         if not obj.access(caller, locktype):
             accountstr = 'account' if accountmode else 'object'
-            caller.msg(f"You are not allowed to edit this {accountmode}'s permissions.")
+            caller.msg(f"You are not allowed to edit this {accountstr}'s permissions.")
             return
 
         caller_result = []
