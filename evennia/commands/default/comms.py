@@ -547,7 +547,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
         if message:
             channel.msg(message, senders=caller, bypass_mute=True)
         channel.delete()
-        logger.log_sec("fChannel {channel_key} was deleted by {caller}")
+        logger.log_sec(f"Channel {channel_key} was deleted by {caller}")
 
     def set_lock(self, channel, lockstring):
         """
