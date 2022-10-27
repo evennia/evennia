@@ -80,7 +80,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
                 return
             pobj = pobj[0]
             if not pobj.access(caller, "boot"):
-                caller.msg(f"You don't have the permission to boot {pobj.key,}.")
+                caller.msg(f"You don't have the permission to boot {pobj.key}.")
                 return
             # we have a bootable object with a connected user
             matches = SESSIONS.sessions_from_account(pobj)
@@ -97,7 +97,7 @@ class CmdBoot(COMMAND_DEFAULT_CLASS):
         if "quiet" not in self.switches:
             feedback = f"You have been disconnected by {caller.name}.\n"
             if reason:
-                feedback += "f\nReason given: {reason}"
+                feedback += f"\nReason given: {reason}"
 
         for session in boot_list:
             session.msg(feedback)
@@ -462,7 +462,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                 caller.msg("You are not allowed to examine this object.")
                 return
 
-            string = f"Permissions on |{obj.key}s|n: "
+            string = f"Permissions on |{obj.key}|n: "
             if not obj.permissions.all():
                 string += "<None>"
             else:
@@ -480,9 +480,8 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
         # we supplied an argument on the form obj = perm
         locktype = "edit" if accountmode else "control"
         if not obj.access(caller, locktype):
-            caller.msg(
-                f"You are not allowed to edit this {'account' if accountmode else 'object'}'s permissions."
-            )
+            accountstr = 'account' if accountmode else 'object'
+            caller.msg(f"You are not allowed to edit this {accountmode}'s permissions.")
             return
 
         caller_result = []
