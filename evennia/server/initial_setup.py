@@ -110,7 +110,7 @@ def create_objects():
         "examine:perm(Developer);edit:false();delete:false();boot:false();msg:all();puppet:false()"
     )
     # we set this low so that quelling is more useful
-    superuser_character.permissions.add("Player")
+    superuser_character.permissions.add("Developer")
     superuser_character.save()
 
     superuser.attributes.add("_first_login", True)
