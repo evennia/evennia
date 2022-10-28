@@ -962,7 +962,7 @@ class CmdSetHelp(CmdHelp):
         if "append" in switches or "merge" in switches or "extend" in switches:
             # merge/append operations
             if not old_entry:
-                self.msg("Could not find topic '%s'. You must give an exact name." % topicstr)
+                self.msg(f"Could not find topic '{topicstr}'. You must give an exact name.")
                 return
             if not self.rhs:
                 self.msg("You must supply text to append/merge.")
@@ -972,16 +972,16 @@ class CmdSetHelp(CmdHelp):
             else:
                 old_entry.entrytext += "\n%s" % self.rhs
             old_entry.aliases.add(aliases)
-            self.msg("Entry updated:\n%s%s" % (old_entry.entrytext, aliastxt))
+            self.msg(f"Entry updated:\n{old_entry.entrytext}{aliastxt}")
             return
 
         if "delete" in switches or "del" in switches:
             # delete the help entry
             if not old_entry:
-                self.msg("Could not find topic '%s'%s." % (topicstr, aliastxt))
+                self.msg(f"Could not find topic '{topicstr}'{aliastxt}.")
                 return
             old_entry.delete()
-            self.msg("Deleted help entry '%s'%s." % (topicstr, aliastxt))
+            self.msg(f"Deleted help entry '{topicstr}'{aliastxt}.")
             return
 
         # at this point it means we want to add a new help entry.
@@ -998,7 +998,7 @@ class CmdSetHelp(CmdHelp):
                 old_entry.locks.add(lockstring)
                 old_entry.aliases.add(aliases)
                 old_entry.save()
-                self.msg("Overwrote the old topic '%s'%s." % (topicstr, aliastxt))
+                self.msg(f"Overwrote the old topic '{topicstr}'{aliastxt}.")
             else:
                 self.msg(
                     f"Topic '{topicstr}'{aliastxt} already exists. Use /edit to open in editor, or "

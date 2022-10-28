@@ -3,19 +3,20 @@ Unit tests for the prototypes and spawner
 
 """
 
-from random import randint, sample
-import mock
 import uuid
+from random import randint, sample
 from time import time
+
+import mock
 from anything import Something
 from django.test.utils import override_settings
+from evennia.prototypes import menus as olc_menus
+from evennia.prototypes import protfuncs as protofuncs
+from evennia.prototypes import prototypes as protlib
+from evennia.prototypes import spawner
+from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils.tests.test_evmenu import TestEvMenu
-from evennia.prototypes import spawner, prototypes as protlib
-from evennia.prototypes import menus as olc_menus
-from evennia.prototypes import protfuncs as protofuncs, spawner
-
-from evennia.prototypes.prototypes import _PROTOTYPE_TAG_META_CATEGORY
 
 _PROTPARENTS = {
     "NOBODY": {},
@@ -42,6 +43,11 @@ _PROTPARENTS = {
     "GOBLIN_ARCHWIZARD": {
         "key": "goblin archwizard",
         "prototype_parent": ("GOBLIN_WIZARD", "ARCHWIZARD"),
+    },
+    "ISSUE2908": {
+        "typeclass": "evennia.objects.objects.DefaultObject",
+        "key": "testobject_isse2909",
+        "location": "$choice($objlist(",
     },
 }
 
@@ -163,10 +169,12 @@ class TestUtils(BaseEvenniaTest):
                 "key": "Obj",
                 "home": Something,
                 "location": Something,
-                "locks": "call:true();control:perm(Developer);delete:perm(Admin);"
-                "drop:holds();"
-                "edit:perm(Admin);examine:perm(Builder);get:all();"
-                "puppet:pperm(Developer);tell:perm(Admin);view:all()",
+                "locks": (
+                    "call:true();control:perm(Developer);delete:perm(Admin);"
+                    "drop:holds();"
+                    "edit:perm(Admin);examine:perm(Builder);get:all();"
+                    "puppet:pperm(Developer);tell:perm(Admin);view:all()"
+                ),
                 "prototype_desc": "Built from Obj",
                 "prototype_key": Something,
                 "prototype_locks": "spawn:all();edit:all()",
@@ -183,10 +191,12 @@ class TestUtils(BaseEvenniaTest):
                 "home": Something,
                 "key": "Obj",
                 "location": Something,
-                "locks": "call:true();control:perm(Developer);delete:perm(Admin);"
-                "drop:holds();"
-                "edit:perm(Admin);examine:perm(Builder);get:all();"
-                "puppet:pperm(Developer);tell:perm(Admin);view:all()",
+                "locks": (
+                    "call:true();control:perm(Developer);delete:perm(Admin);"
+                    "drop:holds();"
+                    "edit:perm(Admin);examine:perm(Builder);get:all();"
+                    "puppet:pperm(Developer);tell:perm(Admin);view:all()"
+                ),
                 "new": "new_val",
                 "permissions": ["Builder"],
                 "prototype_desc": "New version of prototype",
@@ -962,3 +972,24 @@ class TestPartialTagAttributes(BaseEvenniaTest):
     def test_partial_spawn(self):
         obj = spawner.spawn(self.prot)
         self.assertEqual(obj[0].key, self.prot["key"])
+
+
+class TestIssue2908(BaseEvenniaTest):
+    """
+    Test spawning a prototype with a nested protfunc, as per issue #2908.
+
+    """
+
+    def test_spawn_with_protfunc(self):
+
+        self.room1.tags.add("beach", category="zone")
+
+        prot = {
+            "prototype_key": "rock",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "key": "a rock",
+            "location": "$choice($objlist(beach,category=zone,type=tag))",
+        }
+
+        obj = spawner.spawn(prot, caller=self.char1)
+        self.assertEqual(obj[0].location, self.room1)

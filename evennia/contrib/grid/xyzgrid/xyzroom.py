@@ -7,9 +7,10 @@ used as stand-alone XYZ-coordinate-aware rooms.
 
 """
 
+from django.conf import settings
 from django.db.models import Q
-from evennia.objects.objects import DefaultRoom, DefaultExit
 from evennia.objects.manager import ObjectManager
+from evennia.objects.objects import DefaultExit, DefaultRoom
 
 # name of all tag categories. Note that the Z-coordinate is
 # the `map_name` of the XYZgrid
@@ -22,6 +23,8 @@ MAP_YDEST_TAG_CATEGORY = "exit_dest_y_coordinate"
 MAP_ZDEST_TAG_CATEGORY = "exit_dest_z_coordinate"
 
 GET_XYZGRID = None
+
+CLIENT_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
 
 class XYZManager(ObjectManager):
@@ -229,7 +232,7 @@ class XYZExitManager(XYZManager):
                 f"{key}={val}" for key, val in kwargs.items()
             )
             raise self.model.DoesNotExist(
-                f"{self.model.__name__} " f"matching query {inp} does not exist."
+                f"{self.model.__name__} matching query {inp} does not exist."
             )
 
 
@@ -458,7 +461,8 @@ class XYZRoom(DefaultRoom):
                 xymap.options.get("map_separator_char", self.map_separator_char),
             )
 
-            client_width, _ = looker.sessions.get()[0].get_client_size()
+            sessions = looker.sessions.get()
+            client_width, _ = sessions[0].get_client_size() if sessions else CLIENT_DEFAULT_WIDTH
 
             map_width = xymap.max_x
 

@@ -230,12 +230,12 @@ displaying them differently. See next section.
 As pointed out earlier, the `@time` command is meant to be used with a standard calendar, not a
 custom one.  We can easily create a new command though.  We'll call it `time`, as is often the case
 on other MU*.  Here's an example of how we could write it (for the example, you can create a file
-`showtime.py` in your `commands` directory and paste this code in it):
+`gametime.py` in your `commands` directory and paste this code in it):
 
 ```python
 # in a file mygame/commands/gametime.py
 
-from evennia.contrib import custom_gametime
+from evennia.contrib.base_systems import custom_gametime
 
 from commands.command import Command
 
