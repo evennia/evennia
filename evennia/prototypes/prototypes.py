@@ -7,29 +7,29 @@ Handling storage of prototypes, both database-based ones (DBPrototypes) and thos
 
 import hashlib
 import time
+
 from django.conf import settings
-from django.db.models import Q
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.utils.translation import gettext as _
-from evennia.scripts.scripts import DefaultScript
+from evennia.locks.lockhandler import check_lockstring, validate_lockstring
 from evennia.objects.models import ObjectDB
+from evennia.scripts.scripts import DefaultScript
 from evennia.typeclasses.attributes import Attribute
+from evennia.utils import dbserialize, logger
 from evennia.utils.create import create_script
 from evennia.utils.evmore import EvMore
+from evennia.utils.evtable import EvTable
+from evennia.utils.funcparser import FuncParser
 from evennia.utils.utils import (
     all_from_module,
-    variable_from_module,
-    make_iter,
-    is_iter,
-    dbid_to_obj,
-    justify,
     class_from_module,
+    dbid_to_obj,
+    is_iter,
+    justify,
+    make_iter,
+    variable_from_module,
 )
-from evennia.locks.lockhandler import validate_lockstring, check_lockstring
-from evennia.utils import logger
-from evennia.utils.funcparser import FuncParser
-from evennia.utils import dbserialize
-from evennia.utils.evtable import EvTable
 
 _MODULE_PROTOTYPE_MODULES = {}
 _MODULE_PROTOTYPES = {}
@@ -925,7 +925,13 @@ def validate_prototype(
 
 
 def protfunc_parser(
-    value, available_functions=None, testing=False, stacktrace=False, caller=None, **kwargs
+    value,
+    available_functions=None,
+    testing=False,
+    stacktrace=False,
+    caller=None,
+    raise_errors=True,
+    **kwargs,
 ):
     """
     Parse a prototype value string for a protfunc and process it.
@@ -939,6 +945,7 @@ def protfunc_parser(
         available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
             If not set, use default sources.
         stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
+        raise_errors (bool, optional): Raise explicit errors from malformed/not found protfunc calls.
 
     Keyword Args:
         session (Session): Passed to protfunc. Session of the entity spawning the prototype.
@@ -957,7 +964,7 @@ def protfunc_parser(
     if not isinstance(value, str):
         return value
 
-    result = FUNC_PARSER.parse_to_any(value, raise_errors=True, caller=caller, **kwargs)
+    result = FUNC_PARSER.parse_to_any(value, raise_errors=raise_errors, caller=caller, **kwargs)
 
     return result
 
@@ -1100,7 +1107,9 @@ def check_permission(prototype_key, action, default=True):
     return default
 
 
-def init_spawn_value(value, validator=None, caller=None, prototype=None):
+def init_spawn_value(
+    value, validator=None, caller=None, prototype=None, protfunc_raise_errors=True
+):
     """
     Analyze the prototype value and produce a value useful at the point of spawning.
 
@@ -1128,7 +1137,9 @@ def init_spawn_value(value, validator=None, caller=None, prototype=None):
         value = validator(value[0](*make_iter(args)))
     else:
         value = validator(value)
-    result = protfunc_parser(value, caller=caller, prototype=prototype)
+    result = protfunc_parser(
+        value, caller=caller, prototype=prototype, raise_errors=protfunc_raise_errors
+    )
     if result != value:
         return validator(result)
     return result

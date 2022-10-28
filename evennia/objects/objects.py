@@ -689,13 +689,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             exclude (list, optional): A list of objects not to send to.
             from_obj (Object, optional): An object designated as the
                 "sender" of the message. See `DefaultObject.msg()` for
-                more info.
+                more info. This will be used for `$You/you` if using funcparser inlines.
             mapping (dict, optional): A mapping of formatting keys
                 `{"key":<object>, "key2":<object2>,...}.
                 The keys must either match `{key}` or `$You(key)/$you(key)` markers
                 in the `text` string. If `<object>` doesn't have a `get_display_name`
-                method, it will be returned as a string. If not set, a key `you` will
-                be auto-added to point to `from_obj` if given, otherwise to `self`.
+                method, it will be returned as a string. Pass "you" to represent the caller,
+                this can be skipped if `from_obj` is provided (that will then act as 'you').
             raise_funcparse_errors (bool, optional): If set, a failing `$func()` will
                 lead to an outright error. If unset (default), the failing `$func()`
                 will instead appear in output unparsed.
@@ -728,6 +728,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
                 char.location.msg_contents(
                     "$You() $conj(attack) $you(defender).",
+                    from_obj=player1,
                     mapping={"defender": player2})
 
             - player1 will see `You attack The Second girl.`
@@ -738,7 +739,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
                 char.location.msg_contents(
                     "{attacker} attacks {defender}.",
-                    mapping={"attacker:player1, "defender":player2})
+                    mapping={"attacker":player1, "defender":player2})
 
             - player1 will see: 'Player1 attacks The Second girl.'
             - player2 will see: 'The First girl attacks Player2'
@@ -762,7 +763,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         for receiver in contents:
 
             # actor-stance replacements
-            inmessage = _MSG_CONTENTS_PARSER.parse(
+            outmessage = _MSG_CONTENTS_PARSER.parse(
                 inmessage,
                 raise_errors=raise_funcparse_errors,
                 return_string=True,
@@ -772,7 +773,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             )
 
             # director-stance replacements
-            outmessage = inmessage.format_map(
+            outmessage = outmessage.format_map(
                 {
                     key: obj.get_display_name(looker=receiver)
                     if hasattr(obj, "get_display_name")
@@ -1690,8 +1691,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             access_type (str): The type of access that was requested.
 
         Keyword Args:
-            Not used by default, added for possible expandability in a
-            game.
+            Unused by default, added for possible expandability in a game.
 
         """
         pass
@@ -3133,3 +3133,20 @@ class DefaultExit(DefaultObject):
 
         """
         traversing_object.msg(_("You cannot go there."))
+
+    def get_return_exit(self, return_all=False):
+        """
+        Get the exits that pair with this one in its destination room
+        (i.e. returns to its location)
+
+        Args:
+            return_all (bool): Whether to return available results as a
+                               list or single matching exit.
+
+        Returns:
+            queryset or exit (Exit): The matching exit(s).
+        """
+        query = ObjectDB.objects.filter(db_location=self.destination, db_destination=self.location)
+        if return_all:
+            return query
+        return query.first()

@@ -5,12 +5,13 @@ all Attributes and TypedObjects).
 
 """
 import shlex
-from django.db.models import F, Q, Count, ExpressionWrapper, FloatField
+
+from django.db.models import Count, ExpressionWrapper, F, FloatField, Q
 from django.db.models.functions import Cast
-from evennia.utils import idmapper
-from evennia.utils.utils import make_iter, variable_from_module
 from evennia.typeclasses.attributes import Attribute
 from evennia.typeclasses.tags import Tag
+from evennia.utils import idmapper
+from evennia.utils.utils import class_from_module, make_iter, variable_from_module
 
 __all__ = ("TypedObjectManager",)
 _GA = object.__getattribute__
@@ -196,6 +197,8 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 query.append(("db_key", key))
             if category:
                 query.append(("db_category", category))
+            else:
+                query.append(("db_category", None))
             return _Tag.objects.filter(**dict(query))
         else:
             # search only among tags stored on on this model
@@ -537,15 +540,14 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
     def typeclass_search(self, typeclass, include_children=False, include_parents=False):
         """
-        Searches through all objects returning those which has a
-        certain typeclass. If location is set, limit search to objects
-        in that location.
+        Searches through all objects returning those which are of the
+        specified typeclass.
 
         Args:
             typeclass (str or class): A typeclass class or a python path to a typeclass.
             include_children (bool, optional): Return objects with
                 given typeclass *and* all children inheriting from this
-                typeclass. Mutuall exclusive to `include_parents`.
+                typeclass. Mutually exclusive to `include_parents`.
             include_parents (bool, optional): Return objects with
                 given typeclass *and* all parents to this typeclass.
                 Mutually exclusive to `include_children`.
@@ -553,35 +555,28 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
         Returns:
             objects (list): The objects found with the given typeclasses.
 
+        Raises:
+            ImportError: If the provided `typeclass` is not a valid typeclass or the
+                path to an existing typeclass.
+
         """
-
-        if callable(typeclass):
-            cls = typeclass.__class__
-            typeclass = "%s.%s" % (cls.__module__, cls.__name__)
-        elif not isinstance(typeclass, str) and hasattr(typeclass, "path"):
-            typeclass = typeclass.path
-
-        # query objects of exact typeclass
-        query = Q(db_typeclass_path__exact=typeclass)
+        if not callable(typeclass):
+            typeclass = class_from_module(typeclass)
 
         if include_children:
-            # build requests for child typeclass objects
-            clsmodule, clsname = typeclass.rsplit(".", 1)
-            cls = variable_from_module(clsmodule, clsname)
-            subclasses = cls.__subclasses__()
-            if subclasses:
-                for child in (child for child in subclasses if hasattr(child, "path")):
-                    query = query | Q(db_typeclass_path__exact=child.path)
-        elif include_parents:
-            # build requests for parent typeclass objects
-            clsmodule, clsname = typeclass.rsplit(".", 1)
-            cls = variable_from_module(clsmodule, clsname)
-            parents = cls.__mro__
+            query = typeclass.objects.all_family()
+        else:
+            query = typeclass.objects.all()
+
+        if include_parents:
+            parents = typeclass.__mro__
             if parents:
+                parent_queries = []
                 for parent in (parent for parent in parents if hasattr(parent, "path")):
-                    query = query | Q(db_typeclass_path__exact=parent.path)
-        # actually query the database
-        return super().filter(query)
+                    parent_queries.append(super().filter(db_typeclass_path__exact=parent.path))
+                query = query.union(*parent_queries)
+
+        return query
 
 
 class TypeclassManager(TypedObjectManager):

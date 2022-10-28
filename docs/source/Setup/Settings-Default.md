@@ -172,7 +172,8 @@ HTTP_LOG_FILE = os.path.join(LOG_DIR, "http_requests.log")
 LOCKWARNING_LOG_FILE = os.path.join(LOG_DIR, "lockwarnings.log")
 # Number of lines to append to rotating channel logs when they rotate
 CHANNEL_LOG_NUM_TAIL_LINES = 20
-# Max size (in bytes) of channel log files before they rotate
+# Max size (in bytes) of channel log files before they rotate.
+# Minimum is 1000 (1kB) but should usually be larger.
 CHANNEL_LOG_ROTATE_SIZE = 1000000
 # Unused by default, but used by e.g. the MapSystem contrib. A place for storing
 # semi-permanent data and avoid it being rebuilt over and over. It is created
@@ -605,7 +606,7 @@ OPTIONS_ACCOUNT_DEFAULT = {
     "column_names_color": ("Table column header text.", "Color", "w"),
     "help_category_color": ("Help category names.", "Color", "n"),
     "help_entry_color": ("Help entry names.", "Color", "n"),
-    "timezone": ("Timezone for dates. @tz for a list.", "Timezone", "UTC"),
+    "timezone": ("Timezone for dates.", "Timezone", "UTC"),
 }
 # Modules holding Option classes, responsible for serializing the option and
 # calling validator functions on it. Same-named functions in modules added
