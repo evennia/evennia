@@ -14,12 +14,6 @@ class GoodScript(DefaultScript):
 class InvalidScript:
     pass
 
-class BrokenScript(DefaultScript):
-    """objects will fail upon call"""
-    @property
-    def objects(self):
-        from evennia import module_that_doesnt_exist
-
 class TestGlobalScriptContainer(unittest.TestCase):
 
     def test_init_with_no_scripts(self):
@@ -69,18 +63,20 @@ class TestGlobalScriptContainer(unittest.TestCase):
 
     @override_settings(GLOBAL_SCRIPTS={'script_name': {'typeclass': 'evennia.utils.tests.test_containers.InvalidScript'}})
     def test_start_with_invalid_script(self):
-        """Script class doesn't implement required start methods"""
+        """Script class doesn't implement required methods methods"""
         gsc = containers.GlobalScriptContainer()
 
-        with self.assertRaises(Exception) as cm:
-                gsc.start()
-                self.fail("An exception was expected but it didn't occur.")
+        with self.assertRaises(AttributeError) as err: 
+            gsc.start()
+        # check for general attribute failure on the invalid class to preserve against future code-rder changes
+        self.assertTrue(str(err.exception).startswith("type object 'InvalidScript' has no attribute"), err.exception)
 
-    @override_settings(GLOBAL_SCRIPTS={'script_name': {'typeclass': 'evennia.utils.tests.test_containers.BrokenScript'}})
+    @override_settings(GLOBAL_SCRIPTS={'script_name': {'typeclass': 'evennia.utils.tests.data.broken_script.BrokenScript'}})
     def test_start_with_broken_script(self):
         """Un-importable script should traceback"""
         gsc = containers.GlobalScriptContainer()
 
-        with self.assertRaises(Exception) as cm:
-                gsc.start()
-                self.fail("An exception was expected but it didn't occur.")
+        with self.assertRaises(Exception) as err: 
+            gsc.start()
+        # exception raised by imported module
+        self.assertTrue(str(err.exception).startswith("cannot import name 'nonexistent_module' from 'evennia'"), err.exception)
