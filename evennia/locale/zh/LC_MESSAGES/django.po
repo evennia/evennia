@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-02 09:28+0000\n"
+"POT-Creation-Date: 2022-10-29 18:53+0000\n"
 "PO-Revision-Date: 2019-05-03 17:04+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -27,64 +27,64 @@ msgid ""
 "You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})"
 msgstr ""
 
-#: accounts/accounts.py:552
+#: accounts/accounts.py:555
 msgid "Too many login failures; please try again in a few minutes."
 msgstr ""
 
-#: accounts/accounts.py:565 accounts/accounts.py:829
+#: accounts/accounts.py:568 accounts/accounts.py:832
 msgid ""
 "|rYou have been banned and cannot continue from here.\n"
 "If you feel this ban is in error, please email an admin.|x"
 msgstr ""
 
-#: accounts/accounts.py:577
+#: accounts/accounts.py:580
 msgid "Username and/or password is incorrect."
 msgstr ""
 
-#: accounts/accounts.py:584
+#: accounts/accounts.py:587
 msgid "Too many authentication failures."
 msgstr ""
 
-#: accounts/accounts.py:800
+#: accounts/accounts.py:803
 msgid ""
 "You are creating too many accounts. Please log into an existing account."
 msgstr ""
 
-#: accounts/accounts.py:846
+#: accounts/accounts.py:849
 msgid ""
 "There was an error creating the Account. If this problem persists, contact "
 "an admin."
 msgstr ""
 
-#: accounts/accounts.py:882 accounts/accounts.py:1798
+#: accounts/accounts.py:885 accounts/accounts.py:1801
 msgid "An error occurred. Please e-mail an admin if the problem persists."
 msgstr ""
 
-#: accounts/accounts.py:915
+#: accounts/accounts.py:918
 msgid "Account being deleted."
 msgstr "用户已删除。"
 
-#: accounts/accounts.py:1472 accounts/accounts.py:1816
+#: accounts/accounts.py:1475 accounts/accounts.py:1819
 #, python-brace-format
 msgid "|G{key} connected|n"
 msgstr ""
 
-#: accounts/accounts.py:1478
+#: accounts/accounts.py:1481
 #, fuzzy
 #| msgid "The destination doesn't exist."
 msgid "The Character does not exist."
 msgstr "目的地不存在。"
 
-#: accounts/accounts.py:1517
+#: accounts/accounts.py:1520
 #, python-brace-format
 msgid "|R{key} disconnected{reason}|n"
 msgstr ""
 
-#: accounts/accounts.py:1751
+#: accounts/accounts.py:1754
 msgid "Guest accounts are not enabled on this server."
 msgstr ""
 
-#: accounts/accounts.py:1761
+#: accounts/accounts.py:1764
 msgid "All guest accounts are in use. Please try again later."
 msgstr ""
 
@@ -318,96 +318,96 @@ msgstr "Lock: '{lockdef}' 英文括号不匹配。"
 msgid "Lock: '{lockdef}' has no valid lock functions."
 msgstr "Lock: '{lockdef}' 缺少合法Lock函数。"
 
-#: objects/objects.py:855
+#: objects/objects.py:856
 #, fuzzy, python-brace-format
 #| msgid "Couldn't perform move ('%s'). Contact an admin."
 msgid "Couldn't perform move ({err}). Contact an admin."
 msgstr "无法做出行动 （'%s'）。请联系管理员。"
 
-#: objects/objects.py:865
+#: objects/objects.py:866
 msgid "The destination doesn't exist."
 msgstr "目的地不存在。"
 
-#: objects/objects.py:977
+#: objects/objects.py:978
 #, fuzzy, python-brace-format
 #| msgid "Could not find default home '(#%d)'."
 msgid "Could not find default home '(#{dbid})'."
 msgstr "无法定位默认寓所 '(#%d)' 。"
 
-#: objects/objects.py:991
+#: objects/objects.py:992
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
 msgstr "出现错误！您进入了错误的地点。请联系管理员。"
 
-#: objects/objects.py:1144
+#: objects/objects.py:1145
 #, fuzzy, python-brace-format
 #| msgid "Your character %s has been destroyed."
 msgid "Your character {key} has been destroyed."
 msgstr "您的角色 %s 被摧毁了。"
 
-#: objects/objects.py:1852
+#: objects/objects.py:1853
 #, python-brace-format
 msgid "You now have {name} in your possession."
 msgstr ""
 
-#: objects/objects.py:1862
+#: objects/objects.py:1863
 #, python-brace-format
 msgid "{object} arrives to {destination} from {origin}."
 msgstr ""
 
-#: objects/objects.py:1864
+#: objects/objects.py:1865
 #, python-brace-format
 msgid "{object} arrives to {destination}."
 msgstr ""
 
-#: objects/objects.py:2529
+#: objects/objects.py:2530
 msgid "Invalid character name."
 msgstr ""
 
-#: objects/objects.py:2548
+#: objects/objects.py:2549
 msgid "There are too many characters associated with this account."
 msgstr ""
 
-#: objects/objects.py:2574
+#: objects/objects.py:2575
 #, fuzzy
 #| msgid "This is User #1."
 msgid "This is a character."
 msgstr "这是管理员。"
 
-#: objects/objects.py:2663
+#: objects/objects.py:2664
 #, python-brace-format
 msgid "|r{obj} has no location and no home is set.|n"
 msgstr ""
 
-#: objects/objects.py:2681
+#: objects/objects.py:2682
 #, python-brace-format
 msgid ""
 "\n"
 "You become |c{name}|n.\n"
 msgstr ""
 
-#: objects/objects.py:2686
+#: objects/objects.py:2687
 #, python-brace-format
 msgid "{name} has entered the game."
 msgstr ""
 
-#: objects/objects.py:2712
+#: objects/objects.py:2716
 #, python-brace-format
-msgid "{name} has left the game."
+msgid "{name} has left the game{reason}."
 msgstr ""
 
-#: objects/objects.py:2831
+#: objects/objects.py:2838
 #, fuzzy
 #| msgid "This is User #1."
 msgid "This is a room."
 msgstr "这是管理员。"
 
-#: objects/objects.py:3038
+#: objects/objects.py:3045
 #, fuzzy
 #| msgid "This is User #1."
 msgid "This is an exit."
 msgstr "这是管理员。"
 
-#: objects/objects.py:3135
+#: objects/objects.py:3142
 msgid "You cannot go there."
 msgstr ""
 
@@ -419,83 +419,83 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: prototypes/prototypes.py:390
+#: prototypes/prototypes.py:389
 msgid "Prototype requires a prototype_key"
 msgstr ""
 
-#: prototypes/prototypes.py:398 prototypes/prototypes.py:467
-#: prototypes/prototypes.py:1087
+#: prototypes/prototypes.py:397 prototypes/prototypes.py:466
+#: prototypes/prototypes.py:1092
 #, python-brace-format
 msgid "{protkey} is a read-only prototype (defined as code in {module})."
 msgstr ""
 
-#: prototypes/prototypes.py:400 prototypes/prototypes.py:469
-#: prototypes/prototypes.py:1089
+#: prototypes/prototypes.py:399 prototypes/prototypes.py:468
+#: prototypes/prototypes.py:1094
 #, python-brace-format
 msgid "{protkey} is a read-only prototype (passed directly as a dict)."
 msgstr ""
 
-#: prototypes/prototypes.py:476
+#: prototypes/prototypes.py:475
 #, python-brace-format
 msgid "Prototype {prototype_key} was not found."
 msgstr ""
 
-#: prototypes/prototypes.py:484
+#: prototypes/prototypes.py:483
 #, python-brace-format
 msgid ""
 "{caller} needs explicit 'edit' permissions to delete prototype "
 "{prototype_key}."
 msgstr ""
 
-#: prototypes/prototypes.py:606
+#: prototypes/prototypes.py:605
 #, python-brace-format
 msgid "Found {num} matching prototypes among {module_prototypes}."
 msgstr ""
 
-#: prototypes/prototypes.py:766
+#: prototypes/prototypes.py:765
 msgid "No prototypes found."
 msgstr ""
 
-#: prototypes/prototypes.py:817
+#: prototypes/prototypes.py:816
 msgid "Prototype lacks a 'prototype_key'."
 msgstr ""
 
-#: prototypes/prototypes.py:826
+#: prototypes/prototypes.py:825
 #, python-brace-format
 msgid "Prototype {protkey} requires `typeclass` or 'prototype_parent'."
 msgstr ""
 
-#: prototypes/prototypes.py:833
+#: prototypes/prototypes.py:832
 #, python-brace-format
 msgid ""
 "Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' "
 "or 'prototype_parent' keys."
 msgstr ""
 
-#: prototypes/prototypes.py:844
+#: prototypes/prototypes.py:843
 #, python-brace-format
 msgid ""
 "{err}: Prototype {protkey} is based on typeclass {typeclass}, which could "
 "not be imported!"
 msgstr ""
 
-#: prototypes/prototypes.py:863
+#: prototypes/prototypes.py:862
 #, python-brace-format
 msgid "Prototype {protkey} tries to parent itself."
 msgstr ""
 
-#: prototypes/prototypes.py:869
+#: prototypes/prototypes.py:868
 #, python-brace-format
 msgid ""
 "Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
 msgstr ""
 
-#: prototypes/prototypes.py:877
+#: prototypes/prototypes.py:875
 #, python-brace-format
 msgid "{protkey} has infinite nesting of prototypes."
 msgstr ""
 
-#: prototypes/prototypes.py:902
+#: prototypes/prototypes.py:900
 #, python-brace-format
 msgid ""
 "Prototype {protkey} has no `typeclass` defined anywhere in its parent\n"
@@ -503,7 +503,7 @@ msgid ""
 "with a typeclass."
 msgstr ""
 
-#: prototypes/spawner.py:497
+#: prototypes/spawner.py:495
 #, python-brace-format
 msgid ""
 "Diff contains non-dicts that are not on the form (old, new, action_to_take): "
@@ -575,9 +575,13 @@ msgid ""
 "seconds ..."
 msgstr ""
 
-#: server/server.py:157
+#: server/server.py:156
 msgid "idle timeout exceeded"
 msgstr "连接超时"
+
+#: server/server.py:177
+msgid " (connection lost)"
+msgstr ""
 
 #: server/sessionhandler.py:41
 msgid "Your client sent an incorrect UTF-8 sequence."
@@ -1029,27 +1033,27 @@ msgstr "发现多个匹配项。"
 msgid "Please be more specific."
 msgstr ""
 
-#: utils/utils.py:2121
+#: utils/utils.py:2127
 #, python-brace-format
 msgid ""
 "{obj}.{handlername} is a handler and can't be set directly. To add values, "
 "use `{obj}.{handlername}.add()` instead."
 msgstr ""
 
-#: utils/utils.py:2131
+#: utils/utils.py:2137
 #, python-brace-format
 msgid ""
 "{obj}.{handlername} is a handler and can't be deleted directly. To remove "
 "values, use `{obj}.{handlername}.remove()` instead."
 msgstr ""
 
-#: utils/utils.py:2272
+#: utils/utils.py:2278
 #, fuzzy, python-brace-format
 #| msgid "Could not find '%s'."
 msgid "Could not find '{query}'."
 msgstr "无法找到 '%s'"
 
-#: utils/utils.py:2279
+#: utils/utils.py:2285
 #, fuzzy, python-brace-format
 #| msgid "More than one match for '%s' (please narrow target):\n"
 msgid "More than one match for '{query}' (please narrow target):\n"

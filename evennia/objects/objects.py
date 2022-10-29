@@ -1644,14 +1644,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         pass
 
-    def at_post_unpuppet(self, account, session=None, **kwargs):
+    def at_post_unpuppet(self, account=None, session=None, **kwargs):
         """
         Called just after the Account successfully disconnected from
         this object, severing all connections.
 
         Args:
             account (Account): The account object that just disconnected
-                from this object.
+                from this object. This can be `None` if this is called
+                automatically (such as after a cleanup operation).
             session (Session): Session id controlling the connection that
                 just disconnected.
             **kwargs (dict): Arbitrary, optional arguments for users
@@ -2689,7 +2690,7 @@ class DefaultCharacter(DefaultObject):
 
         self.location.for_contents(message, exclude=[self], from_obj=self)
 
-    def at_post_unpuppet(self, account, session=None, **kwargs):
+    def at_post_unpuppet(self, account=None, session=None, **kwargs):
         """
         We stove away the character when the account goes ooc/logs off,
         otherwise the character object will remain in the room also
@@ -2700,6 +2701,9 @@ class DefaultCharacter(DefaultObject):
                 from this object.
             session (Session): Session controlling the connection that
                 just disconnected.
+        Keyword Args:
+            reason (str): If given, adds a reason for the unpuppet. This
+                is set when the user is auto-unpuppeted due to being link-dead.
             **kwargs (dict): Arbitrary, optional arguments for users
                 overriding the call (unused by default).
         """
@@ -2709,7 +2713,10 @@ class DefaultCharacter(DefaultObject):
 
                 def message(obj, from_obj):
                     obj.msg(
-                        _("{name} has left the game.").format(name=self.get_display_name(obj)),
+                        _("{name} has left the game{reason}.").format(
+                            name=self.get_display_name(obj),
+                            reason=kwargs.get("reason", ""),
+                        ),
                         from_obj=from_obj,
                     )
 
