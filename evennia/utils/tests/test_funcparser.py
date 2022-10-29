@@ -134,8 +134,8 @@ class TestFuncParser(TestCase):
             ("$foo() Test noargs5", "_test() Test noargs5"),
             ("Test args1 $foo(a,b,c)", "Test args1 _test(a, b, c)"),
             ("Test args2 $bar(foo, bar,    too)", "Test args2 _test(foo, bar, too)"),
-            (r"Test args3 $bar(foo, bar, '   too')", "Test args3 _test(foo, bar,    too)"),
-            ("Test args4 $foo('')", "Test args4 _test()"),
+            (r'Test args3 $bar(foo, bar, "   too")', "Test args3 _test(foo, bar,    too)"),
+            ("Test args4 $foo('')", "Test args4 _test('')"),  # ' treated as literal
             ('Test args4 $foo("")', "Test args4 _test()"),
             ("Test args5 $foo(\(\))", "Test args5 _test(())"),
             ("Test args6 $foo(\()", "Test args6 _test(()"),
@@ -143,16 +143,16 @@ class TestFuncParser(TestCase):
             ("Test args8 $foo())", "Test args8 _test())"),
             ("Test args9 $foo(=)", "Test args9 _test(=)"),
             ("Test args10 $foo(\,)", "Test args10 _test(,)"),
-            ("Test args10 $foo(',')", "Test args10 _test(,)"),
+            (r'Test args10 $foo(",")', "Test args10 _test(,)"),
             ("Test args11 $foo(()", "Test args11 $foo(()"),  # invalid syntax
             (
-                "Test kwarg1 $bar(foo=1, bar='foo', too=ere)",
+                r'Test kwarg1 $bar(foo=1, bar="foo", too=ere)',
                 "Test kwarg1 _test(foo=1, bar=foo, too=ere)",
             ),
             ("Test kwarg2 $bar(foo,bar,too=ere)", "Test kwarg2 _test(foo, bar, too=ere)"),
             ("test kwarg3 $foo(foo = bar, bar = ere )", "test kwarg3 _test(foo=bar, bar=ere)"),
             (
-                r"test kwarg4 $foo(foo =\' bar \',\" bar \"= ere )",
+                r"test kwarg4 $foo(foo =' bar ',\" bar \"= ere )",
                 "test kwarg4 _test(foo=' bar ', \" bar \"=ere)",
             ),
             (
@@ -202,7 +202,7 @@ class TestFuncParser(TestCase):
             ("Test eval1 $eval(21 + 21 - 10)", "Test eval1 32"),
             ("Test eval2 $eval((21 + 21) / 2)", "Test eval2 21.0"),
             ("Test eval3 $eval(\"'21' + 'foo' + 'bar'\")", "Test eval3 21foobar"),
-            (r"Test eval4 $eval(\'21\' + \'$repl()\' + \"''\" + str(10 // 2))", "Test eval4 21rr5"),
+            (r"Test eval4 $eval('21' + '$repl()' + \"\" + str(10 // 2))", "Test eval4 21rr5"),
             (
                 r"Test eval5 $eval(\'21\' + \'\$repl()\' + \'\' + str(10 // 2))",
                 "Test eval5 21$repl()5",
@@ -519,10 +519,10 @@ class TestDefaultCallables(TestCase):
             ("There is $an(thing) here", "There is a thing here"),
             ("Some $eval(\"'-'*20\")Hello", "Some --------------------Hello"),
             ('$crop("spider\'s silk", 5)', "spide"),
+            ("$crop(spider's silk, 5)", "spide"),
             ("$an(apple)", "an apple"),
-            # These two are broken because of https://github.com/evennia/evennia/issues/2912
-            # ("$round(2.9) apples", "3.0 apples"),
-            # ("$round(2.967, 1) apples", "3.0 apples"),
+            ("$round(2.9) apples", "3.0 apples"),
+            ("$round(2.967, 1) apples", "3.0 apples"),
             # Degenerate cases
             ("$int2str() apples", " apples"),
             ("$int2str(x) apples", "x apples"),
@@ -616,6 +616,24 @@ class TestDefaultCallables(TestCase):
         ret = self.parser.parse_to_any(string)
         self.assertIn(ret, (1, 2))
 
+    def test_choice_quotes(self):
+        """
+        Test choice, but also commas embedded.
+        """
+
+        string = "$choice(spider's, devil's, mummy's, zombie's)"
+        ret = self.parser.parse(string)
+        self.assertIn(ret, ("spider's", "devil's", "mummy's", "zombie's"))
+
+        string = '$choice("Tiamat, queen of dragons", "Dracula, lord of the night")'
+        ret = self.parser.parse(string)
+        self.assertIn(ret, ("Tiamat, queen of dragons", "Dracula, lord of the night"))
+
+        # single quotes are ignored, so this becomes many entries
+        string = "$choice('Tiamat, queen of dragons', 'Dracula, lord of the night')"
+        ret = self.parser.parse(string)
+        self.assertIn(ret, ("'Tiamat", "queen of dragons'", "'Dracula", " lord of the night'"))
+
     def test_randint(self):
         string = "$randint(1.0, 3.0)"
         ret = self.parser.parse_to_any(string, raise_errors=True)
@@ -649,16 +667,6 @@ class TestDefaultCallables(TestCase):
         )
 
     def test_escaped(self):
-        self.assertEqual(
-            self.parser.parse(
-                "this should be $pad('''escaped,''' and '''instead,''' cropped $crop(with a long,5)"
-                " text., 80)"
-            ),
-            "this should be                    escaped, and instead, cropped with  text.           "
-            "         ",
-        )
-
-    def test_escaped2(self):
         raw_str = (
             'this should be $pad("""escaped,""" and """instead,""" cropped $crop(with a long,5)'
             " text., 80)"
