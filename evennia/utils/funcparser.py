@@ -85,7 +85,6 @@ class _ParsedFunc:
     # state storage
     fullstr: str = ""
     infuncstr: str = ""
-    single_quoted: int = -1
     double_quoted: int = -1
     current_kwarg: str = ""
     open_lparens: int = 0
@@ -319,7 +318,6 @@ class FuncParser:
         # parsing state
         callstack = []
 
-        single_quoted = -1
         double_quoted = -1
         open_lparens = 0  # open (
         open_lsquare = 0  # open [
@@ -367,14 +365,12 @@ class FuncParser:
                         # store state for the current func and stack it
                         curr_func.current_kwarg = current_kwarg
                         curr_func.infuncstr = infuncstr
-                        curr_func.single_quoted = single_quoted
                         curr_func.double_quoted = double_quoted
                         curr_func.open_lparens = open_lparens
                         curr_func.open_lsquare = open_lsquare
                         curr_func.open_lcurly = open_lcurly
                         current_kwarg = ""
                         infuncstr = ""
-                        single_quoted = -1
                         double_quoted = -1
                         open_lparens = 0
                         open_lsquare = 0
@@ -403,24 +399,7 @@ class FuncParser:
                 infuncstr += str(exec_return)
                 exec_return = ""
 
-            if char == "'" and double_quoted < 0:  # note that this is the same as "\'"
-                # a single quote - flip status
-                if single_quoted == 0:
-                    infuncstr = infuncstr[1:]
-                    single_quoted = -1
-                elif single_quoted > 0:
-                    prefix = infuncstr[0:single_quoted]
-                    infuncstr = prefix + infuncstr[single_quoted + 1 :]
-                    single_quoted = -1
-                else:
-                    infuncstr += char
-                    infuncstr = infuncstr.strip()
-                    single_quoted = len(infuncstr) - 1
-                    literal_infuncstr = True
-
-                continue
-
-            if char == '"' and single_quoted < 0:  # note that this is the same as '\"'
+            if char == '"':  # note that this is the same as '\"'
                 # a double quote = flip status
                 if double_quoted == 0:
                     infuncstr = infuncstr[1:]
@@ -437,7 +416,7 @@ class FuncParser:
 
                 continue
 
-            if double_quoted >= 0 or single_quoted >= 0:
+            if double_quoted >= 0:
                 # inside a string definition - this escapes everything else
                 infuncstr += char
                 continue
@@ -551,7 +530,6 @@ class FuncParser:
                             infuncstr = curr_func.infuncstr + str(exec_return)
                             exec_return = ""
                         curr_func.infuncstr = ""
-                        single_quoted = curr_func.single_quoted
                         double_quoted = curr_func.double_quoted
                         open_lparens = curr_func.open_lparens
                         open_lsquare = curr_func.open_lsquare

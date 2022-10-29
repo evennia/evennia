@@ -213,28 +213,31 @@ Sometimes you want to include commas in the argument without it breaking the
 argument list.
 
 ```python
-"There is a $format(beautiful meadow, with dandelions) to the west."
+"The $format(forest's smallest meadow, with dandelions) is to the west."
 ```
 
 You can escape in various ways.
 
-- Prepending with the escape character `\`
+- Prepending special characters like `,` and `=` with the escape character `\`
 
-        ```python
-        "There is a $format(beautiful meadow\, with dandelions) to the west."
-        ```
-- Wrapping your strings in quotes. This works like Python, and you can nest
-   double and single quotes inside each other if so needed. The result will
-   be a verbatim string that contains everything but the outermost quotes.
+```python
+"The $format(forest's smallest meadow\, with dandelions) is to the west."
+```
 
-        ```python
-        "There is a $format('beautiful meadow, with dandelions') to the west."
-        ```
-- If you want verbatim quotes in your string, you can escape them too.
+- Wrapping your strings in double quotes. Unlike in raw Python, you
+can't escape with single quotes `'` since these could also be apostrophes (like
+`forest's` above). The result will be a verbatim string that contains
+everything but the outermost double quotes.
 
-        ```python
-        "There is a $format('beautiful meadow, with \'dandelions\'') to the west."
-        ```
+```python
+'The $format("forest's smallest meadow, with dandelions") is to the west.'
+```
+- If you want verbatim double-quotes to appear in your string, you can escape
+  them with `\"` in turn.
+
+```python
+'The $format("forest's smallest meadow, with \"dandelions\"') is to the west.'
+```
 
 ### Safe convertion of inputs
 
