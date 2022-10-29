@@ -2,7 +2,7 @@
 name: Bug report (branch-develop)
 about: Use this to report errors in the Evennia `develop` branch
 title: "[BUG - Develop] (Enter a brief description here)"
-labels: bug, branch-develop
+labels: bug, branch-develop, needs-triage
 assignees: ''
 
 ---
