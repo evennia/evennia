@@ -1,0 +1,10 @@
+# These are read by the evennia/server/evennia_launcher.py to give more explicit
+# errors/warnings when trying to run Evennia with wrong/unexpected versions (this happens
+# when people upgrade outside regular channels). This file only supports lines of
+# `value = number` and only specific names supported by the handler.
+
+PYTHON_MIN = 3.9
+PYTHON_MAX_TESTED = 3.11
+TWISTED_MIN = 20.3.0
+DJANGO_MIN = 4.0.2
+DJANGO_LT = 4.1

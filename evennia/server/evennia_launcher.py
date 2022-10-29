@@ -90,11 +90,28 @@ SSHUTD = chr(17)  # server-only shutdown
 PSTATUS = chr(18)  # ping server or portal status
 SRESET = chr(19)  # shutdown server in reset mode
 
-# requirements
-PYTHON_MIN = "3.9"
-TWISTED_MIN = "20.3.0"
-DJANGO_MIN = "4.0.2"
-DJANGO_LT = "4.1"
+# live version requirement checks (from VERSION_REQS.txt file)
+PYTHON_MIN = None
+PYTHON_MAX_TESTED = None
+TWISTED_MIN = None
+DJANGO_MIN = None
+DJANGO_LT = None
+
+with open(os.path.join(EVENNIA_LIB, "VERSION_REQS.txt")) as fil:
+    for line in fil.readlines():
+        if line.startswith("#") or not "=" in line:
+            continue
+        match tuple(part.strip() for part in line.split("=", 1)):
+            case ("PYTHON_MIN", *value):
+                PYTHON_MIN = value[0] if value else "0"
+            case ("PYTHON_MAX_TESTED", *value):
+                PYTHON_MAX_TESTED = value[0] if value else "100"
+            case ("TWISTED_MIN", *value):
+                TWISTED_MIN = value[0] if value else "0"
+            case ("DJANGO_MIN", *value):
+                DJANGO_MIN = value[0] if value else "0"
+            case ("DJANGO_LT", *value):
+                DJANGO_LT = value[0] if value else "100"
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -362,6 +379,12 @@ ERROR_LOGDIR_MISSING = """
 ERROR_PYTHON_VERSION = """
     ERROR: Python {pversion} used. Evennia requires version
     {python_min} or higher.
+    """
+
+WARNING_PYTHON_MAX_TESTED_VERSION = """
+    WARNING: Python {pversion} used. Evennia is only tested with Python
+    versions {python_min} to {python_max_tested}. If you see unexpected errors, try
+    reinstalling with a tested Python version instead.
     """
 
 ERROR_TWISTED_VERSION = """
@@ -1262,6 +1285,13 @@ def check_main_evennia_dependencies():
     if LooseVersion(pversion) < LooseVersion(PYTHON_MIN):
         print(ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN))
         error = True
+    if LooseVersion(pversion) > LooseVersion(PYTHON_MAX_TESTED):
+        print(
+            WARNING_PYTHON_MAX_TESTED_VERSION.format(
+                pversion=pversion, python_min=PYTHON_MIN, python_max_tested=PYTHON_MAX_TESTED
+            )
+        )
+
     # Twisted
     try:
         import twisted
