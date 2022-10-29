@@ -99,19 +99,19 @@ DJANGO_LT = None
 
 with open(os.path.join(EVENNIA_LIB, "VERSION_REQS.txt")) as fil:
     for line in fil.readlines():
-        if line.startswith("#") or not "=" in line:
+        if line.startswith("#") or "=" not in line:
             continue
-        match tuple(part.strip() for part in line.split("=", 1)):
-            case ("PYTHON_MIN", *value):
-                PYTHON_MIN = value[0] if value else "0"
-            case ("PYTHON_MAX_TESTED", *value):
-                PYTHON_MAX_TESTED = value[0] if value else "100"
-            case ("TWISTED_MIN", *value):
-                TWISTED_MIN = value[0] if value else "0"
-            case ("DJANGO_MIN", *value):
-                DJANGO_MIN = value[0] if value else "0"
-            case ("DJANGO_LT", *value):
-                DJANGO_LT = value[0] if value else "100"
+        key, *value = (part.strip() for part in line.split("=", 1))
+        if key == "PYTHON_MIN":
+            PYTHON_MIN = value[0] if value else "0"
+        elif key == "PYTHON_MAX_TESTED":
+            PYTHON_MAX_TESTED = value[0] if value else "100"
+        elif key == "TWISTED_MIN":
+            TWISTED_MIN = value[0] if value else "0"
+        elif key == "DJANGO_MIN":
+            DJANGO_MIN = value[0] if value else "0"
+        elif key == "DJANGO_LT":
+            DJANGO_LT = value[0] if value else "100"
 
 try:
     sys.path[1] = EVENNIA_ROOT
