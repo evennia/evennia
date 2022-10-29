@@ -308,35 +308,32 @@ function call inside a string:</p>
 kwargs. In the same way, the right parenthesis (<code class="docutils literal notranslate"><span class="pre">)</span></code>) closes the argument list.
 Sometimes you want to include commas in the argument without it breaking the
 argument list.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;There is a $format(beautiful meadow, with dandelions) to the west.&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;The $format(forest&#39;s smallest meadow, with dandelions) is to the west.&quot;</span>
 </pre></div>
 </div>
 <p>You can escape in various ways.</p>
-<ul>
-<li><p>Prepending with the escape character <code class="docutils literal notranslate"><span class="pre">\</span></code></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  ```python
-  &quot;There is a $format(beautiful meadow\, with dandelions) to the west.&quot;
-  ```
-</pre></div>
-</div>
-</li>
-<li><p>Wrapping your strings in quotes. This works like Python, and you can nest
-double and single quotes inside each other if so needed. The result will
-be a verbatim string that contains everything but the outermost quotes.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  ```python
-  &quot;There is a $format(&#39;beautiful meadow, with dandelions&#39;) to the west.&quot;
-  ```
-</pre></div>
-</div>
-</li>
-<li><p>If you want verbatim quotes in your string, you can escape them too.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  ```python
-  &quot;There is a $format(&#39;beautiful meadow, with \&#39;dandelions\&#39;&#39;) to the west.&quot;
-  ```
-</pre></div>
-</div>
-</li>
+<ul class="simple">
+<li><p>Prepending special characters like <code class="docutils literal notranslate"><span class="pre">,</span></code> and <code class="docutils literal notranslate"><span class="pre">=</span></code> with the escape character <code class="docutils literal notranslate"><span class="pre">\</span></code></p></li>
 </ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;The $format(forest&#39;s smallest meadow\, with dandelions) is to the west.&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Wrapping your strings in double quotes. Unlike in raw Python, you
+can’t escape with single quotes <code class="docutils literal notranslate"><span class="pre">'</span></code> since these could also be apostrophes (like
+<code class="docutils literal notranslate"><span class="pre">forest's</span></code> above). The result will be a verbatim string that contains
+everything but the outermost double quotes.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;The $format(&quot;forest&#39;</span><span class="n">s</span> <span class="n">smallest</span> <span class="n">meadow</span><span class="p">,</span> <span class="k">with</span> <span class="n">dandelions</span><span class="s2">&quot;) is to the west.&#39;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If you want verbatim double-quotes to appear in your string, you can escape
+them with <code class="docutils literal notranslate"><span class="pre">\&quot;</span></code> in turn.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;The $format(&quot;forest&#39;</span><span class="n">s</span> <span class="n">smallest</span> <span class="n">meadow</span><span class="p">,</span> <span class="k">with</span> \<span class="s2">&quot;dandelions</span><span class="se">\&quot;</span><span class="s2">&#39;) is to the west.&#39;</span>
+</pre></div>
+</div>
 </section>
 <section id="safe-convertion-of-inputs">
 <h3>Safe convertion of inputs<a class="headerlink" href="#safe-convertion-of-inputs" title="Permalink to this headline">¶</a></h3>

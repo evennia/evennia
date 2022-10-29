@@ -836,10 +836,6 @@
             <span class="n">exclude</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
             <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]</span>
 
-        <span class="c1"># escape existing { in the input to not interfere with mapping</span>
-        <span class="n">inmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;{{&quot;</span><span class="p">)</span>
-        <span class="n">inmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="s2">&quot;}}&quot;</span><span class="p">)</span>
-
         <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
 
             <span class="c1"># actor-stance replacements</span>
