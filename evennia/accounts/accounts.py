@@ -364,6 +364,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         # do the puppeting
         obj.at_pre_puppet(self, session=session)
+        # used to track in case of crash so we can clean up later
+        obj.tags.add("puppeted", category="account")
 
         # do the connection
         obj.sessions.add(session)
@@ -398,6 +400,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 if not obj.sessions.count():
                     del obj.account
                 obj.at_post_unpuppet(self, session=session)
+                obj.tags.remove("puppeted", category="account")
                 SIGNAL_OBJECT_POST_UNPUPPET.send(sender=obj, session=session, account=self)
             # Just to be sure we're always clear.
             session.puppet = None

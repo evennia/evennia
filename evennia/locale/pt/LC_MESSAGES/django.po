@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Evennia Beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-02 09:28+0000\n"
+"POT-Creation-Date: 2022-10-29 18:53+0000\n"
 "PO-Revision-Date: 2022-10-02 18:12+0000\n"
 "Last-Translator: Marcos Marado <mindboosternoori@gmail.com>\n"
 "Language-Team: Nerun <nerunblogs@gmail.com>\n"
@@ -36,69 +36,76 @@ msgid ""
 msgstr ""
 "Não pode controlar mais nenhum fantoche (max {_MAX_NR_SIMULTANEOUS_PUPPETS})"
 
-#: accounts/accounts.py:552
+#: accounts/accounts.py:555
 msgid "Too many login failures; please try again in a few minutes."
-msgstr "Demasiadas falhas de autenticação; por favor volta a tentar dentro de alguns minutos."
+msgstr ""
+"Demasiadas falhas de autenticação; por favor volta a tentar dentro de alguns "
+"minutos."
 
-#: accounts/accounts.py:565 accounts/accounts.py:829
+#: accounts/accounts.py:568 accounts/accounts.py:832
 msgid ""
 "|rYou have been banned and cannot continue from here.\n"
 "If you feel this ban is in error, please email an admin.|x"
 msgstr ""
 "|rVocê foi banido e não pode passar daqui.\n"
-"Se acredita que este banimento foi um erro, por favor contacte um admin por email.|x"
+"Se acredita que este banimento foi um erro, por favor contacte um admin por "
+"email.|x"
 
-#: accounts/accounts.py:577
+#: accounts/accounts.py:580
 msgid "Username and/or password is incorrect."
 msgstr "Username e/ou password incorrectos."
 
-#: accounts/accounts.py:584
+#: accounts/accounts.py:587
 msgid "Too many authentication failures."
 msgstr "Demasiadas falhas de autenticação."
 
-#: accounts/accounts.py:800
+#: accounts/accounts.py:803
 msgid ""
 "You are creating too many accounts. Please log into an existing account."
-msgstr "Está a criar demasiadas contas. Por favor ligue-se a uma conta existente."
+msgstr ""
+"Está a criar demasiadas contas. Por favor ligue-se a uma conta existente."
 
-#: accounts/accounts.py:846
+#: accounts/accounts.py:849
 msgid ""
 "There was an error creating the Account. If this problem persists, contact "
 "an admin."
-msgstr "Ocorreu um erro ao criar a conta. Se este problema persistir, contacte "
-"um admin."
+msgstr ""
+"Ocorreu um erro ao criar a conta. Se este problema persistir, contacte um "
+"admin."
 
-#: accounts/accounts.py:882 accounts/accounts.py:1798
+#: accounts/accounts.py:885 accounts/accounts.py:1801
 msgid "An error occurred. Please e-mail an admin if the problem persists."
-msgstr "Ocorreu um erro. Por favor contacte um admin por e-mail caso o problema persista."
+msgstr ""
+"Ocorreu um erro. Por favor contacte um admin por e-mail caso o problema "
+"persista."
 
-#: accounts/accounts.py:915
+#: accounts/accounts.py:918
 #, fuzzy
 #| msgid "Player being deleted."
 msgid "Account being deleted."
 msgstr "Jogador sendo deletado."
 
-#: accounts/accounts.py:1472 accounts/accounts.py:1816
+#: accounts/accounts.py:1475 accounts/accounts.py:1819
 #, python-brace-format
 msgid "|G{key} connected|n"
 msgstr "|G{key} ligado|n"
 
-#: accounts/accounts.py:1478
+#: accounts/accounts.py:1481
 #, fuzzy
 #| msgid "The destination doesn't exist."
 msgid "The Character does not exist."
 msgstr "O destino não existe."
 
-#: accounts/accounts.py:1517
+#: accounts/accounts.py:1520
 #, python-brace-format
 msgid "|R{key} disconnected{reason}|n"
 msgstr "|R{key} desligado{reason}|n"
 
-#: accounts/accounts.py:1751
+#: accounts/accounts.py:1754
 msgid "Guest accounts are not enabled on this server."
 msgstr "Contas guest não estão activadas neste servidor."
 
-#: accounts/accounts.py:1761
+#: accounts/accounts.py:1764
 msgid "All guest accounts are in use. Please try again later."
 msgstr "Todas as contas guest estão em utilização. Por favor tente mais tarde."
 
@@ -117,8 +124,8 @@ msgid ""
 "reproduce.\n"
 msgstr ""
 "\n"
-"Um erro não previsto ocorreu. Por favor reporte o problema detalhando os passos para "
-"o reproduzir.\n"
+"Um erro não previsto ocorreu. Por favor reporte o problema detalhando os "
+"passos para o reproduzir.\n"
 
 #: commands/cmdhandler.py:97
 msgid ""
@@ -127,7 +134,8 @@ msgid ""
 "error in one of the cmdsets to merge.\n"
 msgstr ""
 "\n"
-"Um cmdset merger-error ocorreu. Isto é tipicamente devido a um erro de sintaxe\n"
+"Um cmdset merger-error ocorreu. Isto é tipicamente devido a um erro de "
+"sintaxe\n"
 "num dos cmdsets a fazer merge.\n"
 
 #: commands/cmdhandler.py:103
@@ -147,7 +155,8 @@ msgid ""
 "multiple causes.\n"
 msgstr ""
 "\n"
-"Nenhum conjunto de comandos foi encontrado! Este é um problema crítico que pode ter\n"
+"Nenhum conjunto de comandos foi encontrado! Este é um problema crítico que "
+"pode ter\n"
 "múltiplas causas.\n"
 
 #: commands/cmdhandler.py:118
@@ -159,7 +168,8 @@ msgid ""
 msgstr ""
 "\n"
 "Nenhum conjunto de comandos foi contrado! Ese é um sinal de um problema\n"
-"crítico.  Se desligar e voltar a ligar não resolve o problema, tente contactar\n"
+"crítico.  Se desligar e voltar a ligar não resolve o problema, tente "
+"contactar\n"
 "o admin do servidor através de outros meios para assistência.\n"
 
 #: commands/cmdhandler.py:128
@@ -170,7 +180,8 @@ msgid ""
 "traceback and steps to reproduce.\n"
 msgstr ""
 "\n"
-"Um problema aconteceu a lidar com um comando. Se isto não foi causado por uma\n"
+"Um problema aconteceu a lidar com um comando. Se isto não foi causado por "
+"uma\n"
 "alteração local, por favor reporte um problema com no projecto Evennia,\n"
 "incluindo o traceback e os passos de reprodução.\n"
 
@@ -365,70 +376,70 @@ msgstr "Lock: '%s' apresenta irregularidade no uso dos parênteses."
 msgid "Lock: '{lockdef}' has no valid lock functions."
 msgstr "Lock: '%s' não possui funções de lock válidas."
 
-#: objects/objects.py:855
+#: objects/objects.py:856
 #, fuzzy, python-brace-format
 #| msgid "Couldn't perform move ('%s'). Contact an admin."
 msgid "Couldn't perform move ({err}). Contact an admin."
 msgstr ""
 "Não foi possível executar o movimento ('%s'). Contacte um administrador."
 
-#: objects/objects.py:865
+#: objects/objects.py:866
 msgid "The destination doesn't exist."
 msgstr "O destino não existe."
 
-#: objects/objects.py:977
+#: objects/objects.py:978
 #, fuzzy, python-brace-format
 #| msgid "Could not find default home '(#%d)'."
 msgid "Could not find default home '(#{dbid})'."
 msgstr "Não foi possível encontrar a home predefinida '(#%d)'."
 
-#: objects/objects.py:991
+#: objects/objects.py:992
 msgid "Something went wrong! You are dumped into nowhere. Contact an admin."
 msgstr ""
 "Algo deu errado! Você foi despejado em lugar nenhum. Contacte um "
 "administrador."
 
-#: objects/objects.py:1144
+#: objects/objects.py:1145
 #, fuzzy, python-brace-format
 #| msgid "Your character %s has been destroyed."
 msgid "Your character {key} has been destroyed."
 msgstr "Seu personagem %s foi destruído."
 
-#: objects/objects.py:1852
+#: objects/objects.py:1853
 #, python-brace-format
 msgid "You now have {name} in your possession."
 msgstr "Você tem agora {name} na sua posse."
 
-#: objects/objects.py:1862
+#: objects/objects.py:1863
 #, python-brace-format
 msgid "{object} arrives to {destination} from {origin}."
 msgstr "{object} chega a {destination} de {origin}."
 
-#: objects/objects.py:1864
+#: objects/objects.py:1865
 #, python-brace-format
 msgid "{object} arrives to {destination}."
 msgstr "{object} chega a {destination}."
 
-#: objects/objects.py:2529
+#: objects/objects.py:2530
 msgid "Invalid character name."
 msgstr "Nome de personagem inválido."
 
-#: objects/objects.py:2548
+#: objects/objects.py:2549
 msgid "There are too many characters associated with this account."
 msgstr "Existem demasiadas personagens associadas a esta conta."
 
-#: objects/objects.py:2574
+#: objects/objects.py:2575
 #, fuzzy
 #| msgid "This is User #1."
 msgid "This is a character."
 msgstr "Este é o Usuário #1."
 
-#: objects/objects.py:2663
+#: objects/objects.py:2664
 #, python-brace-format
 msgid "|r{obj} has no location and no home is set.|n"
 msgstr "|r{obj} não tem localização e nenhuma home está configurada.|n"
 
-#: objects/objects.py:2681
+#: objects/objects.py:2682
 #, python-brace-format
 msgid ""
 "\n"
@@ -437,29 +448,30 @@ msgstr ""
 "\n"
 "Tornas-te |c{name}|n.\n"
 
-#: objects/objects.py:2686
+#: objects/objects.py:2687
 #, python-brace-format
 msgid "{name} has entered the game."
 msgstr "{name} entrou no jogo."
 
-#: objects/objects.py:2712
-#, python-brace-format
-msgid "{name} has left the game."
+#: objects/objects.py:2716
+#, fuzzy, python-brace-format
+#| msgid "{name} has left the game."
+msgid "{name} has left the game{reason}."
 msgstr "{name} saiu do jogo."
 
-#: objects/objects.py:2831
+#: objects/objects.py:2838
 #, fuzzy
 #| msgid "This is User #1."
 msgid "This is a room."
 msgstr "Este é o Usuário #1."
 
-#: objects/objects.py:3038
+#: objects/objects.py:3045
 #, fuzzy
 #| msgid "This is User #1."
 msgid "This is an exit."
 msgstr "Este é o Usuário #1."
 
-#: objects/objects.py:3135
+#: objects/objects.py:3142
 msgid "You cannot go there."
 msgstr "Não pode ir para aí."
 
@@ -471,28 +483,32 @@ msgstr "Erro"
 msgid "Warning"
 msgstr "Aviso"
 
-#: prototypes/prototypes.py:390
+#: prototypes/prototypes.py:389
 msgid "Prototype requires a prototype_key"
 msgstr "Protótipo precis ade uma prototype_key"
 
-#: prototypes/prototypes.py:398 prototypes/prototypes.py:467
-#: prototypes/prototypes.py:1087
+#: prototypes/prototypes.py:397 prototypes/prototypes.py:466
+#: prototypes/prototypes.py:1092
 #, python-brace-format
 msgid "{protkey} is a read-only prototype (defined as code in {module})."
-msgstr "{protkey} é um protótipo apenas de leitura (definido como código em {module})."
+msgstr ""
+"{protkey} é um protótipo apenas de leitura (definido como código em "
+"{module})."
 
-#: prototypes/prototypes.py:400 prototypes/prototypes.py:469
-#: prototypes/prototypes.py:1089
+#: prototypes/prototypes.py:399 prototypes/prototypes.py:468
+#: prototypes/prototypes.py:1094
 #, python-brace-format
 msgid "{protkey} is a read-only prototype (passed directly as a dict)."
-msgstr "{protkey} é um protótipo apenas de leitura (passado directamene como um dict)."
+msgstr ""
+"{protkey} é um protótipo apenas de leitura (passado directamene como um "
+"dict)."
 
-#: prototypes/prototypes.py:476
+#: prototypes/prototypes.py:475
 #, python-brace-format
 msgid "Prototype {prototype_key} was not found."
 msgstr "Protótipo {prototype_key} não encontrado."
 
-#: prototypes/prototypes.py:484
+#: prototypes/prototypes.py:483
 #, python-brace-format
 msgid ""
 "{caller} needs explicit 'edit' permissions to delete prototype "
@@ -501,71 +517,74 @@ msgstr ""
 "{caller} precisa permissões explícitas de edição para apagar o protótipo "
 "{prototype_key}."
 
-#: prototypes/prototypes.py:606
+#: prototypes/prototypes.py:605
 #, python-brace-format
 msgid "Found {num} matching prototypes among {module_prototypes}."
-msgstr "Encontrados {num} protótipos correspondentes entre {module_prototypes}."
+msgstr ""
+"Encontrados {num} protótipos correspondentes entre {module_prototypes}."
 
-#: prototypes/prototypes.py:766
+#: prototypes/prototypes.py:765
 msgid "No prototypes found."
 msgstr "Não foram encontrados protótipos."
 
-#: prototypes/prototypes.py:817
+#: prototypes/prototypes.py:816
 msgid "Prototype lacks a 'prototype_key'."
 msgstr "Falta ao protótipo uma 'prototype_key'."
 
-#: prototypes/prototypes.py:826
+#: prototypes/prototypes.py:825
 #, python-brace-format
 msgid "Prototype {protkey} requires `typeclass` or 'prototype_parent'."
 msgstr "Protótipo {protkey} precisa de `typeclass` ou 'prototype_parent'."
 
-#: prototypes/prototypes.py:833
+#: prototypes/prototypes.py:832
 #, python-brace-format
 msgid ""
 "Prototype {protkey} can only be used as a mixin since it lacks 'typeclass' "
 "or 'prototype_parent' keys."
 msgstr ""
-"Protótipo {protkey} pode apenas ser usado como mixin visto que não tem chaves 'typeclass' "
-"ou 'prototype_parent'."
+"Protótipo {protkey} pode apenas ser usado como mixin visto que não tem "
+"chaves 'typeclass' ou 'prototype_parent'."
 
-#: prototypes/prototypes.py:844
+#: prototypes/prototypes.py:843
 #, python-brace-format
 msgid ""
 "{err}: Prototype {protkey} is based on typeclass {typeclass}, which could "
 "not be imported!"
 msgstr ""
-"{err}: Protótipo {protkey} é baseado no typeclass {typeclass}, que não foi possível "
-"importar!"
+"{err}: Protótipo {protkey} é baseado no typeclass {typeclass}, que não foi "
+"possível importar!"
 
-#: prototypes/prototypes.py:863
+#: prototypes/prototypes.py:862
 #, python-brace-format
 msgid "Prototype {protkey} tries to parent itself."
 msgstr "Protótipo {protkey} tenta ser o seu próprio pai."
 
-#: prototypes/prototypes.py:869
+#: prototypes/prototypes.py:868
 #, python-brace-format
 msgid ""
 "Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
 msgstr ""
-"O `prototype_parent` (chamado '{parent}') do protótipo {protkey} não foi encontrado."
+"O `prototype_parent` (chamado '{parent}') do protótipo {protkey} não foi "
+"encontrado."
 
-#: prototypes/prototypes.py:877
+#: prototypes/prototypes.py:875
 #, python-brace-format
 msgid "{protkey} has infinite nesting of prototypes."
 msgstr "{protkey} tem um nesting infinito de protótipos."
 
-#: prototypes/prototypes.py:902
+#: prototypes/prototypes.py:900
 #, python-brace-format
 msgid ""
 "Prototype {protkey} has no `typeclass` defined anywhere in its parent\n"
 " chain. Add `typeclass`, or a `prototype_parent` pointing to a prototype "
 "with a typeclass."
 msgstr ""
-"Protótipo {protkey} não teu um `typeclass` definido em lado algum na sua cadeia de parentagem.\n"
+"Protótipo {protkey} não teu um `typeclass` definido em lado algum na sua "
+"cadeia de parentagem.\n"
 "Adicione `typeclass`, ou um `prototype_parent` a apontar para um protótipo "
 "com um typeclass."
 
-#: prototypes/spawner.py:497
+#: prototypes/spawner.py:495
 #, python-brace-format
 msgid ""
 "Diff contains non-dicts that are not on the form (old, new, action_to_take): "
@@ -642,11 +661,15 @@ msgstr ""
 "{servername} Protecção DoS está activa. Está na fila para se ligar em {num} "
 "segundos ..."
 
-#: server/server.py:157
+#: server/server.py:156
 #, fuzzy
 #| msgid "Idle timeout exceeded, disconnecting."
 msgid "idle timeout exceeded"
 msgstr "Tempo de inatividade esgotado, desconectando."
+
+#: server/server.py:177
+msgid " (connection lost)"
+msgstr ""
 
 #: server/sessionhandler.py:41
 msgid "Your client sent an incorrect UTF-8 sequence."
@@ -668,7 +691,8 @@ msgstr "Tempo de inatividade esgotado, desconectando."
 msgid ""
 "Too many failed attempts; you must wait a few minutes before trying again."
 msgstr ""
-"Demasiadas tentativas falhadas; tem de aguardar alguns minutos antes de tentar outra vez."
+"Demasiadas tentativas falhadas; tem de aguardar alguns minutos antes de "
+"tentar outra vez."
 
 #: server/validators.py:31
 msgid "Sorry, that username is reserved."
@@ -684,8 +708,8 @@ msgid ""
 "{policy} From a terminal client, you can also use a phrase of multiple words "
 "if you enclose the password in double quotes."
 msgstr ""
-"{policy} A partir de um cliente terminal, pode também usar uma frase de múltimas palavras "
-"se envolver a password em aspas duplas."
+"{policy} A partir de um cliente terminal, pode também usar uma frase de "
+"múltimas palavras se envolver a password em aspas duplas."
 
 #: utils/eveditor.py:68
 msgid ""
@@ -746,24 +770,27 @@ msgstr ""
 " :UU    - limpa todas as alterações e regressa ao estado inicial\n"
 "\n"
 " :dd <l>     - apaga a(s) última(s) linha(s) <l>\n"
-" :dw <l> <w> - apaga a palavra ou expressão regular <w> em todo o buffer ou na linha <l>\n"
+" :dw <l> <w> - apaga a palavra ou expressão regular <w> em todo o buffer ou "
+"na linha <l>\n"
 " :DD         - apaga todo o buffer\n"
 "\n"
 " :y  <l>        - copia a(s) <l> linha(s) para o buffer de cópia\n"
 " :x  <l>        - corta a(s) <l> linha(s) e guarda-as no buffer de cópia\n"
-" :p  <l>        - cola as linhas anteriormente copiadas directamente após <l>\n"
-" :i  <l> <txt>  - insere o novo texto <txt> na linha <l>. A linha antiga irá mover-se para "
-"baixo\n"
+" :p  <l>        - cola as linhas anteriormente copiadas directamente após "
+"<l>\n"
+" :i  <l> <txt>  - insere o novo texto <txt> na linha <l>. A linha antiga irá "
+"mover-se para baixo\n"
 " :r  <l> <txt>  - substitui a linha <l> com o texto <txt>\n"
 " :I  <l> <txt>  - insere texto no início da linha <l>\n"
 " :A  <l> <txt>  - adiciona text no final da linha <l>\n"
 "\n"
-" :s <l> <w> <txt> - encontra/substitui a palavra ou expressão regular <w> no buffer ou na linha "
-"<l>\n"
+" :s <l> <w> <txt> - encontra/substitui a palavra ou expressão regular <w> no "
+"buffer ou na linha <l>\n"
 "\n"
-" :j <l> <w> - justifica buffer ou linha <l>. <w> é f, c, l ou r. Por omissão é f "
-"(full/cheio)\n"
-" :f <l>     - inunda-preenche todo o buffer ou a linha <l>: Equivalente a fazer :j left\n"
+" :j <l> <w> - justifica buffer ou linha <l>. <w> é f, c, l ou r. Por omissão "
+"é f (full/cheio)\n"
+" :f <l>     - inunda-preenche todo o buffer ou a linha <l>: Equivalente a "
+"fazer :j left\n"
 " :fi <l>    - indenta todo o buffer ou a linha <l>\n"
 " :fd <l>    - desindenta todo o buffer ou a linha <l>\n"
 "\n"
@@ -808,7 +835,8 @@ msgstr ""
 "\n"
 "{error}\n"
 "\n"
-"|rErro no carregamento da função no buffer. Não foi possível carregar os dados iniciais.|n\n"
+"|rErro no carregamento da função no buffer. Não foi possível carregar os "
+"dados iniciais.|n\n"
 
 #: utils/eveditor.py:136
 #, python-brace-format
@@ -861,9 +889,11 @@ msgstr ""
 "\n"
 "{error}\n"
 "\n"
-"|rO estado do editor não pode ser gravado para modo persistente. Mudando para\n"
+"|rO estado do editor não pode ser gravado para modo persistente. Mudando "
+"para\n"
 "o modo não-persistente (o que significa que a sessão do editor não irá\n"
-"sobreviver um eventual reload do servidor - por isso grava frequentemente!)|n\n"
+"sobreviver um eventual reload do servidor - por isso grava frequentemente!)|"
+"n\n"
 
 #: utils/eveditor.py:167
 msgid ""
@@ -871,9 +901,9 @@ msgid ""
 "EvEditor callbacks could not be pickled, for example because it's a class "
 "method or is defined inside another function."
 msgstr ""
-"Erro no modo persistente do EvEditor. Tipicamente, isto é porque um ou mais dos "
-"callbacks do EvEditor não puderam ser pickled, por exemplo porque é um método de classe "
-"ou é definido dentro de outra função."
+"Erro no modo persistente do EvEditor. Tipicamente, isto é porque um ou mais "
+"dos callbacks do EvEditor não puderam ser pickled, por exemplo porque é um "
+"método de classe ou é definido dentro de outra função."
 
 #: utils/eveditor.py:173
 msgid "Nothing to undo."
@@ -1134,7 +1164,6 @@ msgstr "|wp|Wágina anterior|n"
 msgid "|wn|Wext page|n"
 msgstr "|Wpróxima pági|wn|Wa|n"
 
-
 #: utils/evmenu.py:1689
 msgid "Aborted."
 msgstr "Abortado."
@@ -1165,31 +1194,31 @@ msgstr "Havia várias correspondências."
 msgid "Please be more specific."
 msgstr "Por favor seja mais específico."
 
-#: utils/utils.py:2121
+#: utils/utils.py:2127
 #, python-brace-format
 msgid ""
 "{obj}.{handlername} is a handler and can't be set directly. To add values, "
 "use `{obj}.{handlername}.add()` instead."
 msgstr ""
-"{obj}.{handlername} é um handler e não pode ser definido directamente. Para adicionar valores, "
-"use `{obj}.{handlername}.add()`."
+"{obj}.{handlername} é um handler e não pode ser definido directamente. Para "
+"adicionar valores, use `{obj}.{handlername}.add()`."
 
-#: utils/utils.py:2131
+#: utils/utils.py:2137
 #, python-brace-format
 msgid ""
 "{obj}.{handlername} is a handler and can't be deleted directly. To remove "
 "values, use `{obj}.{handlername}.remove()` instead."
 msgstr ""
-"{obj}.{handlername} é um handler e não pode ser apagado directamente. Para remover "
-"valores, use `{obj}.{handlername}.remove()`."
+"{obj}.{handlername} é um handler e não pode ser apagado directamente. Para "
+"remover valores, use `{obj}.{handlername}.remove()`."
 
-#: utils/utils.py:2272
+#: utils/utils.py:2278
 #, fuzzy, python-brace-format
 #| msgid "Could not find '%s'."
 msgid "Could not find '{query}'."
 msgstr "Não foi possível encontrar '%s'."
 
-#: utils/utils.py:2279
+#: utils/utils.py:2285
 #, fuzzy, python-brace-format
 #| msgid "More than one match for '%s' (please narrow target):"
 msgid "More than one match for '{query}' (please narrow target):\n"
@@ -1244,7 +1273,8 @@ msgstr "Tem de indicar um número inteiro para {option_key}!"
 #: utils/validatorfuncs.py:169
 #, python-brace-format
 msgid "Could not convert '{entry}' to a whole number for {option_key}!"
-msgstr "Não foi possível converter '{entry}' num número inteiro para {option_key}!"
+msgstr ""
+"Não foi possível converter '{entry}' num número inteiro para {option_key}!"
 
 #: utils/validatorfuncs.py:180
 #, python-brace-format
@@ -1259,7 +1289,8 @@ msgstr "{option_key} deve ser um número inteiro maior ou igual a 0!"
 #: utils/validatorfuncs.py:210
 #, python-brace-format
 msgid "Must enter a true/false input for {option_key}. Accepts {alternatives}."
-msgstr "Deve inserir um input true/false para {option_key}. Aceita {alternatives}."
+msgstr ""
+"Deve inserir um input true/false para {option_key}. Aceita {alternatives}."
 
 #: utils/validatorfuncs.py:240
 #, python-brace-format
