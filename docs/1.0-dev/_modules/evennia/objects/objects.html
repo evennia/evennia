@@ -815,7 +815,7 @@
 
 <span class="sd">                char.location.msg_contents(</span>
 <span class="sd">                    &quot;{attacker} attacks {defender}.&quot;,</span>
-<span class="sd">                    mapping={&quot;attacker:player1, &quot;defender&quot;:player2})</span>
+<span class="sd">                    mapping={&quot;attacker&quot;:player1, &quot;defender&quot;:player2})</span>
 
 <span class="sd">            - player1 will see: &#39;Player1 attacks The Second girl.&#39;</span>
 <span class="sd">            - player2 will see: &#39;The First girl attacks Player2&#39;</span>
@@ -836,10 +836,14 @@
             <span class="n">exclude</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
             <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">contents</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]</span>
 
+        <span class="c1"># escape existing { in the input to not interfere with mapping</span>
+        <span class="n">inmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;{{&quot;</span><span class="p">)</span>
+        <span class="n">inmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">,</span> <span class="s2">&quot;}}&quot;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">receiver</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
 
             <span class="c1"># actor-stance replacements</span>
-            <span class="n">inmessage</span> <span class="o">=</span> <span class="n">_MSG_CONTENTS_PARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+            <span class="n">outmessage</span> <span class="o">=</span> <span class="n">_MSG_CONTENTS_PARSER</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
                 <span class="n">inmessage</span><span class="p">,</span>
                 <span class="n">raise_errors</span><span class="o">=</span><span class="n">raise_funcparse_errors</span><span class="p">,</span>
                 <span class="n">return_string</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -849,7 +853,7 @@
             <span class="p">)</span>
 
             <span class="c1"># director-stance replacements</span>
-            <span class="n">outmessage</span> <span class="o">=</span> <span class="n">inmessage</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span>
+            <span class="n">outmessage</span> <span class="o">=</span> <span class="n">outmessage</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="n">key</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="o">=</span><span class="n">receiver</span><span class="p">)</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;get_display_name&quot;</span><span class="p">)</span>
@@ -1767,8 +1771,7 @@
 <span class="sd">            access_type (str): The type of access that was requested.</span>
 
 <span class="sd">        Keyword Args:</span>
-<span class="sd">            Not used by default, added for possible expandability in a</span>
-<span class="sd">            game.</span>
+<span class="sd">            Unused by default, added for possible expandability in a game.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>

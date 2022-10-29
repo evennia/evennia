@@ -78,33 +78,36 @@
 <span class="sd">Building and world design commands</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">Min</span><span class="p">,</span> <span class="n">Max</span>
+<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Max</span><span class="p">,</span> <span class="n">Min</span><span class="p">,</span> <span class="n">Q</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>
-<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
-<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
 <span class="kn">from</span> <span class="nn">evennia.commands.cmdhandler</span> <span class="kn">import</span> <span class="n">get_and_merge_cmdsets</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">funcparser</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">menus</span> <span class="k">as</span> <span class="n">olc_menus</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span>
+<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">funcparser</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">ansi_raw</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">deserialize</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">inherits_from</span><span class="p">,</span>
-    <span class="n">class_from_module</span><span class="p">,</span>
-    <span class="n">get_all_typeclasses</span><span class="p">,</span>
-    <span class="n">variable_from_module</span><span class="p">,</span>
-    <span class="n">dbref</span><span class="p">,</span>
-    <span class="n">crop</span><span class="p">,</span>
-    <span class="n">interactive</span><span class="p">,</span>
-    <span class="n">list_to_string</span><span class="p">,</span>
-    <span class="n">display_len</span><span class="p">,</span>
-    <span class="n">format_grid</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evmore</span> <span class="kn">import</span> <span class="n">EvMore</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.evtable</span> <span class="kn">import</span> <span class="n">EvTable</span>
-<span class="kn">from</span> <span class="nn">evennia.prototypes</span> <span class="kn">import</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">prototypes</span> <span class="k">as</span> <span class="n">protlib</span><span class="p">,</span> <span class="n">menus</span> <span class="k">as</span> <span class="n">olc_menus</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span> <span class="k">as</span> <span class="n">ansi_raw</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">class_from_module</span><span class="p">,</span>
+    <span class="n">crop</span><span class="p">,</span>
+    <span class="n">dbref</span><span class="p">,</span>
+    <span class="n">display_len</span><span class="p">,</span>
+    <span class="n">format_grid</span><span class="p">,</span>
+    <span class="n">get_all_typeclasses</span><span class="p">,</span>
+    <span class="n">inherits_from</span><span class="p">,</span>
+    <span class="n">interactive</span><span class="p">,</span>
+    <span class="n">list_to_string</span><span class="p">,</span>
+    <span class="n">variable_from_module</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 
@@ -297,7 +300,7 @@
                     <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No aliases exist for &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No aliases exist for &#39;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
@@ -426,13 +429,11 @@
                     <span class="n">new_aliases</span><span class="o">=</span><span class="n">to_obj_aliases</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">copiedobj</span><span class="p">:</span>
-                    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Copied </span><span class="si">%s</span><span class="s2"> to &#39;</span><span class="si">%s</span><span class="s2">&#39; (aliases: </span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                        <span class="n">from_obj_name</span><span class="p">,</span>
-                        <span class="n">to_obj_name</span><span class="p">,</span>
-                        <span class="n">to_obj_aliases</span><span class="p">,</span>
+                    <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Copied </span><span class="si">{</span><span class="n">from_obj_name</span><span class="si">}</span><span class="s2"> to &#39;</span><span class="si">{</span><span class="n">to_obj_name</span><span class="si">}</span><span class="s2">&#39; (aliases: </span><span class="si">{</span><span class="n">to_obj_aliases</span><span class="si">}</span><span class="s2">).&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;There was an error copying </span><span class="si">%s</span><span class="s2"> to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">from_obj_name</span><span class="p">,</span> <span class="n">to_obj_name</span><span class="p">)</span>
+                    <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;There was an error copying </span><span class="si">{</span><span class="n">from_obj_name</span><span class="si">}</span><span class="s2"> to &#39;</span><span class="si">{</span><span class="n">to_obj_name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
         <span class="c1"># we are done, echo to user</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
@@ -491,7 +492,7 @@
 <span class="sd">        required and verify an object has an attribute.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> doesn&#39;t have an attribute </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> doesn&#39;t have an attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -555,7 +556,7 @@
             <span class="n">to_obj_attrs</span> <span class="o">=</span> <span class="n">to_obj</span><span class="p">[</span><span class="s2">&quot;attrs&quot;</span><span class="p">]</span>
             <span class="n">to_obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">to_obj_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">to_obj</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Could not find object &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">to_obj_name</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Could not find object &#39;</span><span class="si">{</span><span class="n">to_obj_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">from_attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">from_obj_attrs</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -571,13 +572,13 @@
                 <span class="k">if</span> <span class="n">clear</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">from_obj</span> <span class="o">==</span> <span class="n">to_obj</span> <span class="ow">and</span> <span class="n">from_attr</span> <span class="o">==</span> <span class="n">to_attr</span><span class="p">):</span>
                     <span class="n">from_obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">from_attr</span><span class="p">)</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Moved </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">. (value: </span><span class="si">%s</span><span class="s2">)&quot;</span>
-                        <span class="o">%</span> <span class="p">(</span><span class="n">from_obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">from_attr</span><span class="p">,</span> <span class="n">to_obj_name</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Moved </span><span class="si">{</span><span class="n">from_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">from_attr</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_obj_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">to_attr</span><span class="si">}</span><span class="s2">. (value:&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Copied </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">. (value: </span><span class="si">%s</span><span class="s2">)&quot;</span>
-                        <span class="o">%</span> <span class="p">(</span><span class="n">from_obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">from_attr</span><span class="p">,</span> <span class="n">to_obj_name</span><span class="p">,</span> <span class="n">to_attr</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Copied </span><span class="si">{</span><span class="n">from_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">from_attr</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">to_attr</span><span class="si">}</span><span class="s2">. (value:&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="p">)</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">))</span></div></div>
 
@@ -691,11 +692,11 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You create a new </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> (aliases: </span><span class="si">%s</span><span class="s2">).&quot;</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;You create a new </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (aliases: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;You create a new </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">.&quot;</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You create a new </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="c1"># set a default desc</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;You see nothing special.&quot;</span>
@@ -757,7 +758,7 @@
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to edit the description of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have permission to edit the description of </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">evmenu_target</span> <span class="o">=</span> <span class="n">obj</span>
@@ -797,9 +798,9 @@
             <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">):</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The description was set on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The description was set on </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to edit the description of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div></div>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have permission to edit the description of </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdDestroy"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdDestroy">[docs]</a><span class="k">class</span> <span class="nc">CmdDestroy</span><span class="p">(</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">):</span>
@@ -847,21 +848,21 @@
             <span class="c1"># helper function for deleting a single object</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Object </span><span class="si">%s</span><span class="s2"> was already deleted.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_key</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Object </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">db_key</span><span class="si">}</span><span class="s2"> was already deleted.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">objname</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)):</span>
-                    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">You don&#39;t have permission to delete </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">objname</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">You don&#39;t have permission to delete </span><span class="si">{</span><span class="n">objname</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span> <span class="ow">and</span> <span class="s2">&quot;override&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Object </span><span class="si">%s</span><span class="s2"> is controlled by an active account. Use /override to delete anyway.&quot;</span>
-                        <span class="o">%</span> <span class="n">objname</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Object </span><span class="si">{</span><span class="n">objname</span><span class="si">}</span><span class="s2"> is controlled by an active account. Use /override to&quot;</span>
+                        <span class="s2">&quot; delete anyway.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">dbid</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)):</span>
                     <span class="k">return</span> <span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">You are trying to delete |c</span><span class="si">%s</span><span class="s2">|n, which is set as DEFAULT_HOME. &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">You are trying to delete |c</span><span class="si">{</span><span class="n">objname</span><span class="si">}</span><span class="s2">|n, which is set as DEFAULT_HOME. &quot;</span>
                         <span class="s2">&quot;Re-point settings.DEFAULT_HOME to another &quot;</span>
-                        <span class="s2">&quot;object before continuing.&quot;</span> <span class="o">%</span> <span class="n">objname</span>
+                        <span class="s2">&quot;object before continuing.&quot;</span>
                     <span class="p">)</span>
 
                 <span class="n">had_exits</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;exits&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">exits</span>
@@ -874,15 +875,14 @@
                 <span class="n">okay</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">okay</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ERROR: </span><span class="si">%s</span><span class="s2"> not deleted, probably because delete() returned False.&quot;</span>
-                        <span class="o">%</span> <span class="n">objname</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ERROR: </span><span class="si">{</span><span class="n">objname</span><span class="si">}</span><span class="s2"> not deleted, probably because delete() returned False.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2"> was destroyed.&quot;</span> <span class="o">%</span> <span class="n">objname</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">objname</span><span class="si">}</span><span class="s2"> was destroyed.&quot;</span>
                     <span class="k">if</span> <span class="n">had_exits</span><span class="p">:</span>
-                        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Exits to and from </span><span class="si">%s</span><span class="s2"> were destroyed as well.&quot;</span> <span class="o">%</span> <span class="n">objname</span>
+                        <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Exits to and from </span><span class="si">{</span><span class="n">objname</span><span class="si">}</span><span class="s2"> were destroyed as well.&quot;</span>
                     <span class="k">if</span> <span class="n">had_objs</span><span class="p">:</span>
-                        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Objects inside </span><span class="si">%s</span><span class="s2"> were moved to their homes.&quot;</span> <span class="o">%</span> <span class="n">objname</span>
+                        <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Objects inside </span><span class="si">{</span><span class="n">objname</span><span class="si">}</span><span class="s2"> were moved to their homes.&quot;</span>
             <span class="k">return</span> <span class="n">string</span>
 
         <span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -985,7 +985,7 @@
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: dig[/teleport] &lt;roomname&gt;[;alias;alias...]&quot;</span> <span class="s2">&quot;[:parent] [= &lt;exit_there&gt;&quot;</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: dig[/teleport] &lt;roomname&gt;[;alias;alias...][:parent] [= &lt;exit_there&gt;&quot;</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;[;alias;alias..][:parent]] &quot;</span>
             <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;[, &lt;exit_back_here&gt;[;alias;alias..][:parent]]&quot;</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
@@ -1012,11 +1012,8 @@
         <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">new_room</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_room</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-        <span class="n">room_string</span> <span class="o">=</span> <span class="s2">&quot;Created room </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)</span><span class="si">%s</span><span class="s2"> of type </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span>
-            <span class="n">new_room</span><span class="p">,</span>
-            <span class="n">new_room</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
-            <span class="n">alias_string</span><span class="p">,</span>
-            <span class="n">typeclass</span><span class="p">,</span>
+        <span class="n">room_string</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Created room </span><span class="si">{</span><span class="n">new_room</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">new_room</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)</span><span class="si">{</span><span class="n">alias_string</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">typeclass</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
         <span class="c1"># create exit to room</span>
@@ -1048,13 +1045,9 @@
                 <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">new_to_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                     <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_to_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-                <span class="n">exit_to_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Created Exit from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)</span><span class="si">%s</span><span class="s2">.&quot;</span>
-                <span class="n">exit_to_string</span> <span class="o">=</span> <span class="n">exit_to_string</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">location</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">new_room</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">new_to_exit</span><span class="p">,</span>
-                    <span class="n">new_to_exit</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
-                    <span class="n">alias_string</span><span class="p">,</span>
+                <span class="n">exit_to_string</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Created Exit from </span><span class="si">{location.name}</span><span class="s2"> to </span><span class="si">{new_room.name}</span><span class="s2">:&quot;</span>
+                    <span class="s2">&quot; </span><span class="si">{new_to_exit}</span><span class="s2">(</span><span class="si">{new_to_exit.dbref}</span><span class="s2">)</span><span class="si">{alias_string}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
 
         <span class="c1"># Create exit back from new room</span>
@@ -1082,15 +1075,11 @@
                 <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                 <span class="k">if</span> <span class="n">new_back_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                     <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_back_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-                <span class="n">exit_back_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Created Exit back from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)</span><span class="si">%s</span><span class="s2">.&quot;</span>
-                <span class="n">exit_back_string</span> <span class="o">=</span> <span class="n">exit_back_string</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">new_room</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">location</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">new_back_exit</span><span class="p">,</span>
-                    <span class="n">new_back_exit</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
-                    <span class="n">alias_string</span><span class="p">,</span>
+                <span class="n">exit_back_string</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Created Exit back from </span><span class="si">{</span><span class="n">new_room</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">location</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">new_back_exit</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">new_back_exit</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)</span><span class="si">{</span><span class="n">alias_string</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">room_string</span><span class="p">,</span> <span class="n">exit_to_string</span><span class="p">,</span> <span class="n">exit_back_string</span><span class="p">))</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">room_string</span><span class="si">}{</span><span class="n">exit_to_string</span><span class="si">}{</span><span class="n">exit_back_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">new_room</span> <span class="ow">and</span> <span class="s2">&quot;teleport&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">new_room</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;teleport&quot;</span><span class="p">)</span></div></div>
 
@@ -1188,10 +1177,10 @@
             <span class="n">telswitch</span> <span class="o">=</span> <span class="s2">&quot;/teleport&quot;</span>
         <span class="n">backstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;oneway&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
-            <span class="n">backstring</span> <span class="o">=</span> <span class="s2">&quot;, </span><span class="si">%s</span><span class="s2">;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">backname</span><span class="p">,</span> <span class="n">backshort</span><span class="p">)</span>
+            <span class="n">backstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, </span><span class="si">{</span><span class="n">backname</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">backshort</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="c1"># build the string we will use to call dig</span>
-        <span class="n">digstring</span> <span class="o">=</span> <span class="s2">&quot;dig</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">telswitch</span><span class="p">,</span> <span class="n">roomname</span><span class="p">,</span> <span class="n">exitname</span><span class="p">,</span> <span class="n">exitshort</span><span class="p">,</span> <span class="n">backstring</span><span class="p">)</span>
+        <span class="n">digstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dig</span><span class="si">{</span><span class="n">telswitch</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">roomname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">exitname</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">exitshort</span><span class="si">}{</span><span class="n">backstring</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="n">digstring</span><span class="p">)</span></div></div>
 
 
@@ -1253,14 +1242,16 @@
                 <span class="k">return</span>
 
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="n">note</span> <span class="o">=</span> <span class="s2">&quot;Note: </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) did not have a destination set before. Make sure you linked the right thing.&quot;</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Note: </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) did not have a destination set before. Make sure you linked the right&quot;</span>
+                <span class="s2">&quot; thing.&quot;</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="n">note</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;twoway&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">location</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">):</span>
-                    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;To create a two-way link, </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2"> must both have a location&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                        <span class="n">obj</span><span class="p">,</span>
-                        <span class="n">target</span><span class="p">,</span>
+                    <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;To create a two-way link, </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> must both have a location&quot;</span>
                     <span class="p">)</span>
                     <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; (i.e. they cannot be rooms, but should be exits).&quot;</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
@@ -1269,15 +1260,13 @@
                     <span class="n">string</span> <span class="o">+=</span> <span class="n">note</span> <span class="o">%</span> <span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">location</span>
                 <span class="n">target</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">location</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Link created </span><span class="si">%s</span><span class="s2"> (in </span><span class="si">%s</span><span class="s2">) &lt;-&gt; </span><span class="si">%s</span><span class="s2"> (in </span><span class="si">%s</span><span class="s2">) (two-way).&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
-                    <span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Link created </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (in </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="s2">) &lt;-&gt; </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (in&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="s2">) (two-way).&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Link created </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2"> (one way).&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Link created </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> (one way).&quot;</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># this means that no = was given (otherwise rhs</span>
@@ -1285,18 +1274,18 @@
             <span class="c1"># the home/destination on object</span>
             <span class="n">dest</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span>
             <span class="k">if</span> <span class="n">dest</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is an exit to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is an exit to </span><span class="si">{</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not an exit. Its home location is </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">home</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not an exit. Its home location is </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">home</span><span class="si">}</span><span class="s2">.&quot;</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># We gave the command link &#39;obj = &#39; which means we want to</span>
             <span class="c1"># clear destination.</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Former exit </span><span class="si">%s</span><span class="s2"> no longer links anywhere.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Former exit </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> no longer links anywhere.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> had no destination to unlink.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> had no destination to unlink.&quot;</span>
         <span class="c1"># give feedback</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div></div>
 
@@ -1373,7 +1362,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">home</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;This object has no home location set!&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;s current home is </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">home</span><span class="p">,</span> <span class="n">home</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">&#39;s current home is </span><span class="si">{</span><span class="n">home</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">home</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">).&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># set a home location</span>
             <span class="n">new_home</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1382,15 +1371,12 @@
             <span class="n">old_home</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">home</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">home</span> <span class="o">=</span> <span class="n">new_home</span>
             <span class="k">if</span> <span class="n">old_home</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Home location of </span><span class="si">%s</span><span class="s2"> was changed from </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) to </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">obj</span><span class="p">,</span>
-                    <span class="n">old_home</span><span class="p">,</span>
-                    <span class="n">old_home</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
-                    <span class="n">new_home</span><span class="p">,</span>
-                    <span class="n">new_home</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Home location of </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> was changed from </span><span class="si">{</span><span class="n">old_home</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">old_home</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2"> to&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">new_home</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">new_home</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">).&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Home location of </span><span class="si">%s</span><span class="s2"> was set to </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">new_home</span><span class="p">,</span> <span class="n">new_home</span><span class="o">.</span><span class="n">dbref</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Home location of </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> was set to </span><span class="si">{</span><span class="n">new_home</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">new_home</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">).&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
@@ -1419,7 +1405,7 @@
                 <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">cmdset</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
@@ -1463,11 +1449,11 @@
                         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No name defined!&quot;</span><span class="p">)</span>
                         <span class="k">return</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
-                        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have right to edit this account </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="p">)</span>
+                        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have right to edit this account </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                         <span class="k">return</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">newname</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account&#39;s name changed to &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">newname</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Account&#39;s name changed to &#39;</span><span class="si">{</span><span class="n">newname</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
             <span class="c1"># object search, also with *</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
@@ -1483,7 +1469,7 @@
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No names or aliases defined!&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have the right to edit </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have the right to edit </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="c1"># change the name and set aliases:</span>
         <span class="k">if</span> <span class="n">newname</span><span class="p">:</span>
@@ -1491,11 +1477,11 @@
         <span class="n">astring</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
             <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">]</span>
-            <span class="n">astring</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span>
+            <span class="n">astring</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span>
         <span class="c1"># fix for exits - we need their exit-command to change name too</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">flush_from_cache</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Object&#39;s name changed to &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">newname</span><span class="p">,</span> <span class="n">astring</span><span class="p">))</span></div></div>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Object&#39;s name changed to &#39;</span><span class="si">{</span><span class="n">newname</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">astring</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CmdOpen"><a class="viewcode-back" href="../../../../api/evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen">[docs]</a><span class="k">class</span> <span class="nc">CmdOpen</span><span class="p">(</span><span class="n">ObjManipCommand</span><span class="p">):</span>
@@ -1539,24 +1525,23 @@
             <span class="n">exit_obj</span> <span class="o">=</span> <span class="n">exit_obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">exit_obj</span><span class="o">.</span><span class="n">destination</span><span class="p">:</span>
                 <span class="c1"># we are trying to link a non-exit</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; already exists and is not an exit!</span><span class="se">\n</span><span class="s2">If you want to convert it &quot;</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">exit_name</span><span class="si">}</span><span class="s2">&#39; already exists and is not an exit!</span><span class="se">\n</span><span class="s2">If you want to convert it &quot;</span>
                     <span class="s2">&quot;to an exit, you must assign an object to the &#39;destination&#39; property first.&quot;</span>
                 <span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span> <span class="o">%</span> <span class="n">exit_name</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="c1"># we are re-linking an old exit.</span>
             <span class="n">old_destination</span> <span class="o">=</span> <span class="n">exit_obj</span><span class="o">.</span><span class="n">destination</span>
             <span class="k">if</span> <span class="n">old_destination</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Exit </span><span class="si">%s</span><span class="s2"> already exists.&quot;</span> <span class="o">%</span> <span class="n">exit_name</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Exit </span><span class="si">{</span><span class="n">exit_name</span><span class="si">}</span><span class="s2"> already exists.&quot;</span>
                 <span class="k">if</span> <span class="n">old_destination</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">destination</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
                     <span class="c1"># reroute the old exit.</span>
                     <span class="n">exit_obj</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">destination</span>
                     <span class="k">if</span> <span class="n">exit_aliases</span><span class="p">:</span>
                         <span class="p">[</span><span class="n">exit_obj</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">exit_aliases</span><span class="p">]</span>
-                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Rerouted its old destination &#39;</span><span class="si">%s</span><span class="s2">&#39; to &#39;</span><span class="si">%s</span><span class="s2">&#39; and changed aliases.&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                        <span class="n">old_destination</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="n">destination</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot; Rerouted its old destination &#39;</span><span class="si">{</span><span class="n">old_destination</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; to&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot; &#39;</span><span class="si">{</span><span class="n">destination</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; and changed aliases.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; It already points to the correct place.&quot;</span>
@@ -1580,16 +1565,14 @@
                 <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s2">&quot;&quot;</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">exit_aliases</span>
-                    <span class="k">else</span> <span class="s2">&quot; (aliases: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exit_aliases</span><span class="p">]))</span>
+                    <span class="k">else</span> <span class="s2">&quot; (aliases: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exit_aliases</span><span class="p">])</span>
                 <span class="p">)</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Created new Exit &#39;</span><span class="si">%s</span><span class="s2">&#39; from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">exit_name</span><span class="p">,</span>
-                    <span class="n">location</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">destination</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">string</span><span class="p">,</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Created new Exit &#39;</span><span class="si">{</span><span class="n">exit_name</span><span class="si">}</span><span class="s2">&#39; from </span><span class="si">{</span><span class="n">location</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">destination</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">string</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Error: Exit &#39;</span><span class="si">%s</span><span class="s2">&#39; not created.&quot;</span> <span class="o">%</span> <span class="n">exit_name</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error: Exit &#39;</span><span class="si">{</span><span class="n">exit</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not created.&quot;</span>
         <span class="c1"># emit results</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">exit_obj</span></div>
@@ -1672,13 +1655,12 @@
         <span class="c1"># treat as string</span>
         <span class="n">strobj</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_str</span><span class="p">(</span><span class="n">strobj</span><span class="p">)</span>
         <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s1">&#39;|RNote: name &quot;|r</span><span class="si">%s</span><span class="s1">|R&quot; was converted to a string. &#39;</span>
-            <span class="s2">&quot;Make sure this is acceptable.&quot;</span> <span class="o">%</span> <span class="n">strobj</span>
+            <span class="sa">f</span><span class="s1">&#39;|RNote: name &quot;|r</span><span class="si">{</span><span class="n">strobj</span><span class="si">}</span><span class="s1">|R&quot; was converted to a string. Make sure this is acceptable.&#39;</span>
         <span class="p">)</span>
         <span class="n">cmd</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">strobj</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|RUnknown error in evaluating Attribute: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|RUnknown error in evaluating Attribute: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">string</span>
 
 
@@ -1929,7 +1911,7 @@
         <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Called when editor saves its buffer.&quot;&quot;&quot;</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Saved Attribute </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved Attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="c1"># check non-strings before activating editor</span>
         <span class="k">try</span><span class="p">:</span>
@@ -2007,11 +1989,11 @@
         <span class="k">if</span> <span class="s2">&quot;edit&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="c1"># edit in the line editor</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to edit </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have permission to edit </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The Line editor can only be applied &quot;</span> <span class="s2">&quot;to one attribute at a time.&quot;</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;The Line editor can only be applied to one attribute at a time.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">attrs</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -2039,7 +2021,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># deleting the attribute(s)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to edit </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have permission to edit </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
                 <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
@@ -2058,7 +2040,7 @@
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)):</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have permission to edit </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You don&#39;t have permission to edit </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_attr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
@@ -2073,7 +2055,7 @@
                         <span class="ow">or</span> <span class="n">parsed_value</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">)</span>
                     <span class="p">):</span>
                         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                            <span class="s2">&quot;You don&#39;t have permission to set &quot;</span> <span class="sa">f</span><span class="s2">&quot;object with identifier &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;You don&#39;t have permission to set object with identifier &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
                         <span class="p">)</span>
                         <span class="k">continue</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">parsed_value</span>
@@ -2083,7 +2065,8 @@
         <span class="c1"># check if anything was done</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="s2">&quot;No valid attributes were found. Usage: set obj/attr[:category] = value. Use empty value to clear.&quot;</span>
+                <span class="s2">&quot;No valid attributes were found. Usage: set obj/attr[:category] = value. Use empty&quot;</span>
+                <span class="s2">&quot; value to clear.&quot;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># send feedback</span>
@@ -2242,21 +2225,18 @@
                         <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">elif</span> <span class="ow">not</span> <span class="n">matches</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No object or typeclass path found to match &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oquery</span><span class="p">))</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No object or typeclass path found to match &#39;</span><span class="si">{</span><span class="n">oquery</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># one match found</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                        <span class="s2">&quot;Docstring for typeclass &#39;</span><span class="si">{}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oquery</span><span class="p">,</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Docstring for typeclass &#39;</span><span class="si">{</span><span class="n">oquery</span><span class="si">}</span><span class="s2">&#39;: </span><span class="se">\n</span><span class="si">{</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># do the search again to get the error handling in case of multi-match</span>
                 <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">oquery</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                     <span class="k">return</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&#39;s current typeclass is &#39;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-                    <span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s current typeclass is&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; &#39;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
                 <span class="p">)</span>
             <span class="k">return</span>
 
@@ -2287,14 +2267,13 @@
                 <span class="n">prototype</span> <span class="o">=</span> <span class="n">prototype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># no match</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;No prototype &#39;</span><span class="si">{}</span><span class="s2">&#39; was found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No prototype &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; was found.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="n">new_typeclass</span> <span class="o">=</span> <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;typeclass&quot;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;force&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;show&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">or</span> <span class="s2">&quot;examine&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&#39;s current typeclass is </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s current typeclass is &#39;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;swap&quot;</span><span class="p">,</span> <span class="s2">&quot;@swap&quot;</span><span class="p">):</span>
@@ -2315,8 +2294,7 @@
         <span class="n">is_same</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span><span class="n">new_typeclass</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">is_same</span> <span class="ow">and</span> <span class="s2">&quot;force&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already has the typeclass &#39;</span><span class="si">{</span><span class="n">new_typeclass</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
-                <span class="s2">&quot;Use /force to override.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already has the typeclass &#39;</span><span class="si">{</span><span class="n">new_typeclass</span><span class="si">}</span><span class="s2">&#39;. Use /force to override.&quot;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">reset</span> <span class="o">=</span> <span class="s2">&quot;reset&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span>
@@ -2327,11 +2305,10 @@
 
             <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
                 <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span>
-                    <span class="s2">&quot;|yNote that this will reset the object back to its typeclass&#39; default state, &quot;</span>
-                    <span class="s2">&quot;removing any custom locks/perms/attributes etc that may have been added &quot;</span>
-                    <span class="s2">&quot;by an explicit create_object call. Use `update` or type/force instead in order &quot;</span>
-                    <span class="s2">&quot;to keep such data. &quot;</span>
-                    <span class="s2">&quot;Continue [Y]/N?|n&quot;</span>
+                    <span class="s2">&quot;|yNote that this will reset the object back to its typeclass&#39; default state,&quot;</span>
+                    <span class="s2">&quot; removing any custom locks/perms/attributes etc that may have been added by an&quot;</span>
+                    <span class="s2">&quot; explicit create_object call. Use `update` or type/force instead in order to&quot;</span>
+                    <span class="s2">&quot; keep such data. Continue [Y]/N?|n&quot;</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;NO&quot;</span><span class="p">):</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">)</span>
@@ -2343,11 +2320,14 @@
                 <span class="n">diff</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">prototype_diff_from_object</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
                 <span class="n">txt</span> <span class="o">=</span> <span class="n">spawner</span><span class="o">.</span><span class="n">format_diff</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
                 <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;Applying prototype &#39;</span><span class="si">%s</span><span class="s2">&#39; over &#39;</span><span class="si">%s</span><span class="s2">&#39; will cause the follow changes:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">],</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;Applying prototype &#39;</span><span class="si">{</span><span class="n">prototype</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; over &#39;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; will cause the&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; follow changes:</span><span class="se">\n</span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">reset</span><span class="p">:</span>
-                    <span class="n">prompt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|yWARNING:|n Use the /reset switch to apply the prototype over a blank state.&quot;</span>
+                    <span class="n">prompt</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|yWARNING:|n Use the /reset switch to apply the prototype over a blank&quot;</span>
+                        <span class="s2">&quot; state.&quot;</span>
+                    <span class="p">)</span>
                 <span class="n">prompt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Are you sure you want to apply these changes [yes]/no?&quot;</span>
                 <span class="n">answer</span> <span class="o">=</span> <span class="k">yield</span> <span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">answer</span> <span class="ow">and</span> <span class="n">answer</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">):</span>
@@ -2365,15 +2345,14 @@
                 <span class="p">)</span>
                 <span class="n">prototype_success</span> <span class="o">=</span> <span class="n">modified</span> <span class="o">&gt;</span> <span class="mi">0</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">prototype_success</span><span class="p">:</span>
-                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Prototype </span><span class="si">%s</span><span class="s2"> failed to apply.&quot;</span> <span class="o">%</span> <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
+                    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prototype </span><span class="si">{</span><span class="n">prototype</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> failed to apply.&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">is_same</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> updated its existing typeclass (</span><span class="si">%s</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> updated its existing typeclass (</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> changed typeclass from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">old_typeclass_path</span><span class="p">,</span>
-                    <span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span><span class="p">,</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> changed typeclass from </span><span class="si">{</span><span class="n">old_typeclass_path</span><span class="si">}</span><span class="s2"> to&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;Only the at_object_creation hook was run (update mode).&quot;</span>
@@ -2382,11 +2361,14 @@
             <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; All old attributes where deleted before the swap.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Attributes set before swap were not removed</span><span class="se">\n</span><span class="s2">(use `swap` or `type/reset` to clear all).&quot;</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="s2">&quot; Attributes set before swap were not removed</span><span class="se">\n</span><span class="s2">(use `swap` or `type/reset` to&quot;</span>
+                    <span class="s2">&quot; clear all).&quot;</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;prototype&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="n">prototype_success</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="s2">&quot; Prototype &#39;</span><span class="si">%s</span><span class="s2">&#39; was successfully applied over the object type.&quot;</span>
-                    <span class="o">%</span> <span class="n">prototype</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+                    <span class="sa">f</span><span class="s2">&quot; Prototype &#39;</span><span class="si">{</span><span class="n">prototype</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; was successfully applied over the object&quot;</span>
+                    <span class="s2">&quot; type.&quot;</span>
                 <span class="p">)</span>
 
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
@@ -2435,12 +2417,11 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">attrs</span><span class="p">:</span>
             <span class="c1"># wipe everything</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Wiped all attributes on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Wiped all attributes on </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">attrname</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">attrname</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Wiped attributes </span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2">.&quot;</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attrs</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Wiped attributes </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
@@ -2486,9 +2467,7 @@
 
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;Usage: lock &lt;object&gt;[ = &lt;lockstring&gt;] or lock[/switch] &quot;</span> <span class="s2">&quot;&lt;object&gt;/&lt;access_type&gt;&quot;</span>
-            <span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Usage: lock &lt;object&gt;[ = &lt;lockstring&gt;] or lock[/switch] &lt;object&gt;/&lt;access_type&gt;&quot;</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -2521,7 +2500,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="n">lockdef</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no lock of access type &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">access_type</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> has no lock of access type &#39;</span><span class="si">{</span><span class="n">access_type</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -2530,9 +2509,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="n">swi</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Switch(es) |w</span><span class="si">%s</span><span class="s2">|n can not be used with a &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Switch(es) |w</span><span class="si">{</span><span class="n">swi</span><span class="si">}</span><span class="s2">|n can not be used with a &quot;</span>
                     <span class="s2">&quot;lock assignment. Use e.g. &quot;</span>
-                    <span class="s2">&quot;|wlock/del objname/locktype|n instead.&quot;</span> <span class="o">%</span> <span class="n">swi</span>
+                    <span class="s2">&quot;|wlock/del objname/locktype|n instead.&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
 
@@ -2560,7 +2539,7 @@
                 <span class="c1"># update on them unless their cmdsets are rebuilt.</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Added lock &#39;</span><span class="si">%s</span><span class="s2">&#39; to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lockdef</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added lock &#39;</span><span class="si">{</span><span class="n">lockdef</span><span class="si">}</span><span class="s2">&#39; to </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># if we get here, we are just viewing all locks on obj</span>
@@ -3179,7 +3158,8 @@
             <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">qs</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">low</span> <span class="ow">and</span> <span class="n">high</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: Min and max ID not returned by aggregation; falling back to queryset slicing.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: Min and max ID not returned by aggregation;&quot;</span>
+                    <span class="s2">&quot; falling back to queryset slicing.&quot;</span>
                 <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -3220,7 +3200,7 @@
 
         <span class="n">restrictions</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
-            <span class="n">restrictions</span> <span class="o">=</span> <span class="s2">&quot;, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">))</span>
+            <span class="n">restrictions</span> <span class="o">=</span> <span class="s2">&quot;, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">is_dbref</span> <span class="ow">or</span> <span class="n">is_account</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">is_dbref</span><span class="p">:</span>
@@ -3243,14 +3223,12 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   |RNo match found.|n&quot;</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   |RNo match found for &#39;</span><span class="si">%s</span><span class="s2">&#39; in #dbref interval.|n&quot;</span> <span class="o">%</span> <span class="n">searchstring</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   |RNo match found for &#39;</span><span class="si">{</span><span class="n">searchstring</span><span class="si">}</span><span class="s2">&#39; in #dbref interval.|n&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|g   </span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">),</span> <span class="n">result</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|g   </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">|n&quot;</span>
                 <span class="k">if</span> <span class="s2">&quot;loc&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_account</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
-                    <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; (|wlocation|n: |g</span><span class="si">{}</span><span class="s2">|n)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">result</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (|wlocation|n: |g</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="si">}</span><span class="s2">|n)&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Not an account/dbref search but a wider search; build a queryset.</span>
             <span class="c1"># Searches for key and aliases</span>
@@ -3535,13 +3513,12 @@
 
                 <span class="k">if</span> <span class="n">new_script</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Global Script Created - &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_script</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">new_script</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">)&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Global Script Created - </span><span class="si">{</span><span class="n">new_script</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">new_script</span><span class="o">.</span><span class="n">typeclass_path</span><span class="si">}</span><span class="s2">)&quot;</span>
                     <span class="p">)</span>
                     <span class="n">ScriptEvMore</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="p">[</span><span class="n">new_script</span><span class="p">],</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Global Script |rNOT|n Created |r(see log)|n - &quot;</span> <span class="sa">f</span><span class="s2">&quot;arguments: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Global Script |rNOT|n Created |r(see log)|n - arguments: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">scripts</span> <span class="ow">or</span> <span class="n">obj</span><span class="p">:</span>
@@ -3576,9 +3553,7 @@
                             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">script_key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">script_typeclass_path</span><span class="si">}</span><span class="s2">)|n&quot;</span>
                         <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scripttype</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">verb</span><span class="si">}</span><span class="s2"> - &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">script_key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">script_typeclass_path</span><span class="si">}</span><span class="s2">)&quot;</span>
-                        <span class="p">)</span>
+                        <span class="n">msgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scripttype</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">verb</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">script_key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">script_typeclass_path</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msgs</span><span class="p">))</span>
                 <span class="k">if</span> <span class="s2">&quot;delete&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">script</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span>
@@ -3750,15 +3725,14 @@
 
             <span class="k">if</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">has_account</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Cannot teleport a puppeted object &quot;</span>
-                    <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">, puppeted by </span><span class="si">%s</span><span class="s2">) to a None-location.&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">account</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cannot teleport a puppeted object (</span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">, puppeted by&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">account</span><span class="si">}</span><span class="s2">) to a None-location.&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Teleported </span><span class="si">%s</span><span class="s2"> -&gt; None-location.&quot;</span> <span class="o">%</span> <span class="n">obj_to_teleport</span><span class="p">)</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Teleported </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> -&gt; None-location.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="ow">and</span> <span class="s2">&quot;quiet&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
                 <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> teleported </span><span class="si">%s</span><span class="s2"> into nothingness.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">obj_to_teleport</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2"> teleported </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> into nothingness.&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span>
                 <span class="p">)</span>
             <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">return</span>
@@ -3786,13 +3760,13 @@
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="ow">and</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">destination</span><span class="p">:</span>
-            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is already at </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_to_teleport</span><span class="p">,</span> <span class="n">destination</span><span class="p">))</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> is already at </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># check any locks</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;Admin&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj_to_teleport</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;teleport&quot;</span><span class="p">)):</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> &#39;teleport&#39;-lock blocks you from teleporting &quot;</span> <span class="s2">&quot;it anywhere.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> &#39;teleport&#39;-lock blocks you from teleporting it anywhere.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
@@ -3801,7 +3775,7 @@
             <span class="ow">or</span> <span class="n">destination</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">obj_to_teleport</span><span class="p">,</span> <span class="s2">&quot;teleport_here&quot;</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2"> &#39;teleport_here&#39;-lock blocks </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> from &quot;</span> <span class="s2">&quot;moving there.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2"> &#39;teleport_here&#39;-lock blocks </span><span class="si">{</span><span class="n">obj_to_teleport</span><span class="si">}</span><span class="s2"> from moving there.&quot;</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
@@ -3931,7 +3905,12 @@
         <span class="c1"># no search/deletion</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
             <span class="c1"># = is found; command args are of the form obj = tag</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># first search locally, then global</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
@@ -3948,7 +3927,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># no = found - list tags on object</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># first search locally, then global</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">global_search</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="n">tagtuples</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_key_and_category</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -3962,7 +3946,7 @@
                     <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">categories</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntags</span><span class="p">))),</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;No tags attached to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No tags attached to </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
@@ -4118,14 +4102,14 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">expect</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">eval_err</span><span class="p">:</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">eval_err</span><span class="si">}</span><span class="se">\n</span><span class="s2">|RCritical Python syntax error in argument. Only primitive &quot;</span>
-                        <span class="s2">&quot;Python structures are allowed. </span><span class="se">\n</span><span class="s2">Make sure to use correct &quot;</span>
-                        <span class="s2">&quot;Python syntax. Remember especially to put quotes around all &quot;</span>
-                        <span class="s2">&quot;strings inside lists and dicts.|n For more advanced uses, embed &quot;</span>
-                        <span class="s2">&quot;funcparser callables ($funcs) in the strings.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">eval_err</span><span class="si">}</span><span class="se">\n</span><span class="s2">|RCritical Python syntax error in argument. Only&quot;</span>
+                        <span class="s2">&quot; primitive Python structures are allowed. </span><span class="se">\n</span><span class="s2">Make sure to use correct&quot;</span>
+                        <span class="s2">&quot; Python syntax. Remember especially to put quotes around all strings&quot;</span>
+                        <span class="s2">&quot; inside lists and dicts.|n For more advanced uses, embed funcparser&quot;</span>
+                        <span class="s2">&quot; callables ($funcs) in the strings.&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Expected </span><span class="si">{}</span><span class="s2">, got </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expect</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">prototype</span><span class="p">))</span>
+                    <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="n">expect</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
                 <span class="k">return</span>
 
@@ -4135,7 +4119,7 @@
             <span class="c1"># TODO: Exec support is deprecated. Remove completely for 1.0.</span>
             <span class="k">if</span> <span class="s2">&quot;exec&quot;</span> <span class="ow">in</span> <span class="n">prototype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">check_permstring</span><span class="p">(</span><span class="s2">&quot;Developer&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Spawn aborted: You are not allowed to &quot;</span> <span class="s2">&quot;use the &#39;exec&#39; prototype key.&quot;</span>
+                    <span class="s2">&quot;Spawn aborted: You are not allowed to use the &#39;exec&#39; prototype key.&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">try</span><span class="p">:</span>
@@ -4320,7 +4304,8 @@
             <span class="c1"># store a prototype to the database store</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Usage: spawn/save [&lt;key&gt;[;desc[;tag,tag[,...][;lockstring]]]] = &lt;prototype_dict&gt;&quot;</span>
+                    <span class="s2">&quot;Usage: spawn/save [&lt;key&gt;[;desc[;tag,tag[,...][;lockstring]]]] =&quot;</span>
+                    <span class="s2">&quot; &lt;prototype_dict&gt;&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>

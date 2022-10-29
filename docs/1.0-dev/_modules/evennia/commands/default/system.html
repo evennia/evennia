@@ -149,7 +149,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;(Reason: </span><span class="si">%s</span><span class="s2">) &quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_BROADCAST_SERVER_RESTART_MESSAGES</span><span class="p">:</span>
-            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="s2">&quot; Server restart initiated </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="n">reason</span><span class="p">)</span>
+            <span class="n">SESSIONS</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Server restart initiated </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
         <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_restart_server</span><span class="p">()</span></div></div>
 
 
@@ -211,7 +211,7 @@
         <span class="n">announcement</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Server is being SHUT DOWN!</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">announcement</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Server shutdown by </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Server shutdown by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="n">SESSIONS</span><span class="o">.</span><span class="n">announce_all</span><span class="p">(</span><span class="n">announcement</span><span class="p">)</span>
         <span class="n">SESSIONS</span><span class="o">.</span><span class="n">portal_shutdown</span><span class="p">()</span></div></div>
 
@@ -558,13 +558,12 @@
 
             <span class="c1"># Boot the account then delete it.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Informing and disconnecting account ...&quot;</span><span class="p">)</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Your account &#39;</span><span class="si">%s</span><span class="s2">&#39; is being *permanently* deleted.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">username</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Your account &#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39; is being *permanently* deleted.</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="k">if</span> <span class="n">reason</span><span class="p">:</span>
                 <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot; Reason given:</span><span class="se">\n</span><span class="s2">  &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">reason</span>
             <span class="n">account</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">log_sec</span><span class="p">(</span>
-                <span class="s2">&quot;Account Deleted: </span><span class="si">%s</span><span class="s2"> (Reason: </span><span class="si">%s</span><span class="s2">, Caller: </span><span class="si">%s</span><span class="s2">, IP: </span><span class="si">%s</span><span class="s2">).&quot;</span>
-                <span class="o">%</span> <span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Account Deleted: </span><span class="si">{</span><span class="n">account</span><span class="si">}</span><span class="s2"> (Reason: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">, Caller: </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">, IP: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">).&quot;</span>
             <span class="p">)</span>
             <span class="n">account</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Account </span><span class="si">%s</span><span class="s2"> was successfully deleted.&quot;</span> <span class="o">%</span> <span class="n">username</span><span class="p">)</span>
@@ -595,8 +594,8 @@
                 <span class="n">utils</span><span class="o">.</span><span class="n">datetime_format</span><span class="p">(</span><span class="n">ply</span><span class="o">.</span><span class="n">date_created</span><span class="p">),</span> <span class="n">ply</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span> <span class="n">ply</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">ply</span><span class="o">.</span><span class="n">path</span>
             <span class="p">)</span>
 
-        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wAccount typeclass distribution:|n</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">typetable</span>
-        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wLast </span><span class="si">%s</span><span class="s2"> Accounts created:|n</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">naccounts</span><span class="p">,</span> <span class="n">nlim</span><span class="p">),</span> <span class="n">latesttable</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wAccount typeclass distribution:|n</span><span class="se">\n</span><span class="si">{</span><span class="n">typetable</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wLast </span><span class="si">{</span><span class="nb">min</span><span class="p">(</span><span class="n">naccounts</span><span class="p">,</span> <span class="n">nlim</span><span class="p">)</span><span class="si">}</span><span class="s2"> Accounts created:|n</span><span class="se">\n</span><span class="si">{</span><span class="n">latesttable</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
 
 
@@ -686,7 +685,7 @@
             <span class="k">if</span> <span class="n">delmode</span><span class="p">:</span>
                 <span class="n">service</span><span class="o">.</span><span class="n">stopService</span><span class="p">()</span>
                 <span class="n">service_collection</span><span class="o">.</span><span class="n">removeService</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|gStopped and removed service &#39;</span><span class="si">%s</span><span class="s2">&#39;.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|gStopped and removed service &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;.|n&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stopping service &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -697,7 +696,7 @@
                         <span class="s2">&quot;If there are remaining problems, try reloading &quot;</span>
                         <span class="s2">&quot;or rebooting the server.&quot;</span>
                     <span class="p">)</span>
-                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|g... Stopped service &#39;</span><span class="si">%s</span><span class="s2">&#39;.|n&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+                <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|g... Stopped service &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;.|n&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">switches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;start&quot;</span><span class="p">:</span>

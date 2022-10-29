@@ -100,8 +100,8 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getmembers</span><span class="p">,</span> <span class="n">getmodule</span><span class="p">,</span> <span class="n">getmro</span><span class="p">,</span> <span class="n">ismodule</span><span class="p">,</span> <span class="n">trace</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">osjoin</span>
-<span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
 <span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">punctuation</span>
+<span class="kn">from</span> <span class="nn">unicodedata</span> <span class="kn">import</span> <span class="n">east_asian_width</span>
 
 <span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
@@ -480,7 +480,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">iterable</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
     <span class="n">len_iter</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="n">addquote</span><span class="p">:</span>
         <span class="n">iterable</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -496,7 +496,7 @@
 
     <span class="c1"># also add a leading space if separator is a word</span>
     <span class="k">if</span> <span class="n">sep</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">punctuation</span><span class="p">:</span>
-        <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">sep</span>
+        <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">sep</span>
 
     <span class="k">if</span> <span class="n">len_iter</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">iterable</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -2363,14 +2363,17 @@
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
-            <span class="c1"># we need to consider Commands, where .aliases is a list</span>
-            <span class="n">aliases</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span>
-            <span class="c1"># remove any pluralization aliases</span>
-            <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">alias</span>
-                <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">alias</span><span class="o">.</span><span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;plural_key&quot;</span><span class="p">,)</span>
-            <span class="p">]</span>
+            <span class="c1"># we need to consider that result could be a Command, where .aliases</span>
+            <span class="c1"># is a list of strings</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">):</span>
+                <span class="c1"># result is a typeclassed entity where `.aliases` is an AliasHandler.</span>
+                <span class="n">aliases</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_objs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="c1"># remove pluralization aliases</span>
+                <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span> <span class="k">if</span> <span class="n">alias</span><span class="o">.</span><span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;plural_key&quot;</span><span class="p">,)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># result is likely a Command, where `.aliases` is a list of strings.</span>
+                <span class="n">aliases</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span>
+
             <span class="n">error</span> <span class="o">+=</span> <span class="n">_MULTIMATCH_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">number</span><span class="o">=</span><span class="n">num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>

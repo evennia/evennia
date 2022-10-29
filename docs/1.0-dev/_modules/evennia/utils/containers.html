@@ -95,8 +95,6 @@
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">callables_from_module</span><span class="p">,</span> <span class="n">class_from_module</span>
 
 <span class="n">SCRIPTDB</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_BASE_SCRIPT_TYPECLASS</span> <span class="o">=</span> <span class="kc">None</span>
-
 
 <div class="viewcode-block" id="Container"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.Container">[docs]</a><span class="k">class</span> <span class="nc">Container</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -277,27 +275,11 @@
 <span class="sd">        initialized.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="p">:</span>
-            <span class="c1"># we don&#39;t always load this, it collides with doc generation</span>
-            <span class="k">global</span> <span class="n">_BASE_SCRIPT_TYPECLASS</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">_BASE_SCRIPT_TYPECLASS</span><span class="p">:</span>
-                <span class="n">_BASE_SCRIPT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_storage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_storage</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">typeclass</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">)</span>
-                    <span class="n">script_typeclass</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">)</span>
-                    <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">script_typeclass</span><span class="p">,</span> <span class="n">_BASE_SCRIPT_TYPECLASS</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">script_typeclass</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;GlobalScriptContainer could not start import global script </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">. &quot;</span>
-                        <span class="s2">&quot;It will be removed (skipped).&quot;</span>
-                    <span class="p">)</span>
-                    <span class="c1"># Let&#39;s remove this key/value. We want to let other scripts load.</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+                <span class="n">typeclass</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;typeclass&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_SCRIPT_TYPECLASS</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GlobalScriptContainer.get"><a class="viewcode-back" href="../../../api/evennia.utils.containers.html#evennia.utils.containers.GlobalScriptContainer.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

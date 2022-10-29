@@ -166,11 +166,28 @@
 <span class="n">PSTATUS</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>  <span class="c1"># ping server or portal status</span>
 <span class="n">SRESET</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>  <span class="c1"># shutdown server in reset mode</span>
 
-<span class="c1"># requirements</span>
-<span class="n">PYTHON_MIN</span> <span class="o">=</span> <span class="s2">&quot;3.9&quot;</span>
-<span class="n">TWISTED_MIN</span> <span class="o">=</span> <span class="s2">&quot;20.3.0&quot;</span>
-<span class="n">DJANGO_MIN</span> <span class="o">=</span> <span class="s2">&quot;4.0.2&quot;</span>
-<span class="n">DJANGO_LT</span> <span class="o">=</span> <span class="s2">&quot;4.1&quot;</span>
+<span class="c1"># live version requirement checks (from VERSION_REQS.txt file)</span>
+<span class="n">PYTHON_MIN</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">PYTHON_MAX_TESTED</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">TWISTED_MIN</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DJANGO_MIN</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DJANGO_LT</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_LIB</span><span class="p">,</span> <span class="s2">&quot;VERSION_REQS.txt&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fil</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;=&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;PYTHON_MIN&quot;</span><span class="p">:</span>
+            <span class="n">PYTHON_MIN</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;PYTHON_MAX_TESTED&quot;</span><span class="p">:</span>
+            <span class="n">PYTHON_MAX_TESTED</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;100&quot;</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;TWISTED_MIN&quot;</span><span class="p">:</span>
+            <span class="n">TWISTED_MIN</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;DJANGO_MIN&quot;</span><span class="p">:</span>
+            <span class="n">DJANGO_MIN</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;DJANGO_LT&quot;</span><span class="p">:</span>
+            <span class="n">DJANGO_LT</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;100&quot;</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">EVENNIA_ROOT</span>
@@ -438,6 +455,12 @@
 <span class="n">ERROR_PYTHON_VERSION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    ERROR: Python </span><span class="si">{pversion}</span><span class="s2"> used. Evennia requires version</span>
 <span class="s2">    </span><span class="si">{python_min}</span><span class="s2"> or higher.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+<span class="n">WARNING_PYTHON_MAX_TESTED_VERSION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    WARNING: Python </span><span class="si">{pversion}</span><span class="s2"> used. Evennia is only tested with Python</span>
+<span class="s2">    versions </span><span class="si">{python_min}</span><span class="s2"> to </span><span class="si">{python_max_tested}</span><span class="s2">. If you see unexpected errors, try</span>
+<span class="s2">    reinstalling with a tested Python version instead.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
 <span class="n">ERROR_TWISTED_VERSION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -1338,6 +1361,13 @@
     <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">pversion</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">PYTHON_MIN</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_PYTHON_VERSION</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pversion</span><span class="o">=</span><span class="n">pversion</span><span class="p">,</span> <span class="n">python_min</span><span class="o">=</span><span class="n">PYTHON_MIN</span><span class="p">))</span>
         <span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">pversion</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">PYTHON_MAX_TESTED</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">WARNING_PYTHON_MAX_TESTED_VERSION</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">pversion</span><span class="o">=</span><span class="n">pversion</span><span class="p">,</span> <span class="n">python_min</span><span class="o">=</span><span class="n">PYTHON_MIN</span><span class="p">,</span> <span class="n">python_max_tested</span><span class="o">=</span><span class="n">PYTHON_MAX_TESTED</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
     <span class="c1"># Twisted</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">twisted</span>
