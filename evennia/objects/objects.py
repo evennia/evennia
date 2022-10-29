@@ -760,6 +760,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             exclude = make_iter(exclude)
             contents = [obj for obj in contents if obj not in exclude]
 
+        # escape existing { in the input to not interfere with mapping
+        inmessage = inmessage.replace("{", "{{")
+        inmessage = inmessage.replace("}", "}}")
+
         for receiver in contents:
 
             # actor-stance replacements
