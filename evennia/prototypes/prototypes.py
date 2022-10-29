@@ -21,15 +21,9 @@ from evennia.utils.create import create_script
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
 from evennia.utils.funcparser import FuncParser
-from evennia.utils.utils import (
-    all_from_module,
-    class_from_module,
-    dbid_to_obj,
-    is_iter,
-    justify,
-    make_iter,
-    variable_from_module,
-)
+from evennia.utils.utils import (all_from_module, class_from_module,
+                                 dbid_to_obj, is_iter, justify, make_iter,
+                                 variable_from_module)
 
 _MODULE_PROTOTYPE_MODULES = {}
 _MODULE_PROTOTYPES = {}
@@ -59,9 +53,25 @@ _PROTOTYPE_TAG_META_CATEGORY = "db_prototype"
 
 _PROTOTYPE_FALLBACK_LOCK = "spawn:all();edit:all()"
 
-
 # the protfunc parser
 FUNC_PARSER = FuncParser(settings.PROT_FUNC_MODULES)
+
+
+class DBPrototypeCache:
+    def __init__(self):
+        self._cache = {}
+
+    def get(self, db_prot_id):
+        return self._cache.get(db_prot_id, None)
+
+    def add(self, db_prot_id, prototype):
+        self._cache[db_prot_id] = prototype
+
+    def remove(self, db_prot_id):
+        self._cache.pop(db_prot_id, None)
+
+
+DB_PROTOTYPE_CACHE = DBPrototypeCache()
 
 
 class PermissionError(RuntimeError):
@@ -440,6 +450,7 @@ def save_prototype(prototype):
             tags=in_prototype["prototype_tags"],
             attributes=[("prototype", in_prototype)],
         )
+    DB_PROTOTYPE_CACHE.add(stored_prototype.prototype)
     return stored_prototype.prototype
 
 
@@ -484,6 +495,7 @@ def delete_prototype(prototype_key, caller=None):
                     "delete prototype {prototype_key}."
                 ).format(caller=caller, prototype_key=prototype_key)
             )
+    DB_PROTOTYPE_CACHE.remove(stored_prototype.prototype)
     stored_prototype.delete()
     return True
 
@@ -588,14 +600,24 @@ def search_prototype(
                 db_matches = db_matches.filter(Q(db_key__icontains=key)).order_by("db_key")
             else:
                 db_matches = exact_match
+            db_ids = db_matches.values_list("id", flat=True)
+            db_matches = Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
+                .values_list("db_value", flat=True)
+                .order_by("scriptdb__db_key")
 
-        # convert to prototype
-        db_ids = db_matches.values_list("id", flat=True)
-        db_matches = (
-            Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
-            .values_list("db_value", flat=True)
-            .order_by("scriptdb__db_key")
-        )
+
+            db_protkeys = db_matches.values_list("db_key", flat=True)
+            # convert to prototype
+            cache = DB_PROTOTYPE_CACHE.get()
+            db_matches = [cache.get(protkey) for protkey in db_protkeys if protkey in cache]
+        else:
+            # fetch and deserialize all data
+            db_ids = db_matches.values_list("id", flat=True)
+            db_matches = (
+                Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
+                .values_list("db_value", flat=True)
+                .order_by("scriptdb__db_key")
+            )
 
     if key and require_single:
         nmodules = len(module_prototypes)
@@ -761,7 +783,7 @@ def list_prototypes(
 
     dbprot_query, modprot_list = search_prototype(key, tags, return_iterators=True)
 
-    if not dbprot_query and not modprot_list:
+    if not dbprot_query.count() and not modprot_list:
         caller.msg(_("No prototypes found."), session=session)
         return None
 
