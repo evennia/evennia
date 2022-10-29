@@ -632,7 +632,7 @@ class TestDefaultCallables(TestCase):
         # single quotes are ignored, so this becomes many entries
         string = "$choice('Tiamat, queen of dragons', 'Dracula, lord of the night')"
         ret = self.parser.parse(string)
-        self.assertIn(ret, ("'Tiamat", "queen of dragons'", "'Dracula", " lord of the night'"))
+        self.assertIn(ret, ("'Tiamat", "queen of dragons'", "'Dracula", "lord of the night'"))
 
     def test_randint(self):
         string = "$randint(1.0, 3.0)"
