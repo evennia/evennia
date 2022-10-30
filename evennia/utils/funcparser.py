@@ -657,10 +657,9 @@ def funcparser_callable_eval(*args, **kwargs):
 def funcparser_callable_toint(*args, **kwargs):
     """Usage: $toint(43.0) -> 43"""
     inp = funcparser_callable_eval(*args, **kwargs)
-    try:
-        return int(inp)
-    except TypeError:
-        return inp
+    if isinstance(inp, str) and inp.isnumeric():
+        inp = int(inp)
+    return inp
 
 
 def funcparser_callable_int2str(*args, **kwargs):
@@ -674,10 +673,9 @@ def funcparser_callable_int2str(*args, **kwargs):
     """
     if not args:
         return ""
-    try:
+    number = args[0]
+    if isinstance(args[0], str) and args[0].isnumeric():
         number = int(args[0])
-    except ValueError:
-        return args[0]
     return int2str(number)
 
 
@@ -900,10 +898,9 @@ def funcparser_callable_pad(*args, **kwargs):
 
     text, *rest = args
     nrest = len(rest)
-    try:
-        width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
-    except TypeError:
-        width = _CLIENT_DEFAULT_WIDTH
+    width = kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH)
+    if isinstance(width, str) and width.isnumeric():
+        width = int(width)
 
     align = kwargs.get("align", rest[1] if nrest > 1 else "c")
     fillchar = kwargs.get("fillchar", rest[2] if nrest > 2 else " ")
@@ -932,10 +929,9 @@ def funcparser_callable_crop(*args, **kwargs):
         return ""
     text, *rest = args
     nrest = len(rest)
-    try:
-        width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
-    except TypeError:
-        width = _CLIENT_DEFAULT_WIDTH
+    width = kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH)
+    if isinstance(width, str) and width.isnumeric():
+        width = int(width)
     suffix = kwargs.get("suffix", rest[1] if nrest > 1 else "[...]")
     return crop(str(text), width=width, suffix=str(suffix))
 
@@ -949,10 +945,9 @@ def funcparser_callable_space(*args, **kwarg):
     """
     if not args:
         return ""
-    try:
-        width = int(args[0])
-    except TypeError:
-        width = 1
+    width = args[0]
+    if isinstance(width, str) and width.isnumeric():
+        width = int(width)
     return " " * width
 
 
