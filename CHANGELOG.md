@@ -207,6 +207,9 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   powerful searches passed into the regular search functions.
 - `spawner.spawn` and linked methods now has a kwarg `protfunc_raise_errors`
   (default True) to disable strict errors on malformed/not-found protfuncs
+- Improve search performance when having many DB-based prototypes via caching.
+- Remove the `return_parents` kwarg of `evennia.prototypes.spawner.spawn` since it
+  was inefficient and unused.
 
 ## Evennia 0.9.5
 
