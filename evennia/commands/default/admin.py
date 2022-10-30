@@ -480,7 +480,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
         # we supplied an argument on the form obj = perm
         locktype = "edit" if accountmode else "control"
         if not obj.access(caller, locktype):
-            accountstr = 'account' if accountmode else 'object'
+            accountstr = "account" if accountmode else "object"
             caller.msg(f"You are not allowed to edit this {accountstr}'s permissions.")
             return
 
@@ -521,9 +521,7 @@ class CmdPerm(COMMAND_DEFAULT_CLASS):
                     return
 
                 if perm in permissions:
-                    caller_result.append(
-                        f"\nPermission '{perm}' is already defined on {obj.name}."
-                    )
+                    caller_result.append(f"\nPermission '{perm}' is already defined on {obj.name}.")
                 else:
                     obj.permissions.add(perm)
                     plystring = "the Account" if accountmode else "the Object/Character"

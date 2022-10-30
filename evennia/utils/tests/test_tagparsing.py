@@ -353,12 +353,9 @@ class TestTextToHTMLparser(TestCase):
 
     def test_non_url_with_www(self):
         self.assertEqual(
-            self.parser.convert_urls('Awwww.this should not be highlighted'),
-            'Awwww.this should not be highlighted'
+            self.parser.convert_urls("Awwww.this should not be highlighted"),
+            "Awwww.this should not be highlighted",
         )
 
     def test_invalid_www_url(self):
-        self.assertEqual(
-            self.parser.convert_urls('www.t'),
-            'www.t'
-        )
+        self.assertEqual(self.parser.convert_urls("www.t"), "www.t")
