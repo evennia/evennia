@@ -748,7 +748,9 @@ def cmdhandler(
                         )
                         if suggestions:
                             sysarg += _(" Maybe you meant {command}?").format(
-                                command=utils.list_to_string(suggestions, endsep=_("or"), addquote=True)
+                                command=utils.list_to_string(
+                                    suggestions, endsep=_("or"), addquote=True
+                                )
                             )
                         else:
                             sysarg += _(' Type "help" for help.')
