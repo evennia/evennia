@@ -145,6 +145,7 @@ from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.prototypes import (
     PROTOTYPE_TAG_CATEGORY,
     init_spawn_value,
+    search_prototype,
     value_to_obj,
     value_to_obj_or_any,
 )
@@ -190,7 +191,7 @@ class Unset:
 # Helper
 
 
-def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
+def _get_prototype(inprot, protparents=None, uninherited=None, _workprot=None):
     """
     Recursively traverse a prototype dictionary, including multiple
     inheritance. Use validate_prototype before this, we don't check
@@ -198,7 +199,9 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
 
     Args:
         inprot (dict): Prototype dict (the individual prototype, with no inheritance included).
-        protparents (dict): Available protparents, keyed by prototype_key.
+        protparents (dict): Custom protparents, supposedly provided specifically for this `inprot`.
+            If given, any parents will first be looked up in this dict, and then by searching
+            the global prototype store given by settings/db.
         uninherited (dict): Parts of prototype to not inherit.
         _workprot (dict, optional): Work dict for the recursive algorithm.
 
@@ -220,6 +223,8 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
         old.update(new)
         return list(old.values())
 
+    protparents = {} if protparents is None else protparents
+
     _workprot = {} if _workprot is None else _workprot
     if "prototype_parent" in inprot:
         # move backwards through the inheritance
@@ -234,8 +239,12 @@ def _get_prototype(inprot, protparents, uninherited=None, _workprot=None):
                 # protparent already embedded as-is
                 parent_prototype = prototype
             else:
-                # protparent given by-name
-                parent_prototype = protparents.get(prototype.lower(), {})
+                # protparent given by-name, first search provided parents, then global store
+                parent_prototype = protparents.get(prototype.lower())
+                if not parent_prototype:
+                    parent_prototype = search_prototype(key=prototype.lower()) or {}
+                    if parent_prototype:
+                        parent_prototype = parent_prototype[0]
 
             # Build the prot dictionary in reverse order, overloading
             new_prot = _get_prototype(parent_prototype, protparents, _workprot=_workprot)
@@ -277,14 +286,9 @@ def flatten_prototype(prototype, validate=False, no_db=False):
 
     if prototype:
         prototype = protlib.homogenize_prototype(prototype)
-        protparents = {
-            prot["prototype_key"].lower(): prot for prot in protlib.search_prototype(no_db=no_db)
-        }
-        protlib.validate_prototype(
-            prototype, None, protparents, is_prototype_base=validate, strict=validate
-        )
+        protlib.validate_prototype(prototype, is_prototype_base=validate, strict=validate)
         return _get_prototype(
-            prototype, protparents, uninherited={"prototype_key": prototype.get("prototype_key")}
+            prototype, uninherited={"prototype_key": prototype.get("prototype_key")}
         )
     return {}
 
@@ -661,6 +665,8 @@ def batch_update_objects_with_prototype(
 
     if isinstance(prototype, str):
         new_prototype = protlib.search_prototype(prototype)
+        if new_prototype:
+            new_prototype = new_prototype[0]
     else:
         new_prototype = prototype
 
@@ -892,10 +898,6 @@ def spawn(*prototypes, caller=None, **kwargs):
         prototype_parents (dict): A dictionary holding a custom
             prototype-parent dictionary. Will overload same-named
             prototypes from prototype_modules.
-        return_parents (bool): Return a dict of the entire prototype-parent tree
-            available to this prototype (no object creation happens). This is a
-            merged result between the globally found protparents and whatever
-            custom `prototype_parents` are given to this function.
         only_validate (bool): Only run validation of prototype/parents
             (no object creation) and return the create-kwargs.
         protfunc_raise_errors (bool): Raise explicit exceptions on a malformed/not-found
@@ -903,8 +905,7 @@ def spawn(*prototypes, caller=None, **kwargs):
 
     Returns:
         object (Object, dict or list): Spawned object(s). If `only_validate` is given, return
-            a list of the creation kwargs to build the object(s) without actually creating it. If
-            `return_parents` is set, instead return dict of prototype parents.
+            a list of the creation kwargs to build the object(s) without actually creating it.
 
     """
     # search string (=prototype_key) from input
@@ -912,9 +913,6 @@ def spawn(*prototypes, caller=None, **kwargs):
         protlib.search_prototype(prot, require_single=True)[0] if isinstance(prot, str) else prot
         for prot in prototypes
     ]
-
-    # get available protparents
-    protparents = {prot["prototype_key"].lower(): prot for prot in protlib.search_prototype()}
 
     if not kwargs.get("only_validate"):
         # homogenization to be more lenient about prototype format when entering the prototype
@@ -924,21 +922,23 @@ def spawn(*prototypes, caller=None, **kwargs):
     # overload module's protparents with specifically given protparents
     # we allow prototype_key to be the key of the protparent dict, to allow for module-level
     # prototype imports. We need to insert prototype_key in this case
+    custom_protparents = {}
     for key, protparent in kwargs.get("prototype_parents", {}).items():
         key = str(key).lower()
         protparent["prototype_key"] = str(protparent.get("prototype_key", key)).lower()
-        protparents[key] = protlib.homogenize_prototype(protparent)
-
-    if "return_parents" in kwargs:
-        # only return the parents
-        return copy.deepcopy(protparents)
+        custom_protparents[key] = protlib.homogenize_prototype(protparent)
 
     objsparams = []
     for prototype in prototypes:
 
-        protlib.validate_prototype(prototype, None, protparents, is_prototype_base=True)
+        # run validation and homogenization of provided prototypes
+        protlib.validate_prototype(
+            prototype, None, protparents=custom_protparents, is_prototype_base=True
+        )
         prot = _get_prototype(
-            prototype, protparents, uninherited={"prototype_key": prototype.get("prototype_key")}
+            prototype,
+            protparents=custom_protparents,
+            uninherited={"prototype_key": prototype.get("prototype_key")},
         )
         if not prot:
             continue

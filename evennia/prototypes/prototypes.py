@@ -21,9 +21,15 @@ from evennia.utils.create import create_script
 from evennia.utils.evmore import EvMore
 from evennia.utils.evtable import EvTable
 from evennia.utils.funcparser import FuncParser
-from evennia.utils.utils import (all_from_module, class_from_module,
-                                 dbid_to_obj, is_iter, justify, make_iter,
-                                 variable_from_module)
+from evennia.utils.utils import (
+    all_from_module,
+    class_from_module,
+    dbid_to_obj,
+    is_iter,
+    justify,
+    make_iter,
+    variable_from_module,
+)
 
 _MODULE_PROTOTYPE_MODULES = {}
 _MODULE_PROTOTYPES = {}
@@ -55,23 +61,6 @@ _PROTOTYPE_FALLBACK_LOCK = "spawn:all();edit:all()"
 
 # the protfunc parser
 FUNC_PARSER = FuncParser(settings.PROT_FUNC_MODULES)
-
-
-class DBPrototypeCache:
-    def __init__(self):
-        self._cache = {}
-
-    def get(self, db_prot_id):
-        return self._cache.get(db_prot_id, None)
-
-    def add(self, db_prot_id, prototype):
-        self._cache[db_prot_id] = prototype
-
-    def remove(self, db_prot_id):
-        self._cache.pop(db_prot_id, None)
-
-
-DB_PROTOTYPE_CACHE = DBPrototypeCache()
 
 
 class PermissionError(RuntimeError):
@@ -312,7 +301,7 @@ def load_module_prototypes(*mod_or_prototypes, override=True):
             prototype_key = mod_or_dict.get("prototype_key")
             if not prototype_key:
                 raise ValidationError(
-                    f"The prototype {mod_or_prototype} does not contain a 'prototype_key'"
+                    f"The prototype {mod_or_dict} does not contain a 'prototype_key'"
                 )
             prots = [(prototype_key, mod_or_dict)]
             mod = None
@@ -339,6 +328,36 @@ def load_module_prototypes(*mod_or_prototypes, override=True):
 
 
 # Db-based prototypes
+
+
+class DBPrototypeCache:
+    """
+    Cache DB-stored prototypes; it can still be slow to initially load 1000s of
+    prototypes, due to having to deserialize all prototype-dicts, but after the
+    first time the cache will be populated and things will be fast.
+
+    """
+
+    def __init__(self):
+        self._cache = {}
+
+    def get(self, db_prot_id):
+        return self._cache.get(db_prot_id, None)
+
+    def add(self, db_prot_id, prototype):
+        self._cache[db_prot_id] = prototype
+
+    def remove(self, db_prot_id):
+        self._cache.pop(db_prot_id, None)
+
+    def clear(self):
+        self._cache = {}
+
+    def replace(self, all_data):
+        self._cache = all_data
+
+
+DB_PROTOTYPE_CACHE = DBPrototypeCache()
 
 
 class DbPrototype(DefaultScript):
@@ -450,7 +469,7 @@ def save_prototype(prototype):
             tags=in_prototype["prototype_tags"],
             attributes=[("prototype", in_prototype)],
         )
-    DB_PROTOTYPE_CACHE.add(stored_prototype.prototype)
+    DB_PROTOTYPE_CACHE.add(stored_prototype.id, stored_prototype.prototype)
     return stored_prototype.prototype
 
 
@@ -495,13 +514,19 @@ def delete_prototype(prototype_key, caller=None):
                     "delete prototype {prototype_key}."
                 ).format(caller=caller, prototype_key=prototype_key)
             )
-    DB_PROTOTYPE_CACHE.remove(stored_prototype.prototype)
+    DB_PROTOTYPE_CACHE.remove(stored_prototype.id)
     stored_prototype.delete()
     return True
 
 
 def search_prototype(
-    key=None, tags=None, require_single=False, return_iterators=False, no_db=False
+    key=None,
+    tags=None,
+    require_single=False,
+    return_iterators=False,
+    no_db=False,
+    page_size=None,
+    page_no=None,
 ):
     """
     Find prototypes based on key and/or tags, or all prototypes.
@@ -525,7 +550,7 @@ def search_prototype(
             no match was found. Note that if neither `key` nor `tags`
             were given, *all* available prototypes will be returned.
         list, queryset: If `return_iterators` are found, this is a list of
-            module-based prototypes followed by a *paginated* queryset of
+            module-based prototypes followed by a queryset of
             db-prototypes.
 
     Raises:
@@ -538,104 +563,117 @@ def search_prototype(
         be found as a match.
 
     """
-    # This will load the prototypes the first time they are searched
-    loaded = getattr(load_module_prototypes, "_LOADED", False)
-    if not loaded:
-        load_module_prototypes()
-        setattr(load_module_prototypes, "_LOADED", True)
 
-    # prototype keys are always in lowecase
-    if key:
-        key = key.lower()
+    def _search_module_based_prototypes(key, tags):
+        """
+        Helper function to load module-based prots.
 
-    # search module prototypes
+        """
+        # This will load the prototypes the first time they are searched
+        loaded = getattr(load_module_prototypes, "_LOADED", False)
+        if not loaded:
+            load_module_prototypes()
+            setattr(load_module_prototypes, "_LOADED", True)
 
-    mod_matches = {}
-    if tags:
-        # use tags to limit selection
-        tagset = set(tags)
-        mod_matches = {
-            prototype_key: prototype
-            for prototype_key, prototype in _MODULE_PROTOTYPES.items()
-            if tagset.intersection(prototype.get("prototype_tags", []))
-        }
-    else:
-        mod_matches = _MODULE_PROTOTYPES
+        # search module prototypes
 
-    allow_fuzzy = True
-    if key:
-        if key in mod_matches:
-            # exact match
-            module_prototypes = [mod_matches[key].copy()]
-            allow_fuzzy = False
+        mod_matches = {}
+        if tags:
+            # use tags to limit selection
+            tagset = set(tags)
+            mod_matches = {
+                prototype_key: prototype
+                for prototype_key, prototype in _MODULE_PROTOTYPES.items()
+                if tagset.intersection(prototype.get("prototype_tags", []))
+            }
         else:
-            # fuzzy matching
-            module_prototypes = [
-                prototype
-                for prototype_key, prototype in mod_matches.items()
-                if key in prototype_key
-            ]
-    else:
-        # note - we return a copy of the prototype dict, otherwise using this with e.g.
-        # prototype_from_object will modify the base prototype for every object
-        module_prototypes = [match.copy() for match in mod_matches.values()]
+            mod_matches = _MODULE_PROTOTYPES
 
-    if no_db:
-        db_matches = []
-    else:
+        fuzzy_match_db = True
+        if key:
+            if key in mod_matches:
+                # exact match
+                module_prototypes = [mod_matches[key].copy()]
+                fuzzy_match_db = False
+            else:
+                # fuzzy matching
+                module_prototypes = [
+                    prototype
+                    for prototype_key, prototype in mod_matches.items()
+                    if key in prototype_key
+                ]
+        else:
+            # note - we return a copy of the prototype dict, otherwise using this with e.g.
+            # prototype_from_object will modify the base prototype for every object
+            module_prototypes = [match.copy() for match in mod_matches.values()]
+
+        return module_prototypes, fuzzy_match_db
+
+    def _search_db_based_prototypes(key, tags, fuzzy_matching):
+        """
+        Helper function for loading db-based prots.
+
+        """
         # search db-stored prototypes
         if tags:
             # exact match on tag(s)
             tags = make_iter(tags)
             tag_categories = ["db_prototype" for _ in tags]
-            db_matches = DbPrototype.objects.get_by_tag(tags, tag_categories)
+            query = DbPrototype.objects.get_by_tag(tags, tag_categories)
         else:
-            db_matches = DbPrototype.objects.all()
+            query = DbPrototype.objects.all()
 
         if key:
             # exact or partial match on key
-            exact_match = db_matches.filter(Q(db_key__iexact=key)).order_by("db_key")
-            if not exact_match and allow_fuzzy:
+            exact_match = query.filter(Q(db_key__iexact=key))
+            if not exact_match and fuzzy_matching:
                 # try with partial match instead
-                db_matches = db_matches.filter(Q(db_key__icontains=key)).order_by("db_key")
+                query = query.filter(Q(db_key__icontains=key))
             else:
-                db_matches = exact_match
-            db_ids = db_matches.values_list("id", flat=True)
-            db_matches = Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
-                .values_list("db_value", flat=True)
-                .order_by("scriptdb__db_key")
+                query = exact_match
 
+        # convert to prototype, cached or from db
 
-            db_protkeys = db_matches.values_list("db_key", flat=True)
-            # convert to prototype
-            cache = DB_PROTOTYPE_CACHE.get()
-            db_matches = [cache.get(protkey) for protkey in db_protkeys if protkey in cache]
-        else:
-            # fetch and deserialize all data
-            db_ids = db_matches.values_list("id", flat=True)
-            db_matches = (
-                Attribute.objects.filter(scriptdb__pk__in=db_ids, db_key="prototype")
+        db_matches = []
+        not_found = []
+        for db_id in query.values_list("id", flat=True).order_by("db_key"):
+            prot = DB_PROTOTYPE_CACHE.get(db_id)
+            if prot:
+                db_matches.append(prot)
+            else:
+                not_found.append(db_id)
+
+        if not_found:
+            new_db_matches = (
+                Attribute.objects.filter(scriptdb__pk__in=not_found, db_key="prototype")
                 .values_list("db_value", flat=True)
                 .order_by("scriptdb__db_key")
             )
+            for db_id, prot in zip(not_found, new_db_matches):
+                DB_PROTOTYPE_CACHE.add(db_id, prot)
+            db_matches.extend(list(new_db_matches))
+
+        return db_matches
+
+    if key:
+        key = key.lower()
+
+    module_prototypes, fuzzy_match_db = _search_module_based_prototypes(key, tags)
+
+    db_prototypes = [] if no_db else _search_db_based_prototypes(key, tags, fuzzy_match_db)
 
     if key and require_single:
-        nmodules = len(module_prototypes)
-        ndbprots = db_matches.count() if db_matches else 0
-        if nmodules + ndbprots != 1:
-            raise KeyError(
-                _("Found {num} matching prototypes among {module_prototypes}.").format(
-                    num=nmodules + ndbprots, module_prototypes=module_prototypes
-                )
-            )
+        num = len(module_prototypes) + len(db_prototypes)
+        if num != 1:
+            raise KeyError(_(f"Found {num} matching prototypes."))
 
     if return_iterators:
         # trying to get the entire set of prototypes - we must paginate
         # the result instead of trying to fetch the entire set at once
-        return db_matches, module_prototypes
+        return db_prototypes, module_prototypes
     else:
         # full fetch, no pagination (compatibility mode)
-        return list(db_matches) + module_prototypes
+        return list(db_prototypes) + module_prototypes
 
 
 def search_objects_with_prototype(prototype_key):
@@ -686,7 +724,7 @@ class PrototypeEvMore(EvMore):
         # of each.
         n_mod = len(modprot_list)
         self._npages_mod = n_mod // self.height + (0 if n_mod % self.height == 0 else 1)
-        self._db_count = dbprot_paged.count
+        self._db_count = dbprot_paged.count if dbprot_paged else 0
         self._npages_db = dbprot_paged.num_pages if self._db_count > 0 else 0
         # total number of pages
         self._npages = self._npages_mod + self._npages_db
@@ -783,7 +821,7 @@ def list_prototypes(
 
     dbprot_query, modprot_list = search_prototype(key, tags, return_iterators=True)
 
-    if not dbprot_query.count() and not modprot_list:
+    if not dbprot_query and not modprot_list:
         caller.msg(_("No prototypes found."), session=session)
         return None
 
@@ -807,8 +845,9 @@ def validate_prototype(
         prototype (dict): Prototype to validate.
         protkey (str, optional): The name of the prototype definition. If not given, the prototype
             dict needs to have the `prototype_key` field set.
-        protpartents (dict, optional): The available prototype parent library. If
-            note given this will be determined from settings/database.
+        protparents (dict, optional): Additional prototype-parents, supposedly provided specifically
+            for this prototype. If given, matching parents will first be taken from this
+            dict rather than from the global set of prototypes found via settings/database.
         is_prototype_base (bool, optional): We are trying to create a new object *based on this
             object*. This means we can't allow 'mixin'-style prototypes without typeclass/parent
             etc.
@@ -822,15 +861,10 @@ def validate_prototype(
 
     """
     assert isinstance(prototype, dict)
+    protparents = {} if protparents is None else protparents
 
     if _flags is None:
         _flags = {"visited": [], "depth": 0, "typeclass": False, "errors": [], "warnings": []}
-
-    if not protparents:
-        protparents = {
-            prototype.get("prototype_key", "").lower(): prototype
-            for prototype in search_prototype()
-        }
 
     protkey = protkey and protkey.lower() or prototype.get("prototype_key", None)
 
@@ -883,13 +917,20 @@ def validate_prototype(
                 _flags["errors"].append(
                     _("Prototype {protkey} tries to parent itself.").format(protkey=protkey)
                 )
+
+            # get prototype parent, first try custom set, then search globally
             protparent = protparents.get(protstring)
             if not protparent:
-                _flags["errors"].append(
-                    _(
-                        "Prototype {protkey}'s `prototype_parent` (named '{parent}') was not found."
-                    ).format(protkey=protkey, parent=protstring)
-                )
+                protparent = search_prototype(key=protstring, require_single=True)
+                if protparent:
+                    protparent = protparent[0]
+                else:
+                    _flags["errors"].append(
+                        _(
+                            "Prototype {protkey}'s `prototype_parent` (named '{parent}') was not"
+                            " found."
+                        ).format(protkey=protkey, parent=protstring)
+                    )
 
         # check for infinite recursion
         if id(prototype) in _flags["visited"]:
@@ -906,7 +947,11 @@ def validate_prototype(
 
         # next step of recursive validation
         validate_prototype(
-            protparent, protstring, protparents, is_prototype_base=is_prototype_base, _flags=_flags
+            protparent,
+            protkey=protstring,
+            protparents=protparents,
+            is_prototype_base=is_prototype_base,
+            _flags=_flags,
         )
 
         _flags["visited"].pop()
@@ -967,7 +1012,8 @@ def protfunc_parser(
         available_functions (dict, optional): Mapping of name:protfunction to use for this parsing.
             If not set, use default sources.
         stacktrace (bool, optional): If set, print the stack parsing process of the protfunc-parser.
-        raise_errors (bool, optional): Raise explicit errors from malformed/not found protfunc calls.
+        raise_errors (bool, optional): Raise explicit errors from malformed/not found protfunc
+            calls.
 
     Keyword Args:
         session (Session): Passed to protfunc. Session of the entity spawning the prototype.
@@ -1117,8 +1163,10 @@ def check_permission(prototype_key, action, default=True):
             logger.log_err(err.format(protkey=prototype_key, module=mod))
             return False
 
-    prototype = search_prototype(key=prototype_key)
-    if not prototype:
+    prototype = search_prototype(key=prototype_key, require_single=True)
+    if prototype:
+        prototype = prototype[0]
+    else:
         logger.log_err("Prototype {} not found.".format(prototype_key))
         return False
 
