@@ -279,7 +279,7 @@ class TestPronounMapping(TestCase):
             ("you", "m", "you", "he"),
             ("you", "f op", "you", "her"),
             ("I", "", "I", "it"),
-            ("I", "p", "I", "it"), # plural is invalid
+            ("I", "p", "I", "it"),  # plural is invalid
             ("I", "m", "I", "he"),
             ("Me", "n", "Me", "It"),
             ("your", "p", "your", "their"),

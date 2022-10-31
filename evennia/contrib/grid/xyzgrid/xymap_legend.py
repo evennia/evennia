@@ -321,7 +321,9 @@ class MapNode:
             # with proper coordinates etc
             typeclass = self.prototype.get("typeclass")
             if typeclass is None:
-                raise MapError(f"The prototype {self.prototype} for this node has no 'typeclass' key.", self)
+                raise MapError(
+                    f"The prototype {self.prototype} for this node has no 'typeclass' key.", self
+                )
             self.log(f"  spawning room at xyz={xyz} ({typeclass})")
             Typeclass = class_from_module(typeclass)
             nodeobj, err = Typeclass.create(self.prototype.get("key", "An empty room"), xyz=xyz)
@@ -405,7 +407,10 @@ class MapNode:
                 prot = maplinks[key.lower()][3].prototype
                 typeclass = prot.get("typeclass")
                 if typeclass is None:
-                    raise MapError(f"The prototype {self.prototype} for this node has no 'typeclass' key.", self)
+                    raise MapError(
+                        f"The prototype {self.prototype} for this node has no 'typeclass' key.",
+                        self,
+                    )
                 self.log(f"  spawning/updating exit xyz={xyz}, direction={key} ({typeclass})")
 
                 Typeclass = class_from_module(typeclass)

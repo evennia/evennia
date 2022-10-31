@@ -98,17 +98,16 @@ except ImportError:
         "copy 'evennia/game_template/server/conf/web_plugins.py to mygame/server/conf."
     )
 
-
 # Maintenance function - this is called repeatedly by the server
+
+_IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
+_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
+_LAST_SERVER_TIME_SNAPSHOT = 0
 
 _MAINTENANCE_COUNT = 0
 _FLUSH_CACHE = None
-_IDMAPPER_CACHE_MAXSIZE = settings.IDMAPPER_CACHE_MAXSIZE
 _GAMETIME_MODULE = None
 _DEFAULTOBJECT = None
-
-_IDLE_TIMEOUT = settings.IDLE_TIMEOUT
-_LAST_SERVER_TIME_SNAPSHOT = 0
 
 
 def _server_maintenance():
@@ -120,9 +119,11 @@ def _server_maintenance():
     global _LAST_SERVER_TIME_SNAPSHOT
     global _OBJECTDB
 
-    if not _FLUSH_CACHE:
+    if not _OBJECTDB:
         from evennia.objects.models import ObjectDB as _OBJECTDB
+    if not _GAMETIME_MODULE:
         from evennia.utils import gametime as _GAMETIME_MODULE
+    if not _FLUSH_CACHE:
         from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
 
     _MAINTENANCE_COUNT += 1

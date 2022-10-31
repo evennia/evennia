@@ -343,6 +343,7 @@ class CraftingRecipeBase:
 
 class NonExistentRecipe(CraftingRecipeBase):
     """A recipe that does not exist and never produces anything."""
+
     allow_craft = True
     allow_reuse = True
 

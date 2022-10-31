@@ -668,7 +668,9 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     self.msg(f"Option |w{new_name}|n was kept as '|w{old_val}|n'.")
                 else:
                     flags[new_name] = new_val
-                    self.msg(f"Option |w{new_name}|n was changed from '|w{old_val}|n' to '|w{new_val}|n'.")
+                    self.msg(
+                        f"Option |w{new_name}|n was changed from '|w{old_val}|n' to '|w{new_val}|n'."
+                    )
                 return {new_name: new_val}
             except Exception as err:
                 self.msg(f"|rCould not set option |w{new_name}|r:|n {err}")
@@ -759,7 +761,9 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
             account.set_password(newpass)
             account.save()
             self.msg("Password changed.")
-            logger.log_sec(f"Password Changed: {account} (Caller: {account}, IP: {self.session.address}).")
+            logger.log_sec(
+                f"Password Changed: {account} (Caller: {account}, IP: {self.session.address})."
+            )
 
 
 class CmdQuit(COMMAND_DEFAULT_CLASS):
