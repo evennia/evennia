@@ -107,7 +107,7 @@ _LAST_SERVER_TIME_SNAPSHOT = 0
 _MAINTENANCE_COUNT = 0
 _FLUSH_CACHE = None
 _GAMETIME_MODULE = None
-_DEFAULTOBJECT = None
+_OBJECTDB = None
 
 
 def _server_maintenance():
