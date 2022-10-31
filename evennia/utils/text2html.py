@@ -90,8 +90,10 @@ class TextToHTMLparser(object):
     re_url = re.compile(
         r'(?<!=")(\b(?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&\w+;)[^"\',;$*^\\(){}<>\[\]\s])+)(\.(?:\s|$)|&\w+;|)'
     )
-    re_protocol = re.compile(r'^(?:ftp|https?)://')
-    re_valid_no_protocol = re.compile(r'^(?:www|ftp)\.[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*')
+    re_protocol = re.compile(r"^(?:ftp|https?)://")
+    re_valid_no_protocol = re.compile(
+        r"^(?:www|ftp)\.[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*"
+    )
     re_mxplink = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)
     re_mxpurl = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
 
@@ -151,20 +153,24 @@ class TextToHTMLparser(object):
         """
         m = self.re_url.search(text)
         if m:
-          href = m.group(1)
-          label = href
-          # if there is no protocol (i.e. starts with www or ftp)
-          # prefix with http:// so the link isn't treated as relative
-          if not self.re_protocol.match(href):
-            if not self.re_valid_no_protocol.match(href):
-              return text
-            href = "http://" + href
-          rest = m.group(2)
-          # -> added target to output prevent the web browser from attempting to
-          # change pages (and losing our webclient session).
-          return text[:m.start()] + f'<a href="{href}" target="_blank">{label}</a>{rest}' + text[m.end():]
+            href = m.group(1)
+            label = href
+            # if there is no protocol (i.e. starts with www or ftp)
+            # prefix with http:// so the link isn't treated as relative
+            if not self.re_protocol.match(href):
+                if not self.re_valid_no_protocol.match(href):
+                    return text
+                href = "http://" + href
+            rest = m.group(2)
+            # -> added target to output prevent the web browser from attempting to
+            # change pages (and losing our webclient session).
+            return (
+                text[: m.start()]
+                + f'<a href="{href}" target="_blank">{label}</a>{rest}'
+                + text[m.end() :]
+            )
         else:
-          return text
+            return text
 
     def sub_mxp_links(self, match):
         """

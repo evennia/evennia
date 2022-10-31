@@ -20,6 +20,7 @@ from evennia.utils.utils import callables_from_module, class_from_module
 
 SCRIPTDB = None
 
+
 class Container:
     """
     Base container class. A container is simply a storage object whose
@@ -203,7 +204,9 @@ class GlobalScriptContainer(Container):
             self.typeclass_storage = {}
             for key, data in list(self.loaded_data.items()):
                 typeclass = data.get("typeclass", settings.BASE_SCRIPT_TYPECLASS)
-                self.typeclass_storage[key] = class_from_module(typeclass, fallback=settings.BASE_SCRIPT_TYPECLASS)
+                self.typeclass_storage[key] = class_from_module(
+                    typeclass, fallback=settings.BASE_SCRIPT_TYPECLASS
+                )
 
     def get(self, key, default=None):
         """

@@ -1421,16 +1421,19 @@ class TestBuildExampleGrid(BaseEvenniaTest):
 mock_room_callbacks = mock.MagicMock()
 mock_exit_callbacks = mock.MagicMock()
 
+
 class TestXyzRoom(xyzroom.XYZRoom):
-  def at_object_creation(self):
-    mock_room_callbacks.at_object_creation()
+    def at_object_creation(self):
+        mock_room_callbacks.at_object_creation()
+
 
 class TestXyzExit(xyzroom.XYZExit):
-  def at_object_creation(self):
-    mock_exit_callbacks.at_object_creation()
+    def at_object_creation(self):
+        mock_exit_callbacks.at_object_creation()
+
 
 MAP_DATA = {
-  "map": """
+    "map": """
 
     + 0 1
 
@@ -1439,35 +1442,37 @@ MAP_DATA = {
     + 0 1
 
   """,
-  "zcoord": "map1",
-  "prototypes": {
-     ("*", "*"): {
-       "key": "room",
-       "desc": "A room.",
-       "prototype_parent": "xyz_room",
-     },
-     ("*", "*", "*"): {
-       "desc": "A passage.",
-       "prototype_parent": "xyz_exit",
-     }
-  },
-  "options": {
-    "map_visual_range": 1,
-    "map_mode": "scan",
-  }
+    "zcoord": "map1",
+    "prototypes": {
+        ("*", "*"): {
+            "key": "room",
+            "desc": "A room.",
+            "prototype_parent": "xyz_room",
+        },
+        ("*", "*", "*"): {
+            "desc": "A passage.",
+            "prototype_parent": "xyz_exit",
+        },
+    },
+    "options": {
+        "map_visual_range": 1,
+        "map_mode": "scan",
+    },
 }
+
 
 class TestCallbacks(BaseEvenniaTest):
     def setUp(self):
         super().setUp()
         mock_room_callbacks.reset_mock()
         mock_exit_callbacks.reset_mock()
-        
+
     def setup_grid(self, map_data):
         self.grid, err = xyzgrid.XYZGrid.create("testgrid")
 
         def _log(msg):
-             print(msg)
+            print(msg)
+
         self.grid.log = _log
 
         self.map_data = map_data
@@ -1489,5 +1494,9 @@ class TestCallbacks(BaseEvenniaTest):
         self.grid.spawn()
 
         # Two rooms and 2 exits, Each one should have gotten one `at_object_creation` callback.
-        self.assertEqual(mock_room_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
-        self.assertEqual(mock_exit_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()])
+        self.assertEqual(
+            mock_room_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()]
+        )
+        self.assertEqual(
+            mock_exit_callbacks.at_object_creation.mock_calls, [mock.call(), mock.call()]
+        )

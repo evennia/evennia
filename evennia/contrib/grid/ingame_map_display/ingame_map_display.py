@@ -61,21 +61,21 @@ from django.conf import settings
 from evennia import CmdSet
 from evennia.commands.default.muxcommand import MuxCommand
 
-_BASIC_MAP_SIZE = settings.BASIC_MAP_SIZE if hasattr(settings, 'BASIC_MAP_SIZE') else 2
-_MAX_MAP_SIZE = settings.BASIC_MAP_SIZE if hasattr(settings, 'MAX_MAP_SIZE') else 10
+_BASIC_MAP_SIZE = settings.BASIC_MAP_SIZE if hasattr(settings, "BASIC_MAP_SIZE") else 2
+_MAX_MAP_SIZE = settings.BASIC_MAP_SIZE if hasattr(settings, "MAX_MAP_SIZE") else 10
 
 # _COMPASS_DIRECTIONS specifies which way to move the pointer on the x/y axes and what characters to use to depict the exits on the map.
 _COMPASS_DIRECTIONS = {
-    'north': (0, -3, ' | '),
-    'south': (0, 3, ' | '),
-    'east': (3, 0, '-'),
-    'west': (-3, 0, '-'),
-    'northeast': (3, -3, '/'),
-    'northwest': (-3, -3, '\\'),
-    'southeast': (3, 3, '\\'),
-    'southwest': (-3, 3, '/'),
-    'up': (0, 0, '^'),
-    'down': (0, 0, 'v')
+    "north": (0, -3, " | "),
+    "south": (0, 3, " | "),
+    "east": (3, 0, "-"),
+    "west": (-3, 0, "-"),
+    "northeast": (3, -3, "/"),
+    "northwest": (-3, -3, "\\"),
+    "southeast": (3, 3, "\\"),
+    "southwest": (-3, 3, "/"),
+    "up": (0, 0, "^"),
+    "down": (0, 0, "v"),
 }
 
 
@@ -91,7 +91,7 @@ class Map(object):
         """
         self.start_time = time.time()
         self.caller = caller
-        self.max_width = int(size * 2 + 1) * 5   # This must be an odd number
+        self.max_width = int(size * 2 + 1) * 5  # This must be an odd number
         self.max_length = int(size * 2 + 1) * 3  # This must be an odd number
         self.has_mapped = {}
         self.curX = None
@@ -109,8 +109,8 @@ class Map(object):
         board = []
         for row in range(self.max_length):
             board.append([])
-            for column in range(int(self.max_width/5)):
-                board[row].extend([' ', '   ', ' '])
+            for column in range(int(self.max_width / 5)):
+                board[row].extend([" ", "   ", " "])
         return board
 
     def exit_name_as_ordinal(self, ex):
@@ -124,11 +124,13 @@ class Map(object):
         """
         exit_name = ex.name
         if exit_name not in _COMPASS_DIRECTIONS:
-            compass_aliases = [direction in ex.aliases.all() for direction in _COMPASS_DIRECTIONS.keys()]
+            compass_aliases = [
+                direction in ex.aliases.all() for direction in _COMPASS_DIRECTIONS.keys()
+            ]
             if compass_aliases[0]:
                 exit_name = compass_aliases[0]
             if exit_name not in _COMPASS_DIRECTIONS:
-                return ''
+                return ""
         return exit_name
 
     def update_pos(self, room, exit_name):
@@ -179,7 +181,7 @@ class Map(object):
         # Additionally, if the name of the exit is not ordinal but an alias of it is, use that.
         for ex in [x for x in room.exits if x.access(self.caller, "traverse")]:
             ex_name = self.exit_name_as_ordinal(ex)
-            if not ex_name or ex_name in ['up', 'down']:
+            if not ex_name or ex_name in ["up", "down"]:
                 continue
             if self.has_drawn(ex.destination):
                 continue
@@ -201,20 +203,20 @@ class Map(object):
                 continue
 
             ex_character = _COMPASS_DIRECTIONS[ex_name][2]
-            delta_x = int(_COMPASS_DIRECTIONS[ex_name][1]/3)
-            delta_y = int(_COMPASS_DIRECTIONS[ex_name][0]/3)
+            delta_x = int(_COMPASS_DIRECTIONS[ex_name][1] / 3)
+            delta_y = int(_COMPASS_DIRECTIONS[ex_name][0] / 3)
 
             # Make modifications if the exit has BOTH up and down exits
-            if ex_name == 'up':
-                if 'v' in self.grid[x][y]:
-                    self.render_room(room, x, y, p1='^', p2='v')
+            if ex_name == "up":
+                if "v" in self.grid[x][y]:
+                    self.render_room(room, x, y, p1="^", p2="v")
                 else:
-                    self.render_room(room, x, y, here='^')
-            elif ex_name == 'down':
-                if '^' in self.grid[x][y]:
-                    self.render_room(room, x, y, p1='^', p2='v')
+                    self.render_room(room, x, y, here="^")
+            elif ex_name == "down":
+                if "^" in self.grid[x][y]:
+                    self.render_room(room, x, y, p1="^", p2="v")
                 else:
-                    self.render_room(room, x, y, here='v')
+                    self.render_room(room, x, y, here="v")
             else:
                 self.grid[x + delta_x][y + delta_y] = ex_character
 
@@ -234,7 +236,7 @@ class Map(object):
             self.has_mapped[room] = [self.curX, self.curY]
             self.render_room(room, self.curX, self.curY)
 
-    def render_room(self, room, x, y, p1='[', p2=']', here=None):
+    def render_room(self, room, x, y, p1="[", p2="]", here=None):
         """
         Draw a given room with ascii characters
 
@@ -253,7 +255,7 @@ class Map(object):
         you[0] = f"{p1}|n"
         you[1] = f"{here if here else you[1]}"
         if room == self.caller.location:
-            you[1] = '|[x|co|n'  # Highlight the location you are currently in
+            you[1] = "|[x|co|n"  # Highlight the location you are currently in
         you[2] = f"{p2}|n"
 
         self.grid[x][y] = "".join(you)
@@ -300,6 +302,7 @@ class CmdMap(MuxCommand):
 
     Usage: map (optional size)
     """
+
     key = "map"
 
     def func(self):
