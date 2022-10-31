@@ -8,6 +8,7 @@ TESTS ?= evennia
 default:
 	@echo " Usage: "
 	@echo "  make install - install evennia (recommended to activate virtualenv first)"
+	@echo "  make installextra - install evennia with extra-requirements (activate virtualenv first)"
 	@echo "  make fmt/format - run the black autoformatter on the source code"
 	@echo "  make lint - run black in --check mode"
 	@echo "  make test - run evennia test suite with all default values."
@@ -16,6 +17,10 @@ default:
 
 install:
 	pip install -e .
+
+installextra:
+	pip install -e .
+	pip install -r requirements_extra.txt
 
 format:
 	black $(BLACK_FORMAT_CONFIGS) evennia
