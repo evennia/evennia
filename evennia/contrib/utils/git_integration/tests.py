@@ -11,6 +11,7 @@ import git
 import mock
 import datetime
 
+
 class TestGitIntegration(EvenniaTest):
     @mock.patch("git.Repo")
     @mock.patch("git.Git")
@@ -45,11 +46,15 @@ class TestGitIntegration(EvenniaTest):
         test_cmd_git.caller = self.char1
         test_cmd_git.args = "nonexistent_branch"
         self.test_cmd_git = test_cmd_git
-        
+
     def test_git_status(self):
         time_of_commit = datetime.datetime.fromtimestamp(self.test_cmd_git.commit.committed_date)
-        status_msg = '\n'.join([f"Branch: |w{self.test_cmd_git.branch}|n ({self.test_cmd_git.repo.git.rev_parse(self.test_cmd_git.commit.hexsha, short=True)}) ({time_of_commit})",
-        f"By {self.test_cmd_git.commit.author.email}: {self.test_cmd_git.commit.message}"])
+        status_msg = "\n".join(
+            [
+                f"Branch: |w{self.test_cmd_git.branch}|n ({self.test_cmd_git.repo.git.rev_parse(self.test_cmd_git.commit.hexsha, short=True)}) ({time_of_commit})",
+                f"By {self.test_cmd_git.commit.author.email}: {self.test_cmd_git.commit.message}",
+            ]
+        )
         self.assertEqual(status_msg, self.test_cmd_git.get_status())
 
     def test_git_branch(self):
@@ -62,8 +67,9 @@ class TestGitIntegration(EvenniaTest):
         # Checkout no branch
         self.test_cmd_git.checkout()
         self.char1.msg.assert_called_with("Branch 'nonexistent_branch' not available.")
-        
+
     def test_git_pull(self):
         self.test_cmd_git.pull()
-        self.char1.msg.assert_called_with(f"You have pulled new code. Server restart initiated.|/Head now at {self.repo.git.rev_parse(self.repo.head.commit.hexsha, short=True)}.|/Author: {self.repo.head.commit.author.name} ({self.repo.head.commit.author.email})|/{self.repo.head.commit.message.strip()}")
-    
+        self.char1.msg.assert_called_with(
+            f"You have pulled new code. Server restart initiated.|/Head now at {self.repo.git.rev_parse(self.repo.head.commit.hexsha, short=True)}.|/Author: {self.repo.head.commit.author.name} ({self.repo.head.commit.author.email})|/{self.repo.head.commit.message.strip()}"
+        )
