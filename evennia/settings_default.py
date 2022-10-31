@@ -301,8 +301,10 @@ ATTRIBUTE_STORED_MODEL_RENAME = [
     (("players", "playerdb"), ("accounts", "accountdb")),
     (("typeclasses", "defaultplayer"), ("typeclasses", "defaultaccount")),
 ]
-# Default type of autofield (required by Django)
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+# Default type of autofield (required by Django), which defines the type of
+# primary key fields for all tables. This type is guaranteed to be at least a
+# 64-bit integer.
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ######################################################################
 # Evennia webclient options
