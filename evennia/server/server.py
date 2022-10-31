@@ -120,7 +120,7 @@ def _server_maintenance():
     global _LAST_SERVER_TIME_SNAPSHOT
     global _OBJECTDB
 
-    if not _FLUSH_CACHE:
+    if not _MAINTENANCE_COUNT:
         from evennia.objects.models import ObjectDB as _OBJECTDB
         from evennia.utils import gametime as _GAMETIME_MODULE
         from evennia.utils.idmapper.models import conditional_flush as _FLUSH_CACHE
