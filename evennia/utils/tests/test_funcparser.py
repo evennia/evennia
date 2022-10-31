@@ -252,25 +252,37 @@ class TestFuncParser(TestCase):
         with self.assertRaises(funcparser.ParsingError):
             self.parser.parse(unparseable, raise_errors=True)
 
-    @patch("evennia.utils.funcparser._MAX_NESTING", 2)
-    def test_parse_max_nesting(self):
+    @parameterized.expand(
+        [
+            # max_nest, cause error for 4 nested funcs?
+            (0, False),
+            (1, False),
+            (2, False),
+            (3, False),
+            (4, True),
+            (5, True),
+            (6, True),
+        ]
+    )
+    def test_parse_max_nesting(self, max_nest, ok):
         """
-        Make sure it is an error if the max nesting value is reached.
+        Make sure it is an error if the max nesting value is reached. We test
+        four nested functions against differnt MAX_NESTING values.
 
         TODO: Does this make sense? When it sees the first function, len(callstack)
         is 0. It doesn't raise until the stack length is greater than the
         _MAX_NESTING value, which means you can nest 4 values with a value of
         2, as demonstrated by this test.
         """
-        string = "$add(1, $add(1, $add(1, $toint(42))))"
-        ret = self.parser.parse(string)
+        string = "$add(1, $add(1, $add(1, $eval(42))))"
 
-        # TODO: Does this return value actually make sense?
-        # It removed the spaces from the calls.
-        self.assertEqual("$add(1,$add(1,$add(1,$toint(42))))", ret)
-
-        with self.assertRaises(funcparser.ParsingError):
-            self.parser.parse(string, raise_errors=True)
+        with patch("evennia.utils.funcparser._MAX_NESTING", max_nest):
+            if ok:
+                ret = self.parser.parse(string, raise_errors=True)
+                self.assertEqual(ret, "45")
+            else:
+                with self.assertRaises(funcparser.ParsingError):
+                    self.parser.parse(string, raise_errors=True)
 
     def test_parse_underlying_exception(self):
         string = "test $add(1, 1) $raise()"
