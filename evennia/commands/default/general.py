@@ -221,7 +221,8 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                     _, _, old_nickstring, old_replstring = oldnick.value
                     caller.nicks.remove(old_nickstring, category=nicktype)
                     caller.msg(
-                        f"{nicktypestr} removed: '|w{old_nickstring}|n' -> |w{old_replstring}|n.")
+                        f"{nicktypestr} removed: '|w{old_nickstring}|n' -> |w{old_replstring}|n."
+                    )
             else:
                 caller.msg("No matching nicks to remove.")
             return
@@ -242,9 +243,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(
-                            f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'"
-                        )
+                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
             if strings:
                 caller.msg("\n".join(strings))
             else:
@@ -265,9 +264,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(
-                            f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'"
-                        )
+                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
             if strings:
                 caller.msg("\n".join(strings))
             else:
@@ -288,9 +285,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
                 for nick in nicks:
                     _, _, nick, repl = nick.value
                     if nick.startswith(self.lhs):
-                        strings.append(
-                            f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'"
-                        )
+                        strings.append(f"{nicktype.capitalize()}-nick: '{nick}' -> '{repl}'")
             if strings:
                 caller.msg("\n".join(strings))
             else:

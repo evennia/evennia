@@ -1392,7 +1392,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
 
             header = f"|wAccount|n |c{caller.key}|n |wpages:|n"
             if message.startswith(":"):
-                message = f"{caller.key} {message.strip(':').strip()}" 
+                message = f"{caller.key} {message.strip(':').strip()}"
 
             # create the persistent message object
             create.create_message(caller, message, receivers=targets)
@@ -1565,7 +1565,7 @@ class CmdIRC2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
-            botname = f"ircbot-{self.lhs}" 
+            botname = f"ircbot-{self.lhs}"
             matches = AccountDB.objects.filter(db_is_bot=True, username=botname)
             dbref = utils.dbref(self.lhs)
             if not matches and dbref:
@@ -1870,7 +1870,7 @@ class CmdGrapevine2Chan(COMMAND_DEFAULT_CLASS):
             return
 
         if "disconnect" in self.switches or "remove" in self.switches or "delete" in self.switches:
-            botname = f"grapevinebot-{self.lhs}" 
+            botname = f"grapevinebot-{self.lhs}"
             matches = AccountDB.objects.filter(db_is_bot=True, db_key=botname)
 
             if not matches:
