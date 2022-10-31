@@ -1497,16 +1497,19 @@
 <span class="n">mock_room_callbacks</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 <span class="n">mock_exit_callbacks</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
+
 <div class="viewcode-block" id="TestXyzRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom">[docs]</a><span class="k">class</span> <span class="nc">TestXyzRoom</span><span class="p">(</span><span class="n">xyzroom</span><span class="o">.</span><span class="n">XYZRoom</span><span class="p">):</span>
-<div class="viewcode-block" id="TestXyzRoom.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom.at_object_creation">[docs]</a>  <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">mock_room_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span></div></div>
+<div class="viewcode-block" id="TestXyzRoom.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mock_room_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span></div></div>
+
 
 <div class="viewcode-block" id="TestXyzExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit">[docs]</a><span class="k">class</span> <span class="nc">TestXyzExit</span><span class="p">(</span><span class="n">xyzroom</span><span class="o">.</span><span class="n">XYZExit</span><span class="p">):</span>
-<div class="viewcode-block" id="TestXyzExit.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit.at_object_creation">[docs]</a>  <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">mock_exit_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span></div></div>
+<div class="viewcode-block" id="TestXyzExit.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mock_exit_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span></div></div>
+
 
 <span class="n">MAP_DATA</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="s2">    + 0 1</span>
 
@@ -1515,35 +1518,37 @@
 <span class="s2">    + 0 1</span>
 
 <span class="s2">  &quot;&quot;&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="s2">&quot;map1&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="p">{</span>
-     <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="p">{</span>
-       <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;room&quot;</span><span class="p">,</span>
-       <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A room.&quot;</span><span class="p">,</span>
-       <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
-     <span class="p">},</span>
-     <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="p">{</span>
-       <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A passage.&quot;</span><span class="p">,</span>
-       <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
-     <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;map_visual_range&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;map_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;scan&quot;</span><span class="p">,</span>
-  <span class="p">}</span>
+    <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="s2">&quot;map1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;room&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A room.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_room&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">):</span> <span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;A passage.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;prototype_parent&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz_exit&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;map_visual_range&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;map_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;scan&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
 <span class="p">}</span>
+
 
 <div class="viewcode-block" id="TestCallbacks"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestCallbacks">[docs]</a><span class="k">class</span> <span class="nc">TestCallbacks</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
 <div class="viewcode-block" id="TestCallbacks.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestCallbacks.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="n">mock_room_callbacks</span><span class="o">.</span><span class="n">reset_mock</span><span class="p">()</span>
         <span class="n">mock_exit_callbacks</span><span class="o">.</span><span class="n">reset_mock</span><span class="p">()</span></div>
-        
+
 <div class="viewcode-block" id="TestCallbacks.setup_grid"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestCallbacks.setup_grid">[docs]</a>    <span class="k">def</span> <span class="nf">setup_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_data</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">XYZGrid</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;testgrid&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
-             <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">_log</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">map_data</span> <span class="o">=</span> <span class="n">map_data</span>
@@ -1565,8 +1570,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">spawn</span><span class="p">()</span>
 
         <span class="c1"># Two rooms and 2 exits, Each one should have gotten one `at_object_creation` callback.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">mock_room_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">,</span> <span class="p">[</span><span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">(),</span> <span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">()])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">mock_exit_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">,</span> <span class="p">[</span><span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">(),</span> <span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">()])</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">mock_room_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">,</span> <span class="p">[</span><span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">(),</span> <span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">()]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">mock_exit_callbacks</span><span class="o">.</span><span class="n">at_object_creation</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">,</span> <span class="p">[</span><span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">(),</span> <span class="n">mock</span><span class="o">.</span><span class="n">call</span><span class="p">()]</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
           </div>

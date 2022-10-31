@@ -166,8 +166,10 @@
     <span class="n">re_url</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
         <span class="sa">r</span><span class="s1">&#39;(?&lt;!=&quot;)(\b(?:ftp|www|https?)\W+(?:(?!\.(?:\s|$)|&amp;\w+;)[^&quot;</span><span class="se">\&#39;</span><span class="s1">,;$*^</span><span class="se">\\</span><span class="s1">()</span><span class="si">{}</span><span class="s1">&lt;&gt;\[\]\s])+)(\.(?:\s|$)|&amp;\w+;|)&#39;</span>
     <span class="p">)</span>
-    <span class="n">re_protocol</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?:ftp|https?)://&#39;</span><span class="p">)</span>
-    <span class="n">re_valid_no_protocol</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?:www|ftp)\.[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&amp;//=]*&#39;</span><span class="p">)</span>
+    <span class="n">re_protocol</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(?:ftp|https?)://&quot;</span><span class="p">)</span>
+    <span class="n">re_valid_no_protocol</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;^(?:www|ftp)\.[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&amp;//=]*&quot;</span>
+    <span class="p">)</span>
     <span class="n">re_mxplink</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lc(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
     <span class="n">re_mxpurl</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|lu(.*?)\|lt(.*?)\|le&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
@@ -227,20 +229,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_url</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
-          <span class="n">href</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-          <span class="n">label</span> <span class="o">=</span> <span class="n">href</span>
-          <span class="c1"># if there is no protocol (i.e. starts with www or ftp)</span>
-          <span class="c1"># prefix with http:// so the link isn&#39;t treated as relative</span>
-          <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_protocol</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">href</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_valid_no_protocol</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">href</span><span class="p">):</span>
-              <span class="k">return</span> <span class="n">text</span>
-            <span class="n">href</span> <span class="o">=</span> <span class="s2">&quot;http://&quot;</span> <span class="o">+</span> <span class="n">href</span>
-          <span class="n">rest</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-          <span class="c1"># -&gt; added target to output prevent the web browser from attempting to</span>
-          <span class="c1"># change pages (and losing our webclient session).</span>
-          <span class="k">return</span> <span class="n">text</span><span class="p">[:</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;&lt;a href=&quot;</span><span class="si">{</span><span class="n">href</span><span class="si">}</span><span class="s1">&quot; target=&quot;_blank&quot;&gt;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">&lt;/a&gt;</span><span class="si">{</span><span class="n">rest</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">text</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">():]</span>
+            <span class="n">href</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">href</span>
+            <span class="c1"># if there is no protocol (i.e. starts with www or ftp)</span>
+            <span class="c1"># prefix with http:// so the link isn&#39;t treated as relative</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_protocol</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">href</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_valid_no_protocol</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">href</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">text</span>
+                <span class="n">href</span> <span class="o">=</span> <span class="s2">&quot;http://&quot;</span> <span class="o">+</span> <span class="n">href</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># -&gt; added target to output prevent the web browser from attempting to</span>
+            <span class="c1"># change pages (and losing our webclient session).</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">text</span><span class="p">[:</span> <span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;&lt;a href=&quot;</span><span class="si">{</span><span class="n">href</span><span class="si">}</span><span class="s1">&quot; target=&quot;_blank&quot;&gt;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">&lt;/a&gt;</span><span class="si">{</span><span class="n">rest</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="o">+</span> <span class="n">text</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="p">:]</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-          <span class="k">return</span> <span class="n">text</span></div>
+            <span class="k">return</span> <span class="n">text</span></div>
 
 <div class="viewcode-block" id="TextToHTMLparser.sub_mxp_links"><a class="viewcode-back" href="../../../api/evennia.utils.text2html.html#evennia.utils.text2html.TextToHTMLparser.sub_mxp_links">[docs]</a>    <span class="k">def</span> <span class="nf">sub_mxp_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

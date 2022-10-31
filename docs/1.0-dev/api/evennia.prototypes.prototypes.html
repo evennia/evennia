@@ -164,6 +164,46 @@ before a module-based prototype can be accessed by prototype-key.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="evennia.prototypes.prototypes.DBPrototypeCache">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">DBPrototypeCache</code><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DBPrototypeCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DBPrototypeCache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Cache DB-stored prototypes; it can still be slow to initially load 1000s of
+prototypes, due to having to deserialize all prototype-dicts, but after the
+first time the cache will be populated and things will be fast.</p>
+<dl class="py method">
+<dt id="evennia.prototypes.prototypes.DBPrototypeCache.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DBPrototypeCache.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DBPrototypeCache.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.prototypes.prototypes.DBPrototypeCache.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_prot_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DBPrototypeCache.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DBPrototypeCache.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.prototypes.prototypes.DBPrototypeCache.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_prot_id</span></em>, <em class="sig-param"><span class="n">prototype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DBPrototypeCache.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DBPrototypeCache.add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.prototypes.prototypes.DBPrototypeCache.remove">
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_prot_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DBPrototypeCache.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DBPrototypeCache.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.prototypes.prototypes.DBPrototypeCache.clear">
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DBPrototypeCache.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DBPrototypeCache.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.prototypes.prototypes.DBPrototypeCache.replace">
+<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">all_data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DBPrototypeCache.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DBPrototypeCache.replace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="evennia.prototypes.prototypes.DbPrototype">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">DbPrototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#DbPrototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.DbPrototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
@@ -273,7 +313,7 @@ Note that no locks will be checked if**caller** is not passed.</p></li>
 
 <dl class="py function">
 <dt id="evennia.prototypes.prototypes.search_prototype">
-<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">search_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">require_single</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">return_iterators</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_db</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#search_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.search_prototype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.prototypes.prototypes.</code><code class="sig-name descname">search_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">require_single</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">return_iterators</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_db</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">page_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">page_no</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/prototypes.html#search_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.prototypes.search_prototype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find prototypes based on key and/or tags, or all prototypes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
@@ -298,7 +338,7 @@ module-prototypes are static and require no db-lookup.</p></li>
 <dt>Default return, all found prototype dicts. Empty list if</dt><dd><p>no match was found. Note that if neither <strong>key</strong> nor <strong>tags</strong>
 were given, <em>all</em> available prototypes will be returned.</p>
 </dd>
-<dt>list, queryset: If <strong>return_iterators</strong> are found, this is a list of</dt><dd><p>module-based prototypes followed by a <em>paginated</em> queryset of
+<dt>list, queryset: If <strong>return_iterators</strong> are found, this is a list of</dt><dd><p>module-based prototypes followed by a queryset of
 db-prototypes.</p>
 </dd>
 </dl>
@@ -400,8 +440,9 @@ None: If no matches were found. In this case the caller has already been notifie
 <li><p><strong>prototype</strong> (<em>dict</em>) – Prototype to validate.</p></li>
 <li><p><strong>protkey</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the prototype definition. If not given, the prototype
 dict needs to have the <strong>prototype_key</strong> field set.</p></li>
-<li><p><strong>protpartents</strong> (<em>dict</em><em>, </em><em>optional</em>) – The available prototype parent library. If
-note given this will be determined from settings/database.</p></li>
+<li><p><strong>protparents</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional prototype-parents, supposedly provided specifically
+for this prototype. If given, matching parents will first be taken from this
+dict rather than from the global set of prototypes found via settings/database.</p></li>
 <li><p><strong>is_prototype_base</strong> (<em>bool</em><em>, </em><em>optional</em>) – We are trying to create a new object <em>based on this
 object</em>. This means we can’t allow ‘mixin’-style prototypes without typeclass/parent
 etc.</p></li>
@@ -434,7 +475,8 @@ protfuncs, all other types are returned as-is.</p></li>
 <li><p><strong>available_functions</strong> (<em>dict</em><em>, </em><em>optional</em>) – Mapping of name:protfunction to use for this parsing.
 If not set, use default sources.</p></li>
 <li><p><strong>stacktrace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, print the stack parsing process of the protfunc-parser.</p></li>
-<li><p><strong>raise_errors</strong> (<em>bool</em><em>, </em><em>optional</em>) – Raise explicit errors from malformed/not found protfunc calls.</p></li>
+<li><p><strong>raise_errors</strong> (<em>bool</em><em>, </em><em>optional</em>) – Raise explicit errors from malformed/not found protfunc
+calls.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>

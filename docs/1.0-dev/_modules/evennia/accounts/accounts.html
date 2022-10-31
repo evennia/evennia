@@ -440,6 +440,8 @@
 
         <span class="c1"># do the puppeting</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">at_pre_puppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+        <span class="c1"># used to track in case of crash so we can clean up later</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;puppeted&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;account&quot;</span><span class="p">)</span>
 
         <span class="c1"># do the connection</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
@@ -474,6 +476,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
                     <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="n">account</span>
                 <span class="n">obj</span><span class="o">.</span><span class="n">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;puppeted&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;account&quot;</span><span class="p">)</span>
                 <span class="n">SIGNAL_OBJECT_POST_UNPUPPET</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="c1"># Just to be sure we&#39;re always clear.</span>
             <span class="n">session</span><span class="o">.</span><span class="n">puppet</span> <span class="o">=</span> <span class="kc">None</span>

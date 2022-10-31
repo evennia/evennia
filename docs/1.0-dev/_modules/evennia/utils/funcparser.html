@@ -428,7 +428,7 @@
 
                 <span class="k">if</span> <span class="n">curr_func</span><span class="p">:</span>
                     <span class="c1"># we are starting a nested funcdef</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">callstack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_MAX_NESTING</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">callstack</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_MAX_NESTING</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="c1"># stack full - ignore this function</span>
                         <span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="n">ParsingError</span><span class="p">(</span>

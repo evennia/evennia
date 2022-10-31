@@ -368,6 +368,9 @@ can run at the same time. Used to limit multi-playing.</p></li>
 powerful searches passed into the regular search functions.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">spawner.spawn</span></code> and linked methods now has a kwarg <code class="docutils literal notranslate"><span class="pre">protfunc_raise_errors</span></code>
 (default True) to disable strict errors on malformed/not-found protfuncs</p></li>
+<li><p>Improve search performance when having many DB-based prototypes via caching.</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">return_parents</span></code> kwarg of <code class="docutils literal notranslate"><span class="pre">evennia.prototypes.spawner.spawn</span></code> since it
+was inefficient and unused.</p></li>
 </ul>
 </section>
 <section id="evennia-0-9-5">

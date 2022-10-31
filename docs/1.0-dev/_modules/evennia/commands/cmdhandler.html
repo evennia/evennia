@@ -824,7 +824,9 @@
                         <span class="p">)</span>
                         <span class="k">if</span> <span class="n">suggestions</span><span class="p">:</span>
                             <span class="n">sysarg</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot; Maybe you meant </span><span class="si">{command}</span><span class="s2">?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                <span class="n">command</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">list_to_string</span><span class="p">(</span><span class="n">suggestions</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;or&quot;</span><span class="p">),</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                <span class="n">command</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">list_to_string</span><span class="p">(</span>
+                                    <span class="n">suggestions</span><span class="p">,</span> <span class="n">endsep</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;or&quot;</span><span class="p">),</span> <span class="n">addquote</span><span class="o">=</span><span class="kc">True</span>
+                                <span class="p">)</span>
                             <span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">sysarg</span> <span class="o">+=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39; Type &quot;help&quot; for help.&#39;</span><span class="p">)</span>

@@ -556,7 +556,7 @@
         <span class="c1"># we supplied an argument on the form obj = perm</span>
         <span class="n">locktype</span> <span class="o">=</span> <span class="s2">&quot;edit&quot;</span> <span class="k">if</span> <span class="n">accountmode</span> <span class="k">else</span> <span class="s2">&quot;control&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">locktype</span><span class="p">):</span>
-            <span class="n">accountstr</span> <span class="o">=</span> <span class="s1">&#39;account&#39;</span> <span class="k">if</span> <span class="n">accountmode</span> <span class="k">else</span> <span class="s1">&#39;object&#39;</span>
+            <span class="n">accountstr</span> <span class="o">=</span> <span class="s2">&quot;account&quot;</span> <span class="k">if</span> <span class="n">accountmode</span> <span class="k">else</span> <span class="s2">&quot;object&quot;</span>
             <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not allowed to edit this </span><span class="si">{</span><span class="n">accountstr</span><span class="si">}</span><span class="s2">&#39;s permissions.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -597,9 +597,7 @@
                     <span class="k">return</span>
 
                 <span class="k">if</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">:</span>
-                    <span class="n">caller_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Permission &#39;</span><span class="si">{</span><span class="n">perm</span><span class="si">}</span><span class="s2">&#39; is already defined on </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
-                    <span class="p">)</span>
+                    <span class="n">caller_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Permission &#39;</span><span class="si">{</span><span class="n">perm</span><span class="si">}</span><span class="s2">&#39; is already defined on </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
                     <span class="n">plystring</span> <span class="o">=</span> <span class="s2">&quot;the Account&quot;</span> <span class="k">if</span> <span class="n">accountmode</span> <span class="k">else</span> <span class="s2">&quot;the Object/Character&quot;</span>

@@ -1143,14 +1143,15 @@ puppeting this Object.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultObject.at_post_unpuppet">
-<code class="sig-name descname">at_post_unpuppet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_post_unpuppet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_post_unpuppet" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_post_unpuppet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultObject.at_post_unpuppet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultObject.at_post_unpuppet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called just after the Account successfully disconnected from
 this object, severing all connections.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>account</strong> (<em>Account</em>) – The account object that just disconnected
-from this object.</p></li>
+from this object. This can be <strong>None</strong> if this is called
+automatically (such as after a cleanup operation).</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Session id controlling the connection that
 just disconnected.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
@@ -2131,7 +2132,7 @@ puppeting this Object.</p>
 
 <dl class="py method">
 <dt id="evennia.objects.objects.DefaultCharacter.at_post_unpuppet">
-<code class="sig-name descname">at_post_unpuppet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.at_post_unpuppet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.at_post_unpuppet" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">at_post_unpuppet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">account</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/objects/objects.html#DefaultCharacter.at_post_unpuppet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.objects.objects.DefaultCharacter.at_post_unpuppet" title="Permalink to this definition">¶</a></dt>
 <dd><p>We stove away the character when the account goes ooc/logs off,
 otherwise the character object will remain in the room also
 after the account logged off (“headless”, so to say).</p>
@@ -2142,6 +2143,12 @@ after the account logged off (“headless”, so to say).</p>
 from this object.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a>) – Session controlling the connection that
 just disconnected.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>reason</strong> (<em>str</em>) – If given, adds a reason for the unpuppet. This
+is set when the user is auto-unpuppeted due to being link-dead.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Arbitrary, optional arguments for users
 overriding the call (unused by default).</p></li>
 </ul>

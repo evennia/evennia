@@ -1720,14 +1720,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DefaultObject.at_post_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultObject.at_post_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called just after the Account successfully disconnected from</span>
 <span class="sd">        this object, severing all connections.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            account (Account): The account object that just disconnected</span>
-<span class="sd">                from this object.</span>
+<span class="sd">                from this object. This can be `None` if this is called</span>
+<span class="sd">                automatically (such as after a cleanup operation).</span>
 <span class="sd">            session (Session): Session id controlling the connection that</span>
 <span class="sd">                just disconnected.</span>
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
@@ -2765,7 +2766,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">for_contents</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="n">from_obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DefaultCharacter.at_post_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultCharacter.at_post_unpuppet"><a class="viewcode-back" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_unpuppet">[docs]</a>    <span class="k">def</span> <span class="nf">at_post_unpuppet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We stove away the character when the account goes ooc/logs off,</span>
 <span class="sd">        otherwise the character object will remain in the room also</span>
@@ -2776,6 +2777,9 @@
 <span class="sd">                from this object.</span>
 <span class="sd">            session (Session): Session controlling the connection that</span>
 <span class="sd">                just disconnected.</span>
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            reason (str): If given, adds a reason for the unpuppet. This</span>
+<span class="sd">                is set when the user is auto-unpuppeted due to being link-dead.</span>
 <span class="sd">            **kwargs (dict): Arbitrary, optional arguments for users</span>
 <span class="sd">                overriding the call (unused by default).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2785,7 +2789,10 @@
 
                 <span class="k">def</span> <span class="nf">message</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">from_obj</span><span class="p">):</span>
                     <span class="n">obj</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> has left the game.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">obj</span><span class="p">)),</span>
+                        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> has left the game</span><span class="si">{reason}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span>
+                            <span class="n">reason</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reason&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                        <span class="p">),</span>
                         <span class="n">from_obj</span><span class="o">=</span><span class="n">from_obj</span><span class="p">,</span>
                     <span class="p">)</span>
 

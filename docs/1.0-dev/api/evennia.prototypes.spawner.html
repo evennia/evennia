@@ -519,10 +519,6 @@ defined by settings.PROTOTYPE_MODULES.</p></li>
 <li><p><strong>prototype_parents</strong> (<em>dict</em>) – A dictionary holding a custom
 prototype-parent dictionary. Will overload same-named
 prototypes from prototype_modules.</p></li>
-<li><p><strong>return_parents</strong> (<em>bool</em>) – Return a dict of the entire prototype-parent tree
-available to this prototype (no object creation happens). This is a
-merged result between the globally found protparents and whatever
-custom <strong>prototype_parents</strong> are given to this function.</p></li>
 <li><p><strong>only_validate</strong> (<em>bool</em>) – Only run validation of prototype/parents
 (no object creation) and return the create-kwargs.</p></li>
 <li><p><strong>protfunc_raise_errors</strong> (<em>bool</em>) – Raise explicit exceptions on a malformed/not-found
@@ -532,8 +528,7 @@ protfunc. Defaults to True.</p></li>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><p><em>object (Object, dict or list)</em> –</p>
 <dl class="simple">
-<dt>Spawned object(s). If <strong>only_validate</strong> is given, return</dt><dd><p>a list of the creation kwargs to build the object(s) without actually creating it. If
-<strong>return_parents</strong> is set, instead return dict of prototype parents.</p>
+<dt>Spawned object(s). If <strong>only_validate</strong> is given, return</dt><dd><p>a list of the creation kwargs to build the object(s) without actually creating it.</p>
 </dd>
 </dl>
 </p>

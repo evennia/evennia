@@ -221,6 +221,7 @@
 <span class="kn">from</span> <span class="nn">evennia.prototypes.prototypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">PROTOTYPE_TAG_CATEGORY</span><span class="p">,</span>
     <span class="n">init_spawn_value</span><span class="p">,</span>
+    <span class="n">search_prototype</span><span class="p">,</span>
     <span class="n">value_to_obj</span><span class="p">,</span>
     <span class="n">value_to_obj_or_any</span><span class="p">,</span>
 <span class="p">)</span>
@@ -266,7 +267,7 @@
 <span class="c1"># Helper</span>
 
 
-<span class="k">def</span> <span class="nf">_get_prototype</span><span class="p">(</span><span class="n">inprot</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_prototype</span><span class="p">(</span><span class="n">inprot</span><span class="p">,</span> <span class="n">protparents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recursively traverse a prototype dictionary, including multiple</span>
 <span class="sd">    inheritance. Use validate_prototype before this, we don&#39;t check</span>
@@ -274,7 +275,9 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        inprot (dict): Prototype dict (the individual prototype, with no inheritance included).</span>
-<span class="sd">        protparents (dict): Available protparents, keyed by prototype_key.</span>
+<span class="sd">        protparents (dict): Custom protparents, supposedly provided specifically for this `inprot`.</span>
+<span class="sd">            If given, any parents will first be looked up in this dict, and then by searching</span>
+<span class="sd">            the global prototype store given by settings/db.</span>
 <span class="sd">        uninherited (dict): Parts of prototype to not inherit.</span>
 <span class="sd">        _workprot (dict, optional): Work dict for the recursive algorithm.</span>
 
@@ -296,6 +299,8 @@
         <span class="n">old</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
+    <span class="n">protparents</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">protparents</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">protparents</span>
+
     <span class="n">_workprot</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">_workprot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_workprot</span>
     <span class="k">if</span> <span class="s2">&quot;prototype_parent&quot;</span> <span class="ow">in</span> <span class="n">inprot</span><span class="p">:</span>
         <span class="c1"># move backwards through the inheritance</span>
@@ -310,8 +315,12 @@
                 <span class="c1"># protparent already embedded as-is</span>
                 <span class="n">parent_prototype</span> <span class="o">=</span> <span class="n">prototype</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># protparent given by-name</span>
-                <span class="n">parent_prototype</span> <span class="o">=</span> <span class="n">protparents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="p">{})</span>
+                <span class="c1"># protparent given by-name, first search provided parents, then global store</span>
+                <span class="n">parent_prototype</span> <span class="o">=</span> <span class="n">protparents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prototype</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">parent_prototype</span><span class="p">:</span>
+                    <span class="n">parent_prototype</span> <span class="o">=</span> <span class="n">search_prototype</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">prototype</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">or</span> <span class="p">{}</span>
+                    <span class="k">if</span> <span class="n">parent_prototype</span><span class="p">:</span>
+                        <span class="n">parent_prototype</span> <span class="o">=</span> <span class="n">parent_prototype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="c1"># Build the prot dictionary in reverse order, overloading</span>
             <span class="n">new_prot</span> <span class="o">=</span> <span class="n">_get_prototype</span><span class="p">(</span><span class="n">parent_prototype</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">_workprot</span><span class="o">=</span><span class="n">_workprot</span><span class="p">)</span>
@@ -353,14 +362,9 @@
 
     <span class="k">if</span> <span class="n">prototype</span><span class="p">:</span>
         <span class="n">prototype</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
-        <span class="n">protparents</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">prot</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">no_db</span><span class="o">=</span><span class="n">no_db</span><span class="p">)</span>
-        <span class="p">}</span>
-        <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span>
-            <span class="n">prototype</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="n">validate</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">validate</span>
-        <span class="p">)</span>
+        <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="n">validate</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">validate</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_get_prototype</span><span class="p">(</span>
-            <span class="n">prototype</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)}</span>
+            <span class="n">prototype</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)}</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="p">{}</span></div>
 
@@ -737,6 +741,8 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">new_prototype</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_prototype</span><span class="p">:</span>
+            <span class="n">new_prototype</span> <span class="o">=</span> <span class="n">new_prototype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">new_prototype</span> <span class="o">=</span> <span class="n">prototype</span>
 
@@ -968,10 +974,6 @@
 <span class="sd">        prototype_parents (dict): A dictionary holding a custom</span>
 <span class="sd">            prototype-parent dictionary. Will overload same-named</span>
 <span class="sd">            prototypes from prototype_modules.</span>
-<span class="sd">        return_parents (bool): Return a dict of the entire prototype-parent tree</span>
-<span class="sd">            available to this prototype (no object creation happens). This is a</span>
-<span class="sd">            merged result between the globally found protparents and whatever</span>
-<span class="sd">            custom `prototype_parents` are given to this function.</span>
 <span class="sd">        only_validate (bool): Only run validation of prototype/parents</span>
 <span class="sd">            (no object creation) and return the create-kwargs.</span>
 <span class="sd">        protfunc_raise_errors (bool): Raise explicit exceptions on a malformed/not-found</span>
@@ -979,8 +981,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        object (Object, dict or list): Spawned object(s). If `only_validate` is given, return</span>
-<span class="sd">            a list of the creation kwargs to build the object(s) without actually creating it. If</span>
-<span class="sd">            `return_parents` is set, instead return dict of prototype parents.</span>
+<span class="sd">            a list of the creation kwargs to build the object(s) without actually creating it.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># search string (=prototype_key) from input</span>
@@ -988,9 +989,6 @@
         <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">(</span><span class="n">prot</span><span class="p">,</span> <span class="n">require_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prot</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">prot</span>
         <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">prototypes</span>
     <span class="p">]</span>
-
-    <span class="c1"># get available protparents</span>
-    <span class="n">protparents</span> <span class="o">=</span> <span class="p">{</span><span class="n">prot</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">prot</span> <span class="k">for</span> <span class="n">prot</span> <span class="ow">in</span> <span class="n">protlib</span><span class="o">.</span><span class="n">search_prototype</span><span class="p">()}</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;only_validate&quot;</span><span class="p">):</span>
         <span class="c1"># homogenization to be more lenient about prototype format when entering the prototype</span>
@@ -1000,21 +998,23 @@
     <span class="c1"># overload module&#39;s protparents with specifically given protparents</span>
     <span class="c1"># we allow prototype_key to be the key of the protparent dict, to allow for module-level</span>
     <span class="c1"># prototype imports. We need to insert prototype_key in this case</span>
+    <span class="n">custom_protparents</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">protparent</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_parents&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">protparent</span><span class="p">[</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">protparent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">protparents</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">protparent</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="s2">&quot;return_parents&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="c1"># only return the parents</span>
-        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">protparents</span><span class="p">)</span>
+        <span class="n">custom_protparents</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">protlib</span><span class="o">.</span><span class="n">homogenize_prototype</span><span class="p">(</span><span class="n">protparent</span><span class="p">)</span>
 
     <span class="n">objsparams</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">prototype</span> <span class="ow">in</span> <span class="n">prototypes</span><span class="p">:</span>
 
-        <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># run validation and homogenization of provided prototypes</span>
+        <span class="n">protlib</span><span class="o">.</span><span class="n">validate_prototype</span><span class="p">(</span>
+            <span class="n">prototype</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">protparents</span><span class="o">=</span><span class="n">custom_protparents</span><span class="p">,</span> <span class="n">is_prototype_base</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
         <span class="n">prot</span> <span class="o">=</span> <span class="n">_get_prototype</span><span class="p">(</span>
-            <span class="n">prototype</span><span class="p">,</span> <span class="n">protparents</span><span class="p">,</span> <span class="n">uninherited</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)}</span>
+            <span class="n">prototype</span><span class="p">,</span>
+            <span class="n">protparents</span><span class="o">=</span><span class="n">custom_protparents</span><span class="p">,</span>
+            <span class="n">uninherited</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">:</span> <span class="n">prototype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prototype_key&quot;</span><span class="p">)},</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">prot</span><span class="p">:</span>
             <span class="k">continue</span>
