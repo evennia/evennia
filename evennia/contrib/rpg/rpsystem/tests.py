@@ -96,7 +96,7 @@ recog01 = "Mr Receiver"
 recog02 = "Mr Receiver2"
 recog10 = "Mr Sender"
 emote = 'With a flair, /me looks at /first and /colliding sdesc-guy. She says "This is a test."'
-fallback_emote = '/Me is distracted from /first by /nomatch.'
+fallback_emote = "/Me is distracted from /first by /nomatch."
 case_emote = "/Me looks at /first. Then, /me looks at /FIRST, /First and /Colliding twice."
 poss_emote = "/Me frowns at /first for trying to steal /me's test."
 
