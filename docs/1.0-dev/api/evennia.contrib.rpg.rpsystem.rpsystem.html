@@ -353,7 +353,8 @@ This allows for more grammatically correct emotes at the cost of being
 a little more to learn for players. If disabled, the original sdesc case
 is always kept and are inserted as-is.</p>
 </dd>
-<dt>fallback (string, optional): If set, any references that don’t match a target</dt><dd><p>will be replaced with the fallback string.</p>
+<dt>fallback (string, optional): If set, any references that don’t match a target</dt><dd><p>will be replaced with the fallback string. If <strong>None</strong> (default), the
+parsing will fail and give a warning about the missing reference.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
