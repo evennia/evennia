@@ -659,6 +659,8 @@ def funcparser_callable_toint(*args, **kwargs):
     inp = funcparser_callable_eval(*args, **kwargs)
     try:
         return int(inp)
+    except TypeError:
+        return inp
     except ValueError:
         return inp
 
