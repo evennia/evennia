@@ -904,7 +904,7 @@ def funcparser_callable_pad(*args, **kwargs):
     nrest = len(rest)
     try:
         width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
-    except ValueError:
+    except (TypeError, ValueError):
         width = _CLIENT_DEFAULT_WIDTH
 
     align = kwargs.get("align", rest[1] if nrest > 1 else "c")
@@ -936,7 +936,7 @@ def funcparser_callable_crop(*args, **kwargs):
     nrest = len(rest)
     try:
         width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
-    except ValueError:
+    except (TypeError, ValueError):
         width = _CLIENT_DEFAULT_WIDTH
     suffix = kwargs.get("suffix", rest[1] if nrest > 1 else "[...]")
     return crop(str(text), width=width, suffix=str(suffix))
@@ -982,12 +982,12 @@ def funcparser_callable_justify(*args, **kwargs):
     lrest = len(rest)
     try:
         width = int(kwargs.get("width", rest[0] if lrest > 0 else _CLIENT_DEFAULT_WIDTH))
-    except ValueError:
+    except (TypeError, ValueError):
         width = _CLIENT_DEFAULT_WIDTH
     align = str(kwargs.get("align", rest[1] if lrest > 1 else "f"))
     try:
         indent = int(kwargs.get("indent", rest[2] if lrest > 2 else 0))
-    except ValueError:
+    except (TypeError, ValueError):
         indent = 0
     return justify(str(text), width=width, align=align, indent=indent)
 
