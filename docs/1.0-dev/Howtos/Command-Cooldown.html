@@ -63,8 +63,13 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Command Cooldown</a><ul>
+<li><a class="reference internal" href="#the-cooldown-contrib">The Cooldown Contrib</a></li>
 <li><a class="reference internal" href="#non-persistent-cooldown">Non-persistent cooldown</a></li>
 <li><a class="reference internal" href="#persistent-cooldown">Persistent cooldown</a></li>
+<li><a class="reference internal" href="#make-a-cooldown-aware-command-parent">Make a cooldown-aware command parent</a><ul>
+<li><a class="reference internal" href="#command-crossover">Command crossover</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -114,6 +119,13 @@ a while. Such effects are called <em>cooldowns</em>.</p>
 ‘active’ way is to use asynchronous delays as in the <a class="reference internal" href="Command-Duration.html#blocking-commands"><span class="std std-doc">command duration
 tutorial</span></a>, the two might be useful to
 combine if you want to echo some message to the user after the cooldown ends.</p>
+<section id="the-cooldown-contrib">
+<h2>The Cooldown Contrib<a class="headerlink" href="#the-cooldown-contrib" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../Contribs/Contrib-Cooldowns.html"><span class="doc std std-doc">Cooldown contrib</span></a> is a ready-made solution for
+command cooldowns you can use. It implements a <em>handler</em> on the object to
+conveniently manage and store the cooldowns in a similar manner exemplified in
+this tutorial.</p>
+</section>
 <section id="non-persistent-cooldown">
 <h2>Non-persistent cooldown<a class="headerlink" href="#non-persistent-cooldown" title="Permalink to this headline">¶</a></h2>
 <p>This little recipe will limit how often a particular command can be run. Since
@@ -122,78 +134,127 @@ instance will remember things you store on it. So just store the current time
 of execution! Next time the command is run, it just needs to check if it has
 that time stored, and compare it with the current time to see if a desired
 delay has passed.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span> 
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in, say, mygame/commands/spells.py</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
-    
+
 <span class="k">class</span> <span class="nc">CmdSpellFirestorm</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Spell - Firestorm</span>
 
-<span class="sd">    Usage: </span>
+<span class="sd">    Usage:</span>
 <span class="sd">      cast firestorm &lt;target&gt;</span>
-<span class="sd">    </span>
-<span class="sd">    This will unleash a storm of flame. You can only release one </span>
-<span class="sd">    firestorm every five minutes (assuming you have the mana). </span>
+
+<span class="sd">    This will unleash a storm of flame. You can only release one</span>
+<span class="sd">    firestorm every five minutes (assuming you have the mana).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cast firestorm&quot;</span>
-    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:isFireMage()&quot;</span>
-        
+    <span class="n">rate_of_fire</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># 2 minutes</span>
+
     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Implement the spell&quot;</span>
-    
-        <span class="c1"># check cooldown (5 minute cooldown)</span>
-        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>   
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;lastcast&quot;</span><span class="p">)</span> <span class="ow">and</span> \
-                <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastcast</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">:</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">last_cast</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">firestorm_last_cast</span>  <span class="c1"># could be None</span>
+        <span class="k">if</span> <span class="n">last_cast</span> <span class="ow">and</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">last_cast</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_of_fire</span><span class="p">):</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;You cannot cast this spell again yet.&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            <span class="k">return</span> 
-    
-        <span class="c1">#[the spell effect is implemented]</span>
-    
+            <span class="k">return</span>
+
+        <span class="c1"># [the spell effect is implemented]</span>
+
         <span class="c1"># if the spell was successfully cast, store the casting time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lastcast</span> <span class="o">=</span> <span class="n">now</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">firestorm_last_cast</span> <span class="o">=</span> <span class="n">now</span>
 </pre></div>
 </div>
-<p>We just check the <code class="docutils literal notranslate"><span class="pre">lastcast</span></code> flag, and update it if everything works out.
-Simple and very effective since everything is just stored in memory. The
+<p>We specify <code class="docutils literal notranslate"><span class="pre">rate_of_fire</span></code> and then just check for a NAtrribute
+<code class="docutils literal notranslate"><span class="pre">firestorm_last_cast</span></code> and update it if everything works out.</p>
+<p>Simple and very effective since everything is just stored in memory. The
 drawback of this simple scheme is that it’s non-persistent. If you do
-<code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>, the cache is cleaned and all such ongoing cooldowns will be
-forgotten. It is also limited only to this one command, other commands cannot
-(easily) check for this value.</p>
+<code class="docutils literal notranslate"><span class="pre">reload</span></code>, the cache is cleaned and all such ongoing cooldowns will be
+forgotten.</p>
 </section>
 <section id="persistent-cooldown">
 <h2>Persistent cooldown<a class="headerlink" href="#persistent-cooldown" title="Permalink to this headline">¶</a></h2>
-<p>This is essentially the same mechanism as the simple one above, except we use
-the database to store the information which means the cooldown will survive a
-server reload/reboot. Since commands themselves have no representation in the
-database, you need to use the caster for the storage.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># inside the func() of CmdSpellFirestorm as above</span>
+<p>To make a cooldown <em>persistent</em> (so it survives a server reload), just
+use the same technique, but use <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attributes</span></a> (that is, <code class="docutils literal notranslate"><span class="pre">.db</span></code> instead
+of <code class="docutils literal notranslate"><span class="pre">.ndb</span></code> storage to save the last-cast time.</p>
+</section>
+<section id="make-a-cooldown-aware-command-parent">
+<h2>Make a cooldown-aware command parent<a class="headerlink" href="#make-a-cooldown-aware-command-parent" title="Permalink to this headline">¶</a></h2>
+<p>If you have many different spells or other commands with cooldowns, you don’t
+want to have to add this code every time. Instead you can make a “cooldown
+command mixin” class. A <em>mixin</em> is a class that you can ‘add’ to another class
+(via multiple inheritance) to give it some special ability. Here’s an example
+with persistent storage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in, for example, mygame/commands/mixins.py</span>
 
-    <span class="c1"># check cooldown (5 minute cooldown)</span>
-            
-    <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">lastcast</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">firestorm_lastcast</span> 
-            
-    <span class="k">if</span> <span class="n">lastcast</span> <span class="ow">and</span> <span class="n">now</span> <span class="o">-</span> <span class="n">lastcast</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;You need to wait before casting this spell again.&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-        <span class="k">return</span>      
-      
-    <span class="c1">#[the spell effect is implemented]</span>
-    
-    <span class="c1"># if the spell was successfully cast, store the casting time</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">firestorm_lastcast</span> <span class="o">=</span> <span class="n">now</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">class</span> <span class="nc">CooldownCommandMixin</span><span class="p">:</span>
+
+    <span class="n">rate_of_fire</span> <span class="o">=</span> <span class="mi">60</span>
+    <span class="n">cooldown_storage_key</span> <span class="o">=</span> <span class="s2">&quot;last_used&quot;</span>
+    <span class="n">cooldown_storage_category</span> <span class="o">=</span> <span class="s2">&quot;cmd_cooldowns&quot;</span>
+
+    <span class="k">def</span> <span class="nf">check_cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">last_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cooldown_storage_key</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cooldown_storage_category</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">last_time</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate_of_fire</span>
+
+    <span class="k">def</span> <span class="nf">update_cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cooldown_storage_key</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+            <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cooldown_storage_category</span>
+
+        <span class="p">)</span>
 </pre></div>
 </div>
-<p>Since we are storing as an <a class="reference internal" href="../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a>, we need to identify the
-variable as <code class="docutils literal notranslate"><span class="pre">firestorm_lastcast</span></code> so we are sure we get the right one (we’ll
-likely have other skills with cooldowns after all). But this method of
-using cooldowns also has the advantage of working <em>between</em> commands - you can
-for example let all fire-related spells check the same cooldown to make sure
-the casting of <em>Firestorm</em> blocks all fire-related spells for a while. Or, in
-the case of taking that big swing with the sword, this could now block all
-other types of attacks for a while before the warrior can recover.</p>
+<p>This is meant to be mixed into a Command, so we assume <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> exists.
+We allow for setting what Attribute key/category to use to store the cooldown.</p>
+<p>It also uses an Attribute-category to make sure what it stores is not mixed up
+with other Attributes on the caller.</p>
+<p>Here’s how it’s used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in, say, mygame/commands/spells.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">CooldownCommandMixin</span>
+
+
+<span class="k">class</span> <span class="nc">CmdSpellFirestorm</span><span class="p">(</span>
+        <span class="n">CooldownCommandMixin</span><span class="p">,</span> <span class="n">default_cmds</span><span class="o">.</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cast firestorm&quot;</span>
+
+    <span class="n">cooldown_storage_key</span> <span class="o">=</span> <span class="s2">&quot;firestorm_last_cast&quot;</span>
+    <span class="n">rate_of_fire</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_cooldown</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot cast this spell again yet.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># [the spell effect happens]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_cooldown</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<p>So the same as before, we have just hidden away the cooldown checks and you can
+reuse this mixin for all your cooldowns.</p>
+<section id="command-crossover">
+<h3>Command crossover<a class="headerlink" href="#command-crossover" title="Permalink to this headline">¶</a></h3>
+<p>This example of cooldown-checking also works <em>between</em> commands. For example,
+you can have all fire-related spells store the cooldown with the same
+<code class="docutils literal notranslate"><span class="pre">cooldown_storage_key</span></code> (like <code class="docutils literal notranslate"><span class="pre">fire_spell_last_used</span></code>). That would mean casting
+of <em>Firestorm</em> would block all other fire-related spells for a while.</p>
+<p>Similarly, when you take that that big sword swing, other types of attacks could
+be blocked before you can recover your balance.</p>
+</section>
 </section>
 </section>
 
