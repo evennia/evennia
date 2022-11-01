@@ -96,6 +96,7 @@ recog01 = "Mr Receiver"
 recog02 = "Mr Receiver2"
 recog10 = "Mr Sender"
 emote = 'With a flair, /me looks at /first and /colliding sdesc-guy. She says "This is a test."'
+fallback_emote = '/Me is distracted from /first by /nomatch.'
 case_emote = "/Me looks at /first. Then, /me looks at /FIRST, /First and /Colliding twice."
 poss_emote = "/Me frowns at /first for trying to steal /me's test."
 
@@ -241,6 +242,31 @@ class TestRPSystem(BaseEvenniaTest):
             self.out2[0],
             "With a flair, |bA nice sender of emotes|n looks at |bThe first "
             'receiver of emotes.|n and |mReceiver2|n. She says |w"This is a test."|n',
+        )
+
+    def test_send_emote_fallback(self):
+        speaker = self.speaker
+        receiver1 = self.receiver1
+        receiver2 = self.receiver2
+        receivers = [speaker, receiver1, receiver2]
+        speaker.sdesc.add(sdesc0)
+        receiver1.sdesc.add(sdesc1)
+        receiver2.sdesc.add(sdesc2)
+        speaker.msg = lambda text, **kwargs: setattr(self, "out0", text)
+        receiver1.msg = lambda text, **kwargs: setattr(self, "out1", text)
+        receiver2.msg = lambda text, **kwargs: setattr(self, "out2", text)
+        rpsystem.send_emote(speaker, receivers, fallback_emote, fallback="something")
+        self.assertEqual(
+            self.out0[0],
+            "|mSender|n is distracted from |bthe first receiver of emotes.|n by something.",
+        )
+        self.assertEqual(
+            self.out1[0],
+            "|bA nice sender of emotes|n is distracted from |mReceiver1|n by something.",
+        )
+        self.assertEqual(
+            self.out2[0],
+            "|bA nice sender of emotes|n is distracted from |bthe first receiver of emotes.|n by something.",
         )
 
     def test_send_case_sensitive_emote(self):
