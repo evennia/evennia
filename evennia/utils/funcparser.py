@@ -657,9 +657,10 @@ def funcparser_callable_eval(*args, **kwargs):
 def funcparser_callable_toint(*args, **kwargs):
     """Usage: $toint(43.0) -> 43"""
     inp = funcparser_callable_eval(*args, **kwargs)
-    if isinstance(inp, str) and inp.isnumeric():
-        inp = int(inp)
-    return inp
+    try:
+        return int(inp)
+    except ValueError:
+        return inp
 
 
 def funcparser_callable_int2str(*args, **kwargs):
@@ -673,9 +674,10 @@ def funcparser_callable_int2str(*args, **kwargs):
     """
     if not args:
         return ""
-    number = args[0]
-    if isinstance(args[0], str) and args[0].isnumeric():
+    try:
         number = int(args[0])
+    except ValueError:
+        return args[0]
     return int2str(number)
 
 
@@ -898,9 +900,10 @@ def funcparser_callable_pad(*args, **kwargs):
 
     text, *rest = args
     nrest = len(rest)
-    width = kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH)
-    if isinstance(width, str) and width.isnumeric():
-        width = int(width)
+    try:
+        width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
+    except ValueError:
+        width = _CLIENT_DEFAULT_WIDTH
 
     align = kwargs.get("align", rest[1] if nrest > 1 else "c")
     fillchar = kwargs.get("fillchar", rest[2] if nrest > 2 else " ")
@@ -929,9 +932,10 @@ def funcparser_callable_crop(*args, **kwargs):
         return ""
     text, *rest = args
     nrest = len(rest)
-    width = kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH)
-    if isinstance(width, str) and width.isnumeric():
-        width = int(width)
+    try:
+        width = int(kwargs.get("width", rest[0] if nrest > 0 else _CLIENT_DEFAULT_WIDTH))
+    except ValueError:
+        width = _CLIENT_DEFAULT_WIDTH
     suffix = kwargs.get("suffix", rest[1] if nrest > 1 else "[...]")
     return crop(str(text), width=width, suffix=str(suffix))
 
@@ -945,9 +949,10 @@ def funcparser_callable_space(*args, **kwarg):
     """
     if not args:
         return ""
-    width = args[0]
-    if isinstance(width, str) and width.isnumeric():
-        width = int(width)
+    try:
+        width = int(args[0])
+    except ValueError:
+        width = 1
     return " " * width
 
 
@@ -975,12 +980,12 @@ def funcparser_callable_justify(*args, **kwargs):
     lrest = len(rest)
     try:
         width = int(kwargs.get("width", rest[0] if lrest > 0 else _CLIENT_DEFAULT_WIDTH))
-    except TypeError:
+    except ValueError:
         width = _CLIENT_DEFAULT_WIDTH
     align = str(kwargs.get("align", rest[1] if lrest > 1 else "f"))
     try:
         indent = int(kwargs.get("indent", rest[2] if lrest > 2 else 0))
-    except TypeError:
+    except ValueError:
         indent = 0
     return justify(str(text), width=width, align=align, indent=indent)
 
