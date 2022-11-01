@@ -166,7 +166,7 @@ Add the following code to the <code class="docutils literal notranslate"><span c
 <h2>Reference initiating object in an EvMenu command.<a class="headerlink" href="#reference-initiating-object-in-an-evmenu-command" title="Permalink to this headline">¶</a></h2>
 <p><strong>Q:</strong> An object has a Command on it starts up an EvMenu instance. How do I capture a reference to
 that object for use in the menu?</p>
-<p><strong>A:</strong> When an <a class="reference internal" href="../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a> is started, the menu object is stored as <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code>.
+<p><strong>A:</strong> When an <a class="reference internal" href="../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a> is started, the menu object is stored as <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code>.
 This is a good place to store menu-specific things since it will clean itself up when the menu
 closes. When initiating the menu, any additional keywords you give will be available for you as
 properties on this menu object:</p>
@@ -179,7 +179,7 @@ properties on this menu object:</p>
 
 </pre></div>
 </div>
-<p>Inside the menu you can now access the object through <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree.stored_obj</span></code>.</p>
+<p>Inside the menu you can now access the object through <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu.stored_obj</span></code>.</p>
 </section>
 <section id="adding-color-to-default-evennia-channels">
 <h2>Adding color to default Evennia Channels<a class="headerlink" href="#adding-color-to-default-evennia-channels" title="Permalink to this headline">¶</a></h2>

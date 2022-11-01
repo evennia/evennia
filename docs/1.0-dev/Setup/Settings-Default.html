@@ -410,8 +410,10 @@ to change into <code class="docutils literal notranslate"><span class="pre">myga
     <span class="p">((</span><span class="s2">&quot;players&quot;</span><span class="p">,</span> <span class="s2">&quot;playerdb&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;accountdb&quot;</span><span class="p">)),</span>
     <span class="p">((</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="s2">&quot;defaultplayer&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="s2">&quot;defaultaccount&quot;</span><span class="p">)),</span>
 <span class="p">]</span>
-<span class="c1"># Default type of autofield (required by Django)</span>
-<span class="n">DEFAULT_AUTO_FIELD</span> <span class="o">=</span> <span class="s2">&quot;django.db.models.AutoField&quot;</span>
+<span class="c1"># Default type of autofield (required by Django), which defines the type of</span>
+<span class="c1"># primary key fields for all tables. This type is guaranteed to be at least a</span>
+<span class="c1"># 64-bit integer.</span>
+<span class="n">DEFAULT_AUTO_FIELD</span> <span class="o">=</span> <span class="s2">&quot;django.db.models.BigAutoField&quot;</span>
 
 <span class="c1">######################################################################</span>
 <span class="c1"># Evennia webclient options</span>

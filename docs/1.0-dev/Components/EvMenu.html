@@ -396,13 +396,13 @@ start a menu differently depending on the Command’s arguments in which it was 
 list the current state of the menu and use <code class="docutils literal notranslate"><span class="pre">menudebug</span> <span class="pre">&lt;variable&gt;</span></code> to inspect a specific state
 variable from the list.</p></li>
 <li><p>All other keyword arguments will be available as initial data for the nodes. They will be
-available in all nodes as properties on <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code> (see below). These will also
+available in all nodes as properties on <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> (see below). These will also
 survive a <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> if the menu is <code class="docutils literal notranslate"><span class="pre">persistent</span></code>.</p></li>
 </ul>
 <p>You don’t need to store the EvMenu instance anywhere - the very act of initializing it will store it
-as <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code> on the <code class="docutils literal notranslate"><span class="pre">caller</span></code>. This object will be deleted automatically when the menu
+as <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> on the <code class="docutils literal notranslate"><span class="pre">caller</span></code>. This object will be deleted automatically when the menu
 is exited and you can also use it to store your own temporary variables for access throughout the
-menu. Temporary variables you store on a persistent <code class="docutils literal notranslate"><span class="pre">_menutree</span></code> as it runs will
+menu. Temporary variables you store on a persistent <code class="docutils literal notranslate"><span class="pre">_evmenu</span></code> as it runs will
 <em>not</em> survive a <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code>, only those you set as part of the original <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> call.</p>
 </section>
 <section id="the-menu-nodes">
@@ -602,10 +602,10 @@ goto-callable. This functionality comes from a time before goto could be a calla
 </section>
 <section id="temporary-storage">
 <h2>Temporary storage<a class="headerlink" href="#temporary-storage" title="Permalink to this headline">¶</a></h2>
-<p>When the menu starts, the EvMenu instance is stored on the caller as <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code>. Through
+<p>When the menu starts, the EvMenu instance is stored on the caller as <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code>. Through
 this object you can in principle reach the menu’s internal state if you know what you are doing.
 This is also a good place to store temporary, more global variables that may be cumbersome to keep
-passing from node to node via the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. The <code class="docutils literal notranslate"><span class="pre">_menutree</span></code> will be deleted automatically when the
+passing from node to node via the <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. The <code class="docutils literal notranslate"><span class="pre">_evmnenu</span></code> will be deleted automatically when the
 menu closes, meaning you don’t need to worry about cleaning anything up.</p>
 <p>If you want <em>permanent</em> state storage, it’s instead better to use an Attribute on <code class="docutils literal notranslate"><span class="pre">caller</span></code>. Remember
 that this will remain after the menu closes though, so you need to handle any needed cleanup
@@ -1015,14 +1015,14 @@ previous node, but updating its ingoing kwargs to tell it to display a different
 </section>
 <section id="example-storing-data-between-nodes">
 <h3>Example: Storing data between nodes<a class="headerlink" href="#example-storing-data-between-nodes" title="Permalink to this headline">¶</a></h3>
-<p>A convenient way to store data is to store it on the <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code> which you can reach from
-every node. The advantage of doing this is that the <code class="docutils literal notranslate"><span class="pre">_menutree</span></code> NAttribute will be deleted
+<p>A convenient way to store data is to store it on the <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> which you can reach from
+every node. The advantage of doing this is that the <code class="docutils literal notranslate"><span class="pre">_evmenu</span></code> NAttribute will be deleted
 automatically when you exit the menu.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="k">def</span> <span class="nf">_set_name</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
-    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_string</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">charactersheet</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">charactersheet</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_string</span>
     <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You set your name to </span><span class="si">{</span><span class="n">raw_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;background&quot;</span>
 
@@ -1037,7 +1037,7 @@ automatically when you exit the menu.</p>
 
 
 <span class="k">def</span> <span class="nf">node_view_sheet</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Character sheet:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span><span class="o">.</span><span class="n">charactersheet</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Character sheet:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span><span class="o">.</span><span class="n">charactersheet</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Accept&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;finish_chargen&quot;</span><span class="p">},</span>
@@ -1049,11 +1049,11 @@ automatically when you exit the menu.</p>
 </pre></div>
 </div>
 <p>Instead of passing the character sheet along from node to node through the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> we instead
-set it up temporarily on <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree.charactersheet</span></code>. This makes it easy to reach from
+set it up temporarily on <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu.charactersheet</span></code>. This makes it easy to reach from
 all nodes. At the end we look at it and, if we accept the character the menu will likely save the
 result to permanent storage and exit.</p>
 <blockquote>
-<div><p>One point to remember though is that storage on <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code> is not persistent across
+<div><p>One point to remember though is that storage on <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> is not persistent across
 <code class="docutils literal notranslate"><span class="pre">&#64;reloads</span></code>. If you are using a persistent menu (using <code class="docutils literal notranslate"><span class="pre">EvMenu(...,</span> <span class="pre">persistent=True)</span></code> you should
 use
 <code class="docutils literal notranslate"><span class="pre">caller.db</span></code> to store in-menu data like this as well. You must then yourself make sure to clean it
@@ -1344,7 +1344,7 @@ auto-created by the <code class="docutils literal notranslate"><span class="pre"
 menu will be assigned a <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">CmdSet</span></a> with the commands they need to navigate the menu.
 This means that if you were to, from inside the menu, assign a new command set to the caller, <em>you
 may override the Menu Cmdset and kill the menu</em>. If you want to assign cmdsets to the caller as part
-of the menu, you should store the cmdset on <code class="docutils literal notranslate"><span class="pre">caller.ndb._menutree</span></code> and wait to actually assign it
+of the menu, you should store the cmdset on <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code> and wait to actually assign it
 until the exit node.</p>
 </section>
 </section>
