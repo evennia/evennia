@@ -243,6 +243,26 @@ class TestRPSystem(BaseEvenniaTest):
             'receiver of emotes.|n and |mReceiver2|n. She says |w"This is a test."|n',
         )
 
+    def test_send_emote_fallback(self):
+        speaker = self.speaker
+        receiver1 = self.receiver1
+        receivers = [speaker, receiver1]
+        speaker.sdesc.add(sdesc0)
+        receiver1.sdesc.add(sdesc1)
+        speaker.msg = lambda text, **kwargs: setattr(self, "out0", text)
+        receiver1.msg = lambda text, **kwargs: setattr(self, "out1", text)
+        rpsystem.send_emote(speaker, receivers, emote, case_sensitive=False, fallback="something")
+        self.assertEqual(
+            self.out0[0],
+            "With a flair, |mSender|n looks at |bThe first receiver of emotes.|n "
+            'and |bsomething|n. She says |w"This is a test."|n',
+        )
+        self.assertEqual(
+            self.out1[0],
+            "With a flair, |bA nice sender of emotes|n looks at |mReceiver1|n and "
+            '|bsomething|n. She says |w"This is a test."|n',
+        )
+
     def test_send_case_sensitive_emote(self):
         """Test new case-sensitive rp-parsing"""
         speaker = self.speaker
