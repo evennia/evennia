@@ -395,7 +395,7 @@
     <span class="k">return</span> <span class="n">emote</span><span class="p">,</span> <span class="n">mapping</span></div>
 
 
-<div class="viewcode-block" id="parse_sdescs_and_recogs"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.parse_sdescs_and_recogs">[docs]</a><span class="k">def</span> <span class="nf">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">search_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_sdescs_and_recogs"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.rpsystem.html#evennia.contrib.rpg.rpsystem.rpsystem.parse_sdescs_and_recogs">[docs]</a><span class="k">def</span> <span class="nf">parse_sdescs_and_recogs</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">search_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read a raw emote and parse it into an intermediary</span>
 <span class="sd">    format for distributing to all observers.</span>
@@ -408,11 +408,13 @@
 <span class="sd">    string (str): The string (like an emote) we want to analyze for keywords.</span>
 <span class="sd">    search_mode (bool, optional): If `True`, the &quot;emote&quot; is a query string</span>
 <span class="sd">        we want to analyze. If so, the return value is changed.</span>
-<span class="sd">    case_sensitive (bool, optional); If set, the case of /refs matter, so that</span>
+<span class="sd">    case_sensitive (bool, optional): If set, the case of /refs matter, so that</span>
 <span class="sd">        /tall will come out as &#39;tall man&#39; while /Tall will become &#39;Tall man&#39;.</span>
 <span class="sd">        This allows for more grammatically correct emotes at the cost of being</span>
 <span class="sd">        a little more to learn for players. If disabled, the original sdesc case</span>
 <span class="sd">        is always kept and are inserted as-is.</span>
+<span class="sd">    fallback (string, optional): If set, any references that don&#39;t match a target</span>
+<span class="sd">        will be replaced with the fallback string.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (emote, mapping) (tuple): If `search_mode` is `False`</span>
@@ -561,7 +563,11 @@
             <span class="c1"># single-object search mode. Don&#39;t continue loop.</span>
             <span class="k">break</span>
         <span class="k">elif</span> <span class="n">nmatches</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_EMOTE_NOMATCH_ERROR</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="n">fallback</span><span class="p">:</span>
+                <span class="c1"># replace unmatched reference with the fallback string</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}{</span><span class="n">fallback</span><span class="si">}{</span><span class="n">tail</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_EMOTE_NOMATCH_ERROR</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ref</span><span class="o">=</span><span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">()))</span>
         <span class="k">elif</span> <span class="n">nmatches</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># a unique match - parse into intermediary representation</span>
             <span class="n">case</span> <span class="o">=</span> <span class="n">_get_case_ref</span><span class="p">(</span><span class="n">marker_match</span><span class="o">.</span><span class="n">group</span><span class="p">())</span> <span class="k">if</span> <span class="n">case_sensitive</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -636,9 +642,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">case_sensitive</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;case_sensitive&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">fallback</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fallback&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">emote</span><span class="p">,</span> <span class="n">obj_mapping</span> <span class="o">=</span> <span class="n">parse_sdescs_and_recogs</span><span class="p">(</span>
-            <span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="n">case_sensitive</span>
+            <span class="n">sender</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">emote</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="n">case_sensitive</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span>
         <span class="p">)</span>
         <span class="n">emote</span><span class="p">,</span> <span class="n">language_mapping</span> <span class="o">=</span> <span class="n">parse_language</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">emote</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">EmoteError</span><span class="p">,</span> <span class="n">LanguageError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>

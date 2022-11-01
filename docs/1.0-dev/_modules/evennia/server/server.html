@@ -174,17 +174,16 @@
         <span class="s2">&quot;copy &#39;evennia/game_template/server/conf/web_plugins.py to mygame/server/conf.&quot;</span>
     <span class="p">)</span>
 
-
 <span class="c1"># Maintenance function - this is called repeatedly by the server</span>
+
+<span class="n">_IDMAPPER_CACHE_MAXSIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDMAPPER_CACHE_MAXSIZE</span>
+<span class="n">_IDLE_TIMEOUT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDLE_TIMEOUT</span>
+<span class="n">_LAST_SERVER_TIME_SNAPSHOT</span> <span class="o">=</span> <span class="mi">0</span>
 
 <span class="n">_MAINTENANCE_COUNT</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">_FLUSH_CACHE</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_IDMAPPER_CACHE_MAXSIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDMAPPER_CACHE_MAXSIZE</span>
 <span class="n">_GAMETIME_MODULE</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">_DEFAULTOBJECT</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="n">_IDLE_TIMEOUT</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">IDLE_TIMEOUT</span>
-<span class="n">_LAST_SERVER_TIME_SNAPSHOT</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">_OBJECTDB</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <span class="k">def</span> <span class="nf">_server_maintenance</span><span class="p">():</span>
@@ -196,9 +195,11 @@
     <span class="k">global</span> <span class="n">_LAST_SERVER_TIME_SNAPSHOT</span>
     <span class="k">global</span> <span class="n">_OBJECTDB</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_MAINTENANCE_COUNT</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_OBJECTDB</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span> <span class="k">as</span> <span class="n">_OBJECTDB</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_GAMETIME_MODULE</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">gametime</span> <span class="k">as</span> <span class="n">_GAMETIME_MODULE</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_FLUSH_CACHE</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">evennia.utils.idmapper.models</span> <span class="kn">import</span> <span class="n">conditional_flush</span> <span class="k">as</span> <span class="n">_FLUSH_CACHE</span>
 
     <span class="n">_MAINTENANCE_COUNT</span> <span class="o">+=</span> <span class="mi">1</span>

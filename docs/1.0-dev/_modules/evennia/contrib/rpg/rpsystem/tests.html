@@ -172,6 +172,7 @@
 <span class="n">recog02</span> <span class="o">=</span> <span class="s2">&quot;Mr Receiver2&quot;</span>
 <span class="n">recog10</span> <span class="o">=</span> <span class="s2">&quot;Mr Sender&quot;</span>
 <span class="n">emote</span> <span class="o">=</span> <span class="s1">&#39;With a flair, /me looks at /first and /colliding sdesc-guy. She says &quot;This is a test.&quot;&#39;</span>
+<span class="n">fallback_emote</span> <span class="o">=</span> <span class="s1">&#39;/Me is distracted from /first by /nomatch.&#39;</span>
 <span class="n">case_emote</span> <span class="o">=</span> <span class="s2">&quot;/Me looks at /first. Then, /me looks at /FIRST, /First and /Colliding twice.&quot;</span>
 <span class="n">poss_emote</span> <span class="o">=</span> <span class="s2">&quot;/Me frowns at /first for trying to steal /me&#39;s test.&quot;</span>
 
@@ -317,6 +318,31 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">out2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="s2">&quot;With a flair, |bA nice sender of emotes|n looks at |bThe first &quot;</span>
             <span class="s1">&#39;receiver of emotes.|n and |mReceiver2|n. She says |w&quot;This is a test.&quot;|n&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRPSystem.test_send_emote_fallback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_send_emote_fallback">[docs]</a>    <span class="k">def</span> <span class="nf">test_send_emote_fallback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">speaker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speaker</span>
+        <span class="n">receiver1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver1</span>
+        <span class="n">receiver2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">receiver2</span>
+        <span class="n">receivers</span> <span class="o">=</span> <span class="p">[</span><span class="n">speaker</span><span class="p">,</span> <span class="n">receiver1</span><span class="p">,</span> <span class="n">receiver2</span><span class="p">]</span>
+        <span class="n">speaker</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc0</span><span class="p">)</span>
+        <span class="n">receiver1</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc1</span><span class="p">)</span>
+        <span class="n">receiver2</span><span class="o">.</span><span class="n">sdesc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sdesc2</span><span class="p">)</span>
+        <span class="n">speaker</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;out0&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">receiver1</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;out1&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">receiver2</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;out2&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">rpsystem</span><span class="o">.</span><span class="n">send_emote</span><span class="p">(</span><span class="n">speaker</span><span class="p">,</span> <span class="n">receivers</span><span class="p">,</span> <span class="n">fallback_emote</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;something&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;|mSender|n is distracted from |bthe first receiver of emotes.|n by something.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;|bA nice sender of emotes|n is distracted from |mReceiver1|n by something.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;|bA nice sender of emotes|n is distracted from |bthe first receiver of emotes.|n by something.&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestRPSystem.test_send_case_sensitive_emote"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.rpsystem.tests.html#evennia.contrib.rpg.rpsystem.tests.TestRPSystem.test_send_case_sensitive_emote">[docs]</a>    <span class="k">def</span> <span class="nf">test_send_case_sensitive_emote</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
