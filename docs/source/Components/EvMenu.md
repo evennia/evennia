@@ -273,13 +273,13 @@ after
    list the current state of the menu and use `menudebug <variable>` to inspect a specific state
    variable from the list.
  - All other keyword arguments will be available as initial data for the nodes. They will be
-   available in all nodes as properties on `caller.ndb._menutree` (see below). These will also
+   available in all nodes as properties on `caller.ndb._evmenu` (see below). These will also
 survive a `@reload` if the menu is `persistent`.
 
 You don't need to store the EvMenu instance anywhere - the very act of initializing it will store it
-as `caller.ndb._menutree` on the `caller`. This object will be deleted automatically when the menu
+as `caller.ndb._evmenu` on the `caller`. This object will be deleted automatically when the menu
 is exited and you can also use it to store your own temporary variables for access throughout the
-menu. Temporary variables you store on a persistent `_menutree` as it runs will
+menu. Temporary variables you store on a persistent `_evmenu` as it runs will
 *not* survive a `@reload`, only those you set as part of the original `EvMenu` call.
 
 
@@ -508,10 +508,10 @@ manipulated for every iteration.
 
 ## Temporary storage
 
-When the menu starts, the EvMenu instance is stored on the caller as `caller.ndb._menutree`. Through
+When the menu starts, the EvMenu instance is stored on the caller as `caller.ndb._evmenu`. Through
 this object you can in principle reach the menu's internal state if you know what you are doing.
 This is also a good place to store temporary, more global variables that may be cumbersome to keep
-passing from node to node via the `**kwargs`. The `_menutree` will be deleted automatically when the
+passing from node to node via the `**kwargs`. The `_evmnenu` will be deleted automatically when the
 menu closes, meaning you don't need to worry about cleaning anything up.
 
 If you want *permanent* state storage, it's instead better to use an Attribute on `caller`. Remember
@@ -944,16 +944,16 @@ previous node, but updating its ingoing kwargs to tell it to display a different
 
 ### Example: Storing data between nodes
 
-A convenient way to store data is to store it on the `caller.ndb._menutree` which you can reach from
-every node. The advantage of doing this is that the `_menutree` NAttribute will be deleted
+A convenient way to store data is to store it on the `caller.ndb._evmenu` which you can reach from
+every node. The advantage of doing this is that the `_evmenu` NAttribute will be deleted
 automatically when you exit the menu.
 
 ```python
 
 def _set_name(caller, raw_string, **kwargs):
 
-    caller.ndb._menutree.charactersheet = {}
-    caller.ndb._menutree.charactersheet['name'] = raw_string
+    caller.ndb._evmenu.charactersheet = {}
+    caller.ndb._evmenu.charactersheet['name'] = raw_string
     caller.msg(f"You set your name to {raw_string}")
     return "background"
 
@@ -968,7 +968,7 @@ def node_set_name(caller):
 
 
 def node_view_sheet(caller):
-    text = f"Character sheet:\n {self.ndb._menutree.charactersheet}"
+    text = f"Character sheet:\n {self.ndb._evmenu.charactersheet}"
 
     options = ({"key": "Accept",
                 "goto": "finish_chargen"},
@@ -980,11 +980,11 @@ def node_view_sheet(caller):
 ```
 
 Instead of passing the character sheet along from node to node through the `kwargs` we instead
-set it up temporarily on `caller.ndb._menutree.charactersheet`. This makes it easy to reach from
+set it up temporarily on `caller.ndb._evmenu.charactersheet`. This makes it easy to reach from
 all nodes. At the end we look at it and, if we accept the character the menu will likely save the
 result to permanent storage and exit.
 
-> One point to remember though is that storage on `caller.ndb._menutree` is not persistent across
+> One point to remember though is that storage on `caller.ndb._evmenu` is not persistent across
 > `@reloads`. If you are using a persistent menu (using `EvMenu(..., persistent=True)` you should
 use
 > `caller.db` to store in-menu data like this as well. You must then yourself make sure to clean it
@@ -1307,5 +1307,5 @@ The EvMenu is implemented using [Commands](./Commands.md). When you start a new 
 menu will be assigned a [CmdSet](./Command-Sets.md) with the commands they need to navigate the menu.
 This means that if you were to, from inside the menu, assign a new command set to the caller, *you
 may override the Menu Cmdset and kill the menu*. If you want to assign cmdsets to the caller as part
-of the menu, you should store the cmdset on `caller.ndb._menutree` and wait to actually assign it
+of the menu, you should store the cmdset on `caller.ndb._evmenu` and wait to actually assign it
 until the exit node.

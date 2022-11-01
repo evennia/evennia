@@ -52,7 +52,7 @@ def at_pre_move(self, destination):
 **Q:** An object has a Command on it starts up an EvMenu instance. How do I capture a reference to
 that object for use in the menu?
 
-**A:** When an [EvMenu](../Components/EvMenu.md) is started, the menu object is stored as `caller.ndb._menutree`.
+**A:** When an [EvMenu](../Components/EvMenu.md) is started, the menu object is stored as `caller.ndb._evmenu`.
 This is a good place to store menu-specific things since it will clean itself up when the menu
 closes. When initiating the menu, any additional keywords you give will be available for you as
 properties on this menu object:
@@ -67,7 +67,7 @@ class MyObjectCommand(Command):
 
 ```
 
-Inside the menu you can now access the object through `caller.ndb._menutree.stored_obj`.
+Inside the menu you can now access the object through `caller.ndb._evmenu.stored_obj`.
 
 
 ## Adding color to default Evennia Channels
