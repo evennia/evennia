@@ -2293,7 +2293,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 # result is a typeclassed entity where `.aliases` is an AliasHandler.
                 aliases = result.aliases.all(return_objs=True)
                 # remove pluralization aliases
-                aliases = [alias for alias in aliases if alias.category not in ("plural_key",)]
+                aliases = [alias for alias in aliases if hasattr(alias, "category") and alias.category not in ("plural_key",)]
             else:
                 # result is likely a Command, where `.aliases` is a list of strings.
                 aliases = result.aliases
