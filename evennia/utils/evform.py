@@ -149,6 +149,7 @@ import re
 from copy import copy
 
 from evennia.utils.ansi import ANSIString
+from evennia.utils.ansi import raw as ansi_raw
 from evennia.utils.evtable import EvCell, EvTable
 from evennia.utils.utils import all_from_module, is_iter, to_str
 
@@ -333,6 +334,7 @@ class EvForm:
 
         """
         matrix = EvForm._to_ansi(self.literal_form.split("\n"))
+
         maxl = max(len(line) for line in matrix)
         matrix = [line + " " * (maxl - len(line)) for line in matrix]
         if matrix and not matrix[0].strip():
@@ -348,9 +350,8 @@ class EvForm:
             return obj
         elif isinstance(obj, str):
             # since ansi will be parsed twice (here and in the normal ansi send), we have to
-            # escape the |-structure twice. TODO: This is tied to the default color-tag syntax
-            # which is not ideal for those wanting to replace/extend it ...
-            obj = _ANSI_ESCAPE.sub(r"||||", obj)
+            # escape ansi twice.
+            obj = ansi_raw(obj)
 
         if isinstance(obj, dict):
             return dict(
@@ -370,7 +371,7 @@ class EvForm:
         """
         formchar = self.data["formchar"]
         tablechar = self.data["tablechar"]
-        form = self.matrix
+        matrix = self.matrix
 
         cell_options = copy(self.cell_options)
         cell_options.update(self.options)
@@ -378,7 +379,7 @@ class EvForm:
         table_options = copy(self.table_options)
         table_options.update(self.options)
 
-        nform = len(form)
+        nmatrix = len(matrix)
 
         mapping = {}
 
@@ -389,7 +390,7 @@ class EvForm:
             regex = re.compile(rf"{char}+([^{INVALID_FORMCHARS}{char}]+){char}+")
 
             # find the start/width of rectangles for each line
-            for iy, line in enumerate(EvForm._to_ansi(form, regexable=True)):
+            for iy, line in enumerate(EvForm._to_ansi(matrix, regexable=True)):
                 ix0 = 0
                 while True:
                     match = regex.search(line, ix0)
@@ -405,15 +406,15 @@ class EvForm:
                 dy_up = 0
                 if iy > 0:
                     for i in range(1, iy):
-                        if all(form[iy - i][ix] == char for ix in range(leftix, rightix)):
+                        if all(matrix[iy - i][ix] == char for ix in range(leftix, rightix)):
                             dy_up += 1
                         else:
                             break
                 # find bottom edge of rectangle
                 dy_down = 0
-                if iy < nform - 1:
-                    for i in range(1, nform - iy - 1):
-                        if all(form[iy + i][ix] == char for ix in range(leftix, rightix)):
+                if iy < nmatrix - 1:
+                    for i in range(1, nmatrix - iy - 1):
+                        if all(matrix[iy + i][ix] == char for ix in range(leftix, rightix)):
                             dy_down += 1
                         else:
                             break
@@ -434,8 +435,22 @@ class EvForm:
 
             # get data to populate cell
             data = self.cells_mapping.get(key, "")
-            # generate Cell on the fly
-            cell = EvCell(data, width=width, height=height, **cell_options)
+            if isinstance(data, EvCell):
+                # mapping already provides the cell. We need to override some
+                # of the cell's options to make it work in the evform rectangle.
+                # We retain the align/valign since this may be interesting to
+                # play with within the rectangle.
+                cell = data
+                custom_align = cell.align
+                custom_valign = cell.valign
+                cell.reformat(
+                    width=width,
+                    height=height,
+                    **{**cell_options, **{"align": custom_align, "valign": custom_valign}},
+                )
+            else:
+                # generating cell on the fly
+                cell = EvCell(data, width=width, height=height, **cell_options)
 
             mapping[key] = (y, x, width, height, cell)
 

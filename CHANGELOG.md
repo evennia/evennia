@@ -213,6 +213,10 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Made all id fields BigAutoField for all databases. (owllex)
 - `EvForm` refactored. New `literals` mapping, for literal mappings into the
   main template (e.g. for single-character replacements).
+- `EvForm` `cells` kwarg now accepts `EvCells` with custom formatting options
+  (mainly for custom align/valign). `EvCells` now makes use of `utils.justify`.
+- `utils.justify` now supports `align="a"` (absolute alignments. This keeps
+  the given left indent but crops/fills to the width. Used in EvCells.
 
 ## Evennia 0.9.5
 
