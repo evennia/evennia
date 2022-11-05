@@ -487,7 +487,8 @@ class CmdAccounts(COMMAND_DEFAULT_CLASS):
                 string += " Reason given:\n  '%s'" % reason
             account.msg(string)
             logger.log_sec(
-                f"Account Deleted: {account} (Reason: {reason}, Caller: {caller}, IP: {self.session.address})."
+                f"Account Deleted: {account} (Reason: {reason}, Caller: {caller}, IP:"
+                f" {self.session.address})."
             )
             account.delete()
             self.msg("Account %s was successfully deleted." % username)
@@ -1169,7 +1170,7 @@ class CmdTasks(COMMAND_DEFAULT_CLASS):
                 tasks_list[i].append(task_data[i])
         # create and display the table
         tasks_table = EvTable(
-            *tasks_header, table=tasks_list, maxwidth=width, border="cells", align="center"
+            *tasks_header, table=tasks_list, maxwidth=width, border="cells", align="c"
         )
         actions = (f"/{switch}" for switch in self.switch_options)
         helptxt = f"\nActions: {iter_to_str(actions)}"
