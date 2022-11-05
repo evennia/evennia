@@ -179,6 +179,15 @@ class ServerSession(_BASE_SESSION_CLASS):
             return self.puppet if self.puppet else self.account
         return None
 
+    def get_display_name(self, **kwargs):
+        """
+        Get display name for this session.
+        
+        Returns:
+            name (str): A formatted string representing the session.
+        """
+        return f"{self.id} ({self.protocol_key})"
+    
     def log(self, message, channel=True):
         """
         Emits session info to the appropriate outputs and info channels.
