@@ -1697,33 +1697,3 @@ class EvTable(object):
         """print table (this also balances it)"""
         # h = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
         return str(str(ANSIString("\n").join([line for line in self._generate_lines()])))
-
-
-def _test():
-    """Test"""
-    table = EvTable(
-        "|yHeading1|n",
-        "|gHeading2|n",
-        table=[[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-        border="cells",
-        align="l",
-    )
-    table.add_column("|rThis is long data|n", "|bThis is even longer data|n")
-    table.add_row("This is a single row")
-    print(str(table))
-    table.reformat(width=50)
-    print(str(table))
-    table.reformat_column(3, width=30, align="r")
-    print(str(table))
-    return table
-
-
-def _test2():
-    table = EvTable("|yHeading1|n", "|B|[GHeading2|n", "Heading3")
-    for i in range(100):
-        table.add_row(
-            "This is col 0, row %i" % i,
-            "|gThis is col 1, row |w%i|n|g.|n" % i,
-            "This is col 2, row %i" % i,
-        )
-    return table
