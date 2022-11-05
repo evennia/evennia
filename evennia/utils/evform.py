@@ -299,7 +299,7 @@ class EvForm:
         if "form" in kwargs:
             raise DeprecationWarning(
                 "EvForms's 'form' kwarg was renamed to 'data' and can now accept both "
-                "a ptyhon path and a dict detailing the form."
+                "a python path and a dict detailing the form."
             )
 
         # clean cell kwarg options (these cannot be overridden on the cell but must be controlled
