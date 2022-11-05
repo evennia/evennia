@@ -214,7 +214,7 @@ def dedent(text, baseline_index=None, indent=None):
         )
 
 
-def justify(text, width=None, align="f", indent=0):
+def justify(text, width=None, align="f", indent=0, fillchar=" "):
     """
     Fully justify a text so that it fits inside `width`. When using
     full justification (default) this will be done by padding between
@@ -224,16 +224,17 @@ def justify(text, width=None, align="f", indent=0):
     Args:
         text (str): Text to justify.
         width (int, optional): The length of each line, in characters.
-        align (str, optional): The alignment, 'l', 'c', 'r' or 'f'
-            for left, center, right or full justification respectively.
+        align (str, optional): The alignment, 'l', 'c', 'r', 'f' or 'a'
+            for left, center, right, full justification. The 'a' stands for
+            'absolute' and means the text will be returned unmodified.
         indent (int, optional): Number of characters indentation of
             entire justified text block.
+        fillchar (str): The character to use to fill. Defaults to empty space.
 
     Returns:
         justified (str): The justified and indented block of text.
 
     """
-    width = width if width else settings.CLIENT_DEFAULT_WIDTH
 
     def _process_line(line):
         """
@@ -246,28 +247,45 @@ def justify(text, width=None, align="f", indent=0):
         if line_rest > 0:
             if align == "l":
                 if line[-1] == "\n\n":
-                    line[-1] = " " * (line_rest - 1) + "\n" + " " * width + "\n" + " " * width
+                    line[-1] = sp * (line_rest - 1) + "\n" + sp * width + "\n" + sp * width
                 else:
-                    line[-1] += " " * line_rest
+                    line[-1] += sp * line_rest
             elif align == "r":
-                line[0] = " " * line_rest + line[0]
+                line[0] = sp * line_rest + line[0]
             elif align == "c":
-                pad = " " * (line_rest // 2)
+                pad = sp * (line_rest // 2)
                 line[0] = pad + line[0]
                 if line[-1] == "\n\n":
                     line[-1] += (
-                        pad + " " * (line_rest % 2 - 1) + "\n" + " " * width + "\n" + " " * width
+                        pad + sp * (line_rest % 2 - 1) + "\n" + sp * width + "\n" + sp * width
                     )
                 else:
-                    line[-1] = line[-1] + pad + " " * (line_rest % 2)
+                    line[-1] = line[-1] + pad + sp * (line_rest % 2)
             else:  # align 'f'
-                gap += " " * (line_rest // max(1, ngaps))
+                gap += sp * (line_rest // max(1, ngaps))
                 rest_gap = line_rest % max(1, ngaps)
                 for i in range(rest_gap):
-                    line[i] += " "
+                    line[i] += sp
         elif not any(line):
-            return [" " * width]
+            return [sp * width]
         return gap.join(line)
+
+    width = width if width else settings.CLIENT_DEFAULT_WIDTH
+    sp = fillchar
+
+    if align == "a":
+        # absolute mode - just crop or fill to width
+        abs_lines = []
+        for line in text.split("\n"):
+            nlen = len(line)
+            if len(line) < width:
+                line += sp * (width - nlen)
+            else:
+                line = crop(line, width=width, suffix="")
+            abs_lines.append(line)
+        return "\n".join(abs_lines)
+
+    # all other aligns requires splitting into paragraphs and words
 
     # split into paragraphs and words
     paragraphs = re.split("\n\s*?\n", text, re.MULTILINE)
@@ -303,7 +321,7 @@ def justify(text, width=None, align="f", indent=0):
 
     if line:  # catch any line left behind
         lines.append(_process_line(line))
-    indentstring = " " * indent
+    indentstring = sp * indent
     return "\n".join([indentstring + line for line in lines])
 
 
@@ -2293,7 +2311,11 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
                 # result is a typeclassed entity where `.aliases` is an AliasHandler.
                 aliases = result.aliases.all(return_objs=True)
                 # remove pluralization aliases
-                aliases = [alias for alias in aliases if hasattr(alias, "category") and alias.category not in ("plural_key",)]
+                aliases = [
+                    alias
+                    for alias in aliases
+                    if hasattr(alias, "category") and alias.category not in ("plural_key",)
+                ]
             else:
                 # result is likely a Command, where `.aliases` is a list of strings.
                 aliases = result.aliases

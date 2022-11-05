@@ -120,7 +120,7 @@ from textwrap import TextWrapper
 from django.conf import settings
 from evennia.utils.ansi import ANSIString
 from evennia.utils.utils import display_len as d_len
-from evennia.utils.utils import is_iter
+from evennia.utils.utils import is_iter, justify
 
 _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 
@@ -601,29 +601,8 @@ class EvCell:
         align = self.align
         hfill_char = self.hfill_char
         width = self.width
-        if align == "l":
-            lines = [
-                (
-                    line.lstrip(" ") + " "
-                    if line.startswith(" ") and not line.startswith("  ")
-                    else line
-                )
-                + hfill_char * (width - d_len(line))
-                for line in data
-            ]
-            return lines
-        elif align == "r":
-            return [
-                hfill_char * (width - d_len(line))
-                + (
-                    " " + line.rstrip(" ")
-                    if line.endswith(" ") and not line.endswith("  ")
-                    else line
-                )
-                for line in data
-            ]
-        else:  # center, 'c'
-            return [self._center(line, self.width, self.hfill_char) for line in data]
+
+        return [justify(line, width, align=align, fillchar=hfill_char) for line in data]
 
     def _valign(self, data):
         """
