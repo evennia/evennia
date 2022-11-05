@@ -2,15 +2,13 @@
 """
 EvForm - a way to create advanced ASCII forms
 
-This is intended for creating advanced ASCII game forms, such as a
-large pretty character sheet or info document.
+This is intended for creating advanced ASCII game forms, such as a large pretty character sheet or
+info document.
 
-The system works on the basis of a readin template that is given in a
-separate Python file imported into the handler. This file contains
-some optional settings and a string mapping out the form. The template
-has markers in it to denounce fields to fill. The markers map the
-absolute size of the field and will be filled with an `evtable.EvCell`
-object when displaying the form.
+The system works on the basis of a readin template that is given in a separate Python file imported
+into the handler. This file contains some optional settings and a string mapping out the form. The
+template has markers in it to denounce fields to fill. The markers map the absolute size of the
+field and will be filled with an `evtable.EvCell` object when displaying the form.
 
 Example of input file `testform.py`:
 
@@ -38,56 +36,68 @@ FORM = '''
 | cccccccc | ccccccccccccccccccccccccccccccccccc |
 | cccccccc | cccccccccccccccccBccccccccccccccccc |
 |          |                                     |
+|                                           v&   |
 -------------------------------------------------
 '''
 ```
 
-The first line of the `FORM` string is ignored. The forms and table
-markers must mark out complete, unbroken rectangles, each containing
-one embedded single-character identifier (so the smallest element
-possible is a 3-character wide form). The identifier can be any
-character except for the `FORM_CHAR` and `TABLE_CHAR` and some of the
-common ASCII-art elements, like space, `_` `|` `*` etc (see
-`INVALID_FORMCHARS` in this module). Form Rectangles can have any size,
-but must be separated from each other by at least one other
-character's width.
+The first line of the `FORM` string is ignored if empty. The forms and table markers must mark out
+complete, unbroken rectangles, each containing one embedded single-character identifier (so the
+smallest element possible is a 3-character wide form). The identifier can be any character except
+for the `FORM_CHAR` and `TABLE_CHAR` and some of the common ASCII-art elements, like space, `_` `|`
+`*` etc (see `INVALID_FORMCHARS` in this module). Form Rectangles can have any size, but must be
+separated from each other by at least one other character's width.
 
+The form can also replace literal markers not abiding by these rules. For example, the `v&` in the
+bottom right corner could be such literal marker. If a literal-mapping for 'v&' is provided, all
+occurrences of this marker will be replaced. This will happen *before* any other parsing, so in
+principle this could be used to inject new fields/tables into the form dynamically.  This literal
+mapping does not consider width, but it will affect to total width of the form, so make sure what
+you inject does not break things.  Using literal markers is the only way to inject 1 or 2-character
+replacements.
 
-Use as follows:
+Usage
 
 ```python
-    from evennia import EvForm, EvTable
+from evennia import EvForm, EvTable
 
-    # create a new form from the template
-    form = EvForm("path/to/testform.py")
+# create a new form from the template
+form = EvForm("path/to/testform.py")
 
-    # EvForm can also take a dictionary instead of a filepath, as long
-    # as the dict contains the keys FORMCHAR, TABLECHAR and FORM
-    # form = EvForm(form=form_dict)
+# alteratively, you can supply the template as a dict:
 
-    # add data to each tagged form cell
-    form.map(cells={1: "Tom the Bouncer",
-                    2: "Griatch",
-                    3: "A sturdy fellow",
-                    4: 12,
-                    5: 10,
-                    6:  5,
-                    7: 18,
-                    8: 10,
-                    9:  3})
-    # create the EvTables
-    tableA = EvTable("HP","MV","MP",
-                               table=[["**"], ["*****"], ["***"]],
-                               border="incols")
-    tableB = EvTable("Skill", "Value", "Exp",
-                               table=[["Shooting", "Herbalism", "Smithing"],
-                                      [12,14,9],["550/1200", "990/1400", "205/900"]],
-                               border="incols")
-    # add the tables to the proper ids in the form
-    form.map(tables={"A": tableA,
-                     "B": tableB})
+form = EvForm({"FORM": "....", "TABLECHAR": "c", "FORMCHAR": "x"})
 
-    print(form)
+# EvForm can also take a dictionary instead of a filepath, as long
+# as the dict contains the keys FORMCHAR, TABLECHAR and FORM
+# form = EvForm(form=form_dict)
+
+# add data to each tagged form cell
+form.map(cells={1: "Tom the Bouncer",
+                2: "Griatch",
+                3: "A sturdy fellow",
+                4: 12,
+                5: 10,
+                6:  5,
+                7: 18,
+                8: 10,
+                9:  3})
+# create the EvTables
+tableA = EvTable("HP","MV","MP",
+                           table=[["**"], ["*****"], ["***"]],
+                           border="incols")
+tableB = EvTable("Skill", "Value", "Exp",
+                           table=[["Shooting", "Herbalism", "Smithing"],
+                                  [12,14,9],["550/1200", "990/1400", "205/900"]],
+                           border="incols")
+# map 'literal' replacents (here, a version string)
+custom_mapping = {"v&", "v2"}
+
+# add the tables to the proper ids in the form
+form.map(tables={"A": tableA,
+                 "B": tableB})
+
+print(form)
 ```
 
 This produces the following result:
@@ -113,27 +123,30 @@ This produces the following result:
     |   |**|*  | Herbalism  |14         |990/1400    |
     |   |* |   | Smithing   |9          |205/900     |
     |          |                                     |
+    |                                           v2   |
      ------------------------------------------------
 
-The marked forms have been replaced with EvCells of text and with
-EvTables. The form can be updated by simply re-applying `form.map()`
-with the updated data.
+The marked forms have been replaced with EvCells of text and with EvTables. The literal marker `v&`
+was replaced with `v2`.
 
-When working with the template ASCII file, you can use `form.reload()`
-to re-read the template and re-apply all existing mappings.
+If you change the form layout on disk, you can use `form.reload()` to re-read it from disk without
+creating a new form.
 
-Each component is restrained to the width and height specified by the
-template, so it will resize to fit (or crop text if the area is too
-small for it). If you try to fit a table into an area it cannot fit
-into (when including its borders and at least one line of text), the
-form will raise an error.
+If you want to update the data of an existing form, you can use `form.map()` with the changes - the
+mappings will be updated, keeping the things you want. You can also update the template itself this
+way, by supplying it as a dict.
+
+Each component (except literal mappings) is restrained to the width and height specified by the
+template, so it will resize to fit (or crop text if the area is too small for it). If you try to fit
+a table into an area it cannot fit into (when including its borders and at least one line of text),
+the form will raise an error.
 
 ----
 
 """
 
-import copy
 import re
+from copy import copy
 
 from evennia.utils.ansi import ANSIString
 from evennia.utils.evtable import EvCell, EvTable
@@ -142,7 +155,6 @@ from evennia.utils.utils import all_from_module, is_iter, to_str
 # non-valid form-identifying characters (which can thus be
 # used as separators between forms without being detected
 # as an identifier). These should be listed in regex form.
-
 INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
 # if there is an ansi-escape (||) we have to replace this with ||| to make sure
 # to properly escape down the line
@@ -180,7 +192,7 @@ class EvForm:
         "enforce_size": True,
     }
 
-    def __init__(self, data=None, cells=None, tables=None, **kwargs):
+    def __init__(self, data=None, cells=None, tables=None, literals=None, **kwargs):
         """
         Initiate the form
 
@@ -190,8 +202,13 @@ class EvForm:
                 also works, to stay compatible with the in-file names). While "form/FORM"
                 is required, if FORMCHAR/TABLECHAR are not given, they will default to
                 'x' and 'c' respectively.
-            cells (dict): A dictionary mapping  `{id: text}`
+            cells (dict): A dictionary mapping  `{id: str}`
             tables (dict): A dictionary mapping  `{id: EvTable}`.
+            literals (dict): A dictionary mapping `{id: str}`. Will be replaced
+                after width of form is calculated, but before cells/tables are mapped.
+                All occurrences of the identifier on the form will be replaced. Note
+                that there is no length-restriction on the remap, you are responsible
+                for not breaking the form.
 
         Notes:
             Other kwargs are fed as options to the EvCells and EvTables
@@ -207,10 +224,16 @@ class EvForm:
         self.tables_mapping = (
             dict((to_str(key), value) for key, value in tables.items()) if tables else {}
         )
+        self.literals_mapping = (
+            dict((to_str(key), to_str(value)) for key, value in literals.items())
+            if literals
+            else {}
+        )
 
         # work arrays
+        self.literal_form = ""
         self.mapping = {}
-        self.raw_form = []
+        self.matrix = []
         self.form = []
 
         # will parse and build the form
@@ -286,7 +309,18 @@ class EvForm:
 
         return kwargs
 
-    def _parse_to_raw_form(self):
+    def _do_literal_mapping(self):
+        """
+        Do literal replacement in the EvForm.
+
+        """
+        literal_form = copy(self.data["form"])
+
+        for key, repl in self.literals_mapping.items():
+            literal_form = literal_form.replace(key, repl)
+        return literal_form
+
+    def _parse_to_matrix(self):
         """
         Forces all lines to be as long as the longest line, filling with whitespace.
 
@@ -298,13 +332,13 @@ class EvForm:
             same length as the longest input line
 
         """
-        raw_form = EvForm._to_ansi(self.data["form"].split("\n"))
-        maxl = max(len(line) for line in raw_form)
-        raw_form = [line + " " * (maxl - len(line)) for line in raw_form]
-        if raw_form and not raw_form[0].strip():
+        matrix = EvForm._to_ansi(self.literal_form.split("\n"))
+        maxl = max(len(line) for line in matrix)
+        matrix = [line + " " * (maxl - len(line)) for line in matrix]
+        if matrix and not matrix[0].strip():
             # the first line is normally empty, we strip it.
-            raw_form = raw_form[1:]
-        return raw_form
+            matrix = matrix[1:]
+        return matrix
 
     @staticmethod
     def _to_ansi(obj, regexable=False):
@@ -336,12 +370,12 @@ class EvForm:
         """
         formchar = self.data["formchar"]
         tablechar = self.data["tablechar"]
-        form = self.raw_form
+        form = self.matrix
 
-        cell_options = copy.copy(self.cell_options)
+        cell_options = copy(self.cell_options)
         cell_options.update(self.options)
 
-        table_options = copy.copy(self.table_options)
+        table_options = copy(self.table_options)
         table_options.update(self.options)
 
         nform = len(form)
@@ -426,7 +460,7 @@ class EvForm:
         the final result.
 
         """
-        form = copy.copy(self.raw_form)
+        form = copy(self.matrix)
         mapping = self.mapping
 
         for key, (y, x, width, height, cell_or_table) in mapping.items():
@@ -454,14 +488,16 @@ class EvForm:
         """
         self.data = self._parse_indata()
 
+        # Map any literals into the string
+        self.literal_form = self._do_literal_mapping()
         # Create raw form matrix, indexable with (y, x) coords
-        self.raw_form = self._parse_to_raw_form()
+        self.matrix = self._parse_to_matrix()
         # parse and identify all rectangles in the form
         self.mapping = self._rectangles_to_mapping()
         # combine mapping with form template into a final result
         self.form = self._build_form()
 
-    def map(self, cells=None, tables=None, data=None, **kwargs):
+    def map(self, cells=None, tables=None, data=None, literals=None, **kwargs):
         """
         Add mapping for form. This allows for updating an existing
         evform.
@@ -474,6 +510,7 @@ class EvForm:
             data (str or dict): A path to a evform module or a dict with
                 the needed "FORM", "TABLE/FORMCHAR" keys. Will replace
                 the originally initialized form.
+            literals
 
         Keyword Args:
             These will be appended to the existing cell/table options.
@@ -488,9 +525,15 @@ class EvForm:
             self.indata = data
 
         new_cells = dict((to_str(key), value) for key, value in cells.items()) if cells else {}
-        new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
         self.cells_mapping.update(new_cells)
+        new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
         self.tables_mapping.update(new_tables)
+        new_literals = (
+            dict((to_str(key), to_str(value)) for key, value in literals.items())
+            if literals
+            else {}
+        )
+        self.literals_mapping.update(new_literals)
 
         self.options.update(self._parse_inkwargs(**kwargs))
 

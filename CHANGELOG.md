@@ -210,7 +210,9 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Improve search performance when having many DB-based prototypes via caching.
 - Remove the `return_parents` kwarg of `evennia.prototypes.spawner.spawn` since it
   was inefficient and unused.
-- Made all id fields BigAutoField for all databases.
+- Made all id fields BigAutoField for all databases. (owllex)
+- `EvForm` refactored. New `literals` mapping, for literal mappings into the
+  main template (e.g. for single-character replacements).
 
 ## Evennia 0.9.5
 

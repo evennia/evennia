@@ -48,10 +48,10 @@ class TestEvForm(TestCase):
         form.map(tables={"A": tableA, "B": tableB})
         return str(form)
 
-    def _simple_form(self, form):
+    def _simple_form(self, form, literals=None):
         cellsdict = {1: "Apple", 2: "Banana", 3: "Citrus", 4: "Durian"}
         formdict = {"FORMCHAR": "x", "TABLECHAR": "c", "FORM": form}
-        form = evform.EvForm(formdict)
+        form = evform.EvForm(formdict, literals=literals)
         form.map(cells=cellsdict)
         form = ansi.strip_ansi(str(form))
         # this is necessary since editors/black tend to strip lines spaces
@@ -164,6 +164,18 @@ Apple      Banana     Citrus
 Durian
 """.lstrip()
         result = self._simple_form(form)
+        self.assertEqual(expected, result)
+
+    def test_literal_replacement(self):
+        form = """
+xxxx1xxxx  xxxx2xxxx  xxxx3xxxx
+xxxx4xxxx  v&
+        """
+        expected = """
+Apple      Banana     Citrus
+Durian     v2
+""".lstrip()
+        result = self._simple_form(form, literals={"v&": "v2"})
         self.assertEqual(expected, result)
 
 
