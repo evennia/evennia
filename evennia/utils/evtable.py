@@ -555,36 +555,6 @@ class EvCell:
 
         return adjusted_data
 
-    def _center(self, text, width, pad_char):
-        """
-        Horizontally center text on line of certain width, using padding.
-
-        Args:
-            text (str): The text to center.
-            width (int): How wide the area is (in characters) where `text`
-                should be centered.
-            pad_char (str): Which padding character to use.
-
-        Returns:
-            text (str): Centered text.
-
-        """
-        excess = width - d_len(text)
-        if excess <= 0:
-            return text
-        if excess % 2:
-            # uneven padding
-            narrowside = (excess // 2) * pad_char
-            widerside = narrowside + pad_char
-            if width % 2:
-                return narrowside + text + widerside
-            else:
-                return widerside + text + narrowside
-        else:
-            # even padding - same on both sides
-            side = (excess // 2) * pad_char
-            return side + text + side
-
     def _align(self, data):
         """
         Align list of rows of cell. Whitespace characters will be stripped
