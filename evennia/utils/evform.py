@@ -132,11 +132,12 @@ form will raise an error.
 
 """
 
-import re
 import copy
-from evennia.utils.evtable import EvCell, EvTable
-from evennia.utils.utils import all_from_module, to_str, is_iter
+import re
+
 from evennia.utils.ansi import ANSIString
+from evennia.utils.evtable import EvCell, EvTable
+from evennia.utils.utils import all_from_module, is_iter, to_str
 
 # non-valid form-identifying characters (which can thus be
 # used as separators between forms without being detected
@@ -148,39 +149,6 @@ INVALID_FORMCHARS = r"\s\/\|\\\*\_\-\#\<\>\~\^\:\;\.\,"
 _ANSI_ESCAPE = re.compile(r"\|\|")
 
 
-def _to_rect(lines):
-    """
-    Forces all lines to be as long as the longest
-
-    Args:
-        lines (list): list of `ANSIString`s
-
-    Returns:
-        (list): list of `ANSIString`s of
-        same length as the longest input line
-
-    """
-    maxl = max(len(line) for line in lines)
-    return [line + " " * (maxl - len(line)) for line in lines]
-
-
-def _to_ansi(obj, regexable=False):
-    "convert to ANSIString"
-    if isinstance(obj, ANSIString):
-        return obj
-    elif isinstance(obj, str):
-        # since ansi will be parsed twice (here and in the normal ansi send), we have to
-        # escape the |-structure twice. TODO: This is tied to the default color-tag syntax
-        # which is not ideal for those wanting to replace/extend it ...
-        obj = _ANSI_ESCAPE.sub(r"||||", obj)
-    if isinstance(obj, dict):
-        return dict((key, _to_ansi(value, regexable=regexable)) for key, value in obj.items())
-    elif is_iter(obj):
-        return [_to_ansi(o) for o in obj]
-    else:
-        return ANSIString(obj, regexable=regexable)
-
-
 class EvForm:
     """
     This object is instantiated with a text file and parses
@@ -190,25 +158,48 @@ class EvForm:
 
     """
 
-    def __init__(self, filename=None, cells=None, tables=None, form=None, **kwargs):
+    # cell option defaults
+    cell_options = {
+        "pad_left": 0,
+        "pad_right": 0,
+        "pad_top": 0,
+        "pad_bottom": 0,
+        "align": "l",
+        "valign": "t",
+        "enforce_size": True,
+    }
+
+    # table option defaults
+    table_options = {
+        "pad_left": 0,
+        "pad_right": 0,
+        "pad_top": 0,
+        "pad_bottom": 0,
+        "align": "l",
+        "valign": "t",
+        "enforce_size": True,
+    }
+
+    def __init__(self, data=None, cells=None, tables=None, **kwargs):
         """
         Initiate the form
 
         Keyword Args:
-            filename (str): Path to template file.
+            data (str or dict): Path to template file or a dict with
+                "formchar", "tablechar" and "form" keys (not case sensitive, so FORM etc
+                also works, to stay compatible with the in-file names). While "form/FORM"
+                is required, if FORMCHAR/TABLECHAR are not given, they will default to
+                'x' and 'c' respectively.
             cells (dict): A dictionary mapping  `{id: text}`
             tables (dict): A dictionary mapping  `{id: EvTable}`.
-            form (dict): A dictionary
-                `{"FORMCHAR":char, "TABLECHAR":char, "FORM":templatestring}`.
-                If this is given, filename is not read.
 
         Notes:
             Other kwargs are fed as options to the EvCells and EvTables
             (see `evtable.EvCell` and `evtable.EvTable` for more info).
 
         """
-        self.filename = filename
-        self.input_form_dict = form
+        self.indata = data  # storing here so we can reload later in case of a filename
+        self.options = self._parse_inkwargs(**kwargs)
 
         self.cells_mapping = (
             dict((to_str(key), value) for key, value in cells.items()) if cells else {}
@@ -217,252 +208,294 @@ class EvForm:
             dict((to_str(key), value) for key, value in tables.items()) if tables else {}
         )
 
-        self.cellchar = "x"
-        self.tablechar = "c"
-
+        # work arrays
+        self.mapping = {}
         self.raw_form = []
         self.form = []
 
-        # clean kwargs (these cannot be overridden)
+        # will parse and build the form
+        self.reload()
+
+    def _parse_indata(self):
+        """
+        Parse and validate the `self.indata` property. We do this in order to be able to
+        re-load the evform module if indata is a filename and catch any on-file changes.
+
+        Returns:
+            dict: The data dict parsed/generated from the in-data.
+
+        """
+        data = self.indata
+
+        default_formchar = "x"
+        default_tablechar = "c"
+
+        if isinstance(data, str):
+            # a module path - read all variables from it
+            data = all_from_module(data)
+
+        if isinstance(data, dict):
+            data = {
+                "form": str(data.get("form", data.get("FORM", None))),
+                "formchar": str(data.get("formchar", data.get("FORMCHAR", default_formchar))),
+                "tablechar": str(data.get("tablechar", data.get("TABLECHAR", default_tablechar))),
+            }
+        else:
+            raise RuntimeError(f"EvForm invalid input: {data}.")
+
+        if not data or data["form"] is None:
+            raise RuntimeError("Evform data must specify a valid 'form' or 'FORM'.")
+
+        # handle empty or multi-character form/tablechars (not supported)
+        data["formchar"] = data["formchar"][0] if data["formchar"] else default_formchar
+        data["tablechar"] = data["tablechar"][0] if data["tablechar"] else default_tablechar
+        if re.match(rf"[{INVALID_FORMCHARS}]", data["formchar"]):
+            raise RuntimeError(f"Invalid formchar: {data['formchar']}")
+        if re.match(rf"[{INVALID_FORMCHARS}]", data["tablechar"]):
+            raise RuntimeError(f"Invalid tablechar: {data['tablechar']}")
+
+        return data
+
+    def _parse_inkwargs(self, **kwargs):
+        """
+        Validate incoming kwargs that will be passed on to become cell/table options.
+
+        Keyword Args:
+            any: Kwargs to process.
+
+        Returns:
+            dict: A validated/cleaned kwarg to use for options.
+
+        """
+        if "filename" in kwargs:
+            raise DeprecationWarning(
+                "EvForm's 'filename' kwarg was renamed to 'data' and can now accept both "
+                "a python path and a dict with 'FORMCHAR', 'TABLECHAR' and 'FORM' keys."
+            )
+        if "form" in kwargs:
+            raise DeprecationWarning(
+                "EvForms's 'form' kwarg was renamed to 'data' and can now accept both "
+                "a ptyhon path and a dict detailing the form."
+            )
+
+        # clean cell kwarg options (these cannot be overridden on the cell but must be controlled
+        # by the evform itself)
         kwargs.pop("enforce_size", None)
         kwargs.pop("width", None)
         kwargs.pop("height", None)
-        # table/cell options
-        self.options = kwargs
 
-        self.reload()
+        return kwargs
 
-    def _parse_rectangles(self, cellchar, tablechar, form, **kwargs):
+    def _parse_to_raw_form(self):
         """
-        Parse a form for rectangular formfields identified by formchar
-        enclosing an identifier.
+        Forces all lines to be as long as the longest line, filling with whitespace.
+
+        Args:
+            lines (list): list of `ANSIString`s
+
+        Returns:
+            (list): list of `ANSIString`s of
+            same length as the longest input line
 
         """
+        raw_form = EvForm._to_ansi(self.data["form"].split("\n"))
+        maxl = max(len(line) for line in raw_form)
+        raw_form = [line + " " * (maxl - len(line)) for line in raw_form]
+        if raw_form and not raw_form[0].strip():
+            # the first line is normally empty, we strip it.
+            raw_form = raw_form[1:]
+        return raw_form
 
-        # update options given at creation with new input - this
-        # allows e.g. self.map() to add custom settings for individual
-        # cells/tables
-        custom_options = copy.copy(self.options)
-        custom_options.update(kwargs)
+    @staticmethod
+    def _to_ansi(obj, regexable=False):
+        "convert anything to ANSIString"
+
+        if isinstance(obj, ANSIString):
+            return obj
+        elif isinstance(obj, str):
+            # since ansi will be parsed twice (here and in the normal ansi send), we have to
+            # escape the |-structure twice. TODO: This is tied to the default color-tag syntax
+            # which is not ideal for those wanting to replace/extend it ...
+            obj = _ANSI_ESCAPE.sub(r"||||", obj)
+
+        if isinstance(obj, dict):
+            return dict(
+                (key, EvForm._to_ansi(value, regexable=regexable)) for key, value in obj.items()
+            )
+        # regular _to_ansi (from EvTable)
+        elif is_iter(obj):
+            return [EvForm._to_ansi(o) for o in obj]
+        else:
+            return ANSIString(obj, regexable=regexable)
+
+    def _rectangles_to_mapping(self):
+        """
+        Parse a form for rectangular formfields identified by formchar/tablechar enclosing an
+        identifier.
+
+        """
+        formchar = self.data["formchar"]
+        tablechar = self.data["tablechar"]
+        form = self.raw_form
+
+        cell_options = copy.copy(self.cell_options)
+        cell_options.update(self.options)
+
+        table_options = copy.copy(self.table_options)
+        table_options.update(self.options)
 
         nform = len(form)
 
         mapping = {}
-        cell_coords = {}
-        table_coords = {}
 
-        # Locate the identifier tags and the horizontal end coords for all forms
-        re_cellchar = re.compile(
-            r"%s+([^%s%s]+)%s+" % (cellchar, INVALID_FORMCHARS, cellchar, cellchar)
-        )
-        re_tablechar = re.compile(
-            r"%s+([^%s%s|+])%s+" % (tablechar, INVALID_FORMCHARS, tablechar, tablechar)
-        )
-        for iy, line in enumerate(_to_ansi(form, regexable=True)):
-            # find cells
-            ix0 = 0
-            while True:
-                match = re_cellchar.search(line, ix0)
-                if match:
-                    # get the width of the rectangle directly from the match
-                    cell_coords[match.group(1)] = [iy, match.start(), match.end()]
-                    ix0 = match.end()
-                else:
-                    break
-            # find tables
-            ix0 = 0
-            while True:
-                match = re_tablechar.search(line, ix0)
-                if match:
-                    # get the width of the rectangle directly from the match
-                    table_coords[match.group(1)] = [iy, match.start(), match.end()]
-                    ix0 = match.end()
-                else:
-                    break
+        def _get_rectangles(char):
+            """Find all identified rectangles marked with given char"""
+            rects = []
+            coords = {}
+            regex = re.compile(rf"{char}+([^{INVALID_FORMCHARS}{char}]+){char}+")
 
-        # get rectangles and assign EvCells
-        for key, (iy, leftix, rightix) in cell_coords.items():
-            # scan up to find top of rectangle
-            dy_up = 0
-            if iy > 0:
-                for i in range(1, iy):
-                    if all(form[iy - i][ix] == cellchar for ix in range(leftix, rightix)):
-                        dy_up += 1
-                    else:
-                        break
-            # find bottom edge of rectangle
-            dy_down = 0
-            if iy < nform - 1:
-                for i in range(1, nform - iy - 1):
-                    if all(form[iy + i][ix] == cellchar for ix in range(leftix, rightix)):
-                        dy_down += 1
+            # find the start/width of rectangles for each line
+            for iy, line in enumerate(EvForm._to_ansi(form, regexable=True)):
+                ix0 = 0
+                while True:
+                    match = regex.search(line, ix0)
+                    if match:
+                        # get the width of the rectangle directly from the match
+                        coords[match.group(1)] = [iy, match.start(), match.end()]
+                        ix0 = match.end()
                     else:
                         break
 
-            #  we have our rectangle. Calculate size of EvCell.
-            iyup = iy - dy_up
-            iydown = iy + dy_down
-            width = rightix - leftix
-            height = abs(iyup - iydown) + 1
+            for key, (iy, leftix, rightix) in coords.items():
+                # scan up to find top of rectangle
+                dy_up = 0
+                if iy > 0:
+                    for i in range(1, iy):
+                        if all(form[iy - i][ix] == char for ix in range(leftix, rightix)):
+                            dy_up += 1
+                        else:
+                            break
+                # find bottom edge of rectangle
+                dy_down = 0
+                if iy < nform - 1:
+                    for i in range(1, nform - iy - 1):
+                        if all(form[iy + i][ix] == char for ix in range(leftix, rightix)):
+                            dy_down += 1
+                        else:
+                            break
 
-            # we have all the coordinates we need. Create EvCell.
+                #  we have our rectangle. Calculate size
+                iyup = iy - dy_up
+                iydown = iy + dy_down
+                width = rightix - leftix
+                height = abs(iyup - iydown) + 1
+
+                # store (key, y, x, width, height) of triangle
+                rects.append((key, iyup, leftix, width, height))
+
+            return rects
+
+        # Map EvCells into form rectangles
+        for (key, y, x, width, height) in _get_rectangles(formchar):
+
+            # get data to populate cell
             data = self.cells_mapping.get(key, "")
-            # if key == "1":
+            # generate Cell on the fly
+            cell = EvCell(data, width=width, height=height, **cell_options)
 
-            options = {
-                "pad_left": 0,
-                "pad_right": 0,
-                "pad_top": 0,
-                "pad_bottom": 0,
-                "align": "l",
-                "valign": "t",
-                "enforce_size": True,
-            }
-            options.update(custom_options)
-            # if key=="4":
+            mapping[key] = (y, x, width, height, cell)
 
-            mapping[key] = (
-                iyup,
-                leftix,
-                width,
-                height,
-                EvCell(data, width=width, height=height, **options),
-            )
+        # Map EvTables into form rectangles
+        for (key, y, x, width, height) in _get_rectangles(tablechar):
 
-        # get rectangles and assign Tables
-        for key, (iy, leftix, rightix) in table_coords.items():
-
-            # scan up to find top of rectangle
-            dy_up = 0
-            if iy > 0:
-                for i in range(1, iy):
-                    if all(form[iy - i][ix] == tablechar for ix in range(leftix, rightix)):
-                        dy_up += 1
-                    else:
-                        break
-            # find bottom edge of rectangle
-            dy_down = 0
-            if iy < nform - 1:
-                for i in range(1, nform - iy - 1):
-                    if all(form[iy + i][ix] == tablechar for ix in range(leftix, rightix)):
-                        dy_down += 1
-                    else:
-                        break
-
-            #  we have our rectangle. Calculate size of Table.
-            iyup = iy - dy_up
-            iydown = iy + dy_down
-            width = rightix - leftix
-            height = abs(iyup - iydown) + 1
-
-            # we have all the coordinates we need. Create Table.
+            # get EvTable from mapping
             table = self.tables_mapping.get(key, None)
 
-            options = {
-                "pad_left": 0,
-                "pad_right": 0,
-                "pad_top": 0,
-                "pad_bottom": 0,
-                "align": "l",
-                "valign": "t",
-                "enforce_size": True,
-            }
-            options.update(custom_options)
-
             if table:
-                table.reformat(width=width, height=height, **options)
+                table.reformat(width=width, height=height, **table_options)
             else:
-                table = EvTable(width=width, height=height, **options)
-            mapping[key] = (iyup, leftix, width, height, table)
+                table = EvTable(width=width, height=height, **table_options)
+
+            mapping[key] = (y, x, width, height, table)
 
         return mapping
 
-    def _populate_form(self, raw_form, mapping):
+    def _build_form(self):
         """
-        Insert cell contents into form at given locations
+        Insert cell/table contents into form at given locations to create
+        the final result.
 
         """
-        form = copy.copy(raw_form)
-        for key, (iy0, ix0, width, height, cell_or_table) in mapping.items():
+        form = copy.copy(self.raw_form)
+        mapping = self.mapping
+
+        for key, (y, x, width, height, cell_or_table) in mapping.items():
+
             # rect is a list of <height> lines, each <width> wide
             rect = cell_or_table.get()
             for il, rectline in enumerate(rect):
-                formline = form[iy0 + il]
+                formline = form[y + il]
                 # insert new content, replacing old
-                form[iy0 + il] = formline[:ix0] + rectline + formline[ix0 + width :]
+                form[y + il] = formline[:x] + rectline + formline[x + width :]
+
         return form
 
-    def map(self, cells=None, tables=None, **kwargs):
+    def reload(self):
         """
-        Add mapping for form.
+        Creates the form from a filename or data structure.
 
         Args:
-            cells (dict): A dictionary of {identifier:celltext}
-            tables (dict): A dictionary of {identifier:table}
+            data (str or dict): Can be used to update an existing form using
+                the same cells/tables provided on initialization or using `.map()`.
+
+        Notes:
+            Kwargs are passed through to Cel creation.
+
+        """
+        self.data = self._parse_indata()
+
+        # Create raw form matrix, indexable with (y, x) coords
+        self.raw_form = self._parse_to_raw_form()
+        # parse and identify all rectangles in the form
+        self.mapping = self._rectangles_to_mapping()
+        # combine mapping with form template into a final result
+        self.form = self._build_form()
+
+    def map(self, cells=None, tables=None, data=None, **kwargs):
+        """
+        Add mapping for form. This allows for updating an existing
+        evform.
+
+        Args:
+            cells (dict): A dictionary of {identifier:celltext}. These
+                will be appended to the existing mappings.
+            tables (dict): A dictionary of {identifier:table}. Will
+                be appended to the existing mapping.
+            data (str or dict): A path to a evform module or a dict with
+                the needed "FORM", "TABLE/FORMCHAR" keys. Will replace
+                the originally initialized form.
+
+        Keyword Args:
+            These will be appended to the existing cell/table options.
 
         Notes:
             kwargs will be forwarded to tables/cells. See
             `evtable.EvCell` and `evtable.EvTable` for info.
 
         """
-        # clean kwargs (these cannot be overridden)
-        kwargs.pop("enforce_size", None)
-        kwargs.pop("width", None)
-        kwargs.pop("height", None)
+        if data:
+            # storing so ._parse_indata will find it during reload
+            self.indata = data
 
         new_cells = dict((to_str(key), value) for key, value in cells.items()) if cells else {}
         new_tables = dict((to_str(key), value) for key, value in tables.items()) if tables else {}
-
         self.cells_mapping.update(new_cells)
         self.tables_mapping.update(new_tables)
+
+        self.options.update(self._parse_inkwargs(**kwargs))
+
+        # parse and build the form
         self.reload()
-
-    def reload(self, filename=None, form=None, **kwargs):
-        """
-        Creates the form from a stored file name.
-
-        Args:
-            filename (str): The file to read from.
-            form (dict): A mapping for the form.
-
-        Notes:
-            Kwargs are passed through to Cel creation.
-
-        """
-        # clean kwargs (these cannot be overridden)
-        kwargs.pop("enforce_size", None)
-        kwargs.pop("width", None)
-        kwargs.pop("height", None)
-
-        if form or self.input_form_dict:
-            datadict = form if form else self.input_form_dict
-            self.input_form_dict = datadict
-        elif filename or self.filename:
-            filename = filename if filename else self.filename
-            datadict = all_from_module(filename)
-            self.filename = filename
-        else:
-            datadict = {}
-
-        cellchar = to_str(datadict.get("FORMCHAR", "x"))
-        self.cellchar = to_str(cellchar[0] if len(cellchar) > 1 else cellchar)
-        tablechar = datadict.get("TABLECHAR", "c")
-        self.tablechar = tablechar[0] if len(tablechar) > 1 else tablechar
-
-        # split into a list of list of lines. Form can be indexed with form[iy][ix]
-        raw_form = _to_ansi(datadict.get("FORM", "").split("\n"))
-        self.raw_form = _to_rect(raw_form)
-
-        # strip first line
-        self.raw_form = self.raw_form[1:] if self.raw_form else self.raw_form
-
-        self.options.update(kwargs)
-
-        # parse and replace
-        self.mapping = self._parse_rectangles(
-            self.cellchar, self.tablechar, self.raw_form, **kwargs
-        )
-        self.form = self._populate_form(self.raw_form, self.mapping)
 
     def __str__(self):
         "Prints the form"

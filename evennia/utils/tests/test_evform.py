@@ -3,7 +3,7 @@ Unit tests for the EvForm text form generator
 
 """
 from django.test import TestCase
-from evennia.utils import evform, ansi, evtable
+from evennia.utils import ansi, evform, evtable
 
 
 class TestEvForm(TestCase):
@@ -51,8 +51,8 @@ class TestEvForm(TestCase):
     def _simple_form(self, form):
         cellsdict = {1: "Apple", 2: "Banana", 3: "Citrus", 4: "Durian"}
         formdict = {"FORMCHAR": "x", "TABLECHAR": "c", "FORM": form}
-        form = evform.EvForm(form=formdict)
-        form.map(cellsdict)
+        form = evform.EvForm(formdict)
+        form.map(cells=cellsdict)
         form = ansi.strip_ansi(str(form))
         # this is necessary since editors/black tend to strip lines spaces
         # from the end of lines for the comparison strings.
@@ -112,7 +112,7 @@ class TestEvForm(TestCase):
     def test_ansi_escape(self):
         # note that in a msg() call, the result would be the  correct |-----,
         # in a print, ansi only gets called once, so ||----- is the result
-        self.assertEqual(str(evform.EvForm(form={"FORM": "\n||-----"})), "||-----")
+        self.assertEqual(str(evform.EvForm({"FORM": "\n||-----"})), "||-----")
 
     def test_stacked_form(self):
         """
@@ -241,7 +241,7 @@ class TestEvFormParallelTables(TestCase):
         """
         Build form to check for error.
         """
-        form = evform.EvForm(form=self.formdict)
+        form = evform.EvForm(self.formdict)
         form.map(
             cells={
                 "1": self.text1,
