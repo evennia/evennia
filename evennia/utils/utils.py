@@ -214,7 +214,7 @@ def dedent(text, baseline_index=None, indent=None):
         )
 
 
-def justify(text, width=None, align="f", indent=0, fillchar=" "):
+def justify(text, width=None, align="l", indent=0, fillchar=" "):
     """
     Fully justify a text so that it fits inside `width`. When using
     full justification (default) this will be done by padding between
@@ -240,7 +240,7 @@ def justify(text, width=None, align="f", indent=0, fillchar=" "):
         """
         helper function that distributes extra spaces between words. The number
         of gaps is nwords - 1 but must be at least 1 for single-word lines. We
-        distribute odd spaces randomly to one of the gaps.
+        distribute odd spaces to one of the gaps.
         """
         line_rest = width - (wlen + ngaps)
         gap = " "  # minimum gap between words
@@ -270,7 +270,7 @@ def justify(text, width=None, align="f", indent=0, fillchar=" "):
             return [sp * width]
         return gap.join(line)
 
-    width = width if width else settings.CLIENT_DEFAULT_WIDTH
+    width = width if width is not None else settings.CLIENT_DEFAULT_WIDTH
     sp = fillchar
 
     if align == "a":
@@ -296,7 +296,12 @@ def justify(text, width=None, align="f", indent=0, fillchar=" "):
         words.extend((word, len(word)) for word in paragraph.split())
     ngaps, wlen, line = 0, 0, []
 
+    if not words:
+        # Just whitespace!
+        return sp * width
+
     lines = []
+
     while words:
         if not line:
             # start a new line
@@ -322,6 +327,7 @@ def justify(text, width=None, align="f", indent=0, fillchar=" "):
     if line:  # catch any line left behind
         lines.append(_process_line(line))
     indentstring = sp * indent
+    out = "\n".join([indentstring + line for line in lines])
     return "\n".join([indentstring + line for line in lines])
 
 

@@ -7,16 +7,15 @@ TODO: Not nearly all utilities are covered yet.
 
 import os.path
 import random
-from parameterized import parameterized
-import mock
 from datetime import datetime, timedelta
 
+import mock
 from django.test import TestCase
-from twisted.internet import task
-
-from evennia.utils.ansi import ANSIString
 from evennia.utils import utils
+from evennia.utils.ansi import ANSIString
 from evennia.utils.test_resources import BaseEvenniaTest
+from parameterized import parameterized
+from twisted.internet import task
 
 
 class TestIsIter(TestCase):
@@ -735,3 +734,27 @@ class TestIntConversions(TestCase):
 
         with self.assertRaises(ValueError):
             utils.str2int("not a number")
+
+
+class TestJustify(TestCase):
+    def test_justify_whitespace(self):
+        result = utils.justify(" ", 1, align="l")
+        self.assertEqual(" ", result)
+
+        result = utils.justify("", 1, align="l")
+        self.assertEqual(" ", result)
+
+    @parameterized.expand(
+        [
+            (5, "Task \n ID  "),
+            (6, " Task \n  ID  "),
+            (7, "Task ID"),
+            (8, "Task ID "),
+            (9, " Task ID "),
+            (10, " Task ID  "),
+            (11, "  Task ID  "),
+        ]
+    )
+    def test_center_justify_small(self, width, expected):
+        result = utils.justify("Task ID", width, align="c", indent=0, fillchar=" ")
+        self.assertEqual(expected, result)

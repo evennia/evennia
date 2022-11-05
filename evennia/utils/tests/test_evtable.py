@@ -1,5 +1,5 @@
 """
-Tests for EvTable
+Tests for EvTable component.
 
 """
 

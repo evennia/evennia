@@ -354,8 +354,9 @@ class EvCell:
                 desired size). This can be overruled by individual settings below.
             hfill_char (str): Character used for horizontal fill (default `" "`).
             vfill_char (str): Character used for vertical fill (default `" "`).
-            align (str): Should be one of "l", "r" or  "c" for left-, right- or center
-                horizontal alignment respectively. Default is left-aligned.
+            align (str): Should be one of "l", "r", "c", "f" or "a" for left-, right-, center-,
+                full-justified (with space between words) or absolute (keep as much original
+                whitespace as possible). Default is left-aligned.
             valign (str): Should be one of "t", "b" or "c" for top-, bottom and center
                 vertical alignment respectively. Default is centered.
             border_width (int): General border width. This is overruled
@@ -388,7 +389,6 @@ class EvCell:
                 small.
 
         """
-
         self.formatted = None
         padwidth = kwargs.get("pad_width", None)
         padwidth = int(padwidth) if padwidth is not None else None
@@ -601,7 +601,6 @@ class EvCell:
         align = self.align
         hfill_char = self.hfill_char
         width = self.width
-
         return [justify(line, width, align=align, fillchar=hfill_char) for line in data]
 
     def _valign(self, data):
@@ -900,7 +899,7 @@ class EvCell:
 # EvColumn class
 
 
-class EvColumn(object):
+class EvColumn:
     """
     This class holds a list of Cells to represent a column of a table.
     It holds operations and settings that affect *all* cells in the
@@ -1030,7 +1029,7 @@ class EvColumn(object):
 # Main Evtable class
 
 
-class EvTable(object):
+class EvTable:
     """
     The table class holds a list of EvColumns, each consisting of EvCells so
     that the result is a 2D matrix.
