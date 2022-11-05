@@ -290,7 +290,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="justify"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.justify">[docs]</a><span class="k">def</span> <span class="nf">justify</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="justify"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.justify">[docs]</a><span class="k">def</span> <span class="nf">justify</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fully justify a text so that it fits inside `width`. When using</span>
 <span class="sd">    full justification (default) this will be done by padding between</span>
@@ -300,50 +300,68 @@
 <span class="sd">    Args:</span>
 <span class="sd">        text (str): Text to justify.</span>
 <span class="sd">        width (int, optional): The length of each line, in characters.</span>
-<span class="sd">        align (str, optional): The alignment, &#39;l&#39;, &#39;c&#39;, &#39;r&#39; or &#39;f&#39;</span>
-<span class="sd">            for left, center, right or full justification respectively.</span>
+<span class="sd">        align (str, optional): The alignment, &#39;l&#39;, &#39;c&#39;, &#39;r&#39;, &#39;f&#39; or &#39;a&#39;</span>
+<span class="sd">            for left, center, right, full justification. The &#39;a&#39; stands for</span>
+<span class="sd">            &#39;absolute&#39; and means the text will be returned unmodified.</span>
 <span class="sd">        indent (int, optional): Number of characters indentation of</span>
 <span class="sd">            entire justified text block.</span>
+<span class="sd">        fillchar (str): The character to use to fill. Defaults to empty space.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        justified (str): The justified and indented block of text.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">width</span> <span class="o">=</span> <span class="n">width</span> <span class="k">if</span> <span class="n">width</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
 
     <span class="k">def</span> <span class="nf">_process_line</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        helper function that distributes extra spaces between words. The number</span>
 <span class="sd">        of gaps is nwords - 1 but must be at least 1 for single-word lines. We</span>
-<span class="sd">        distribute odd spaces randomly to one of the gaps.</span>
+<span class="sd">        distribute odd spaces to one of the gaps.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">line_rest</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="p">(</span><span class="n">wlen</span> <span class="o">+</span> <span class="n">ngaps</span><span class="p">)</span>
         <span class="n">gap</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>  <span class="c1"># minimum gap between words</span>
         <span class="k">if</span> <span class="n">line_rest</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">:</span>
-                    <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span>
+                    <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">sp</span> <span class="o">*</span> <span class="n">width</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">sp</span> <span class="o">*</span> <span class="n">width</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">line_rest</span>
+                    <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sp</span> <span class="o">*</span> <span class="n">line_rest</span>
             <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
-                <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">line_rest</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp</span> <span class="o">*</span> <span class="n">line_rest</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
-                <span class="n">pad</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">pad</span> <span class="o">=</span> <span class="n">sp</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
                 <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">pad</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">:</span>
                     <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
-                        <span class="n">pad</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span>
+                        <span class="n">pad</span> <span class="o">+</span> <span class="n">sp</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">sp</span> <span class="o">*</span> <span class="n">width</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">sp</span> <span class="o">*</span> <span class="n">width</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pad</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pad</span> <span class="o">+</span> <span class="n">sp</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># align &#39;f&#39;</span>
-                <span class="n">gap</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">//</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ngaps</span><span class="p">))</span>
+                <span class="n">gap</span> <span class="o">+=</span> <span class="n">sp</span> <span class="o">*</span> <span class="p">(</span><span class="n">line_rest</span> <span class="o">//</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ngaps</span><span class="p">))</span>
                 <span class="n">rest_gap</span> <span class="o">=</span> <span class="n">line_rest</span> <span class="o">%</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ngaps</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rest_gap</span><span class="p">):</span>
-                    <span class="n">line</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
+                    <span class="n">line</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sp</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">[</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">sp</span> <span class="o">*</span> <span class="n">width</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">gap</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="n">width</span> <span class="o">=</span> <span class="n">width</span> <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">fillchar</span>
+
+    <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+        <span class="c1"># absolute mode - just crop or fill to width</span>
+        <span class="n">abs_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">width</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="n">sp</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">nlen</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">crop</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">abs_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">abs_lines</span><span class="p">)</span>
+
+    <span class="c1"># all other aligns requires splitting into paragraphs and words</span>
 
     <span class="c1"># split into paragraphs and words</span>
     <span class="n">paragraphs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\s*?</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
@@ -354,7 +372,12 @@
         <span class="n">words</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">word</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">))</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
     <span class="n">ngaps</span><span class="p">,</span> <span class="n">wlen</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">words</span><span class="p">:</span>
+        <span class="c1"># Just whitespace!</span>
+        <span class="k">return</span> <span class="n">sp</span> <span class="o">*</span> <span class="n">width</span>
+
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="k">while</span> <span class="n">words</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
             <span class="c1"># start a new line</span>
@@ -379,7 +402,8 @@
 
     <span class="k">if</span> <span class="n">line</span><span class="p">:</span>  <span class="c1"># catch any line left behind</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_process_line</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-    <span class="n">indentstring</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
+    <span class="n">indentstring</span> <span class="o">=</span> <span class="n">sp</span> <span class="o">*</span> <span class="n">indent</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">indentstring</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">])</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">indentstring</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">])</span></div>
 
 
@@ -2369,7 +2393,11 @@
                 <span class="c1"># result is a typeclassed entity where `.aliases` is an AliasHandler.</span>
                 <span class="n">aliases</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">return_objs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="c1"># remove pluralization aliases</span>
-                <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="n">alias</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span> <span class="k">if</span> <span class="n">alias</span><span class="o">.</span><span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;plural_key&quot;</span><span class="p">,)]</span>
+                <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">alias</span>
+                    <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">alias</span><span class="o">.</span><span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;plural_key&quot;</span><span class="p">,)</span>
+                <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># result is likely a Command, where `.aliases` is a list of strings.</span>
                 <span class="n">aliases</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">aliases</span>

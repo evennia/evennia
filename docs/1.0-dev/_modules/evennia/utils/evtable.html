@@ -196,7 +196,7 @@
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">display_len</span> <span class="k">as</span> <span class="n">d_len</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">justify</span>
 
 <span class="n">_DEFAULT_WIDTH</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CLIENT_DEFAULT_WIDTH</span>
 
@@ -430,8 +430,9 @@
 <span class="sd">                desired size). This can be overruled by individual settings below.</span>
 <span class="sd">            hfill_char (str): Character used for horizontal fill (default `&quot; &quot;`).</span>
 <span class="sd">            vfill_char (str): Character used for vertical fill (default `&quot; &quot;`).</span>
-<span class="sd">            align (str): Should be one of &quot;l&quot;, &quot;r&quot; or  &quot;c&quot; for left-, right- or center</span>
-<span class="sd">                horizontal alignment respectively. Default is left-aligned.</span>
+<span class="sd">            align (str): Should be one of &quot;l&quot;, &quot;r&quot;, &quot;c&quot;, &quot;f&quot; or &quot;a&quot; for left-, right-, center-,</span>
+<span class="sd">                full-justified (with space between words) or absolute (keep as much original</span>
+<span class="sd">                whitespace as possible). Default is left-aligned.</span>
 <span class="sd">            valign (str): Should be one of &quot;t&quot;, &quot;b&quot; or &quot;c&quot; for top-, bottom and center</span>
 <span class="sd">                vertical alignment respectively. Default is centered.</span>
 <span class="sd">            border_width (int): General border width. This is overruled</span>
@@ -464,7 +465,6 @@
 <span class="sd">                small.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">padwidth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pad_width&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">padwidth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">padwidth</span><span class="p">)</span> <span class="k">if</span> <span class="n">padwidth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
@@ -677,29 +677,7 @@
         <span class="n">align</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">align</span>
         <span class="n">hfill_char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hfill_char</span>
         <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
-        <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span><span class="p">:</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="p">(</span>
-                    <span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
-                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">line</span>
-                <span class="p">)</span>
-                <span class="o">+</span> <span class="n">hfill_char</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span>
-            <span class="p">]</span>
-            <span class="k">return</span> <span class="n">lines</span>
-        <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span>
-                <span class="n">hfill_char</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
-                <span class="o">+</span> <span class="p">(</span>
-                    <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">line</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span>
-            <span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># center, &#39;c&#39;</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hfill_char</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">justify</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="n">align</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="n">hfill_char</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_valign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -997,7 +975,7 @@
 <span class="c1"># EvColumn class</span>
 
 
-<div class="viewcode-block" id="EvColumn"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn">[docs]</a><span class="k">class</span> <span class="nc">EvColumn</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvColumn"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvColumn">[docs]</a><span class="k">class</span> <span class="nc">EvColumn</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class holds a list of Cells to represent a column of a table.</span>
 <span class="sd">    It holds operations and settings that affect *all* cells in the</span>
@@ -1127,7 +1105,7 @@
 <span class="c1"># Main Evtable class</span>
 
 
-<div class="viewcode-block" id="EvTable"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable">[docs]</a><span class="k">class</span> <span class="nc">EvTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EvTable"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable">[docs]</a><span class="k">class</span> <span class="nc">EvTable</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The table class holds a list of EvColumns, each consisting of EvCells so</span>
 <span class="sd">    that the result is a 2D matrix.</span>
@@ -1794,36 +1772,6 @@
         <span class="sd">&quot;&quot;&quot;print table (this also balances it)&quot;&quot;&quot;</span>
         <span class="c1"># h = &quot;12345678901234567890123456789012345678901234567890123456789012345678901234567890&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_lines</span><span class="p">()])))</span></div>
-
-
-<span class="k">def</span> <span class="nf">_test</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Test&quot;&quot;&quot;</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span>
-        <span class="s2">&quot;|yHeading1|n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;|gHeading2|n&quot;</span><span class="p">,</span>
-        <span class="n">table</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span>
-        <span class="n">border</span><span class="o">=</span><span class="s2">&quot;cells&quot;</span><span class="p">,</span>
-        <span class="n">align</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;|rThis is long data|n&quot;</span><span class="p">,</span> <span class="s2">&quot;|bThis is even longer data|n&quot;</span><span class="p">)</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s2">&quot;This is a single row&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
-    <span class="n">table</span><span class="o">.</span><span class="n">reformat_column</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">table</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">table</span>
-
-
-<span class="k">def</span> <span class="nf">_test2</span><span class="p">():</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="n">EvTable</span><span class="p">(</span><span class="s2">&quot;|yHeading1|n&quot;</span><span class="p">,</span> <span class="s2">&quot;|B|[GHeading2|n&quot;</span><span class="p">,</span> <span class="s2">&quot;Heading3&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-            <span class="s2">&quot;This is col 0, row </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
-            <span class="s2">&quot;|gThis is col 1, row |w</span><span class="si">%i</span><span class="s2">|n|g.|n&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
-            <span class="s2">&quot;This is col 2, row </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="n">table</span>
 </pre></div>
 
           </div>

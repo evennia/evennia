@@ -246,7 +246,7 @@ display.</p>
 
 <dl class="py function">
 <dt id="evennia.utils.utils.justify">
-<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">justify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">align</span><span class="o">=</span><span class="default_value">'f'</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#justify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.justify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">evennia.utils.utils.</code><code class="sig-name descname">justify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">align</span><span class="o">=</span><span class="default_value">'l'</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">fillchar</span><span class="o">=</span><span class="default_value">' '</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#justify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.utils.justify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fully justify a text so that it fits inside <strong>width</strong>. When using
 full justification (default) this will be done by padding between
 words with extra whitespace where necessary. Paragraphs will
@@ -256,10 +256,12 @@ be retained.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) – Text to justify.</p></li>
 <li><p><strong>width</strong> (<em>int</em><em>, </em><em>optional</em>) – The length of each line, in characters.</p></li>
-<li><p><strong>align</strong> (<em>str</em><em>, </em><em>optional</em>) – The alignment, ‘l’, ‘c’, ‘r’ or ‘f’
-for left, center, right or full justification respectively.</p></li>
+<li><p><strong>align</strong> (<em>str</em><em>, </em><em>optional</em>) – The alignment, ‘l’, ‘c’, ‘r’, ‘f’ or ‘a’
+for left, center, right, full justification. The ‘a’ stands for
+‘absolute’ and means the text will be returned unmodified.</p></li>
 <li><p><strong>indent</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of characters indentation of
 entire justified text block.</p></li>
+<li><p><strong>fillchar</strong> (<em>str</em>) – The character to use to fill. Defaults to empty space.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

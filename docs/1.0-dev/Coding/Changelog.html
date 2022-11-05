@@ -371,7 +371,13 @@ powerful searches passed into the regular search functions.</p></li>
 <li><p>Improve search performance when having many DB-based prototypes via caching.</p></li>
 <li><p>Remove the <code class="docutils literal notranslate"><span class="pre">return_parents</span></code> kwarg of <code class="docutils literal notranslate"><span class="pre">evennia.prototypes.spawner.spawn</span></code> since it
 was inefficient and unused.</p></li>
-<li><p>Made all id fields BigAutoField for all databases.</p></li>
+<li><p>Made all id fields BigAutoField for all databases. (owllex)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EvForm</span></code> refactored. New <code class="docutils literal notranslate"><span class="pre">literals</span></code> mapping, for literal mappings into the
+main template (e.g. for single-character replacements).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EvForm</span></code> <code class="docutils literal notranslate"><span class="pre">cells</span></code> kwarg now accepts <code class="docutils literal notranslate"><span class="pre">EvCells</span></code> with custom formatting options
+(mainly for custom align/valign). <code class="docutils literal notranslate"><span class="pre">EvCells</span></code> now makes use of <code class="docutils literal notranslate"><span class="pre">utils.justify</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils.justify</span></code> now supports <code class="docutils literal notranslate"><span class="pre">align=&quot;a&quot;</span></code> (absolute alignments. This keeps
+the given left indent but crops/fills to the width. Used in EvCells.</p></li>
 </ul>
 </section>
 <section id="evennia-0-9-5">

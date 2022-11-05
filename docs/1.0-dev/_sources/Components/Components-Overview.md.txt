@@ -47,12 +47,15 @@ Batch-Command-Processor.md
 
 Coding-Utils.md
 EvEditor.md
+EvForm.md
 EvMenu.md
 EvMore.md
+EvTable.md
+FuncParser.md
 MonitorHandler.md
 TickerHandler.md
 Locks.md
-FuncParser.md
+Signals.md
 ```
 
 ## Web components

@@ -100,14 +100,12 @@
   <section id="module-evennia.utils.evform">
 <span id="evennia-utils-evform"></span><h1>evennia.utils.evform<a class="headerlink" href="#module-evennia.utils.evform" title="Permalink to this headline">¶</a></h1>
 <p>EvForm - a way to create advanced ASCII forms</p>
-<p>This is intended for creating advanced ASCII game forms, such as a
-large pretty character sheet or info document.</p>
-<p>The system works on the basis of a readin template that is given in a
-separate Python file imported into the handler. This file contains
-some optional settings and a string mapping out the form. The template
-has markers in it to denounce fields to fill. The markers map the
-absolute size of the field and will be filled with an <strong>evtable.EvCell</strong>
-object when displaying the form.</p>
+<p>This is intended for creating advanced ASCII game forms, such as a large pretty character sheet or
+info document.</p>
+<p>The system works on the basis of a readin template that is given in a separate Python file imported
+into the handler. This file contains some optional settings and a string mapping out the form. The
+template has markers in it to denounce fields to fill. The markers map the absolute size of the
+field and will be filled with an <strong>evtable.EvCell</strong> object when displaying the form.</p>
 <p>Example of input file <strong>testform.py</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FORMCHAR</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
 <span class="n">TABLECHAR</span> <span class="o">=</span> <span class="s2">&quot;c&quot;</span>
@@ -132,24 +130,33 @@ object when displaying the form.</p>
 <span class="s1">| cccccccc | ccccccccccccccccccccccccccccccccccc |</span>
 <span class="s1">| cccccccc | cccccccccccccccccBccccccccccccccccc |</span>
 <span class="s1">|          |                                     |</span>
+<span class="s1">|                                           v&amp;   |</span>
 <span class="s1">-------------------------------------------------</span>
 <span class="s1">&#39;&#39;&#39;</span>
 </pre></div>
 </div>
-<p>The first line of the <strong>FORM</strong> string is ignored. The forms and table
-markers must mark out complete, unbroken rectangles, each containing
-one embedded single-character identifier (so the smallest element
-possible is a 3-character wide form). The identifier can be any
-character except for the <strong>FORM_CHAR</strong> and <strong>TABLE_CHAR</strong> and some of the
-common ASCII-art elements, like space, <strong>_</strong> <strong>|</strong> <strong>*</strong> etc (see
-<strong>INVALID_FORMCHARS</strong> in this module). Form Rectangles can have any size,
-but must be separated from each other by at least one other
-character’s width.</p>
-<p>Use as follows:</p>
+<p>The first line of the <strong>FORM</strong> string is ignored if empty. The forms and table markers must mark out
+complete, unbroken rectangles, each containing one embedded single-character identifier (so the
+smallest element possible is a 3-character wide form). The identifier can be any character except
+for the <strong>FORM_CHAR</strong> and <strong>TABLE_CHAR</strong> and some of the common ASCII-art elements, like space, <strong>_</strong> <strong>|</strong>
+<strong>*</strong> etc (see <strong>INVALID_FORMCHARS</strong> in this module). Form Rectangles can have any size, but must be
+separated from each other by at least one other character’s width.</p>
+<p>The form can also replace literal markers not abiding by these rules. For example, the <strong>v&amp;</strong> in the
+bottom right corner could be such literal marker. If a literal-mapping for ‘v&amp;’ is provided, all
+occurrences of this marker will be replaced. This will happen <em>before</em> any other parsing, so in
+principle this could be used to inject new fields/tables into the form dynamically.  This literal
+mapping does not consider width, but it will affect to total width of the form, so make sure what
+you inject does not break things.  Using literal markers is the only way to inject 1 or 2-character
+replacements.</p>
+<p>Usage</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">EvForm</span><span class="p">,</span> <span class="n">EvTable</span>
 
 <span class="c1"># create a new form from the template</span>
 <span class="n">form</span> <span class="o">=</span> <span class="n">EvForm</span><span class="p">(</span><span class="s2">&quot;path/to/testform.py&quot;</span><span class="p">)</span>
+
+<span class="c1"># alteratively, you can supply the template as a dict:</span>
+
+<span class="n">form</span> <span class="o">=</span> <span class="n">EvForm</span><span class="p">({</span><span class="s2">&quot;FORM&quot;</span><span class="p">:</span> <span class="s2">&quot;....&quot;</span><span class="p">,</span> <span class="s2">&quot;TABLECHAR&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;FORMCHAR&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">})</span>
 
 <span class="c1"># EvForm can also take a dictionary instead of a filepath, as long</span>
 <span class="c1"># as the dict contains the keys FORMCHAR, TABLECHAR and FORM</span>
@@ -173,6 +180,9 @@ character’s width.</p>
                            <span class="n">table</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;Shooting&quot;</span><span class="p">,</span> <span class="s2">&quot;Herbalism&quot;</span><span class="p">,</span> <span class="s2">&quot;Smithing&quot;</span><span class="p">],</span>
                                   <span class="p">[</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">9</span><span class="p">],[</span><span class="s2">&quot;550/1200&quot;</span><span class="p">,</span> <span class="s2">&quot;990/1400&quot;</span><span class="p">,</span> <span class="s2">&quot;205/900&quot;</span><span class="p">]],</span>
                            <span class="n">border</span><span class="o">=</span><span class="s2">&quot;incols&quot;</span><span class="p">)</span>
+<span class="c1"># map &#39;literal&#39; replacents (here, a version string)</span>
+<span class="n">custom_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;v&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;v2&quot;</span><span class="p">}</span>
+
 <span class="c1"># add the tables to the proper ids in the form</span>
 <span class="n">form</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">tableA</span><span class="p">,</span>
                  <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">tableB</span><span class="p">})</span>
@@ -200,41 +210,59 @@ character’s width.</p>
 <span class="o">|</span>   <span class="o">|**|*</span>  <span class="o">|</span> <span class="n">Herbalism</span>  <span class="o">|</span><span class="mi">14</span>         <span class="o">|</span><span class="mi">990</span><span class="o">/</span><span class="mi">1400</span>    <span class="o">|</span>
 <span class="o">|</span>   <span class="o">|*</span> <span class="o">|</span>   <span class="o">|</span> <span class="n">Smithing</span>   <span class="o">|</span><span class="mi">9</span>          <span class="o">|</span><span class="mi">205</span><span class="o">/</span><span class="mi">900</span>     <span class="o">|</span>
 <span class="o">|</span>          <span class="o">|</span>                                     <span class="o">|</span>
+<span class="o">|</span>                                           <span class="n">v2</span>   <span class="o">|</span>
  <span class="o">------------------------------------------------</span>
 </pre></div>
 </div>
-<p>The marked forms have been replaced with EvCells of text and with
-EvTables. The form can be updated by simply re-applying <strong>form.map()</strong>
-with the updated data.</p>
-<p>When working with the template ASCII file, you can use <strong>form.reload()</strong>
-to re-read the template and re-apply all existing mappings.</p>
-<p>Each component is restrained to the width and height specified by the
-template, so it will resize to fit (or crop text if the area is too
-small for it). If you try to fit a table into an area it cannot fit
-into (when including its borders and at least one line of text), the
-form will raise an error.</p>
+<p>The marked forms have been replaced with EvCells of text and with EvTables. The literal marker <strong>v&amp;</strong>
+was replaced with <strong>v2</strong>.</p>
+<p>If you change the form layout on disk, you can use <strong>form.reload()</strong> to re-read it from disk without
+creating a new form.</p>
+<p>If you want to update the data of an existing form, you can use <strong>form.map()</strong> with the changes - the
+mappings will be updated, keeping the things you want. You can also update the template itself this
+way, by supplying it as a dict.</p>
+<p>Each component (except literal mappings) is restrained to the width and height specified by the
+template, so it will resize to fit (or crop text if the area is too small for it). If you try to fit
+a table into an area it cannot fit into (when including its borders and at least one line of text),
+the form will raise an error.</p>
 <hr class="docutils" />
 <dl class="py class">
 <dt id="evennia.utils.evform.EvForm">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evform.</code><code class="sig-name descname">EvForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evform.</code><code class="sig-name descname">EvForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">literals</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This object is instantiated with a text file and parses
 it for rectangular form fields. It can then be fed a
 mapping so as to populate the fields with fixed-width
 EvCell or Tables.</p>
+<dl class="py attribute">
+<dt id="evennia.utils.evform.EvForm.cell_options">
+<code class="sig-name descname">cell_options</code><em class="property"> = {'align': 'l', 'enforce_size': True, 'pad_bottom': 0, 'pad_left': 0, 'pad_right': 0, 'pad_top': 0, 'valign': 't'}</em><a class="headerlink" href="#evennia.utils.evform.EvForm.cell_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.evform.EvForm.table_options">
+<code class="sig-name descname">table_options</code><em class="property"> = {'align': 'l', 'enforce_size': True, 'pad_bottom': 0, 'pad_left': 0, 'pad_right': 0, 'pad_top': 0, 'valign': 't'}</em><a class="headerlink" href="#evennia.utils.evform.EvForm.table_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="evennia.utils.evform.EvForm.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">literals</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initiate the form</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) – Path to template file.</p></li>
-<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: text}</strong></p></li>
+<li><p><strong>data</strong> (<em>str</em><em> or </em><em>dict</em>) – Path to template file or a dict with
+“formchar”, “tablechar” and “form” keys (not case sensitive, so FORM etc
+also works, to stay compatible with the in-file names). While “form/FORM”
+is required, if FORMCHAR/TABLECHAR are not given, they will default to
+‘x’ and ‘c’ respectively.</p></li>
+<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: str}</strong></p></li>
 <li><p><strong>tables</strong> (<em>dict</em>) – A dictionary mapping  <strong>{id: EvTable}</strong>.</p></li>
-<li><p><strong>form</strong> (<em>dict</em>) – A dictionary
-<strong>{“FORMCHAR”:char, “TABLECHAR”:char, “FORM”:templatestring}</strong>.
-If this is given, filename is not read.</p></li>
+<li><p><strong>literals</strong> (<em>dict</em>) – A dictionary mapping <strong>{id: str}</strong>. Will be replaced
+after width of form is calculated, but before cells/tables are mapped.
+All occurrences of the identifier on the form will be replaced. Note
+that there is no length-restriction on the remap, you are responsible
+for not breaking the form.</p></li>
 </ul>
 </dd>
 </dl>
@@ -244,36 +272,44 @@ If this is given, filename is not read.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.utils.evform.EvForm.reload">
+<code class="sig-name descname">reload</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.reload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the form from a filename or data structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em><em> or </em><em>dict</em>) – Can be used to update an existing form using
+the same cells/tables provided on initialization or using <strong>.map()</strong>.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Kwargs are passed through to Cel creation.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.utils.evform.EvForm.map">
-<code class="sig-name descname">map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add mapping for form.</p>
+<code class="sig-name descname">map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">literals</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add mapping for form. This allows for updating an existing
+evform.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary of {identifier:celltext}</p></li>
-<li><p><strong>tables</strong> (<em>dict</em>) – A dictionary of {identifier:table}</p></li>
+<li><p><strong>cells</strong> (<em>dict</em>) – A dictionary of {identifier:celltext}. These
+will be appended to the existing mappings.</p></li>
+<li><p><strong>tables</strong> (<em>dict</em>) – A dictionary of {identifier:table}. Will
+be appended to the existing mapping.</p></li>
+<li><p><strong>data</strong> (<em>str</em><em> or </em><em>dict</em>) – A path to a evform module or a dict with
+the needed “FORM”, “TABLE/FORMCHAR” keys. Will replace
+the originally initialized form.</p></li>
+<li><p><strong>literals</strong> – </p></li>
 </ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>will be appended to the existing cell/table options.</strong> (<em>These</em>) – </p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>kwargs will be forwarded to tables/cells. See
 <strong>evtable.EvCell</strong> and <strong>evtable.EvTable</strong> for info.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.utils.evform.EvForm.reload">
-<code class="sig-name descname">reload</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">form</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evform.html#EvForm.reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evform.EvForm.reload" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the form from a stored file name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) – The file to read from.</p></li>
-<li><p><strong>form</strong> (<em>dict</em>) – A mapping for the form.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Kwargs are passed through to Cel creation.</p>
 </dd></dl>
 
 </dd></dl>
