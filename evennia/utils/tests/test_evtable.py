@@ -224,7 +224,7 @@ class TestEvTable(EvenniaTestCase):
 
         self._validate(expected, str(table))
 
-    def test_2762(self):
+    def test_direct_evcolumn_adds(self):
         """
         Testing https://github.com/evennia/evennia/issues/2762
 
@@ -273,6 +273,38 @@ class TestEvTable(EvenniaTestCase):
 |#a.....#|#one..#|
 |#column#|#here.#|
 +--------+-------+
+        """
+
+        self._validate(expected, str(table))
+
+    def test_width_enforcement(self):
+        """
+        Testing https://github.com/evennia/evennia/issues/2761
+
+        EvTable enforces width kwarg, expanding the wrong column
+
+        """
+        # simple crop
+        table = evtable.EvTable(table=[["column"]], width=7, enforce_size=True)
+        expected = """
++-----+
+| col |
++-----+
+        """
+
+        self._validate(expected, str(table))
+
+        colA = evtable.EvColumn("it", "is", "a", "column", width=6, enforce_size=True)
+        colB = evtable.EvColumn("and", "another", "column", "here")
+        table = evtable.EvTable(table=[colA, colB], width=40)
+
+        expected = """
++----+---------------------------------+
+| it | and                             |
+| is | another                         |
+| a  | column                          |
+| co | here                            |
++----+---------------------------------+
         """
 
         self._validate(expected, str(table))
