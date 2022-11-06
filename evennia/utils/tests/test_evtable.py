@@ -292,6 +292,7 @@ class TestEvTable(EvenniaTestCase):
 +-----+
         """
 
+        # more advanced table with crop
         self._validate(expected, str(table))
 
         colA = evtable.EvColumn("it", "is", "a", "column", width=6, enforce_size=True)
@@ -305,6 +306,27 @@ class TestEvTable(EvenniaTestCase):
 | a  | column                          |
 | co | here                            |
 +----+---------------------------------+
+        """
+
+        self._validate(expected, str(table))
+
+    def test_styling_overrides(self):
+        """
+        Testing https://github.com/evennia/evennia/issues/2760
+
+        Not being able to override table settings.
+
+        """
+        column = evtable.EvColumn("this", "is", "a", "column", fill_char=".")
+        table = evtable.EvTable(table=[column])
+
+        expected = """
++--------+
+| this.. |
+| is.... |
+| a..... |
+| column |
++--------+
         """
 
         self._validate(expected, str(table))
