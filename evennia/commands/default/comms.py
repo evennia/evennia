@@ -8,15 +8,15 @@ Communication commands:
 """
 
 from django.conf import settings
-from evennia.comms.models import Msg
-from evennia.accounts.models import AccountDB
 from evennia.accounts import bots
-from evennia.locks.lockhandler import LockException
+from evennia.accounts.models import AccountDB
 from evennia.comms.comms import DefaultChannel
+from evennia.comms.models import Msg
+from evennia.locks.lockhandler import LockException
 from evennia.utils import create, logger, utils
+from evennia.utils.evmenu import ask_yes_no
 from evennia.utils.logger import tail_log_file
 from evennia.utils.utils import class_from_module, strip_unsafe_input
-from evennia.utils.evmenu import ask_yes_no
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 CHANNEL_DEFAULT_TYPECLASS = class_from_module(
@@ -285,8 +285,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 return None
             elif len(channels) > 1:
                 self.msg(
-                    "Multiple possible channel matches/alias for "
-                    f"'{channelname}':\n" + ", ".join(chan.key for chan in channels)
+                    f"Multiple possible channel matches/alias for '{channelname}':\n"
+                    + ", ".join(chan.key for chan in channels)
                 )
                 return None
             return channels[0]
@@ -869,9 +869,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             subscribed, _ = self.list_channels()
             table = self.display_subbed_channels(subscribed)
 
-            self.msg(
-                "\n|wChannel subscriptions|n " f"(use |w/all|n to see all available):\n{table}"
-            )
+            self.msg(f"\n|wChannel subscriptions|n (use |w/all|n to see all available):\n{table}")
             return
 
         if not self.switches and not self.args:
@@ -937,8 +935,8 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                 )
             elif len(found_channels) > 1:
                 errors.append(
-                    "Multiple possible channel matches/alias for "
-                    "'{channel_name}':\n" + ", ".join(chan.key for chan in found_channels)
+                    "Multiple possible channel matches/alias for '{channel_name}':\n"
+                    + ", ".join(chan.key for chan in found_channels)
                 )
             else:
                 channels.append(found_channels[0])
@@ -965,7 +963,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
                     header = f"Channel |w{channel.key}|n"
                     self.msg(
                         f"{header}\n(use |w{channel.key} <msg>|n (or a channel-alias) "
-                        f"to chat and the 'channel' command "
+                        "to chat and the 'channel' command "
                         f"to customize)\n{table}"
                     )
                 elif channel in available:
@@ -1015,9 +1013,7 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             # un-subscribe from a channel
             success, err = self.unsub_from_channel(channel)
             if success:
-                self.msg(
-                    f"You un-subscribed from channel {channel.key}. " "All aliases were cleared."
-                )
+                self.msg(f"You un-subscribed from channel {channel.key}. All aliases were cleared.")
             else:
                 self.msg(err)
             return
@@ -1069,9 +1065,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
 
             ask_yes_no(
                 caller,
-                prompt=f"Are you sure you want to delete channel '{channel.key}' "
-                "(make sure name is correct!)?\nThis will disconnect and "
-                "remove all users' aliases. {options}?",
+                prompt=(
+                    f"Are you sure you want to delete channel '{channel.key}' "
+                    "(make sure name is correct!)?\nThis will disconnect and "
+                    "remove all users' aliases. {options}?"
+                ),
                 yes_action=_perform_delete,
                 no_action="Aborted.",
                 default="N",
@@ -1185,9 +1183,11 @@ class CmdChannel(COMMAND_DEFAULT_CLASS):
             )
             ask_yes_no(
                 caller,
-                prompt=f"Are you sure you want to boot user {target.key} from "
-                f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}). "
-                "{options}?",
+                prompt=(
+                    f"Are you sure you want to boot user {target.key} from "
+                    f"channel(s) {channames} (make sure name/channels are correct{reasonwarn}). "
+                    "{options}?"
+                ),
                 yes_action=_boot_user,
                 no_action="Aborted.",
                 default="Y",
@@ -1337,15 +1337,15 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
         caller = self.caller
 
         # get the messages we've sent (not to channels)
-        pages_we_sent = Msg.objects.get_messages_by_sender(caller)
+        pages_we_sent = Msg.objects.get_messages_by_sender(caller).order_by("-db_date_created")
         # get last messages we've got
-        pages_we_got = Msg.objects.get_messages_by_receiver(caller)
+        pages_we_got = Msg.objects.get_messages_by_receiver(caller).order_by("-db_date_created")
         targets, message, number = [], None, None
 
         if "last" in self.switches:
             if pages_we_sent:
-                recv = ",".join(obj.key for obj in pages_we_sent[-1].receivers)
-                self.msg("You last paged |c%s|n:%s" % (recv, pages_we_sent[-1].message))
+                recv = ",".join(obj.key for obj in pages_we_sent[0].receivers)
+                self.msg(f"You last paged |c{recv}|n:{pages_we_sent[0].message}")
                 return
             else:
                 self.msg("You haven't paged anyone yet.")
