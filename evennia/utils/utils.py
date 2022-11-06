@@ -2193,23 +2193,34 @@ def calledby(callerdepth=1):
     another function; it will print which function called it.
 
     Args:
-        callerdepth (int): Must be larger than 0. When > 1, it will
-            print the caller of the caller etc.
+        callerdepth (int or None): If None, show entire stack. If int, must be larger than 0.
+            When > 1, it will print the sequence to that depth.
 
     Returns:
-        calledby (str): A debug string detailing which routine called
-            us.
+        calledby (str): A debug string detailing the code that called us.
 
     """
     import inspect
 
+    def _stack_display(frame):
+        path = os.path.sep.join(frame[1].rsplit(os.path.sep, 2)[-2:])
+        return (
+            f"> called by '{frame[3]}': {path}:{frame[2]} >>>"
+            f" {frame[4][0].strip() if frame[4] else ''}"
+        )
+
     stack = inspect.stack()
-    # we must step one extra level back in stack since we don't want
-    # to include the call of this function itself.
-    callerdepth = min(max(2, callerdepth + 1), len(stack) - 1)
-    frame = inspect.stack()[callerdepth]
-    path = os.path.sep.join(frame[1].rsplit(os.path.sep, 2)[-2:])
-    return "[called by '%s': %s:%s %s]" % (frame[3], path, frame[2], frame[4])
+
+    out = []
+    if callerdepth is None:
+        callerdepth = len(stack) - 1
+
+    # show range
+    for idepth in range(1, max(1, callerdepth + 1)):
+        # we must step one extra level back in stack since we don't want
+        # to include the call of this function itself.
+        out.append(_stack_display(stack[min(idepth + 1, len(stack) - 1)]))
+    return "\n".join(out[::-1])
 
 
 def m_len(target):

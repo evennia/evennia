@@ -217,6 +217,7 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
   (mainly for custom align/valign). `EvCells` now makes use of `utils.justify`.
 - `utils.justify` now supports `align="a"` (absolute alignments. This keeps
   the given left indent but crops/fills to the width. Used in EvCells.
+- `EvTable` now supports passing `EvColumn`s as a list directly, (`EvTable(table=[colA,colB])`)
 
 ## Evennia 0.9.5
 
