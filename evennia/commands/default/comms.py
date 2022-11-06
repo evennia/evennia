@@ -1385,7 +1385,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
             if not targets:
                 # no target given - send to last person we paged
                 if pages_we_sent:
-                    targets = pages_we_sent[-1].receivers
+                    targets = pages_we_sent[0].receivers
                 else:
                     self.msg("Who do you want page?")
                     return
