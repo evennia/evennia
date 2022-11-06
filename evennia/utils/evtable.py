@@ -471,20 +471,6 @@ class EvCell:
         else:
             self.height = self.raw_height
 
-    def _crop(self, text, width):
-        """
-        Apply cropping of text.
-
-        Args:
-            text (str): The text to crop.
-            width (int): The width to crop `text` to.
-
-        """
-        if d_len(text) > width:
-            crop_string = self.crop_string
-            return text[: width - d_len(crop_string)] + crop_string
-        return text
-
     def _reformat(self):
         """
         Apply all EvCells' formatting operations.
@@ -541,11 +527,14 @@ class EvCell:
                 # too many lines. Crop and mark last line with crop_string
                 crop_string = self.crop_string
                 adjusted_data = adjusted_data[:-excess]
+                adjusted_data_length = len(adjusted_data[-1])
                 crop_string_length = len(crop_string)
-                if len(adjusted_data[-1]) > crop_string_length:
+                if adjusted_data_length >= crop_string_length:
+                    # replace with data[...]
+                    # (note that if adjusted data is shorter than the crop-string,
+                    # we skip the crop-string and just pass the cropped data.)
                     adjusted_data[-1] = adjusted_data[-1][:-crop_string_length] + crop_string
-                else:
-                    adjusted_data[-1] += crop_string
+
             elif excess < 0:
                 # too few lines. Fill to height.
                 adjusted_data.extend(["" for _ in range(excess)])
