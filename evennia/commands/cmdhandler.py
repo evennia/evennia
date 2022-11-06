@@ -27,21 +27,21 @@ command line. The processing of a command works as follows:
 
 """
 
-from collections import defaultdict
-from weakref import WeakValueDictionary
-from traceback import format_exc
-from itertools import chain
-from copy import copy
 import types
-from twisted.internet import reactor
-from twisted.internet.task import deferLater
-from twisted.internet.defer import inlineCallbacks, returnValue
+from collections import defaultdict
+from copy import copy
+from itertools import chain
+from traceback import format_exc
+from weakref import WeakValueDictionary
+
 from django.conf import settings
+from django.utils.translation import gettext as _
 from evennia.commands.command import InterruptCommand
 from evennia.utils import logger, utils
 from evennia.utils.utils import string_suggestions
-
-from django.utils.translation import gettext as _
+from twisted.internet import reactor
+from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.task import deferLater
 
 _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 
@@ -140,7 +140,7 @@ likely file a bug report with the Evennia project.
 )
 
 _ERROR_RECURSION_LIMIT = _(
-    "Command recursion limit ({recursion_limit}) " "reached for '{raw_cmdname}' ({cmdclass})."
+    "Command recursion limit ({recursion_limit}) reached for '{raw_cmdname}' ({cmdclass})."
 )
 
 
@@ -478,8 +478,10 @@ def get_and_merge_cmdsets(caller, session, account, obj, callertype, raw_string)
             cset.duplicates = cset.old_duplicates
         # important - this syncs the CmdSetHandler's .current field with the
         # true current cmdset!
-        if cmdset:
-            caller.cmdset.current = cmdset
+        # TODO - removed because this causes cmdset overlaps across sessions/accounts
+        # - see https://github.com/evennia/evennia/issues/2855
+        # if cmdset:
+        #     caller.cmdset.current = cmdset
 
         returnValue(cmdset)
     except ErrorReported:
