@@ -7,14 +7,15 @@ It is stored on the Server side (as opposed to protocol-specific sessions which
 are stored on the Portal side)
 """
 import time
-from django.utils import timezone
+
 from django.conf import settings
-from evennia.comms.models import ChannelDB
-from evennia.utils import logger
-from evennia.utils.utils import make_iter, lazy_property, class_from_module
+from django.utils import timezone
 from evennia.commands.cmdsethandler import CmdSetHandler
+from evennia.comms.models import ChannelDB
 from evennia.scripts.monitorhandler import MONITOR_HANDLER
-from evennia.typeclasses.attributes import AttributeHandler, InMemoryAttributeBackend, DbHolder
+from evennia.typeclasses.attributes import AttributeHandler, DbHolder, InMemoryAttributeBackend
+from evennia.utils import logger
+from evennia.utils.utils import class_from_module, lazy_property, make_iter
 
 _GA = object.__getattribute__
 _SA = object.__setattr__
@@ -435,3 +436,11 @@ class ServerSession(_BASE_SESSION_CLASS):
 
         """
         return True
+
+    def get_display_name(self, *args, **kwargs):
+        if self.puppet:
+            return self.puppet.get_display_name(*args, **kwargs)
+        elif self.account:
+            return self.account.get_display_name(*args, **kwargs)
+        else:
+            return f"{self.protocol_key}({self.address})"
