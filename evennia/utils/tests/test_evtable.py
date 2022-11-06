@@ -196,7 +196,8 @@ class TestEvTable(EvenniaTestCase):
 
     def test_multiple_rows(self):
         """
-        adding a lot of rows with `.add_row`.
+        Adding a lot of rows with `.add_row`.
+
         """
         table = evtable.EvTable("|yHeading1|n", "|B|[GHeading2|n", "Heading3")
         nlines = 12
@@ -220,5 +221,58 @@ class TestEvTable(EvenniaTestCase):
             )
         expected.append(expected[0])
         expected = "\n".join(expected)
+
+        self._validate(expected, str(table))
+
+    def test_2762(self):
+        """
+        Testing https://github.com/evennia/evennia/issues/2762
+
+        Extra spaces getting added to cell content
+
+        Also testing out adding EvColumns directly to the table kwarg.
+
+        """
+        # direct table add
+        table = evtable.EvTable(table=[["another"]], fill_char=".", pad_char="#", width=8)
+
+        expected = """
++------+
+|#anot#|
+|#her.#|
++------+
+        """
+        self._validate(expected, str(table))
+
+        # add with .add_column
+        table = evtable.EvTable(fill_char=".", pad_char="#")
+        table.add_column("another", width=8)
+
+        self._validate(expected, str(table))
+
+        # add by passing a column to constructor directly
+
+        colB = evtable.EvColumn("another", width=8)
+
+        table = evtable.EvTable(table=[colB], fill_char=".", pad_char="#")
+
+        self._validate(expected, str(table))
+
+        # more complex table
+
+        colA = evtable.EvColumn("this", "is", "a", "column")  # no width
+        colB = evtable.EvColumn("and", "another", "one", "here", width=8)
+
+        table = evtable.EvTable(table=[colA, colB], fill_char=".", pad_char="#")
+
+        expected = """
++--------+-------+
+|#this..#|#and..#|
+|#is....#|#anoth#|
+|#......#|#er...#|
+|#a.....#|#one..#|
+|#column#|#here.#|
++--------+-------+
+        """
 
         self._validate(expected, str(table))

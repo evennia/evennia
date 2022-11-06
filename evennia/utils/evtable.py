@@ -471,9 +471,6 @@ class EvCell:
         else:
             self.height = self.raw_height
 
-        # prepare data
-        # self.formatted = self._reformat()
-
     def _crop(self, text, width):
         """
         Apply cropping of text.
@@ -853,16 +850,19 @@ class EvCell:
         Get data, padded and aligned in the form of a list of lines.
 
         """
-        self.formatted = self._reformat()
+        if not self.formatted:
+            self.formatted = self._reformat()
         return self.formatted
 
     def __repr__(self):
-        self.formatted = self._reformat()
+        if not self.formatted:
+            self.formatted = self._reformat()
         return str(ANSIString("<EvCel %s>" % self.formatted))
 
     def __str__(self):
         "returns cell contents on string form"
-        self.formatted = self._reformat()
+        if not self.formatted:
+            self.formatted = self._reformat()
         return str(ANSIString("\n").join(self.formatted))
 
 
@@ -1146,7 +1146,19 @@ class EvTable:
         self.options = kwargs
 
         # use the temporary table to generate the table on the fly, as a list of EvColumns
-        self.table = [EvColumn(*col, **kwargs) for col in table]
+        self.table = []
+        for col in table:
+            if isinstance(col, EvColumn):
+                self.add_column(col, **kwargs)
+            elif isinstance(col, (list, tuple)):
+                self.table.append(EvColumn(*col, **kwargs))
+            else:
+                raise RuntimeError(
+                    "EvTable 'table' kwarg must be a list of EvColumns or a list-of-lists of"
+                    f" strings. Found {type(col)}."
+                )
+
+        # self.table = [EvColumn(*col, **kwargs) for col in table]
 
         # this is the actual working table
         self.worktable = None
@@ -1508,7 +1520,12 @@ class EvTable:
         options = dict(list(self.options.items()) + list(kwargs.items()))
 
         xpos = kwargs.get("xpos", None)
-        column = EvColumn(*args, **options)
+
+        if args and isinstance(args[0], EvColumn):
+            column = args[0]
+            column.reformat(**kwargs)
+        else:
+            column = EvColumn(*args, **options)
         wtable = self.ncols
         htable = self.nrows
 
@@ -1546,7 +1563,6 @@ class EvTable:
             xpos = min(wtable - 1, max(0, int(xpos)))
             self.table.insert(xpos, column)
         self.ncols += 1
-        # self._balance()
 
     def add_row(self, *args, **kwargs):
         """
