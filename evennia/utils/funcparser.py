@@ -85,6 +85,7 @@ class _ParsedFunc:
     # state storage
     fullstr: str = ""
     infuncstr: str = ""
+    rawstr: str = ""
     double_quoted: int = -1
     current_kwarg: str = ""
     open_lparens: int = 0
@@ -96,7 +97,7 @@ class _ParsedFunc:
         return self.funcname, self.args, self.kwargs
 
     def __str__(self):
-        return self.fullstr + self.infuncstr
+        return self.prefix + self.rawstr + self.infuncstr
 
 
 class ParsingError(RuntimeError):
@@ -369,6 +370,8 @@ class FuncParser:
                         curr_func.open_lparens = open_lparens
                         curr_func.open_lsquare = open_lsquare
                         curr_func.open_lcurly = open_lcurly
+                        # we must strip the remaining funcstr so it's not counted twice
+                        curr_func.rawstr = curr_func.rawstr[: -len(infuncstr)]
                         current_kwarg = ""
                         infuncstr = ""
                         double_quoted = -1
@@ -391,6 +394,8 @@ class FuncParser:
                 continue
 
             # in a function def (can be nested)
+
+            curr_func.rawstr += char
 
             if exec_return != "" and char not in (",=)"):
                 # if exec_return is followed by any other character
@@ -552,8 +557,15 @@ class FuncParser:
             # these are malformed (no closing bracket) and we should get their
             # strings as-is.
             callstack.append(curr_func)
-            for _ in range(len(callstack)):
-                infuncstr = str(callstack.pop()) + infuncstr
+            for inum, _ in enumerate(range(len(callstack))):
+                funcstr = str(callstack.pop())
+                if inum == 0 and funcstr.endswith(infuncstr):
+                    # avoid double-echo of nested function calls. This should
+                    # produce a good result most of the time, but it's not 100%
+                    # guaranteed to, since it can ignore genuine duplicates
+                    infuncstr = funcstr
+                else:
+                    infuncstr = funcstr + infuncstr
 
         if not return_str and exec_return != "":
             # return explicit return

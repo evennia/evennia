@@ -82,6 +82,12 @@ def _raises_callable(*args, **kwargs):
     raise RuntimeError("Test exception raised by test callable")
 
 
+def _pass_callable(*args, **kwargs):
+    kwargs.pop("funcparser", None)
+    kwargs.pop("raise_errors", None)
+    return str(args) + str(kwargs)
+
+
 _test_callables = {
     "foo": _test_callable,
     "bar": _test_callable,
@@ -95,6 +101,7 @@ _test_callables = {
     "lit": _lit_callable,
     "sum": _lsum_callable,
     "raise": _raises_callable,
+    "pass": _pass_callable,
 }
 
 
@@ -184,8 +191,8 @@ class TestFuncParser(TestCase):
             ("Test with color |r$foo(a,b)|n is ok", "Test with color |r_test(a, b)|n is ok"),
             ("Test malformed1 This is $foo( and $bar(", "Test malformed1 This is $foo( and $bar("),
             (
-                "Test malformed2 This is $foo( and $bar()",
-                "Test malformed2 This is $foo( and _test()",
+                "Test malformed2 This is $foo( and  $bar()",
+                "Test malformed2 This is $foo( and  _test()",
             ),
             ("Test malformed3 $", "Test malformed3 $"),
             (
@@ -304,11 +311,14 @@ class TestFuncParser(TestCase):
         ret = self.parser.parse(string, strip=True)
         self.assertEqual("Test  and  things", ret)
 
-    @unittest.skip("broken due to https://github.com/evennia/evennia/issues/2927")
     def test_parse_whitespace_preserved(self):
-        string = "The answer is $add(1, x)"
+        string = "The answer is $foobar(1, x)"  # not found, so should be preserved
         ret = self.parser.parse(string)
-        self.assertEqual("The answer is $add(1, x)", ret)
+        self.assertEqual("The answer is $foobar(1, x)", ret)
+
+        string = 'The $pass(testing,  bar= $dum(b = "test2" , a), ) $pass('
+        ret = self.parser.parse(string)
+        self.assertEqual("The ('testing',){'bar': '$dum(b = \"test2\" , a)'} $pass(", ret)
 
     def test_parse_escape(self):
         """
