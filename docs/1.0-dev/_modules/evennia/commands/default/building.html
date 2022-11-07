@@ -865,12 +865,12 @@
                         <span class="s2">&quot;object before continuing.&quot;</span>
                     <span class="p">)</span>
 
-                <span class="n">had_exits</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;exits&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">exits</span>
-                <span class="n">had_objs</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;contents&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
-                    <span class="n">obj</span>
-                    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">contents</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;exits&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">exits</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="c1"># check if object to delete had exits or objects inside it</span>
+                <span class="n">obj_exits</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">exits</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;exits&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">()</span>
+                <span class="n">obj_contents</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;contents&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">()</span>
+                <span class="n">had_exits</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">obj_exits</span><span class="p">)</span>
+                <span class="n">had_objs</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">entity</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">obj_contents</span> <span class="k">if</span> <span class="n">entity</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj_exits</span><span class="p">)</span>
+
                 <span class="c1"># do the deletion</span>
                 <span class="n">okay</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">okay</span><span class="p">:</span>
@@ -1046,8 +1046,8 @@
                 <span class="k">if</span> <span class="n">new_to_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                     <span class="n">alias_string</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_to_exit</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
                 <span class="n">exit_to_string</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Created Exit from </span><span class="si">{location.name}</span><span class="s2"> to </span><span class="si">{new_room.name}</span><span class="s2">:&quot;</span>
-                    <span class="s2">&quot; </span><span class="si">{new_to_exit}</span><span class="s2">(</span><span class="si">{new_to_exit.dbref}</span><span class="s2">)</span><span class="si">{alias_string}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Created Exit from </span><span class="si">{</span><span class="n">location</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_room</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">new_to_exit</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">new_to_exit</span><span class="o">.</span><span class="n">dbref</span><span class="si">}</span><span class="s2">)</span><span class="si">{</span><span class="n">alias_string</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
 
         <span class="c1"># Create exit back from new room</span>

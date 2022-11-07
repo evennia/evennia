@@ -591,7 +591,6 @@
 <span class="sd">            existing ones to make a unique set.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;evennia.commands.cmdset.CmdSet&quot;</span><span class="p">):</span>
             <span class="c1"># cmd is a command set so merge all commands in that set</span>
             <span class="c1"># to this one. We raise a visible error if we created</span>
@@ -612,31 +611,32 @@
             <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_instantiate</span><span class="p">(</span><span class="n">cmd</span><span class="p">)]</span>
+
         <span class="n">commands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commands</span>
         <span class="n">system_commands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_commands</span>
+
         <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">:</span>
             <span class="c1"># add all commands</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cmd</span><span class="o">.</span><span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">cmd</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdsetobj</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">ic</span> <span class="o">=</span> <span class="n">commands</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-                <span class="n">commands</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>  <span class="c1"># replace</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+            <span class="c1"># remove duplicates and add new</span>
+            <span class="k">for</span> <span class="n">_dum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">cmd</span><span class="p">)):</span>
+                <span class="n">commands</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
 
             <span class="c1"># add system_command to separate list as well,</span>
-            <span class="c1"># for quick look-up</span>
+            <span class="c1"># for quick look-up. These have no</span>
             <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">ic</span> <span class="o">=</span> <span class="n">system_commands</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-                    <span class="n">system_commands</span><span class="p">[</span><span class="n">ic</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>  <span class="c1"># replace</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="n">system_commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                <span class="c1"># remove same-matches and add new</span>
+                <span class="k">for</span> <span class="n">_dum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">system_commands</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">cmd</span><span class="p">)):</span>
+                    <span class="n">system_commands</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                <span class="n">system_commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">commands</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_duplicates</span><span class="p">:</span>
             <span class="c1"># extra run to make sure to avoid doublets</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commands</span><span class="p">))</span></div>
+            <span class="n">commands</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">commands</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">commands</span></div>
 
 <div class="viewcode-block" id="CmdSet.remove"><a class="viewcode-back" href="../../../api/evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
