@@ -1458,16 +1458,11 @@ this functionality is pretty much exclusively used by handlers.</p>
 another function; it will print which function called it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>callerdepth</strong> (<em>int</em>) – Must be larger than 0. When &gt; 1, it will
-print the caller of the caller etc.</p>
+<dd class="field-odd"><p><strong>callerdepth</strong> (<em>int</em><em> or </em><em>None</em>) – If None, show entire stack. If int, must be larger than 0.
+When &gt; 1, it will print the sequence to that depth.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>calledby (str)</em> –</p>
-<dl class="simple">
-<dt>A debug string detailing which routine called</dt><dd><p>us.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><em>calledby (str)</em> – A debug string detailing the code that called us.</p>
 </dd>
 </dl>
 </dd></dl>

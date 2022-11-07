@@ -547,23 +547,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_height</span></div>
 
-        <span class="c1"># prepare data</span>
-        <span class="c1"># self.formatted = self._reformat()</span>
-
-    <span class="k">def</span> <span class="nf">_crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply cropping of text.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            text (str): The text to crop.</span>
-<span class="sd">            width (int): The width to crop `text` to.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">d_len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">width</span><span class="p">:</span>
-            <span class="n">crop_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop_string</span>
-            <span class="k">return</span> <span class="n">text</span><span class="p">[:</span> <span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">crop_string</span><span class="p">)]</span> <span class="o">+</span> <span class="n">crop_string</span>
-        <span class="k">return</span> <span class="n">text</span>
-
     <span class="k">def</span> <span class="nf">_reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply all EvCells&#39; formatting operations.</span>
@@ -620,46 +603,19 @@
                 <span class="c1"># too many lines. Crop and mark last line with crop_string</span>
                 <span class="n">crop_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop_string</span>
                 <span class="n">adjusted_data</span> <span class="o">=</span> <span class="n">adjusted_data</span><span class="p">[:</span><span class="o">-</span><span class="n">excess</span><span class="p">]</span>
+                <span class="n">adjusted_data_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adjusted_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">crop_string_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">crop_string</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">adjusted_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">crop_string_length</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">adjusted_data_length</span> <span class="o">&gt;=</span> <span class="n">crop_string_length</span><span class="p">:</span>
+                    <span class="c1"># replace with data[...]</span>
+                    <span class="c1"># (note that if adjusted data is shorter than the crop-string,</span>
+                    <span class="c1"># we skip the crop-string and just pass the cropped data.)</span>
                     <span class="n">adjusted_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">adjusted_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="n">crop_string_length</span><span class="p">]</span> <span class="o">+</span> <span class="n">crop_string</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">adjusted_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">crop_string</span>
+
             <span class="k">elif</span> <span class="n">excess</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># too few lines. Fill to height.</span>
                 <span class="n">adjusted_data</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">excess</span><span class="p">)])</span>
 
         <span class="k">return</span> <span class="n">adjusted_data</span>
-
-    <span class="k">def</span> <span class="nf">_center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">pad_char</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Horizontally center text on line of certain width, using padding.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            text (str): The text to center.</span>
-<span class="sd">            width (int): How wide the area is (in characters) where `text`</span>
-<span class="sd">                should be centered.</span>
-<span class="sd">            pad_char (str): Which padding character to use.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            text (str): Centered text.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">excess</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="n">d_len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">excess</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">text</span>
-        <span class="k">if</span> <span class="n">excess</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="c1"># uneven padding</span>
-            <span class="n">narrowside</span> <span class="o">=</span> <span class="p">(</span><span class="n">excess</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">pad_char</span>
-            <span class="n">widerside</span> <span class="o">=</span> <span class="n">narrowside</span> <span class="o">+</span> <span class="n">pad_char</span>
-            <span class="k">if</span> <span class="n">width</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">narrowside</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">widerside</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">widerside</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">narrowside</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># even padding - same on both sides</span>
-            <span class="n">side</span> <span class="o">=</span> <span class="p">(</span><span class="n">excess</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">pad_char</span>
-            <span class="k">return</span> <span class="n">side</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">side</span>
 
     <span class="k">def</span> <span class="nf">_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -959,16 +915,19 @@
 <span class="sd">        Get data, padded and aligned in the form of a list of lines.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;&lt;EvCel </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;returns cell contents on string form&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reformat</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ANSIString</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formatted</span><span class="p">))</span></div>
 
 
@@ -1252,7 +1211,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span>
 
         <span class="c1"># use the temporary table to generate the table on the fly, as a list of EvColumns</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="p">[</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">col</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">table</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">EvColumn</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">col</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;EvTable &#39;table&#39; kwarg must be a list of EvColumns or a list-of-lists of&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; strings. Found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># self.table = [EvColumn(*col, **kwargs) for col in table]</span>
 
         <span class="c1"># this is the actual working table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worktable</span> <span class="o">=</span> <span class="kc">None</span></div>
@@ -1614,7 +1585,12 @@
         <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
         <span class="n">xpos</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xpos&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">column</span> <span class="o">=</span> <span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">EvColumn</span><span class="p">):</span>
+            <span class="n">column</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">column</span><span class="o">.</span><span class="n">reformat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">column</span> <span class="o">=</span> <span class="n">EvColumn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="n">wtable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span>
         <span class="n">htable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span>
 
@@ -1652,7 +1628,6 @@
             <span class="n">xpos</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">wtable</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">xpos</span><span class="p">)))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">+=</span> <span class="mi">1</span></div>
-        <span class="c1"># self._balance()</span>
 
 <div class="viewcode-block" id="EvTable.add_row"><a class="viewcode-back" href="../../../api/evennia.utils.evtable.html#evennia.utils.evtable.EvTable.add_row">[docs]</a>    <span class="k">def</span> <span class="nf">add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

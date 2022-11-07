@@ -2269,23 +2269,34 @@
 <span class="sd">    another function; it will print which function called it.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        callerdepth (int): Must be larger than 0. When &gt; 1, it will</span>
-<span class="sd">            print the caller of the caller etc.</span>
+<span class="sd">        callerdepth (int or None): If None, show entire stack. If int, must be larger than 0.</span>
+<span class="sd">            When &gt; 1, it will print the sequence to that depth.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        calledby (str): A debug string detailing which routine called</span>
-<span class="sd">            us.</span>
+<span class="sd">        calledby (str): A debug string detailing the code that called us.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">inspect</span>
 
+    <span class="k">def</span> <span class="nf">_stack_display</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="mi">2</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&gt; called by &#39;</span><span class="si">{</span><span class="n">frame</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">frame</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> &gt;&gt;&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">frame</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">frame</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
     <span class="n">stack</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
-    <span class="c1"># we must step one extra level back in stack since we don&#39;t want</span>
-    <span class="c1"># to include the call of this function itself.</span>
-    <span class="n">callerdepth</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">callerdepth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="n">callerdepth</span><span class="p">]</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="mi">2</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span>
-    <span class="k">return</span> <span class="s2">&quot;[called by &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span> <span class="n">frame</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">frame</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span></div>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">callerdepth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">callerdepth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1"># show range</span>
+    <span class="k">for</span> <span class="n">idepth</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">callerdepth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+        <span class="c1"># we must step one extra level back in stack since we don&#39;t want</span>
+        <span class="c1"># to include the call of this function itself.</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_stack_display</span><span class="p">(</span><span class="n">stack</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idepth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]))</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="m_len"><a class="viewcode-back" href="../../../api/evennia.utils.utils.html#evennia.commands.default.building.m_len">[docs]</a><span class="k">def</span> <span class="nf">m_len</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>

@@ -161,6 +161,7 @@
     <span class="c1"># state storage</span>
     <span class="n">fullstr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">infuncstr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">rawstr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">double_quoted</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">current_kwarg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">open_lparens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -172,7 +173,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullstr</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">infuncstr</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawstr</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">infuncstr</span>
 
 
 <div class="viewcode-block" id="ParsingError"><a class="viewcode-back" href="../../../api/evennia.utils.funcparser.html#evennia.utils.funcparser.ParsingError">[docs]</a><span class="k">class</span> <span class="nc">ParsingError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
@@ -445,6 +446,8 @@
                         <span class="n">curr_func</span><span class="o">.</span><span class="n">open_lparens</span> <span class="o">=</span> <span class="n">open_lparens</span>
                         <span class="n">curr_func</span><span class="o">.</span><span class="n">open_lsquare</span> <span class="o">=</span> <span class="n">open_lsquare</span>
                         <span class="n">curr_func</span><span class="o">.</span><span class="n">open_lcurly</span> <span class="o">=</span> <span class="n">open_lcurly</span>
+                        <span class="c1"># we must strip the remaining funcstr so it&#39;s not counted twice</span>
+                        <span class="n">curr_func</span><span class="o">.</span><span class="n">rawstr</span> <span class="o">=</span> <span class="n">curr_func</span><span class="o">.</span><span class="n">rawstr</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">infuncstr</span><span class="p">)]</span>
                         <span class="n">current_kwarg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                         <span class="n">infuncstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                         <span class="n">double_quoted</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -467,6 +470,8 @@
                 <span class="k">continue</span>
 
             <span class="c1"># in a function def (can be nested)</span>
+
+            <span class="n">curr_func</span><span class="o">.</span><span class="n">rawstr</span> <span class="o">+=</span> <span class="n">char</span>
 
             <span class="k">if</span> <span class="n">exec_return</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;,=)&quot;</span><span class="p">):</span>
                 <span class="c1"># if exec_return is followed by any other character</span>
@@ -628,8 +633,15 @@
             <span class="c1"># these are malformed (no closing bracket) and we should get their</span>
             <span class="c1"># strings as-is.</span>
             <span class="n">callstack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr_func</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">callstack</span><span class="p">)):</span>
-                <span class="n">infuncstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">callstack</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span> <span class="o">+</span> <span class="n">infuncstr</span>
+            <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">callstack</span><span class="p">))):</span>
+                <span class="n">funcstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">callstack</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">inum</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">funcstr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">infuncstr</span><span class="p">):</span>
+                    <span class="c1"># avoid double-echo of nested function calls. This should</span>
+                    <span class="c1"># produce a good result most of the time, but it&#39;s not 100%</span>
+                    <span class="c1"># guaranteed to, since it can ignore genuine duplicates</span>
+                    <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">funcstr</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">infuncstr</span> <span class="o">=</span> <span class="n">funcstr</span> <span class="o">+</span> <span class="n">infuncstr</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">return_str</span> <span class="ow">and</span> <span class="n">exec_return</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
             <span class="c1"># return explicit return</span>

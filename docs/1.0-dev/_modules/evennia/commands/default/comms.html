@@ -84,15 +84,15 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span>
-<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.accounts</span> <span class="kn">import</span> <span class="n">bots</span>
-<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.comms.comms</span> <span class="kn">import</span> <span class="n">DefaultChannel</span>
+<span class="kn">from</span> <span class="nn">evennia.comms.models</span> <span class="kn">import</span> <span class="n">Msg</span>
+<span class="kn">from</span> <span class="nn">evennia.locks.lockhandler</span> <span class="kn">import</span> <span class="n">LockException</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">ask_yes_no</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">tail_log_file</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">strip_unsafe_input</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.evmenu</span> <span class="kn">import</span> <span class="n">ask_yes_no</span>
 
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
 <span class="n">CHANNEL_DEFAULT_TYPECLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span>
@@ -361,8 +361,8 @@
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="s2">&quot;Multiple possible channel matches/alias for &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">channelname</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;Multiple possible channel matches/alias for &#39;</span><span class="si">{</span><span class="n">channelname</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">return</span> <span class="n">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -945,9 +945,7 @@
             <span class="n">subscribed</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_channels</span><span class="p">()</span>
             <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_subbed_channels</span><span class="p">(</span><span class="n">subscribed</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wChannel subscriptions|n &quot;</span> <span class="sa">f</span><span class="s2">&quot;(use |w/all|n to see all available):</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|wChannel subscriptions|n (use |w/all|n to see all available):</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -1013,8 +1011,8 @@
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_channels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="s2">&quot;Multiple possible channel matches/alias for &quot;</span>
-                    <span class="s2">&quot;&#39;</span><span class="si">{channel_name}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">found_channels</span><span class="p">)</span>
+                    <span class="s2">&quot;Multiple possible channel matches/alias for &#39;</span><span class="si">{channel_name}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">found_channels</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">channels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">found_channels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -1041,7 +1039,7 @@
                     <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Channel |w</span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">|n&quot;</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">header</span><span class="si">}</span><span class="se">\n</span><span class="s2">(use |w</span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &lt;msg&gt;|n (or a channel-alias) &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;to chat and the &#39;channel&#39; command &quot;</span>
+                        <span class="s2">&quot;to chat and the &#39;channel&#39; command &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;to customize)</span><span class="se">\n</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">available</span><span class="p">:</span>
@@ -1091,9 +1089,7 @@
             <span class="c1"># un-subscribe from a channel</span>
             <span class="n">success</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unsub_from_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;You un-subscribed from channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. &quot;</span> <span class="s2">&quot;All aliases were cleared.&quot;</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You un-subscribed from channel </span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">. All aliases were cleared.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
             <span class="k">return</span>
@@ -1145,9 +1141,11 @@
 
             <span class="n">ask_yes_no</span><span class="p">(</span>
                 <span class="n">caller</span><span class="p">,</span>
-                <span class="n">prompt</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Are you sure you want to delete channel &#39;</span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                <span class="s2">&quot;(make sure name is correct!)?</span><span class="se">\n</span><span class="s2">This will disconnect and &quot;</span>
-                <span class="s2">&quot;remove all users&#39; aliases. </span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Are you sure you want to delete channel &#39;</span><span class="si">{</span><span class="n">channel</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="s2">&quot;(make sure name is correct!)?</span><span class="se">\n</span><span class="s2">This will disconnect and &quot;</span>
+                    <span class="s2">&quot;remove all users&#39; aliases. </span><span class="si">{options}</span><span class="s2">?&quot;</span>
+                <span class="p">),</span>
                 <span class="n">yes_action</span><span class="o">=</span><span class="n">_perform_delete</span><span class="p">,</span>
                 <span class="n">no_action</span><span class="o">=</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
@@ -1261,9 +1259,11 @@
             <span class="p">)</span>
             <span class="n">ask_yes_no</span><span class="p">(</span>
                 <span class="n">caller</span><span class="p">,</span>
-                <span class="n">prompt</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Are you sure you want to boot user </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> from &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;channel(s) </span><span class="si">{</span><span class="n">channames</span><span class="si">}</span><span class="s2"> (make sure name/channels are correct</span><span class="si">{</span><span class="n">reasonwarn</span><span class="si">}</span><span class="s2">). &quot;</span>
-                <span class="s2">&quot;</span><span class="si">{options}</span><span class="s2">?&quot;</span><span class="p">,</span>
+                <span class="n">prompt</span><span class="o">=</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Are you sure you want to boot user </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> from &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;channel(s) </span><span class="si">{</span><span class="n">channames</span><span class="si">}</span><span class="s2"> (make sure name/channels are correct</span><span class="si">{</span><span class="n">reasonwarn</span><span class="si">}</span><span class="s2">). &quot;</span>
+                    <span class="s2">&quot;</span><span class="si">{options}</span><span class="s2">?&quot;</span>
+                <span class="p">),</span>
                 <span class="n">yes_action</span><span class="o">=</span><span class="n">_boot_user</span><span class="p">,</span>
                 <span class="n">no_action</span><span class="o">=</span><span class="s2">&quot;Aborted.&quot;</span><span class="p">,</span>
                 <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
@@ -1413,15 +1413,15 @@
         <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
 
         <span class="c1"># get the messages we&#39;ve sent (not to channels)</span>
-        <span class="n">pages_we_sent</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_messages_by_sender</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">pages_we_sent</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_messages_by_sender</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">)</span>
         <span class="c1"># get last messages we&#39;ve got</span>
-        <span class="n">pages_we_got</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_messages_by_receiver</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">pages_we_got</span> <span class="o">=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_messages_by_receiver</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">)</span>
         <span class="n">targets</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">number</span> <span class="o">=</span> <span class="p">[],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="s2">&quot;last&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">switches</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pages_we_sent</span><span class="p">:</span>
-                <span class="n">recv</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">pages_we_sent</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">receivers</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You last paged |c</span><span class="si">%s</span><span class="s2">|n:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">recv</span><span class="p">,</span> <span class="n">pages_we_sent</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+                <span class="n">recv</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">pages_we_sent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">receivers</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You last paged |c</span><span class="si">{</span><span class="n">recv</span><span class="si">}</span><span class="s2">|n:</span><span class="si">{</span><span class="n">pages_we_sent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You haven&#39;t paged anyone yet.&quot;</span><span class="p">)</span>
@@ -1461,7 +1461,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">targets</span><span class="p">:</span>
                 <span class="c1"># no target given - send to last person we paged</span>
                 <span class="k">if</span> <span class="n">pages_we_sent</span><span class="p">:</span>
-                    <span class="n">targets</span> <span class="o">=</span> <span class="n">pages_we_sent</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">receivers</span>
+                    <span class="n">targets</span> <span class="o">=</span> <span class="n">pages_we_sent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">receivers</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want page?&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
