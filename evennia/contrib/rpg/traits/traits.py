@@ -453,13 +453,13 @@ class Character(DefaultCharacter):
 """
 
 
-from time import time
-from django.conf import settings
 from functools import total_ordering
-from evennia.utils.dbserialize import _SaverDict
-from evennia.utils import logger
-from evennia.utils.utils import inherits_from, class_from_module, list_to_string, percent
+from time import time
 
+from django.conf import settings
+from evennia.utils import logger
+from evennia.utils.dbserialize import _SaverDict
+from evennia.utils.utils import class_from_module, inherits_from, list_to_string, percent
 
 # Available Trait classes.
 # This way the user can easily supply their own. Each
@@ -592,7 +592,7 @@ class TraitHandler:
             trait_cls = self._get_trait_class(trait_key=trait_key)
             valid_keys = list_to_string(list(trait_cls.default_keys.keys()), endsep="or")
             raise TraitException(
-                "Trait object not settable directly. " f"Assign to {trait_key}.{valid_keys}."
+                f"Trait object not settable directly. Assign to {trait_key}.{valid_keys}."
             )
 
     def __setitem__(self, trait_key, value):
@@ -628,7 +628,6 @@ class TraitHandler:
         except KeyError:
             raise TraitException(f"Trait class for {trait_type} could not be found.")
 
-    @property
     def all(self):
         """
         Get all trait keys in this handler.
@@ -869,8 +868,7 @@ class Trait:
 
         if not isinstance(trait_data, _SaverDict):
             logger.log_warn(
-                f"Non-persistent Trait data (type(trait_data)) "
-                f"loaded for {type(self).__name__}."
+                f"Non-persistent Trait data (type(trait_data)) loaded for {type(self).__name__}."
             )
 
     @staticmethod
@@ -977,7 +975,7 @@ class Trait:
             if _GA(self, "allow_extra_properties"):
                 _GA(self, "_data")[key] = value
                 return
-        raise AttributeError(f"Can't set attribute {key} on " f"{self.trait_type} Trait.")
+        raise AttributeError(f"Can't set attribute {key} on {self.trait_type} Trait.")
 
     def __delattr__(self, key):
         """
@@ -1268,7 +1266,7 @@ class CounterTrait(Trait):
                 for key, value in descs.items()
             ):
                 raise TraitException(
-                    f"Trait descs must be defined on the "
+                    "Trait descs must be defined on the "
                     f"form {{number:str}} (instead found {descs})."
                 )
         # set up rate
