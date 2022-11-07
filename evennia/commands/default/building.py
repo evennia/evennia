@@ -789,12 +789,12 @@ class CmdDestroy(COMMAND_DEFAULT_CLASS):
                         "object before continuing."
                     )
 
-                had_exits = hasattr(obj, "exits") and obj.exits
-                had_objs = hasattr(obj, "contents") and any(
-                    obj
-                    for obj in obj.contents
-                    if not (hasattr(obj, "exits") and obj not in obj.exits)
-                )
+                # check if object to delete had exits or objects inside it
+                obj_exits = obj.exits if hasattr(obj, "exits") else ()
+                obj_contents = obj.contents if hasattr(obj, "contents") else ()
+                had_exits = bool(obj_exits)
+                had_objs = any(entity for entity in obj_contents if entity not in obj_exits)
+
                 # do the deletion
                 okay = obj.delete()
                 if not okay:
