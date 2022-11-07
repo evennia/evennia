@@ -4,45 +4,44 @@ Unit testing for the Command system itself.
 """
 
 from django.test import override_settings
-from evennia.utils.test_resources import BaseEvenniaTest, TestCase
+from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
-from evennia.commands import cmdparser
-
+from evennia.utils.test_resources import BaseEvenniaTest, TestCase
 
 # Testing-command sets
 
 
-class _CmdA(Command):
+class _BaseCmd(Command):
+    def __init__(self, cmdset, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.from_cmdset = cmdset
+
+
+class _CmdA(_BaseCmd):
     key = "A"
 
-    def __init__(self, cmdset, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.from_cmdset = cmdset
 
-
-class _CmdB(Command):
+class _CmdB(_BaseCmd):
     key = "B"
 
-    def __init__(self, cmdset, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.from_cmdset = cmdset
 
-
-class _CmdC(Command):
+class _CmdC(_BaseCmd):
     key = "C"
 
-    def __init__(self, cmdset, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.from_cmdset = cmdset
 
-
-class _CmdD(Command):
+class _CmdD(_BaseCmd):
     key = "D"
 
-    def __init__(self, cmdset, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.from_cmdset = cmdset
+
+class _CmdEe(_BaseCmd):
+    key = "E"
+    aliases = ["ee"]
+
+
+class _CmdEf(_BaseCmd):
+    key = "E"
+    aliases = ["ff"]
 
 
 class _CmdSetA(CmdSet):
@@ -80,6 +79,14 @@ class _CmdSetD(CmdSet):
         self.add(_CmdB("D"))
         self.add(_CmdC("D"))
         self.add(_CmdD("D"))
+
+
+class _CmdSetEe_Ef(CmdSet):
+    key = "Ee_Ef"
+
+    def at_cmdset_creation(self):
+        self.add(_CmdEe("Ee"))
+        self.add(_CmdEf("Ee"))
 
 
 # testing Command Sets
@@ -816,7 +823,7 @@ class TestDuplicateBehavior(TestCase):
         self.cmdset_d.priority = 0
         self.cmdset_a.duplicates = True
 
-    def test_reverse_sameprio_duplicate(self):
+    def test_reverse_sameprio_duplicate__implicit(self):
         """
         Test of `duplicates` transfer which does not propagate. Only
         A has duplicates=True.
@@ -831,7 +838,7 @@ class TestDuplicateBehavior(TestCase):
         self.assertIsNone(cmdset_f.duplicates)
         self.assertEqual(len(cmdset_f.commands), 8)
 
-    def test_reverse_sameprio_duplicate(self):
+    def test_reverse_sameprio_duplicate__explicit(self):
         """
         Test of `duplicates` transfer, which does not propagate.
         C.duplication=True
@@ -982,6 +989,7 @@ class TestOptionTransferReplace(TestCase):
 
 
 import sys
+
 from evennia.commands import cmdhandler
 from twisted.trial.unittest import TestCase as TwistedTestCase
 
@@ -1084,6 +1092,11 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
 
         deferred.addCallback(_callback)
         return deferred
+
+    def test_command_replace_different_aliases(self):
+        cmdset_ee = _CmdSetEe_Ef()
+        self.assertEqual(len(cmdset_ee.commands), 1)
+        self.assertEqual(cmdset_ee.commands[0].key, "e")
 
 
 class AccessableCommand(Command):

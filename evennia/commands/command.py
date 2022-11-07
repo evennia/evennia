@@ -262,7 +262,7 @@ class Command(metaclass=CommandMeta):
         str, too.
 
         """
-        return hash("\n".join(self._matchset))
+        return hash("command")
 
     def __ne__(self, cmd):
         """
