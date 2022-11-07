@@ -515,12 +515,6 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             existing ones to make a unique set.
 
         """
-        if hasattr(cmd, "key") and (cmd.key in ("say", "whisper")):
-            from evennia.utils import calledby
-
-            print(calledby(2))
-            print(f"cmdset.add {cmd.__class__}")
-
         if inherits_from(cmd, "evennia.commands.cmdset.CmdSet"):
             # cmd is a command set so merge all commands in that set
             # to this one. We raise a visible error if we created

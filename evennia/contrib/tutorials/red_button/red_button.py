@@ -32,10 +32,9 @@ such as when closing the lid and un-blinding a character.
 
 """
 import random
-from evennia import DefaultObject
-from evennia import Command, CmdSet
-from evennia.utils.utils import delay, repeat, interactive
 
+from evennia import CmdSet, Command, DefaultObject
+from evennia.utils.utils import delay, interactive, repeat
 
 # Commands on the button (not all awailable at the same time)
 
@@ -385,8 +384,7 @@ class BlindCmdSet(CmdSet):
 
     def at_cmdset_creation(self):
         "Setup the blind cmdset"
-        from evennia.commands.default.general import CmdSay
-        from evennia.commands.default.general import CmdPose
+        from evennia.commands.default.general import CmdPose, CmdSay
 
         self.add(CmdSay())
         self.add(CmdPose())
@@ -434,7 +432,7 @@ class RedButton(DefaultObject):
     # these on the fly.
 
     desc_closed_lid = (
-        "This is a large red button, inviting yet evil-looking. " "A closed glass lid protects it."
+        "This is a large red button, inviting yet evil-looking. A closed glass lid protects it."
     )
     desc_open_lid = (
         "This is a large red button, inviting yet evil-looking. "
@@ -520,7 +518,7 @@ class RedButton(DefaultObject):
         # remove lidopen-state, if it exists
         self.cmdset.remove(LidOpenCmdSet)
         # add lid-closed cmdset
-        self.cmdset.add(LidClosedCmdSet)
+        self.cmdset.add(LidClosedCmdSet, persistent=True)
 
         if msg and self.location:
             self.location.msg_contents(msg)
@@ -535,7 +533,7 @@ class RedButton(DefaultObject):
         # remove lidopen-state, if it exists
         self.cmdset.remove(LidClosedCmdSet)
         # add lid-open cmdset
-        self.cmdset.add(LidOpenCmdSet)
+        self.cmdset.add(LidOpenCmdSet, persistent=True)
 
         # wait 20s then call self.to_closed_state with a message as argument
         delay(
@@ -566,6 +564,7 @@ class RedButton(DefaultObject):
 
         # we don't need to remove other cmdsets, this will replace all,
         # then restore whatever was there when it goes away.
+        # we don't make this persistent, to make sure any problem is just a reload away
         caller.cmdset.add(BlindCmdSet)
 
         # wait 20s then call self._unblind to remove blindness effect. The
