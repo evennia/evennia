@@ -970,8 +970,8 @@ class CmdDig(ObjManipCommand):
                 if new_to_exit.aliases.all():
                     alias_string = " (%s)" % ", ".join(new_to_exit.aliases.all())
                 exit_to_string = (
-                    "\nCreated Exit from {location.name} to {new_room.name}:"
-                    " {new_to_exit}({new_to_exit.dbref}){alias_string}."
+                    f"\nCreated Exit from {location.name} to {new_room.name}:"
+                    f" {new_to_exit}({new_to_exit.dbref}){alias_string}."
                 )
 
         # Create exit back from new room
