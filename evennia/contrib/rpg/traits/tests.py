@@ -92,7 +92,7 @@ class TraitHandlerTest(_TraitHandlerBase):
         Cache should not be set until first get
         """
         self.assertEqual(len(self.traithandler._cache), 0)
-        self.traithandler.all  # does not affect cache
+        self.traithandler.all()  # does not affect cache
         self.assertEqual(len(self.traithandler._cache), 0)
         self.traithandler.test1
         self.assertEqual(len(self.traithandler._cache), 1)
@@ -124,7 +124,7 @@ class TraitHandlerTest(_TraitHandlerBase):
 
     def test_all(self):
         "Test all method"
-        self.assertEqual(self.traithandler.all, ["test1", "test2"])
+        self.assertEqual(self.traithandler.all(), ["test1", "test2"])
 
     def test_remove(self):
         "Test remove method"

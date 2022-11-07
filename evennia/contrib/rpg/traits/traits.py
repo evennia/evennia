@@ -609,7 +609,7 @@ class TraitHandler:
 
     def __repr__(self):
         return "TraitHandler ({num} Trait(s) stored): {keys}".format(
-            num=len(self), keys=", ".join(self.all)
+            num=len(self), keys=", ".join(self.all())
         )
 
     def _get_trait_class(self, trait_type=None, trait_key=None):
@@ -718,7 +718,7 @@ class TraitHandler:
         """
         Remove all Traits from the handler's parent object.
         """
-        for trait_key in self.all:
+        for trait_key in self.all():
             self.remove(trait_key)
 
 
