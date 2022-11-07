@@ -685,7 +685,7 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;TraitHandler (</span><span class="si">{num}</span><span class="s2"> Trait(s) stored): </span><span class="si">{keys}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">keys</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">)</span>
+            <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">keys</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_trait_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trait_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -794,7 +794,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all Traits from the handler&#39;s parent object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">trait_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">trait_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">trait_key</span><span class="p">)</span></div></div>
 
 
