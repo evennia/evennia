@@ -538,6 +538,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         commands = self.commands
         system_commands = self.system_commands
+
         for cmd in cmds:
             # add all commands
             if not hasattr(cmd, "obj") or cmd.obj is None:
