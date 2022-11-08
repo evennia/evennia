@@ -1490,7 +1490,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             if cdict.get("aliases"):
                 self.aliases.batch_add(*cdict["aliases"])
             if cdict.get("location"):
-                cdict["location"].at_object_receive(self, None)
+                cdict["location"].at_object_receive(self, None, move_type="create")
                 self.at_post_move(None)
             if cdict.get("tags"):
                 # this should be a list of tags, tuples (key, category) or (key, category, data)
