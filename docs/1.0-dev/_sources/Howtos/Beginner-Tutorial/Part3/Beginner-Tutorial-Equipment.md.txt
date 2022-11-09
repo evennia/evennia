@@ -543,14 +543,14 @@ can be added:
 - Get all usable items (items with a use-location of `BACKPACK`) from the backpack
 
 Experiment with adding those. A full example is found in 
-[evennia/contrib/tutorials/evadventure/equipment.py](evennia.contrib.tutorials.evadventure.equipment).
+[evennia/contrib/tutorials/evadventure/equipment.py](../../../api/evennia.contrib.tutorials.evadventure.equipment.md).
 
 ## Unit Testing 
 
 > Create a new module `mygame/evadventure/tests/test_equipment.py`.
 
 ```{sidebar}
-See [evennia/contrib/tutorials/evadventure/tests/test_equipment.py](evennia.contrib.tutorials.evadventure.tests.test_equipment)
+See [evennia/contrib/tutorials/evadventure/tests/test_equipment.py](../../../api/evennia.contrib.tutorials.evadventure.tests.test_equipment.md)
 for a finished testing example.
 ```
 

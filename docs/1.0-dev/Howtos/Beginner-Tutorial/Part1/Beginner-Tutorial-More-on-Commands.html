@@ -187,10 +187,10 @@ your parsing - if you wanted some other Command to also understand input on the 
 from this class and just implement the <code class="docutils literal notranslate"><span class="pre">func</span></code> needed for that command without implementing <code class="docutils literal notranslate"><span class="pre">parse</span></code> anew.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Tuples and Lists</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- A `list` is written as `[a, b, c, d, ...]`. You can add and grow/shrink a list after it was first created.
-- A `tuple` is written as `(a, b, c, d, ...)`. A tuple cannot be modified once it is created.
-</pre></div>
-</div>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">list</span></code> is written as <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">...]</span></code>. You can add and grow/shrink a list after it was first created.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">tuple</span></code> is written as <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">...)</span></code>. A tuple cannot be modified once it is created.</p></li>
+</ul>
 </aside>
 <ul>
 <li><p><strong>Line 14</strong> - We do the stripping of <code class="docutils literal notranslate"><span class="pre">self.args</span></code> once and for all here. We also store the stripped version back
@@ -282,14 +282,7 @@ hit-2
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Multi-matches</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Some game engines will just pick the first hit when finding more than one.
-Evennia will always give you a choice. The reason for this is that Evennia
-cannot know if `hit` and `hit` are different or the same - maybe it behaves
-differently depending on the object it sits on? Besides, imagine if you had
-a red and a blue button both with the command `push` on it. Now you just write
-`push`. Wouldn&#39;t you prefer to be asked `which` button you really wanted to push?
-</pre></div>
-</div>
+<p>Some game engines will just pick the first hit when finding more than one. Evennia will always give you a choice. The reason for this is that Evennia cannot know if <code class="docutils literal notranslate"><span class="pre">hit</span></code> and <code class="docutils literal notranslate"><span class="pre">hit</span></code> are different or the same - maybe it behaves differently depending on the object it sits on? Besides, imagine if you had a red and a blue button both with the command <code class="docutils literal notranslate"><span class="pre">push</span></code> on it. Now you just write <code class="docutils literal notranslate"><span class="pre">push</span></code>. Wouldn’t you prefer to be asked <code class="docutils literal notranslate"><span class="pre">which</span></code> button you really wanted to push?</p>
 </aside>
 <p>Woah, that didn’t go as planned. Evennia actually found <em>two</em> <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands to didn’t know which one to use
 (<em>we</em> know they are the same, but Evennia can’t be sure of that). As we can see, <code class="docutils literal notranslate"><span class="pre">hit-1</span></code> is the one found on
@@ -328,12 +321,7 @@ for limiting the kind of things you can do with an object, including limiting ju
 it.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Locks</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Evennia Locks are defined as a mini-language defined in `lockstrings`. The lockstring
-is on a form `&lt;situation&gt;:&lt;lockfuncs&gt;`, where `situation` determines when this
-lock applies and the `lockfuncs` (there can be more than one) are run to determine
-if the lock-check passes or not depending on circumstance.
-</pre></div>
-</div>
+<p>Evennia Locks are defined as a mini-language defined in <code class="docutils literal notranslate"><span class="pre">lockstrings</span></code>. The lockstring is on a form <code class="docutils literal notranslate"><span class="pre">&lt;situation&gt;:&lt;lockfuncs&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">situation</span></code> determines when this lock applies and the <code class="docutils literal notranslate"><span class="pre">lockfuncs</span></code> (there can be more than one) are run to determine if the lock-check passes or not depending on circumstance.</p>
 </aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.search(&quot;sword&quot;).locks.add(&quot;call:holds()&quot;)
 </pre></div>
@@ -344,12 +332,7 @@ this object if you are <em>holding</em> the object (that is, it’s in your inve
 first:</p>
 <aside class="sidebar">
 <p class="sidebar-title">quell/unquell</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Quelling allows you as a developer to take on the role of players with less
-priveleges. This is useful for testing and debugging, in particular since a
-superuser has a little `too` much power sometimes.
-Use `unquell` to get back to your normal self.
-</pre></div>
-</div>
+<p>Quelling allows you as a developer to take on the role of players with less priveleges. This is useful for testing and debugging, in particular since a superuser has a little <code class="docutils literal notranslate"><span class="pre">too</span></code> much power sometimes. Use <code class="docutils literal notranslate"><span class="pre">unquell</span></code> to get back to your normal self.</p>
 </aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quell
 </pre></div>
@@ -440,10 +423,7 @@ All these commands are in just loaded on the default objects that Evennia provid
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">super()</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The `super()` function refers to the parent of the current class and is commonly
-used to call same-named methods on the parent.
-</pre></div>
-</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">super()</span></code> function refers to the parent of the current class and is commonly used to call same-named methods on the parent.</p>
 </aside>
 <p><code class="docutils literal notranslate"><span class="pre">evennia.default_cmds</span></code> is a container that holds all of Evennia’s default commands and cmdsets. In this module
 we can see that this was imported and then a new child class was made for each cmdset. Each class looks familiar
@@ -585,11 +565,7 @@ has a special function <code class="docutils literal notranslate"><span class="p
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Another way</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Instead of adding `MyCmdGet` explicitly in default_cmdset.py,
-you could also add it to `mycommands.MyCmdSet` and let it be
-added automatically for you.
-</pre></div>
-</div>
+<p>Instead of adding <code class="docutils literal notranslate"><span class="pre">MyCmdGet</span></code> explicitly in default_cmdset.py, you could also add it to <code class="docutils literal notranslate"><span class="pre">mycommands.MyCmdSet</span></code> and let it be added automatically here for you.</p>
 </aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; get

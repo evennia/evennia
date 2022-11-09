@@ -111,8 +111,7 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="adding-custom-commands">
 <h1><span class="section-number">8. </span>Adding custom commands<a class="headerlink" href="#adding-custom-commands" title="Permalink to this headline">¶</a></h1>
-<p>In this lesson we’ll learn how to create our own Evennia <em>Commands</em>. If you are new to Python you’ll
-also learn some more basics about how to manipulate strings and get information out of Evennia.</p>
+<p>In this lesson we’ll learn how to create our own Evennia <em>Commands</em>. If you are new to Python you’ll also learn some more basics about how to manipulate strings and get information out of Evennia.</p>
 <p>A Command is something that handles the input from a user and causes a result to happen.
 An example is <code class="docutils literal notranslate"><span class="pre">look</span></code>, which examines your current location and tells how it looks like and
 what is in it.</p>
@@ -419,12 +418,14 @@ have the whitespace and is not the same as <code class="docutils literal notrans
 <aside class="sidebar">
 <p class="sidebar-title">if-statements</p>
 <p>The full form of the if statement is</p>
-<p>if condition:
-…
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if condition:
+    ...
 elif othercondition:
-…
+    ...
 else:
-…</p>
+    ...
+</pre></div>
+</div>
 <p>There can be any number of <code class="docutils literal notranslate"><span class="pre">elifs</span></code> to mark when different branches of the code should run. If
 the <code class="docutils literal notranslate"><span class="pre">else</span></code> condition is given, it will run if none of the other conditions was truthy. In Python
 the <code class="docutils literal notranslate"><span class="pre">if..elif..else</span></code> structure also serves the same function as <code class="docutils literal notranslate"><span class="pre">case</span></code> in some other languages.</p>

@@ -145,13 +145,13 @@ not, make it so):</p>
 </pre></div>
 </div>
 <aside class="sidebar">
-<p class="sidebar-title">Remember:</p>
+<p class="sidebar-title">Whitespace matters in Python!</p>
 <ul class="simple">
 <li><p>Indentation matters in Python</p></li>
 <li><p>So does capitalization</p></li>
-<li><p>Use 4 <cite>spaces</cite> to indent, not tabs</p></li>
+<li><p>Use 4 <code class="docutils literal notranslate"><span class="pre">spaces</span></code> to indent, not tabs</p></li>
 <li><p>Empty lines are fine</p></li>
-<li><p>Anything on a line after a <cite>#</cite> is a <cite>comment</cite>, ignored by Python</p></li>
+<li><p>Anything on a line after a <code class="docutils literal notranslate"><span class="pre">#</span></code> is a <code class="docutils literal notranslate"><span class="pre">comment</span></code>, ignored by Python</p></li>
 </ul>
 </aside>
 <p>The <em>python_path</em> describes the relation between Python resources, both between and inside
@@ -244,11 +244,7 @@ imports at the top, resources that are then used by all code in that module.</p>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Docstrings vs Comments</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A docstring is not the same as a comment (created by `#`). A
-docstring is not ignored by Python but is an integral part of the thing
-it is documenting (the module and the class in this case).
-</pre></div>
-</div>
+<p>A docstring is not the same as a comment (created by <code class="docutils literal notranslate"><span class="pre">#</span></code>). A docstring is not ignored by Python but is an integral part of the thing it is documenting (the module and the class in this case).</p>
 </aside>
 <p>The real file is much longer but we can ignore the multi-line strings (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span> <span class="pre">...</span> <span class="pre">&quot;&quot;&quot;</span></code>). These serve
 as documentation-strings, or <em>docstrings</em> for the module (at the top) and the <code class="docutils literal notranslate"><span class="pre">class</span></code> below.</p>
@@ -263,10 +259,7 @@ little detour to understand what a ‘class’, an ‘object’ or ‘instance�
 things to understand before you can use Evennia efficiently.</p>
 <aside class="sidebar">
 <p class="sidebar-title">OOP</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Classes, objects, instances and inheritance are fundamental to Python. This and some
-other concepts are often clumped together under the term Object-Oriented-Programming (OOP).
-</pre></div>
-</div>
+<p>Classes, objects, instances and inheritance are fundamental to Python. This and some other concepts are often clumped together under the term Object-Oriented-Programming (OOP).</p>
 </aside>
 <section id="classes-and-instances">
 <h3><span class="section-number">5.2.1. </span>Classes and instances<a class="headerlink" href="#classes-and-instances" title="Permalink to this headline">¶</a></h3>
@@ -292,8 +285,8 @@ back to the <code class="docutils literal notranslate"><span class="pre">key</sp
 <aside class="sidebar">
 <p class="sidebar-title">Terms</p>
 <ul class="simple">
-<li><p>A <cite>class</cite> is a code template describing a ‘type’ of something</p></li>
-<li><p>An <cite>object</cite> is an <cite>instance</cite> of a <cite>class</cite>. Like using a mold to cast tin soldiers, one class can be <cite>instantiated</cite> into any number of object-instances.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">class</span></code> is a code template describing a ‘type’ of something</p></li>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">object</span></code> is an <code class="docutils literal notranslate"><span class="pre">instance</span></code> of a <code class="docutils literal notranslate"><span class="pre">class</span></code>. Like using a mold to cast in soldiers, one class can be <code class="docutils literal notranslate"><span class="pre">instantiated</span></code> into any number of object-instances.</p></li>
 </ul>
 </aside>
 <p>A class is just a template. Before it can be used, we must create an <em>instance</em> of the class. If
@@ -350,12 +343,7 @@ Python Console is closing.
 <p>Or you can use a separate terminal and restart from outside the game:</p>
 <aside class="sidebar">
 <p class="sidebar-title">On reloading</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Reloading with the python mode gets a little annoying since you need to redo everything
-after every reload. Just keep in mind that during regular development you will not be
-working this way. The in-game python mode is practical for quick fixes and experiments like
-this, but actual code is normally written externally, in python modules.
-</pre></div>
-</div>
+<p>Reloading with the python mode gets a little annoying since you need to redo everything after every reload. Just keep in mind that during regular development you will not be working this way. The in-game python mode is practical for quick fixes and experiments like this, but actual code is normally written externally, in python modules.</p>
 </aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ evennia reload   (or restart)
 </pre></div>
@@ -441,11 +429,7 @@ as exemplified for the new <code class="docutils literal notranslate"><span clas
 the parent in parenthesis. <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Classname(Parent)</span></code> is the way to do this.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Multi-inheritance</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>It&#39;s possible to add more comma-separated parents to a class. You should usually avoid
-this until you `really` know what you are doing. A single parent will be enough for almost
-every case you&#39;ll need.
-</pre></div>
-</div>
+<p>It’s possible to add more comma-separated parents to a class. You should usually avoid this until you <code class="docutils literal notranslate"><span class="pre">really</span></code> know what you are doing. A single parent will be enough for almost every case you’ll need.</p>
 </aside>
 <p>Let’s try out our new class. First <code class="docutils literal notranslate"><span class="pre">reload</span></code> the server and the do</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py

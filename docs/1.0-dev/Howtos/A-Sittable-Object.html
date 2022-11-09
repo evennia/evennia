@@ -423,12 +423,7 @@ As you sit down in armchair, life feels easier.
 <p>To keep things separate we’ll make a new module <code class="docutils literal notranslate"><span class="pre">mygame/commands/sittables.py</span></code>:</p>
 <aside class="sidebar">
 <p class="sidebar-title">Separate Commands and Typeclasses?</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You can organize these things as you like. If you wanted you could put the sit-command + cmdset
-together with the `Sittable` typeclass in `mygame/typeclasses/sittables.py`. That has the advantage of
-keeping everything related to sitting in one place. But there is also some organizational merit to
-keeping all Commands in one place as we do here.
-</pre></div>
-</div>
+<p>You can organize these things as you like. If you wanted you could put the sit-command + cmdset together with the <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> typeclass in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/sittables.py</span></code>. That has the advantage of keeping everything related to sitting in one place. But there is also some organizational merit to keeping all Commands in one place as we do here.</p>
 </aside>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
 
@@ -624,11 +619,7 @@ What will be checked is the <code class="docutils literal notranslate"><span cla
 The arguments are required and Evennia will pass all relevant objects to them:</p>
 <aside class="sidebar">
 <p class="sidebar-title">Lockfuncs</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Evennia provides a large number of default lockfuncs, such as checking permission-levels,
-if you are carrying or are inside the accessed object etc. There is no concept of &#39;sitting&#39;
-in default Evennia however, so this we need to specify ourselves.
-</pre></div>
-</div>
+<p>Evennia provides a large number of default lockfuncs, such as checking permission-levels, if you are carrying or are inside the accessed object etc. There is no concept of ‘sitting’ in default Evennia however, so this we need to specify ourselves.</p>
 </aside>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">accessing_obj</span></code> is the one trying to access the lock. So us, in this case.</p></li>
@@ -723,12 +714,7 @@ are run in sequence:</p>
 abort this sequence we need to <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">InterruptCommand</span></code>.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Raising exceptions</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Raising an exception allows for immediately interrupting the current program flow. Python
-automatically raises error-exceptions when detecting problems with the code. It will be
-raised up through the sequence of called code (the &#39;stack&#39;) until it&#39;s either `caught` with
-a `try ... except` or reaches the outermost scope where it&#39;ll be logged or displayed.
-</pre></div>
-</div>
+<p>Raising an exception allows for immediately interrupting the current program flow. Python automatically raises error-exceptions when detecting problems with the code. It will be raised up through the sequence of called code (the ‘stack’) until it’s either <code class="docutils literal notranslate"><span class="pre">caught</span></code> with a <code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">...</span> <span class="pre">except</span></code> or reaches the outermost scope where it’ll be logged or displayed.</p>
 </aside>
 <p><code class="docutils literal notranslate"><span class="pre">InterruptCommand</span></code> is an <em>exception</em> that the Command-system catches with the understanding that we want
 to do a clean abort. In the <code class="docutils literal notranslate"><span class="pre">.parse</span></code> method we strip any whitespaces from the argument and
@@ -770,11 +756,7 @@ We catch this with <code class="docutils literal notranslate"><span class="pre">
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Continuing across multiple lines</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Note how the `.search()` method&#39;s arguments are spread out over multiple
-lines. This works for all lists, tuples and other listings and is
-a good way to avoid very long and hard-to-read lines.
-</pre></div>
-</div>
+<p>Note how the <code class="docutils literal notranslate"><span class="pre">.search()</span></code> method’s arguments are spread out over multiple lines. This works for all lists, tuples and other listings and is a good way to avoid very long and hard-to-read lines.</p>
 </aside>
 <p>The <code class="docutils literal notranslate"><span class="pre">caller.search</span></code> method has an keyword argument <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> that can take either a python-path to a
 typeclass, the typeclass itself, or a list of either to widen the allowed options. In this case we know

@@ -47,7 +47,7 @@ The flat API is defined in `__init__.py` [viewable here](github:evennia/__init__
 
 ### Typeclasses
 
-- [evennia.Defaultaccount](evennia.accounts.accounts.DefaultAccount) - player account class ([docs](Components/Accounts.md))
+- [evennia.DefaultAccount](evennia.accounts.accounts.DefaultAccount) - player account class ([docs](Components/Accounts.md))
 - [evennia.DefaultGuest](evennia.accounts.accounts.DefaultGuest) - base guest account class
 - [evennia.DefaultObject](evennia.objects.objects.DefaultObject) - base class for all objects ([docs](Components/Objects.md))
 - [evennia.DefaultCharacter](evennia.objects.objects.DefaultCharacter) - base class for in-game characters ([docs](Components/Objects.md#characters))

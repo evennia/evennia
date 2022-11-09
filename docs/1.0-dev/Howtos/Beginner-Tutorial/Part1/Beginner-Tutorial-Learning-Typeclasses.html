@@ -224,12 +224,7 @@ from <code class="docutils literal notranslate"><span class="pre">DefaultObject<
 <p>First reload the server as usual. We will need to create the dragon a little differently this time:</p>
 <aside class="sidebar">
 <p class="sidebar-title">Keyword arguments</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Keyword arguments (like `db_key=&quot;Smaug&quot;`) is a way to 
-name the input arguments to a function or method. They make 
-things easier to read but also allows for conveniently setting 
-defaults for values not given explicitly.
-</pre></div>
-</div>
+<p>Keyword arguments (like <code class="docutils literal notranslate"><span class="pre">db_key=&quot;Smaug&quot;</span></code>) is a way to  name the input arguments to a function or method. They make  things easier to read but also allows for conveniently setting defaults for values not given explicitly.</p>
 </aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
 &gt; from typeclasses.monsters import Dragon
@@ -412,12 +407,7 @@ in <a class="reference external" href="https://github.com/evennia/evennia/blob/m
 with the name <code class="docutils literal notranslate"><span class="pre">BASE_OBJECT_TYPECLASS</span></code>, which is set to <code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Changing things</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>While it&#39;s tempting to change folders around to your liking, this can
-make it harder to follow tutorials and may confuse if 
-you are asking others for help. So don&#39;t overdo it unless you really 
-know what you are doing.
-</pre></div>
-</div>
+<p>While it’s tempting to change folders around to your liking, this can make it harder to follow tutorials and may confuse if you are asking others for help. So don’t overdo it unless you really  know what you are doing.</p>
 </aside>
 <p>So if you wanted the creation commands and methods to default to some other class you could
 add your own <code class="docutils literal notranslate"><span class="pre">BASE_OBJECT_TYPECLASS</span></code> line to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>. The same is true for all the other
@@ -508,10 +498,10 @@ So if we modify this class we’ll also modify ourselves.</p>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Tuples and lists</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- A `list` is written `[a, b, c, d, ...]`. It can be modified after creation.
-- A `tuple` is written `(a, b, c, ...)`. It cannot be modified once created.
-</pre></div>
-</div>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">list</span></code> is written <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">...]</span></code>. It can be modified after creation.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">tuple</span></code> is written <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">...)</span></code>. It cannot be modified once created.</p></li>
+</ul>
 </aside>
 <p>We made a new method, gave it a docstring and had it <code class="docutils literal notranslate"><span class="pre">return</span></code> the RP-esque values we set. It comes back as a
 <em>tuple</em> <code class="docutils literal notranslate"><span class="pre">(10,</span> <span class="pre">12,</span> <span class="pre">15)</span></code>. To get a specific value you could specify the <em>index</em> of the value you want,
@@ -567,11 +557,7 @@ same <code class="docutils literal notranslate"><span class="pre">str</span></co
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Spaces in Attribute name?</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>What if you want spaces in your Attribute name? Or you want to assign the 
-name of the Attribute on-the fly? Then you can use `.attributes.add(name, value)` instead,
-for example `self.attributes.add(&quot;str&quot;, 10)`. 
-</pre></div>
-</div>
+<p>What if you want spaces in your Attribute name? Or you want to assign the  name of the Attribute on-the fly? Then you can use <code class="docutils literal notranslate"><span class="pre">.attributes.add(name,</span> <span class="pre">value)</span></code> instead, for example <code class="docutils literal notranslate"><span class="pre">self.attributes.add(&quot;str&quot;,</span> <span class="pre">10)</span></code>.</p>
 </aside>
 <p>We removed the hard-coded stats and added added <code class="docutils literal notranslate"><span class="pre">.db</span></code> for every stat. The <code class="docutils literal notranslate"><span class="pre">.db</span></code> handler makes the stat
 into an an Evennia <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>.</p>
@@ -620,12 +606,7 @@ in more detail. For now, let’s give every new character some random stats to s
 is called <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>.</p>
 <aside class="sidebar">
 <p class="sidebar-title"><strong>init</strong> vs at_object_creation</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>For the `Monster` class we used `__init__` to set up the class. We can&#39;t use this
-for a typeclass because it will be called more than once, at the very least after
-every reload and maybe more depending on caching. Even if you are familiar with Python,
-avoid touching `__init__` for typeclasses, the results will not be what you expect.
-</pre></div>
-</div>
+<p>For the <code class="docutils literal notranslate"><span class="pre">Monster</span></code> class we used <code class="docutils literal notranslate"><span class="pre">__init__</span></code> to set up the class. We can’t use this for a typeclass because it will be called more than once, at the very least after every reload and maybe more depending on caching. Even if you are familiar with Python, avoid touching <code class="docutils literal notranslate"><span class="pre">__init__</span></code> for typeclasses, the results will not be what you expect.</p>
 </aside>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># up by the other imports</span>
 <span class="kn">import</span> <span class="nn">random</span> 
@@ -695,13 +676,7 @@ this is done (still in python multi-line mode):</p>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Database queries</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`Character.objects.all()` is an example of a database query expressed in Python. This will be converted 
-into a database query under the hood. This syntax is part of 
-`Django&#39;s query language &lt;https://docs.djangoproject.com/en/3.0/topics/db/queries/&gt;`_. You don&#39;t need to
-know Django to use Evennia, but if you ever need more specific database queries, this is always available
-when you need it.
-</pre></div>
-</div>
+<p><code class="docutils literal notranslate"><span class="pre">Character.objects.all()</span></code> is an example of a database query expressed in Python. This will be converted into a database query under the hood. This syntax is part of <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/db/queries/">Django’s query language</a>. You don’t need to know Django to use Evennia, but if you ever need more specific database queries, this is always available when you need it.</p>
 </aside>
 <p>We import the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class and then we use <code class="docutils literal notranslate"><span class="pre">.objects.all()</span></code> to get all <code class="docutils literal notranslate"><span class="pre">Character</span></code> instances. Simplified,
 <code class="docutils literal notranslate"><span class="pre">.objects</span></code> is a resource from which one can <em>query</em> for all <code class="docutils literal notranslate"><span class="pre">Characters</span></code>. Using <code class="docutils literal notranslate"><span class="pre">.all()</span></code> gets us a listing

@@ -77,8 +77,8 @@ from this class and just implement the `func` needed for that command without im
 
 ```{sidebar} Tuples and Lists
 
-    - A `list` is written as `[a, b, c, d, ...]`. You can add and grow/shrink a list after it was first created.
-    - A `tuple` is written as `(a, b, c, d, ...)`. A tuple cannot be modified once it is created.
+- A `list` is written as `[a, b, c, d, ...]`. You can add and grow/shrink a list after it was first created.
+- A `tuple` is written as `(a, b, c, d, ...)`. A tuple cannot be modified once it is created.
 
 ```
 - **Line 14** - We do the stripping of `self.args` once and for all here. We also store the stripped version back
@@ -163,12 +163,7 @@ Let's try to swing it!
 
 ```{sidebar} Multi-matches
 
-    Some game engines will just pick the first hit when finding more than one.
-    Evennia will always give you a choice. The reason for this is that Evennia
-    cannot know if `hit` and `hit` are different or the same - maybe it behaves
-    differently depending on the object it sits on? Besides, imagine if you had
-    a red and a blue button both with the command `push` on it. Now you just write
-    `push`. Wouldn't you prefer to be asked `which` button you really wanted to push?
+Some game engines will just pick the first hit when finding more than one. Evennia will always give you a choice. The reason for this is that Evennia cannot know if `hit` and `hit` are different or the same - maybe it behaves differently depending on the object it sits on? Besides, imagine if you had a red and a blue button both with the command `push` on it. Now you just write `push`. Wouldn't you prefer to be asked `which` button you really wanted to push?
 ```
 Woah, that didn't go as planned. Evennia actually found _two_ `hit` commands to didn't know which one to use
 (_we_ know they are the same, but Evennia can't be sure of that). As we can see, `hit-1` is the one found on
@@ -208,10 +203,7 @@ for limiting the kind of things you can do with an object, including limiting ju
 it.
 ```{sidebar} Locks
 
-    Evennia Locks are defined as a mini-language defined in `lockstrings`. The lockstring
-    is on a form `<situation>:<lockfuncs>`, where `situation` determines when this
-    lock applies and the `lockfuncs` (there can be more than one) are run to determine
-    if the lock-check passes or not depending on circumstance.
+Evennia Locks are defined as a mini-language defined in `lockstrings`. The lockstring is on a form `<situation>:<lockfuncs>`, where `situation` determines when this lock applies and the `lockfuncs` (there can be more than one) are run to determine if the lock-check passes or not depending on circumstance.
 ```
 
     > py self.search("sword").locks.add("call:holds()")
@@ -223,10 +215,7 @@ For locks to work, you cannot be _superuser_, since the superuser passes all loc
 first:
 ```{sidebar} quell/unquell
 
-    Quelling allows you as a developer to take on the role of players with less
-    priveleges. This is useful for testing and debugging, in particular since a
-    superuser has a little `too` much power sometimes.
-    Use `unquell` to get back to your normal self.
+Quelling allows you as a developer to take on the role of players with less priveleges. This is useful for testing and debugging, in particular since a superuser has a little `too` much power sometimes. Use `unquell` to get back to your normal self.
 ```
 
     > quell
@@ -322,8 +311,7 @@ class SessionCmdSet(default_cmds.SessionCmdSet):
 
 ```{sidebar} super()
 
-    The `super()` function refers to the parent of the current class and is commonly
-    used to call same-named methods on the parent.
+The `super()` function refers to the parent of the current class and is commonly used to call same-named methods on the parent.
 ```
 `evennia.default_cmds` is a container that holds all of Evennia's default commands and cmdsets. In this module
 we can see that this was imported and then a new child class was made for each cmdset. Each class looks familiar
@@ -476,9 +464,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 ```
 ```{sidebar} Another way
 
-    Instead of adding `MyCmdGet` explicitly in default_cmdset.py,
-    you could also add it to `mycommands.MyCmdSet` and let it be
-    added automatically for you.
+Instead of adding `MyCmdGet` explicitly in default_cmdset.py, you could also add it to `mycommands.MyCmdSet` and let it be added automatically here for you.
 ```
 
     > reload

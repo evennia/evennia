@@ -109,10 +109,7 @@
 <h1><span class="section-number">6. </span>Overview of the Evennia library<a class="headerlink" href="#overview-of-the-evennia-library" title="Permalink to this headline">¶</a></h1>
 <aside class="sidebar">
 <p class="sidebar-title">API</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>API stands for `Application Programming Interface`, a description for how to access
-the resources of a program or library.
-</pre></div>
-</div>
+<p>API stands for <code class="docutils literal notranslate"><span class="pre">Application</span> <span class="pre">Programming</span> <span class="pre">Interface</span></code>, a description for how to access the resources of a program or library.</p>
 </aside>
 <p>A good place to start exploring Evennia is the <a class="reference internal" href="../../../Evennia-API.html"><span class="doc std std-doc">Evenia-API frontpage</span></a>.
 This page sums up the main components of Evennia with a short description of each. Try clicking through
@@ -186,12 +183,7 @@ from here to <code class="docutils literal notranslate"><span class="pre">mygame
 </ul>
 <aside class="sidebar">
 <p class="sidebar-title"><strong>init</strong>.py</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The `__init__.py` file is a special Python filename used to represent a Python &#39;package&#39;.
-When you import `evennia` on its own, you import this file. When you do `evennia.foo` Python will
-first look for a property `.foo` in `__init__.py` and then for a module or folder of that name
-in the same location.
-</pre></div>
-</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file is a special Python filename used to represent a Python ‘package’. When you import <code class="docutils literal notranslate"><span class="pre">evennia</span></code> on its own, you import this file. When you do <code class="docutils literal notranslate"><span class="pre">evennia.foo</span></code> Python will first look for a property <code class="docutils literal notranslate"><span class="pre">.foo</span></code> in <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> and then for a module or folder of that name in the same location.</p>
 </aside>
 <p>While all the actual Evennia code is found in the various folders, the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> represents the entire
 package <code class="docutils literal notranslate"><span class="pre">evennia</span></code>. It contains “shortcuts” to code that is actually located elsewhere. Most of these shortcuts
@@ -213,12 +205,7 @@ are actually importing from <code class="docutils literal notranslate"><span cla
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Relative and absolute imports</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The first full-stop in `from .objects.objects ...` means that
-we are importing from the current location. This is called a `relative import`.
-By comparison, `from evennia.objects.objects` is an `absolute import`. In this particular
-case, the two would give the same result.
-</pre></div>
-</div>
+<p>The first full-stop in <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.objects.objects</span> <span class="pre">...</span></code> means that we are importing from the current location. This is called a <code class="docutils literal notranslate"><span class="pre">relative</span> <span class="pre">import</span></code>. By comparison, <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">evennia.objects.objects</span></code> is an <code class="docutils literal notranslate"><span class="pre">absolute</span> <span class="pre">import</span></code>. In this particular case, the two would give the same result.</p>
 </aside>
 <blockquote>
 <div><p>You can also look at <a class="reference internal" href="../../../Evennia-API.html#typeclasses"><span class="std std-doc">the right section of the API frontpage</span></a> and click through
@@ -230,7 +217,7 @@ it as <code class="docutils literal notranslate"><span class="pre">from</span> <
 to look it up in the docs:</p>
 <ol class="simple">
 <li><p>Open the <a class="reference internal" href="../../../Evennia-API.html"><span class="doc std std-doc">API frontpage</span></a></p></li>
-<li><p>Locate the link to <a class="reference internal" href="../../../api/evennia.objects.objects.html#evennia-objects-objects"><span class="std std-ref">evennia.objects.objects</span></a> and click on it.
+<li><p>Locate the link to <a class="reference internal" href="../../../api/evennia.objects.objects.html"><span class="doc std std-doc">evennia.objects.objects</span></a> and click on it.
 3 You are now in the python module. Scroll down (or search in your web browser) to find the <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> class.
 4 You can now read what this does and what methods are on it. If you want to see the full source, click the
 [source] link next to it.</p></li>

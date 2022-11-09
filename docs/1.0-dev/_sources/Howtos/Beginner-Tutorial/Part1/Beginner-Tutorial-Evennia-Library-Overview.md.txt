@@ -2,8 +2,7 @@
 
 ```{sidebar} API
 
-    API stands for `Application Programming Interface`, a description for how to access
-    the resources of a program or library.
+API stands for `Application Programming Interface`, a description for how to access the resources of a program or library.
 ```
 A good place to start exploring Evennia is the [Evenia-API frontpage](../../../Evennia-API.md).
 This page sums up the main components of Evennia with a short description of each. Try clicking through
@@ -73,10 +72,7 @@ from here to `mygame/server/settings.py` file.
 
 ```{sidebar} __init__.py
 
-    The `__init__.py` file is a special Python filename used to represent a Python 'package'.
-    When you import `evennia` on its own, you import this file. When you do `evennia.foo` Python will
-    first look for a property `.foo` in `__init__.py` and then for a module or folder of that name
-    in the same location.
+The `__init__.py` file is a special Python filename used to represent a Python 'package'. When you import `evennia` on its own, you import this file. When you do `evennia.foo` Python will first look for a property `.foo` in `__init__.py` and then for a module or folder of that name in the same location.
 
 ```
 
@@ -101,10 +97,7 @@ are actually importing from `evennia/__init__.py`.
 
 ```{sidebar} Relative and absolute imports
 
-    The first full-stop in `from .objects.objects ...` means that
-    we are importing from the current location. This is called a `relative import`.
-    By comparison, `from evennia.objects.objects` is an `absolute import`. In this particular
-    case, the two would give the same result.
+The first full-stop in `from .objects.objects ...` means that we are importing from the current location. This is called a `relative import`. By comparison, `from evennia.objects.objects` is an `absolute import`. In this particular case, the two would give the same result.
 ```
 
 > You can also look at [the right section of the API frontpage](../../../Evennia-API.md#typeclasses) and click through
@@ -117,7 +110,7 @@ So to find the code for `DefaultObject` we need to look in `evennia/objects/obje
 to look it up in the docs:
 
 1. Open the [API frontpage](../../../Evennia-API.md)
-2. Locate the link to [evennia.objects.objects](evennia.objects.objects) and click on it.
+2. Locate the link to [evennia.objects.objects](../../../api/evennia.objects.objects.md) and click on it.
 3 You are now in the python module. Scroll down (or search in your web browser) to find the `DefaultObject` class.
 4 You can now read what this does and what methods are on it. If you want to see the full source, click the
    \[source\] link next to it.
