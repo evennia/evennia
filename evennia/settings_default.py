@@ -818,7 +818,6 @@ DEFAULT_CHANNELS = [
         "aliases": ("pub",),
         "desc": "Public discussion",
         "locks": "control:perm(Admin);listen:all();send:all()",
-        "typeclass": BASE_CHANNEL_TYPECLASS,
     }
 ]
 
