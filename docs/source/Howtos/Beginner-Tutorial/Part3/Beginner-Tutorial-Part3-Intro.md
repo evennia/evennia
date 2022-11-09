@@ -38,7 +38,7 @@ Even if this is not the game-style you are interested in, following along will g
 of experience using Evennia and be really helpful for doing your own thing later!
 
 Fully coded examples of all code we make in this part can be found in the 
-[evennia/contrib/tutorials/evadventure](evennia.contrib.tutorials.evadventure) package.
+[evennia/contrib/tutorials/evadventure](../../../api/evennia.contrib.tutorials.evadventure.md) package.
 
 ## Lessons 
 

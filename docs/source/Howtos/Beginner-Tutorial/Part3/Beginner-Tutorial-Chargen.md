@@ -91,7 +91,7 @@ and you'll leave the menu;
 
 ```{sidebar}
 Full Knave random tables are found in 
-[evennia/contrib/tutorials/evadventure/random_tables.py](evennia.contrib.tutorials.evadventure.random_tables). 
+[evennia/contrib/tutorials/evadventure/random_tables.py](../../../api/evennia.contrib.tutorials.evadventure.random_tables.md). 
 ```
 
 > Make a new module `mygame/evadventure/random_tables.py`.
@@ -124,7 +124,7 @@ keep in here.
 
 ```{sidebar}
 There is a full implementation of the chargen in 
-[evennia/contrib/tutorials/evadventure/chargen.py](evennia.contrib.tutorials.evadventure.chargen).
+[evennia/contrib/tutorials/evadventure/chargen.py](../../../api/evennia.contrib.tutorials.evadventure.chargen.md).
 ```
 > create a new module `mygame/evadventure/chargen.py`.
 

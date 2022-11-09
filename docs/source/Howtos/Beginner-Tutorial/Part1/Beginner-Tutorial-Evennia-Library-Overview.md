@@ -117,7 +117,7 @@ So to find the code for `DefaultObject` we need to look in `evennia/objects/obje
 to look it up in the docs:
 
 1. Open the [API frontpage](../../../Evennia-API.md)
-2. Locate the link to [evennia.objects.objects](evennia.objects.objects) and click on it.
+2. Locate the link to [evennia.objects.objects](../../../api/evennia.objects.objects.md) and click on it.
 3 You are now in the python module. Scroll down (or search in your web browser) to find the `DefaultObject` class.
 4 You can now read what this does and what methods are on it. If you want to see the full source, click the
    \[source\] link next to it.

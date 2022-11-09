@@ -53,7 +53,7 @@ from ..yourmodulename import whatever
 
 ```{sidebar}
 A full example of the enum module is found in 
-[evennia/contrib/tutorials/evadventure/enums.py](evennia.contrib.tutorials.evadventure.enums).
+[evennia/contrib/tutorials/evadventure/enums.py](../../../api/evennia.contrib.tutorials.evadventure.enums.md).
 ```
 Create a new file `mygame/evadventure/enums.py`.
 
@@ -139,7 +139,7 @@ Here the `Ability` class holds basic properties of a character sheet.
 
 ```{sidebar}
 An example of the utility module is found in 
-[evennia/contrib/tutorials/evadventure/utils.py](evennia.contrib.tutorials.evadventure.utils)
+[evennia/contrib/tutorials/evadventure/utils.py](../../../api/evennia.contrib.tutorials.evadventure.utils.md)
 ```
 
 This is for general functions we may need from all over. In this case we only picture one utility,

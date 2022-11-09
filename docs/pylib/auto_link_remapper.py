@@ -7,9 +7,12 @@ directive somewhere.
 
 import re
 from collections import defaultdict
-from sphinx.errors import DocumentError
+from os.path import abspath, dirname
+from os.path import join as pathjoin
+from os.path import relpath
 from pathlib import Path
-from os.path import abspath, dirname, join as pathjoin, relpath
+
+from sphinx.errors import DocumentError
 
 _IGNORE_FILES = []
 _SOURCEDIR_NAME = "source"

@@ -86,7 +86,7 @@ Some features exemplified by the tutorial world:
 If you have previous programming experience (or after you have gone
 through this Starter tutorial) it may be instructive to dig a little deeper into the Tutorial-world
 code to learn how it achieves what it does. The code is heavily documented.
-You can find all the code in [evennia/contrib/tutorials/tutorial_world](evennia.contrib.tutorials.tutorial_world).
+You can find all the code in [evennia/contrib/tutorials/tutorial_world](../../../api/evennia.contrib.tutorials.tutorial_world.md).
 The build-script is [here](github:evennia/contrib/tutorials/tutorial_world/build.ev).
 
 
