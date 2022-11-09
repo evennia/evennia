@@ -13,7 +13,7 @@ combine if you want to echo some message to the user after the cooldown ends.
 
 ## The Cooldown Contrib
 
-The [Cooldown contrib](Contribs/Contrib-Cooldowns) is a ready-made solution for
+The [Cooldown contrib](../Contribs/Contrib-Cooldowns.md) is a ready-made solution for
 command cooldowns you can use. It implements a _handler_ on the object to
 conveniently manage and store the cooldowns in a similar manner exemplified in
 this tutorial.
@@ -73,7 +73,7 @@ forgotten.
 ## Persistent cooldown
 
 To make a cooldown _persistent_ (so it survives a server reload), just
-use the same technique, but use [Attributes](Attributes) (that is, `.db` instead
+use the same technique, but use [Attributes](../Components/Attributes.md) (that is, `.db` instead
 of `.ndb` storage to save the last-cast time.
 
 ## Make a cooldown-aware command parent

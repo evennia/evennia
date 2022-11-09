@@ -205,6 +205,19 @@ Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
 - Make setting `MAX_NR_CHARACTERS` interact better with the new settings above.
 - Allow `$search` funcparser func to search tags and to accept kwargs for more
   powerful searches passed into the regular search functions.
+- `spawner.spawn` and linked methods now has a kwarg `protfunc_raise_errors`
+  (default True) to disable strict errors on malformed/not-found protfuncs
+- Improve search performance when having many DB-based prototypes via caching.
+- Remove the `return_parents` kwarg of `evennia.prototypes.spawner.spawn` since it
+  was inefficient and unused.
+- Made all id fields BigAutoField for all databases. (owllex)
+- `EvForm` refactored. New `literals` mapping, for literal mappings into the
+  main template (e.g. for single-character replacements).
+- `EvForm` `cells` kwarg now accepts `EvCells` with custom formatting options
+  (mainly for custom align/valign). `EvCells` now makes use of `utils.justify`.
+- `utils.justify` now supports `align="a"` (absolute alignments. This keeps
+  the given left indent but crops/fills to the width. Used in EvCells.
+- `EvTable` now supports passing `EvColumn`s as a list directly, (`EvTable(table=[colA,colB])`)
 
 ## Evennia 0.9.5
 

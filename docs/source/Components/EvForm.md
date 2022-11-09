@@ -1,3 +1,3 @@
 # EvForm
 
-[Docstring in evennia/utils/evform.py](api:evennia.utils.evform)
+[Docstring in evennia/utils/evform.py](evennia.utils.evform)
