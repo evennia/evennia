@@ -320,8 +320,10 @@ ATTRIBUTE_STORED_MODEL_RENAME = [
     (("players", "playerdb"), ("accounts", "accountdb")),
     (("typeclasses", "defaultplayer"), ("typeclasses", "defaultaccount")),
 ]
-# Default type of autofield (required by Django)
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+# Default type of autofield (required by Django), which defines the type of
+# primary key fields for all tables. This type is guaranteed to be at least a
+# 64-bit integer.
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ######################################################################
 # Evennia webclient options
@@ -604,8 +606,6 @@ OPTIONS_ACCOUNT_DEFAULT = {
     "footer_text_color": ("Text inside Footer Lines.", "Color", "n"),
     "footer_fill": ("Fill for Footer Lines.", "Text", "="),
     "column_names_color": ("Table column header text.", "Color", "w"),
-    "help_category_color": ("Help category names.", "Color", "n"),
-    "help_entry_color": ("Help entry names.", "Color", "n"),
     "timezone": ("Timezone for dates.", "Timezone", "UTC"),
 }
 # Modules holding Option classes, responsible for serializing the option and

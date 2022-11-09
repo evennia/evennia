@@ -1,3 +1,3 @@
 # EvTable 
 
-[Docstring in evennia/utils/evtable.py](api:evennia.utils.evtable)
+[Docstring in evennia/utils/evtable.py](evennia.utils.evtable)
