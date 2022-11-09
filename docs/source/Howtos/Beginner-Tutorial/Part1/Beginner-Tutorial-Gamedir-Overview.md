@@ -17,14 +17,7 @@ You may have noticed when we were building things in-game that we would often re
 
 ```{sidebar} Python-paths
 
-    A 'python path' uses '.' instead of '/' or '`\\`' and
-    skips the `.py` ending of files. It can also point to 
-    the code contents of python files. Since Evennia is already 
-    looking for code in your game dir, your python paths can start 
-    from there. 
-
-    So a path `/home/foo/devel/mygame/commands/command.py`
-    would translate to a Python-path `commands.command`. 
+A 'python path' uses '.' instead of '/' or '`\\`' and skips the `.py` ending of files. It can also point to  the code contents of python files. Since Evennia is already  looking for code in your game dir, your python paths can start  from there. So a path `/home/foo/devel/mygame/commands/command.py` would translate to a Python-path `commands.command`. 
 ```
 
     create/drop button:tutorial_examples.red_button.RedButton
@@ -62,9 +55,7 @@ of Evennia. These manifest in game like the server understanding input like `loo
 
 ```{sidebar} Classes
 
-    A `class` is  template for creating object-instances of a particular type
-    in Python. We will explain classes in more detail in the next 
-    `python overview <Python-basic-tutorial-part-two>`_.
+A `class` is  template for creating object-instances of a particular type in Python. We will explain classes in more detail in the next lesson.
 
 ```
 - [command.py](github:evennia/game_template/commands/command.py) (Python-path: `commands.command`) - this contain the

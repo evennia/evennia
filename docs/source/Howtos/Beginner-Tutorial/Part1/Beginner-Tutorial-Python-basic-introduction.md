@@ -73,14 +73,10 @@ is to use the `.format` _method_ of the string:
     > py print("This is a {} idea!".format("good"))
     This is a good idea!
 
-```{eval-rst}
-.. sidebar:: Functions and Methods
+```{sidebar} Functions and Methods
+- Function: Something that performs and action when you `call` it with zero or more `arguments`. A function is stand-alone in a python module, like `print()`
+- Method: A function that sits "on" an object, like `obj.msg()`.
 
-    Function:
-        Something that performs and action when you `call` it with zero or more `arguments`. A function
-        is stand-alone in a python module, like `print()`
-    Method:
-        A function that sits "on" an object, like `<string>.format()`.
 ```
 
 A method can be thought of as a resource "on" another object. The method knows on which object it

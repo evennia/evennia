@@ -112,10 +112,7 @@ First reload the server as usual. We will need to create the dragon a little dif
 
 ```{sidebar} Keyword arguments
 
-    Keyword arguments (like `db_key="Smaug"`) is a way to 
-    name the input arguments to a function or method. They make 
-    things easier to read but also allows for conveniently setting 
-    defaults for values not given explicitly.
+Keyword arguments (like `db_key="Smaug"`) is a way to  name the input arguments to a function or method. They make  things easier to read but also allows for conveniently setting defaults for values not given explicitly.
 
 ```
     > py
@@ -296,10 +293,7 @@ with the name `BASE_OBJECT_TYPECLASS`, which is set to `typeclasses.objects.Obje
 
 ```{sidebar} Changing things
 
-    While it's tempting to change folders around to your liking, this can
-    make it harder to follow tutorials and may confuse if 
-    you are asking others for help. So don't overdo it unless you really 
-    know what you are doing.
+While it's tempting to change folders around to your liking, this can make it harder to follow tutorials and may confuse if you are asking others for help. So don't overdo it unless you really  know what you are doing.
 ```
 
 So if you wanted the creation commands and methods to default to some other class you could 
@@ -393,8 +387,8 @@ class Character(DefaultCharacter):
     
 ```{sidebar} Tuples and lists
 
-    - A `list` is written `[a, b, c, d, ...]`. It can be modified after creation.
-    - A `tuple` is written `(a, b, c, ...)`. It cannot be modified once created.
+- A `list` is written `[a, b, c, d, ...]`. It can be modified after creation.
+- A `tuple` is written `(a, b, c, ...)`. It cannot be modified once created.
 ```
 We made a new method, gave it a docstring and had it `return` the RP-esque values we set. It comes back as a
 _tuple_ `(10, 12, 15)`. To get a specific value you could specify the _index_ of the value you want,
@@ -453,9 +447,7 @@ class Character(DefaultCharacter):
 
 ```{sidebar} Spaces in Attribute name?
 
-    What if you want spaces in your Attribute name? Or you want to assign the 
-    name of the Attribute on-the fly? Then you can use `.attributes.add(name, value)` instead,
-    for example `self.attributes.add("str", 10)`. 
+What if you want spaces in your Attribute name? Or you want to assign the  name of the Attribute on-the fly? Then you can use `.attributes.add(name, value)` instead, for example `self.attributes.add("str", 10)`. 
 
 ```
 
@@ -508,10 +500,7 @@ is called `at_object_creation`.
 
 ```{sidebar} __init__ vs at_object_creation
 
-    For the `Monster` class we used `__init__` to set up the class. We can't use this
-    for a typeclass because it will be called more than once, at the very least after
-    every reload and maybe more depending on caching. Even if you are familiar with Python,
-    avoid touching `__init__` for typeclasses, the results will not be what you expect.
+For the `Monster` class we used `__init__` to set up the class. We can't use this for a typeclass because it will be called more than once, at the very least after every reload and maybe more depending on caching. Even if you are familiar with Python, avoid touching `__init__` for typeclasses, the results will not be what you expect.
 
 ```
 
@@ -585,12 +574,7 @@ this is done (still in python multi-line mode):
     
 ```{sidebar} Database queries
 
-    `Character.objects.all()` is an example of a database query expressed in Python. This will be converted 
-    into a database query under the hood. This syntax is part of 
-    `Django's query language <https://docs.djangoproject.com/en/3.0/topics/db/queries/>`_. You don't need to
-    know Django to use Evennia, but if you ever need more specific database queries, this is always available
-    when you need it.
-
+`Character.objects.all()` is an example of a database query expressed in Python. This will be converted into a database query under the hood. This syntax is part of [Django's query language](https://docs.djangoproject.com/en/4.1/topics/db/queries/). You don't need to know Django to use Evennia, but if you ever need more specific database queries, this is always available when you need it. 
 ``` 
 We import the `Character` class and then we use `.objects.all()` to get all `Character` instances. Simplified,
 `.objects` is a resource from which one can _query_ for all `Characters`. Using `.all()` gets us a listing 
