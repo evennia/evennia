@@ -330,11 +330,7 @@ To keep things separate we'll make a new module `mygame/commands/sittables.py`:
 
 ```{sidebar} Separate Commands and Typeclasses?
 
-    You can organize these things as you like. If you wanted you could put the sit-command + cmdset
-    together with the `Sittable` typeclass in `mygame/typeclasses/sittables.py`. That has the advantage of
-    keeping everything related to sitting in one place. But there is also some organizational merit to
-    keeping all Commands in one place as we do here.
-
+You can organize these things as you like. If you wanted you could put the sit-command + cmdset together with the `Sittable` typeclass in `mygame/typeclasses/sittables.py`. That has the advantage of keeping everything related to sitting in one place. But there is also some organizational merit to keeping all Commands in one place as we do here.
 ```
 
 ```python
@@ -550,10 +546,7 @@ The arguments are required and Evennia will pass all relevant objects to them:
 
 ```{sidebar} Lockfuncs
 
-    Evennia provides a large number of default lockfuncs, such as checking permission-levels,
-    if you are carrying or are inside the accessed object etc. There is no concept of 'sitting'
-    in default Evennia however, so this we need to specify ourselves.
-
+Evennia provides a large number of default lockfuncs, such as checking permission-levels, if you are carrying or are inside the accessed object etc. There is no concept of 'sitting' in default Evennia however, so this we need to specify ourselves.
 ```
 
 - `accessing_obj` is the one trying to access the lock. So us, in this case.
@@ -654,10 +647,7 @@ abort this sequence we need to `raise InterruptCommand`.
 
 ```{sidebar} Raising exceptions
 
-    Raising an exception allows for immediately interrupting the current program flow. Python
-    automatically raises error-exceptions when detecting problems with the code. It will be
-    raised up through the sequence of called code (the 'stack') until it's either `caught` with
-    a `try ... except` or reaches the outermost scope where it'll be logged or displayed.
+Raising an exception allows for immediately interrupting the current program flow. Python automatically raises error-exceptions when detecting problems with the code. It will be raised up through the sequence of called code (the 'stack') until it's either `caught` with a `try ... except` or reaches the outermost scope where it'll be logged or displayed.
 
 ```
 
@@ -707,9 +697,7 @@ While it's useful to learn about `try ... except`, there is also a way to levera
 
 ```{sidebar} Continuing across multiple lines
 
-    Note how the `.search()` method's arguments are spread out over multiple
-    lines. This works for all lists, tuples and other listings and is
-    a good way to avoid very long and hard-to-read lines.
+Note how the `.search()` method's arguments are spread out over multiple lines. This works for all lists, tuples and other listings and is a good way to avoid very long and hard-to-read lines.
 
 ```
 

@@ -1,7 +1,6 @@
 # Adding custom commands
 
-In this lesson we'll learn how to create our own Evennia _Commands_. If you are new to Python you'll
-also learn some more basics about how to manipulate strings and get information out of Evennia.
+In this lesson we'll learn how to create our own Evennia _Commands_. If you are new to Python you'll also learn some more basics about how to manipulate strings and get information out of Evennia.
 
 A Command is something that handles the input from a user and causes a result to happen.
 An example is `look`, which examines your current location and tells how it looks like and
@@ -308,16 +307,17 @@ A lot of things to dissect here:
     `self.args.strip()` over and over, we store the stripped version
     in a _local variable_ `args`. Note that we don't modify `self.args` by doing this, `self.args` will still
     have the whitespace and is not the same as `args` in this example.
+
 ```{sidebar} if-statements
 
 The full form of the if statement is
-
-if condition:
-    ...
-elif othercondition:
-    ...
-else:
-    ...
+	
+	if condition:
+	    ...
+	elif othercondition:
+	    ...
+	else:
+	    ...
 
 There can be any number of `elifs` to mark when different branches of the code should run. If
 the `else` condition is given, it will run if none of the other conditions was truthy. In Python

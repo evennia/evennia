@@ -118,10 +118,7 @@ build a little "tech demo" along the way.
 
 ```{sidebar} Tech demo
 
-    With "tech demo" we mean a small example of your code in-action: A room with a mob,
-    a way to jump into and test character-creation etc. The tech demo need not be pretty, it's
-    there to test functionality. It's not the beginning of your game world (unless you find that
-    to be more fun).
+With "tech demo" we mean a small example of your code in-action: A room with a mob, a way to jump into and test character-creation etc. The tech demo need not be pretty, it's there to test functionality. It's not the beginning of your game world (unless you find that to be more fun).
 
 ```
 

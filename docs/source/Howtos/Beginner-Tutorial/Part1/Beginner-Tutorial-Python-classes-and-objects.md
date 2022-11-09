@@ -35,15 +35,13 @@ def hello_world(who):
     who.msg("Hello World!")
 ```
 
-```{eval-rst}
+```{sidebar} Whitespace matters in Python!
 
-.. sidebar:: Remember:
-
-    - Indentation matters in Python
-    - So does capitalization
-    - Use 4 `spaces` to indent, not tabs
-    - Empty lines are fine
-    - Anything on a line after a `#` is a `comment`, ignored by Python
+- Indentation matters in Python
+- So does capitalization
+- Use 4 `spaces` to indent, not tabs
+- Empty lines are fine
+- Anything on a line after a `#` is a `comment`, ignored by Python
 ```
 
 The _python_path_ describes the relation between Python resources, both between and inside
@@ -138,9 +136,7 @@ class Object(DefaultObject):
 
 ```{sidebar} Docstrings vs Comments
 
-    A docstring is not the same as a comment (created by `#`). A
-    docstring is not ignored by Python but is an integral part of the thing
-    it is documenting (the module and the class in this case).
+A docstring is not the same as a comment (created by `#`). A docstring is not ignored by Python but is an integral part of the thing it is documenting (the module and the class in this case).
 ```
 The real file is much longer but we can ignore the multi-line strings (`""" ... """`). These serve
 as documentation-strings, or _docstrings_ for the module (at the top) and the `class` below.
@@ -158,8 +154,7 @@ little detour to understand what a 'class', an 'object' or 'instance' is. These 
 things to understand before you can use Evennia efficiently.
 ```{sidebar} OOP
 
-    Classes, objects, instances and inheritance are fundamental to Python. This and some
-    other concepts are often clumped together under the term Object-Oriented-Programming (OOP).
+Classes, objects, instances and inheritance are fundamental to Python. This and some other concepts are often clumped together under the term Object-Oriented-Programming (OOP).
 ```
 
 ### Classes and instances
@@ -187,11 +182,10 @@ at least one argument (almost always written as `self` although you could in pri
 another name), which is a reference back to itself. So when we print `self.key` we are referring
 back to the `key` on the class.
 
-```{eval-rst}
-.. sidebar:: Terms
+```{sidebar} Terms
 
-    - A `class` is a code template describing a 'type' of something
-    - An `object` is an `instance` of a `class`. Like using a mold to cast tin soldiers, one class can be `instantiated` into any number of object-instances.
+- A `class` is a code template describing a 'type' of something
+- An `object` is an `instance` of a `class`. Like using a mold to cast in soldiers, one class can be `instantiated` into any number of object-instances.
 
 ```
 A class is just a template. Before it can be used, we must create an _instance_ of the class. If
@@ -252,10 +246,7 @@ way:
 Or you can use a separate terminal and restart from outside the game:
 ```{sidebar} On reloading
 
-    Reloading with the python mode gets a little annoying since you need to redo everything
-    after every reload. Just keep in mind that during regular development you will not be
-    working this way. The in-game python mode is practical for quick fixes and experiments like
-    this, but actual code is normally written externally, in python modules.
+Reloading with the python mode gets a little annoying since you need to redo everything after every reload. Just keep in mind that during regular development you will not be working this way. The in-game python mode is practical for quick fixes and experiments like this, but actual code is normally written externally, in python modules.
 ```
 
     $ evennia reload   (or restart)
@@ -347,9 +338,7 @@ the parent in parenthesis. `class Classname(Parent)` is the way to do this.
 
 ```{sidebar} Multi-inheritance
 
-    It's possible to add more comma-separated parents to a class. You should usually avoid
-    this until you `really` know what you are doing. A single parent will be enough for almost
-    every case you'll need.
+It's possible to add more comma-separated parents to a class. You should usually avoid this until you `really` know what you are doing. A single parent will be enough for almost every case you'll need.
 
 ```
 

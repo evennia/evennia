@@ -12,9 +12,7 @@ The base tools are the `evennia.search_*` functions, such as `evennia.search_obj
 
 ```{sidebar} Querysets
 
-    What is returned from the main search functions is actually a `queryset`. They can be
-    treated like lists except that they can't modified in-place. We'll discuss querysets in
-    the `next lesson` <Django-queries>`_.
+What is returned from the main search functions is actually a `queryset`. They can be treated like lists except that they can't modified in-place. We'll discuss querysets in the `next lesson` <Django-queries>`_.
 ```
 
 Strings are always case-insensitive, so searching for `"rose"`, `"Rose"` or `"rOsE"` give the same results.

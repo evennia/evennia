@@ -413,15 +413,12 @@ This means storing objects in a collection of some kind and are examples of *ite
 entities you can loop over in a for-loop. Attribute-saving supports the following iterables:
 
 * [Tuples](https://docs.python.org/2/library/functions.html#tuple), like `(1,2,"test", <dbobj>)`.
-* [Lists](https://docs.python.org/2/tutorial/datastructures.html#more-on-lists), like `[1,2,"test",
-<dbobj>]`.
-* [Dicts](https://docs.python.org/2/tutorial/datastructures.html#dictionaries), like `{1:2,
-"test":<dbobj>]`.
+* [Lists](https://docs.python.org/2/tutorial/datastructures.html#more-on-lists), like `[1,2,"test", <dbobj>]`.
+* [Dicts](https://docs.python.org/2/tutorial/datastructures.html#dictionaries), like `{1:2, "test":<dbobj>]`.
 * [Sets](https://docs.python.org/2/tutorial/datastructures.html#sets), like `{1,2,"test",<dbobj>}`.
 * [collections.OrderedDict](https://docs.python.org/2/library/collections.html#collections.OrderedDict),
 like `OrderedDict((1,2), ("test", <dbobj>))`.
-* [collections.Deque](https://docs.python.org/2/library/collections.html#collections.deque), like
-`deque((1,2,"test",<dbobj>))`.
+* [collections.Deque](https://docs.python.org/2/library/collections.html#collections.deque), like `deque((1,2,"test",<dbobj>))`.
 * *Nestings* of any combinations of the above, like lists in dicts or an OrderedDict of tuples, each
 containing dicts, etc.
 * All other iterables (i.e. entities with the `__iter__` method) will be converted to a *list*.
