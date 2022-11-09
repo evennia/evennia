@@ -46,7 +46,7 @@ hitting 0. Death, if it happens, is permanent.
 
 ```{sidebar}
 A complete version of the rule module is found in 
-[evennia/contrib/tutorials/evadventure/rules.py](evennia.contrib.tutorials.evadventure.rules).
+[evennia/contrib/tutorials/evadventure/rules.py](../../../api/evennia.contrib.tutorials.evadventure.rules.md).
 ```
 There are three broad sets of rules for most RPGS:
 
@@ -597,7 +597,7 @@ As before, run the specific test with
 ### Mocking and patching
 
 ```{sidebar}
-In [evennia/contrib/tutorials/evadventure/tests/test_rules.py](evennia.contrib.tutorials.evadventure.tests.test_rules)
+In [evennia/contrib/tutorials/evadventure/tests/test_rules.py](../../../api/evennia.contrib.tutorials.evadventure.tests.test_rules.md)
 has a complete example of rule testing.
 ```
 The `setUp` method is a special method of the testing class. It will be run before every 

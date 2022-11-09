@@ -80,7 +80,7 @@ class EvAdventureMob(LivingMixin, EvadventureNPC):
 ```
 
 ```{sidebar}
-In [evennia/contrib/tutorials/evadventure/characters.py](evennia.contrib.tutorials.evadventure.characters)
+In [evennia/contrib/tutorials/evadventure/characters.py](../../../api/evennia.contrib.tutorials.evadventure.characters.md)
 is an example of a character class structure.
 ```
 Above, the `LivingMixin` class cannot work on its own - it just 'patches' the other classes with some 

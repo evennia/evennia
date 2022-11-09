@@ -52,7 +52,7 @@ Once we have these enums, we will use them for referencing things.
 > Create a new module `mygame/evadventure/objects.py`
 
 ```{sidebar}
-[evennia/contrib/tutorials/evadventure/objects.py](evennia.contrib.tutorials.evadventure.objects) has 
+[evennia/contrib/tutorials/evadventure/objects.py](../../../api/evennia.contrib.tutorials.evadventure.objects.md) has 
 a full set of objects implemented.
 ```
 <div style="clear: right;"></div>
