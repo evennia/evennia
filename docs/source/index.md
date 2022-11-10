@@ -14,27 +14,35 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 `MU*` creation system.
 
 - [Evennia Introduction](./Evennia-Introduction.md)
-- [Installation](Setup/Installation.md)
-- [Beginner Tutorial](Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.md)
 - [How to contribute and get help](./Contributing.md)
 
-## Main sections
+## Setup 
 
-- [Server Setup, Maintenance and Life](Setup/Setup-Overview.md) - how to run, maintain and release
-- [Tutorials and Howto's](Howtos/Howtos-Overview.md) - projects and hints for reaching particular effects and goals
-----
+- [Installation](Setup/Installation.md)  
+- [Starting, Stopping and Reloading](Setup/Start-Stop-Reload.md)  - how to manage the Evennia server
+- [Setup and configuration](Setup/Setup-Overview.md) - how to run, maintain and release
+
+## Howtos and Tutorials
+
+- [The Beginner Tutorial](Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.md) - learn the basics and build a small game (in progress)
+- [Tutorials and Howto's](Howtos/Howtos-Overview.md) - mixed tutorials to learn Evennia
+
+## Developing with Evennia
 
 - [Core components](Components/Components-Overview.md) - the core building blocks of Evennia
 - [Concepts](Concepts/Concepts-Overview.md) - larger-scale concepts and features
-----
-
 - [API](./Evennia-API.md) - the full API-reference, generated from source
 - [Default Commands](Components/Default-Commands.md) - list of game commands included out of the box
 - [Coding](Coding/Coding-Overview.md) - coding and development hints and resources
-- [Contribs](Contribs/Contribs-Overview.md) - game-specific tools and code added by the community
-----
-- [Links](./Links.md) - useful links
+
+## Contributions and Info 
+
+- [Contribs](Contribs/Contribs-Overview.md) - game-specific code and snippets to use for your game
 - [How to contribute to these docs](./Contributing-Docs.md) - if you want to help out
+- [Links](./Links.md) - useful links
+- [Licensing](./Licensing.md) - Evennia licensing info (BSD)
+
+----
 
 ## All Sections
 

@@ -1,7 +1,6 @@
 # Core Components
 
-These are the 'building blocks' out of which Evennia is built. This documentation is complementary to, and often goes deeper
-than, the doc-strings of each component in the [API](../Evennia-API.md).
+These are the 'building blocks' out of which Evennia is built. This documentation is complementary to, and often goes deeper than, the doc-strings of each component in the [API](../Evennia-API.md).
 
 ## Database entites
 
