@@ -6,13 +6,15 @@ Sessionhandler for portal sessions.
 
 import time
 from collections import deque, namedtuple
-from twisted.internet import reactor
+
 from django.conf import settings
+from django.utils.translation import gettext as _
+from twisted.internet import reactor
+
+from evennia.server.portal.amp import PCONN, PCONNSYNC, PDISCONN, PDISCONNALL
 from evennia.server.sessionhandler import SessionHandler
-from evennia.server.portal.amp import PCONN, PDISCONN, PCONNSYNC, PDISCONNALL
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import class_from_module
-from django.utils.translation import gettext as _
 
 # module import
 _MOD_IMPORT = None

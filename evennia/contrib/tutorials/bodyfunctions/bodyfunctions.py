@@ -14,6 +14,7 @@ make sure to put it on yourself or you won't see any messages!
 
 """
 import random
+
 from evennia import DefaultScript
 
 

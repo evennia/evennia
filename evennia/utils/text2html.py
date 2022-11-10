@@ -10,6 +10,7 @@ snippet #577349 on http://code.activestate.com.
 
 import re
 from html import escape as html_escape
+
 from .ansi import *
 
 # All xterm256 RGB equivalents

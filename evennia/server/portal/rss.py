@@ -5,8 +5,9 @@ This connects an RSS feed to an in-game Evennia channel, sending messages
 to the channel whenever the feed updates.
 
 """
-from twisted.internet import task, threads
 from django.conf import settings
+from twisted.internet import task, threads
+
 from evennia.server.session import Session
 from evennia.utils import logger
 

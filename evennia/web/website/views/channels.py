@@ -4,13 +4,14 @@ Views for managing channels.
 """
 
 from django.conf import settings
-from django.views.generic import ListView
-from django.utils.text import slugify
 from django.db.models.functions import Lower
 from django.http import HttpResponseBadRequest
+from django.utils.text import slugify
+from django.views.generic import ListView
 
-from evennia.utils.logger import tail_log_file
 from evennia.utils import class_from_module
+from evennia.utils.logger import tail_log_file
+
 from .mixins import TypeclassMixin
 from .objects import ObjectDetailView
 

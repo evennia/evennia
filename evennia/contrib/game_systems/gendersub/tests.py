@@ -4,9 +4,11 @@ Test gendersub contrib.
 """
 
 
+from mock import patch
+
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
-from mock import patch
+
 from . import gendersub
 
 

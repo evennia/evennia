@@ -55,7 +55,9 @@ in your game and using it as-is.
 """
 
 from random import randint
-from evennia import Command, default_cmds, DefaultObject
+
+from evennia import Command, DefaultObject, default_cmds
+
 from . import tb_basic
 
 """

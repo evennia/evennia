@@ -8,12 +8,13 @@ Everything starts at handle_setup()
 
 
 import time
+
 from django.conf import settings
 from django.utils.translation import gettext as _
+
 from evennia.accounts.models import AccountDB
 from evennia.server.models import ServerConfig
 from evennia.utils import create, logger
-
 
 ERROR_NO_SUPERUSER = """
     No superuser exists yet. The superuser is the 'owner' account on

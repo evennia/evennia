@@ -25,34 +25,31 @@ This module also contains the Managers for the respective models; inherit from
 these to create custom managers.
 
 """
-from django.db.models import signals
-
-from django.db.models.base import ModelBase
-from django.db import models
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
+from django.db import models
+from django.db.models import signals
+from django.db.models.base import ModelBase
 from django.urls import reverse
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
 
+from evennia.locks.lockhandler import LockHandler
+from evennia.server.signals import SIGNAL_TYPED_OBJECT_POST_RENAME
+from evennia.typeclasses import managers
 from evennia.typeclasses.attributes import (
     Attribute,
     AttributeHandler,
     AttributeProperty,
-    ModelAttributeBackend,
+    DbHolder,
     InMemoryAttributeBackend,
+    ModelAttributeBackend,
 )
-from evennia.typeclasses.attributes import DbHolder
-from evennia.typeclasses.tags import Tag, TagHandler, AliasHandler, PermissionHandler, TagProperty
-
+from evennia.typeclasses.tags import AliasHandler, PermissionHandler, Tag, TagHandler, TagProperty
 from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
-from evennia.server.signals import SIGNAL_TYPED_OBJECT_POST_RENAME
-
-from evennia.typeclasses import managers
-from evennia.locks.lockhandler import LockHandler
-from evennia.utils.utils import is_iter, inherits_from, lazy_property, class_from_module
 from evennia.utils.logger import log_trace
+from evennia.utils.utils import class_from_module, inherits_from, is_iter, lazy_property
 
 __all__ = ("TypedObject",)
 

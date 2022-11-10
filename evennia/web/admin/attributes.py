@@ -8,12 +8,13 @@ relevant together with a specific object.
 
 import traceback
 from datetime import datetime
-from django.contrib import admin
-from evennia.typeclasses.attributes import Attribute
-from django import forms
 
+from django import forms
+from django.contrib import admin
+
+from evennia.typeclasses.attributes import Attribute
+from evennia.utils.dbserialize import _SaverSet, from_pickle
 from evennia.utils.picklefield import PickledFormField
-from evennia.utils.dbserialize import from_pickle, _SaverSet
 
 
 class AttributeForm(forms.ModelForm):

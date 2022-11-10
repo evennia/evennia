@@ -4,9 +4,10 @@ Testing clothing contrib
 """
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest
-from evennia.utils.create import create_object
 from evennia.objects.objects import DefaultRoom
+from evennia.utils.create import create_object
 from evennia.utils.test_resources import BaseEvenniaTest
+
 from . import clothing
 
 

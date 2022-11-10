@@ -167,11 +167,13 @@ made available in the script namespace.
     script = create.create_script()
 
 """
-import re
 import codecs
-import traceback
+import re
 import sys
+import traceback
+
 from django.conf import settings
+
 from evennia.utils import utils
 
 _ENCODINGS = settings.ENCODINGS

@@ -65,15 +65,16 @@ the 'Fishing' set. Fishing from a boat? No problem!
 
 """
 import sys
-from traceback import format_exc
 from importlib import import_module
 from inspect import trace
+from traceback import format_exc
+
 from django.conf import settings
-from evennia.utils import logger, utils
+from django.utils.translation import gettext as _
+
 from evennia.commands.cmdset import CmdSet
 from evennia.server.models import ServerConfig
-
-from django.utils.translation import gettext as _
+from evennia.utils import logger, utils
 
 __all__ = ("import_cmdset", "CmdSetHandler")
 

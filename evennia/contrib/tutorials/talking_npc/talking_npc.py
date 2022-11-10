@@ -23,9 +23,8 @@ a lot more complex possibilities.
 
 """
 
-from evennia import DefaultObject, CmdSet, default_cmds
+from evennia import CmdSet, DefaultObject, default_cmds
 from evennia.utils.evmenu import EvMenu
-
 
 # Menu implementing the dialogue tree
 

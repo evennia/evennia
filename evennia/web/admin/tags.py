@@ -6,12 +6,13 @@ Tag admin
 
 import traceback
 from datetime import datetime
-from django.contrib import admin
-from evennia.typeclasses.tags import Tag
-from django import forms
 
+from django import forms
+from django.contrib import admin
+
+from evennia.typeclasses.tags import Tag
+from evennia.utils.dbserialize import _SaverSet, from_pickle
 from evennia.utils.picklefield import PickledFormField
-from evennia.utils.dbserialize import from_pickle, _SaverSet
 
 
 class TagForm(forms.ModelForm):

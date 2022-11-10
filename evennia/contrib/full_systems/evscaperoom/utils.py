@@ -8,8 +8,9 @@ and does not need to be imported from here.
 
 import re
 from random import choice
+
 from evennia import create_object, search_object
-from evennia.utils import justify, inherits_from
+from evennia.utils import inherits_from, justify
 
 _BASE_TYPECLASS_PATH = "evscaperoom.objects."
 _RE_PERSPECTIVE = re.compile(r"~(\w+)", re.I + re.U + re.M)

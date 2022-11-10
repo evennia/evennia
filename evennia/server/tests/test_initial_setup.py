@@ -3,9 +3,9 @@ Test initial startup procedure
 
 """
 
-from mock import MagicMock, patch
 from django.conf import settings
 from django.test import TestCase
+from mock import MagicMock, patch
 
 from evennia.server import initial_setup
 

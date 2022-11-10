@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
-import django.utils.timezone
 import django.core.validators
+import django.utils.timezone
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):

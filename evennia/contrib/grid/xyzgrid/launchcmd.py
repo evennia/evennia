@@ -17,11 +17,12 @@ Use `evennia xyzgrid help` for usage help.
 """
 
 from os.path import join as pathjoin
-from django.conf import settings
-import evennia
-from evennia.utils import ansi
-from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
 
+from django.conf import settings
+
+import evennia
+from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid
+from evennia.utils import ansi
 
 _HELP_SHORT = """
 evennia xyzgrid help | list | init | add | spawn | initpath | delete [<options>]

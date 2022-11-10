@@ -6,9 +6,9 @@ These patterns are all under the admin/* namespace.
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
-from . import frontpage
+from django.urls import include, path
 
+from . import frontpage
 
 urlpatterns = [
     # Django original admin page. Make this URL always available, whether

@@ -42,6 +42,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
 """
 from django.conf import settings
+
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.default.comms import CmdChannel
 from evennia.utils import logger

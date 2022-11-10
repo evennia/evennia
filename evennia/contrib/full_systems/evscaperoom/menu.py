@@ -8,9 +8,9 @@ new room (to start from scratch) or join an existing room (with other players).
 
 """
 from evennia import EvMenu
+from evennia.utils import create, justify, list_to_string, logger
 from evennia.utils.evmenu import list_node
-from evennia.utils import create, justify, list_to_string
-from evennia.utils import logger
+
 from .room import EvscapeRoom
 from .utils import create_fantasy_word
 
@@ -217,8 +217,8 @@ def node_quit(caller, raw_string, **kwargs):
         # we check an Attribute on the caller to see if we should
         # leave the game entirely when leaving
         if caller.db.evscaperoom_standalone:
-            from evennia.commands import cmdhandler
             from evennia import default_cmds
+            from evennia.commands import cmdhandler
 
             cmdhandler.cmdhandler(
                 caller.ndb._menutree._session, "", cmdobj=default_cmds.CmdQuit(), cmdobj_key="@quit"

@@ -42,11 +42,12 @@ survive a reload. See the `EvEditor` class for more details.
 import re
 
 from django.conf import settings
-from evennia import CmdSet
-from evennia.utils import is_iter, fill, dedent, logger, justify, to_str, utils
-from evennia.utils.ansi import raw
-from evennia.commands import cmdhandler
 from django.utils.translation import gettext as _
+
+from evennia import CmdSet
+from evennia.commands import cmdhandler
+from evennia.utils import dedent, fill, is_iter, justify, logger, to_str, utils
+from evennia.utils.ansi import raw
 
 # we use cmdhandler instead of evennia.syscmdkeys to
 # avoid some cases of loading before evennia init'd

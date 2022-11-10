@@ -5,17 +5,19 @@ puppeting).
 """
 
 from django.conf import settings
-from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
 from django.db.models.functions import Lower
-from django.views.generic.base import RedirectView
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.views.generic import ListView
+from django.views.generic.base import RedirectView
+
 from evennia.utils import class_from_module
-from .mixins import TypeclassMixin
-from .objects import ObjectDetailView, ObjectDeleteView, ObjectUpdateView, ObjectCreateView
 from evennia.web.website import forms
+
+from .mixins import TypeclassMixin
+from .objects import ObjectCreateView, ObjectDeleteView, ObjectDetailView, ObjectUpdateView
 
 
 class CharacterMixin(TypeclassMixin):

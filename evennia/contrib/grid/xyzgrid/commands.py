@@ -10,6 +10,7 @@ the commands with XYZ-aware equivalents.
 from collections import namedtuple
 
 from django.conf import settings
+
 from evennia import CmdSet, InterruptCommand, default_cmds
 from evennia.commands.default import building
 from evennia.contrib.grid.xyzgrid.xyzgrid import get_xyzgrid

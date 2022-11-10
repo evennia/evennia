@@ -6,6 +6,7 @@ Test the EvAdventure commands.
 from unittest.mock import call, patch
 
 from anything import Something
+
 from evennia.utils.create import create_object
 from evennia.utils.test_resources import BaseEvenniaCommandTest
 

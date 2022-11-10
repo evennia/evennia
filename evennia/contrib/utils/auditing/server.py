@@ -9,10 +9,11 @@ import os
 import re
 import socket
 
-from django.utils import timezone
 from django.conf import settings as ev_settings
-from evennia.utils import utils, logger, mod_import, get_evennia_version
+from django.utils import timezone
+
 from evennia.server.serversession import ServerSession
+from evennia.utils import get_evennia_version, logger, mod_import, utils
 
 # Attributes governing auditing of commands and where to send log objects
 AUDIT_CALLBACK = getattr(

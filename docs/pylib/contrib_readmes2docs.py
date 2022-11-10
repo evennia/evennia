@@ -4,8 +4,10 @@ an index.
 
 """
 from collections import defaultdict
-from os.path import abspath, dirname, join as pathjoin, sep
 from glob import glob
+from os.path import abspath, dirname
+from os.path import join as pathjoin
+from os.path import sep
 
 _EVENNIA_PATH = pathjoin(dirname(dirname(dirname(abspath(__file__)))))
 _DOCS_PATH = pathjoin(_EVENNIA_PATH, "docs")

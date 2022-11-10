@@ -55,7 +55,8 @@ dice.roll_dice(3, 10, ("+", 2))  # 3d10 + 2
 """
 import re
 from random import randint
-from evennia import default_cmds, CmdSet
+
+from evennia import CmdSet, default_cmds
 
 
 def roll(dicenum, dicetype, modifier=None, conditional=None, return_tuple=False):

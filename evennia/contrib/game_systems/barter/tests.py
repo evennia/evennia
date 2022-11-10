@@ -3,8 +3,10 @@ Test the contrib barter system
 """
 
 from mock import Mock
+
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
+
 from . import barter
 
 

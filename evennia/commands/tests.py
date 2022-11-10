@@ -4,6 +4,7 @@ Unit testing for the Command system itself.
 """
 
 from django.test import override_settings
+
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
@@ -990,8 +991,9 @@ class TestOptionTransferReplace(TestCase):
 
 import sys
 
-from evennia.commands import cmdhandler
 from twisted.trial.unittest import TestCase as TwistedTestCase
+
+from evennia.commands import cmdhandler
 
 
 def _mockdelay(time, func, *args, **kwargs):

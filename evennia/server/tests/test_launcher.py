@@ -5,14 +5,15 @@ Test the evennia launcher.
 
 import os
 import pickle
+
 from anything import Something
-from mock import patch, MagicMock, create_autospec
+from mock import MagicMock, create_autospec, patch
 from twisted.internet import reactor
+from twisted.internet.base import DelayedCall
 from twisted.trial.unittest import TestCase as TwistedTestCase
+
 from evennia.server import evennia_launcher
 from evennia.server.portal import amp
-
-from twisted.internet.base import DelayedCall
 
 DelayedCall.debug = True
 

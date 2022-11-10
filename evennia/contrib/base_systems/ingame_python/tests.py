@@ -2,18 +2,20 @@
 Module containing the test cases for the in-game Python system.
 """
 
-from mock import Mock
 from textwrap import dedent
 
 from django.conf import settings
+from mock import Mock
+
 from evennia import ScriptDB
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.objects.objects import ExitCommand
 from evennia.utils import ansi, utils
 from evennia.utils.create import create_object, create_script
 from evennia.utils.test_resources import BaseEvenniaTest
-from .commands import CmdCallback
+
 from .callbackhandler import CallbackHandler
+from .commands import CmdCallback
 
 # Force settings
 settings.EVENTS_CALENDAR = "standard"

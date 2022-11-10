@@ -17,6 +17,7 @@ from codecs import decode as codecs_decode
 
 from django.conf import settings
 from django.utils.translation import gettext as _
+
 from evennia.commands.cmdhandler import CMD_LOGINSTART
 from evennia.server.portal import amp
 from evennia.server.signals import (

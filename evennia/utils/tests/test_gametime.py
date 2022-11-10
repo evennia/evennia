@@ -2,9 +2,9 @@
 Unit tests for the utilities of the evennia.utils.gametime module.
 """
 
-from datetime import datetime
 import time
 import unittest
+from datetime import datetime
 from unittest.mock import Mock
 
 from django.conf import settings

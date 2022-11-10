@@ -3,8 +3,10 @@ Testing of TestDice.
 
 """
 
-from evennia.commands.default.tests import BaseEvenniaCommandTest
 from mock import patch
+
+from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from . import dice
 
 

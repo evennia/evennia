@@ -5,9 +5,8 @@ A simple mirror object to experiment with.
 
 """
 
-from evennia import DefaultObject
-from evennia.utils import make_iter, is_iter
-from evennia import logger
+from evennia import DefaultObject, logger
+from evennia.utils import is_iter, make_iter
 
 
 class TutorialMirror(DefaultObject):

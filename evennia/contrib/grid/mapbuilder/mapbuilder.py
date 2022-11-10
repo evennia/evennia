@@ -279,9 +279,10 @@ EXAMPLE2_LEGEND = {
 ---
 """
 from django.conf import settings
-from evennia.utils import utils
-from evennia import create_object
 from typeclasses import exits
+
+from evennia import create_object
+from evennia.utils import utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 

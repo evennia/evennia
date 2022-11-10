@@ -95,25 +95,27 @@ See `./example.py` for a full grid example.
 import pickle
 from collections import defaultdict
 from os import mkdir
-from os.path import isdir, isfile, join as pathjoin
+from os.path import isdir, isfile
+from os.path import join as pathjoin
 
 try:
-    from scipy.sparse.csgraph import dijkstra
-    from scipy.sparse import csr_matrix
     from scipy import zeros
+    from scipy.sparse import csr_matrix
+    from scipy.sparse.csgraph import dijkstra
 except ImportError as err:
     raise ImportError(
         f"{err}\nThe XYZgrid contrib requires "
         "the SciPy package. Install with `pip install scipy'."
     )
 from django.conf import settings
-from evennia.utils.utils import variable_from_module, mod_import, is_iter
-from evennia.utils import logger
+
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.spawner import flatten_prototype
+from evennia.utils import logger
+from evennia.utils.utils import is_iter, mod_import, variable_from_module
 
-from .utils import MapError, MapParserError, BIGVAL
 from . import xymap_legend
+from .utils import BIGVAL, MapError, MapParserError
 
 _NO_DB_PROTOTYPES = True
 if hasattr(settings, "XYZGRID_USE_DB_PROTOTYPES"):

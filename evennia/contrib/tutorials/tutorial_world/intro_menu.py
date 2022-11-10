@@ -12,9 +12,8 @@ still create the goto-callbacks.
 
 """
 
-from evennia import create_object
-from evennia import CmdSet
-from evennia.utils.evmenu import parse_menu_template, EvMenu
+from evennia import CmdSet, create_object
+from evennia.utils.evmenu import EvMenu, parse_menu_template
 
 # Goto callbacks and helper resources for the menu
 

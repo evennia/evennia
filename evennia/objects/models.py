@@ -19,6 +19,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
+
 from evennia.objects.manager import ObjectDBManager
 from evennia.typeclasses.models import TypedObject
 from evennia.utils import logger

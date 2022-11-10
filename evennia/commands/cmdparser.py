@@ -8,7 +8,9 @@ same inputs as the default one.
 
 
 import re
+
 from django.conf import settings
+
 from evennia.utils.logger import log_trace
 
 _MULTIMATCH_REGEX = re.compile(settings.SEARCH_MULTIMATCH_REGEX, re.I + re.U)

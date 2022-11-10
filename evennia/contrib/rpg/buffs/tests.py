@@ -2,14 +2,15 @@
 Tests for the buff system contrib
 """
 from unittest.mock import Mock, call, patch
-from evennia import DefaultObject, create_object
-from evennia.utils import create
-from evennia.utils.utils import lazy_property
-from .samplebuffs import StatBuff
-from .buff import BaseBuff, Mod, BuffHandler, BuffableProperty
-from evennia.utils.test_resources import EvenniaTest
 
+from evennia import DefaultObject, create_object
 from evennia.contrib.rpg.buffs import buff
+from evennia.utils import create
+from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.utils import lazy_property
+
+from .buff import BaseBuff, BuffableProperty, BuffHandler, Mod
+from .samplebuffs import StatBuff
 
 
 class _EmptyBuff(BaseBuff):

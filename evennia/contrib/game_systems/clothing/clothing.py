@@ -73,12 +73,9 @@ with which to test the system:
 
 """
 
-from evennia import DefaultObject
-from evennia import DefaultCharacter
-from evennia import default_cmds
+from evennia import DefaultCharacter, DefaultObject, default_cmds
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.utils import list_to_string
-from evennia.utils import evtable
+from evennia.utils import evtable, list_to_string
 
 # Options start here.
 # Maximum character length of 'wear style' strings, or None for unlimited.

@@ -21,9 +21,9 @@ TutorialWeaponRack
 
 import random
 
-from evennia import DefaultObject, DefaultExit, Command, CmdSet
-from evennia.utils import search, delay, dedent
+from evennia import CmdSet, Command, DefaultExit, DefaultObject
 from evennia.prototypes.spawner import spawn
+from evennia.utils import dedent, delay, search
 
 # -------------------------------------------------------------
 #

@@ -4,7 +4,8 @@ Helper utils for admin views.
 """
 
 import importlib
-from evennia.utils.utils import get_all_typeclasses, inherits_from, get_all_cmdsets
+
+from evennia.utils.utils import get_all_cmdsets, get_all_typeclasses, inherits_from
 
 
 def get_and_load_typeclasses(parent=None, excluded_parents=None):

@@ -4,6 +4,7 @@ Tutorial - talking NPC tests.
 """
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
+
 from . import talking_npc
 
 

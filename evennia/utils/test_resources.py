@@ -28,6 +28,9 @@ import types
 
 from django.conf import settings
 from django.test import TestCase, override_settings
+from mock import MagicMock, Mock, patch
+from twisted.internet.defer import Deferred
+
 from evennia import settings_default
 from evennia.accounts.accounts import DefaultAccount
 from evennia.commands.command import InterruptCommand
@@ -39,8 +42,6 @@ from evennia.server.sessionhandler import SESSIONS
 from evennia.utils import ansi, create
 from evennia.utils.idmapper.models import flush_cache
 from evennia.utils.utils import all_from_module, to_str
-from mock import MagicMock, Mock, patch
-from twisted.internet.defer import Deferred
 
 _RE_STRIP_EVMENU = re.compile(r"^\+|-+\+|\+-+|--+|\|(?:\s|$)", re.MULTILINE)
 

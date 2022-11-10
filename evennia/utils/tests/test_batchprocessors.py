@@ -1,10 +1,12 @@
 """Tests for batchprocessors """
 
 import codecs
-from django.test import TestCase
-from evennia.utils import batchprocessors, utils
-import mock
 import textwrap
+
+import mock
+from django.test import TestCase
+
+from evennia.utils import batchprocessors, utils
 
 
 class TestBatchprocessorErrors(TestCase):

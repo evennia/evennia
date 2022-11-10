@@ -1,4 +1,5 @@
 import random
+
 from .buff import BaseBuff, Mod
 
 

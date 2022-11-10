@@ -98,12 +98,13 @@ You can see all the features of the `BaseBuff` class below, or browse `samplebuf
 many attributes and hook methods you can overload to create complex, interrelated buffs.
 
 """
-from random import random
 import time
+from random import random
+
 from evennia import Command
 from evennia.server import signals
-from evennia.utils import utils, search
 from evennia.typeclasses.attributes import AttributeProperty
+from evennia.utils import search, utils
 
 
 class BaseBuff:

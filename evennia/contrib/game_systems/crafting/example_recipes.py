@@ -69,10 +69,11 @@ just mocked for the example.
 
 """
 
-from random import random, randint
-from evennia.commands.command import Command, InterruptCommand
-from .crafting import craft, CraftingRecipe, CraftingValidationError
+from random import randint, random
 
+from evennia.commands.command import Command, InterruptCommand
+
+from .crafting import CraftingRecipe, CraftingValidationError, craft
 
 # ------------------------------------------------------------
 # Sword recipe

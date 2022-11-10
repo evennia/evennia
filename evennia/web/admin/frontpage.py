@@ -4,8 +4,8 @@ Admin views.
 """
 
 from django.contrib.admin.sites import site
-from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
 
 from evennia.accounts.models import AccountDB
 

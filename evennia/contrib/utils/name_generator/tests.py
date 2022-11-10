@@ -2,8 +2,8 @@
 Tests for the Random Name Generator
 """
 
-from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.contrib.utils.name_generator import namegen
+from evennia.utils.test_resources import BaseEvenniaTest
 
 _INVALID_STYLES = {
     "missing_keys": {

@@ -4,14 +4,17 @@ Views for managing a specific object)
 """
 
 from collections import OrderedDict
+
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-from evennia.utils import class_from_module
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.text import slugify
-from .mixins import EvenniaCreateView, EvenniaDeleteView, EvenniaUpdateView, EvenniaDetailView
+
+from evennia.utils import class_from_module
+
+from .mixins import EvenniaCreateView, EvenniaDeleteView, EvenniaDetailView, EvenniaUpdateView
 
 
 class ObjectDetailView(EvenniaDetailView):

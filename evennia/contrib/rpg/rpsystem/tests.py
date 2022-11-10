@@ -3,13 +3,14 @@ Tests for RP system
 
 """
 import time
+
 from anything import Anything
+
+from evennia import create_object
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.test_resources import BaseEvenniaTest
-from evennia import create_object
 
-from . import rpsystem
-from . import rplanguage
+from . import rplanguage, rpsystem
 
 mtrans = {"testing": "1", "is": "2", "a": "3", "human": "4"}
 atrans = ["An", "automated", "advantageous", "repeatable", "faster"]

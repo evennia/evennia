@@ -4,7 +4,9 @@ Test Color markup.
 """
 
 import re
+
 from evennia.utils.test_resources import BaseEvenniaTest
+
 from . import color_markups
 
 

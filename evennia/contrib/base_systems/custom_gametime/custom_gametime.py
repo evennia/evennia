@@ -35,9 +35,10 @@ the converter functions in this module.
 # change these to fit your game world
 
 from django.conf import settings
+
 from evennia import DefaultScript
-from evennia.utils.create import create_script
 from evennia.utils import gametime
+from evennia.utils.create import create_script
 
 # The game time speedup  / slowdown relative real time
 TIMEFACTOR = settings.TIME_FACTOR

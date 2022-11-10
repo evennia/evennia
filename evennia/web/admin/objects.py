@@ -2,22 +2,22 @@
 # This sets up how models are displayed
 # in the web admin interface.
 #
-from django.conf import settings
 from django import forms
-from django.urls import reverse, path
-from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
+from django.http import HttpResponseRedirect
+from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
-from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
+from evennia.objects.models import ObjectDB
+
+from . import utils as adminutils
 from .attributes import AttributeInline
 from .tags import TagInline
-from . import utils as adminutils
 
 
 class ObjectAttributeInline(AttributeInline):

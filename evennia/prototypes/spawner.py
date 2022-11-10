@@ -137,9 +137,10 @@ import copy
 import hashlib
 import time
 
-import evennia
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.objects.models import ObjectDB
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes.prototypes import (

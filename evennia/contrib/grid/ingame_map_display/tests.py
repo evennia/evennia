@@ -4,9 +4,11 @@ Tests of ingame_map_display.
 """
 
 
+from typeclasses import exits, rooms
+
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
-from typeclasses import rooms, exits
+
 from . import ingame_map_display
 
 

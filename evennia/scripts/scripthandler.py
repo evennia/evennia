@@ -5,11 +5,10 @@ added to all game objects. You access it through the property
 `scripts` on the game object.
 
 """
-from evennia.scripts.models import ScriptDB
-from evennia.utils import create
-from evennia.utils import logger
-
 from django.utils.translation import gettext as _
+
+from evennia.scripts.models import ScriptDB
+from evennia.utils import create, logger
 
 
 class ScriptHandler(object):

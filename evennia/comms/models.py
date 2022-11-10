@@ -19,14 +19,15 @@ necessary to easily be able to delete connections on the fly).
 
 """
 from django.conf import settings
-from django.utils import timezone
 from django.db import models
+from django.utils import timezone
+
+from evennia.comms import managers
+from evennia.locks.lockhandler import LockHandler
 from evennia.typeclasses.models import TypedObject
 from evennia.typeclasses.tags import Tag, TagHandler
 from evennia.utils.idmapper.models import SharedMemoryModel
-from evennia.comms import managers
-from evennia.locks.lockhandler import LockHandler
-from evennia.utils.utils import crop, make_iter, lazy_property
+from evennia.utils.utils import crop, lazy_property, make_iter
 
 __all__ = ("Msg", "TempMsg", "ChannelDB", "SubscriptionHandler")
 

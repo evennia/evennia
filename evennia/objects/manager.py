@@ -2,14 +2,20 @@
 Custom manager for Objects.
 """
 import re
-from django.db.models import Q
-from django.conf import settings
-from django.db.models.fields import exceptions
-from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
-from evennia.utils.utils import is_iter, make_iter, string_partial_matching
-from evennia.utils.utils import class_from_module, dbid_to_obj
-from evennia.server import signals
 
+from django.conf import settings
+from django.db.models import Q
+from django.db.models.fields import exceptions
+
+from evennia.server import signals
+from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
+from evennia.utils.utils import (
+    class_from_module,
+    dbid_to_obj,
+    is_iter,
+    make_iter,
+    string_partial_matching,
+)
 
 __all__ = ("ObjectManager", "ObjectDBManager")
 _GA = object.__getattribute__
@@ -567,8 +573,8 @@ class ObjectDBManager(TypedObjectManager):
             new_destination = original_object.destination
 
         # create new object
-        from evennia.utils import create
         from evennia.scripts.models import ScriptDB
+        from evennia.utils import create
 
         new_object = create.create_object(
             typeclass_path,

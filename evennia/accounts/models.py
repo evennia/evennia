@@ -19,6 +19,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.encoding import smart_str
+
 from evennia.accounts.manager import AccountDBManager
 from evennia.server.signals import SIGNAL_ACCOUNT_POST_RENAME
 from evennia.typeclasses.models import TypedObject

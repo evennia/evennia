@@ -8,12 +8,13 @@ https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
 
 """
 from typing import Union
-from django.db.models import Q
-from django_filters.rest_framework.filterset import FilterSet
-from django_filters.filters import CharFilter, EMPTY_VALUES
 
-from evennia.objects.models import ObjectDB
+from django.db.models import Q
+from django_filters.filters import EMPTY_VALUES, CharFilter
+from django_filters.rest_framework.filterset import FilterSet
+
 from evennia.accounts.models import AccountDB
+from evennia.objects.models import ObjectDB
 from evennia.scripts.models import ScriptDB
 
 

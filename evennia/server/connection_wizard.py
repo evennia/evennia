@@ -2,10 +2,12 @@
 Link Evennia to external resources (wizard plugin for evennia_launcher)
 
 """
+import pprint
 import sys
 from os import path
-import pprint
+
 from django.conf import settings
+
 from evennia.utils.utils import list_to_string, mod_import
 
 

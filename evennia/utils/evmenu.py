@@ -280,6 +280,7 @@ from django.conf import settings
 
 # i18n
 from django.utils.translation import gettext as _
+
 from evennia import CmdSet, Command
 from evennia.commands import cmdhandler
 from evennia.utils import logger

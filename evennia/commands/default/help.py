@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from itertools import chain
 
 from django.conf import settings
+
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.help.models import HelpEntry
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories

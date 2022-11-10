@@ -4,19 +4,16 @@ Test AMP client
 """
 
 import pickle
-from model_mommy import mommy
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-from twisted.trial.unittest import TestCase as TwistedTestCase
-from evennia.server import amp_client
-from evennia.server.portal import amp_server
-from evennia.server.portal import amp
-from evennia.server import server
-from evennia.server.portal import portal
-from evennia.server import serversession, session
-from evennia.utils import create
 
+from model_mommy import mommy
 from twisted.internet.base import DelayedCall
+from twisted.trial.unittest import TestCase as TwistedTestCase
+
+from evennia.server import amp_client, server, serversession, session
+from evennia.server.portal import amp, amp_server, portal
+from evennia.utils import create
 
 DelayedCall.debug = True
 

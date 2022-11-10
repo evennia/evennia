@@ -4,9 +4,10 @@ This defines how Comm models are displayed in the web admin interface.
 """
 
 from django import forms
-from django.contrib import admin
-from evennia.comms.models import ChannelDB, Msg
 from django.conf import settings
+from django.contrib import admin
+
+from evennia.comms.models import ChannelDB, Msg
 
 from .attributes import AttributeInline
 from .tags import TagInline

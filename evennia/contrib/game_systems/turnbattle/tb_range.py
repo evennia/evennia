@@ -101,8 +101,10 @@ in your game and using it as-is.
 """
 
 from random import randint
-from evennia import DefaultObject, Command, default_cmds, DefaultScript
+
+from evennia import Command, DefaultObject, DefaultScript, default_cmds
 from evennia.commands.default.help import CmdHelp
+
 from . import tb_basic
 
 """

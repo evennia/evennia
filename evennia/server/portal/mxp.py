@@ -14,6 +14,7 @@ http://www.gammon.com.au/mushclient/addingservermxp.htm
 
 """
 import re
+
 from django.conf import settings
 
 LINKS_SUB = re.compile(r"\|lc(.*?)\|lt(.*?)\|le", re.DOTALL)

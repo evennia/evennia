@@ -17,20 +17,21 @@ http://localhost:4001/webclient.)
                  to sessions connected over the webclient.
 
 """
+import html
 import json
 import re
 import time
-import html
 
-from twisted.web import server, resource
-from twisted.internet.task import LoopingCall
-from django.utils.functional import Promise
 from django.conf import settings
-from evennia.utils.ansi import parse_ansi
-from evennia.utils import utils
-from evennia.utils.utils import to_bytes
-from evennia.utils.text2html import parse_html
+from django.utils.functional import Promise
+from twisted.internet.task import LoopingCall
+from twisted.web import resource, server
+
 from evennia.server import session
+from evennia.utils import utils
+from evennia.utils.ansi import parse_ansi
+from evennia.utils.text2html import parse_html
+from evennia.utils.utils import to_bytes
 
 _CLIENT_SESSIONS = utils.mod_import(settings.SESSION_ENGINE).SessionStore
 _RE_SCREENREADER_REGEX = re.compile(

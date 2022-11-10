@@ -3,8 +3,8 @@ The command template for the default MUX-style command set. There
 is also an Account/OOC version that makes sure caller is an Account object.
 """
 
-from evennia.utils import utils
 from evennia.commands.command import Command
+from evennia.utils import utils
 
 # limit symbol import for API
 __all__ = ("MuxCommand", "MuxAccountCommand")

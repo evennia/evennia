@@ -67,9 +67,10 @@ in your game and using it as-is.
 """
 
 from random import randint
-from evennia.utils.logger import log_trace
-from evennia import Command, default_cmds, DefaultScript, create_object
+
+from evennia import Command, DefaultScript, create_object, default_cmds
 from evennia.commands.default.muxcommand import MuxCommand
+from evennia.utils.logger import log_trace
 
 from . import tb_basic
 

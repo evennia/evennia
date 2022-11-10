@@ -5,13 +5,14 @@ Unit tests for the Evscaperoom
 import inspect
 import pkgutil
 from os import path
-from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from evennia import InterruptCommand
-from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils import mod_import
-from . import commands
+from evennia.utils.test_resources import BaseEvenniaTest
+
+from . import commands, objects
 from . import state as basestate
-from . import objects
 from . import utils
 
 

@@ -4,10 +4,13 @@ Testing of ExtendedRoom contrib
 """
 
 import datetime
-from mock import patch, Mock
+
 from django.conf import settings
+from mock import Mock, patch
+
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.objects.objects import DefaultRoom
+
 from . import extended_room
 
 

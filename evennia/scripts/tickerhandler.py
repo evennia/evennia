@@ -67,13 +67,14 @@ call the handler's `save()` and `restore()` methods when the server reboots.
 """
 import inspect
 
-from twisted.internet.defer import inlineCallbacks
 from django.core.exceptions import ObjectDoesNotExist
+from twisted.internet.defer import inlineCallbacks
+
 from evennia.scripts.scripts import ExtendedLoopingCall
 from evennia.server.models import ServerConfig
-from evennia.utils.logger import log_trace, log_err
+from evennia.utils import inherits_from, variable_from_module
 from evennia.utils.dbserialize import dbserialize, dbunserialize, pack_dbobj
-from evennia.utils import variable_from_module, inherits_from
+from evennia.utils.logger import log_err, log_trace
 
 _GA = object.__getattribute__
 _SA = object.__setattr__

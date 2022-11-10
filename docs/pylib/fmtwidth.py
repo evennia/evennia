@@ -8,9 +8,9 @@ Usage:
     python fmtwidth.py --width 79 ../source/**.md
 
 """
+import argparse
 import glob
 import textwrap
-import argparse
 
 _DEFAULT_WIDTH = 100
 

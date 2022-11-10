@@ -4,8 +4,9 @@ Sets up an api-access permission check using the in-game permission hierarchy.
 """
 
 
-from rest_framework import permissions
 from django.conf import settings
+from rest_framework import permissions
+
 from evennia.locks.lockhandler import check_perm
 
 

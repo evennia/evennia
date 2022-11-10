@@ -10,9 +10,10 @@ from ast import literal_eval
 from unittest.mock import MagicMock, patch
 
 from django.test import TestCase, override_settings
-from evennia.utils import funcparser, test_resources
 from parameterized import parameterized
 from simpleeval import simple_eval
+
+from evennia.utils import funcparser, test_resources
 
 
 def _test_callable(*args, **kwargs):

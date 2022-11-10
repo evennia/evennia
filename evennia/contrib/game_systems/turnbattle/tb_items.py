@@ -67,10 +67,12 @@ in your game and using it as-is.
 """
 
 from random import randint
+
+from evennia import TICKER_HANDLER as tickerhandler
 from evennia import Command, default_cmds
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.prototypes.spawner import spawn
-from evennia import TICKER_HANDLER as tickerhandler
+
 from . import tb_basic
 
 """

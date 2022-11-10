@@ -10,7 +10,8 @@ To test - import this from a Django-aware shell, then call run_update.
 from os.path import abspath, dirname
 from os.path import join as pathjoin
 
-from evennia.utils.utils import callables_from_module, mod_import, variable_from_module
+from evennia.utils.utils import (callables_from_module, mod_import,
+                                 variable_from_module)
 
 __all__ = "run_update"
 

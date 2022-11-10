@@ -126,13 +126,13 @@ from inspect import getargspec
 from textwrap import dedent
 
 from django.conf import settings
-from evennia import Command, CmdSet
+
+from evennia import CmdSet, Command
 from evennia.commands import cmdhandler
 from evennia.utils.ansi import strip_ansi
 from evennia.utils.eveditor import EvEditor
 from evennia.utils.logger import log_err, log_trace
 from evennia.utils.utils import class_from_module
-
 
 # Constants
 _MAX_TEXT_WIDTH = settings.CLIENT_DEFAULT_WIDTH

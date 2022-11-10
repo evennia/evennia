@@ -3,8 +3,8 @@ Test eveditor
 
 """
 
-from evennia.utils import eveditor
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+from evennia.utils import eveditor
 
 
 class TestEvEditor(BaseEvenniaCommandTest):

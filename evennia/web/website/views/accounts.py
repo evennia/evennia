@@ -4,14 +4,15 @@ Views for managing accounts.
 """
 
 
-from evennia.utils import class_from_module
 from django.conf import settings
 from django.contrib import messages
-from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
+
+from evennia.utils import class_from_module
+from evennia.web.website import forms
 
 from .mixins import EvenniaCreateView, TypeclassMixin
-from evennia.web.website import forms
 
 
 class AccountMixin(TypeclassMixin):

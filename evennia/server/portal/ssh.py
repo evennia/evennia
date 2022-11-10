@@ -12,9 +12,9 @@ Using standard ssh client,
 import os
 import re
 
+from twisted.conch.interfaces import IConchUser
 from twisted.cred.checkers import credentials
 from twisted.cred.portal import Portal
-from twisted.conch.interfaces import IConchUser
 
 _SSH_IMPORT_ERROR = """
 ERROR: Missing crypto library for SSH. Install it with
@@ -33,19 +33,19 @@ try:
 except ImportError:
     raise ImportError(_SSH_IMPORT_ERROR)
 
-from twisted.conch.ssh.userauth import SSHUserAuthServer
-from twisted.conch.ssh import common
-from twisted.conch.insults import insults
-from twisted.conch.manhole_ssh import TerminalRealm, _Glue, ConchFactory
-from twisted.conch.manhole import Manhole, recvline
-from twisted.internet import defer, protocol
-from twisted.conch import interfaces as iconch
-from twisted.python import components
 from django.conf import settings
+from twisted.conch import interfaces as iconch
+from twisted.conch.insults import insults
+from twisted.conch.manhole import Manhole, recvline
+from twisted.conch.manhole_ssh import ConchFactory, TerminalRealm, _Glue
+from twisted.conch.ssh import common
+from twisted.conch.ssh.userauth import SSHUserAuthServer
+from twisted.internet import defer, protocol
+from twisted.python import components
 
 from evennia.accounts.models import AccountDB
 from evennia.utils import ansi
-from evennia.utils.utils import to_str, class_from_module
+from evennia.utils.utils import class_from_module, to_str
 
 _RE_N = re.compile(r"\|n$")
 _RE_SCREENREADER_REGEX = re.compile(

@@ -7,9 +7,10 @@ from django.conf import settings
 from django.contrib import admin
 
 from evennia.scripts.models import ScriptDB
+
+from . import utils as adminutils
 from .attributes import AttributeInline
 from .tags import TagInline
-from . import utils as adminutils
 
 
 class ScriptForm(forms.ModelForm):

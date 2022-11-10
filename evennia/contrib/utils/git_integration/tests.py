@@ -3,13 +3,14 @@ Tests of git.
 
 """
 
-from evennia.utils.test_resources import EvenniaTest
-from evennia.contrib.utils.git_integration.git_integration import GitCommand
-from evennia.utils.utils import list_to_string
+import datetime
 
 import git
 import mock
-import datetime
+
+from evennia.contrib.utils.git_integration.git_integration import GitCommand
+from evennia.utils.test_resources import EvenniaTest
+from evennia.utils.utils import list_to_string
 
 
 class TestGitIntegration(EvenniaTest):

@@ -4,12 +4,16 @@ Test tutorial_world/mob
 """
 
 from mock import patch
-from twisted.trial.unittest import TestCase as TwistedTestCase
 from twisted.internet.base import DelayedCall
+from twisted.trial.unittest import TestCase as TwistedTestCase
+
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
-from evennia.utils.test_resources import BaseEvenniaTest, mockdelay, mockdeferLater
-from . import mob, objects as tutobjects, rooms as tutrooms
+from evennia.utils.test_resources import BaseEvenniaTest, mockdeferLater, mockdelay
+
+from . import mob
+from . import objects as tutobjects
+from . import rooms as tutrooms
 
 
 class TestTutorialWorldMob(BaseEvenniaTest):

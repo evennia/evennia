@@ -4,7 +4,9 @@ Cooldowns tests.
 """
 
 from mock import patch
+
 from evennia.utils.test_resources import BaseEvenniaTest
+
 from . import cooldowns
 
 

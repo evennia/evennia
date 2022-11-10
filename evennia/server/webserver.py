@@ -14,18 +14,16 @@ a great example/aid on how to do this.)
 """
 import urllib.parse
 from urllib.parse import quote as urlquote
-from twisted.web import resource, http, server, static
-from twisted.internet import reactor
-from twisted.application import internet
-from twisted.web.proxy import ReverseProxyResource
-from twisted.web.server import NOT_DONE_YET
-from twisted.python import threadpool
-from twisted.internet import defer
 
-from twisted.web.wsgi import WSGIResource
 from django.conf import settings
 from django.core.wsgi import get_wsgi_application
-
+from twisted.application import internet
+from twisted.internet import defer, reactor
+from twisted.python import threadpool
+from twisted.web import http, resource, server, static
+from twisted.web.proxy import ReverseProxyResource
+from twisted.web.server import NOT_DONE_YET
+from twisted.web.wsgi import WSGIResource
 
 from evennia.utils import logger
 

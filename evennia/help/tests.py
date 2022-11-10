@@ -5,9 +5,11 @@ command test-suite).
 """
 
 from unittest import mock
+
+from evennia.help import filehelp
+from evennia.help import utils as help_utils
 from evennia.utils.test_resources import TestCase
 from evennia.utils.utils import dedent
-from evennia.help import filehelp, utils as help_utils
 
 
 class TestParseSubtopics(TestCase):

@@ -20,10 +20,10 @@ therefore always be limited to superusers only.
 import re
 
 from django.conf import settings
-from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
+
 from evennia.commands.cmdset import CmdSet
 from evennia.utils import logger, utils
-
+from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
 
 _RE_COMMENT = re.compile(r"^#.*?$", re.MULTILINE + re.DOTALL)
 _RE_CODE_START = re.compile(r"^# batchcode code:", re.MULTILINE)
