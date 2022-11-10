@@ -20,7 +20,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 - [Installation](Setup/Installation.md)  
 - [Starting, Stopping and Reloading](Setup/Start-Stop-Reload.md)  - how to manage the Evennia server
-- [Setup and configuration](Setup/Setup-Overview.md) - how to run, maintain and release
+- [Configurations](Setup/Setup-Overview.md) - how to run, maintain and release
 
 ## Howtos and Tutorials
 
