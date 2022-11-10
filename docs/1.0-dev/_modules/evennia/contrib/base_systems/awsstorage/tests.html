@@ -74,19 +74,22 @@
           <div class="body" role="main">
             
   <h1>Source code for evennia.contrib.base_systems.awsstorage.tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">skipIf</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">skipIf</span>
+
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span>
 <span class="kn">from</span> <span class="nn">django.core.files.base</span> <span class="kn">import</span> <span class="n">ContentFile</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">override_settings</span>
 <span class="kn">from</span> <span class="nn">django.utils.timezone</span> <span class="kn">import</span> <span class="n">is_aware</span><span class="p">,</span> <span class="n">utc</span>
-
-<span class="kn">import</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">threading</span>
 
 <span class="n">_SKIP</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">botocore.exceptions</span> <span class="kn">import</span> <span class="n">ClientError</span>
+
     <span class="kn">from</span> <span class="nn">.awsstorage</span> <span class="kn">import</span> <span class="n">aws_s3_cdn</span> <span class="k">as</span> <span class="n">s3boto3</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_SKIP</span> <span class="o">=</span> <span class="kc">True</span>

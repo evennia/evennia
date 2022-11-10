@@ -88,9 +88,9 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
+<span class="kn">from</span> <span class="nn">twisted.conch.interfaces</span> <span class="kn">import</span> <span class="n">IConchUser</span>
 <span class="kn">from</span> <span class="nn">twisted.cred.checkers</span> <span class="kn">import</span> <span class="n">credentials</span>
 <span class="kn">from</span> <span class="nn">twisted.cred.portal</span> <span class="kn">import</span> <span class="n">Portal</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.interfaces</span> <span class="kn">import</span> <span class="n">IConchUser</span>
 
 <span class="n">_SSH_IMPORT_ERROR</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">ERROR: Missing crypto library for SSH. Install it with</span>
@@ -109,19 +109,19 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">_SSH_IMPORT_ERROR</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">twisted.conch.ssh.userauth</span> <span class="kn">import</span> <span class="n">SSHUserAuthServer</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.ssh</span> <span class="kn">import</span> <span class="n">common</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.insults</span> <span class="kn">import</span> <span class="n">insults</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.manhole_ssh</span> <span class="kn">import</span> <span class="n">TerminalRealm</span><span class="p">,</span> <span class="n">_Glue</span><span class="p">,</span> <span class="n">ConchFactory</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.manhole</span> <span class="kn">import</span> <span class="n">Manhole</span><span class="p">,</span> <span class="n">recvline</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span>
-<span class="kn">from</span> <span class="nn">twisted.conch</span> <span class="kn">import</span> <span class="n">interfaces</span> <span class="k">as</span> <span class="n">iconch</span>
-<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">components</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">twisted.conch</span> <span class="kn">import</span> <span class="n">interfaces</span> <span class="k">as</span> <span class="n">iconch</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.insults</span> <span class="kn">import</span> <span class="n">insults</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.manhole</span> <span class="kn">import</span> <span class="n">Manhole</span><span class="p">,</span> <span class="n">recvline</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.manhole_ssh</span> <span class="kn">import</span> <span class="n">ConchFactory</span><span class="p">,</span> <span class="n">TerminalRealm</span><span class="p">,</span> <span class="n">_Glue</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.ssh</span> <span class="kn">import</span> <span class="n">common</span>
+<span class="kn">from</span> <span class="nn">twisted.conch.ssh.userauth</span> <span class="kn">import</span> <span class="n">SSHUserAuthServer</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">defer</span><span class="p">,</span> <span class="n">protocol</span>
+<span class="kn">from</span> <span class="nn">twisted.python</span> <span class="kn">import</span> <span class="n">components</span>
 
 <span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">to_str</span>
 
 <span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
 <span class="n">_RE_SCREENREADER_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>

@@ -84,12 +84,15 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">re</span> <span class="k">as</span> <span class="nn">_re</span>
-<span class="kn">import</span> <span class="nn">pytz</span> <span class="k">as</span> <span class="nn">_pytz</span>
 <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">_dt</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">string_partial_matching</span> <span class="k">as</span> <span class="n">_partial</span><span class="p">,</span> <span class="n">validate_email_address</span>
+<span class="kn">import</span> <span class="nn">re</span> <span class="k">as</span> <span class="nn">_re</span>
+
+<span class="kn">import</span> <span class="nn">pytz</span> <span class="k">as</span> <span class="nn">_pytz</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">strip_ansi</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">string_partial_matching</span> <span class="k">as</span> <span class="n">_partial</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">validate_email_address</span>
 
 <span class="n">_TZ_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">tz</span><span class="p">):</span> <span class="n">_pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span> <span class="k">for</span> <span class="n">tz</span> <span class="ow">in</span> <span class="n">_pytz</span><span class="o">.</span><span class="n">common_timezones</span><span class="p">}</span>
 

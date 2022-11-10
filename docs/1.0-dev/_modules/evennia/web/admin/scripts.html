@@ -83,9 +83,10 @@
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 <span class="kn">from</span> <span class="nn">evennia.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">adminutils</span>
 <span class="kn">from</span> <span class="nn">.attributes</span> <span class="kn">import</span> <span class="n">AttributeInline</span>
 <span class="kn">from</span> <span class="nn">.tags</span> <span class="kn">import</span> <span class="n">TagInline</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">adminutils</span>
 
 
 <div class="viewcode-block" id="ScriptForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.scripts.html#evennia.web.admin.scripts.ScriptForm">[docs]</a><span class="k">class</span> <span class="nc">ScriptForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>

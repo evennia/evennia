@@ -93,6 +93,9 @@
 <span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
+
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DefaultCharacter</span><span class="p">,</span>
     <span class="n">DefaultExit</span><span class="p">,</span>
@@ -114,8 +117,6 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">gametime</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">EvenniaCommandTest</span>
-<span class="kn">from</span> <span class="nn">parameterized</span> <span class="kn">import</span> <span class="n">parameterized</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">task</span>
 
 <span class="c1"># ------------------------------------------------------------</span>
 <span class="c1"># Command testing</span>
@@ -1660,8 +1661,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span>
             <span class="s2">&quot;Obj = Room2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Obj(#</span><span class="si">{}</span><span class="s2">) is leaving Room(#</span><span class="si">{}</span><span class="s2">), heading for Room2(#</span><span class="si">{}</span><span class="s2">).|Teleported Obj -&gt; Room2.&quot;</span>
-            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oid</span><span class="p">,</span> <span class="n">rid</span><span class="p">,</span> <span class="n">rid2</span><span class="p">),</span>
+            <span class="s2">&quot;Obj(#</span><span class="si">{}</span><span class="s2">) is leaving Room(#</span><span class="si">{}</span><span class="s2">), heading for Room2(#</span><span class="si">{}</span><span class="s2">).|Teleported Obj -&gt; Room2.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">oid</span><span class="p">,</span> <span class="n">rid</span><span class="p">,</span> <span class="n">rid2</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">building</span><span class="o">.</span><span class="n">CmdTeleport</span><span class="p">(),</span> <span class="s2">&quot;NotFound = Room&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;NotFound&#39;.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -1777,8 +1779,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;{&#39;prototype_key&#39;:&#39;GOBLIN&#39;, &#39;typeclass&#39;:&#39;evennia.objects.objects.DefaultCharacter&#39;, &quot;</span>
-            <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span>
-            <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+            <span class="s2">&quot;&#39;key&#39;:&#39;goblin&#39;, &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned goblin&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">goblin</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;goblin&quot;</span><span class="p">)</span>
@@ -1826,8 +1827,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
             <span class="n">building</span><span class="o">.</span><span class="n">CmdSpawn</span><span class="p">(),</span>
             <span class="s2">&quot;/noloc {&#39;prototype_parent&#39;:&#39;TESTBALL&#39;, &#39;key&#39;: &#39;Ball&#39;, &#39;prototype_key&#39;: &#39;foo&#39;,&quot;</span>
-            <span class="s2">&quot; &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span>
-            <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
+            <span class="s2">&quot; &#39;location&#39;:&#39;</span><span class="si">%s</span><span class="s2">&#39;}&quot;</span> <span class="o">%</span> <span class="n">spawnLoc</span><span class="o">.</span><span class="n">dbref</span><span class="p">,</span>
             <span class="s2">&quot;Spawned Ball&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ball</span> <span class="o">=</span> <span class="n">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Ball&quot;</span><span class="p">)</span>

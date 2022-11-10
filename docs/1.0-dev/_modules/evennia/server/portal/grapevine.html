@@ -86,12 +86,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span>
+
+<span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="kn">import</span> <span class="n">WebSocketClientFactory</span><span class="p">,</span> <span class="n">WebSocketClientProtocol</span><span class="p">,</span> <span class="n">connectWS</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span>
+
 <span class="kn">from</span> <span class="nn">evennia.server.session</span> <span class="kn">import</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_info</span><span class="p">,</span> <span class="n">log_err</span>
-<span class="kn">from</span> <span class="nn">autobahn.twisted.websocket</span> <span class="kn">import</span> <span class="n">WebSocketClientProtocol</span><span class="p">,</span> <span class="n">WebSocketClientFactory</span><span class="p">,</span> <span class="n">connectWS</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.logger</span> <span class="kn">import</span> <span class="n">log_err</span><span class="p">,</span> <span class="n">log_info</span>
 
 <span class="c1"># There is only one at this time</span>
 <span class="n">GRAPEVINE_URI</span> <span class="o">=</span> <span class="s2">&quot;wss://grapevine.haus/socket&quot;</span>

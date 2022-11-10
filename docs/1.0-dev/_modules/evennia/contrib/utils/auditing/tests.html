@@ -79,13 +79,16 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
-<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">AuditedServerSession</span>
+
+<span class="kn">from</span> <span class="nn">anything</span> <span class="kn">import</span> <span class="n">Anything</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
+
 <span class="kn">from</span> <span class="nn">evennia.server.sessionhandler</span> <span class="kn">import</span> <span class="n">SESSIONS</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+
+<span class="kn">from</span> <span class="nn">.server</span> <span class="kn">import</span> <span class="n">AuditedServerSession</span>
 
 
 <div class="viewcode-block" id="AuditingTest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.auditing.tests.html#evennia.contrib.utils.auditing.tests.AuditingTest">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="n">AUDIT_MASKS</span><span class="o">=</span><span class="p">[])</span>

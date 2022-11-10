@@ -78,14 +78,15 @@
 <span class="sd">Tests for the buff system contrib</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
-<span class="kn">from</span> <span class="nn">.samplebuffs</span> <span class="kn">import</span> <span class="n">StatBuff</span>
-<span class="kn">from</span> <span class="nn">.buff</span> <span class="kn">import</span> <span class="n">BaseBuff</span><span class="p">,</span> <span class="n">Mod</span><span class="p">,</span> <span class="n">BuffHandler</span><span class="p">,</span> <span class="n">BuffableProperty</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
 
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">create_object</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.rpg.buffs</span> <span class="kn">import</span> <span class="n">buff</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+
+<span class="kn">from</span> <span class="nn">.buff</span> <span class="kn">import</span> <span class="n">BaseBuff</span><span class="p">,</span> <span class="n">BuffableProperty</span><span class="p">,</span> <span class="n">BuffHandler</span><span class="p">,</span> <span class="n">Mod</span>
+<span class="kn">from</span> <span class="nn">.samplebuffs</span> <span class="kn">import</span> <span class="n">StatBuff</span>
 
 
 <span class="k">class</span> <span class="nc">_EmptyBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>

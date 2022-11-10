@@ -84,28 +84,31 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
-<span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="n">Telnet</span><span class="p">,</span> <span class="n">StatefulTelnetProtocol</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">twisted.conch.telnet</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">IAC</span><span class="p">,</span>
-    <span class="n">NOP</span><span class="p">,</span>
-    <span class="n">LINEMODE</span><span class="p">,</span>
-    <span class="n">GA</span><span class="p">,</span>
-    <span class="n">WILL</span><span class="p">,</span>
-    <span class="n">WONT</span><span class="p">,</span>
     <span class="n">ECHO</span><span class="p">,</span>
-    <span class="n">NULL</span><span class="p">,</span>
-    <span class="n">MODE</span><span class="p">,</span>
+    <span class="n">GA</span><span class="p">,</span>
+    <span class="n">IAC</span><span class="p">,</span>
+    <span class="n">LINEMODE</span><span class="p">,</span>
     <span class="n">LINEMODE_EDIT</span><span class="p">,</span>
     <span class="n">LINEMODE_TRAPSIG</span><span class="p">,</span>
+    <span class="n">MODE</span><span class="p">,</span>
+    <span class="n">NOP</span><span class="p">,</span>
+    <span class="n">NULL</span><span class="p">,</span>
+    <span class="n">WILL</span><span class="p">,</span>
+    <span class="n">WONT</span><span class="p">,</span>
+    <span class="n">StatefulTelnetProtocol</span><span class="p">,</span>
+    <span class="n">Telnet</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">ttype</span><span class="p">,</span> <span class="n">mssp</span><span class="p">,</span> <span class="n">telnet_oob</span><span class="p">,</span> <span class="n">naws</span><span class="p">,</span> <span class="n">suppress_ga</span>
-<span class="kn">from</span> <span class="nn">evennia.server.portal.mccp</span> <span class="kn">import</span> <span class="n">Mccp</span><span class="p">,</span> <span class="n">mccp_compress</span><span class="p">,</span> <span class="n">MCCP</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">protocol</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+
+<span class="kn">from</span> <span class="nn">evennia.server.portal</span> <span class="kn">import</span> <span class="n">mssp</span><span class="p">,</span> <span class="n">naws</span><span class="p">,</span> <span class="n">suppress_ga</span><span class="p">,</span> <span class="n">telnet_oob</span><span class="p">,</span> <span class="n">ttype</span>
+<span class="kn">from</span> <span class="nn">evennia.server.portal.mccp</span> <span class="kn">import</span> <span class="n">MCCP</span><span class="p">,</span> <span class="n">Mccp</span><span class="p">,</span> <span class="n">mccp_compress</span>
 <span class="kn">from</span> <span class="nn">evennia.server.portal.mxp</span> <span class="kn">import</span> <span class="n">Mxp</span><span class="p">,</span> <span class="n">mxp_parse</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">ansi</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">class_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">to_bytes</span>
 
 <span class="n">_RE_N</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\|n$&quot;</span><span class="p">)</span>
 <span class="n">_RE_LEND</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rb</span><span class="s2">&quot;\n$|\r$|\r\n$|\r\x00$|&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>

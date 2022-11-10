@@ -94,9 +94,10 @@
 <span class="kn">from</span> <span class="nn">django.db.models.signals</span> <span class="kn">import</span> <span class="n">post_migrate</span><span class="p">,</span> <span class="n">post_save</span><span class="p">,</span> <span class="n">pre_delete</span>
 <span class="kn">from</span> <span class="nn">django.db.transaction</span> <span class="kn">import</span> <span class="n">atomic</span>
 <span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">DatabaseError</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.reactor</span> <span class="kn">import</span> <span class="n">callFromThread</span>
+
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">dbref</span><span class="p">,</span> <span class="n">get_evennia_pids</span><span class="p">,</span> <span class="n">to_str</span>
-<span class="kn">from</span> <span class="nn">twisted.internet.reactor</span> <span class="kn">import</span> <span class="n">callFromThread</span>
 
 <span class="kn">from</span> <span class="nn">.manager</span> <span class="kn">import</span> <span class="n">SharedMemoryManager</span>
 

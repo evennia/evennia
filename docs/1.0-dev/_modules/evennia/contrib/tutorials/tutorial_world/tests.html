@@ -80,12 +80,16 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">twisted.trial.unittest</span> <span class="kn">import</span> <span class="n">TestCase</span> <span class="k">as</span> <span class="n">TwistedTestCase</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.base</span> <span class="kn">import</span> <span class="n">DelayedCall</span>
+<span class="kn">from</span> <span class="nn">twisted.trial.unittest</span> <span class="kn">import</span> <span class="n">TestCase</span> <span class="k">as</span> <span class="n">TwistedTestCase</span>
+
 <span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">mockdelay</span><span class="p">,</span> <span class="n">mockdeferLater</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mob</span><span class="p">,</span> <span class="n">objects</span> <span class="k">as</span> <span class="n">tutobjects</span><span class="p">,</span> <span class="n">rooms</span> <span class="k">as</span> <span class="n">tutrooms</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span><span class="p">,</span> <span class="n">mockdeferLater</span><span class="p">,</span> <span class="n">mockdelay</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mob</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">objects</span> <span class="k">as</span> <span class="n">tutobjects</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">rooms</span> <span class="k">as</span> <span class="n">tutrooms</span>
 
 
 <div class="viewcode-block" id="TestTutorialWorldMob"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldMob">[docs]</a><span class="k">class</span> <span class="nc">TestTutorialWorldMob</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>

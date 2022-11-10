@@ -85,10 +85,11 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 
-<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span> <span class="k">as</span> <span class="n">ev_settings</span>
-<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">get_evennia_version</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">timezone</span>
+
 <span class="kn">from</span> <span class="nn">evennia.server.serversession</span> <span class="kn">import</span> <span class="n">ServerSession</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">get_evennia_version</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">utils</span>
 
 <span class="c1"># Attributes governing auditing of commands and where to send log objects</span>
 <span class="n">AUDIT_CALLBACK</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>

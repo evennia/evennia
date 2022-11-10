@@ -84,12 +84,13 @@
 
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span>
-<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
 
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">Attribute</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">_SaverSet</span><span class="p">,</span> <span class="n">from_pickle</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.picklefield</span> <span class="kn">import</span> <span class="n">PickledFormField</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">from_pickle</span><span class="p">,</span> <span class="n">_SaverSet</span>
 
 
 <div class="viewcode-block" id="AttributeForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeForm">[docs]</a><span class="k">class</span> <span class="nc">AttributeForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>

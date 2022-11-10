@@ -119,12 +119,13 @@
 <span class="sd">- Positionable (supports sit/lie/knee/climb at once)</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">list_to_string</span><span class="p">,</span> <span class="n">wrap</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">create_evscaperoom_object</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">parse_for_perspectives</span><span class="p">,</span> <span class="n">parse_for_things</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">create_evscaperoom_object</span><span class="p">,</span> <span class="n">parse_for_perspectives</span><span class="p">,</span> <span class="n">parse_for_things</span>
 
 
 <div class="viewcode-block" id="EvscaperoomObject"><a class="viewcode-back" href="../../../../../api/evennia.contrib.full_systems.evscaperoom.objects.html#evennia.contrib.full_systems.evscaperoom.objects.EvscaperoomObject">[docs]</a><span class="k">class</span> <span class="nc">EvscaperoomObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
