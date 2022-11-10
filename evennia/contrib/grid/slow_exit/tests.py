@@ -4,8 +4,10 @@ Slow exit tests.
 """
 
 from mock import Mock, patch
+
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils.create import create_object
+
 from . import slow_exit
 
 slow_exit.MOVE_DELAY = {"stroll": 0, "walk": 0, "run": 0, "sprint": 0}

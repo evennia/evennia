@@ -7,17 +7,16 @@ sets up all the networking features.  (this is done automatically
 by game/evennia.py).
 
 """
-import sys
 import os
+import sys
 import time
-
-from os.path import dirname, abspath
-from twisted.application import internet, service
-from twisted.internet.task import LoopingCall
-from twisted.internet import protocol, reactor
-from twisted.logger import globalLogPublisher
+from os.path import abspath, dirname
 
 import django
+from twisted.application import internet, service
+from twisted.internet import protocol, reactor
+from twisted.internet.task import LoopingCall
+from twisted.logger import globalLogPublisher
 
 django.setup()
 from django.conf import settings
@@ -27,11 +26,10 @@ import evennia
 
 evennia._init()
 
-from evennia.utils.utils import get_evennia_version, mod_import, make_iter, class_from_module
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
-from evennia.utils import logger
 from evennia.server.webserver import EvenniaReverseProxyResource
-
+from evennia.utils import logger
+from evennia.utils.utils import class_from_module, get_evennia_version, make_iter, mod_import
 
 # we don't need a connection to the database so close it right away
 try:
@@ -394,8 +392,9 @@ if WEBSERVER_ENABLED:
                 if WEBSOCKET_CLIENT_ENABLED and not websocket_started:
                     # start websocket client port for the webclient
                     # we only support one websocket client
-                    from evennia.server.portal import webclient  # noqa
                     from autobahn.twisted.websocket import WebSocketServerFactory
+
+                    from evennia.server.portal import webclient  # noqa
 
                     w_interface = WEBSOCKET_CLIENT_INTERFACE
                     w_ifacestr = ""

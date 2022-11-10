@@ -5,6 +5,7 @@ Tests of simpledoor.
 
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from . import simpledoor
 
 

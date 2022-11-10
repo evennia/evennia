@@ -6,8 +6,9 @@ Test the EvAdventure equipment handler.
 
 from unittest.mock import MagicMock, patch
 
-from evennia.utils.test_resources import BaseEvenniaTest
 from parameterized import parameterized
+
+from evennia.utils.test_resources import BaseEvenniaTest
 
 from ..enums import Ability, WieldLocation
 from ..equipment import EquipmentError

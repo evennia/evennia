@@ -4,12 +4,14 @@ Admin commands
 
 """
 
-import time
 import re
+import time
+
 from django.conf import settings
-from evennia.server.sessionhandler import SESSIONS
+
 from evennia.server.models import ServerConfig
-from evennia.utils import evtable, logger, search, class_from_module
+from evennia.server.sessionhandler import SESSIONS
+from evennia.utils import class_from_module, evtable, logger, search
 
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 

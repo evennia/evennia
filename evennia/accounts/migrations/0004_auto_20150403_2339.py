@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-from django.db import models, migrations
-import evennia.accounts.manager
 import django.core.validators
+from django.db import migrations, models
+
+import evennia.accounts.manager
 
 
 class Migration(migrations.Migration):

@@ -1,9 +1,9 @@
 from evennia.contrib.base_systems.components import Component, DBField, TagField, signals
-from evennia.contrib.base_systems.components.holder import ComponentProperty, ComponentHolderMixin
+from evennia.contrib.base_systems.components.holder import ComponentHolderMixin, ComponentProperty
 from evennia.contrib.base_systems.components.signals import as_listener
 from evennia.objects.objects import DefaultCharacter
 from evennia.utils import create
-from evennia.utils.test_resources import EvenniaTest, BaseEvenniaTest
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
 
 
 class ComponentTestA(Component):

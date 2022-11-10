@@ -4,7 +4,7 @@ in loading global scripts where the module can be parsed but has broken
 dependencies.
 """
 
-from evennia import nonexistent_module, DefaultScript
+from evennia import DefaultScript, nonexistent_module
 
 
 class BrokenScript(DefaultScript):

@@ -6,8 +6,9 @@ Test the rules and chargen.
 from unittest.mock import MagicMock, call, patch
 
 from anything import Something
-from evennia.utils.test_resources import BaseEvenniaTest
 from parameterized import parameterized
+
+from evennia.utils.test_resources import BaseEvenniaTest
 
 from .. import characters, enums, equipment, random_tables, rules
 from .mixins import EvAdventureMixin

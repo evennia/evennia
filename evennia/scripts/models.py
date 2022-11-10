@@ -25,10 +25,11 @@ Common examples of uses of Scripts:
 
 """
 from django.conf import settings
-from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
-from evennia.typeclasses.models import TypedObject
+from django.db import models
+
 from evennia.scripts.manager import ScriptDBManager
+from evennia.typeclasses.models import TypedObject
 from evennia.utils.utils import dbref, to_str
 
 __all__ = ("ScriptDB",)

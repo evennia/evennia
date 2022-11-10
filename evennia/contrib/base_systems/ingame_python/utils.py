@@ -6,14 +6,13 @@ These functions are to be used by developers to customize events and callbacks.
 """
 
 from django.conf import settings
-from evennia import logger
-from evennia import ScriptDB
+
+from evennia import ScriptDB, logger
+from evennia.contrib.base_systems.custom_gametime import UNITS, gametime_to_realtime
+from evennia.contrib.base_systems.custom_gametime import real_seconds_until as custom_rsu
 from evennia.utils.create import create_script
 from evennia.utils.gametime import real_seconds_until as standard_rsu
 from evennia.utils.utils import class_from_module
-from evennia.contrib.base_systems.custom_gametime import UNITS
-from evennia.contrib.base_systems.custom_gametime import gametime_to_realtime
-from evennia.contrib.base_systems.custom_gametime import real_seconds_until as custom_rsu
 
 # Temporary storage for events waiting for the script to be started
 EVENTS = []

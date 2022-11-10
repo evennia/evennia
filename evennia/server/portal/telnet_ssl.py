@@ -26,6 +26,7 @@ except ImportError as error:
     raise ImportError(errstr.format(err=error))
 
 from django.conf import settings
+
 from evennia.server.portal.telnet import TelnetProtocol
 
 _GAME_DIR = settings.GAME_DIR

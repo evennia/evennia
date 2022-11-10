@@ -4,6 +4,7 @@ Building menu tests.
 """
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from .building_menu import BuildingMenu, CmdNoMatch
 
 

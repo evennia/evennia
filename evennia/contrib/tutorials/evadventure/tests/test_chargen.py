@@ -5,9 +5,10 @@ Test chargen.
 
 from unittest.mock import MagicMock, patch
 
+from parameterized import parameterized
+
 from evennia import create_object
 from evennia.utils.test_resources import BaseEvenniaTest
-from parameterized import parameterized
 
 from .. import chargen, enums, objects
 

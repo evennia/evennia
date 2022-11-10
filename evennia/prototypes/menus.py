@@ -7,16 +7,17 @@ OLC Prototype menu nodes
 import json
 import re
 from random import choice
-from django.db.models import Q
+
 from django.conf import settings
-from evennia.objects.models import ObjectDB
-from evennia.utils.evmenu import EvMenu, list_node
-from evennia.utils import evmore
-from evennia.utils.ansi import strip_ansi
-from evennia.utils import utils
+from django.db.models import Q
+
 from evennia.locks.lockhandler import get_all_lockfuncs
+from evennia.objects.models import ObjectDB
 from evennia.prototypes import prototypes as protlib
 from evennia.prototypes import spawner
+from evennia.utils import evmore, utils
+from evennia.utils.ansi import strip_ansi
+from evennia.utils.evmenu import EvMenu, list_node
 
 # ------------------------------------------------------------
 #

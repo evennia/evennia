@@ -69,6 +69,7 @@ NAMEGEN_FANTASY_RULES = {
 import random
 import re
 from os import path
+
 from django.conf import settings
 
 from evennia.utils.utils import is_iter

@@ -4,14 +4,15 @@ Views to manipulate help entries.
 Multi entry object type supported added by DaveWithTheNiceHat 2021
     Pull Request #2429
 """
-from django.utils.text import slugify
 from django.conf import settings
-from evennia.utils.utils import inherits_from
-from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest
-from evennia.help.models import HelpEntry
+from django.utils.text import slugify
+from django.views.generic import DetailView, ListView
+
 from evennia.help.filehelp import FILE_HELP_ENTRIES
+from evennia.help.models import HelpEntry
 from evennia.utils.ansi import strip_ansi
+from evennia.utils.utils import inherits_from
 
 DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 

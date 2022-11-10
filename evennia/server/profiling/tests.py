@@ -1,6 +1,7 @@
-from django.test import TestCase
-from mock import Mock, patch, mock_open
 from anything import Something
+from django.test import TestCase
+from mock import Mock, mock_open, patch
+
 from .dummyrunner_settings import (
     c_creates_button,
     c_creates_obj,

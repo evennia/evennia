@@ -6,6 +6,7 @@ Rooms are simple containers that has no location of their own.
 """
 
 from evennia.objects.objects import DefaultRoom
+
 from .objects import ObjectParent
 
 

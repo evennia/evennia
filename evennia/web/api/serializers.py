@@ -12,12 +12,12 @@ often django model instances, that we can use (deserialization).
 
 from rest_framework import serializers
 
-from evennia.objects.objects import DefaultObject
 from evennia.accounts.accounts import DefaultAccount
+from evennia.help.models import HelpEntry
+from evennia.objects.objects import DefaultObject
 from evennia.scripts.models import ScriptDB
 from evennia.typeclasses.attributes import Attribute
 from evennia.typeclasses.tags import Tag
-from evennia.help.models import HelpEntry
 
 
 class AttributeSerializer(serializers.ModelSerializer):

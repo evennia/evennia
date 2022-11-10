@@ -13,9 +13,9 @@ We also need to build the toc-tree and should do so automatically for now.
 
 """
 
+import datetime
 import glob
 import re
-import datetime
 
 _RE_MD_LINK = re.compile(r"\[(?P<txt>[\w -\[\]]+?)\]\((?P<url>.+?)\)", re.I + re.S + re.U)
 _RE_REF_LINK = re.compile(r"\[[\w -\[\]]*?\]\(.+?\)", re.I + re.S + re.U)

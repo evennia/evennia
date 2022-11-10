@@ -13,9 +13,10 @@ the easiest place to do it. Write a method and invoke it via
 
 Evennia contribution - Johnny 2017
 """
-from evennia.utils.logger import log_file
 import json
 import syslog
+
+from evennia.utils.logger import log_file
 
 
 def to_file(data):

@@ -2,13 +2,15 @@
 Tests for the REST API.
 
 """
+from collections import namedtuple
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.test import override_settings
+from django.urls import include, path, reverse
+from rest_framework.test import APIClient
+
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.web.api import serializers
-from rest_framework.test import APIClient
-from django.urls import reverse, path, include
-from django.test import override_settings
-from collections import namedtuple
-from django.core.exceptions import ObjectDoesNotExist
 
 urlpatterns = [
     path(r"^", include("evennia.web.website.urls")),

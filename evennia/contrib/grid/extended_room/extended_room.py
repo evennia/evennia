@@ -86,12 +86,10 @@ typeclass or use the `typeclass` command to swap existing rooms.
 
 import datetime
 import re
+
 from django.conf import settings
-from evennia import DefaultRoom
-from evennia import gametime
-from evennia import default_cmds
-from evennia import utils
-from evennia import CmdSet
+
+from evennia import CmdSet, DefaultRoom, default_cmds, gametime, utils
 
 # error return function, needed by Extended Look command
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit(".", 1))

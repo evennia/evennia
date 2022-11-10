@@ -12,7 +12,7 @@ should modify urls.py in those sub directories.
 Search the Django documentation for "URL dispatcher" for more help.
 
 """
-from django.urls import path, include
+from django.urls import include, path
 
 # default evennia patterns
 from evennia.web.urls import urlpatterns as evennia_default_urlpatterns

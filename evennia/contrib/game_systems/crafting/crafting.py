@@ -121,11 +121,12 @@ a full example of the components for creating a sword from base components.
 
 import functools
 from copy import copy
-from evennia.utils.utils import iter_to_str, callables_from_module, inherits_from, make_iter
+
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.prototypes.spawner import spawn
 from evennia.utils.create import create_object
+from evennia.utils.utils import callables_from_module, inherits_from, iter_to_str, make_iter
 
 _RECIPE_CLASSES = {}
 

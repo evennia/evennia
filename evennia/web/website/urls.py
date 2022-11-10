@@ -4,9 +4,11 @@ This redirects to website sub-pages.
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
-from .views import index, errors, accounts, help as helpviews, channels, characters
+from django.urls import include, path
 
+from .views import accounts, channels, characters, errors
+from .views import help as helpviews
+from .views import index
 
 urlpatterns = [
     # website front page

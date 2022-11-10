@@ -26,10 +26,10 @@ will replace the default `desc` command).
 
 """
 import re
-from evennia import default_cmds
-from evennia.utils.utils import crop
-from evennia.utils.eveditor import EvEditor
 
+from evennia import default_cmds
+from evennia.utils.eveditor import EvEditor
+from evennia.utils.utils import crop
 
 # regex for the set functionality
 _RE_KEYS = re.compile(r"([\w\s]+)(?:\+*?)", re.U + re.I)

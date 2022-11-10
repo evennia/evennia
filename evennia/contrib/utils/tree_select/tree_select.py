@@ -158,9 +158,9 @@ character's command set.
 
 """
 
+from evennia import Command
 from evennia.utils import evmenu
 from evennia.utils.logger import log_trace
-from evennia import Command
 
 
 def init_tree_selection(

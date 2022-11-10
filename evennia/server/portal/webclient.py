@@ -14,15 +14,17 @@ The most common inputfunc is "text", which takes just the text input
 from the command line and interprets it as an Evennia Command: `["text", ["look"], {}]`
 
 """
-import re
-import json
 import html
+import json
+import re
+
+from autobahn.exception import Disconnected
+from autobahn.twisted.websocket import WebSocketServerProtocol
 from django.conf import settings
-from evennia.utils.utils import mod_import, class_from_module
+
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
-from autobahn.twisted.websocket import WebSocketServerProtocol
-from autobahn.exception import Disconnected
+from evennia.utils.utils import class_from_module, mod_import
 
 _RE_SCREENREADER_REGEX = re.compile(
     r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE

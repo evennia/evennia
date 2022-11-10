@@ -10,8 +10,7 @@ command method rather than caller.msg().
 """
 
 from evennia.commands.cmdset import CmdSet
-from evennia.commands.default import help, comms, admin, system
-from evennia.commands.default import building, account, general
+from evennia.commands.default import account, admin, building, comms, general, help, system
 
 
 class AccountCmdSet(CmdSet):

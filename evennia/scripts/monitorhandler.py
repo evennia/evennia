@@ -11,12 +11,11 @@ functionality:
 
 """
 import inspect
-
 from collections import defaultdict
+
 from evennia.server.models import ServerConfig
+from evennia.utils import logger, variable_from_module
 from evennia.utils.dbserialize import dbserialize, dbunserialize
-from evennia.utils import logger
-from evennia.utils import variable_from_module
 
 _SA = object.__setattr__
 _GA = object.__getattribute__

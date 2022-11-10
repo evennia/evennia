@@ -10,12 +10,14 @@ the grapevine client to in-game channels.
 """
 
 import json
-from twisted.internet import protocol
+
+from autobahn.twisted.websocket import WebSocketClientFactory, WebSocketClientProtocol, connectWS
 from django.conf import settings
+from twisted.internet import protocol
+
 from evennia.server.session import Session
 from evennia.utils import get_evennia_version
-from evennia.utils.logger import log_info, log_err
-from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientFactory, connectWS
+from evennia.utils.logger import log_err, log_info
 
 # There is only one at this time
 GRAPEVINE_URI = "wss://grapevine.haus/socket"

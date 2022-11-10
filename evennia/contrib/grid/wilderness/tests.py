@@ -3,9 +3,10 @@ Test wilderness
 
 """
 
-from evennia.utils.test_resources import BaseEvenniaTest
 from evennia import DefaultCharacter
 from evennia.utils.create import create_object
+from evennia.utils.test_resources import BaseEvenniaTest
+
 from . import wilderness
 
 

@@ -5,8 +5,9 @@ sub-categories.
 This is used primarily by the default `help` command.
 
 """
-from django.conf import settings
 import re
+
+from django.conf import settings
 
 # these are words that Lunr normally ignores but which we want to find
 # since we use them (e.g. as command names).
@@ -58,14 +59,13 @@ def help_search_with_index(query, candidate_entries, suggestion_maxnum=5, fields
     if not _LUNR:
         # we have to delay-load lunr because it messes with logging if it's imported
         # before twisted's logging has been set up
-        from lunr import lunr as _LUNR
-        from lunr.exceptions import QueryParseError as _LUNR_EXCEPTION
         from lunr import get_default_builder as _LUNR_GET_BUILDER
+        from lunr import lunr as _LUNR
         from lunr import stop_word_filter
+        from lunr.exceptions import QueryParseError as _LUNR_EXCEPTION
         from lunr.stemmer import stemmer
 
         # from lunr.trimmer import trimmer
-
         # pre-create a lunr index-builder pipeline where we've removed some of
         # the stop-words from the default in lunr.
 

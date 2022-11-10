@@ -5,9 +5,10 @@ Tests for dbserialize module
 from collections import defaultdict, deque
 
 from django.test import TestCase
+from parameterized import parameterized
+
 from evennia.objects.objects import DefaultObject
 from evennia.utils import dbserialize
-from parameterized import parameterized
 
 
 class TestDbSerialize(TestCase):

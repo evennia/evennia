@@ -32,15 +32,15 @@ for instructions on how to define this module.
 """
 
 
+import random
 import sys
 import time
-import random
 from argparse import ArgumentParser
-from twisted.conch import telnet
-from twisted.internet import reactor, protocol
-from twisted.internet.task import LoopingCall
 
 import django
+from twisted.conch import telnet
+from twisted.internet import protocol, reactor
+from twisted.internet.task import LoopingCall
 
 django.setup()
 import evennia  # noqa
@@ -48,9 +48,10 @@ import evennia  # noqa
 evennia._init()
 
 from django.conf import settings  # noqa
-from evennia.utils import mod_import, time_format  # noqa
-from evennia.commands.command import Command  # noqa
+
 from evennia.commands.cmdset import CmdSet  # noqa
+from evennia.commands.command import Command  # noqa
+from evennia.utils import mod_import, time_format  # noqa
 from evennia.utils.ansi import strip_ansi  # noqa
 
 # Load the dummyrunner settings module

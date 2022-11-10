@@ -3,7 +3,9 @@ Tests for the bodyfunctions.
 
 """
 from mock import Mock, patch
+
 from evennia.utils.test_resources import BaseEvenniaTest
+
 from .bodyfunctions import BodyFunctions
 
 

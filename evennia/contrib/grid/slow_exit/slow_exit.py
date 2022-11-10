@@ -55,11 +55,10 @@ TickerHandler might be better.
 
 """
 
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.command import Command
 from evennia.objects.objects import DefaultExit
 from evennia.utils import utils
-from evennia.commands.command import Command
-from evennia.commands.cmdset import CmdSet
-
 
 MOVE_DELAY = {"stroll": 6, "walk": 4, "run": 2, "sprint": 1}
 

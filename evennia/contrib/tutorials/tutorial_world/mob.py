@@ -7,10 +7,8 @@ object based on that mobile class.
 
 import random
 
-from evennia import TICKER_HANDLER
-from evennia import search_object
-from evennia import Command, CmdSet
-from evennia import logger
+from evennia import TICKER_HANDLER, CmdSet, Command, logger, search_object
+
 from . import objects as tut_objects
 
 

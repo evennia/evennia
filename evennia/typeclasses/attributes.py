@@ -8,20 +8,19 @@ which is a non-db version of Attributes.
 
 
 """
-import re
 import fnmatch
-
+import re
 from collections import defaultdict
 
-from django.db import models
 from django.conf import settings
+from django.db import models
 from django.utils.encoding import smart_str
 
 from evennia.locks.lockhandler import LockHandler
+from evennia.utils.dbserialize import from_pickle, to_pickle
 from evennia.utils.idmapper.models import SharedMemoryModel
-from evennia.utils.dbserialize import to_pickle, from_pickle
 from evennia.utils.picklefield import PickledObjectField
-from evennia.utils.utils import lazy_property, to_str, make_iter, is_iter
+from evennia.utils.utils import is_iter, lazy_property, make_iter, to_str
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
 

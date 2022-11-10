@@ -3,16 +3,18 @@ Test map builder.
 
 """
 
-from evennia.commands.default.tests import BaseEvenniaCommandTest
-from . import mapbuilder
+import random
+from random import randint
 
-# -*- coding: utf-8 -*-
+from typeclasses import exits, rooms
 
 # Add the necessary imports for your instructions here.
 from evennia import create_object
-from typeclasses import rooms, exits
-from random import randint
-import random
+from evennia.commands.default.tests import BaseEvenniaCommandTest
+
+from . import mapbuilder
+
+# -*- coding: utf-8 -*-
 
 
 # A map with a temple (▲) amongst mountains (n,∩) in a forest (♣,♠) on an

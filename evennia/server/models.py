@@ -10,12 +10,10 @@ manager's conf() method.
 """
 from django.db import models
 
-from evennia.utils.idmapper.models import WeakSharedMemoryModel
-from evennia.utils import logger, utils
-from evennia.utils.dbserialize import to_pickle, from_pickle
 from evennia.server.manager import ServerConfigManager
-from evennia.utils import picklefield
-
+from evennia.utils import logger, picklefield, utils
+from evennia.utils.dbserialize import from_pickle, to_pickle
+from evennia.utils.idmapper.models import WeakSharedMemoryModel
 
 # ------------------------------------------------------------
 #

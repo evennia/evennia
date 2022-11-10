@@ -11,16 +11,26 @@ in a separate module (e.g. if they could have been re-used elsewhere.)
 
 
 import random
-from evennia import TICKER_HANDLER
-from evennia import CmdSet, Command, DefaultRoom, DefaultExit
-from evennia import utils, create_object, search_object
-from evennia import syscmdkeys, default_cmds
-from .objects import LightSource
 
 # the system error-handling module is defined in the settings. We load the
 # given setting here using utils.object_from_module. This way we can use
 # it regardless of if we change settings later.
 from django.conf import settings
+
+from evennia import (
+    TICKER_HANDLER,
+    CmdSet,
+    Command,
+    DefaultExit,
+    DefaultRoom,
+    create_object,
+    default_cmds,
+    search_object,
+    syscmdkeys,
+    utils,
+)
+
+from .objects import LightSource
 
 _SEARCH_AT_RESULT = utils.object_from_module(settings.SEARCH_AT_RESULT)
 

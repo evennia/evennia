@@ -2,10 +2,11 @@
 Custom manager for HelpEntry objects.
 """
 from django.db import IntegrityError
-from evennia.utils import logger, utils
-from evennia.typeclasses.managers import TypedObjectManager
-from evennia.utils.utils import make_iter
+
 from evennia.server import signals
+from evennia.typeclasses.managers import TypedObjectManager
+from evennia.utils import logger, utils
+from evennia.utils.utils import make_iter
 
 __all__ = ("HelpEntryManager",)
 

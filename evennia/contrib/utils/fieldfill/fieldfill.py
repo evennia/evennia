@@ -139,9 +139,9 @@ Optional:
         the field to False or True.
 """
 
-from evennia.utils import evmenu, evtable, delay, list_to_string, logger
 from evennia import Command
 from evennia.server.sessionhandler import SESSIONS
+from evennia.utils import delay, evmenu, evtable, list_to_string, logger
 
 
 class FieldEvMenu(evmenu.EvMenu):

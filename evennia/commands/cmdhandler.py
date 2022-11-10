@@ -36,12 +36,13 @@ from weakref import WeakValueDictionary
 
 from django.conf import settings
 from django.utils.translation import gettext as _
-from evennia.commands.command import InterruptCommand
-from evennia.utils import logger, utils
-from evennia.utils.utils import string_suggestions
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.task import deferLater
+
+from evennia.commands.command import InterruptCommand
+from evennia.utils import logger, utils
+from evennia.utils.utils import string_suggestions
 
 _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 

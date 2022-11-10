@@ -17,7 +17,7 @@ This is the starting point when a user enters an URL.
 """
 
 from django.conf import settings
-from django.urls import path, include
+from django.urls import include, path
 from django.views.generic import RedirectView
 
 # Setup the root url tree from /

@@ -152,6 +152,7 @@ import re
 from string import punctuation
 
 from django.conf import settings
+
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.objects.models import ObjectDB

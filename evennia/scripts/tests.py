@@ -1,11 +1,12 @@
 from unittest import TestCase, mock
+
 from parameterized import parameterized
 
 from evennia import DefaultScript
-from evennia.scripts.models import ScriptDB, ObjectDoesNotExist
+from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
+from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 from evennia.utils.create import create_script
 from evennia.utils.test_resources import BaseEvenniaTest
-from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
 
 
 class TestScript(BaseEvenniaTest):

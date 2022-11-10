@@ -5,12 +5,15 @@ Testing puzzles.
 
 # Test of the Puzzles module
 
-import re
 import itertools
+import re
+
 from mock import Mock
-from evennia.utils import search
+
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+from evennia.utils import search
 from evennia.utils.create import create_object
+
 from . import puzzles
 
 

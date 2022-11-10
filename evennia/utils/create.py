@@ -14,8 +14,8 @@ objects already existing in the database.
 
 """
 
-from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.contenttypes.models import ContentType
+from django.db.utils import OperationalError, ProgrammingError
 
 # limit symbol import from API
 __all__ = (
@@ -41,11 +41,11 @@ try:
 except (OperationalError, ProgrammingError):
     # this is a fallback used during tests/doc building
     print("Database not available yet - using temporary fallback for create managers.")
-    from evennia.objects.models import ObjectDB
     from evennia.accounts.models import AccountDB
-    from evennia.scripts.models import ScriptDB
-    from evennia.comms.models import Msg, ChannelDB
+    from evennia.comms.models import ChannelDB, Msg
     from evennia.help.models import HelpEntry
+    from evennia.objects.models import ObjectDB
+    from evennia.scripts.models import ScriptDB
     from evennia.typeclasses.tags import Tag  # noqa
 
 #

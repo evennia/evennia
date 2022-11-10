@@ -33,8 +33,8 @@ See the ./README.md file for details and install instructions.
 
 from django.core.exceptions import (
     ImproperlyConfigured,
-    SuspiciousOperation,
     SuspiciousFileOperation,
+    SuspiciousOperation,
 )
 
 try:
@@ -72,6 +72,7 @@ import posixpath
 import threading
 from gzip import GzipFile
 from tempfile import SpooledTemporaryFile
+
 from django.core.files.base import File
 from django.core.files.storage import Storage
 from django.utils.deconstruct import deconstructible

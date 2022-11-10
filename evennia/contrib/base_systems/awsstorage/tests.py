@@ -1,16 +1,19 @@
+import datetime
+import gzip
+import pickle
+import threading
 from unittest import skipIf
-from django.test import override_settings
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import ContentFile
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.timezone import is_aware, utc
-
-import datetime, gzip, pickle, threading
 
 _SKIP = False
 try:
     from botocore.exceptions import ClientError
+
     from .awsstorage import aws_s3_cdn as s3boto3
 except ImportError:
     _SKIP = True

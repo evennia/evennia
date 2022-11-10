@@ -8,12 +8,15 @@ They can employ more paramters at your leisure.
 
 """
 
-import re as _re
-import pytz as _pytz
 import datetime as _dt
-from evennia.utils.ansi import strip_ansi
-from evennia.utils.utils import string_partial_matching as _partial, validate_email_address
+import re as _re
+
+import pytz as _pytz
 from django.utils.translation import gettext as _
+
+from evennia.utils.ansi import strip_ansi
+from evennia.utils.utils import string_partial_matching as _partial
+from evennia.utils.utils import validate_email_address
 
 _TZ_DICT = {str(tz): _pytz.timezone(tz) for tz in _pytz.common_timezones}
 

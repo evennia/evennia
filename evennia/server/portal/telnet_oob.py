@@ -23,12 +23,13 @@ This implements the following telnet OOB communication protocols:
 ----
 
 """
-import re
 import json
-from evennia.utils.utils import is_iter
+import re
 
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
+
+from evennia.utils.utils import is_iter
 
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = bytes([69])

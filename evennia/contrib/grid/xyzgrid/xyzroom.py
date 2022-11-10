@@ -9,6 +9,7 @@ used as stand-alone XYZ-coordinate-aware rooms.
 
 from django.conf import settings
 from django.db.models import Q
+
 from evennia.objects.manager import ObjectManager
 from evennia.objects.objects import DefaultExit, DefaultRoom
 

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from mock import Mock, MagicMock, patch
 from random import randint
 from unittest import TestCase
 
 from django.test import override_settings
-from evennia.accounts.accounts import AccountSessionHandler
-from evennia.accounts.accounts import DefaultAccount, DefaultGuest
-from evennia.utils.test_resources import BaseEvenniaTest
+from mock import MagicMock, Mock, patch
+
+from evennia.accounts.accounts import AccountSessionHandler, DefaultAccount, DefaultGuest
 from evennia.utils import create
+from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils.utils import uses_database
 
 

@@ -1,11 +1,12 @@
-from django.conf import settings
-from evennia import CmdSet, InterruptCommand
-from evennia.utils.utils import list_to_string
-from evennia.commands.default.muxcommand import MuxCommand
-from evennia.server.sessionhandler import SESSIONS
+import datetime
 
 import git
-import datetime
+from django.conf import settings
+
+from evennia import CmdSet, InterruptCommand
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.server.sessionhandler import SESSIONS
+from evennia.utils.utils import list_to_string
 
 
 class GitCommand(MuxCommand):

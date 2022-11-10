@@ -18,6 +18,7 @@ except ImportError as error:
     raise ImportError(errstr.format(err=error))
 
 from django.conf import settings
+
 from evennia.utils.utils import class_from_module
 
 _GAME_DIR = settings.GAME_DIR
@@ -69,6 +70,7 @@ def verify_SSL_key_and_cert(keyfile, certfile):
     if not (os.path.exists(keyfile) and os.path.exists(certfile)):
         # key/cert does not exist. Create.
         import subprocess
+
         from Crypto.PublicKey import RSA
         from twisted.conch.ssh.keys import Key
 

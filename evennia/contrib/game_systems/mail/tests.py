@@ -4,6 +4,7 @@ Test mail contrib
 """
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from . import mail
 
 

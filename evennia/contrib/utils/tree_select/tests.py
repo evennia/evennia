@@ -3,9 +3,10 @@ Test tree select
 
 """
 
-from evennia.utils.test_resources import BaseEvenniaTest
-from . import tree_select
 from evennia.contrib.utils.fieldfill import fieldfill
+from evennia.utils.test_resources import BaseEvenniaTest
+
+from . import tree_select
 
 TREE_MENU_TESTSTR = """Foo
 Bar

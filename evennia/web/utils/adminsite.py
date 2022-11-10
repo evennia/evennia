@@ -8,8 +8,8 @@ of that folder for Django to find them).
 
 """
 
-from django.contrib.admin import apps
 from django.contrib import admin
+from django.contrib.admin import apps
 
 
 class EvenniaAdminApp(apps.AdminConfig):

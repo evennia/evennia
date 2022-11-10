@@ -12,13 +12,14 @@ state is identified by its module name.
 
 """
 
-from django.conf import settings
 from functools import wraps
-from evennia import utils
-from evennia import logger
+
+from django.conf import settings
+
+from evennia import logger, utils
+
 from .objects import EvscaperoomObject
 from .utils import create_evscaperoom_object, msg_cinematic, parse_for_things
-
 
 # state setup
 if hasattr(settings, "EVSCAPEROOM_STATE_PACKAGE"):

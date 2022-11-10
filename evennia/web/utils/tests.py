@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 from mock import MagicMock, patch
+
 from . import general_context
 
 

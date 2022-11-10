@@ -457,6 +457,7 @@ from functools import total_ordering
 from time import time
 
 from django.conf import settings
+
 from evennia.utils import logger
 from evennia.utils.dbserialize import _SaverDict
 from evennia.utils.utils import class_from_module, inherits_from, list_to_string, percent

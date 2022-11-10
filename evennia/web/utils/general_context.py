@@ -9,7 +9,9 @@ TEMPLATES["OPTIONS"]["context_processors"] list.
 
 
 import os
+
 from django.conf import settings
+
 from evennia.utils.utils import get_evennia_version
 
 # Setup lists of the most relevant apps so

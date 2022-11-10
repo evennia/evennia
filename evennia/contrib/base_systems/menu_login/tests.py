@@ -4,6 +4,7 @@ Test menu_login
 """
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from . import menu_login
 
 

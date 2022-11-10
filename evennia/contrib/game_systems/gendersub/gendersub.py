@@ -42,9 +42,9 @@ default cmdset before it becomes available.
 """
 
 import re
+
+from evennia import Command, DefaultCharacter
 from evennia.utils import logger
-from evennia import DefaultCharacter
-from evennia import Command
 
 # gender maps
 

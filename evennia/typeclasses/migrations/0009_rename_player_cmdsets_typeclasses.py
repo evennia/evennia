@@ -3,6 +3,7 @@
 
 
 import re
+
 from django.db import migrations
 
 CASE_WORD_EXCEPTIONS = []

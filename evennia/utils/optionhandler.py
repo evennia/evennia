@@ -1,6 +1,7 @@
-from evennia.utils.utils import string_partial_matching
-from evennia.utils.containers import OPTION_CLASSES
 from django.utils.translation import gettext as _
+
+from evennia.utils.containers import OPTION_CLASSES
+from evennia.utils.utils import string_partial_matching
 
 _GA = object.__getattribute__
 _SA = object.__setattr__

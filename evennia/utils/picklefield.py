@@ -29,23 +29,21 @@ Modified for Evennia by Griatch and the Evennia community.
 
 """
 from ast import literal_eval
+from base64 import b64decode, b64encode
+from copy import Error as CopyError
+from copy import deepcopy
 from datetime import datetime
-
-from copy import deepcopy, Error as CopyError
-from base64 import b64encode, b64decode
+from pickle import dumps, loads
 from zlib import compress, decompress
 
 # import six # this is actually a pypy component, not in default syslib
 from django.core.exceptions import ValidationError
 from django.db import models
-
 from django.forms.fields import CharField
 from django.forms.widgets import Textarea
-
-from pickle import loads, dumps
 from django.utils.encoding import force_str
-from evennia.utils.dbserialize import pack_dbobj
 
+from evennia.utils.dbserialize import pack_dbobj
 
 DEFAULT_PROTOCOL = 4
 

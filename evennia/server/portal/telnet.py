@@ -8,28 +8,31 @@ sessions etc.
 """
 
 import re
-from twisted.internet import protocol
-from twisted.internet.task import LoopingCall
-from twisted.conch.telnet import Telnet, StatefulTelnetProtocol
+
+from django.conf import settings
 from twisted.conch.telnet import (
-    IAC,
-    NOP,
-    LINEMODE,
-    GA,
-    WILL,
-    WONT,
     ECHO,
-    NULL,
-    MODE,
+    GA,
+    IAC,
+    LINEMODE,
     LINEMODE_EDIT,
     LINEMODE_TRAPSIG,
+    MODE,
+    NOP,
+    NULL,
+    WILL,
+    WONT,
+    StatefulTelnetProtocol,
+    Telnet,
 )
-from django.conf import settings
-from evennia.server.portal import ttype, mssp, telnet_oob, naws, suppress_ga
-from evennia.server.portal.mccp import Mccp, mccp_compress, MCCP
+from twisted.internet import protocol
+from twisted.internet.task import LoopingCall
+
+from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
+from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
 from evennia.server.portal.mxp import Mxp, mxp_parse
 from evennia.utils import ansi
-from evennia.utils.utils import to_bytes, class_from_module
+from evennia.utils.utils import class_from_module, to_bytes
 
 _RE_N = re.compile(r"\|n$")
 _RE_LEND = re.compile(rb"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)

@@ -73,16 +73,12 @@ are spawened on their corresponding location.
 
 import itertools
 from random import choice
-from evennia import create_script
-from evennia import CmdSet
-from evennia import DefaultScript
-from evennia import DefaultCharacter
-from evennia import DefaultRoom
-from evennia import DefaultExit
+
+from evennia import CmdSet, DefaultCharacter, DefaultExit, DefaultRoom, DefaultScript, create_script
 from evennia.commands.default.muxcommand import MuxCommand
-from evennia.utils.utils import inherits_from
-from evennia.utils import search, utils, logger
 from evennia.prototypes.spawner import spawn
+from evennia.utils import logger, search, utils
+from evennia.utils.utils import inherits_from
 
 # Tag used by puzzles
 _PUZZLES_TAG_CATEGORY = "puzzles"

@@ -10,6 +10,7 @@ from time import time
 import mock
 from anything import Something
 from django.test.utils import override_settings
+
 from evennia.prototypes import menus as olc_menus
 from evennia.prototypes import protfuncs as protofuncs
 from evennia.prototypes import prototypes as protlib

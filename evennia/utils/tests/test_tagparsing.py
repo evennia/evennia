@@ -3,10 +3,12 @@ Unit tests for all sorts of inline text-tag parsing, like ANSI, html conversion,
 
 """
 import re
+
 from django.test import TestCase, override_settings
+
+from evennia.utils import funcparser
 from evennia.utils.ansi import ANSIString
 from evennia.utils.text2html import TextToHTMLparser
-from evennia.utils import funcparser
 
 
 class ANSIStringTestCase(TestCase):

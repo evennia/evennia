@@ -5,14 +5,13 @@ Testing various individual functionalities in the server package.
 
 """
 import unittest
+
 from django.test import TestCase
-
-from evennia.server.validators import EvenniaPasswordValidator
-from evennia.utils.test_resources import BaseEvenniaTest
-
 from django.test.runner import DiscoverRunner
 
 from evennia.server.throttle import Throttle
+from evennia.server.validators import EvenniaPasswordValidator
+from evennia.utils.test_resources import BaseEvenniaTest
 
 from ..deprecations import check_errors
 

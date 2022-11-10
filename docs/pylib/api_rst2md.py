@@ -5,8 +5,9 @@ Remap autodoc API rst files to md files and wrap their contents.
 """
 
 from glob import glob
-from os.path import abspath, join as pathjoin, dirname
 from os import rename
+from os.path import abspath, dirname
+from os.path import join as pathjoin
 
 
 def _rst2md(filename_rst):

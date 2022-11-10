@@ -57,7 +57,9 @@ If you don't want the player to be able to specify the size of the map, ignore a
 arguments passed into the Map command.
 """
 import time
+
 from django.conf import settings
+
 from evennia import CmdSet
 from evennia.commands.default.muxcommand import MuxCommand
 

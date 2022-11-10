@@ -3,12 +3,14 @@ The managers for the custom Account object and permissions.
 """
 
 import datetime
+
 from django.conf import settings
-from django.utils import timezone
 from django.contrib.auth.models import UserManager
-from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
+from django.utils import timezone
+
 from evennia.server import signals
-from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj
+from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
+from evennia.utils.utils import class_from_module, dbid_to_obj, make_iter
 
 __all__ = ("AccountManager", "AccountDBManager")
 

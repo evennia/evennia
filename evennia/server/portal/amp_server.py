@@ -6,10 +6,12 @@ these are the Evennia Server and the evennia launcher).
 """
 import os
 import sys
-from twisted.internet import protocol
-from evennia.server.portal import amp
+from subprocess import STDOUT, Popen
+
 from django.conf import settings
-from subprocess import Popen, STDOUT
+from twisted.internet import protocol
+
+from evennia.server.portal import amp
 from evennia.utils import logger
 from evennia.utils.utils import class_from_module
 

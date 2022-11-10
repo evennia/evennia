@@ -3,7 +3,8 @@ Update dynamically generated doc pages based on github sources.
 
 """
 
-from os.path import dirname, abspath, join as pathjoin
+from os.path import abspath, dirname
+from os.path import join as pathjoin
 
 ROOTDIR = dirname(dirname(dirname(abspath(__file__))))
 DOCDIR = pathjoin(ROOTDIR, "docs")

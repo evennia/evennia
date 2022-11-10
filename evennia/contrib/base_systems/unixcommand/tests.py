@@ -4,6 +4,7 @@ Test of the Unixcommand.
 """
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from .unixcommand import UnixCommand
 
 

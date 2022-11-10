@@ -5,16 +5,17 @@ This module acts as a central place for AMP-servers and -clients to get commands
 
 """
 
+import pickle
 import time
-from functools import wraps
-from twisted.protocols import amp
+import zlib  # Used in Compressed class
 from collections import defaultdict, namedtuple
+from functools import wraps
 from io import BytesIO
 from itertools import count
-import zlib  # Used in Compressed class
-import pickle
 
-from twisted.internet.defer import DeferredList, Deferred
+from twisted.internet.defer import Deferred, DeferredList
+from twisted.protocols import amp
+
 from evennia.utils.utils import variable_from_module
 
 # delayed import

@@ -59,10 +59,11 @@ and other one-time method calls and set-up should be put here.
 """
 
 import inflect
+from typeclasses.characters import Character
+
 from evennia.prototypes.spawner import spawn
 from evennia.utils import dedent
 from evennia.utils.evtable import EvTable
-from typeclasses.characters import Character
 
 _INFLECT = inflect.engine()
 

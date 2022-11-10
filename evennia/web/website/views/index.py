@@ -5,9 +5,10 @@ The main index page, including the game stats
 
 from django.conf import settings
 from django.views.generic import TemplateView
+
 from evennia import SESSION_HANDLER
-from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
+from evennia.objects.models import ObjectDB
 from evennia.utils import class_from_module
 
 

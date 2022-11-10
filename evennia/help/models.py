@@ -14,10 +14,10 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.help.manager import HelpEntryManager
-from evennia.typeclasses.models import Tag, TagHandler, AliasHandler
 from evennia.locks.lockhandler import LockHandler
+from evennia.typeclasses.models import AliasHandler, Tag, TagHandler
+from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.utils.utils import lazy_property
 
 __all__ = ("HelpEntry",)

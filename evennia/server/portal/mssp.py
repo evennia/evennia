@@ -11,6 +11,7 @@ active players and so on.
 
 """
 from django.conf import settings
+
 from evennia.utils import utils
 
 MSSP = bytes([70])  # b"\x46"

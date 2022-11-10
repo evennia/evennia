@@ -3,30 +3,31 @@
 # in the web admin interface.
 #
 from django import forms
-from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import IS_POPUP_VAR
-from django.contrib.admin.widgets import ForeignKeyRawIdWidget, FilteredSelectMultiple
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.translation import gettext as _
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.admin.utils import unquote
-from django.template.response import TemplateResponse
-from django.http import Http404, HttpResponseRedirect
+from django.contrib.admin.widgets import FilteredSelectMultiple, ForeignKeyRawIdWidget
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.core.exceptions import PermissionDenied
-from django.views.decorators.debug import sensitive_post_parameters
+from django.http import Http404, HttpResponseRedirect
+from django.template.response import TemplateResponse
+from django.urls import path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
-from django.urls import path, reverse
-from django.contrib.auth import update_session_auth_hash
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
+from django.views.decorators.debug import sensitive_post_parameters
 
-from evennia.objects.models import ObjectDB
 from evennia.accounts.models import AccountDB
+from evennia.objects.models import ObjectDB
 from evennia.utils import create
+
+from . import utils as adminutils
 from .attributes import AttributeInline
 from .tags import TagInline
-from . import utils as adminutils
 
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 

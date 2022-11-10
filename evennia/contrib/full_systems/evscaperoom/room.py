@@ -7,14 +7,13 @@ that particular escaperoom challenge should be gone.
 
 """
 
-from evennia import DefaultRoom, DefaultCharacter, DefaultObject
-from evennia import utils
-from evennia.utils.ansi import strip_ansi
-from evennia import logger
+from evennia import DefaultCharacter, DefaultObject, DefaultRoom, logger, utils
 from evennia.locks.lockhandler import check_lockstring
+from evennia.utils.ansi import strip_ansi
 from evennia.utils.utils import lazy_property, list_to_string
-from .objects import EvscaperoomObject
+
 from .commands import CmdSetEvScapeRoom
+from .objects import EvscaperoomObject
 from .state import StateHandler
 
 

@@ -49,10 +49,10 @@ available.
 
 """
 
-from random import choice, randint, seed
 import re
 import string
 import time
+from random import choice, randint, seed
 
 from evennia import DefaultScript, ScriptDB
 from evennia.utils.create import create_script

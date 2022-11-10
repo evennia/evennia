@@ -7,6 +7,7 @@ for allowing Characters to traverse the exit to its destination.
 
 """
 from evennia.objects.objects import DefaultExit
+
 from .objects import ObjectParent
 
 

@@ -1,9 +1,11 @@
 """Tests for text2html """
 
 import unittest
-from django.test import TestCase
-from evennia.utils import ansi, text2html
+
 import mock
+from django.test import TestCase
+
+from evennia.utils import ansi, text2html
 
 
 class TestText2Html(TestCase):

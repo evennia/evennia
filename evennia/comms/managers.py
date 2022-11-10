@@ -7,10 +7,11 @@ Comm system components.
 
 from django.conf import settings
 from django.db.models import Q
-from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
+
 from evennia.server import signals
+from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
 from evennia.utils import logger
-from evennia.utils.utils import dbref, make_iter, class_from_module
+from evennia.utils.utils import class_from_module, dbref, make_iter
 
 _GA = object.__getattribute__
 _AccountDB = None

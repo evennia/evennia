@@ -1,10 +1,12 @@
 """Tests for validatorfuncs """
 
-from django.test import TestCase
-from evennia.utils import validatorfuncs
-import mock
 import datetime
+
+import mock
 import pytz
+from django.test import TestCase
+
+from evennia.utils import validatorfuncs
 
 
 class TestValidatorFuncs(TestCase):

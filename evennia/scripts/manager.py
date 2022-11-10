@@ -4,9 +4,10 @@ The custom manager for Scripts.
 
 from django.conf import settings
 from django.db.models import Q
-from evennia.typeclasses.managers import TypedObjectManager, TypeclassManager
-from evennia.utils.utils import make_iter, class_from_module, dbid_to_obj
+
 from evennia.server import signals
+from evennia.typeclasses.managers import TypeclassManager, TypedObjectManager
+from evennia.utils.utils import class_from_module, dbid_to_obj, make_iter
 
 __all__ = ("ScriptManager", "ScriptDBManager")
 _GA = object.__getattribute__
@@ -258,8 +259,8 @@ class ScriptDBManager(TypedObjectManager):
         """
         global _ObjectDB, _AccountDB
         if not _ObjectDB:
-            from evennia.objects.models import ObjectDB as _ObjectDB
             from evennia.accounts.models import AccountDB as _AccountDB
+            from evennia.objects.models import ObjectDB as _ObjectDB
 
         typeclass = typeclass if typeclass else settings.BASE_SCRIPT_TYPECLASS
 

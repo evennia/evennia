@@ -11,11 +11,12 @@ from datetime import datetime, timedelta
 
 import mock
 from django.test import TestCase
+from parameterized import parameterized
+from twisted.internet import task
+
 from evennia.utils import utils
 from evennia.utils.ansi import ANSIString
 from evennia.utils.test_resources import BaseEvenniaTest
-from parameterized import parameterized
-from twisted.internet import task
 
 
 class TestIsIter(TestCase):

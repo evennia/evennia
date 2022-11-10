@@ -5,12 +5,13 @@ more Evennia channels.
 """
 
 import re
-from twisted.application import internet
-from twisted.words.protocols import irc
-from twisted.internet import protocol, reactor
-from evennia.server.session import Session
-from evennia.utils import logger, utils, ansi
 
+from twisted.application import internet
+from twisted.internet import protocol, reactor
+from twisted.words.protocols import irc
+
+from evennia.server.session import Session
+from evennia.utils import ansi, logger, utils
 
 # IRC colors
 

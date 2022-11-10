@@ -4,6 +4,7 @@ Test multidescer contrib.
 """
 
 from evennia.commands.default.tests import BaseEvenniaCommandTest
+
 from . import multidescer
 
 

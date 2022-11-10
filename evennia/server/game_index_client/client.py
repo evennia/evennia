@@ -2,16 +2,16 @@
 The client for sending data to the Evennia Game Index
 
 """
-import urllib.request, urllib.parse, urllib.error
 import platform
+import urllib.error
+import urllib.parse
+import urllib.request
 
 import django
 from django.conf import settings
-from twisted.internet import defer
-from twisted.internet import protocol
-from twisted.internet import reactor
+from twisted.internet import defer, protocol, reactor
 from twisted.internet.defer import inlineCallbacks
-from twisted.web.client import Agent, _HTTP11ClientFactory, HTTPConnectionPool
+from twisted.web.client import Agent, HTTPConnectionPool, _HTTP11ClientFactory
 from twisted.web.http_headers import Headers
 from twisted.web.iweb import IBodyProducer
 from zope.interface import implementer

@@ -66,13 +66,14 @@ An example of the contents of a module:
 """
 
 from dataclasses import dataclass
+
 from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
-from evennia.utils.utils import variable_from_module, make_iter, all_from_module
-from evennia.utils import logger
-from evennia.utils.utils import lazy_property
+
 from evennia.locks.lockhandler import LockHandler
+from evennia.utils import logger
+from evennia.utils.utils import all_from_module, lazy_property, make_iter, variable_from_module
 
 _DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 

@@ -4,6 +4,7 @@ Test health bar contrib
 """
 
 from evennia.utils.test_resources import BaseEvenniaTest
+
 from . import health_bar
 
 

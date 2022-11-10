@@ -5,7 +5,9 @@ Testing custom game time
 
 # Testing custom_gametime
 from mock import Mock, patch
+
 from evennia.utils.test_resources import BaseEvenniaTest
+
 from .. import custom_gametime
 
 

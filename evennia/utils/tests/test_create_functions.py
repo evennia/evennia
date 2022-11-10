@@ -4,9 +4,10 @@ Tests of create functions
 """
 
 from django.test import TestCase
-from evennia.utils.test_resources import BaseEvenniaTest
+
 from evennia.scripts.scripts import DefaultScript
 from evennia.utils import create
+from evennia.utils.test_resources import BaseEvenniaTest
 
 
 class TestCreateScript(BaseEvenniaTest):

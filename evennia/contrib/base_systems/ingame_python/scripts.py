@@ -2,21 +2,21 @@
 Scripts for the in-game Python system.
 """
 
-from datetime import datetime, timedelta
-from queue import Queue
 import re
 import sys
 import traceback
+from datetime import datetime, timedelta
+from queue import Queue
 
 from django.conf import settings
-from evennia import DefaultObject, DefaultScript, ChannelDB, ScriptDB
-from evennia import logger
+
+from evennia import ChannelDB, DefaultObject, DefaultScript, ScriptDB, logger
+from evennia.contrib.base_systems.ingame_python.callbackhandler import CallbackHandler
+from evennia.contrib.base_systems.ingame_python.utils import EVENTS, InterruptEvent, get_next_wait
 from evennia.utils.ansi import raw
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize
 from evennia.utils.utils import all_from_module, delay, pypath_to_realpath
-from evennia.contrib.base_systems.ingame_python.callbackhandler import CallbackHandler
-from evennia.contrib.base_systems.ingame_python.utils import get_next_wait, EVENTS, InterruptEvent
 
 # Constants
 RE_LINE_ERROR = re.compile(r'^  File "\<string\>", line (\d+)')

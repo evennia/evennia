@@ -1,8 +1,10 @@
-from django.core.cache import caches
-from collections import deque
-from evennia.utils import logger
 import time
+from collections import deque
+
+from django.core.cache import caches
 from django.utils.translation import gettext as _
+
+from evennia.utils import logger
 
 
 class Throttle:
