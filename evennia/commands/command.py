@@ -146,17 +146,19 @@ class Command(metaclass=CommandMeta):
 
     The cmdhandler makes the following variables available to the
     command methods (so you can always assume them to be there):
+
     self.caller - the game object calling the command
     self.cmdstring - the command name used to trigger this command (allows
                      you to know which alias was used, for example)
-    cmd.args - everything supplied to the command following the cmdstring
+    self.args - everything supplied to the command following the cmdstring
                (this is usually what is parsed in self.parse())
-    cmd.cmdset - the cmdset from which this command was matched (useful only
-                seldomly, notably for help-type commands, to create dynamic
-                help entries and lists)
-    cmd.obj - the object on which this command is defined. If a default command,
-                 this is usually the same as caller.
-    cmd.rawstring - the full raw string input, including any args and no parsing.
+    self.cmdset - the cmdset from which this command was matched (useful only
+                  seldomly, notably for help-type commands, to create dynamic
+                  help entries and lists)
+    self.obj - the object on which this command is defined. If a default command,
+               this is usually the same as caller.
+    self.raw_string - the full raw string input, including the command name,
+                      any args and no parsing.
 
     The following class properties can/should be defined on your child class:
 
