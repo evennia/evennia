@@ -222,17 +222,19 @@
 
 <span class="sd">    The cmdhandler makes the following variables available to the</span>
 <span class="sd">    command methods (so you can always assume them to be there):</span>
+
 <span class="sd">    self.caller - the game object calling the command</span>
 <span class="sd">    self.cmdstring - the command name used to trigger this command (allows</span>
 <span class="sd">                     you to know which alias was used, for example)</span>
-<span class="sd">    cmd.args - everything supplied to the command following the cmdstring</span>
+<span class="sd">    self.args - everything supplied to the command following the cmdstring</span>
 <span class="sd">               (this is usually what is parsed in self.parse())</span>
-<span class="sd">    cmd.cmdset - the cmdset from which this command was matched (useful only</span>
-<span class="sd">                seldomly, notably for help-type commands, to create dynamic</span>
-<span class="sd">                help entries and lists)</span>
-<span class="sd">    cmd.obj - the object on which this command is defined. If a default command,</span>
-<span class="sd">                 this is usually the same as caller.</span>
-<span class="sd">    cmd.rawstring - the full raw string input, including any args and no parsing.</span>
+<span class="sd">    self.cmdset - the cmdset from which this command was matched (useful only</span>
+<span class="sd">                  seldomly, notably for help-type commands, to create dynamic</span>
+<span class="sd">                  help entries and lists)</span>
+<span class="sd">    self.obj - the object on which this command is defined. If a default command,</span>
+<span class="sd">               this is usually the same as caller.</span>
+<span class="sd">    self.raw_string - the full raw string input, including the command name,</span>
+<span class="sd">                      any args and no parsing.</span>
 
 <span class="sd">    The following class properties can/should be defined on your child class:</span>
 

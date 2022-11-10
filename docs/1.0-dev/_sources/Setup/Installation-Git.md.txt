@@ -1,7 +1,6 @@
 # Installing with GIT
 
-This installs and runs Evennia from its sources. This is required if you want to contribute to Evennia
-itself or have an easier time exploring the code. See the basic [Installation](./Installation.md) for
+This installs and runs Evennia from its sources. This is required if you want to contribute to Evennia itself or have an easier time exploring the code. See the basic [Installation](./Installation.md) for
 a quick installation of the library. See the [troubleshooting](./Installation-Troubleshooting.md) if you run
 into trouble.
 

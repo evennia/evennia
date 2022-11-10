@@ -110,13 +110,6 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>The Evennia server is installed, run and maintained from the terminal (console/CMD on Windows). Starting the server
-doesn’t make anything visible online. Once you download everything you can in fact develop your game in complete
-isolation if you want, without needing any access to the internet.</p>
-<p>Evennia requires <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9 or 3.10.
-Using a <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Python virtualenv</span></a> is highly recommended in order to keep your
-Evennia installation independent from the system libraries. Don’t install Evennia as
-administrator or superuser.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>pip install evennia is not yet available in develop branch. Use the <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">git installation</span></a>.</p>
@@ -125,14 +118,24 @@ administrator or superuser.</p>
 <p class="admonition-title">Important</p>
 <p>If you are converting an existing game from a previous version, <a class="reference internal" href="Installation-Upgrade.html"><span class="doc std std-doc">see here</span></a>.</p>
 </div>
+<ul class="simple">
+<li><p>Evennia requires <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9 or 3.10.</p></li>
+<li><p>Using a <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Python virtualenv</span></a> is highly recommended in order to keep your
+Evennia installation independent from the system libraries.</p></li>
+<li><p>Don’t install Evennia as
+administrator or superuser.</p></li>
+</ul>
+<p>Evennia  is managed from the terminal (console/CMD on Windows).  If you have a suitable Python installed, you can install with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia
 </pre></div>
 </div>
-<p>Once installed, make sure the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command works. Use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-h</span></code> for usage help. If you are using a
-virtualenv, make sure it’s active whenever you need to use the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p>
-<p>Alternatively, you can <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">install Evennia from github</span></a> or use <a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">docker</span></a>.
-Check out <a class="reference internal" href="Installation-Troubleshooting.html"><span class="doc std std-doc">installation troubleshooting</span></a> if you run into problems. Some
+<p>Alternatively, you can <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">install Evennia from github</span></a> or use <a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">docker</span></a>.</p>
+<p>Installing doesn’t make anything visible online. Apart from installation and updating, you can develop your game without any internet connection.</p>
+<p>Once installed, make sure the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command works. Use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-h</span></code> for usage help. If you are using a  virtualenv, make sure it’s active whenever you need to use the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p>
+<blockquote>
+<div><p>Check out <a class="reference internal" href="Installation-Troubleshooting.html"><span class="doc std std-doc">installation troubleshooting</span></a> if you run into problems. Some
 users have also experimented with <a class="reference internal" href="Installation-Android.html"><span class="doc std std-doc">installing Evennia on Android</span></a>.</p>
+</div></blockquote>
 <section id="initialize-a-new-game">
 <h2>Initialize a new game<a class="headerlink" href="#initialize-a-new-game" title="Permalink to this headline">¶</a></h2>
 <p>Use <code class="docutils literal notranslate"><span class="pre">cd</span></code> to enter a folder where you want to do your game development. Here (and in
@@ -150,18 +153,15 @@ contains empty templates and all the default settings needed to start the server
 evennia migrate
 </pre></div>
 </div>
-<p>This will create the default database (Sqlite3). The database file ends up as <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>. If you
-ever want to start from a fresh database, just delete this file and re-run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> again.</p>
+<p>This will create the default database (Sqlite3). The database file ends up as <code class="docutils literal notranslate"><span class="pre">mygame/server/evennia.db3</span></code>. If you ever want to start from a fresh database, just delete this file and re-run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code> again.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia start
 </pre></div>
 </div>
-<p>Set your user-name and password when prompted. This will be the “god user” or “superuser” in-game.
-The email is optional.</p>
+<p>Set your user-name and password when prompted. This will be the “god user” or “superuser” in-game.  The email is optional.</p>
 <blockquote>
 <div><p>You can also <a class="reference internal" href="Installation-Non-Interactive.html"><span class="doc std std-doc">automate</span></a> the creation of the super user.</p>
 </div></blockquote>
-<p>If all went well, the server is now up and running. Point a legacy MUD/telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> or
-a web browser at <a class="reference external" href="http://localhost:4001">http://localhost:4001</a> to play your new (if empty) game!</p>
+<p>If all went well, the server is now up and running. Point a legacy MUD/telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> or a web browser at <a class="reference external" href="http://localhost:4001">http://localhost:4001</a> to play your new (if empty) game!</p>
 <p>Log in as a new account or use the superuser you just created.</p>
 </section>
 <section id="restarting-and-stopping">
@@ -197,8 +197,7 @@ a web browser at <a class="reference external" href="http://localhost:4001">http
 </section>
 <section id="server-configuration">
 <h2>Server configuration<a class="headerlink" href="#server-configuration" title="Permalink to this headline">¶</a></h2>
-<p>The server configuration file is <code class="docutils literal notranslate"><span class="pre">mygame/server/settings.py</span></code>. It’s empty by default. Copy and change
-only the settings you want from the <a class="reference internal" href="Settings-Default.html"><span class="doc std std-doc">default settings file</span></a>.</p>
+<p>The server configuration file is <code class="docutils literal notranslate"><span class="pre">mygame/server/settings.py</span></code>. It’s empty by default. Copy and change  only the settings you want from the <a class="reference internal" href="Settings-Default.html"><span class="doc std std-doc">default settings file</span></a>.</p>
 </section>
 <section id="register-with-the-evennia-game-index-optional">
 <h2>Register with the Evennia Game Index (optional)<a class="headerlink" href="#register-with-the-evennia-game-index-optional" title="Permalink to this headline">¶</a></h2>
@@ -214,13 +213,7 @@ beforehand to make sure you don’t pick a game name that is already taken - be 
 <section id="the-next-steps">
 <h2>The Next steps<a class="headerlink" href="#the-next-steps" title="Permalink to this headline">¶</a></h2>
 <p>You are good to go!</p>
-<p>Evennia comes with a small <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Tutorial-World.html"><span class="doc std std-doc">Tutorial World</span></a> to experiment and learn from. After logging
-in, you can create it by running</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>batchcommand tutorial_world.build
-</pre></div>
-</div>
-<p>Next, why not head into the <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.html"><span class="doc std std-doc">Starting Tutorial</span></a>
-to learn how to start making your new game!</p>
+<p>Next, why not head into the <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.html"><span class="doc std std-doc">Starting Tutorial</span></a>  to learn how to start making your new game!</p>
 </section>
 </section>
 

@@ -3,10 +3,11 @@
 
 You control Evennia from your game folder (we refer to it as `mygame/` here), using the `evennia`
 program. If the `evennia` program is not available on the command line you must first install
-Evennia as described in the [Setup Quickstart](./Installation.md) page.
+Evennia as described on the [Installation](./Installation.md) page.
 
-> Hint: If you ever try the `evennia` command and get an error complaining that the command is not
-available, make sure your [virtualenv](../Glossary.md#virtualenv) is active.
+```{sidebar} evennia not found?
+If you ever try the `evennia` command and get an error complaining that the command is not available, make sure your [virtualenv](../Glossary.md#virtualenv) is active. 
+```
 
 Below are described the various management options. Run
 
@@ -20,7 +21,7 @@ to give you a menu with options.
 
 ## Starting Evennia
 
-Evennia consists of two components, the Evennia [Server and Portal](../Components/Portal-And-Server.md).  Briefly,
+Evennia consists of two components, the Evennia [Portal and Server](../Components/Portal-And-Server.md).  Briefly,
 the  *Server* is what is running the mud. It handles all game-specific things but doesn't care
 exactly how players connect, only that they have. The *Portal* is a gateway to which players
 connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the
@@ -28,10 +29,7 @@ game. Both are required for a functioning mud.
 
      evennia start
 
-The above command will start the Portal, which in turn will boot up the Server. The command will
-print a summary of the process and unless there is an error you will see no further output. Both
-components will instead log to log files in `mygame/server/logs/`. For convenience you can follow
-those logs directly in your terminal by attaching `-l` to commands:
+The above command will start the Portal, which in turn will boot up the Server. The command will print a summary of the process and unless there is an error you will see no further output. Both components will instead log to log files in `mygame/server/logs/`. For convenience you can follow those logs directly in your terminal by attaching `-l` to commands:
 
      evennia -l
 
@@ -40,23 +38,6 @@ Will start following the logs of an already running server. When starting Evenni
      evennia start -l
 
 > To stop viewing the log files, press `Ctrl-C`.
-
-## Foreground mode
-
-Normally, Evennia runs as a 'daemon', in the background. If you want you can start either of the
-processes (but not both) as foreground processes in *interactive* mode. This means they will log
-directly to the terminal (rather than to log files that we then echo to the terminal) and you can
-kill the process (not just the log-file view) with `Ctrl-C`.
-
-    evennia istart
-
-will start/restart the *Server* in interactive mode. This is required if you want to run a
-*debugger*. Next time you reload the server, it will return to normal mode.
-
-    evennia ipstart
-
-will start the *Portal* in interactive mode. This is usually only necessary if you want to run
-Evennia under the control of some other type of process.
 
 ## Reloading
 
@@ -77,6 +58,36 @@ From in-game the `@reload` command is used. You can also reload the server from 
 
 Sometimes reloading from "the outside" is necessary in case you have added some sort of bug that
 blocks in-game input.
+
+## Stopping
+
+A full shutdown closes Evennia completely, both Server and Portal. All accounts will be booted and
+systems saved and turned off cleanly.
+
+From inside the game you initiate a shutdown with the `@shutdown` command.  From command line you do
+
+     evennia stop
+
+You will see messages of both Server and Portal closing down. All accounts will see the shutdown
+message and then be disconnected. The same effect happens if you press `Ctrl+C` while the server
+runs in interactive mode.
+
+
+## Foreground mode
+
+Normally, Evennia runs as a 'daemon', in the background. If you want you can start either of the
+processes (but not both) as foreground processes in *interactive* mode. This means they will log
+directly to the terminal (rather than to log files that we then echo to the terminal) and you can
+kill the process (not just the log-file view) with `Ctrl-C`.
+
+    evennia istart
+
+will start/restart the *Server* in interactive mode. This is required if you want to run a
+[debugger](../Coding/Debugging.md). Next time you `evennia reload` the server, it will return to normal mode.
+
+    evennia ipstart
+
+will start the *Portal* in interactive mode. 
 
 ## Resetting
 
@@ -103,20 +114,6 @@ This is identical to doing these two commands:
      evennia stop
      evennia start
 
-
-## Shutting down
-
-A full shutdown closes Evennia completely, both Server and Portal. All accounts will be booted and
-systems saved and turned off cleanly.
-
-From inside the game you initiate a shutdown with the `@shutdown` command.  From command line you do
-
-     evennia stop
-
-You will see messages of both Server and Portal closing down. All accounts will see the shutdown
-message and then be disconnected. The same effect happens if you press `Ctrl+C` while the server
-runs in interactive mode.
-
 ## Status and info
 
 To check basic Evennia settings, such as which ports and services are active, this will repeat the
@@ -134,7 +131,7 @@ This can be useful for automating checks to make sure the game is running and is
 ## Killing (Linux/Mac only)
 
 In the extreme case that neither of the server processes locks up and does not respond to commands,
-you can send them kill-signals to force them to shut down. To kill only the Server:
+[]()you can send them kill-signals to force them to shut down. To kill only the Server:
 
     evennia skill
 
@@ -147,19 +144,17 @@ Note that this functionality is not supported on Windows.
 
 ## Django options
 
-The `evennia` program will also pass-through options used by the `django-admin`. These operate on
-the database in various ways.
+The `evennia` program will also pass-through options used by the `django-admin`. These operate on the database in various ways.
 
 ```bash
 
  evennia migrate # migrate the database
  evennia shell   # launch an interactive, django-aware python shell
- evennia dbshell # launch database shell
+ evennia dbshell # launch the database shell
 
 ```
 
-For (many) more options, see [the django-admin
-docs](https://docs.djangoproject.com/en/1.7/ref/django-admin/#usage).
+For (many) more options, see [the django-admin docs](https://docs.djangoproject.com/en/1.7/ref/django-admin/#usage).
 
 ## Advanced handling of Evennia processes
 
@@ -168,10 +163,7 @@ such as Linux' `top` or the more advanced `htop`), you will find the following p
 related to Evennia:
 
 * 1 x `twistd ... evennia/server/portal/portal.py` - this is the Portal process.
-* 3 x `twistd ... server.py` - One of these processes manages Evennia's Server component, the main
-  game. The other processes (with the same name but different process id) handle's Evennia's
-  internal web server threads. You can look at `mygame/server/server.pid` to determine which is the
-  main process.
+* 3 x `twistd ... server.py` - One of these processes manages Evennia's Server component, the main game. The other processes (with the same name but different process id) handle's Evennia's internal web server threads. You can look at `mygame/server/server.pid` to determine which is the main process. 
 
 ### Syntax errors during live development
 

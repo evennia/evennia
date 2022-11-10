@@ -900,7 +900,7 @@ main test suite started with</p>
 <p>Test the batch processor.</p>
 <dl class="py attribute">
 <dt id="evennia.commands.default.tests.TestBatchProcess.red_button">
-<code class="sig-name descname">red_button</code><em class="property"> = &lt;module 'evennia.contrib.tutorials.red_button.red_button' from '/tmp/tmp9qhx00ov/7d2d8aaa49e8e4b7f4000bef078036b7bd8ed2fd/evennia/contrib/tutorials/red_button/red_button.py'&gt;</em><a class="headerlink" href="#evennia.commands.default.tests.TestBatchProcess.red_button" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">red_button</code><em class="property"> = &lt;module 'evennia.contrib.tutorials.red_button.red_button' from '/tmp/tmp6bfo0rqt/014c9383612e80a10a57ddaeee1cd3b99ca58606/evennia/contrib/tutorials/red_button/red_button.py'&gt;</em><a class="headerlink" href="#evennia.commands.default.tests.TestBatchProcess.red_button" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -922,22 +922,23 @@ main test suite started with</p>
 <p>This is the base command class. Inherit from this
 to create new commands.</p>
 <p>The cmdhandler makes the following variables available to the
-command methods (so you can always assume them to be there):
-self.caller - the game object calling the command
+command methods (so you can always assume them to be there):</p>
+<p>self.caller - the game object calling the command
 self.cmdstring - the command name used to trigger this command (allows</p>
 <blockquote>
 <div><p>you to know which alias was used, for example)</p>
 </div></blockquote>
 <dl class="simple">
-<dt>cmd.args - everything supplied to the command following the cmdstring</dt><dd><p>(this is usually what is parsed in self.parse())</p>
+<dt>self.args - everything supplied to the command following the cmdstring</dt><dd><p>(this is usually what is parsed in self.parse())</p>
 </dd>
-<dt>cmd.cmdset - the cmdset from which this command was matched (useful only</dt><dd><p>seldomly, notably for help-type commands, to create dynamic
+<dt>self.cmdset - the cmdset from which this command was matched (useful only</dt><dd><p>seldomly, notably for help-type commands, to create dynamic
 help entries and lists)</p>
 </dd>
-<dt>cmd.obj - the object on which this command is defined. If a default command,</dt><dd><p>this is usually the same as caller.</p>
+<dt>self.obj - the object on which this command is defined. If a default command,</dt><dd><p>this is usually the same as caller.</p>
+</dd>
+<dt>self.raw_string - the full raw string input, including the command name,</dt><dd><p>any args and no parsing.</p>
 </dd>
 </dl>
-<p>cmd.rawstring - the full raw string input, including any args and no parsing.</p>
 <p>The following class properties can/should be defined on your child class:</p>
 <p>key - identifier for command (e.g. “look”)
 aliases - (optional) list of aliases (e.g. [“l”, “loo”])
@@ -1007,7 +1008,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.tests.CmdInterrupt.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'interrupt', 'no_prefix': ' ', 'tags': '', 'text': '\n    ## Base command\n\n    (you may see this if a child command had no help text defined)\n\n    Usage:\n      command [args]\n\n    This is the base command class. Inherit from this\n    to create new commands.\n\n    The cmdhandler makes the following variables available to the\n    command methods (so you can always assume them to be there):\n    self.caller - the game object calling the command\n    self.cmdstring - the command name used to trigger this command (allows\n                     you to know which alias was used, for example)\n    cmd.args - everything supplied to the command following the cmdstring\n               (this is usually what is parsed in self.parse())\n    cmd.cmdset - the cmdset from which this command was matched (useful only\n                seldomly, notably for help-type commands, to create dynamic\n                help entries and lists)\n    cmd.obj - the object on which this command is defined. If a default command,\n                 this is usually the same as caller.\n    cmd.rawstring - the full raw string input, including any args and no parsing.\n\n    The following class properties can/should be defined on your child class:\n\n    key - identifier for command (e.g. &quot;look&quot;)\n    aliases - (optional) list of aliases (e.g. [&quot;l&quot;, &quot;loo&quot;])\n    locks - lock string (default is &quot;cmd:all()&quot;)\n    help_category - how to organize this help entry in help system\n                    (default is &quot;General&quot;)\n    auto_help - defaults to True. Allows for turning off auto-help generation\n    arg_regex - (optional) raw string regex defining how the argument part of\n                the command should look in order to match for this command\n                (e.g. must it be a space between cmdname and arg?)\n    auto_help_display_key - (optional) if given, this replaces the string shown\n        in the auto-help listing. This is particularly useful for system-commands\n        whose actual key is not really meaningful.\n\n    (Note that if auto_help is on, this initial string is also used by the\n    system to create the help entry for the command, so it\'s a good idea to\n    format it similar to this one).  This behavior can be changed by\n    overriding the method \'get_help\' of a command: by default, this\n    method returns cmd.__doc__ (that is, this very docstring, or\n    the docstring of your command).  You can, however, extend or\n    replace this without disabling auto_help.\n    '}</em><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'interrupt', 'no_prefix': ' ', 'tags': '', 'text': '\n    ## Base command\n\n    (you may see this if a child command had no help text defined)\n\n    Usage:\n      command [args]\n\n    This is the base command class. Inherit from this\n    to create new commands.\n\n    The cmdhandler makes the following variables available to the\n    command methods (so you can always assume them to be there):\n\n    self.caller - the game object calling the command\n    self.cmdstring - the command name used to trigger this command (allows\n                     you to know which alias was used, for example)\n    self.args - everything supplied to the command following the cmdstring\n               (this is usually what is parsed in self.parse())\n    self.cmdset - the cmdset from which this command was matched (useful only\n                  seldomly, notably for help-type commands, to create dynamic\n                  help entries and lists)\n    self.obj - the object on which this command is defined. If a default command,\n               this is usually the same as caller.\n    self.raw_string - the full raw string input, including the command name,\n                      any args and no parsing.\n\n    The following class properties can/should be defined on your child class:\n\n    key - identifier for command (e.g. &quot;look&quot;)\n    aliases - (optional) list of aliases (e.g. [&quot;l&quot;, &quot;loo&quot;])\n    locks - lock string (default is &quot;cmd:all()&quot;)\n    help_category - how to organize this help entry in help system\n                    (default is &quot;General&quot;)\n    auto_help - defaults to True. Allows for turning off auto-help generation\n    arg_regex - (optional) raw string regex defining how the argument part of\n                the command should look in order to match for this command\n                (e.g. must it be a space between cmdname and arg?)\n    auto_help_display_key - (optional) if given, this replaces the string shown\n        in the auto-help listing. This is particularly useful for system-commands\n        whose actual key is not really meaningful.\n\n    (Note that if auto_help is on, this initial string is also used by the\n    system to create the help entry for the command, so it\'s a good idea to\n    format it similar to this one).  This behavior can be changed by\n    overriding the method \'get_help\' of a command: by default, this\n    method returns cmd.__doc__ (that is, this very docstring, or\n    the docstring of your command).  You can, however, extend or\n    replace this without disabling auto_help.\n    '}</em><a class="headerlink" href="#evennia.commands.default.tests.CmdInterrupt.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

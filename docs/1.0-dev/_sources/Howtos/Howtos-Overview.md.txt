@@ -1,10 +1,6 @@
 # Tutorials and Howto's
 
-The documents in this section aims to teach how to use Evennia in a tutorial or
-a step-by-step way. They often give hints on about solving a problem or implementing
-a particular feature or concept. They will often refer to the
-[components](../Components/Components-Overview.md) or [concepts](../Concepts/Concepts-Overview.md)
-docs for those that want to dive deeper.
+All Evennia tutorials. They will often refer to the [components](../Components/Components-Overview.md) or [concepts](../Concepts/Concepts-Overview.md) if you want to dive deeper. 
 
 ## Beginner Tutorial
 
