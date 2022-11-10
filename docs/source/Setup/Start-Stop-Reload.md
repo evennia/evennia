@@ -83,7 +83,7 @@ kill the process (not just the log-file view) with `Ctrl-C`.
     evennia istart
 
 will start/restart the *Server* in interactive mode. This is required if you want to run a
-[debugger](Debugging). Next time you `evennia reload` the server, it will return to normal mode.
+[debugger](../Coding/Debugging.md). Next time you `evennia reload` the server, it will return to normal mode.
 
     evennia ipstart
 
