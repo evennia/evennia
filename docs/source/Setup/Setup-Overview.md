@@ -1,7 +1,6 @@
 # Server Setup and Life
 
-This documentation covers how to setup and maintain the server, 
-from first install to opening your game to the public.
+This sums up all steps of maintaining your Evennia game from first installation to production release.
 
 ## Installation & running 
 
