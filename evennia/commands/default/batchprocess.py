@@ -243,7 +243,7 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
             caller.msg(string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         if not commands:
-            caller.msg("File %s seems empty of valid commands." % python_path)
+            caller.msg(f"File {python_path} seems empty of valid commands.")
             return
 
         switches = self.switches
@@ -263,12 +263,12 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
             # Set interactive state directly
             caller.cmdset.add(BatchInteractiveCmdSet)
 
-            caller.msg("\nBatch-command processor - Interactive mode for %s ..." % python_path)
+            caller.msg(f"\nBatch-command processor - Interactive mode for {python_path} ...")
             show_curr(caller)
         else:
             caller.msg(
                 "Running Batch-command processor - Automatic mode "
-                "for %s (this might take some time) ..." % python_path
+                f"for {python_path} (this might take some time) ..." 
             )
 
             # run in-process (might block)
@@ -279,8 +279,7 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
                 step_pointer(caller, 1)
             # clean out the safety cmdset and clean out all other
             # temporary attrs.
-            string = "  Batchfile '%s' applied." % python_path
-            caller.msg("|G%s" % string)
+            caller.msg(f"|G  Batchfile '{python_path}' applied.")
             purge_processor(caller)
 
 
@@ -330,7 +329,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
             return
         except IOError as err:
             if err:
-                err = "{}\n".format(str(err))
+                err = f"{err}\n"
             else:
                 err = ""
             string = (
@@ -340,7 +339,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
             caller.msg(string % (err, python_path, ", ".join(settings.BASE_BATCHPROCESS_PATHS)))
             return
         if not codes:
-            caller.msg("File %s seems empty of functional code." % python_path)
+            caller.msg(f"File {python_path} seems empty of functional code.")
             return
 
         switches = self.switches
@@ -361,10 +360,10 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
             # Set interactive state directly
             caller.cmdset.add(BatchInteractiveCmdSet)
 
-            caller.msg("\nBatch-code processor - Interactive mode for %s ..." % python_path)
+            caller.msg(f"\nBatch-code processor - Interactive mode for {python_path} ...")
             show_curr(caller)
         else:
-            caller.msg("Running Batch-code processor - Automatic mode for %s ..." % python_path)
+            caller.msg(f"Running Batch-code processor - Automatic mode for {python_path} ...")
 
             for _ in range(len(codes)):
                 # loop through the batch file
@@ -373,8 +372,7 @@ class CmdBatchCode(_COMMAND_DEFAULT_CLASS):
                 step_pointer(caller, 1)
             # clean out the safety cmdset and clean out all other
             # temporary attrs.
-            string = "  Batchfile '%s' applied." % python_path
-            caller.msg("|G%s" % string)
+            caller.msg(f"|G  Batchfile '{python_path}' applied.")
             purge_processor(caller)
 
 
