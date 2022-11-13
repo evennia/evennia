@@ -43,11 +43,11 @@ wasn't generated for you):
 ```python
 # URL patterns for the character app
 
-from django.conf.urls import url
+from django.urls import path
 from web.character.views import sheet
 
 urlpatterns = [
-    url(r'^sheet/(?P<object_id>\d+)/$', sheet, name="sheet")
+    path("sheet/<int:object_id>", sheet, name="sheet")
 ]
 ```
 
@@ -193,13 +193,14 @@ skills the user has, or if the user is approved (assuming your game has an appro
 
 The last file we need to edit is the master URLs file. This is needed in order to smoothly integrate
 the URLs from your new `character` app with the URLs from Evennia's existing pages. Find the file
-`web/urls.py` and update its `patterns` list as follows:
+`web/website/urls.py` and update its `patterns` list as follows:
 
 ```python
-# web/urls.py
+# web/website/urls.py
 
-custom_patterns = [
-    url(r'^character/', include('web.character.urls'))
+urlpatterns = [
+    # ...
+    path("character/", include('web.character.urls'))
    ]
 ```
 
