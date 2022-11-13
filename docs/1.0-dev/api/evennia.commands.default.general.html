@@ -266,7 +266,7 @@ for everyone to use, you need build privileges and the alias command.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.general.CmdNick.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['nickname', 'nicks']</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['nicks', 'nickname']</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -298,7 +298,7 @@ for everyone to use, you need build privileges and the alias command.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.general.CmdNick.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'nickname nicks', 'category': 'general', 'key': 'nick', 'no_prefix': ' nickname nicks', 'tags': '', 'text': '\n    define a personal alias/nick by defining a string to\n    match and replace it with another on the fly\n\n    Usage:\n      nick[/switches] &lt;string&gt; [= [replacement_string]]\n      nick[/switches] &lt;template&gt; = &lt;replacement_template&gt;\n      nick/delete &lt;string&gt; or number\n      nicks\n\n    Switches:\n      inputline - replace on the inputline (default)\n      object    - replace on object-lookup\n      account   - replace on account-lookup\n      list      - show all defined aliases (also &quot;nicks&quot; works)\n      delete    - remove nick by index in /list\n      clearall  - clear all nicks\n\n    Examples:\n      nick hi = say Hello, I\'m Sarah!\n      nick/object tom = the tall man\n      nick build $1 $2 = create/drop $1;$2\n      nick tell $1 $2=page $1=$2\n      nick tm?$1=page tallman=$1\n      nick tm\\=$1=page tallman=$1\n\n    A \'nick\' is a personal string replacement. Use $1, $2, ... to catch arguments.\n    Put the last $-marker without an ending space to catch all remaining text. You\n    can also use unix-glob matching for the left-hand side &lt;string&gt;:\n\n        * - matches everything\n        ? - matches 0 or 1 single characters\n        [abcd] - matches these chars in any order\n        [!abcd] - matches everything not among these chars\n        \\= - escape literal \'=\' you want in your &lt;string&gt;\n\n    Note that no objects are actually renamed or changed by this command - your nicks\n    are only available to you. If you want to permanently add keywords to an object\n    for everyone to use, you need build privileges and the alias command.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'nicks nickname', 'category': 'general', 'key': 'nick', 'no_prefix': ' nicks nickname', 'tags': '', 'text': '\n    define a personal alias/nick by defining a string to\n    match and replace it with another on the fly\n\n    Usage:\n      nick[/switches] &lt;string&gt; [= [replacement_string]]\n      nick[/switches] &lt;template&gt; = &lt;replacement_template&gt;\n      nick/delete &lt;string&gt; or number\n      nicks\n\n    Switches:\n      inputline - replace on the inputline (default)\n      object    - replace on object-lookup\n      account   - replace on account-lookup\n      list      - show all defined aliases (also &quot;nicks&quot; works)\n      delete    - remove nick by index in /list\n      clearall  - clear all nicks\n\n    Examples:\n      nick hi = say Hello, I\'m Sarah!\n      nick/object tom = the tall man\n      nick build $1 $2 = create/drop $1;$2\n      nick tell $1 $2=page $1=$2\n      nick tm?$1=page tallman=$1\n      nick tm\\=$1=page tallman=$1\n\n    A \'nick\' is a personal string replacement. Use $1, $2, ... to catch arguments.\n    Put the last $-marker without an ending space to catch all remaining text. You\n    can also use unix-glob matching for the left-hand side &lt;string&gt;:\n\n        * - matches everything\n        ? - matches 0 or 1 single characters\n        [abcd] - matches these chars in any order\n        [!abcd] - matches everything not among these chars\n        \\= - escape literal \'=\' you want in your &lt;string&gt;\n\n    Note that no objects are actually renamed or changed by this command - your nicks\n    are only available to you. If you want to permanently add keywords to an object\n    for everyone to use, you need build privileges and the alias command.\n\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdNick.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -771,7 +771,7 @@ which permission groups you are a member of.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.general.CmdAccess.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['groups', 'hierarchy']</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['hierarchy', 'groups']</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -802,7 +802,7 @@ which permission groups you are a member of.</p>
 
 <dl class="py attribute">
 <dt id="evennia.commands.default.general.CmdAccess.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'groups hierarchy', 'category': 'general', 'key': 'access', 'no_prefix': ' groups hierarchy', 'tags': '', 'text': '\n    show your current game access\n\n    Usage:\n      access\n\n    This command shows you the permission hierarchy and\n    which permission groups you are a member of.\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'hierarchy groups', 'category': 'general', 'key': 'access', 'no_prefix': ' hierarchy groups', 'tags': '', 'text': '\n    show your current game access\n\n    Usage:\n      access\n\n    This command shows you the permission hierarchy and\n    which permission groups you are a member of.\n    '}</em><a class="headerlink" href="#evennia.commands.default.general.CmdAccess.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

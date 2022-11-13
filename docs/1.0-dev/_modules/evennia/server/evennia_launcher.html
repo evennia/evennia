@@ -1329,6 +1329,8 @@
     <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
         <span class="c1"># even if evennia is not found, we should not crash here.</span>
         <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">version</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">rev</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">check_output</span><span class="p">(</span><span class="s2">&quot;git rev-parse --short HEAD&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">EVENNIA_ROOT</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">STDOUT</span><span class="p">)</span>

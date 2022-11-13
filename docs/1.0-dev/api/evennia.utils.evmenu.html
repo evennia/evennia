@@ -188,12 +188,6 @@ Such a callable should return either a str or a (str, dict), where the
 string is the name of the next node to go to and the dict is the new,
 (possibly modified) kwarg to pass into the next node. If the callable returns
 None or the empty string, the current node will be revisited.</p></li>
-<li><p><strong>exec</strong> (str, callable or tuple, optional): This takes the same input as <strong>goto</strong> above
-and runs before it. If given a node name, the node will be executed but will not
-be considered the next node. If node/callback returns str or (str, dict), these will
-replace the <strong>goto</strong> step (<strong>goto</strong> callbacks will not fire), with the string being the
-next node name and the optional dict acting as the kwargs-input for the next node.
-If an exec callable returns the empty string (only), the current node is re-run.</p></li>
 </ul>
 </li>
 </ul>
@@ -208,7 +202,6 @@ its number 1..N.</p>
     <span class="n">options</span> <span class="o">=</span> <span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;testing&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Select this to go to node 2&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;node2&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}),</span>
-                <span class="s2">&quot;exec&quot;</span><span class="p">:</span> <span class="s2">&quot;callback1&quot;</span><span class="p">},</span>
                <span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Go to node 3.&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;node3&quot;</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
@@ -369,7 +362,7 @@ re-running the entire node with text and options.</p>
 <dt id="evennia.utils.evmenu.CmdEvMenuNode">
 <em class="property">class </em><code class="sig-prename descclassname">evennia.utils.evmenu.</code><code class="sig-name descname">CmdEvMenuNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#CmdEvMenuNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
-<p>Menu options.</p>
+<p>Command to handle all user input targeted at the menu while the menu is active.</p>
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdEvMenuNode.key">
 <code class="sig-name descname">key</code><em class="property"> = '__noinput_command'</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode.key" title="Permalink to this definition">¶</a></dt>
@@ -429,7 +422,7 @@ commands the caller can use.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdEvMenuNode.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command', 'category': 'menu', 'key': '__noinput_command', 'no_prefix': ' __nomatch_command', 'tags': '', 'text': '\n    Menu options.\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command', 'category': 'menu', 'key': '__noinput_command', 'no_prefix': ' __nomatch_command', 'tags': '', 'text': '\n    Command to handle all user input targeted at the menu while the menu is active.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdEvMenuNode.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -584,111 +577,20 @@ non-persistent mode no such restrictions exist.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="evennia.utils.evmenu.EvMenu.msg">
-<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.msg" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a central point for sending return texts to the caller. It
-allows for a central point to add custom messaging when creating custom
-EvMenu overrides.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>txt</strong> (<em>str</em>) – The text to send.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>By default this will send to the same session provided to EvMenu
-(if <strong>session</strong> kwarg was provided to <strong>EvMenu.__init__</strong>). It will
-also send it with a <strong>type=menu</strong> for the benefit of OOB/webclient.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.utils.evmenu.EvMenu.run_exec">
-<code class="sig-name descname">run_exec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodename</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.run_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.run_exec" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOTE: This is deprecated. Use <strong>goto</strong> directly instead.</p>
-<p>Run a function or node as a callback (with the ‘exec’ option key).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nodename</strong> (<em>callable</em><em> or </em><em>str</em>) – A callable to run as
-<strong>callable(caller, raw_string)</strong>, or the Name of an existing
-node to run as a callable. This may or may not return
-a string.</p></li>
-<li><p><strong>raw_string</strong> (<em>str</em>) – The raw default string entered on the
-previous node (only used if the node accepts it as an
-argument)</p></li>
-<li><p><strong>kwargs</strong> (<em>any</em>) – These are optional kwargs passed into goto</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>new_goto (str or None)</em> –</p>
-<dl class="simple">
-<dt>A replacement goto location string or</dt><dd><p>None (no replacement).</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Relying on exec callbacks to set the goto location is
-very powerful but will easily lead to spaghetti structure and
-hard-to-trace paths through the menu logic. So be careful with
-relying on this.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.utils.evmenu.EvMenu.extract_goto_exec">
-<code class="sig-name descname">extract_goto_exec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodename</span></em>, <em class="sig-param"><span class="n">option_dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.extract_goto_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.extract_goto_exec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper: Get callables and their eventual kwargs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nodename</strong> (<em>str</em>) – The current node name (used for error reporting).</p></li>
-<li><p><strong>option_dict</strong> (<em>dict</em>) – The seleted option’s dict.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>goto (str, callable or None)</em> – The goto directive in the option.
-goto_kwargs (dict): Kwargs for <strong>goto</strong> if the former is callable, otherwise empty.
-execute (callable or None): Executable given by the <strong>exec</strong> directive.
-exec_kwargs (dict): Kwargs for <strong>execute</strong> if it’s callable, otherwise empty.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="evennia.utils.evmenu.EvMenu.goto">
-<code class="sig-name descname">goto</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodename</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.goto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.goto" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">goto</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodename_or_callable</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.goto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.goto" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run a node by name, optionally dynamically generating that name first.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>nodename</strong> (<em>str</em><em> or </em><em>callable</em>) – Name of node or a callable
+<li><p><strong>nodename_or_callable</strong> (<em>str</em><em> or </em><em>callable</em>) – Name of node or a callable
 to be called as <strong>function(caller, raw_string, **kwargs)</strong> or
-<strong>function(caller, **kwargs)</strong> to return the actual goto string or
-a (“nodename”, kwargs) tuple.</p></li>
+<strong>function(caller, **kwargs)</strong>. This callable must return the node-name (str)
+pointing to the next node.</p></li>
 <li><p><strong>raw_string</strong> (<em>str</em>) – The raw default string entered on the
 previous node (only used if the node accepts it as an
 argument)</p></li>
 <li><p><strong>**kwargs</strong> – Extra arguments to goto callables.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.utils.evmenu.EvMenu.run_exec_then_goto">
-<code class="sig-name descname">run_exec_then_goto</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">runexec</span></em>, <em class="sig-param"><span class="n">goto</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="n">runexec_kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">goto_kwargs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.run_exec_then_goto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.run_exec_then_goto" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call ‘exec’ callback and goto (which may also be a callable) in sequence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>runexec</strong> (<em>callable</em><em> or </em><em>str</em>) – Callback to run before goto. If
-the callback returns a string, this is used to replace
-the <strong>goto</strong> string/callable before being passed into the goto handler.</p></li>
-<li><p><strong>goto</strong> (<em>str</em>) – The target node to go to next (may be replaced
-by <strong>runexec</strong>)..</p></li>
-<li><p><strong>raw_string</strong> (<em>str</em>) – The original user input.</p></li>
-<li><p><strong>runexec_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Optional kwargs for runexec.</p></li>
-<li><p><strong>goto_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Optional kwargs for goto.</p></li>
 </ul>
 </dd>
 </dl>
@@ -713,9 +615,27 @@ of a property to inspect.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="evennia.utils.evmenu.EvMenu.msg">
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a central point for sending return texts to the caller. It
+allows for a central point to add custom messaging when creating custom
+EvMenu overrides.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>txt</strong> (<em>str</em>) – The text to send.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default this will send to the same session provided to EvMenu
+(if <strong>session</strong> kwarg was provided to <strong>EvMenu.__init__</strong>). It will
+also send it with a <strong>type=menu</strong> for the benefit of OOB/webclient.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="evennia.utils.evmenu.EvMenu.parse_input">
 <code class="sig-name descname">parse_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_string</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/evmenu.html#EvMenu.parse_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.evmenu.EvMenu.parse_input" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses the incoming string from the menu user.</p>
+<dd><p>Parses the incoming string from the menu user. This is the entry-point for all input
+into the menu.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>raw_string</strong> (<em>str</em>) – The incoming, unmodified string
@@ -855,7 +775,7 @@ given, the decorated node must itself provide a way to continue from the node!</
 </pre></div>
 </div>
 <p class="rubric">Notes</p>
-<p>All normal <strong>goto</strong> or <strong>exec</strong> callables returned from the decorated nodes
+<p>All normal <strong>goto</strong> callables returned from the decorated nodes
 will, if they accept <strong>**kwargs</strong>, get a new kwarg ‘available_choices’
 injected. These are the ordered list of named options (descs) visible
 on the current node page.</p>
@@ -1009,7 +929,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['no', 'abort', 'a', 'n', 'y', 'yes', '__nomatch_command']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['__nomatch_command', 'yes', 'abort', 'y', 'a', 'no', 'n']</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1035,7 +955,7 @@ single question.</p>
 
 <dl class="py attribute">
 <dt id="evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'no abort a n y yes __nomatch_command', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' no abort a n y yes __nomatch_command', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '__nomatch_command yes abort y a no n', 'category': 'general', 'key': '__noinput_command', 'no_prefix': ' __nomatch_command yes abort y a no n', 'tags': '', 'text': '\n    Handle a prompt for yes or no. Press [return] for the default choice.\n\n    '}</em><a class="headerlink" href="#evennia.utils.evmenu.CmdYesNoQuestion.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

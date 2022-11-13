@@ -165,12 +165,6 @@
 <span class="sd">    string is the name of the next node to go to and the dict is the new,</span>
 <span class="sd">    (possibly modified) kwarg to pass into the next node. If the callable returns</span>
 <span class="sd">    None or the empty string, the current node will be revisited.</span>
-<span class="sd">  - `exec` (str, callable or tuple, optional): This takes the same input as `goto` above</span>
-<span class="sd">    and runs before it. If given a node name, the node will be executed but will not</span>
-<span class="sd">    be considered the next node. If node/callback returns str or (str, dict), these will</span>
-<span class="sd">    replace the `goto` step (`goto` callbacks will not fire), with the string being the</span>
-<span class="sd">    next node name and the optional dict acting as the kwargs-input for the next node.</span>
-<span class="sd">    If an exec callable returns the empty string (only), the current node is re-run.</span>
 
 <span class="sd">If `key` is not given, the option will automatically be identified by</span>
 <span class="sd">its number 1..N.</span>
@@ -187,7 +181,6 @@
 <span class="sd">        options = ({&quot;key&quot;: &quot;testing&quot;,</span>
 <span class="sd">                    &quot;desc&quot;: &quot;Select this to go to node 2&quot;,</span>
 <span class="sd">                    &quot;goto&quot;: (&quot;node2&quot;, {&quot;foo&quot;: &quot;bar&quot;}),</span>
-<span class="sd">                    &quot;exec&quot;: &quot;callback1&quot;},</span>
 <span class="sd">                   {&quot;desc&quot;: &quot;Go to node 3.&quot;,</span>
 <span class="sd">                    &quot;goto&quot;: &quot;node3&quot;})</span>
 <span class="sd">        return text, options</span>
@@ -356,7 +349,6 @@
 
 <span class="c1"># i18n</span>
 <span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
-
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">evennia.commands</span> <span class="kn">import</span> <span class="n">cmdhandler</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -433,7 +425,8 @@
 
 <div class="viewcode-block" id="CmdEvMenuNode"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.CmdEvMenuNode">[docs]</a><span class="k">class</span> <span class="nc">CmdEvMenuNode</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Menu options.</span>
+<span class="sd">    Command to handle all user input targeted at the menu while the menu is active.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">key</span> <span class="o">=</span> <span class="n">_CMD_NOINPUT</span>
@@ -714,7 +707,7 @@
         <span class="c1"># store ourself on the object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span> <span class="o">=</span> <span class="bp">self</span>
 
-        <span class="c1"># DEPRECATED - for backwards-compatibility</span>
+        <span class="c1"># DEPRECATED - for backwards-compatibility. Use `.ndb._evmenu` instead</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_menutree</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="k">if</span> <span class="n">persistent</span><span class="p">:</span>
@@ -854,7 +847,7 @@
 
     <span class="k">def</span> <span class="nf">_execute_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Execute a node.</span>
+<span class="sd">        Execute a node (-function) and get its returns.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            nodename (str): Name of node.</span>
@@ -890,87 +883,12 @@
             <span class="k">raise</span>
 
         <span class="c1"># store options to make them easier to test</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">test_options</span> <span class="o">=</span> <span class="n">options</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">test_nodetext</span> <span class="o">=</span> <span class="n">nodetext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_options</span> <span class="o">=</span> <span class="n">options</span>
 
         <span class="k">return</span> <span class="n">nodetext</span><span class="p">,</span> <span class="n">options</span>
 
-<div class="viewcode-block" id="EvMenu.msg"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is a central point for sending return texts to the caller. It</span>
-<span class="sd">        allows for a central point to add custom messaging when creating custom</span>
-<span class="sd">        EvMenu overrides.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            txt (str): The text to send.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">            By default this will send to the same session provided to EvMenu</span>
-<span class="sd">            (if `session` kwarg was provided to `EvMenu.__init__`). It will</span>
-<span class="sd">            also send it with a `type=menu` for the benefit of OOB/webclient.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;menu&quot;</span><span class="p">}),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="EvMenu.run_exec"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.run_exec">[docs]</a>    <span class="k">def</span> <span class="nf">run_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        NOTE: This is deprecated. Use `goto` directly instead.</span>
-
-<span class="sd">        Run a function or node as a callback (with the &#39;exec&#39; option key).</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            nodename (callable or str): A callable to run as</span>
-<span class="sd">                `callable(caller, raw_string)`, or the Name of an existing</span>
-<span class="sd">                node to run as a callable. This may or may not return</span>
-<span class="sd">                a string.</span>
-<span class="sd">            raw_string (str): The raw default string entered on the</span>
-<span class="sd">                previous node (only used if the node accepts it as an</span>
-<span class="sd">                argument)</span>
-<span class="sd">            kwargs (any): These are optional kwargs passed into goto</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            new_goto (str or None): A replacement goto location string or</span>
-<span class="sd">                None (no replacement).</span>
-<span class="sd">        Notes:</span>
-<span class="sd">            Relying on exec callbacks to set the goto location is</span>
-<span class="sd">            very powerful but will easily lead to spaghetti structure and</span>
-<span class="sd">            hard-to-trace paths through the menu logic. So be careful with</span>
-<span class="sd">            relying on this.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">nodename</span><span class="p">):</span>
-                <span class="c1"># this is a direct callable - execute it directly</span>
-                <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_safe_call</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-                        <span class="k">raise</span> <span class="n">EvMenuError</span><span class="p">(</span>
-                            <span class="s2">&quot;exec callable must return either None, str or (str, dict)&quot;</span>
-                        <span class="p">)</span>
-                    <span class="n">ret</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># nodename is a string; lookup as node and run as node in-place (don&#39;t goto it)</span>
-                <span class="c1"># execute the node</span>
-                <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_node</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-                        <span class="k">raise</span> <span class="n">EvMenuError</span><span class="p">(</span><span class="s2">&quot;exec node must return either None, str or (str, dict)&quot;</span><span class="p">)</span>
-                    <span class="n">ret</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
-        <span class="k">except</span> <span class="n">EvMenuError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="n">errmsg</span> <span class="o">=</span> <span class="s2">&quot;Error in exec &#39;</span><span class="si">%s</span><span class="s2">&#39; (input: &#39;</span><span class="si">%s</span><span class="s2">&#39;): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span> <span class="n">err</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;|r</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">errmsg</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="c1"># only return a value if a string (a goto target), ignore all other returns</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
-                <span class="c1"># an empty string - rerun the same node</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodename</span>
-            <span class="k">return</span> <span class="n">ret</span><span class="p">,</span> <span class="n">kwargs</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="EvMenu.extract_goto_exec"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.extract_goto_exec">[docs]</a>    <span class="k">def</span> <span class="nf">extract_goto_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">option_dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_extract_goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">option_dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper: Get callables and their eventual kwargs.</span>
 
@@ -981,12 +899,10 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            goto (str, callable or None): The goto directive in the option.</span>
 <span class="sd">            goto_kwargs (dict): Kwargs for `goto` if the former is callable, otherwise empty.</span>
-<span class="sd">            execute (callable or None): Executable given by the `exec` directive.</span>
-<span class="sd">            exec_kwargs (dict): Kwargs for `execute` if it&#39;s callable, otherwise empty.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
-        <span class="n">goto</span><span class="p">,</span> <span class="n">execute</span> <span class="o">=</span> <span class="n">option_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;goto&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">option_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">goto_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">goto</span> <span class="o">=</span> <span class="n">option_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;goto&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">goto</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">goto</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span> <span class="o">=</span> <span class="n">goto</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># ignore any extra arguments</span>
@@ -999,29 +915,17 @@
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">goto</span> <span class="o">=</span> <span class="n">goto</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">execute</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">execute</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">execute</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">execute</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="n">execute</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># ignore any extra arguments</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">exec_kwargs</span><span class="p">,</span> <span class="s2">&quot;__getitem__&quot;</span><span class="p">):</span>
-                    <span class="c1">#  not a dict-like structure</span>
-                    <span class="k">raise</span> <span class="n">EvMenuError</span><span class="p">(</span>
-                        <span class="s2">&quot;EvMenu node </span><span class="si">{}</span><span class="s2">: exec kwargs is not a dict: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">nodename</span><span class="p">,</span> <span class="n">goto_kwargs</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">execute</span> <span class="o">=</span> <span class="n">execute</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="n">exec_kwargs</span></div>
+        <span class="k">return</span> <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span>
 
-<div class="viewcode-block" id="EvMenu.goto"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EvMenu.goto"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename_or_callable</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run a node by name, optionally dynamically generating that name first.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            nodename (str or callable): Name of node or a callable</span>
+<span class="sd">            nodename_or_callable (str or callable): Name of node or a callable</span>
 <span class="sd">                to be called as `function(caller, raw_string, **kwargs)` or</span>
-<span class="sd">                `function(caller, **kwargs)` to return the actual goto string or</span>
-<span class="sd">                a (&quot;nodename&quot;, kwargs) tuple.</span>
+<span class="sd">                `function(caller, **kwargs)`. This callable must return the node-name (str)</span>
+<span class="sd">                pointing to the next node.</span>
 <span class="sd">            raw_string (str): The raw default string entered on the</span>
 <span class="sd">                previous node (only used if the node accepts it as an</span>
 <span class="sd">                argument)</span>
@@ -1029,10 +933,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">nodename</span><span class="p">):</span>
-            <span class="c1"># run the &quot;goto&quot; callable, if possible</span>
-            <span class="n">inp_nodename</span> <span class="o">=</span> <span class="n">nodename</span>
-            <span class="n">nodename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_safe_call</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">inp_nodename</span> <span class="o">=</span> <span class="n">nodename_or_callable</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">nodename_or_callable</span><span class="p">):</span>
+            <span class="c1"># run the &quot;goto&quot; callable to get the next node to go to</span>
+            <span class="n">nodename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_safe_call</span><span class="p">(</span><span class="n">nodename_or_callable</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodename</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">EvMenuError</span><span class="p">(</span>
@@ -1042,8 +946,14 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">nodename</span><span class="p">:</span>
                 <span class="c1"># no nodename return. Re-run current node</span>
                 <span class="n">nodename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodename</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># the nodename given directly</span>
+            <span class="n">nodename</span> <span class="o">=</span> <span class="n">nodename_or_callable</span>
+
+        <span class="c1"># one way or another, we have the nodename as a string now</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># execute the found node, make use of the returns.</span>
+            <span class="c1"># execute the found nodename, make use of the returns.</span>
             <span class="n">nodetext</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_node</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">EvMenuError</span><span class="p">:</span>
             <span class="k">return</span>
@@ -1054,47 +964,13 @@
             <span class="p">)</span>
 
         <span class="c1"># validation of the node return values</span>
+
+        <span class="c1"># if the nodetext is a list/tuple, the second set is the help text.</span>
         <span class="n">helptext</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">nodetext</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodetext</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">nodetext</span><span class="p">,</span> <span class="n">helptext</span> <span class="o">=</span> <span class="n">nodetext</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">nodetext</span> <span class="o">=</span> <span class="n">nodetext</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">nodetext</span><span class="p">,</span> <span class="o">*</span><span class="n">helptext</span> <span class="o">=</span> <span class="n">nodetext</span>
+            <span class="n">helptext</span> <span class="o">=</span> <span class="n">helptext</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">helptext</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">nodetext</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">nodetext</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">nodetext</span><span class="p">)</span>
-        <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">options</span>
-
-        <span class="c1"># this will be displayed in the given order</span>
-        <span class="n">display_options</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># this is used for lookup</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">options</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">dic</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
-                <span class="c1"># fix up the option dicts</span>
-                <span class="n">keys</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">))</span>
-                <span class="n">desc</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-                <span class="k">if</span> <span class="s2">&quot;_default&quot;</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_default&quot;</span><span class="p">]</span>
-                    <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_goto_exec</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="n">exec_kwargs</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># use the key (only) if set, otherwise use the running number</span>
-                    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())))</span>
-                    <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_goto_exec</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
-                    <span class="n">display_options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">desc</span><span class="p">))</span>
-                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">goto</span> <span class="ow">or</span> <span class="n">execute</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span>
-                                <span class="n">goto</span><span class="p">,</span>
-                                <span class="n">goto_kwargs</span><span class="p">,</span>
-                                <span class="n">execute</span><span class="p">,</span>
-                                <span class="n">exec_kwargs</span><span class="p">,</span>
-                            <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">nodetext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_node</span><span class="p">(</span><span class="n">nodetext</span><span class="p">,</span> <span class="n">display_options</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">node_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nodename</span> <span class="o">=</span> <span class="n">nodename</span>
 
         <span class="c1"># handle the helptext</span>
         <span class="k">if</span> <span class="n">helptext</span><span class="p">:</span>
@@ -1104,32 +980,45 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">helptext</span> <span class="o">=</span> <span class="n">_HELP_NO_OPTIONS</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_quit</span> <span class="k">else</span> <span class="n">_HELP_NO_OPTIONS_NO_QUIT</span>
 
+        <span class="c1"># store the current node&#39;s data in the menu state</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodename</span> <span class="o">=</span> <span class="n">nodename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">display_options</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># options will be displayed in this order</span>
+
+        <span class="k">if</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">options</span>
+            <span class="k">for</span> <span class="n">inum</span><span class="p">,</span> <span class="n">dic</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+
+                <span class="c1"># homogenize the options dict</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">))</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="s2">&quot;_default&quot;</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_default&quot;</span><span class="p">]</span>
+                    <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_goto</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># use the key (only) if set, otherwise use the running number</span>
+                    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">make_iter</span><span class="p">(</span><span class="n">dic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">inum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())))</span>
+                    <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_goto</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">display_options</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">desc</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">strip_ansi</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># format the text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodetext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_node</span><span class="p">(</span><span class="n">nodetext</span><span class="p">,</span> <span class="n">display_options</span><span class="p">)</span>
+
+        <span class="c1"># display self.nodetext to the user</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display_nodetext</span><span class="p">()</span>
+
+        <span class="c1"># close menu if we have no more options to process</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close_menu</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="EvMenu.run_exec_then_goto"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.run_exec_then_goto">[docs]</a>    <span class="k">def</span> <span class="nf">run_exec_then_goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runexec</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">runexec_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Call &#39;exec&#39; callback and goto (which may also be a callable) in sequence.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            runexec (callable or str): Callback to run before goto. If</span>
-<span class="sd">                the callback returns a string, this is used to replace</span>
-<span class="sd">                the `goto` string/callable before being passed into the goto handler.</span>
-<span class="sd">            goto (str): The target node to go to next (may be replaced</span>
-<span class="sd">                by `runexec`)..</span>
-<span class="sd">            raw_string (str): The original user input.</span>
-<span class="sd">            runexec_kwargs (dict, optional): Optional kwargs for runexec.</span>
-<span class="sd">            goto_kwargs (dict, optional): Optional kwargs for goto.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">runexec</span><span class="p">:</span>
-            <span class="c1"># replace goto only if callback returns</span>
-            <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_exec</span><span class="p">(</span>
-                <span class="n">runexec</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">runexec_kwargs</span> <span class="k">if</span> <span class="n">runexec_kwargs</span> <span class="k">else</span> <span class="p">{})</span>
-            <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">goto</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">goto</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">goto_kwargs</span> <span class="k">if</span> <span class="n">goto_kwargs</span> <span class="k">else</span> <span class="p">{}))</span></div>
 
 <div class="viewcode-block" id="EvMenu.close_menu"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.close_menu">[docs]</a>    <span class="k">def</span> <span class="nf">close_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1207,9 +1096,27 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">debugtxt</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="EvMenu.msg"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a central point for sending return texts to the caller. It</span>
+<span class="sd">        allows for a central point to add custom messaging when creating custom</span>
+<span class="sd">        EvMenu overrides.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            txt (str): The text to send.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            By default this will send to the same session provided to EvMenu</span>
+<span class="sd">            (if `session` kwarg was provided to `EvMenu.__init__`). It will</span>
+<span class="sd">            also send it with a `type=menu` for the benefit of OOB/webclient.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;menu&quot;</span><span class="p">}),</span> <span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="EvMenu.parse_input"><a class="viewcode-back" href="../../../api/evennia.utils.evmenu.html#evennia.utils.evmenu.EvMenu.parse_input">[docs]</a>    <span class="k">def</span> <span class="nf">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parses the incoming string from the menu user.</span>
+<span class="sd">        Parses the incoming string from the menu user. This is the entry-point for all input</span>
+<span class="sd">        into the menu.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            raw_string (str): The incoming, unmodified string</span>
@@ -1220,14 +1127,15 @@
 <span class="sd">            should also report errors directly to the user.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># this is the input cmd given to the menu</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="n">strip_ansi</span><span class="p">(</span><span class="n">raw_string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
-                <span class="c1"># this will take precedence over the default commands</span>
-                <span class="c1"># below</span>
-                <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execfunc</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_exec_then_goto</span><span class="p">(</span><span class="n">execfunc</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">exec_kwargs</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
+                <span class="c1"># we chose one of the available options; this</span>
+                <span class="c1"># will take precedence over the default commands</span>
+                <span class="n">goto_node</span><span class="p">,</span> <span class="n">goto_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">goto_node</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">goto_kwargs</span> <span class="ow">or</span> <span class="p">{}))</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_look</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;look&quot;</span><span class="p">,</span> <span class="s2">&quot;l&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">display_nodetext</span><span class="p">()</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_help</span> <span class="ow">and</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span>
@@ -1237,8 +1145,8 @@
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug_mode</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;menudebug&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">print_debug_info</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
-                <span class="n">goto</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">,</span> <span class="n">execfunc</span><span class="p">,</span> <span class="n">exec_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_exec_then_goto</span><span class="p">(</span><span class="n">execfunc</span><span class="p">,</span> <span class="n">goto</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="n">exec_kwargs</span><span class="p">,</span> <span class="n">goto_kwargs</span><span class="p">)</span>
+                <span class="n">goto_node</span><span class="p">,</span> <span class="n">goto_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">goto_node</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">goto_kwargs</span> <span class="ow">or</span> <span class="p">{}))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">_HELP_NO_OPTION_MATCH</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">EvMenuGotoAbortMessage</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
@@ -1430,7 +1338,7 @@
 <span class="sd">        ```</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        All normal `goto` or `exec` callables returned from the decorated nodes</span>
+<span class="sd">        All normal `goto` callables returned from the decorated nodes</span>
 <span class="sd">        will, if they accept `**kwargs`, get a new kwarg &#39;available_choices&#39;</span>
 <span class="sd">        injected. These are the ordered list of named options (descs) visible</span>
 <span class="sd">        on the current node page.</span>
@@ -1562,7 +1470,7 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">decorated_options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">decorated_options</span> <span class="o">=</span> <span class="p">[</span><span class="n">decorated_options</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">eopt</span> <span class="ow">in</span> <span class="n">decorated_options</span><span class="p">:</span>
-                <span class="n">cback</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;goto&quot;</span> <span class="ow">in</span> <span class="n">eopt</span> <span class="ow">and</span> <span class="s2">&quot;goto&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;exec&quot;</span> <span class="ow">in</span> <span class="n">eopt</span> <span class="ow">and</span> <span class="s2">&quot;exec&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
+                <span class="n">cback</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;goto&quot;</span> <span class="ow">in</span> <span class="n">eopt</span> <span class="ow">and</span> <span class="s2">&quot;goto&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">cback</span><span class="p">:</span>
                     <span class="n">signature</span> <span class="o">=</span> <span class="n">eopt</span><span class="p">[</span><span class="n">cback</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">signature</span><span class="p">):</span>
