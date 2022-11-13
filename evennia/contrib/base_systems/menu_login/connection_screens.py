@@ -21,14 +21,13 @@ of the screen is done by the unlogged-in "look" command.
 """
 
 from django.conf import settings
-
 from evennia import utils
 
 CONNECTION_SCREEN = """
 |b==============================================================|n
  Welcome to |g{}|n, version {}!
 
- Enter |wh|nelp for more info. |wlook|n will re-show this screen.
+ Enter |wh|nelp for more info.
 |b==============================================================|n""".format(
     settings.SERVERNAME, utils.get_evennia_version("short")
 )
