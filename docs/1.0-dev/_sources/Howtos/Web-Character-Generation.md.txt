@@ -364,16 +364,16 @@ created in `mygame/web/chargen/urls.py`.
 ```python
 # file mygame/web/chargen/urls.py
 
-from django.conf.urls import url
+from django.urls import path
 from web.chargen import views
 
 urlpatterns = [
-    # ex: /chargen/
-    url(r'^$', views.index, name='index'),
-    # ex: /chargen/5/
-    url(r'^(?P<app_id>[0-9]+)/$', views.detail, name='detail'),
-    # ex: /chargen/create
-    url(r'^create/$', views.creating, name='creating'),
+    # url: /chargen/
+    path("", views.index, name='chargen-index'),
+    # url: /chargen/5/
+    path("<int:pk>/", views.detail, name="chargen-detail"),
+    # url: /chargen/create
+    path("create/", views.creating, name='chargen-creating'),
 ]
 ```
 
@@ -381,29 +381,20 @@ You could change the format as you desire. To make it more secure, you could rem
 "detail" url, and instead just fetch the account’s applications using a unifying field like
 account_id to find all the character application objects to display.
 
-We must also update the main `mygame/web/urls.py` file (that is, one level up from our chargen app),
-so the main website knows where our app's views are located. Find the `patterns` variable, and
+To add this to our website, we must also update the main `mygame/website/urls.py` file; this
+will help tying our new chargen app in with the rest of the website. `urlpatterns` variable, and
 change it to include:
 
 ```python
-# in file mygame/web/urls.py
+# in file mygame/website/urls.py
 
-from django.conf.urls import url, include
+from django.urls import path, include
 
-# default evennia patterns
-from evennia.web.urls import urlpatterns
-
-# eventual custom patterns
-custom_patterns = [
-    # url(r'/desired/url/', view, name='example'),
+urlpatterns = [
+    # make all chargen endpoints available under /chargen url
+    path("chargen/", include("web.chargen.urls")
 ]
 
-# this is required by Django.
-urlpatterns += [
-    url(r'^chargen/', include('web.chargen.urls')),
-]
-
-urlpatterns = custom_patterns + urlpatterns
 ```
 
 ### URLs - Checkpoint:
@@ -517,7 +508,7 @@ up on documentation elsewhere on the web for GET vs. POST.
 After finishing this tutorial you should have edited or created the following files:
 
 ```bash
-mygame/web/urls.py
+mygame/web/website/urls.py
 mygame/web/chargen/models.py
 mygame/web/chargen/views.py
 mygame/web/chargen/urls.py

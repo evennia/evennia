@@ -484,43 +484,34 @@ setting custom attributes is as easy as doing it in the meat of your Evennia gam
 created in <code class="docutils literal notranslate"><span class="pre">mygame/web/chargen/urls.py</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file mygame/web/chargen/urls.py</span>
 
-<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
 <span class="kn">from</span> <span class="nn">web.chargen</span> <span class="kn">import</span> <span class="n">views</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="c1"># ex: /chargen/</span>
-    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^$&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">),</span>
-    <span class="c1"># ex: /chargen/5/</span>
-    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?P&lt;app_id&gt;[0-9]+)/$&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;detail&#39;</span><span class="p">),</span>
-    <span class="c1"># ex: /chargen/create</span>
-    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^create/$&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">creating</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;creating&#39;</span><span class="p">),</span>
+    <span class="c1"># url: /chargen/</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;chargen-index&#39;</span><span class="p">),</span>
+    <span class="c1"># url: /chargen/5/</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;chargen-detail&quot;</span><span class="p">),</span>
+    <span class="c1"># url: /chargen/create</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;create/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">creating</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;chargen-creating&#39;</span><span class="p">),</span>
 <span class="p">]</span>
 </pre></div>
 </div>
 <p>You could change the format as you desire. To make it more secure, you could remove app_id from the
 “detail” url, and instead just fetch the account’s applications using a unifying field like
 account_id to find all the character application objects to display.</p>
-<p>We must also update the main <code class="docutils literal notranslate"><span class="pre">mygame/web/urls.py</span></code> file (that is, one level up from our chargen app),
-so the main website knows where our app’s views are located. Find the <code class="docutils literal notranslate"><span class="pre">patterns</span></code> variable, and
+<p>To add this to our website, we must also update the main <code class="docutils literal notranslate"><span class="pre">mygame/website/urls.py</span></code> file; this
+will help tying our new chargen app in with the rest of the website. <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> variable, and
 change it to include:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in file mygame/web/urls.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in file mygame/website/urls.py</span>
 
-<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span><span class="p">,</span> <span class="n">include</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">include</span>
 
-<span class="c1"># default evennia patterns</span>
-<span class="kn">from</span> <span class="nn">evennia.web.urls</span> <span class="kn">import</span> <span class="n">urlpatterns</span>
-
-<span class="c1"># eventual custom patterns</span>
-<span class="n">custom_patterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="c1"># url(r&#39;/desired/url/&#39;, view, name=&#39;example&#39;),</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># make all chargen endpoints available under /chargen url</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;chargen/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;web.chargen.urls&quot;</span><span class="p">)</span>
 <span class="p">]</span>
 
-<span class="c1"># this is required by Django.</span>
-<span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^chargen/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;web.chargen.urls&#39;</span><span class="p">)),</span>
-<span class="p">]</span>
-
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">custom_patterns</span> <span class="o">+</span> <span class="n">urlpatterns</span>
 </pre></div>
 </div>
 <section id="urls-checkpoint">
@@ -631,7 +622,7 @@ up on documentation elsewhere on the web for GET vs. POST.</p>
 <section id="activating-your-new-character-generation">
 <h2>Activating your new character generation<a class="headerlink" href="#activating-your-new-character-generation" title="Permalink to this headline">¶</a></h2>
 <p>After finishing this tutorial you should have edited or created the following files:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mygame/web/urls.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mygame/web/website/urls.py
 mygame/web/chargen/models.py
 mygame/web/chargen/views.py
 mygame/web/chargen/urls.py
