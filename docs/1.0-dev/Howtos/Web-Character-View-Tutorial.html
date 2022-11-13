@@ -131,11 +131,11 @@ we shall see.</p>
 wasn’t generated for you):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># URL patterns for the character app</span>
 
-<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
 <span class="kn">from</span> <span class="nn">web.character.views</span> <span class="kn">import</span> <span class="n">sheet</span>
 
 <span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^sheet/(?P&lt;object_id&gt;\d+)/$&#39;</span><span class="p">,</span> <span class="n">sheet</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sheet&quot;</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;sheet/&lt;int:object_id&gt;&quot;</span><span class="p">,</span> <span class="n">sheet</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sheet&quot;</span><span class="p">)</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -269,11 +269,12 @@ flexibility in how you display the data.</p>
 skills the user has, or if the user is approved (assuming your game has an approval system).</p>
 <p>The last file we need to edit is the master URLs file. This is needed in order to smoothly integrate
 the URLs from your new <code class="docutils literal notranslate"><span class="pre">character</span></code> app with the URLs from Evennia’s existing pages. Find the file
-<code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code> and update its <code class="docutils literal notranslate"><span class="pre">patterns</span></code> list as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># web/urls.py</span>
+<code class="docutils literal notranslate"><span class="pre">web/website/urls.py</span></code> and update its <code class="docutils literal notranslate"><span class="pre">patterns</span></code> list as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># web/website/urls.py</span>
 
-<span class="n">custom_patterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^character/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;web.character.urls&#39;</span><span class="p">))</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># ...</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;character/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">&#39;web.character.urls&#39;</span><span class="p">))</span>
    <span class="p">]</span>
 </pre></div>
 </div>

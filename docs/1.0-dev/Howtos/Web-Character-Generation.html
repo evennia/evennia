@@ -491,7 +491,7 @@ created in <code class="docutils literal notranslate"><span class="pre">mygame/w
     <span class="c1"># url: /chargen/</span>
     <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;chargen-index&#39;</span><span class="p">),</span>
     <span class="c1"># url: /chargen/5/</span>
-    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&lt;int:pk&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;chargen-detail&quot;</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&lt;int:app_id&gt;/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;chargen-detail&quot;</span><span class="p">),</span>
     <span class="c1"># url: /chargen/create</span>
     <span class="n">path</span><span class="p">(</span><span class="s2">&quot;create/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">creating</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;chargen-creating&#39;</span><span class="p">),</span>
 <span class="p">]</span>
