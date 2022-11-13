@@ -12,17 +12,17 @@ using a couple of existing object hooks to inform the NPC that a Character has e
 It is assumed that you already know how to create custom room and character typeclasses, please see
 the [Basic Game tutorial](./Tutorial-for-basic-MUSH-like-game.md) if you haven't already done this.
 
-What we will need is the following: 
+What we will need is the following:
 
 - An NPC typeclass that can react when someone enters.
 - A custom [Room](../Components/Objects.md#rooms) typeclass that can tell the NPC that someone entered.
-- We will also tweak our default `Character` typeclass a little. 
+- We will also tweak our default `Character` typeclass a little.
 
 To begin with, we need to create an NPC typeclass. Create a new file inside of your typeclasses
 folder and name it `npcs.py` and then add the following code:
 
 ```python
-from typeclasses.characters import Character 
+from typeclasses.characters import Character
 
 class NPC(Character):
     """
@@ -30,9 +30,9 @@ class NPC(Character):
     """
     def at_char_entered(self, character):
         """
-         A simple is_aggressive check. 
+         A simple is_aggressive check.
          Can be expanded upon later.
-        """       
+        """
         if self.db.is_aggressive:
             self.execute_cmd(f"say Graaah, die {character}!")
         else:
@@ -55,12 +55,12 @@ from evennia import utils
     def at_object_receive(self, obj, source_location):
         if utils.inherits_from(obj, 'typeclasses.npcs.NPC'): # An NPC has entered
             return
-        elif utils.inherits_from(obj, 'typeclasses.characters.Character'): 
+        elif utils.inherits_from(obj, 'typeclasses.characters.Character'):
             # A PC has entered.
             # Cause the player's character to look around.
             obj.execute_cmd('look')
             for item in self.contents:
-                if utils.inherits_from(item, 'typeclasses.npcs.NPC'): 
+                if utils.inherits_from(item, 'typeclasses.npcs.NPC'):
                     # An NPC is in the room
                     item.at_char_entered(obj)
 ```
@@ -90,11 +90,10 @@ overload.  This means that a character entering would see the NPC perform its ac
     # Add this hook in any blank area within your Character class.
     def at_post_move(self, source_location):
         """
-        Default is to look around after a move 
+        Default is to look around after a move
         Note:  This has been moved to Room.at_object_receive
         """
-        #self.execute_cmd('look')
-        pass
+        # self.execute_cmd('look')
 ```
 
 Now let's create an NPC and make it aggressive. Type the following commands into your MUD client:
