@@ -268,7 +268,7 @@ class CmdBatchCommands(_COMMAND_DEFAULT_CLASS):
         else:
             caller.msg(
                 "Running Batch-command processor - Automatic mode "
-                f"for {python_path} (this might take some time) ..." 
+                f"for {python_path} (this might take some time) ..."
             )
 
             # run in-process (might block)
