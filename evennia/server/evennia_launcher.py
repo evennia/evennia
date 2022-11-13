@@ -1253,6 +1253,8 @@ def evennia_version():
     except (ImportError, AttributeError):
         # even if evennia is not found, we should not crash here.
         pass
+    else:
+        return version
     try:
         rev = (
             check_output("git rev-parse --short HEAD", shell=True, cwd=EVENNIA_ROOT, stderr=STDOUT)
