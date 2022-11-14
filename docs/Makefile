@@ -125,7 +125,6 @@ quickstrict:
 # we build index directly for the current branch
 local:
 	make _check-env
-	make clean
 	make _autodoc-index
 	make _html-build
 	@echo ""
@@ -147,7 +146,6 @@ mv-index:
 
 mv-local:
 	make _multiversion-check-env
-	make clean
 	make _multiversion-build
 	@echo ""
 	@echo "Documentation built (multiversion + autodocs)."
@@ -160,7 +158,6 @@ deploy:
 	@echo "Documentation deployed."
 
 # build and prepare the docs for release
-#
 release:
 	make mv-local
 	make deploy

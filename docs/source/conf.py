@@ -7,6 +7,7 @@
 import os
 import re
 import sys
+from collections import namedtuple
 
 # from recommonmark.transform import AutoStructify
 from sphinx.util.osutil import cd
@@ -51,13 +52,23 @@ html_static_path = ["_static"]
 # -- Sphinx-multiversion config ----------------------------------------------
 
 # which branches to include in multi-versioned docs
-# - master, develop and vX.X branches
-smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
+# smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
+# smv_branch_whitelist = r"^develop$|^master$|^v1.0$"
+smv_branch_whitelist = r"^develop$"
 smv_outputdir_format = "{config.release}"
 # don't make docs for tags
 smv_tag_whitelist = r"^$"
-# legacy branches are linked to in template, but not built (custom for Evennia)
-smv_legacy_branches = ["0.9.5"]
+
+# used to fill in versioning.html links for versions that are not actually built
+legacy_versions = ["0.9.5"]
+
+
+def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
+    LVersion = namedtuple("legacy_version", ["release", "name", "url"])
+    context["legacy_versions"] = [
+        LVersion(release=f"{vers}", name=f"v{vers}", url=f"../{vers}/index.html")
+        for vers in legacy_versions
+    ]
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -347,6 +358,7 @@ def setup(app):
     app.connect("autodoc-skip-member", autodoc_skip_member)
     app.connect("autodoc-process-docstring", autodoc_post_process_docstring)
     app.connect("source-read", url_resolver)
+    app.connect("html-page-context", add_legacy_versions_to_html_page_context)
 
     # build toctree file
     sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
