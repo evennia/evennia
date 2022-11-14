@@ -5,4 +5,10 @@
   <li><a href="{{ item.url }}">{{ item.release }} ({{ item.name }} branch)</a></li>
   {%- endfor %}
 </ul>
+    {% if legacy_versions %} <ul>
+      {%- for item in legacy_versions %}
+      <li><a href="{{ item.url }}">{{ item.release }} ({{ item.name }} branch)</a></li>
+      {%- endfor %}
+    </ul>
+    {% endif %}
 {% endif %}

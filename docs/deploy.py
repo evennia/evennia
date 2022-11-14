@@ -8,6 +8,7 @@ This is assumed to be executed from inside the docs/ folder.
 
 import glob
 import os
+import subprocess
 import sys
 
 # branches that should not be rebuilt anymore (all others are considered active)
@@ -18,7 +19,7 @@ latest_branch = "0.9.5"
 
 def deploy():
 
-    if os.popen("git status --untracked=no --porcelain"):
+    if subprocess.call(["git", "status", "--untracked=no", "--porcelain"]):
         print(
             "There are uncommitted or untracked changes. Make sure "
             "to commit everything in your current branch first."
@@ -26,35 +27,36 @@ def deploy():
         sys.exit(1)
 
     # get the deployment branch
-    os.popen("git fetch")
-    os.popen("git checkout gh-pages")
+    os.system("git fetch")
+    os.system("git checkout gh-pages")
 
     for file_path in glob.glob("*"):
         # run from inside the docs/ dir
         # delete old but active doc branches
 
-        _, filename = file_path.rsplit("/", 1).strip()
+        _, *filename = file_path.rsplit("/", 1)
 
-        if filename in legacy_branches:
+        if filename and filename[0] in legacy_branches:
             # skip deleting the legacy brancehs
             continue
         else:
             # we want to delete both active branches and old symlinks
-            os.popen(f"rm -Rf {file_path}")
+            print("remove file_path:", file_path)
+            os.system(f"rm -Rf {file_path}")
 
     # copy built branches to current dir
-    os.popen("cp -Rf build/html/* .")
+    os.system("cp -Rf build/html/* .")
     # symlink to latest and link its index to the root
-    os.popen(f"ln -s {latest_branch} latest")
-    os.popen(f"ln -s {latest_branch}/index.html .")
+    os.system(f"ln -s {latest_branch} latest")
+    os.system(f"ln -s {latest_branch}/index.html .")
 
     # docs/build is in .gitignore so will be skipped
-    os.popen("git add .")
-    os.popen('git commit -a -m "Updated HTML docs."')
-    os.popen("git push origin gh-pages")
+    os.system("git add .")
+    os.system('git commit -a -m "Updated HTML docs."')
+    os.system("git push origin gh-pages")
 
     # get back to previous branch
-    os.popen("git checkout .")
+    os.system("git checkout .")
 
     print("Deployed to https:// evennia.github.io/evennia/")
 
