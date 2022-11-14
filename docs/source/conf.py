@@ -14,7 +14,7 @@ from sphinx.util.osutil import cd
 # -- Project information -----------------------------------------------------
 
 project = "Evennia"
-copyright = "2020, The Evennia developer community"
+copyright = "2022, The Evennia developer community"
 author = "The Evennia developer community"
 
 # The full Evennia version covered by these docs, including alpha/beta/rc tags
@@ -56,6 +56,8 @@ smv_branch_whitelist = r"^develop$|^v[0-9\.]+?$"
 smv_outputdir_format = "{config.release}"
 # don't make docs for tags
 smv_tag_whitelist = r"^$"
+# legacy branches are linked to in template, but not built (custom for Evennia)
+smv_legacy_branches = ["0.9.5"]
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -348,8 +350,12 @@ def setup(app):
 
     # build toctree file
     sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from docs.pylib import (auto_link_remapper, contrib_readmes2docs,
-                            update_default_cmd_index, update_dynamic_pages)
+    from docs.pylib import (
+        auto_link_remapper,
+        contrib_readmes2docs,
+        update_default_cmd_index,
+        update_dynamic_pages,
+    )
 
     _no_autodoc = os.environ.get("NOAUTODOC")
     update_default_cmd_index.run_update(no_autodoc=_no_autodoc)

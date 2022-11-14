@@ -89,7 +89,8 @@ _multiversion-build:
 	@EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXMULTIVERSION) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
 
 _multiversion-deploy:
-	@bash -e deploy.sh
+	@python deploy.py
+	# @bash -e deploy.sh
 
 _latex-build:
 	@NOAUTODOC=1 EVDIR=$(EVDIR) EVGAMEDIR=$(EVGAMEDIR) $(SPHINXBUILD) -M latexpdf "$(SOURCEDIR)" "$(BUILDDIR)/latex" $(QUICKFILES)
