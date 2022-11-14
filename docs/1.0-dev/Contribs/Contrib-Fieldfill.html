@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Easy fillable form &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="In-game Git Integration" href="Contrib-Git-Integration.html" />
+    <link rel="prev" title="Input/Output Auditing" href="Contrib-Auditing.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Git-Integration.html" title="In-game Git Integration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Auditing.html" title="Input/Output Auditing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Easy fillable form</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Easy fillable form</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#field-template-keys">FIELD TEMPLATE KEYS:</a><ul>
+<li><a class="reference internal" href="#required">Required:</a></li>
+<li><a class="reference internal" href="#optional">Optional:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Auditing.html"
+                        title="previous chapter">Input/Output Auditing</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Git-Integration.html"
+                        title="next chapter">In-game Git Integration</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Fieldfill.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Fieldfill.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="easy-fillable-form">
+<h1>Easy fillable form<a class="headerlink" href="#easy-fillable-form" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Tim Ashley Jenkins, 2018</p>
+<p>This module contains a function that generates an <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> for you - this
+menu presents the player with a form of fields that can be filled
+out in any order (e.g. for character generation or building). Each field’s value can
+be verified, with the function allowing easy checks for text and integer input,
+minimum and maximum values / character lengths, or can even be verified by a custom
+function. Once the form is submitted, the form’s data is submitted as a dictionary
+to any callable of your choice.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The function that initializes the fillable form menu is fairly simple, and
+includes the caller, the template for the form, and the callback(caller, result)
+to which the form data will be sent to upon submission.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>init_fill_field(formtemplate, caller, formcallback)
+</pre></div>
+</div>
+<p>Form templates are defined as a list of dictionaries - each dictionary
+represents a field in the form, and contains the data for the field’s name and
+behavior. For example, this basic form template will allow a player to fill out
+a brief character profile:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>PROFILE_TEMPLATE = [
+    {&quot;fieldname&quot;:&quot;Name&quot;, &quot;fieldtype&quot;:&quot;text&quot;},
+    {&quot;fieldname&quot;:&quot;Age&quot;, &quot;fieldtype&quot;:&quot;number&quot;},
+    {&quot;fieldname&quot;:&quot;History&quot;, &quot;fieldtype&quot;:&quot;text&quot;},
+]
+</pre></div>
+</div>
+<p>This will present the player with an EvMenu showing this basic form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>      <span class="n">Name</span><span class="p">:</span>
+       <span class="n">Age</span><span class="p">:</span>
+   <span class="n">History</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>While in this menu, the player can assign a new value to any field with the
+syntax <field> = <new value>, like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">&gt;</span> <span class="n">name</span> <span class="o">=</span> <span class="n">Ashley</span>
+    <span class="n">Field</span> <span class="s1">&#39;Name&#39;</span> <span class="nb">set</span> <span class="n">to</span><span class="p">:</span> <span class="n">Ashley</span>
+</pre></div>
+</div>
+<p>Typing ‘look’ by itself will show the form and its current values.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">&gt;</span> <span class="n">look</span>
+
+      <span class="n">Name</span><span class="p">:</span> <span class="n">Ashley</span>
+       <span class="n">Age</span><span class="p">:</span>
+    <span class="n">History</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Number fields require an integer input, and will reject any text that can’t
+be converted into an integer.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="n">youthful</span>
+    <span class="n">Field</span> <span class="s1">&#39;Age&#39;</span> <span class="n">requires</span> <span class="n">a</span> <span class="n">number</span><span class="o">.</span>
+    <span class="o">&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="mi">31</span>
+    <span class="n">Field</span> <span class="s1">&#39;Age&#39;</span> <span class="nb">set</span> <span class="n">to</span><span class="p">:</span> <span class="mi">31</span>
+</pre></div>
+</div>
+<p>Form data is presented as an EvTable, so text of any length will wrap cleanly.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">&gt;</span> <span class="n">history</span> <span class="o">=</span> <span class="n">EVERY</span> <span class="n">MORNING</span> <span class="n">I</span> <span class="n">WAKE</span> <span class="n">UP</span> <span class="n">AND</span> <span class="n">OPEN</span> <span class="n">PALM</span> <span class="n">SLAM</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="n">Field</span> <span class="s1">&#39;History&#39;</span> <span class="nb">set</span> <span class="n">to</span><span class="p">:</span> <span class="n">EVERY</span> <span class="n">MORNING</span> <span class="n">I</span> <span class="n">WAKE</span> <span class="n">UP</span> <span class="n">AND</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">&gt;</span> <span class="n">look</span>
+
+      <span class="n">Name</span><span class="p">:</span> <span class="n">Ashley</span>
+       <span class="n">Age</span><span class="p">:</span> <span class="mi">31</span>
+   <span class="n">History</span><span class="p">:</span> <span class="n">EVERY</span> <span class="n">MORNING</span> <span class="n">I</span> <span class="n">WAKE</span> <span class="n">UP</span> <span class="n">AND</span> <span class="n">OPEN</span> <span class="n">PALM</span> <span class="n">SLAM</span> <span class="n">A</span> <span class="n">VHS</span> <span class="n">INTO</span> <span class="n">THE</span> <span class="n">SLOT</span><span class="o">.</span>
+            <span class="n">IT</span><span class="s1">&#39;S CHRONICLES OF RIDDICK AND RIGHT THEN AND THERE I START DOING</span>
+            <span class="n">THE</span> <span class="n">MOVES</span> <span class="n">ALONGSIDE</span> <span class="n">WITH</span> <span class="n">THE</span> <span class="n">MAIN</span> <span class="n">CHARACTER</span><span class="p">,</span> <span class="n">RIDDICK</span><span class="o">.</span> <span class="n">I</span> <span class="n">DO</span> <span class="n">EVERY</span>
+            <span class="n">MOVE</span> <span class="n">AND</span> <span class="n">I</span> <span class="n">DO</span> <span class="n">EVERY</span> <span class="n">MOVE</span> <span class="n">HARD</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>When the player types ‘submit’ (or your specified submit command), the menu
+quits and the form’s data is passed to your specified function as a dictionary,
+like so:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>formdata = {&quot;Name&quot;:&quot;Ashley&quot;, &quot;Age&quot;:31, &quot;History&quot;:&quot;EVERY MORNING I[...]&quot;}
+</pre></div>
+</div>
+<p>You can do whatever you like with this data in your function - forms can be used
+to set data on a character, to help builders create objects, or for players to
+craft items or perform other complicated actions with many variables involved.</p>
+<p>The data that your form will accept can also be specified in your form template -
+let’s say, for example, that you won’t accept ages under 18 or over 100. You can
+do this by specifying “min” and “max” values in your field’s dictionary:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">PROFILE_TEMPLATE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;fieldname&quot;</span><span class="p">:</span><span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;fieldtype&quot;</span><span class="p">:</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;fieldname&quot;</span><span class="p">:</span><span class="s2">&quot;Age&quot;</span><span class="p">,</span> <span class="s2">&quot;fieldtype&quot;</span><span class="p">:</span><span class="s2">&quot;number&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span><span class="mi">18</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;fieldname&quot;</span><span class="p">:</span><span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="s2">&quot;fieldtype&quot;</span><span class="p">:</span><span class="s2">&quot;text&quot;</span><span class="p">}</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p>Now if the player tries to enter a value out of range, the form will not acept the
+given value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">Field</span> <span class="s1">&#39;Age&#39;</span> <span class="n">reqiures</span> <span class="n">a</span> <span class="n">minimum</span> <span class="n">value</span> <span class="n">of</span> <span class="mf">18.</span>
+    <span class="o">&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="mi">900</span>
+    <span class="n">Field</span> <span class="s1">&#39;Age&#39;</span> <span class="n">has</span> <span class="n">a</span> <span class="n">maximum</span> <span class="n">value</span> <span class="n">of</span> <span class="mf">100.</span>
+</pre></div>
+</div>
+<p>Setting ‘min’ and ‘max’ for a text field will instead act as a minimum or
+maximum character length for the player’s input.</p>
+<p>There are lots of ways to present the form to the player - fields can have default
+values or show a custom message in place of a blank value, and player input can be
+verified by a custom function, allowing for a great deal of flexibility. There
+is also an option for ‘bool’ fields, which accept only a True / False input and
+can be customized to represent the choice to the player however you like (E.G.
+Yes/No, On/Off, Enabled/Disabled, etc.)</p>
+<p>This module contains a simple example form that demonstrates all of the included
+functionality - a command that allows a player to compose a message to another
+online character and have it send after a custom delay. You can test it by
+importing this module in your game’s <code class="docutils literal notranslate"><span class="pre">default_cmdsets.py</span></code> module and adding
+CmdTestMenu to your default character’s command set.</p>
+</section>
+<section id="field-template-keys">
+<h2>FIELD TEMPLATE KEYS:<a class="headerlink" href="#field-template-keys" title="Permalink to this headline">¶</a></h2>
+<section id="required">
+<h3>Required:<a class="headerlink" href="#required" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">fieldname</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">field</span><span class="p">,</span> <span class="k">as</span> <span class="n">presented</span> <span class="n">to</span> <span class="n">the</span> <span class="n">player</span><span class="o">.</span>
+    <span class="n">fieldtype</span> <span class="p">(</span><span class="nb">str</span><span class="p">):</span> <span class="n">Type</span> <span class="n">of</span> <span class="n">value</span> <span class="n">required</span><span class="p">:</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="ow">or</span> <span class="s1">&#39;bool&#39;</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="optional">
+<h3>Optional:<a class="headerlink" href="#optional" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>max (int): Maximum character length (if text) or value (if number).</p></li>
+<li><p>min (int): Minimum charater length (if text) or value (if number).</p></li>
+<li><p>truestr (str): String for a ‘True’ value in a bool field.
+(E.G. ‘On’, ‘Enabled’, ‘Yes’)</p></li>
+<li><p>falsestr (str): String for a ‘False’ value in a bool field.
+(E.G. ‘Off’, ‘Disabled’, ‘No’)</p></li>
+<li><p>default (str): Initial value (blank if not given).</p></li>
+<li><p>blankmsg (str): Message to show in place of value when field is blank.</p></li>
+<li><p>cantclear (bool): Field can’t be cleared if True.</p></li>
+<li><p>required (bool): If True, form cannot be submitted while field is blank.</p></li>
+<li><p>verifyfunc (callable): Name of a callable used to verify input - takes
+(caller, value) as arguments. If the function returns True,
+the player’s input is considered valid - if it returns False,
+the input is rejected. Any other value returned will act as
+the field’s new value, replacing the player’s input. This
+allows for values that aren’t strings or integers (such as
+object dbrefs). For boolean fields, return ‘0’ or ‘1’ to set
+the field to False or True.</p></li>
+</ul>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/utils/fieldfill/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Git-Integration.html" title="In-game Git Integration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Auditing.html" title="Input/Output Auditing"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Easy fillable form</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,774 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.base_systems.ingame_python.scripts &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.ingame_python.scripts</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="scripts.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.base_systems.ingame_python.scripts</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scripts for the in-game Python system.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultScript</span><span class="p">,</span> <span class="n">ScriptDB</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.callbackhandler</span> <span class="kn">import</span> <span class="n">CallbackHandler</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.utils</span> <span class="kn">import</span> <span class="n">EVENTS</span><span class="p">,</span> <span class="n">InterruptEvent</span><span class="p">,</span> <span class="n">get_next_wait</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">all_from_module</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">pypath_to_realpath</span>
+
+<span class="c1"># Constants</span>
+<span class="n">RE_LINE_ERROR</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^  File &quot;\&lt;string\&gt;&quot;, line (\d+)&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EventHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler">[docs]</a><span class="k">class</span> <span class="nc">EventHandler</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The event handler that contains all events in a global script.</span>
+
+<span class="sd">    This script shouldn&#39;t be created more than once.  It contains</span>
+<span class="sd">    event (in a non-persistent attribute) and callbacks (in a</span>
+<span class="sd">    persistent attribute).  The script method would help adding,</span>
+<span class="sd">    editing and deleting these events and callbacks.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EventHandler.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Hook called when the script is created.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;event_handler&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;Global event handler&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Permanent data to be stored</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Tasks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">at_server_start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EventHandler.at_server_start"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.at_server_start">[docs]</a>    <span class="k">def</span> <span class="nf">at_server_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set up the event system when starting.</span>
+
+<span class="sd">        Note that this hook is called every time the server restarts</span>
+<span class="sd">        (including when it&#39;s reloaded).  This hook performs the following</span>
+<span class="sd">        tasks:</span>
+
+<span class="sd">        -   Create temporarily stored events.</span>
+<span class="sd">        -   Generate locals (individual events&#39; namespace).</span>
+<span class="sd">        -   Load eventfuncs, including user-defined ones.</span>
+<span class="sd">        -   Re-schedule tasks that aren&#39;t set to fire anymore.</span>
+<span class="sd">        -   Effectively connect the handler to the main script.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">custom_call</span><span class="p">,</span> <span class="n">custom_add</span> <span class="ow">in</span> <span class="n">EVENTS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">typeclass</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">custom_call</span><span class="p">,</span> <span class="n">custom_add</span><span class="p">)</span>
+
+        <span class="c1"># Generate locals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">current_locals</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">fresh_locals</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.contrib.base_systems.ingame_python.eventfuncs&quot;</span><span class="p">]</span>
+        <span class="n">addresses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;EVENTFUNCS_LOCATIONS&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;world.eventfuncs&quot;</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pypath_to_realpath</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">fresh_locals</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">all_from_module</span><span class="p">(</span><span class="n">address</span><span class="p">))</span>
+
+        <span class="c1"># Restart the delayed tasks</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">future</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event_name</span><span class="p">,</span> <span class="nb">locals</span> <span class="o">=</span> <span class="n">definition</span>
+            <span class="n">seconds</span> <span class="o">=</span> <span class="p">(</span><span class="n">future</span> <span class="o">-</span> <span class="n">now</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">seconds</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">delay</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">complete_task</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+
+        <span class="c1"># Place the script in the CallbackHandler</span>
+        <span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python</span> <span class="kn">import</span> <span class="n">typeclasses</span>
+
+        <span class="n">CallbackHandler</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">DefaultObject</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="n">typeclasses</span><span class="o">.</span><span class="n">EventObject</span><span class="o">.</span><span class="n">callbacks</span>
+
+        <span class="c1"># Create the channel if non-existent</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;everror&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ChannelDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span>
+                <span class="s2">&quot;everror&quot;</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Event errors&quot;</span><span class="p">,</span>
+                <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;control:false();listen:perm(Builders);send:false()&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EventHandler.get_events"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_events">[docs]</a>    <span class="k">def</span> <span class="nf">get_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of events on this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object or typeclass): the connected object or a general typeclass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary of the object&#39;s events.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Events would define what the object can have as</span>
+<span class="sd">            callbacks.  Note, however, that chained callbacks will not</span>
+<span class="sd">            appear in events and are handled separately.</span>
+
+<span class="sd">            You can also request the events of a typeclass, not a</span>
+<span class="sd">            connected object.  This is useful to get the global list</span>
+<span class="sd">            of events for a typeclass that has no object yet.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">all_events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="n">classes</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">classes</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+
+        <span class="n">invalid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">classes</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">typeclass</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="n">typeclass_name</span> <span class="o">=</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">etype</span> <span class="ow">in</span> <span class="n">all_events</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">typeclass_name</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">invalid</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">etype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Invalidate</span>
+                    <span class="n">invalid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                    <span class="n">events</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">etype</span>
+
+            <span class="c1"># Look for the parent classes</span>
+            <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">typeclass</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">:</span>
+                <span class="n">classes</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">events</span></div>
+
+<div class="viewcode-block" id="EventHandler.get_variable"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_variable">[docs]</a>    <span class="k">def</span> <span class="nf">get_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the variable defined in the locals.</span>
+
+<span class="sd">        This can be very useful to check the value of a variable that can be modified in an event, and whose value will be used in code.  This system allows additional customization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            variable_name (str): the name of the variable to return.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The variable if found in the locals.</span>
+<span class="sd">            None if not found in the locals.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This will return the variable from the current locals.</span>
+<span class="sd">            Keep in mind that locals are shared between events.  As</span>
+<span class="sd">            every event is called one by one, this doesn&#39;t pose</span>
+<span class="sd">            additional problems if you get the variable right after</span>
+<span class="sd">            an event has been executed.  If, however, you differ,</span>
+<span class="sd">            there&#39;s no guarantee the variable will be here or will</span>
+<span class="sd">            mean the same thing.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">current_locals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EventHandler.get_callbacks"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.get_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of the object&#39;s callbacks.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): the connected objects.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary of the object&#39;s callbacks.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method can be useful to override in some contexts,</span>
+<span class="sd">            when several objects would share callbacks.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj_callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">callback_list</span> <span class="ow">in</span> <span class="n">obj_callbacks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">new_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">callback</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">callback_list</span><span class="p">):</span>
+                <span class="n">callback</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+                <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback_name</span>
+                <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">new_list</span><span class="p">:</span>
+                <span class="n">callbacks</span><span class="p">[</span><span class="n">callback_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_list</span>
+
+        <span class="k">return</span> <span class="n">callbacks</span></div>
+
+<div class="viewcode-block" id="EventHandler.add_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.add_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add the specified callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): the Evennia typeclassed object to be extended.</span>
+<span class="sd">            callback_name (str): the name of the callback to add.</span>
+<span class="sd">            code (str): the Python code associated with this callback.</span>
+<span class="sd">            author (Character or Account, optional): the author of the callback.</span>
+<span class="sd">            valid (bool, optional): should the callback be connected?</span>
+<span class="sd">            parameters (str, optional): optional parameters.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method doesn&#39;t check that the callback type exists.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj_callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">obj_callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="n">obj_callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="n">obj_callbacks</span><span class="p">[</span><span class="n">callback_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">callbacks</span> <span class="o">=</span> <span class="n">obj_callbacks</span><span class="p">[</span><span class="n">callback_name</span><span class="p">]</span>
+
+        <span class="c1"># Add the callback in the list</span>
+        <span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;created_on&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="n">author</span><span class="p">,</span>
+                <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">valid</span><span class="p">,</span>
+                <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
+                <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="c1"># If not valid, set it in &#39;to_valid&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">callbacks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Call the custom_add if needed</span>
+        <span class="n">custom_add</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_events</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">custom_add</span><span class="p">:</span>
+            <span class="n">custom_add</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">callbacks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+        <span class="c1"># Build the definition to return (a dictionary)</span>
+        <span class="n">definition</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">callbacks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback_name</span>
+        <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">callbacks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">definition</span></div>
+
+<div class="viewcode-block" id="EventHandler.edit_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.edit_callback">[docs]</a>    <span class="k">def</span> <span class="nf">edit_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Edit the specified callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): the Evennia typeclassed object to be edited.</span>
+<span class="sd">            callback_name (str): the name of the callback to edit.</span>
+<span class="sd">            number (int): the callback number to be changed.</span>
+<span class="sd">            code (str): the Python code associated with this callback.</span>
+<span class="sd">            author (Character or Account, optional): the author of the callback.</span>
+<span class="sd">            valid (bool, optional): should the callback be connected?</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError if the callback is locked.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method doesn&#39;t check that the callback type exists.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj_callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">obj_callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="n">obj_callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callbacks</span><span class="p">:</span>
+            <span class="n">obj_callbacks</span><span class="p">[</span><span class="n">callback_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">callbacks</span> <span class="o">=</span> <span class="n">obj_callbacks</span><span class="p">[</span><span class="n">callback_name</span><span class="p">]</span>
+
+        <span class="c1"># If locked, don&#39;t edit it</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;this callback is locked.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Edit the callback</span>
+        <span class="n">callbacks</span><span class="p">[</span><span class="n">number</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;updated_on&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="s2">&quot;updated_by&quot;</span><span class="p">:</span> <span class="n">author</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">valid</span><span class="p">,</span> <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="n">code</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="c1"># If not valid, set it in &#39;to_valid&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span> <span class="ow">and</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">valid</span> <span class="ow">and</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">))</span>
+
+        <span class="c1"># Build the definition to return (a dictionary)</span>
+        <span class="n">definition</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">callbacks</span><span class="p">[</span><span class="n">number</span><span class="p">])</span>
+        <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback_name</span>
+        <span class="n">definition</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">number</span>
+        <span class="k">return</span> <span class="n">definition</span></div>
+
+<div class="viewcode-block" id="EventHandler.del_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.del_callback">[docs]</a>    <span class="k">def</span> <span class="nf">del_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete the specified callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): the typeclassed object containing the callback.</span>
+<span class="sd">            callback_name (str): the name of the callback to delete.</span>
+<span class="sd">            number (int): the number of the callback to delete.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError if the callback is locked.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj_callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="n">obj_callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="c1"># If locked, don&#39;t edit it</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;this callback is locked.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Delete the callback itself</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">callbacks</span><span class="p">[</span><span class="n">number</span><span class="p">][</span><span class="s2">&quot;code&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span>
+                <span class="s2">&quot;Deleting callback </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">del</span> <span class="n">callbacks</span><span class="p">[</span><span class="n">number</span><span class="p">]</span>
+
+        <span class="c1"># Change IDs of callbacks to be validated</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">):</span>
+            <span class="n">t_obj</span><span class="p">,</span> <span class="n">t_callback_name</span><span class="p">,</span> <span class="n">t_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="n">t_obj</span> <span class="ow">and</span> <span class="n">callback_name</span> <span class="o">==</span> <span class="n">t_callback_name</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">t_number</span> <span class="o">==</span> <span class="n">number</span><span class="p">:</span>
+                    <span class="c1"># Strictly equal, delete the callback</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">t_number</span> <span class="o">&gt;</span> <span class="n">number</span><span class="p">:</span>
+                    <span class="c1"># Change the ID for this callback</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">t_obj</span><span class="p">,</span> <span class="n">t_callback_name</span><span class="p">,</span> <span class="n">t_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Update locked callback</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">):</span>
+            <span class="n">t_obj</span><span class="p">,</span> <span class="n">t_callback_name</span><span class="p">,</span> <span class="n">t_number</span> <span class="o">=</span> <span class="n">line</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="n">t_obj</span> <span class="ow">and</span> <span class="n">callback_name</span> <span class="o">==</span> <span class="n">t_callback_name</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="n">t_number</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">locked</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_obj</span><span class="p">,</span> <span class="n">t_callback_name</span><span class="p">,</span> <span class="n">t_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Delete time-related callbacks associated with this object</span>
+        <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">TimecallbackScript</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">obj</span> <span class="ow">is</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callback_name</span> <span class="o">==</span> <span class="n">callback_name</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="n">number</span><span class="p">:</span>
+                        <span class="n">script</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span> <span class="o">&gt;</span> <span class="n">number</span><span class="p">:</span>
+                        <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span> <span class="o">-=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="EventHandler.accept_callback"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.accept_callback">[docs]</a>    <span class="k">def</span> <span class="nf">accept_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Valid a callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): the object containing the callback.</span>
+<span class="sd">            callback_name (str): the name of the callback.</span>
+<span class="sd">            number (int): the number of the callback.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj_callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="n">obj_callbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="c1"># Accept and connect the callback</span>
+        <span class="n">callbacks</span><span class="p">[</span><span class="n">number</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">to_valid</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="n">number</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="EventHandler.call"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the connected callbacks.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Object): the Evennia typeclassed object.</span>
+<span class="sd">            callback_name (str): the callback name to call.</span>
+<span class="sd">            *args: additional variables for this callback.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            number (int, optional): call just a specific callback.</span>
+<span class="sd">            parameters (str, optional): call a callback with parameters.</span>
+<span class="sd">            locals (dict, optional): a locals replacement.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True to report the callback was called without interruption,</span>
+<span class="sd">            False otherwise.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># First, look for the callback type corresponding to this name</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">)</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locals&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Errors should not pass silently</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">,</span> <span class="s2">&quot;locals&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Unknown keyword arguments were specified &quot;</span> <span class="s2">&quot;to call callbacks: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_events</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">callback_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">locals</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">event</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
+                <span class="s2">&quot;The callback </span><span class="si">{}</span><span class="s2"> for the object </span><span class="si">{}</span><span class="s2"> (typeclass &quot;</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">) can&#39;t be found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Prepare the locals if necessary</span>
+        <span class="k">if</span> <span class="nb">locals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">locals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">fresh_locals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">variable</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">locals</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span>
+                        <span class="s2">&quot;callback </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">): need variable &quot;</span>
+                        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> in position </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">variable</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">locals</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">locals</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_callbacks</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="n">event</span><span class="p">:</span>
+            <span class="n">custom_call</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">custom_call</span><span class="p">:</span>
+                <span class="n">callbacks</span> <span class="o">=</span> <span class="n">custom_call</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+        <span class="c1"># Now execute all the valid callbacks linked at this address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">current_locals</span> <span class="o">=</span> <span class="nb">locals</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">callback</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">callbacks</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">number</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">exec</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">],</span> <span class="nb">locals</span><span class="p">,</span> <span class="nb">locals</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">InterruptEvent</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">etype</span><span class="p">,</span> <span class="n">evalue</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+                <span class="n">trace</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">evalue</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="EventHandler.handle_error"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.handle_error">[docs]</a>    <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle an error in a callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (dict): the callback representation.</span>
+<span class="sd">            trace (list): the traceback containing the exception.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method can be useful to override to change the default</span>
+<span class="sd">            handling of errors.  By default, the error message is sent to</span>
+<span class="sd">            the character who last updated the callback, if connected.</span>
+<span class="sd">            If not, display to the everror channel.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">callback_name</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">]</span>
+        <span class="n">oid</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span>
+            <span class="s2">&quot;An error occurred during the callback </span><span class="si">{}</span><span class="s2"> of &quot;</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (#</span><span class="si">{}</span><span class="s2">), number </span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">oid</span><span class="p">,</span> <span class="n">number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">trace</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Create the error message</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;|runknown|n&quot;</span>
+        <span class="n">lineno</span> <span class="o">=</span> <span class="s2">&quot;|runknown|n&quot;</span>
+        <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">trace</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;  File &quot;&lt;string&gt;&quot;, line &#39;</span><span class="p">):</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">RE_LINE_ERROR</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+                    <span class="n">lineno</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+                    <span class="c1"># Try to extract the line</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">line</span> <span class="o">=</span> <span class="n">raw</span><span class="p">(</span><span class="n">callback</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="n">lineno</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+        <span class="n">exc</span> <span class="o">=</span> <span class="n">raw</span><span class="p">(</span><span class="n">trace</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;Error in </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2"> (#</span><span class="si">{}</span><span class="s2">)[</span><span class="si">{}</span><span class="s2">], line </span><span class="si">{}</span><span class="s2">:&quot;</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">callback_name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">oid</span><span class="p">,</span> <span class="n">number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">exc</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Inform the last updater if connected</span>
+        <span class="n">updater</span> <span class="o">=</span> <span class="n">callback</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;updated_by&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">updater</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">updater</span> <span class="o">=</span> <span class="n">callback</span><span class="p">[</span><span class="s2">&quot;created_by&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">updater</span> <span class="ow">and</span> <span class="n">updater</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">updater</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;Error in </span><span class="si">{}</span><span class="s2"> of </span><span class="si">{}</span><span class="s2"> (#</span><span class="si">{}</span><span class="s2">)[</span><span class="si">{}</span><span class="s2">], line </span><span class="si">{}</span><span class="s2">:&quot;</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="se">\n</span><span class="s2">          </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">callback_name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">oid</span><span class="p">,</span> <span class="n">number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">exc</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EventHandler.add_event"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.add_event">[docs]</a>    <span class="k">def</span> <span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeclass</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">custom_call</span><span class="p">,</span> <span class="n">custom_add</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new event for a defined typeclass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            typeclass (str): the path leading to the typeclass.</span>
+<span class="sd">            name (str): the name of the event to add.</span>
+<span class="sd">            variables (list of str): list of variable names for this event.</span>
+<span class="sd">            help_text (str): the long help text of the event.</span>
+<span class="sd">            custom_call (callable or None): the function to be called</span>
+<span class="sd">                    when the event fires.</span>
+<span class="sd">            custom_add (callable or None): the function to be called when</span>
+<span class="sd">                    a callback is added.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">typeclass</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="n">typeclass</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="n">typeclass</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+            <span class="n">events</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">variables</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">custom_call</span><span class="p">,</span> <span class="n">custom_add</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EventHandler.set_task"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.EventHandler.set_task">[docs]</a>    <span class="k">def</span> <span class="nf">set_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set and schedule a task to run.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            seconds (int, float): the delay in seconds from now.</span>
+<span class="sd">            obj (Object): the typecalssed object connected to the event.</span>
+<span class="sd">            callback_name (str): the callback&#39;s name.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This method allows to schedule a &quot;persistent&quot; task.</span>
+<span class="sd">            &#39;utils.delay&#39; is called, but a copy of the task is kept in</span>
+<span class="sd">            the event handler, and when the script restarts (after reload),</span>
+<span class="sd">            the differed delay is called again.</span>
+<span class="sd">            The dictionary of locals is frozen and will be available</span>
+<span class="sd">            again when the task runs.  This feature, however, is limited</span>
+<span class="sd">            by the database: all data cannot be saved.  Lambda functions,</span>
+<span class="sd">            class methods, objects inside an instance and so on will</span>
+<span class="sd">            not be kept in the locals dictionary.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">)</span>
+
+        <span class="c1"># Choose a free task_id</span>
+        <span class="n">used_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">task_id</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">used_ids</span><span class="p">:</span>
+            <span class="n">task_id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Collect and freeze current locals</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">current_locals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dbserialize</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">locals</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">now</span> <span class="o">+</span> <span class="n">delta</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="nb">locals</span><span class="p">)</span>
+        <span class="n">delay</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">complete_task</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># Script to call time-related events</span>
+<div class="viewcode-block" id="TimeEventScript"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript">[docs]</a><span class="k">class</span> <span class="nc">TimeEventScript</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Gametime-sensitive script.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TimeEventScript.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The script is created.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_delay</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persistent</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Script attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">time_format</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">event_name</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TimeEventScript.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.TimeEventScript.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call the event and reset interval.</span>
+
+<span class="sd">        It is necessary to restart the script to reset its interval</span>
+<span class="sd">        only twice after a reload.  When the script has undergone</span>
+<span class="sd">        down time, there&#39;s usually a slight shift in game time.  Once</span>
+<span class="sd">        the script restarts once, it will set the average time it</span>
+<span class="sd">        needs for all its future intervals and should not need to be</span>
+<span class="sd">        restarted.  In short, a script that is created shouldn&#39;t need</span>
+<span class="sd">        to restart more than once, and a script that is reloaded should</span>
+<span class="sd">        restart only twice.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">time_format</span><span class="p">:</span>
+            <span class="c1"># If the &#39;usual&#39; time is set, use it</span>
+            <span class="n">seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">usual</span>
+            <span class="k">if</span> <span class="n">seconds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">seconds</span><span class="p">,</span> <span class="n">usual</span><span class="p">,</span> <span class="n">details</span> <span class="o">=</span> <span class="n">get_next_wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">time_format</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">usual</span> <span class="o">=</span> <span class="n">usual</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">!=</span> <span class="n">seconds</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">restart</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="n">seconds</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">event_name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">event_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">event_name</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">number</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">event_name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">number</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># Functions to manipulate tasks</span>
+<div class="viewcode-block" id="complete_task"><a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_python.scripts.html#evennia.contrib.base_systems.ingame_python.scripts.complete_task">[docs]</a><span class="k">def</span> <span class="nf">complete_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mark the task in the event handler as complete.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        task_id (int): the task ID.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This function should be called automatically for individual tasks.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_key</span><span class="o">=</span><span class="s2">&quot;event_handler&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ScriptDB</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_trace</span><span class="p">(</span><span class="s2">&quot;Can&#39;t get the event handler.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">task_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_err</span><span class="p">(</span><span class="s2">&quot;The task #</span><span class="si">{}</span><span class="s2"> was scheduled, but it cannot be &quot;</span> <span class="s2">&quot;found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task_id</span><span class="p">))</span>
+        <span class="k">return</span>
+
+    <span class="n">delta</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="nb">locals</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+    <span class="n">script</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.ingame_python.scripts</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

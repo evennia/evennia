@@ -1,0 +1,1351 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Evennia Default settings file &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Choosing An SQL Server" href="Choosing-An-SQL-Server.html" />
+    <link rel="prev" title="Game Settings and Configuration direcotry" href="Settings.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Choosing-An-SQL-Server.html" title="Choosing An SQL Server"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Settings.html" title="Game Settings and Configuration direcotry"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Setup-Overview.html" accesskey="U">Server Setup and Life</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Default settings file</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Settings.html"
+                        title="previous chapter">Game Settings and Configuration direcotry</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Choosing-An-SQL-Server.html"
+                        title="next chapter">Choosing An SQL Server</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Setup/Settings-Default.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Settings-Default.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-default-settings-file">
+<h1>Evennia Default settings file<a class="headerlink" href="#evennia-default-settings-file" title="Permalink to this headline">¶</a></h1>
+<p>Master file is located at <code class="docutils literal notranslate"><span class="pre">evennia/evennia/settings_default.py</span></code>. Read
+its comments to see what each setting does and copy only what you want
+to change into <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>.</p>
+<p>Example of accessing settings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">SERVERNAME</span> <span class="o">==</span> <span class="s2">&quot;Evennia&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Yay!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Master configuration file for Evennia.</span>
+
+<span class="sd">NOTE: NO MODIFICATIONS SHOULD BE MADE TO THIS FILE!</span>
+
+<span class="sd">All settings changes should be done by copy-pasting the variable and</span>
+<span class="sd">its value to &lt;gamedir&gt;/server/conf/settings.py.</span>
+
+<span class="sd">Hint: Don&#39;t copy&amp;paste over more from this file than you actually want</span>
+<span class="sd">to change.  Anything you don&#39;t copy&amp;paste will thus retain its default</span>
+<span class="sd">value - which may change as Evennia is developed. This way you can</span>
+<span class="sd">always be sure of what you have changed and what is default behaviour.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.messages</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">messages</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse_lazy</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Evennia base server config</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># This is the name of your game. Make it catchy!</span>
+<span class="n">SERVERNAME</span> <span class="o">=</span> <span class="s2">&quot;Evennia&quot;</span>
+<span class="c1"># Short one-sentence blurb describing your game. Shown under the title</span>
+<span class="c1"># on the website and could be used in online listings of your game etc.</span>
+<span class="n">GAME_SLOGAN</span> <span class="o">=</span> <span class="s2">&quot;The Python MUD/MU* creation system&quot;</span>
+<span class="c1"># The url address to your server, like mymudgame.com. This should be the publicly</span>
+<span class="c1"># visible location. This is used e.g. on the web site to show how you connect to the</span>
+<span class="c1"># game over telnet. Default is localhost (only on your machine).</span>
+<span class="n">SERVER_HOSTNAME</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+<span class="c1"># Lockdown mode will cut off the game from any external connections</span>
+<span class="c1"># and only allow connections from localhost. Requires a cold reboot.</span>
+<span class="n">LOCKDOWN_MODE</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Activate telnet service</span>
+<span class="n">TELNET_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># A list of ports the Evennia telnet server listens on Can be one or many.</span>
+<span class="n">TELNET_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4000</span><span class="p">]</span>
+<span class="c1"># Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
+<span class="n">TELNET_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
+<span class="c1"># Activate Telnet+SSL protocol (SecureSocketLibrary) for supporting clients</span>
+<span class="n">SSL_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Ports to use for Telnet+SSL</span>
+<span class="n">SSL_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4003</span><span class="p">]</span>
+<span class="c1"># Telnet+SSL Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
+<span class="n">SSL_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
+<span class="c1"># OOB (out-of-band) telnet communication allows Evennia to communicate</span>
+<span class="c1"># special commands and data with enabled Telnet clients. This is used</span>
+<span class="c1"># to create custom client interfaces over a telnet connection. To make</span>
+<span class="c1"># full use of OOB, you need to prepare functions to handle the data</span>
+<span class="c1"># server-side (see INPUT_FUNC_MODULES). TELNET_ENABLED is required for this</span>
+<span class="c1"># to work.</span>
+<span class="n">TELNET_OOB_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Activate SSH protocol communication (SecureShell)</span>
+<span class="n">SSH_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Ports to use for SSH</span>
+<span class="n">SSH_PORTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4004</span><span class="p">]</span>
+<span class="c1"># Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
+<span class="n">SSH_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
+<span class="c1"># Start the evennia django+twisted webserver so you can</span>
+<span class="c1"># browse the evennia website and the admin interface</span>
+<span class="c1"># (Obs - further web configuration can be found below</span>
+<span class="c1"># in the section  &#39;Config for Django web features&#39;)</span>
+<span class="n">WEBSERVER_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># This is a security setting protecting against host poisoning</span>
+<span class="c1"># attacks.  It defaults to allowing all. In production, make</span>
+<span class="c1"># sure to change this to your actual host addresses/IPs.</span>
+<span class="n">ALLOWED_HOSTS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]</span>
+<span class="c1"># The webserver sits behind a Portal proxy. This is a list</span>
+<span class="c1"># of tuples (proxyport,serverport) used. The proxyports are what</span>
+<span class="c1"># the Portal proxy presents to the world. The serverports are</span>
+<span class="c1"># the internal ports the proxy uses to forward data to the Server-side</span>
+<span class="c1"># webserver (these should not be publicly open)</span>
+<span class="n">WEBSERVER_PORTS</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">4001</span><span class="p">,</span> <span class="mi">4005</span><span class="p">)]</span>
+<span class="c1"># Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
+<span class="n">WEBSERVER_INTERFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
+<span class="c1"># IP addresses that may talk to the server in a reverse proxy configuration,</span>
+<span class="c1"># like NginX.</span>
+<span class="n">UPSTREAM_IPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">]</span>
+<span class="c1"># The webserver uses threadpool for handling requests. This will scale</span>
+<span class="c1"># with server load. Set the minimum and maximum number of threads it</span>
+<span class="c1"># may use as (min, max) (must be &gt; 0)</span>
+<span class="n">WEBSERVER_THREADPOOL_LIMITS</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="c1"># Start the evennia webclient. This requires the webserver to be running and</span>
+<span class="c1"># offers the fallback ajax-based webclient backbone for browsers not supporting</span>
+<span class="c1"># the websocket one.</span>
+<span class="n">WEBCLIENT_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Activate Websocket support for modern browsers. If this is on, the</span>
+<span class="c1"># default webclient will use this and only use the ajax version if the browser</span>
+<span class="c1"># is too old to support websockets. Requires WEBCLIENT_ENABLED.</span>
+<span class="n">WEBSOCKET_CLIENT_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Server-side websocket port to open for the webclient. Note that this value will</span>
+<span class="c1"># be dynamically encoded in the webclient html page to allow the webclient to call</span>
+<span class="c1"># home. If the external encoded value needs to be different than this, due to</span>
+<span class="c1"># working through a proxy or docker port-remapping, the environment variable</span>
+<span class="c1"># WEBCLIENT_CLIENT_PROXY_PORT can be used to override this port only for the</span>
+<span class="c1"># front-facing client&#39;s sake.</span>
+<span class="n">WEBSOCKET_CLIENT_PORT</span> <span class="o">=</span> <span class="mi">4002</span>
+<span class="c1"># Interface addresses to listen to. If 0.0.0.0, listen to all. Use :: for IPv6.</span>
+<span class="n">WEBSOCKET_CLIENT_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span>
+<span class="c1"># Actual URL for webclient component to reach the websocket. You only need</span>
+<span class="c1"># to set this if you know you need it, like using some sort of proxy setup.</span>
+<span class="c1"># If given it must be on the form &quot;ws[s]://hostname[:port]&quot;. If left at None,</span>
+<span class="c1"># the client will itself figure out this url based on the server&#39;s hostname.</span>
+<span class="c1"># e.g. ws://external.example.com or wss://external.example.com:443</span>
+<span class="n">WEBSOCKET_CLIENT_URL</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># This determine&#39;s whether Evennia&#39;s custom admin page is used, or if the</span>
+<span class="c1"># standard Django admin is used.</span>
+<span class="n">EVENNIA_ADMIN</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># The Server opens an AMP port so that the portal can</span>
+<span class="c1"># communicate with it. This is an internal functionality of Evennia, usually</span>
+<span class="c1"># operating between two processes on the same machine. You usually don&#39;t need to</span>
+<span class="c1"># change this unless you cannot use the default AMP port/host for</span>
+<span class="c1"># whatever reason.</span>
+<span class="n">AMP_HOST</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+<span class="n">AMP_PORT</span> <span class="o">=</span> <span class="mi">4006</span>
+<span class="n">AMP_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+
+
+<span class="c1"># Path to the lib directory containing the bulk of the codebase&#39;s code.</span>
+<span class="n">EVENNIA_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="c1"># Path to the game directory (containing the server/conf/settings.py file)</span>
+<span class="c1"># This is dynamically created- there is generally no need to change this!</span>
+<span class="k">if</span> <span class="n">EVENNIA_DIR</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span>
+<span class="p">):</span>
+    <span class="c1"># unittesting mode</span>
+    <span class="n">GAME_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Fallback location (will be replaced by the actual game dir at runtime)</span>
+    <span class="n">GAME_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_DIR</span><span class="p">,</span> <span class="s2">&quot;game_template&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">gpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;server&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">gpath</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="s2">&quot;settings.py&quot;</span><span class="p">)):</span>
+                <span class="n">GAME_DIR</span> <span class="o">=</span> <span class="n">gpath</span>
+                <span class="k">break</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
+<span class="c1"># Place to put log files, how often to rotate the log and how big each log file</span>
+<span class="c1"># may become before rotating.</span>
+<span class="n">LOG_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">)</span>
+<span class="n">SERVER_LOG_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LOG_DIR</span><span class="p">,</span> <span class="s2">&quot;server.log&quot;</span><span class="p">)</span>
+<span class="n">SERVER_LOG_DAY_ROTATION</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">SERVER_LOG_MAX_SIZE</span> <span class="o">=</span> <span class="mi">1000000</span>
+<span class="n">PORTAL_LOG_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LOG_DIR</span><span class="p">,</span> <span class="s2">&quot;portal.log&quot;</span><span class="p">)</span>
+<span class="n">PORTAL_LOG_DAY_ROTATION</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">PORTAL_LOG_MAX_SIZE</span> <span class="o">=</span> <span class="mi">1000000</span>
+<span class="c1"># The http log is usually only for debugging since it&#39;s very spammy</span>
+<span class="n">HTTP_LOG_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LOG_DIR</span><span class="p">,</span> <span class="s2">&quot;http_requests.log&quot;</span><span class="p">)</span>
+<span class="c1"># if this is set to the empty string, lockwarnings will be turned off.</span>
+<span class="n">LOCKWARNING_LOG_FILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LOG_DIR</span><span class="p">,</span> <span class="s2">&quot;lockwarnings.log&quot;</span><span class="p">)</span>
+<span class="c1"># Number of lines to append to rotating channel logs when they rotate</span>
+<span class="n">CHANNEL_LOG_NUM_TAIL_LINES</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="c1"># Max size (in bytes) of channel log files before they rotate.</span>
+<span class="c1"># Minimum is 1000 (1kB) but should usually be larger.</span>
+<span class="n">CHANNEL_LOG_ROTATE_SIZE</span> <span class="o">=</span> <span class="mi">1000000</span>
+<span class="c1"># Unused by default, but used by e.g. the MapSystem contrib. A place for storing</span>
+<span class="c1"># semi-permanent data and avoid it being rebuilt over and over. It is created</span>
+<span class="c1"># on-demand only.</span>
+<span class="n">CACHE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;.cache&quot;</span><span class="p">)</span>
+<span class="c1"># Local time zone for this installation. All choices can be found here:</span>
+<span class="c1"># http://www.postgresql.org/docs/8.0/interactive/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE</span>
+<span class="n">TIME_ZONE</span> <span class="o">=</span> <span class="s2">&quot;UTC&quot;</span>
+<span class="c1"># Activate time zone in datetimes</span>
+<span class="n">USE_TZ</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Authentication backends. This is the code used to authenticate a user.</span>
+<span class="n">AUTHENTICATION_BACKENDS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.web.utils.backends.CaseInsensitiveModelBackend&quot;</span><span class="p">]</span>
+<span class="c1"># Language code for this installation. All choices can be found here:</span>
+<span class="c1"># http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes</span>
+<span class="n">LANGUAGE_CODE</span> <span class="o">=</span> <span class="s2">&quot;en-us&quot;</span>
+<span class="c1"># How long time (in seconds) a user may idle before being logged</span>
+<span class="c1"># out. This can be set as big as desired. A user may avoid being</span>
+<span class="c1"># thrown off by sending the empty system command &#39;idle&#39; to the server</span>
+<span class="c1"># at regular intervals. Set &lt;=0 to deactivate idle timeout completely.</span>
+<span class="n">IDLE_TIMEOUT</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="c1"># The idle command can be sent to keep your session active without actually</span>
+<span class="c1"># having to spam normal commands regularly. It gives no feedback, only updates</span>
+<span class="c1"># the idle timer. Note that &quot;idle&quot; will *always* work, even if a different</span>
+<span class="c1"># command-name is given here; this is because the webclient needs a default</span>
+<span class="c1"># to send to avoid proxy timeouts.</span>
+<span class="n">IDLE_COMMAND</span> <span class="o">=</span> <span class="s2">&quot;idle&quot;</span>
+<span class="c1"># The set of encodings tried. An Account object may set an attribute &quot;encoding&quot; on</span>
+<span class="c1"># itself to match the client used. If not set, or wrong encoding is</span>
+<span class="c1"># given, this list is tried, in order, aborting on the first match.</span>
+<span class="c1"># Add sets for languages/regions your accounts are likely to use.</span>
+<span class="c1"># (see http://en.wikipedia.org/wiki/Character_encoding)</span>
+<span class="c1"># Telnet default encoding, unless specified by the client, will be ENCODINGS[0].</span>
+<span class="n">ENCODINGS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="s2">&quot;latin-1&quot;</span><span class="p">,</span> <span class="s2">&quot;ISO-8859-1&quot;</span><span class="p">]</span>
+<span class="c1"># Regular expression applied to all output to a given session in order</span>
+<span class="c1"># to strip away characters (usually various forms of decorations) for the benefit</span>
+<span class="c1"># of users with screen readers. Note that ANSI/MXP doesn&#39;t need to</span>
+<span class="c1"># be stripped this way, that is handled automatically.</span>
+<span class="n">SCREENREADER_REGEX_STRIP</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\+-+|\+$|\+~|--+|~~+|==+&quot;</span>
+<span class="c1"># MXP support means the ability to show clickable links in the client. Clicking</span>
+<span class="c1"># the link will execute a game command. It&#39;s a way to add mouse input to the game.</span>
+<span class="n">MXP_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># If this is set, MXP can only be sent by the server and not added from the</span>
+<span class="c1"># client side. Disabling this is a potential security risk because it could</span>
+<span class="c1"># allow malevolent players to lure others to execute commands they did not</span>
+<span class="c1"># intend to.</span>
+<span class="n">MXP_OUTGOING_ONLY</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Database objects are cached in what is known as the idmapper. The idmapper</span>
+<span class="c1"># caching results in a massive speedup of the server (since it dramatically</span>
+<span class="c1"># limits the number of database accesses needed) and also allows for</span>
+<span class="c1"># storing temporary data on objects. It is however also the main memory</span>
+<span class="c1"># consumer of Evennia. With this setting the cache can be capped and</span>
+<span class="c1"># flushed when it reaches a certain size. Minimum is 50 MB but it is</span>
+<span class="c1"># not recommended to set this to less than 100 MB for a distribution</span>
+<span class="c1"># system.</span>
+<span class="c1"># Empirically, N_objects_in_cache ~ ((RMEM - 35) / 0.0157):</span>
+<span class="c1">#  mem(MB)   |  objs in cache   ||   mem(MB)   |   objs in cache</span>
+<span class="c1">#      50    |       ~1000      ||      800    |     ~49 000</span>
+<span class="c1">#     100    |       ~4000      ||     1200    |     ~75 000</span>
+<span class="c1">#     200    |      ~10 000     ||     1600    |    ~100 000</span>
+<span class="c1">#     500    |      ~30 000     ||     2000    |    ~125 000</span>
+<span class="c1"># Note that the estimated memory usage is not exact (and the cap is only</span>
+<span class="c1"># checked every 5 minutes), so err on the side of caution if</span>
+<span class="c1"># running on a server with limited memory. Also note that Python</span>
+<span class="c1"># will not necessarily return the memory to the OS when the idmapper</span>
+<span class="c1"># flashes (the memory will be freed and made available to the Python</span>
+<span class="c1"># process only). How many objects need to be in memory at any given</span>
+<span class="c1"># time depends very much on your game so some experimentation may</span>
+<span class="c1"># be necessary (use @server to see how many objects are in the idmapper</span>
+<span class="c1"># cache at any time). Setting this to None disables the cache cap.</span>
+<span class="n">IDMAPPER_CACHE_MAXSIZE</span> <span class="o">=</span> <span class="mi">200</span>  <span class="c1"># (MB)</span>
+<span class="c1"># This determines how many connections per second the Portal should</span>
+<span class="c1"># accept, as a DoS countermeasure. If the rate exceeds this number, incoming</span>
+<span class="c1"># connections will be queued to this rate, so none will be lost.</span>
+<span class="c1"># Must be set to a value &gt; 0.</span>
+<span class="n">MAX_CONNECTION_RATE</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="c1"># Determine how many commands per second a given Session is allowed</span>
+<span class="c1"># to send to the Portal via a connected protocol. Too high rate will</span>
+<span class="c1"># drop the command and echo a warning. Note that this will also cap</span>
+<span class="c1"># OOB messages so don&#39;t set it too low if you expect a lot of events</span>
+<span class="c1"># from the client! To turn the limiter off, set to &lt;= 0.</span>
+<span class="n">MAX_COMMAND_RATE</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="c1"># The warning to echo back to users if they send commands too fast</span>
+<span class="n">COMMAND_RATE_WARNING</span> <span class="o">=</span> <span class="s2">&quot;You entered commands too fast. Wait a moment and try again.&quot;</span>
+<span class="c1"># custom, extra commands to add to the `evennia` launcher. This is a dict</span>
+<span class="c1"># of {&#39;cmdname&#39;: &#39;path.to.callable&#39;, ...}, where the callable will be passed</span>
+<span class="c1"># any extra args given on the command line. For example `evennia cmdname foo bar`.</span>
+<span class="n">EXTRA_LAUNCHER_COMMANDS</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># Determine how large of a string can be sent to the server in number</span>
+<span class="c1"># of characters. If they attempt to enter a string over this character</span>
+<span class="c1"># limit, we stop them and send a message. To make unlimited, set to</span>
+<span class="c1"># 0 or less.</span>
+<span class="n">MAX_CHAR_LIMIT</span> <span class="o">=</span> <span class="mi">6000</span>
+<span class="c1"># The warning to echo back to users if they enter a very large string</span>
+<span class="n">MAX_CHAR_LIMIT_WARNING</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;You entered a string that was too long. Please break it up into multiple parts.&quot;</span>
+<span class="p">)</span>
+<span class="c1"># If this is true, errors and tracebacks from the engine will be</span>
+<span class="c1"># echoed as text in-game as well as to the log. This can speed up</span>
+<span class="c1"># debugging. OBS: Showing full tracebacks to regular users could be a</span>
+<span class="c1"># security problem -turn this off in a production game!</span>
+<span class="n">IN_GAME_ERRORS</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Broadcast &quot;Server restart&quot;-like messages to all sessions.</span>
+<span class="n">BROADCAST_SERVER_RESTART_MESSAGES</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Evennia Database config</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Database config syntax:</span>
+<span class="c1"># ENGINE - path to the the database backend. Possible choices are:</span>
+<span class="c1">#            &#39;django.db.backends.sqlite3&#39;, (default)</span>
+<span class="c1">#            &#39;django.db.backends.mysql&#39;,</span>
+<span class="c1">#            &#39;django.db.backends.postgresql&#39;,</span>
+<span class="c1">#            &#39;django.db.backends.oracle&#39; (untested).</span>
+<span class="c1"># NAME - database name, or path to the db file for sqlite3</span>
+<span class="c1"># USER - db admin (unused in sqlite3)</span>
+<span class="c1"># PASSWORD - db admin password (unused in sqlite3)</span>
+<span class="c1"># HOST - empty string is localhost (unused in sqlite3)</span>
+<span class="c1"># PORT - empty string defaults to localhost (unused in sqlite3)</span>
+<span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;ENGINE&quot;</span><span class="p">:</span> <span class="s2">&quot;django.db.backends.sqlite3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TEST_DB_PATH&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia.db3&quot;</span><span class="p">)),</span>
+        <span class="s2">&quot;USER&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PASSWORD&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;HOST&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PORT&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1"># How long the django-database connection should be kept open, in seconds.</span>
+<span class="c1"># If you get errors about the database having gone away after long idle</span>
+<span class="c1"># periods, shorten this value (e.g. MySQL defaults to a timeout of 8 hrs)</span>
+<span class="n">CONN_MAX_AGE</span> <span class="o">=</span> <span class="mi">3600</span> <span class="o">*</span> <span class="mi">7</span>
+<span class="c1"># When removing or renaming models, such models stored in Attributes may</span>
+<span class="c1"># become orphaned and will return as None. If the change is a rename (that</span>
+<span class="c1"># is, there is a 1:1 pk mapping between the old and the new), the unserializer</span>
+<span class="c1"># can convert old to new when retrieving them. This is a list of tuples</span>
+<span class="c1"># (old_natural_key, new_natural_key). Note that Django ContentTypes&#39;</span>
+<span class="c1"># natural_keys are themselves tuples (appname, modelname). Creation-dates will</span>
+<span class="c1"># not be checked for models specified here. If new_natural_key does not exist,</span>
+<span class="c1"># `None` will be returned and stored back as if no replacement was set.</span>
+<span class="n">ATTRIBUTE_STORED_MODEL_RENAME</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">((</span><span class="s2">&quot;players&quot;</span><span class="p">,</span> <span class="s2">&quot;playerdb&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;accountdb&quot;</span><span class="p">)),</span>
+    <span class="p">((</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="s2">&quot;defaultplayer&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span> <span class="s2">&quot;defaultaccount&quot;</span><span class="p">)),</span>
+<span class="p">]</span>
+<span class="c1"># Default type of autofield (required by Django), which defines the type of</span>
+<span class="c1"># primary key fields for all tables. This type is guaranteed to be at least a</span>
+<span class="c1"># 64-bit integer.</span>
+<span class="n">DEFAULT_AUTO_FIELD</span> <span class="o">=</span> <span class="s2">&quot;django.db.models.BigAutoField&quot;</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Evennia webclient options</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># default webclient options (without user changing it)</span>
+<span class="n">WEBCLIENT_OPTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Gags prompts in output window and puts them on the input bar</span>
+    <span class="s2">&quot;gagprompt&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="c1"># Shows help files in a new popup window instead of in-pane</span>
+    <span class="s2">&quot;helppopup&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="c1"># Shows notifications of new messages as popup windows</span>
+    <span class="s2">&quot;notification_popup&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="c1"># Plays a sound for notifications of new messages</span>
+    <span class="s2">&quot;notification_sound&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Evennia pluggable modules</span>
+<span class="c1">######################################################################</span>
+<span class="c1"># Plugin modules extend Evennia in various ways. In the cases with no</span>
+<span class="c1"># existing default, there are examples of many of these modules</span>
+<span class="c1"># in contrib/examples.</span>
+
+<span class="c1"># The command parser module to use. See the default module for which</span>
+<span class="c1"># functions it must implement</span>
+<span class="n">COMMAND_PARSER</span> <span class="o">=</span> <span class="s2">&quot;evennia.commands.cmdparser.cmdparser&quot;</span>
+<span class="c1"># On a multi-match when search objects or commands, the user has the</span>
+<span class="c1"># ability to search again with an index marker that differentiates</span>
+<span class="c1"># the results. If multiple &quot;box&quot; objects</span>
+<span class="c1"># are found, they can by default be separated as 1-box, 2-box. Below you</span>
+<span class="c1"># can change the regular expression used. The regex must have one</span>
+<span class="c1"># have two capturing groups (?P&lt;number&gt;...) and (?P&lt;name&gt;...) - the default</span>
+<span class="c1"># parser expects this. It should also involve a number starting from 1.</span>
+<span class="c1"># When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE</span>
+<span class="c1"># to properly describe the syntax.</span>
+<span class="n">SEARCH_MULTIMATCH_REGEX</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?P&lt;name&gt;[^-]*)-(?P&lt;number&gt;[0-9]+)(?P&lt;args&gt;.*)&quot;</span>
+<span class="c1"># To display multimatch errors in various listings we must display</span>
+<span class="c1"># the syntax in a way that matches what SEARCH_MULTIMATCH_REGEX understand.</span>
+<span class="c1"># The template will be populated with data and expects the following markup:</span>
+<span class="c1"># {number} - the order of the multimatch, starting from 1; {name} - the</span>
+<span class="c1"># name (key) of the multimatched entity; {aliases} - eventual</span>
+<span class="c1"># aliases for the entity; {info} - extra info like #dbrefs for staff. Don&#39;t</span>
+<span class="c1"># forget a line break if you want one match per line.</span>
+<span class="n">SEARCH_MULTIMATCH_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot; </span><span class="si">{name}</span><span class="s2">-</span><span class="si">{number}{aliases}{info}</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="c1"># The handler that outputs errors when using any API-level search</span>
+<span class="c1"># (not manager methods). This function should correctly report errors</span>
+<span class="c1"># both for command- and object-searches. This allows full control</span>
+<span class="c1"># over the error output (it uses SEARCH_MULTIMATCH_TEMPLATE by default).</span>
+<span class="n">SEARCH_AT_RESULT</span> <span class="o">=</span> <span class="s2">&quot;evennia.utils.utils.at_search_result&quot;</span>
+<span class="c1"># Single characters to ignore at the beginning of a command. When set, e.g.</span>
+<span class="c1"># cmd, @cmd and +cmd will all find a command &quot;cmd&quot; or one named &quot;@cmd&quot; etc. If</span>
+<span class="c1"># you have defined two different commands cmd and @cmd you can still enter</span>
+<span class="c1"># @cmd to exactly target the second one. Single-character commands consisting</span>
+<span class="c1"># of only a prefix character will not be stripped. Set to the empty</span>
+<span class="c1"># string (&quot;&quot;) to turn off prefix ignore.</span>
+<span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="s2">&quot;@&amp;/+&quot;</span>
+<span class="c1"># The module holding text strings for the connection screen.</span>
+<span class="c1"># This module should contain one or more variables</span>
+<span class="c1"># with strings defining the look of the screen.</span>
+<span class="n">CONNECTION_SCREEN_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server.conf.connection_screens&quot;</span>
+<span class="c1"># Delay to use before sending the evennia.syscmdkeys.CMD_LOGINSTART Command</span>
+<span class="c1"># when a new session connects (this defaults the unloggedin-look for showing</span>
+<span class="c1"># the connection screen). The delay is useful mainly for telnet, to allow</span>
+<span class="c1"># client/server to establish client capabilities like color/mxp etc before</span>
+<span class="c1"># sending any text. A value of 0.3 should be enough. While a good idea, it may</span>
+<span class="c1"># cause issues with menu-logins and autoconnects since the menu will not have</span>
+<span class="c1"># started when the autoconnects starts sending menu commands.</span>
+<span class="n">DELAY_CMD_LOGINSTART</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="c1"># A module that must exist - this holds the instructions Evennia will use to</span>
+<span class="c1"># first prepare the database for use (create user #1 and Limbo etc). Only override if</span>
+<span class="c1"># you really know what # you are doing. If replacing, it must contain a function</span>
+<span class="c1"># handle_setup(stepname=None). The function will start being called with no argument</span>
+<span class="c1"># and is expected to maintain a named sequence of steps. Once each step is completed, it</span>
+<span class="c1"># should be saved with ServerConfig.objects.conf(&#39;last_initial_setup_step&#39;, stepname)</span>
+<span class="c1"># on a crash, the system will continue by calling handle_setup with the last completed</span>
+<span class="c1"># step. The last step in the sequence must be named &#39;done&#39;. Once this key is saved,</span>
+<span class="c1"># initialization will not run again.</span>
+<span class="n">INITIAL_SETUP_MODULE</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.initial_setup&quot;</span>
+<span class="c1"># An optional module that, if existing, must hold a function</span>
+<span class="c1"># named at_initial_setup(). This hook method can be used to customize</span>
+<span class="c1"># the server&#39;s initial setup sequence (the very first startup of the system).</span>
+<span class="c1"># The check will fail quietly if module doesn&#39;t exist or fails to load.</span>
+<span class="n">AT_INITIAL_SETUP_HOOK_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server.conf.at_initial_setup&quot;</span>
+<span class="c1"># Module(s) containing custom at_server_init(), at_server_start(),</span>
+<span class="c1"># at_server_reload() and at_server_stop() methods. These methods will be called</span>
+<span class="c1"># every time the server starts, reloads and resets/stops</span>
+<span class="c1"># respectively. Can be given as a single path or a list of paths. If a list,</span>
+<span class="c1"># each module&#39;s hooks will be called in list order.</span>
+<span class="n">AT_SERVER_STARTSTOP_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server.conf.at_server_startstop&quot;</span>
+<span class="c1"># List of one or more module paths to modules containing a function start_</span>
+<span class="c1"># plugin_services(application). This module will be called with the main</span>
+<span class="c1"># Evennia Server application when the Server is initiated.</span>
+<span class="c1"># It will be called last in the startup sequence.</span>
+<span class="n">SERVER_SERVICES_PLUGIN_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;server.conf.server_services_plugins&quot;</span><span class="p">]</span>
+<span class="c1"># List of one or more module paths to modules containing a function</span>
+<span class="c1"># start_plugin_services(application). This module will be called with the</span>
+<span class="c1"># main Evennia Portal application when the Portal is initiated.</span>
+<span class="c1"># It will be called last in the startup sequence.</span>
+<span class="n">PORTAL_SERVICES_PLUGIN_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;server.conf.portal_services_plugins&quot;</span><span class="p">]</span>
+<span class="c1"># Module holding MSSP meta data. This is used by MUD-crawlers to determine</span>
+<span class="c1"># what type of game you are running, how many accounts you have etc.</span>
+<span class="n">MSSP_META_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server.conf.mssp&quot;</span>
+<span class="c1"># Module for web plugins.</span>
+<span class="n">WEB_PLUGINS_MODULE</span> <span class="o">=</span> <span class="s2">&quot;server.conf.web_plugins&quot;</span>
+<span class="c1"># Tuple of modules implementing lock functions. All callable functions</span>
+<span class="c1"># inside these modules will be available as lock functions.</span>
+<span class="n">LOCK_FUNC_MODULES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;evennia.locks.lockfuncs&quot;</span><span class="p">,</span> <span class="s2">&quot;server.conf.lockfuncs&quot;</span><span class="p">)</span>
+<span class="c1"># Module holding handlers for managing incoming data from the client. These</span>
+<span class="c1"># will be loaded in order, meaning functions in later modules may overload</span>
+<span class="c1"># previous ones if having the same name.</span>
+<span class="n">INPUT_FUNC_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.server.inputfuncs&quot;</span><span class="p">,</span> <span class="s2">&quot;server.conf.inputfuncs&quot;</span><span class="p">]</span>
+<span class="c1"># Modules that contain prototypes for use with the spawner mechanism.</span>
+<span class="n">PROTOTYPE_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;world.prototypes&quot;</span><span class="p">]</span>
+<span class="c1"># Modules containining Prototype functions able to be embedded in prototype</span>
+<span class="c1"># definitions from in-game.</span>
+<span class="n">PROT_FUNC_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.prototypes.protfuncs&quot;</span><span class="p">]</span>
+<span class="c1"># Module holding settings/actions for the dummyrunner program (see the</span>
+<span class="c1"># dummyrunner for more information)</span>
+<span class="n">DUMMYRUNNER_SETTINGS_MODULE</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.profiling.dummyrunner_settings&quot;</span>
+<span class="c1"># Mapping to extend Evennia&#39;s normal ANSI color tags. The mapping is a list of</span>
+<span class="c1"># tuples mapping the exact tag (not a regex!) to the ANSI convertion, like</span>
+<span class="c1"># `(r&quot;%c%r&quot;, ansi.ANSI_RED)` (the evennia.utils.ansi module contains all</span>
+<span class="c1"># ANSI escape sequences). Default is to use `|` and `|[` -prefixes.</span>
+<span class="n">COLOR_ANSI_EXTRA_MAP</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># Extend the available regexes for adding XTERM256 colors in-game. This is given</span>
+<span class="c1"># as a list of regexes, where each regex must contain three anonymous groups for</span>
+<span class="c1"># holding integers 0-5 for the red, green and blue components Default is</span>
+<span class="c1"># is r&#39;\|([0-5])([0-5])([0-5])&#39;, which allows e.g. |500 for red.</span>
+<span class="c1"># XTERM256 foreground color replacement</span>
+<span class="n">COLOR_XTERM256_EXTRA_FG</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># XTERM256 background color replacement. Default is \|\[([0-5])([0-5])([0-5])&#39;</span>
+<span class="n">COLOR_XTERM256_EXTRA_BG</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># Extend the available regexes for adding XTERM256 grayscale values in-game. Given</span>
+<span class="c1"># as a list of regexes, where each regex must contain one anonymous group containing</span>
+<span class="c1"># a single letter a-z to mark the level from white to black. Default is r&#39;\|=([a-z])&#39;,</span>
+<span class="c1"># which allows e.g. |=k for a medium gray.</span>
+<span class="c1"># XTERM256 grayscale foreground</span>
+<span class="n">COLOR_XTERM256_EXTRA_GFG</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># XTERM256 grayscale background. Default is \|\[=([a-z])&#39;</span>
+<span class="n">COLOR_XTERM256_EXTRA_GBG</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># ANSI does not support bright backgrounds, so Evennia fakes this by mapping it to</span>
+<span class="c1"># XTERM256 backgrounds where supported. This is a list of tuples that maps the wanted</span>
+<span class="c1"># ansi tag (not a regex!) to a valid XTERM256 background tag, such as `(r&#39;{[r&#39;, r&#39;{[500&#39;)`.</span>
+<span class="n">COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># If set True, the above color settings *replace* the default |-style color markdown</span>
+<span class="c1"># rather than extend it.</span>
+<span class="n">COLOR_NO_DEFAULT</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Default command sets and commands</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Command set used on session before account has logged in</span>
+<span class="n">CMDSET_UNLOGGEDIN</span> <span class="o">=</span> <span class="s2">&quot;commands.default_cmdsets.UnloggedinCmdSet&quot;</span>
+<span class="c1"># (Note that changing these three following cmdset paths will only affect NEW</span>
+<span class="c1"># created characters/objects, not those already in play. So if you want to</span>
+<span class="c1"># change this and have it apply to every object, it&#39;s recommended you do it</span>
+<span class="c1"># before having created a lot of objects (or simply reset the database after</span>
+<span class="c1"># the change for simplicity)).</span>
+<span class="c1"># Command set used on the logged-in session</span>
+<span class="n">CMDSET_SESSION</span> <span class="o">=</span> <span class="s2">&quot;commands.default_cmdsets.SessionCmdSet&quot;</span>
+<span class="c1"># Default set for logged in account with characters (fallback)</span>
+<span class="n">CMDSET_CHARACTER</span> <span class="o">=</span> <span class="s2">&quot;commands.default_cmdsets.CharacterCmdSet&quot;</span>
+<span class="c1"># Command set for accounts without a character (ooc)</span>
+<span class="n">CMDSET_ACCOUNT</span> <span class="o">=</span> <span class="s2">&quot;commands.default_cmdsets.AccountCmdSet&quot;</span>
+
+<span class="c1"># Location to search for cmdsets if full path not given</span>
+<span class="n">CMDSET_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;commands&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia&quot;</span><span class="p">,</span> <span class="s2">&quot;evennia.contrib&quot;</span><span class="p">]</span>
+<span class="c1"># Fallbacks for cmdset paths that fail to load. Note that if you change the path for your</span>
+<span class="c1"># default cmdsets, you will also need to copy CMDSET_FALLBACKS after your change in your</span>
+<span class="c1"># settings file for it to detect the change.</span>
+<span class="n">CMDSET_FALLBACKS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">CMDSET_CHARACTER</span><span class="p">:</span> <span class="s2">&quot;evennia.commands.default.cmdset_character.CharacterCmdSet&quot;</span><span class="p">,</span>
+    <span class="n">CMDSET_ACCOUNT</span><span class="p">:</span> <span class="s2">&quot;evennia.commands.default.cmdset_account.AccountCmdSet&quot;</span><span class="p">,</span>
+    <span class="n">CMDSET_SESSION</span><span class="p">:</span> <span class="s2">&quot;evennia.commands.default.cmdset_session.SessionCmdSet&quot;</span><span class="p">,</span>
+    <span class="n">CMDSET_UNLOGGEDIN</span><span class="p">:</span> <span class="s2">&quot;evennia.commands.default.cmdset_unloggedin.UnloggedinCmdSet&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1"># Parent class for all default commands. Changing this class will</span>
+<span class="c1"># modify all default commands, so do so carefully.</span>
+<span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.commands.default.muxcommand.MuxCommand&quot;</span>
+<span class="c1"># Command.arg_regex is a regular expression desribing how the arguments</span>
+<span class="c1"># to the command must be structured for the command to match a given user</span>
+<span class="c1"># input. By default the command-name should end with a space or / (since the</span>
+<span class="c1"># default commands uses MuxCommand and /switches). Note that the extra \n</span>
+<span class="c1"># is necessary for use with batchprocessor.</span>
+<span class="n">COMMAND_DEFAULT_ARG_REGEX</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[ /]|\n|$&quot;</span>
+<span class="c1"># By default, Command.msg will only send data to the Session calling</span>
+<span class="c1"># the Command in the first place. If set, Command.msg will instead return</span>
+<span class="c1"># data to all Sessions connected to the Account/Character associated with</span>
+<span class="c1"># calling the Command. This may be more intuitive for users in certain</span>
+<span class="c1"># multisession modes.</span>
+<span class="n">COMMAND_DEFAULT_MSG_ALL_SESSIONS</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># The default lockstring of a command.</span>
+<span class="n">COMMAND_DEFAULT_LOCKS</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Typeclasses and other paths</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># These are paths that will be prefixed to the paths given if the</span>
+<span class="c1"># immediately entered path fail to find a typeclass. It allows for</span>
+<span class="c1"># shorter input strings. They must either base off the game directory</span>
+<span class="c1"># or start from the evennia library.</span>
+<span class="n">TYPECLASS_PATHS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;typeclasses&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.contrib&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.contrib.game_systems&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.contrib.base_systems&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.contrib.full_systems&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.contrib.tutorials&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.contrib.utils&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Typeclass for account objects (linked to a character) (fallback)</span>
+<span class="n">BASE_ACCOUNT_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;typeclasses.accounts.Account&quot;</span>
+<span class="c1"># Typeclass and base for all objects (fallback)</span>
+<span class="n">BASE_OBJECT_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;typeclasses.objects.Object&quot;</span>
+<span class="c1"># Typeclass for character objects linked to an account (fallback)</span>
+<span class="n">BASE_CHARACTER_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;typeclasses.characters.Character&quot;</span>
+<span class="c1"># Typeclass for rooms (fallback)</span>
+<span class="n">BASE_ROOM_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;typeclasses.rooms.Room&quot;</span>
+<span class="c1"># Typeclass for Exit objects (fallback).</span>
+<span class="n">BASE_EXIT_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;typeclasses.exits.Exit&quot;</span>
+<span class="c1"># Typeclass for Channel (fallback).</span>
+<span class="n">BASE_CHANNEL_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;typeclasses.channels.Channel&quot;</span>
+<span class="c1"># Typeclass for Scripts (fallback). You usually don&#39;t need to change this</span>
+<span class="c1"># but create custom variations of scripts on a per-case basis instead.</span>
+<span class="n">BASE_SCRIPT_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;typeclasses.scripts.Script&quot;</span>
+<span class="c1"># The default home location used for all objects. This is used as a</span>
+<span class="c1"># fallback if an object&#39;s normal home location is deleted. Default</span>
+<span class="c1"># is Limbo (#2).</span>
+<span class="n">DEFAULT_HOME</span> <span class="o">=</span> <span class="s2">&quot;#2&quot;</span>
+<span class="c1"># The start position for new characters. Default is Limbo (#2).</span>
+<span class="n">START_LOCATION</span> <span class="o">=</span> <span class="s2">&quot;#2&quot;</span>
+<span class="c1"># Lookups of Attributes, Tags, Nicks, Aliases can be aggressively</span>
+<span class="c1"># cached to avoid repeated database hits. This often gives noticeable</span>
+<span class="c1"># performance gains since they are called so often. Drawback is that</span>
+<span class="c1"># if you are accessing the database from multiple processes (such as</span>
+<span class="c1"># from a website -not- running Evennia&#39;s own webserver) data may go</span>
+<span class="c1"># out of sync between the processes. Keep on unless you face such</span>
+<span class="c1"># issues.</span>
+<span class="n">TYPECLASS_AGGRESSIVE_CACHE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># These are fallbacks for BASE typeclasses failing to load. Usually needed only</span>
+<span class="c1"># during doc building. The system expects these to *always* load correctly, so</span>
+<span class="c1"># only modify if you are making fundamental changes to how objects/accounts</span>
+<span class="c1"># work and know what you are doing</span>
+<span class="n">FALLBACK_ACCOUNT_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.accounts.accounts.DefaultAccount&quot;</span>
+<span class="n">FALLBACK_OBJECT_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.objects.objects.DefaultObject&quot;</span>
+<span class="n">FALLBACK_CHARACTER_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.objects.objects.DefaultCharacter&quot;</span>
+<span class="n">FALLBACK_ROOM_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.objects.objects.DefaultRoom&quot;</span>
+<span class="n">FALLBACK_EXIT_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.objects.objects.DefaultExit&quot;</span>
+<span class="n">FALLBACK_CHANNEL_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.comms.comms.DefaultChannel&quot;</span>
+<span class="n">FALLBACK_SCRIPT_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.scripts.scripts.DefaultScript&quot;</span>
+
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Options and validators</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Options available on Accounts. Each such option is described by a</span>
+<span class="c1"># class available from evennia.OPTION_CLASSES, in turn making use</span>
+<span class="c1"># of validators from evennia.VALIDATOR_FUNCS to validate input when</span>
+<span class="c1"># the user changes an option. The options are accessed through the</span>
+<span class="c1"># `Account.options` handler.</span>
+
+<span class="c1"># (&quot;Description&quot;, &#39;Option Class name in evennia.OPTION_CLASS_MODULES&#39;, &#39;Default Value&#39;)</span>
+
+<span class="n">OPTIONS_ACCOUNT_DEFAULT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;border_color&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Headers, footers, table borders, etc.&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;header_star_color&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;* inside Header lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;header_text_color&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Text inside Header lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;header_fill&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Fill for Header lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Text&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;separator_star_color&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;* inside Separator lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;separator_text_color&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Text inside Separator lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;separator_fill&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Fill for Separator Lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Text&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;footer_star_color&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;* inside Footer lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;footer_text_color&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Text inside Footer Lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;footer_fill&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Fill for Footer Lines.&quot;</span><span class="p">,</span> <span class="s2">&quot;Text&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;column_names_color&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Table column header text.&quot;</span><span class="p">,</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;timezone&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Timezone for dates.&quot;</span><span class="p">,</span> <span class="s2">&quot;Timezone&quot;</span><span class="p">,</span> <span class="s2">&quot;UTC&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="c1"># Modules holding Option classes, responsible for serializing the option and</span>
+<span class="c1"># calling validator functions on it. Same-named functions in modules added</span>
+<span class="c1"># later in this list will override those added earlier.</span>
+<span class="n">OPTION_CLASS_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.utils.optionclasses&quot;</span><span class="p">]</span>
+<span class="c1"># Module holding validator functions. These are used as a resource for</span>
+<span class="c1"># validating options, but can also be used as input validators in general.</span>
+<span class="c1"># Same-named functions in modules added later in this list will override those</span>
+<span class="c1"># added earlier.</span>
+<span class="n">VALIDATOR_FUNC_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.utils.validatorfuncs&quot;</span><span class="p">]</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Batch processors</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Python path to a directory to be searched for batch scripts</span>
+<span class="c1"># for the batch processors (.ev and/or .py files).</span>
+<span class="n">BASE_BATCHPROCESS_PATHS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;world&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.contrib&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.contrib.tutorials&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Game Time setup</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># You don&#39;t actually have to use this, but it affects the routines in</span>
+<span class="c1"># evennia.utils.gametime.py and allows for a convenient measure to</span>
+<span class="c1"># determine the current in-game time. You can of course interpret</span>
+<span class="c1"># &quot;week&quot;, &quot;month&quot; etc as your own in-game time units as desired.</span>
+
+<span class="c1"># The time factor dictates if the game world runs faster (timefactor&gt;1)</span>
+<span class="c1"># or slower (timefactor&lt;1) than the real world.</span>
+<span class="n">TIME_FACTOR</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="c1"># The starting point of your game time (the epoch), in seconds.</span>
+<span class="c1"># In Python a value of 0 means Jan 1 1970 (use negatives for earlier</span>
+<span class="c1"># start date). This will affect the returns from the utils.gametime</span>
+<span class="c1"># module. If None, the server&#39;s first start-time is used as the epoch.</span>
+<span class="n">TIME_GAME_EPOCH</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># Normally, game time will only increase when the server runs. If this is True,</span>
+<span class="c1"># game time will not pause when the server reloads or goes offline. This setting</span>
+<span class="c1"># together with a time factor of 1 should keep the game in sync with</span>
+<span class="c1"># the real time (add a different epoch to shift time)</span>
+<span class="n">TIME_IGNORE_DOWNTIMES</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Help system</span>
+<span class="c1">######################################################################</span>
+<span class="c1"># Help output from CmdHelp are wrapped in an EvMore call</span>
+<span class="c1"># (excluding webclient with separate help popups). If continuous scroll</span>
+<span class="c1"># is preferred, change &#39;HELP_MORE&#39; to False. EvMORE uses CLIENT_DEFAULT_HEIGHT</span>
+<span class="n">HELP_MORE_ENABLED</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># The help category of a command if not specified.</span>
+<span class="n">COMMAND_DEFAULT_HELP_CATEGORY</span> <span class="o">=</span> <span class="s2">&quot;general&quot;</span>
+<span class="c1"># The help category of a db or file-based help entry if not specified</span>
+<span class="n">DEFAULT_HELP_CATEGORY</span> <span class="o">=</span> <span class="s2">&quot;general&quot;</span>
+<span class="c1"># File-based help entries. These are modules containing dicts defining help</span>
+<span class="c1"># entries. They can be used together with in-database entries created in-game.</span>
+<span class="n">FILE_HELP_ENTRY_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;world.help_entries&quot;</span><span class="p">]</span>
+<span class="c1"># if topics listed in help should be clickable</span>
+<span class="c1"># clickable links only work on clients that support MXP.</span>
+<span class="n">HELP_CLICKABLE_TOPICS</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># The Lunr search engine (used by help) excludes &#39;common&#39; words from its search.</span>
+<span class="c1"># This is not so good when those words are names of commands, like who or say;</span>
+<span class="c1"># so we need to make sure to tell Lunr to not filter them out by adding them here</span>
+<span class="c1"># (many are auto-added out of the box, this extends the list).</span>
+<span class="n">LUNR_STOP_WORD_FILTER_EXCEPTIONS</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># FuncParser</span>
+<span class="c1">#</span>
+<span class="c1"># Strings parsed with the FuncParser can contain &#39;callables&#39; on the</span>
+<span class="c1"># form $funcname(args,kwargs), which will lead to actual Python functions</span>
+<span class="c1"># being executed.</span>
+<span class="c1">######################################################################</span>
+<span class="c1"># This changes the start-symbol for the funcparser callable. Note that</span>
+<span class="c1"># this will make a lot of documentation invalid and there may also be</span>
+<span class="c1"># other unexpected side effects, so change with caution.</span>
+<span class="n">FUNCPARSER_START_CHAR</span> <span class="o">=</span> <span class="s2">&quot;$&quot;</span>
+<span class="c1"># The symbol to use to escape Func</span>
+<span class="n">FUNCPARSER_ESCAPE_CHAR</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
+<span class="c1"># This is the global max nesting-level for nesting functions in</span>
+<span class="c1"># the funcparser. This protects against infinite loops.</span>
+<span class="n">FUNCPARSER_MAX_NESTING</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="c1"># Activate funcparser for all outgoing strings. The current Session</span>
+<span class="c1"># will be passed into the parser (used to be called inlinefuncs)</span>
+<span class="n">FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Only functions defined globally (and not starting with &#39;_&#39;) in</span>
+<span class="c1"># these modules will be considered valid inlinefuncs. The list</span>
+<span class="c1"># is loaded from left-to-right, same-named functions will overload</span>
+<span class="n">FUNCPARSER_OUTGOING_MESSAGES_MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;evennia.utils.funcparser&quot;</span><span class="p">,</span> <span class="s2">&quot;server.conf.inlinefuncs&quot;</span><span class="p">]</span>
+<span class="c1"># Prototype values are also parsed with FuncParser. These modules</span>
+<span class="c1"># define which $func callables are available to use in prototypes.</span>
+<span class="n">FUNCPARSER_PROTOTYPE_PARSING_MODULES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;evennia.prototypes.protfuncs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;server.conf.prototypefuncs&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Global Scripts</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Global scripts started here will be available through</span>
+<span class="c1"># &#39;evennia.GLOBAL_SCRIPTS.key&#39;. The scripts will survive a reload and be</span>
+<span class="c1"># recreated automatically if deleted. Each entry must have the script keys,</span>
+<span class="c1"># whereas all other fields in the specification are optional. If &#39;typeclass&#39; is</span>
+<span class="c1"># not given, BASE_SCRIPT_TYPECLASS will be assumed.  Note that if you change</span>
+<span class="c1"># typeclass for the same key, a new Script will replace the old one on</span>
+<span class="c1"># `evennia.GLOBAL_SCRIPTS`.</span>
+<span class="n">GLOBAL_SCRIPTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># &#39;key&#39;: {&#39;typeclass&#39;: &#39;typeclass.path.here&#39;,</span>
+    <span class="c1">#         &#39;repeats&#39;: -1, &#39;interval&#39;: 50, &#39;desc&#39;: &#39;Example script&#39;},</span>
+<span class="p">}</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Default Account setup and access</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Different Multisession modes allow a player (=account) to connect to the</span>
+<span class="c1"># game simultaneously with multiple clients (=sessions).</span>
+<span class="c1">#  0 - single session per account (if reconnecting, disconnect old session)</span>
+<span class="c1">#  1 - multiple sessions per account, all sessions share output</span>
+<span class="c1">#  2 - multiple sessions per account, one session allowed per puppet</span>
+<span class="c1">#  3 - multiple sessions per account, multiple sessions per puppet (share output)</span>
+<span class="c1">#      session getting the same data.</span>
+<span class="n">MULTISESSION_MODE</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># Whether we should create a character with the same name as the account when</span>
+<span class="c1"># a new account is created. Together with AUTO_PUPPET_ON_LOGIN, this mimics</span>
+<span class="c1"># a legacy MUD, where there is no difference between account and character.</span>
+<span class="n">AUTO_CREATE_CHARACTER_WITH_ACCOUNT</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Whether an account should auto-puppet the last puppeted puppet when logging in. This</span>
+<span class="c1"># will only work if the session/puppet combination can be determined (usually</span>
+<span class="c1"># MULTISESSION_MODE 0 or 1), otherwise, the player will end up OOC. Use</span>
+<span class="c1"># MULTISESSION_MODE=0, AUTO_CREATE_CHARACTER_WITH_ACCOUNT=True and this value to</span>
+<span class="c1"># mimic a legacy mud with minimal difference between Account and Character. Disable</span>
+<span class="c1"># this and AUTO_PUPPET to get a chargen/character select screen on login.</span>
+<span class="n">AUTO_PUPPET_ON_LOGIN</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># How many *different* characters an account can puppet *at the same time*. A value</span>
+<span class="c1"># above 1 only makes a difference together with MULTISESSION_MODE &gt; 1.</span>
+<span class="n">MAX_NR_SIMULTANEOUS_PUPPETS</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># The maximum number of characters allowed by be created by the default ooc</span>
+<span class="c1"># char-creation command. This can be seen as how big of a &#39;stable&#39; of characters</span>
+<span class="c1"># an account can have (not how many you can puppet at the same time). Set to</span>
+<span class="c1"># None for no limit.</span>
+<span class="n">MAX_NR_CHARACTERS</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># The access hierarchy, in climbing order. A higher permission in the</span>
+<span class="c1"># hierarchy includes access of all levels below it. Used by the perm()/pperm()</span>
+<span class="c1"># lock functions, which accepts both plural and singular (Admin &amp; Admins)</span>
+<span class="n">PERMISSION_HIERARCHY</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Guest&quot;</span><span class="p">,</span>  <span class="c1"># note-only used if GUEST_ENABLED=True</span>
+    <span class="s2">&quot;Player&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Helper&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Builder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Admin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Developer&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="c1"># The default permission given to all new accounts</span>
+<span class="n">PERMISSION_ACCOUNT_DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;Player&quot;</span>
+<span class="c1"># Default sizes for client window (in number of characters), if client</span>
+<span class="c1"># is not supplying this on its own</span>
+<span class="n">CLIENT_DEFAULT_WIDTH</span> <span class="o">=</span> <span class="mi">78</span>
+<span class="c1"># telnet standard height is 24; does anyone use such low-res displays anymore?</span>
+<span class="n">CLIENT_DEFAULT_HEIGHT</span> <span class="o">=</span> <span class="mi">45</span>
+<span class="c1"># Set rate limits per-IP on account creations and login attempts. Set limits</span>
+<span class="c1"># to None to disable.</span>
+<span class="n">CREATION_THROTTLE_LIMIT</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">CREATION_THROTTLE_TIMEOUT</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span>
+<span class="n">LOGIN_THROTTLE_LIMIT</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">LOGIN_THROTTLE_TIMEOUT</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span>
+<span class="c1"># Certain characters, like html tags, line breaks and tabs are stripped</span>
+<span class="c1"># from user input for commands using the `evennia.utils.strip_unsafe_input` helper</span>
+<span class="c1"># since they can be exploitative. This list defines Account-level permissions</span>
+<span class="c1"># (and higher) that bypass this stripping. It is used as a fallback if a</span>
+<span class="c1"># specific list of perms are not given to the helper function.</span>
+<span class="n">INPUT_CLEANUP_BYPASS_PERMISSIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Builder&quot;</span><span class="p">]</span>
+
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Guest accounts</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># This enables guest logins, by default via &quot;connect guest&quot;. Note that</span>
+<span class="c1"># you need to edit your login screen to inform about this possibility.</span>
+<span class="n">GUEST_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Typeclass for guest account objects (linked to a character)</span>
+<span class="n">BASE_GUEST_TYPECLASS</span> <span class="o">=</span> <span class="s2">&quot;typeclasses.accounts.Guest&quot;</span>
+<span class="c1"># The permission given to guests</span>
+<span class="n">PERMISSION_GUEST_DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;Guests&quot;</span>
+<span class="c1"># The default home location used for guests.</span>
+<span class="n">GUEST_HOME</span> <span class="o">=</span> <span class="n">DEFAULT_HOME</span>
+<span class="c1"># The start position used for guest characters.</span>
+<span class="n">GUEST_START_LOCATION</span> <span class="o">=</span> <span class="n">START_LOCATION</span>
+<span class="c1"># The naming convention used for creating new guest</span>
+<span class="c1"># accounts/characters. The size of this list also determines how many</span>
+<span class="c1"># guests may be on the game at once. The default is a maximum of nine</span>
+<span class="c1"># guests, named Guest1 through Guest9.</span>
+<span class="n">GUEST_LIST</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Guest&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">)]</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># In-game Channels created from server start</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># The mudinfo channel is a read-only channel used by Evennia to replay status</span>
+<span class="c1"># messages, connection info etc to staff. The superuser will automatically be</span>
+<span class="c1"># subscribed to this channel. If set to None, the channel is disabled and</span>
+<span class="c1"># status messages will only be logged (not recommended).</span>
+<span class="n">CHANNEL_MUDINFO</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;MudInfo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Connection log&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;locks&quot;</span><span class="p">:</span> <span class="s2">&quot;control:perm(Developer);listen:perm(Admin);send:false()&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1"># Optional channel (same form as CHANNEL_MUDINFO) that will receive connection</span>
+<span class="c1"># messages like (&quot;&lt;account&gt; has (dis)connected&quot;). While the MudInfo channel</span>
+<span class="c1"># will also receieve this info, this channel is meant for non-staffers. If</span>
+<span class="c1"># None, this information will only be logged.</span>
+<span class="n">CHANNEL_CONNECTINFO</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># New accounts will auto-sub to the default channels given below (but they can</span>
+<span class="c1"># unsub at any time). Traditionally, at least &#39;public&#39; should exist. Entries</span>
+<span class="c1"># will be (re)created on the next reload, but removing or updating a same-key</span>
+<span class="c1"># channel from this list will NOT automatically change/remove it in the game,</span>
+<span class="c1"># that needs to be done manually. Note: To create other, non-auto-subbed</span>
+<span class="c1"># channels, create them manually in server/conf/at_initial_setup.py.</span>
+<span class="n">DEFAULT_CHANNELS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Public&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;pub&quot;</span><span class="p">,),</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Public discussion&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;locks&quot;</span><span class="p">:</span> <span class="s2">&quot;control:perm(Admin);listen:all();send:all()&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># External Connections</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Note: You do *not* have to make your MUD open to</span>
+<span class="c1"># the public to use the external connections, they</span>
+<span class="c1"># operate as long as you have an internet connection,</span>
+<span class="c1"># just like stand-alone chat clients.</span>
+
+<span class="c1"># The Evennia Game Index is a dynamic listing of Evennia games. You can add your game</span>
+<span class="c1"># to this list also if it is in closed pre-alpha development.</span>
+<span class="n">GAME_INDEX_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># This dict</span>
+<span class="n">GAME_INDEX_LISTING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;game_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Mygame&quot;</span><span class="p">,</span>  <span class="c1"># usually SERVERNAME</span>
+    <span class="s2">&quot;game_status&quot;</span><span class="p">:</span> <span class="s2">&quot;pre-alpha&quot;</span><span class="p">,</span>  <span class="c1"># pre-alpha, alpha, beta or launched</span>
+    <span class="s2">&quot;short_description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># could be GAME_SLOGAN</span>
+    <span class="s2">&quot;long_description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;listing_contact&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># email</span>
+    <span class="s2">&quot;telnet_hostname&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># mygame.com</span>
+    <span class="s2">&quot;telnet_port&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># 1234</span>
+    <span class="s2">&quot;game_website&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># http://mygame.com</span>
+    <span class="s2">&quot;web_client_url&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># http://mygame.com/webclient</span>
+<span class="p">}</span>
+<span class="c1"># Evennia can connect to external IRC channels and</span>
+<span class="c1"># echo what is said on the channel to IRC and vice</span>
+<span class="c1"># versa. Obs - make sure the IRC network allows bots.</span>
+<span class="c1"># When enabled, command @irc2chan will be available in-game</span>
+<span class="c1"># IRC requires that you have twisted.words installed.</span>
+<span class="n">IRC_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># RSS allows to connect RSS feeds (from forum updates, blogs etc) to</span>
+<span class="c1"># an in-game channel. The channel will be updated when the rss feed</span>
+<span class="c1"># updates. Use @rss2chan in game to connect if this setting is</span>
+<span class="c1"># active. OBS: RSS support requires the python-feedparser package to</span>
+<span class="c1"># be installed (through package manager or from the website</span>
+<span class="c1"># http://code.google.com/p/feedparser/)</span>
+<span class="n">RSS_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">RSS_UPDATE_INTERVAL</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># 10 minutes</span>
+<span class="c1"># Grapevine (grapevine.haus) is a network for listing MUDs as well as allow</span>
+<span class="c1"># users of said MUDs to communicate with each other on shared channels. To use,</span>
+<span class="c1"># your game must first be registered by logging in and creating a game entry at</span>
+<span class="c1"># https://grapevine.haus. Evennia links grapevine channels to in-game channels</span>
+<span class="c1"># with the @grapevine2chan command, available once this flag is set</span>
+<span class="c1"># Grapevine requires installing the pyopenssl library (pip install pyopenssl)</span>
+<span class="n">GRAPEVINE_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Grapevine channels to allow connection to. See https://grapevine.haus/chat</span>
+<span class="c1"># for the available channels. Only channels in this list can be linked to in-game</span>
+<span class="c1"># channels later.</span>
+<span class="n">GRAPEVINE_CHANNELS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gossip&quot;</span><span class="p">,</span> <span class="s2">&quot;testing&quot;</span><span class="p">]</span>
+<span class="c1"># Grapevine authentication. Register your game at https://grapevine.haus to get</span>
+<span class="c1"># them. These are secret and should thus be overridden in secret_settings file</span>
+<span class="n">GRAPEVINE_CLIENT_ID</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">GRAPEVINE_CLIENT_SECRET</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Django web features</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># While DEBUG is False, show a regular server error page on the web</span>
+<span class="c1"># stuff, email the traceback to the people in the ADMINS tuple</span>
+<span class="c1"># below. If True, show a detailed traceback for the web</span>
+<span class="c1"># browser to display. Note however that this will leak memory when</span>
+<span class="c1"># active, so make sure to turn it off for a production server!</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Emails are sent to these people if the above DEBUG value is False. If you&#39;d</span>
+<span class="c1"># rather prefer nobody receives emails, leave this commented out or empty.</span>
+<span class="n">ADMINS</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># &#39;Your Name&#39;, &#39;your_email@domain.com&#39;),)</span>
+<span class="c1"># These guys get broken link notifications when SEND_BROKEN_LINK_EMAILS is True.</span>
+<span class="n">MANAGERS</span> <span class="o">=</span> <span class="n">ADMINS</span>
+<span class="c1"># This is a public point of contact for players or the public to contact</span>
+<span class="c1"># a staff member or administrator of the site. It is publicly posted.</span>
+<span class="n">STAFF_CONTACT_EMAIL</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># If using Sites/Pages from the web admin, this value must be set to the</span>
+<span class="c1"># database-id of the Site (domain) we want to use with this game&#39;s Pages.</span>
+<span class="n">SITE_ID</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># The age for sessions.</span>
+<span class="c1"># Default: 1209600 (2 weeks, in seconds)</span>
+<span class="n">SESSION_COOKIE_AGE</span> <span class="o">=</span> <span class="mi">1209600</span>
+<span class="c1"># Session cookie domain</span>
+<span class="c1"># Default: None</span>
+<span class="n">SESSION_COOKIE_DOMAIN</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># The name of the cookie to use for sessions.</span>
+<span class="c1"># Default: &#39;sessionid&#39;</span>
+<span class="n">SESSION_COOKIE_NAME</span> <span class="o">=</span> <span class="s2">&quot;sessionid&quot;</span>
+<span class="c1"># Should the session expire when the browser closes?</span>
+<span class="c1"># Default: False</span>
+<span class="n">SESSION_EXPIRE_AT_BROWSER_CLOSE</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># If you set this to False, Django will make some optimizations so as not</span>
+<span class="c1"># to load the internationalization machinery.</span>
+<span class="n">USE_I18N</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Where to find locales (no need to change this, most likely)</span>
+<span class="n">LOCALE_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_DIR</span><span class="p">,</span> <span class="s2">&quot;locale/&quot;</span><span class="p">)]</span>
+<span class="c1"># How to display time stamps in e.g. the admin</span>
+<span class="n">SHORT_DATETIME_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;Y-m-d H:i:s.u&quot;</span>
+<span class="n">DATETIME_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;Y-m-d H:i:s&quot;</span>  <span class="c1"># ISO 8601 but without T and timezone</span>
+<span class="c1"># This should be turned off unless you want to do tests with Django&#39;s</span>
+<span class="c1"># development webserver (normally Evennia runs its own server)</span>
+<span class="n">SERVE_MEDIA</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># The master urlconf file that contains all of the sub-branches to the</span>
+<span class="c1"># applications. Change this to add your own URLs to the website.</span>
+<span class="n">ROOT_URLCONF</span> <span class="o">=</span> <span class="s2">&quot;web.urls&quot;</span>
+<span class="c1"># Where users are redirected after logging in via contrib.auth.login.</span>
+<span class="n">LOGIN_REDIRECT_URL</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
+<span class="c1"># Where to redirect users when using the @login_required decorator.</span>
+<span class="n">LOGIN_URL</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;login&quot;</span><span class="p">)</span>
+<span class="c1"># Where to redirect users who wish to logout.</span>
+<span class="n">LOGOUT_URL</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;logout&quot;</span><span class="p">)</span>
+<span class="c1"># URL that handles the media served from MEDIA_ROOT.</span>
+<span class="c1"># Example: &quot;http://media.lawrence.com&quot;</span>
+<span class="n">MEDIA_URL</span> <span class="o">=</span> <span class="s2">&quot;/media/&quot;</span>
+<span class="c1"># Absolute path to the directory that holds file uploads from web apps.</span>
+<span class="n">MEDIA_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;.media&quot;</span><span class="p">)</span>
+<span class="c1"># URL prefix for admin media -- CSS, JavaScript and images. Make sure</span>
+<span class="c1"># to use a trailing slash. Admin-related files are searched under STATIC_URL/admin.</span>
+<span class="n">STATIC_URL</span> <span class="o">=</span> <span class="s2">&quot;/static/&quot;</span>
+<span class="c1"># Absolute path to directory where the static data will be gathered into to be</span>
+<span class="c1"># served by webserver.</span>
+<span class="n">STATIC_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;server&quot;</span><span class="p">,</span> <span class="s2">&quot;.static&quot;</span><span class="p">)</span>
+<span class="c1"># Location of static data to overload the defaults from</span>
+<span class="c1"># evennia/web/static.</span>
+<span class="n">STATICFILES_DIRS</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;static&quot;</span><span class="p">)]</span>
+<span class="c1"># Patterns of files in the static directories. Used here to make sure that</span>
+<span class="c1"># its readme file is preserved but unused.</span>
+<span class="n">STATICFILES_IGNORE_PATTERNS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;README.md&quot;</span><span class="p">]</span>
+<span class="c1"># The name of the currently selected web template. This corresponds to the</span>
+<span class="c1"># directory names shown in the templates directory.</span>
+<span class="n">WEBSITE_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;website&quot;</span>
+<span class="n">WEBCLIENT_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;webclient&quot;</span>
+<span class="c1"># We setup the location of the website template as well as the admin site.</span>
+<span class="n">TEMPLATES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;django.template.backends.django.DjangoTemplates&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DIRS&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="n">WEBSITE_TEMPLATE</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="n">WEBCLIENT_TEMPLATE</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="n">WEBSITE_TEMPLATE</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_DIR</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="n">WEBCLIENT_TEMPLATE</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;APP_DIRS&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;OPTIONS&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;context_processors&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;django.template.context_processors.i18n&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;django.template.context_processors.request&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;django.contrib.auth.context_processors.auth&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;django.template.context_processors.media&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;django.template.context_processors.debug&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;django.contrib.messages.context_processors.messages&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;sekizai.context_processors.sekizai&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;evennia.web.utils.general_context.general_context&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="c1"># While true, show &quot;pretty&quot; error messages for template syntax errors.</span>
+            <span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+<span class="c1"># Django cache settings</span>
+<span class="c1"># https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache</span>
+<span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;django.core.cache.backends.locmem.LocMemCache&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;throttle&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;BACKEND&quot;</span><span class="p">:</span> <span class="s2">&quot;django.core.cache.backends.locmem.LocMemCache&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TIMEOUT&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="s2">&quot;OPTIONS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;MAX_ENTRIES&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+<span class="c1"># MiddleWare are semi-transparent extensions to Django&#39;s functionality.</span>
+<span class="c1"># see http://www.djangoproject.com/documentation/middleware/ for a more detailed</span>
+<span class="c1"># explanation.</span>
+<span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;django.middleware.common.CommonMiddleware&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.sessions.middleware.SessionMiddleware&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.messages.middleware.MessageMiddleware&quot;</span><span class="p">,</span>  <span class="c1"># 1.4?</span>
+    <span class="s2">&quot;django.contrib.auth.middleware.AuthenticationMiddleware&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.middleware.csrf.CsrfViewMiddleware&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.admindocs.middleware.XViewMiddleware&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.flatpages.middleware.FlatpageFallbackMiddleware&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.web.utils.middleware.SharedLoginMiddleware&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Evennia components</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Global and Evennia-specific apps. This ties everything together so we can</span>
+<span class="c1"># refer to app models and perform DB syncs.</span>
+<span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;django.contrib.auth&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.contenttypes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.sessions&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.admindocs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.flatpages&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.sites&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django.contrib.staticfiles&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.web.utils.adminsite.EvenniaAdminApp&quot;</span><span class="p">,</span>  <span class="c1"># replaces django.contrib.admin</span>
+    <span class="s2">&quot;django.contrib.messages&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rest_framework&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;django_filters&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sekizai&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.utils.idmapper&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.server&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.typeclasses&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.accounts&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.objects&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.comms&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.help&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.scripts&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evennia.web&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="c1"># The user profile extends the User object with more functionality;</span>
+<span class="c1"># This should usually not be changed.</span>
+<span class="n">AUTH_USER_MODEL</span> <span class="o">=</span> <span class="s2">&quot;accounts.AccountDB&quot;</span>
+
+<span class="c1"># Password validation plugins</span>
+<span class="c1"># https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators</span>
+<span class="n">AUTH_PASSWORD_VALIDATORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;django.contrib.auth.password_validation.UserAttributeSimilarityValidator&quot;</span><span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;django.contrib.auth.password_validation.MinimumLengthValidator&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OPTIONS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;min_length&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;django.contrib.auth.password_validation.CommonPasswordValidator&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;django.contrib.auth.password_validation.NumericPasswordValidator&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;evennia.server.validators.EvenniaPasswordValidator&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="c1"># Username validation plugins</span>
+<span class="n">AUTH_USERNAME_VALIDATORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;django.contrib.auth.validators.ASCIIUsernameValidator&quot;</span><span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;django.core.validators.MinLengthValidator&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OPTIONS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;limit_value&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;django.core.validators.MaxLengthValidator&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;OPTIONS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;limit_value&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;evennia.server.validators.EvenniaUsernameAvailabilityValidator&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="c1"># Use a custom test runner that just tests Evennia-specific apps.</span>
+<span class="n">TEST_RUNNER</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.tests.testrunner.EvenniaTestSuiteRunner&quot;</span>
+
+<span class="c1"># Messages and Bootstrap don&#39;t classify events the same way; this setting maps</span>
+<span class="c1"># messages.error() to Bootstrap &#39;danger&#39; classes.</span>
+<span class="n">MESSAGE_TAGS</span> <span class="o">=</span> <span class="p">{</span><span class="n">messages</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="s2">&quot;danger&quot;</span><span class="p">}</span>
+
+<span class="c1"># Django REST Framework settings</span>
+<span class="n">REST_FRAMEWORK</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># django_filters allows you to specify search fields for models in an API View</span>
+    <span class="s2">&quot;DEFAULT_FILTER_BACKENDS&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;django_filters.rest_framework.DjangoFilterBackend&quot;</span><span class="p">,),</span>
+    <span class="c1"># whether to paginate results and how many per page</span>
+    <span class="s2">&quot;DEFAULT_PAGINATION_CLASS&quot;</span><span class="p">:</span> <span class="s2">&quot;rest_framework.pagination.LimitOffsetPagination&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PAGE_SIZE&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="c1"># require logged in users to call API so that access checks can work on them</span>
+    <span class="s2">&quot;DEFAULT_PERMISSION_CLASSES&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;rest_framework.permissions.IsAuthenticated&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="c1"># These are the different ways people can authenticate for API requests - via</span>
+    <span class="c1"># session or with user/password. Other ways are possible, such as via tokens</span>
+    <span class="c1"># or oauth, but require additional dependencies.</span>
+    <span class="s2">&quot;DEFAULT_AUTHENTICATION_CLASSES&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;rest_framework.authentication.BasicAuthentication&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;rest_framework.authentication.SessionAuthentication&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="c1"># default permission checks used by the EvenniaPermission class</span>
+    <span class="s2">&quot;DEFAULT_CREATE_PERMISSION&quot;</span><span class="p">:</span> <span class="s2">&quot;builder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DEFAULT_LIST_PERMISSION&quot;</span><span class="p">:</span> <span class="s2">&quot;builder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DEFAULT_VIEW_LOCKS&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;examine&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;DEFAULT_DESTROY_LOCKS&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;delete&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;DEFAULT_UPDATE_LOCKS&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="s2">&quot;edit&quot;</span><span class="p">],</span>
+    <span class="c1"># No throttle class set by default. Setting one also requires a cache backend to be specified.</span>
+<span class="p">}</span>
+
+<span class="c1"># To enable the REST api, turn this to True</span>
+<span class="n">REST_API_ENABLED</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Networking Replaceables</span>
+<span class="c1">######################################################################</span>
+<span class="c1"># This allows for replacing the very core of the infrastructure holding Evennia</span>
+<span class="c1"># together with your own variations. You should usually never have to touch</span>
+<span class="c1"># this, and if so, you really need to know what you are doing.</span>
+
+<span class="c1"># The Base Session Class is used as a parent class for all Protocols such as</span>
+<span class="c1"># Telnet and SSH.) Changing this could be really dangerous. It will cascade</span>
+<span class="c1"># to tons of classes. You generally shouldn&#39;t need to touch protocols.</span>
+<span class="n">BASE_SESSION_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.session.Session&quot;</span>
+
+<span class="c1"># Telnet Protocol inherits from whatever above BASE_SESSION_CLASS is specified.</span>
+<span class="c1"># It is used for all telnet connections, and is also inherited by the SSL Protocol</span>
+<span class="c1"># (which is just TLS + Telnet).</span>
+<span class="n">TELNET_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.telnet.TelnetProtocol&quot;</span>
+<span class="n">SSL_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.ssl.SSLProtocol&quot;</span>
+
+<span class="c1"># Websocket Client Protocol. This inherits from BASE_SESSION_CLASS. It is used</span>
+<span class="c1"># for all webclient connections.</span>
+<span class="n">WEBSOCKET_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.webclient.WebSocketClient&quot;</span>
+
+<span class="c1"># Protocol for the SSH interface. This inherits from BASE_SESSION_CLASS.</span>
+<span class="n">SSH_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.ssh.SshProtocol&quot;</span>
+
+<span class="c1"># Server-side session class used. This will inherit from BASE_SESSION_CLASS.</span>
+<span class="c1"># This one isn&#39;t as dangerous to replace.</span>
+<span class="n">SERVER_SESSION_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.serversession.ServerSession&quot;</span>
+
+<span class="c1"># The Server SessionHandler manages all ServerSessions, handling logins,</span>
+<span class="c1"># ensuring the login process happens smoothly, handling expected and</span>
+<span class="c1"># unexpected disconnects. You shouldn&#39;t need to touch it, but you can.</span>
+<span class="c1"># Replace it to implement altered game logic.</span>
+<span class="n">SERVER_SESSION_HANDLER_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.sessionhandler.ServerSessionHandler&quot;</span>
+
+<span class="c1"># The Portal SessionHandler manages all incoming connections regardless of</span>
+<span class="c1"># the protocol in use. It is responsible for keeping them going and informing</span>
+<span class="c1"># the Server Session Handler of the connections and synchronizing them across the</span>
+<span class="c1"># AMP connection. You shouldn&#39;t ever need to change this. But you can.</span>
+<span class="n">PORTAL_SESSION_HANDLER_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.portalsessionhandler.PortalSessionHandler&quot;</span>
+
+
+<span class="c1"># These are members / properties / attributes kept on both Server and</span>
+<span class="c1"># Portal Sessions. They are sync&#39;d at various points, such as logins and</span>
+<span class="c1"># reloads. If you add to this, you may need to adjust the class __init__</span>
+<span class="c1"># so the additions have somewhere to go. These must be simple things that</span>
+<span class="c1"># can be pickled - stuff you could serialize to JSON is best.</span>
+<span class="n">SESSION_SYNC_ATTRS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;protocol_key&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;address&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;suid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sessid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;csessid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uname&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logged_in&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;puid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;conn_time&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cmd_last&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cmd_last_visible&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cmd_total&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;protocol_flags&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;server_data&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cmdset_storage_string&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># The following are used for the communications between the Portal and Server.</span>
+<span class="c1"># Very dragons territory.</span>
+<span class="n">AMP_SERVER_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.portal.amp_server.AMPServerProtocol&quot;</span>
+<span class="n">AMP_CLIENT_PROTOCOL_CLASS</span> <span class="o">=</span> <span class="s2">&quot;evennia.server.amp_client.AMPServerClientProtocol&quot;</span>
+
+<span class="c1"># don&#39;t change this manually, it can be checked from code to know if</span>
+<span class="c1"># being run from a unit test (set by the evennia.utils.test_resources.BaseEvenniaTest</span>
+<span class="c1"># and BaseEvenniaTestCase unit testing parents)</span>
+<span class="n">_TEST_ENVIRONMENT</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1">######################################################################</span>
+<span class="c1"># Django extensions</span>
+<span class="c1">######################################################################</span>
+
+<span class="c1"># Django extesions are useful third-party tools that are not</span>
+<span class="c1"># always included in the default django distro.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">django_extensions</span>  <span class="c1"># noqa</span>
+
+    <span class="n">INSTALLED_APPS</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;django_extensions&quot;</span><span class="p">]</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># Django extensions are not installed in all distros.</span>
+    <span class="k">pass</span>
+
+<span class="c1">#######################################################################</span>
+<span class="c1"># SECRET_KEY</span>
+<span class="c1">#######################################################################</span>
+<span class="c1"># This is the signing key for the cookies generated by Evennia&#39;s</span>
+<span class="c1"># web interface.</span>
+<span class="c1">#</span>
+<span class="c1"># It is a fallback for the SECRET_KEY setting in settings.py, which</span>
+<span class="c1"># is randomly seeded when settings.py is first created. If copying</span>
+<span class="c1"># from here, make sure to change it!</span>
+<span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s2">&quot;changeme!(*#&amp;*($&amp;*(#*(&amp;SDFKJJKLS*(@#KJAS&quot;</span>
+
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Choosing-An-SQL-Server.html" title="Choosing An SQL Server"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Settings.html" title="Game Settings and Configuration direcotry"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Setup-Overview.html" >Server Setup and Life</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Default settings file</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

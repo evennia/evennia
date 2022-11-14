@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.grid.extended_room.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.extended_room.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.grid.extended_room.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Testing of ExtendedRoom contrib</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">from</span> <span class="nn">evennia.commands.default.tests</span> <span class="kn">import</span> <span class="n">BaseEvenniaCommandTest</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultRoom</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">extended_room</span>
+
+
+<div class="viewcode-block" id="ForceUTCDatetime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.ForceUTCDatetime">[docs]</a><span class="k">class</span> <span class="nc">ForceUTCDatetime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Force UTC datetime.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ForceUTCDatetime.fromtimestamp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.ForceUTCDatetime.fromtimestamp">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fromtimestamp</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Force fromtimestamp to run with naive datetimes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestExtendedRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom">[docs]</a><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.grid.extended_room.extended_room.datetime.datetime&quot;</span><span class="p">,</span> <span class="n">ForceUTCDatetime</span><span class="p">)</span>
+<span class="c1"># mock gametime to return April 9, 2064, at 21:06 (spring evening)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.utils.gametime.gametime&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="mi">2975000766</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">TestExtendedRoom</span><span class="p">(</span><span class="n">BaseEvenniaCommandTest</span><span class="p">):</span>
+    <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">extended_room</span><span class="o">.</span><span class="n">ExtendedRoom</span>
+    <span class="n">DETAIL_DESC</span> <span class="o">=</span> <span class="s2">&quot;A test detail.&quot;</span>
+    <span class="n">SPRING_DESC</span> <span class="o">=</span> <span class="s2">&quot;A spring description.&quot;</span>
+    <span class="n">OLD_DESC</span> <span class="o">=</span> <span class="s2">&quot;Old description.&quot;</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">TIME_ZONE</span> <span class="o">=</span> <span class="s2">&quot;UTC&quot;</span>
+
+<div class="viewcode-block" id="TestExtendedRoom.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_timeslot</span> <span class="o">=</span> <span class="s2">&quot;afternoon&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_season</span> <span class="o">=</span> <span class="s2">&quot;winter&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;testdetail&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">DETAIL_DESC</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">spring_desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPRING_DESC</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OLD_DESC</span></div>
+
+<div class="viewcode-block" id="TestExtendedRoom.test_return_appearance"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">test_return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># get the appearance of a non-extended room for contrast purposes</span>
+        <span class="n">old_desc</span> <span class="o">=</span> <span class="n">DefaultRoom</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+        <span class="c1"># the new appearance should be the old one, but with the desc switched</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">old_desc</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OLD_DESC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPRING_DESC</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;spring&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_season</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;evening&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">last_timeslot</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestExtendedRoom.test_return_detail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_return_detail">[docs]</a>    <span class="k">def</span> <span class="nf">test_return_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DETAIL_DESC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">return_detail</span><span class="p">(</span><span class="s2">&quot;testdetail&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestExtendedRoom.test_cmdextendedlook"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdextendedlook">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmdextendedlook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span>
+            <span class="s2">&quot;here&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Room(#</span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPRING_DESC</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span> <span class="s2">&quot;testdetail&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DETAIL_DESC</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomLook</span><span class="p">(),</span> <span class="s2">&quot;nonexistent&quot;</span><span class="p">,</span> <span class="s2">&quot;Could not find &#39;nonexistent&#39;.&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestExtendedRoom.test_cmdsetdetail"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdsetdetail">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmdsetdetail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Details on Room&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span>
+            <span class="s2">&quot;thingie = newdetail with spaces&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Detail set &#39;thingie&#39;: &#39;newdetail with spaces&#39;&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;thingie&quot;</span><span class="p">,</span> <span class="s2">&quot;Detail &#39;thingie&#39; on Room:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span>
+            <span class="s2">&quot;/del thingie&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Detail thingie deleted, if it existed.&quot;</span><span class="p">,</span>
+            <span class="n">cmdstring</span><span class="o">=</span><span class="s2">&quot;detail&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;thingie&quot;</span><span class="p">,</span> <span class="s2">&quot;Detail &#39;thingie&#39; not found.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Test with aliases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Details on Room&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span>
+            <span class="s2">&quot;thingie;other;stuff = newdetail with spaces&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Detail set &#39;thingie;other;stuff&#39;: &#39;newdetail with spaces&#39;&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;thingie&quot;</span><span class="p">,</span> <span class="s2">&quot;Detail &#39;thingie&#39; on Room:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;other&quot;</span><span class="p">,</span> <span class="s2">&quot;Detail &#39;other&#39; on Room:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;stuff&quot;</span><span class="p">,</span> <span class="s2">&quot;Detail &#39;stuff&#39; on Room:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span>
+            <span class="s2">&quot;/del other;stuff&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Detail other;stuff deleted, if it existed.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;other&quot;</span><span class="p">,</span> <span class="s2">&quot;Detail &#39;other&#39; not found.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomDetail</span><span class="p">(),</span> <span class="s2">&quot;stuff&quot;</span><span class="p">,</span> <span class="s2">&quot;Detail &#39;stuff&#39; not found.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestExtendedRoom.test_cmdgametime"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.extended_room.tests.html#evennia.contrib.grid.extended_room.tests.TestExtendedRoom.test_cmdgametime">[docs]</a>    <span class="k">def</span> <span class="nf">test_cmdgametime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">extended_room</span><span class="o">.</span><span class="n">CmdExtendedRoomGameTime</span><span class="p">(),</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;It&#39;s a spring day, in the evening.&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.extended_room.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

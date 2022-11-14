@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.web.admin.objects &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.admin.objects</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="objects.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.web.admin.objects</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># This sets up how models are displayed</span>
+<span class="c1"># in the web admin interface.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span><span class="p">,</span> <span class="n">messages</span>
+<span class="kn">from</span> <span class="nn">django.contrib.admin.utils</span> <span class="kn">import</span> <span class="n">flatten_fieldsets</span>
+<span class="kn">from</span> <span class="nn">django.contrib.admin.widgets</span> <span class="kn">import</span> <span class="n">ForeignKeyRawIdWidget</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">django.utils.html</span> <span class="kn">import</span> <span class="n">format_html</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="kn">from</span> <span class="nn">evennia.accounts.models</span> <span class="kn">import</span> <span class="n">AccountDB</span>
+<span class="kn">from</span> <span class="nn">evennia.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">adminutils</span>
+<span class="kn">from</span> <span class="nn">.attributes</span> <span class="kn">import</span> <span class="n">AttributeInline</span>
+<span class="kn">from</span> <span class="nn">.tags</span> <span class="kn">import</span> <span class="n">TagInline</span>
+
+
+<div class="viewcode-block" id="ObjectAttributeInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAttributeInline">[docs]</a><span class="k">class</span> <span class="nc">ObjectAttributeInline</span><span class="p">(</span><span class="n">AttributeInline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines inline descriptions of Attributes (experimental)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">db_attributes</span><span class="o">.</span><span class="n">through</span>
+    <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;objectdb&quot;</span></div>
+
+
+<div class="viewcode-block" id="ObjectTagInline"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectTagInline">[docs]</a><span class="k">class</span> <span class="nc">ObjectTagInline</span><span class="p">(</span><span class="n">TagInline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines inline descriptions of Tags (experimental)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">db_tags</span><span class="o">.</span><span class="n">through</span>
+    <span class="n">related_field</span> <span class="o">=</span> <span class="s2">&quot;objectdb&quot;</span></div>
+
+
+<div class="viewcode-block" id="ObjectCreateForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectCreateForm">[docs]</a><span class="k">class</span> <span class="nc">ObjectCreateForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This form details the look of the fields.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ObjectCreateForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectCreateForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">ObjectDB</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;__all__&quot;</span></div>
+
+    <span class="n">db_key</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Name/Key&quot;</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;78&quot;</span><span class="p">}),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Main identifier, like &#39;apple&#39;, &#39;strong guy&#39;, &#39;Elizabeth&#39; etc. &quot;</span>
+        <span class="s2">&quot;If creating a Character, check so the name is unique among characters!&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">db_typeclass_path</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Typeclass&quot;</span><span class="p">,</span>
+        <span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASE_OBJECT_TYPECLASS</span><span class="p">},</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;This is the Python-path to the class implementing the actual functionality. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;&lt;BR&gt;If you are creating a Character you usually need &lt;B&gt;</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_CHARACTER_TYPECLASS</span><span class="si">}</span><span class="s2">&lt;/B&gt; &quot;</span>
+        <span class="s2">&quot;or a subclass of that. &lt;BR&gt;If your custom class is not found in the list, it may not be imported &quot;</span>
+        <span class="s2">&quot;into Evennia yet.&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">adminutils</span><span class="o">.</span><span class="n">get_and_load_typeclasses</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ObjectDB</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">db_lock_storage</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Locks&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">}),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;In-game lock definition string. If not given, defaults will be used. &quot;</span>
+        <span class="s2">&quot;This string should be on the form &quot;</span>
+        <span class="s2">&quot;&lt;i&gt;type:lockfunction(args);type2:lockfunction2(args);...&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">db_cmdset_storage</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CmdSet&quot;</span><span class="p">,</span>
+        <span class="n">initial</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;78&quot;</span><span class="p">}),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This is not working well because it will not properly allow an empty choice, and will</span>
+    <span class="c1"># also not work well for comma-separated storage without more work. Notably, it&#39;s also</span>
+    <span class="c1"># a bit hard to visualize.</span>
+    <span class="c1"># db_cmdset_storage = forms.MultipleChoiceField(</span>
+    <span class="c1">#     label=&quot;CmdSet&quot;,</span>
+    <span class="c1">#     required=False,</span>
+    <span class="c1">#     choices=adminutils.get_and_load_typeclasses(parent=ObjectDB))</span>
+
+    <span class="n">db_location</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span>
+        <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Location&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">ForeignKeyRawIdWidget</span><span class="p">(</span>
+            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s2">&quot;db_location&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span>
+        <span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;The (current) in-game location.&lt;BR&gt;&quot;</span>
+        <span class="s2">&quot;Usually a Room but can be&lt;BR&gt;&quot;</span>
+        <span class="s2">&quot;empty for un-puppeted Characters.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">db_home</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span>
+        <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Home&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">ForeignKeyRawIdWidget</span><span class="p">(</span>
+            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s2">&quot;db_location&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span>
+        <span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fallback in-game location.&lt;BR&gt;&quot;</span>
+        <span class="s2">&quot;All objects should usually have&lt;BR&gt;&quot;</span>
+        <span class="s2">&quot;a home location.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">db_destination</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span>
+        <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Destination&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">ForeignKeyRawIdWidget</span><span class="p">(</span>
+            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s2">&quot;db_destination&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span>
+        <span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Only used by Exits.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="ObjectCreateForm.__init__"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectCreateForm.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tweak some fields dynamically.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># set default home</span>
+        <span class="n">home_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEFAULT_HOME</span><span class="p">)</span>
+        <span class="n">home_id</span> <span class="o">=</span> <span class="n">home_id</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">home_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">home_id</span>
+        <span class="n">default_home</span> <span class="o">=</span> <span class="n">ObjectDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">home_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">default_home</span><span class="p">:</span>
+            <span class="n">default_home</span> <span class="o">=</span> <span class="n">default_home</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;db_home&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">default_home</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;db_location&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">default_home</span>
+
+        <span class="c1"># better help text for cmdset_storage</span>
+        <span class="n">char_cmdset</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_CHARACTER</span>
+        <span class="n">account_cmdset</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMDSET_ACCOUNT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Path to Command-set path. Most non-character objects don&#39;t need a cmdset&quot;</span>
+            <span class="s2">&quot; and can leave this field blank. Default cmdset-path&lt;BR&gt; for Characters &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;is &lt;strong&gt;</span><span class="si">{</span><span class="n">char_cmdset</span><span class="si">}</span><span class="s2">&lt;/strong&gt; .&quot;</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ObjectEditForm"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectEditForm">[docs]</a><span class="k">class</span> <span class="nc">ObjectEditForm</span><span class="p">(</span><span class="n">ObjectCreateForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Form used for editing. Extends the create one with more fields</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ObjectEditForm.Meta"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectEditForm.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">ObjectDB</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;__all__&quot;</span></div>
+
+    <span class="n">db_account</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span>
+        <span class="n">AccountDB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Puppeting Account&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">ForeignKeyRawIdWidget</span><span class="p">(</span>
+            <span class="n">ObjectDB</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="s2">&quot;db_account&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remote_field</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span>
+        <span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;An Account puppeting this Object (if any).&lt;BR&gt;Note that when a user logs &quot;</span>
+        <span class="s2">&quot;off/unpuppets, this&lt;BR&gt;field will be empty again. This is normal.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ObjectAdmin"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin">[docs]</a><span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">ObjectDB</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ObjectAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Describes the admin page for Objects.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">ObjectTagInline</span><span class="p">,</span> <span class="n">ObjectAttributeInline</span><span class="p">]</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_location&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_destination&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_account&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_date_created&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;db_key&quot;</span><span class="p">)</span>
+    <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">,</span> <span class="s2">&quot;-id&quot;</span><span class="p">]</span>
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;=id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_account__db_key&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;^db_location__db_key&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">raw_id_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_destination&quot;</span><span class="p">,</span> <span class="s2">&quot;db_location&quot;</span><span class="p">,</span> <span class="s2">&quot;db_home&quot;</span><span class="p">,</span> <span class="s2">&quot;db_account&quot;</span><span class="p">)</span>
+    <span class="n">readonly_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;serialized_string&quot;</span><span class="p">,</span> <span class="s2">&quot;link_button&quot;</span><span class="p">)</span>
+
+    <span class="n">save_as</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">save_on_top</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">list_select_related</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">view_on_site</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">,)</span>
+
+    <span class="c1"># editing fields setup</span>
+
+    <span class="n">form</span> <span class="o">=</span> <span class="n">ObjectEditForm</span>
+    <span class="n">fieldsets</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;db_location&quot;</span><span class="p">,</span> <span class="s2">&quot;db_home&quot;</span><span class="p">,</span> <span class="s2">&quot;db_destination&quot;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;db_account&quot;</span><span class="p">,</span> <span class="s2">&quot;link_button&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;db_lock_storage&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;serialized_string&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">add_form</span> <span class="o">=</span> <span class="n">ObjectCreateForm</span>
+    <span class="n">add_fieldsets</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_typeclass_path&quot;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;db_location&quot;</span><span class="p">,</span> <span class="s2">&quot;db_home&quot;</span><span class="p">,</span> <span class="s2">&quot;db_destination&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;db_cmdset_storage&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="ObjectAdmin.serialized_string"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.serialized_string">[docs]</a>    <span class="k">def</span> <span class="nf">serialized_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the serialized version of the object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">dbserialize</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbserialize</span><span class="o">.</span><span class="n">pack_dbobj</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
+
+    <span class="n">serialized_string</span><span class="o">.</span><span class="n">help_text</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Copy &amp; paste this string into an Attribute&#39;s `value` field to store this object there.&quot;</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="ObjectAdmin.get_fieldsets"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.get_fieldsets">[docs]</a>    <span class="k">def</span> <span class="nf">get_fieldsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return fieldsets.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (Request): Incoming request.</span>
+<span class="sd">            obj (Object, optional): Database object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_fieldsets</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_fieldsets</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ObjectAdmin.get_form"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.get_form">[docs]</a>    <span class="k">def</span> <span class="nf">get_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use special form during creation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (Request): Incoming request.</span>
+<span class="sd">            obj (Object, optional): Database object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">help_texts</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;help_texts&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">help_texts</span><span class="p">[</span><span class="s2">&quot;serialized_string&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialized_string</span><span class="o">.</span><span class="n">help_text</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;help_texts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">help_texts</span>
+
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;form&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_form</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="n">flatten_fieldsets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_fieldsets</span><span class="p">)}</span>
+            <span class="p">)</span>
+        <span class="n">defaults</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_form</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">defaults</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ObjectAdmin.get_urls"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.get_urls">[docs]</a>    <span class="k">def</span> <span class="nf">get_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">urls</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_urls</span><span class="p">()</span>
+        <span class="n">custom_urls</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">path</span><span class="p">(</span>
+                <span class="s2">&quot;account-object-link/&lt;int:pk&gt;&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">admin_site</span><span class="o">.</span><span class="n">admin_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_object_to_account</span><span class="p">),</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;object-account-link&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">custom_urls</span> <span class="o">+</span> <span class="n">urls</span></div>
+
+<div class="viewcode-block" id="ObjectAdmin.link_button"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.link_button">[docs]</a>    <span class="k">def</span> <span class="nf">link_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">format_html</span><span class="p">(</span>
+            <span class="s1">&#39;&lt;a class=&quot;button&quot; href=&quot;</span><span class="si">{}</span><span class="s1">&quot;&gt;Link to Account&lt;/a&gt;&amp;nbsp;&#39;</span><span class="p">,</span>
+            <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:object-account-link&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]),</span>
+        <span class="p">)</span></div>
+
+    <span class="n">link_button</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s2">&quot;Create attrs/locks for puppeting&quot;</span>
+    <span class="n">link_button</span><span class="o">.</span><span class="n">allow_tags</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="ObjectAdmin.link_object_to_account"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.link_object_to_account">[docs]</a>    <span class="k">def</span> <span class="nf">link_object_to_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">object_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Link object and account when pressing the button.</span>
+
+<span class="sd">        This will:</span>
+
+<span class="sd">        - Set account.db._last_puppet to this object</span>
+<span class="sd">        - Add object to account.db._playable_characters</span>
+<span class="sd">        - Change object locks to allow puppeting by account</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">object_id</span><span class="p">)</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">db_account</span>
+
+        <span class="k">if</span> <span class="n">account</span><span class="p">:</span>
+            <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_last_puppet</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="p">:</span>
+                <span class="n">account</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">_playable_characters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="s2">&quot;puppet&quot;</span><span class="p">):</span>
+                <span class="n">lock</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;puppet&quot;</span><span class="p">)</span>
+                <span class="n">lock</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; or pid(</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lock</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span>
+                <span class="s2">&quot;Did the following (where possible): &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Set Account.db._last_puppet = </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> to Account.db._playable_characters list, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Added &#39;puppet:pid(</span><span class="si">{</span><span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&#39; lock to </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span>
+                <span class="s2">&quot;Account must be connected for this action &quot;</span>
+                <span class="s2">&quot;(set Puppeting Account and save this page first).&quot;</span><span class="p">,</span>
+                <span class="n">level</span><span class="o">=</span><span class="n">messages</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># stay on the same page</span>
+        <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:objects_objectdb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="ObjectAdmin.save_model"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.save_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">change</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Model-save hook.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (Request): Incoming request.</span>
+<span class="sd">            obj (Object): Database object.</span>
+<span class="sd">            form (Form): Form instance.</span>
+<span class="sd">            change (bool): If this is a change or a new object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">change</span><span class="p">:</span>
+            <span class="c1"># adding a new object</span>
+            <span class="c1"># have to call init with typeclass passed to it</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">set_class_from_typeclass</span><span class="p">(</span><span class="n">typeclass_path</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">db_typeclass_path</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">basetype_setup</span><span class="p">()</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">basetype_posthook_setup</span><span class="p">()</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">at_object_creation</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ObjectAdmin.response_add"><a class="viewcode-back" href="../../../../api/evennia.web.admin.objects.html#evennia.web.admin.accounts.ObjectAdmin.response_add">[docs]</a>    <span class="k">def</span> <span class="nf">response_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">post_url_continue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponseRedirect</span>
+        <span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">reverse</span>
+
+        <span class="k">return</span> <span class="n">HttpResponseRedirect</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;admin:objects_objectdb_change&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">]))</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.admin.objects</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.prototypes.protfuncs &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.prototypes.prototypes" href="evennia.prototypes.prototypes.html" />
+    <link rel="prev" title="evennia.prototypes.menus" href="evennia.prototypes.menus.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.prototypes.prototypes.html" title="evennia.prototypes.prototypes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.prototypes.menus.html" title="evennia.prototypes.menus"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.prototypes.html" accesskey="U">evennia.prototypes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.protfuncs</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.prototypes.menus.html"
+                        title="previous chapter">evennia.prototypes.menus</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.prototypes.prototypes.html"
+                        title="next chapter">evennia.prototypes.prototypes</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.prototypes.protfuncs.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.prototypes.protfuncs.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.prototypes.protfuncs.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.prototypes.protfuncs">
+<span id="evennia-prototypes-protfuncs"></span><h1>evennia.prototypes.protfuncs<a class="headerlink" href="#module-evennia.prototypes.protfuncs" title="Permalink to this headline">¶</a></h1>
+<p>Protfuncs are FuncParser-callables that can be embedded in a prototype to
+provide custom logic without having access to Python. The protfunc is parsed at
+the time of spawning, using the creating object’s session as input. If the
+protfunc returns a non-string, this is what will be added to the prototype.</p>
+<p>In the prototype dict, the protfunc is specified as a string inside the prototype, e.g.:</p>
+<blockquote>
+<div><p>{ …</p>
+<p>“key”: “$funcname(args, kwargs)”</p>
+<p>…  }</p>
+</div></blockquote>
+<p>Available protfuncs are either all callables in one of the modules of <strong>settings.PROT_FUNC_MODULES</strong>
+or all callables added to a dict FUNCPARSER_CALLABLES in such a module.</p>
+<blockquote>
+<div><p>def funcname (<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
+</div></blockquote>
+<p>At spawn-time the spawner passes the following extra kwargs into each callable (in addition to
+what is added in the call itself):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>session (Session): The Session of the entity spawning using this prototype.</p></li>
+<li><p>prototype (dict): The dict this protfunc is a part of.</p></li>
+<li><p>current_key (str): The active key this value belongs to in the prototype.</p></li>
+</ul>
+</div></blockquote>
+<p>Any traceback raised by this function will be handled at the time of spawning and abort the spawn
+before any object is created/updated. It must otherwise return the value to store for the specified
+prototype key (this value must be possible to serialize in an Attribute).</p>
+<dl class="py function">
+<dt id="evennia.prototypes.protfuncs.protfunc_callable_protkey">
+<code class="sig-prename descclassname">evennia.prototypes.protfuncs.</code><code class="sig-name descname">protfunc_callable_protkey</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/prototypes/protfuncs.html#protfunc_callable_protkey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.prototypes.protfuncs.protfunc_callable_protkey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Usage: $protkey(keyname)
+Returns the value of another key in this prototoype. Will raise an error if</p>
+<blockquote>
+<div><p>the key is not found in this prototype.</p>
+</div></blockquote>
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.prototypes.prototypes.html" title="evennia.prototypes.prototypes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.prototypes.menus.html" title="evennia.prototypes.menus"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.prototypes.html" >evennia.prototypes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.prototypes.protfuncs</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

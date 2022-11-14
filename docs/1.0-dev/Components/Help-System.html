@@ -1,0 +1,534 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Help System &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Permissions" href="Permissions.html" />
+    <link rel="prev" title="Spawner and Prototypes" href="Prototypes.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Permissions.html" title="Permissions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Prototypes.html" title="Spawner and Prototypes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Help System</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Help System</a><ul>
+<li><a class="reference internal" href="#using-the-help-system-from-in-game">Using the help system from in-game</a></li>
+<li><a class="reference internal" href="#sources-of-help-entries">Sources of help entries</a><ul>
+<li><a class="reference internal" href="#the-help-entry">The Help Entry</a><ul>
+<li><a class="reference internal" href="#subtopics">Subtopics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-auto-help-system">Command Auto-help system</a></li>
+<li><a class="reference internal" href="#database-help-entries">Database-help entries</a></li>
+<li><a class="reference internal" href="#file-help-entries">File-help entries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#entry-priority">Entry priority</a></li>
+<li><a class="reference internal" href="#locking-help-entries">Locking help entries</a></li>
+<li><a class="reference internal" href="#customizing-the-look-of-the-help-system">Customizing the look of the help system</a></li>
+<li><a class="reference internal" href="#technical-notes">Technical notes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Prototypes.html"
+                        title="previous chapter">Spawner and Prototypes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Permissions.html"
+                        title="next chapter">Permissions</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/Help-System.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Help-System.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="help-system">
+<h1>Help System<a class="headerlink" href="#help-system" title="Permalink to this headline">¶</a></h1>
+<p>Evennia has an extensive help system covering both command-help and regular
+free-form help documentation. It supports subtopics and if failing to find a
+match it will provide suggestsions, first from alternative topics and then by
+finding mentions of the search term in help entries.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; help theatre
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">------------------------------------------------------------------------------</span>
+<span class="n">Help</span> <span class="k">for</span> <span class="n">The</span> <span class="n">theatre</span> <span class="p">(</span><span class="n">aliases</span><span class="p">:</span> <span class="n">the</span> <span class="n">hub</span><span class="p">,</span> <span class="n">curtains</span><span class="p">)</span>
+
+<span class="n">The</span> <span class="n">theatre</span> <span class="ow">is</span> <span class="n">at</span> <span class="n">the</span> <span class="n">centre</span> <span class="n">of</span> <span class="n">the</span> <span class="n">city</span><span class="p">,</span> <span class="n">both</span> <span class="n">literally</span> <span class="ow">and</span> <span class="n">figuratively</span> <span class="o">...</span>
+<span class="p">(</span><span class="n">A</span> <span class="n">lot</span> <span class="n">more</span> <span class="n">text</span> <span class="n">about</span> <span class="n">it</span> <span class="n">follows</span> <span class="o">...</span><span class="p">)</span>
+
+<span class="n">Subtopics</span><span class="p">:</span>
+  <span class="n">theatre</span><span class="o">/</span><span class="n">lore</span>
+  <span class="n">theatre</span><span class="o">/</span><span class="n">layout</span>
+  <span class="n">theatre</span><span class="o">/</span><span class="n">dramatis</span> <span class="n">personae</span>
+<span class="o">------------------------------------------------------------------------------</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; help evennia
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">------------------------------------------------------------------------------</span>
+<span class="n">No</span> <span class="n">help</span> <span class="n">found</span>
+
+<span class="n">There</span> <span class="ow">is</span> <span class="n">no</span> <span class="n">help</span> <span class="n">topic</span> <span class="n">matching</span> <span class="s1">&#39;evennia&#39;</span><span class="o">.</span>
+<span class="o">...</span> <span class="n">But</span> <span class="n">matches</span> <span class="n">where</span> <span class="n">found</span> <span class="n">within</span> <span class="n">the</span> <span class="n">help</span> <span class="n">texts</span> <span class="n">of</span> <span class="n">the</span> <span class="n">suggestions</span> <span class="n">below</span><span class="o">.</span>
+
+<span class="n">Suggestions</span><span class="p">:</span>
+  <span class="n">grapevine2chan</span><span class="p">,</span> <span class="n">about</span><span class="p">,</span> <span class="n">irc2chan</span>
+<span class="o">-----------------------------------------------------------------------------</span>
+</pre></div>
+</div>
+<section id="using-the-help-system-from-in-game">
+<h2>Using the help system from in-game<a class="headerlink" href="#using-the-help-system-from-in-game" title="Permalink to this headline">¶</a></h2>
+<p>The help system is accessed in-game by use of the <code class="docutils literal notranslate"><span class="pre">help</span></code> command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>help &lt;topic&gt;
+</pre></div>
+</div>
+<p>Sub-topics are accessed as <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">&lt;topic&gt;/&lt;subtopic&gt;/...</span></code>.</p>
+<p>Creating a new help entry from in-game is done with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sethelp &lt;topic&gt;[;aliases] [,category] [,lockstring] = &lt;text&gt;
+</pre></div>
+</div>
+<p>For example</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sethelp The Gods;pantheon, Lore = In the beginning all was dark ...
+</pre></div>
+</div>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">/edit</span></code> switch to open the EvEditor for more convenient in-game writing
+(but note that devs can also create help entries outside the game using their
+regular code editor, see below).</p>
+<blockquote>
+<div><p>You can also create help entries as Python modules, outside of the game. See
+<em>FileHelp</em> entries below.</p>
+</div></blockquote>
+</section>
+<section id="sources-of-help-entries">
+<h2>Sources of help entries<a class="headerlink" href="#sources-of-help-entries" title="Permalink to this headline">¶</a></h2>
+<p>Evennia collects help entries from three sources:</p>
+<ul class="simple">
+<li><p><em>Auto-generated command help</em> - this is literally the doc-strings of
+the <a class="reference internal" href="Commands.html"><span class="doc std std-doc">Command classes</span></a>. The idea is that the command docs are
+easier to maintain and keep up-to-date if the developer can change them at the
+same time as they do the code.</p></li>
+<li><p><em>Database-stored help entries</em> - These are created in-game (using the
+default <code class="docutils literal notranslate"><span class="pre">sethelp</span></code> command as exemplified in the previous section).</p></li>
+<li><p><em>File-stored help entries</em> - These are created outside the game, as dicts in
+normal Python modules. They allows developers to write and maintain their help
+files using a proper text editor.</p></li>
+</ul>
+<section id="the-help-entry">
+<h3>The Help Entry<a class="headerlink" href="#the-help-entry" title="Permalink to this headline">¶</a></h3>
+<p>All help entries (no matter the source) have the following properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code> - This is the main topic-name. For Commands, this is literally the
+command’s <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aliases</span></code> - Alternate names for the help entry. This can be useful if the main
+name is hard to remember.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help_category</span></code> - The general grouping of the entry. This is optional. If not
+given it will use the default category given by
+<code class="docutils literal notranslate"><span class="pre">settings.COMMAND_DEFAULT_HELP_CATEGORY</span></code> for Commands and
+<code class="docutils literal notranslate"><span class="pre">settings.DEFAULT_HELP_CATEGORY</span></code> for file+db help entries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">locks</span></code> - Lock string (for commands) or LockHandler (all help entries).
+This defines who may read this entry. See the next section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code> - This is not used by default, but could be used to further organize
+help entries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code> - The actual help entry text. This will be dedented and stripped of
+extra space at beginning and end.</p></li>
+</ul>
+<p>A <code class="docutils literal notranslate"><span class="pre">text</span></code> that scrolls off the screen will automatically be paginated by
+the <a class="reference internal" href="EvMore.html"><span class="doc std std-doc">EvMore</span></a> pager (you can control this with
+<code class="docutils literal notranslate"><span class="pre">settings.HELP_MORE_ENABLED=False</span></code>). If you use EvMore and want to control
+exactly where the pager should break the page, mark the break with the control
+character <code class="docutils literal notranslate"><span class="pre">\f</span></code>.</p>
+<section id="subtopics">
+<h4>Subtopics<a class="headerlink" href="#subtopics" title="Permalink to this headline">¶</a></h4>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.0.</span></p>
+</div>
+<p>Rather than making a very long help entry, the <code class="docutils literal notranslate"><span class="pre">text</span></code> may also be broken up
+into <em>subtopics</em>. A list of the next level of subtopics are shown below the
+main help text and allows the user to read more about some particular detail
+that wouldn’t fit in the main text.</p>
+<p>Subtopics use a markup slightly similar to markdown headings. The top level
+heading must be named <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">subtopics</span></code> (non case-sensitive) and the following
+headers must be sub-headings to this (so <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">subtopic</span> <span class="pre">name</span></code> etc). All headings
+are non-case sensitive (the help command will format them). The topics can be
+nested at most to a depth of 5 (which is probably too many levels already). The
+parser uses fuzzy matching to find the subtopic, so one does not have to type
+it all out exactly.</p>
+<p>Below is an example of a <code class="docutils literal notranslate"><span class="pre">text</span></code> with sub topics.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>The theatre is the heart of the city, here you can find ...
+(This is the main help text, what you get with `help theatre`)
+
+# subtopics
+
+## lore
+
+The theatre holds many mysterious things...
+(`help theatre/lore`)
+
+### the grand opening
+
+The grand opening is the name for a mysterious event where ghosts appeared ...
+(`this is a subsub-topic to lore, accessible as `help theatre/lore/grand` or
+any other partial match).
+
+### the Phantom
+
+Deep under the theatre, rumors has it a monster hides ...
+(another subsubtopic, accessible as `help theatre/lore/phantom`)
+
+## layout
+
+The theatre is a two-story building situated at ...
+(`help theatre/layout`)
+
+## dramatis personae
+
+There are many interesting people prowling the halls of the theatre ...
+(`help theatre/dramatis` or `help theathre/drama` or `help theatre/personae` would work)
+
+### Primadonna Ada
+
+Everyone knows the primadonna! She is ...
+(A subtopic under dramatis personae, accessible as `help theatre/drama/ada` etc)
+
+### The gatekeeper
+
+He always keeps an eye on the door and ...
+(`help theatre/drama/gate`)
+
+</pre></div>
+</div>
+</section>
+</section>
+<section id="command-auto-help-system">
+<h3>Command Auto-help system<a class="headerlink" href="#command-auto-help-system" title="Permalink to this headline">¶</a></h3>
+<p>The auto-help system uses the <code class="docutils literal notranslate"><span class="pre">__doc__</span></code> strings of your command classes and
+formats this to a nice- looking help entry. This makes for a very easy way to
+keep the help updated - just document your commands well and updating the help
+file is just a <code class="docutils literal notranslate"><span class="pre">reload</span></code> away.</p>
+<p>Example (from a module with command definitions):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">CmdMyCmd</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       mycmd - my very own command</span>
+
+<span class="sd">       Usage:</span>
+<span class="sd">         mycmd[/switches] &lt;args&gt;</span>
+
+<span class="sd">       Switches:</span>
+<span class="sd">         test - test the command</span>
+<span class="sd">         run  - do something else</span>
+
+<span class="sd">       This is my own command that does this and that.</span>
+
+<span class="sd">       &quot;&quot;&quot;</span>
+       <span class="c1"># [...]</span>
+
+       <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all();read:all()&quot;</span>  <span class="c1"># default</span>
+       <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>       <span class="c1"># default</span>
+       <span class="n">auto_help</span> <span class="o">=</span> <span class="kc">True</span>                <span class="c1"># default</span>
+
+       <span class="c1"># [...]</span>
+</pre></div>
+</div>
+<p>The text at the very top of the command class definition is the class’
+<code class="docutils literal notranslate"><span class="pre">__doc__</span></code>-string and will be shown to users looking for help. Try to use a
+consistent format - all default commands are using the structure shown above.</p>
+<p>You can limit access to the help entry by the <code class="docutils literal notranslate"><span class="pre">view</span></code> and/or <code class="docutils literal notranslate"><span class="pre">read</span></code> locks on the
+Command. See <a class="reference internal" href="#locking-help-entries"><span class="std std-doc">the section below</span></a> for details.</p>
+<p>You should also supply the <code class="docutils literal notranslate"><span class="pre">help_category</span></code> class property if you can; this helps
+to group help entries together for people to more easily find them. See the
+<code class="docutils literal notranslate"><span class="pre">help</span></code> command in-game to see the default categories. If you don’t specify the
+category, <code class="docutils literal notranslate"><span class="pre">settings.COMMAND_DEFAULT_HELP_CATEGORY</span></code> (default is “General”) is
+used.</p>
+<p>If you don’t want your command to be picked up by the auto-help system at all
+(like if you want to write its docs manually using the info in the next section
+or you use a <a class="reference internal" href="Command-Sets.html"><span class="doc std std-doc">cmdset</span></a> that has its own help functionality) you
+can explicitly set <code class="docutils literal notranslate"><span class="pre">auto_help</span></code> class property to <code class="docutils literal notranslate"><span class="pre">False</span></code> in your command
+definition.</p>
+<p>Alternatively, you can keep the advantages of <em>auto-help</em> in commands, but
+control the display of command helps.  You can do so by overriding the command’s
+<code class="docutils literal notranslate"><span class="pre">get_help(caller,</span> <span class="pre">cmdset)</span></code> method.  By default, this method will return the
+class docstring.  You could modify it to add custom behavior:  the text returned
+by this method will be displayed to the character asking for help in this
+command.</p>
+</section>
+<section id="database-help-entries">
+<h3>Database-help entries<a class="headerlink" href="#database-help-entries" title="Permalink to this headline">¶</a></h3>
+<p>These are most commonly created in-game using the <code class="docutils literal notranslate"><span class="pre">sethelp</span></code> command. If you need to create one
+manually, you can do so with <code class="docutils literal notranslate"><span class="pre">evennia.create_help_entry()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_help_entry</span>
+<span class="n">entry</span> <span class="o">=</span> <span class="n">create_help_entry</span><span class="p">(</span><span class="s2">&quot;emote&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Emoting is important because ...&quot;</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="s2">&quot;Roleplaying&quot;</span><span class="p">,</span> <span class="n">locks</span><span class="o">=</span><span class="s2">&quot;view:all()&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The entity being created is a <a class="reference internal" href="../api/evennia.help.models.html#evennia.help.models.HelpEntry" title="evennia.help.models.HelpEntry"><span class="xref myst py py-class">evennia.help.models.HelpEntry</span></a>
+object. This is <em>not</em> a <a class="reference internal" href="Typeclasses.html"><span class="doc std std-doc">Typeclassed</span></a> entity and is not meant to
+be modified to any great degree. It holds the properties listed earlier. The
+text is stored in a field <code class="docutils literal notranslate"><span class="pre">entrytext</span></code>. It does not provide a <code class="docutils literal notranslate"><span class="pre">get_help</span></code> method
+like commands, stores and returns the <code class="docutils literal notranslate"><span class="pre">entrytext</span></code> directly.</p>
+<p>You can search for (db-)-<code class="docutils literal notranslate"><span class="pre">HelpEntry</span></code> objects using <code class="docutils literal notranslate"><span class="pre">evennia.search_help</span></code> but note that
+this will not return the two other types of help entries.</p>
+</section>
+<section id="file-help-entries">
+<h3>File-help entries<a class="headerlink" href="#file-help-entries" title="Permalink to this headline">¶</a></h3>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.0.</span></p>
+</div>
+<p>File-help entries are created by the game development team outside of the game. The
+help entries are defined in normal Python modules (<code class="docutils literal notranslate"><span class="pre">.py</span></code> file ending) containing
+a <code class="docutils literal notranslate"><span class="pre">dict</span></code> to represent each entry. They require a server <code class="docutils literal notranslate"><span class="pre">reload</span></code> before any changes
+apply.</p>
+<ul class="simple">
+<li><p>Evennia will look through all modules given by
+<code class="docutils literal notranslate"><span class="pre">settings.FILE_HELP_ENTRY_MODULES</span></code>. This should be a list of python-paths for
+Evennia to import.</p></li>
+<li><p>If this module contains a top-level variable <code class="docutils literal notranslate"><span class="pre">HELP_ENTRY_DICTS</span></code>, this will be
+imported and must be a <code class="docutils literal notranslate"><span class="pre">list</span></code> of help-entry dicts.</p></li>
+<li><p>If no <code class="docutils literal notranslate"><span class="pre">HELP_ENTRY_DICTS</span></code> list is found, <em>every</em> top-level variable in the
+module that is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> will be read as a help entry. The variable-names will
+be ignored in this case.</p></li>
+</ul>
+<p>If you add multiple modules to be read, same-keyed help entries added later in
+the list will override coming before.</p>
+<p>Each entry dict must define keys to match that needed by all help entries.
+Here’s an example of a help module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># in a module pointed to by settings.FILE_HELP_ENTRY_MODULES</span>
+
+<span class="n">HELP_ENTRY_DICTS</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;The Gods&quot;</span><span class="p">,</span>   <span class="c1"># case-insensitive, can be searched by &#39;gods&#39; too</span>
+    <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;pantheon&#39;</span><span class="p">,</span> <span class="s1">&#39;religion&#39;</span><span class="p">]</span>
+    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;Lore&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;locks&quot;</span><span class="p">:</span> <span class="s2">&quot;read:all()&quot;</span><span class="p">,</span>  <span class="c1"># optional</span>
+    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        The gods formed the world ...</span>
+
+<span class="s1">        # Subtopics</span>
+
+<span class="s1">        ## Pantheon</span>
+
+<span class="s1">        The pantheon consists of 40 gods that ...</span>
+
+<span class="s1">        ### God of love</span>
+
+<span class="s1">        The most prominent god is ...</span>
+
+<span class="s1">        ### God of war</span>
+
+<span class="s1">        Also known as &#39;the angry god&#39;, this god is known to ...</span>
+
+<span class="s1">    &#39;&#39;&#39;</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;The mortals&quot;</span><span class="p">,</span>
+
+  <span class="p">}</span>
+<span class="p">]</span>
+
+</pre></div>
+</div>
+<p>The help entry text will be dedented and will retain paragraphs. You should try
+to keep your strings a reasonable width (it will look better). Just reload the
+server and the file-based help entries will be available to view.</p>
+</section>
+</section>
+<section id="entry-priority">
+<h2>Entry priority<a class="headerlink" href="#entry-priority" title="Permalink to this headline">¶</a></h2>
+<p>Should you have clashing help-entries between the three types of available
+entries, the priority is</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Command-auto-help &gt; Db-help &gt; File-help
+</pre></div>
+</div>
+<p>So if you create a db-help entry ‘foo’, it will replace any file-based help
+entry ‘foo’. But if there is a Command ‘foo’, that’s the help you’ll get when
+you enter <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">foo</span></code>.</p>
+<p>The reasoning for this is that commands must always be understood in order to
+play the game. Meanwhile db-based help can be kept up-to-date from in-game
+builders and may be less ‘static’ than the file-based ones.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sethelp</span></code> command (which only deals with creating db-based help entries)
+will warn you if a new help entry might shadow/be shadowed by a
+same/similar-named command or file-based help entry.</p>
+</section>
+<section id="locking-help-entries">
+<h2>Locking help entries<a class="headerlink" href="#locking-help-entries" title="Permalink to this headline">¶</a></h2>
+<p>The default <code class="docutils literal notranslate"><span class="pre">help</span></code> command gather all available commands and help entries
+together so they can be searched or listed. By setting locks on the command/help
+entry one can limit who can read help about it.</p>
+<ul class="simple">
+<li><p>Commands failing the normal <code class="docutils literal notranslate"><span class="pre">cmd</span></code>-lock will be removed before even getting
+to the help command. In this case the other two lock types below are ignored.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">view</span></code> access type determines if the command/help entry should be visible in
+the main help index. If not given, it is assumed everyone can view.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">read</span></code> access type determines if the command/help entry can be actually read.
+If a <code class="docutils literal notranslate"><span class="pre">read</span></code> lock is given and <code class="docutils literal notranslate"><span class="pre">view</span></code> is not, the <code class="docutils literal notranslate"><span class="pre">read</span></code>-lock is assumed to
+apply to <code class="docutils literal notranslate"><span class="pre">view</span></code>-access as well (so if you can’t read the help entry it will
+also not show up in the index). If <code class="docutils literal notranslate"><span class="pre">read</span></code>-lock is not given, it’s assume
+everyone can read the help entry.</p></li>
+</ul>
+<p>For Commands you set the help-related locks the same way you would any lock:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &lt;docstring for command&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;mycommand&quot;</span>
+    <span class="c1"># everyone can use the command, builders can view it in the help index</span>
+    <span class="c1"># but only devs can actually read the help (a weird setup for sure!)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all();view:perm(Builders);read:perm(Developers)</span>
+
+</pre></div>
+</div>
+<p>Db-help entries and File-Help entries work the same way (except the <code class="docutils literal notranslate"><span class="pre">cmd</span></code>-type
+lock is not used. A file-help example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">help_entry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># ...</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;read:perm(Developer)&quot;</span><span class="p">,</span>
+    <span class="c1"># ...</span>
+<span class="p">}</span>
+
+</pre></div>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0: </span>Changed the old ‘view’ lock to control the help-index inclusion and added
+the new ‘read’ lock-type to control access to the entry itself.</p>
+</div>
+</section>
+<section id="customizing-the-look-of-the-help-system">
+<h2>Customizing the look of the help system<a class="headerlink" href="#customizing-the-look-of-the-help-system" title="Permalink to this headline">¶</a></h2>
+<p>This is done almost exclusively by overriding the <code class="docutils literal notranslate"><span class="pre">help</span></code> command
+<a class="reference internal" href="../api/evennia.commands.default.help.html#evennia.commands.default.help.CmdHelp" title="evennia.commands.default.help.CmdHelp"><span class="xref myst py py-class">evennia.commands.default.help.CmdHelp</span></a>.</p>
+<p>Since the available commands may vary from moment to moment, <code class="docutils literal notranslate"><span class="pre">help</span></code> is
+responsible for collating the three sources of help-entries (commands/db/file)
+together and search through them on the fly. It also does all the formatting of
+the output.</p>
+<p>To make it easier to tweak the look, the parts of the code that changes the
+visual presentation and entity searching has been broken out into separate
+methods on the command class. Override these in your version of <code class="docutils literal notranslate"><span class="pre">help</span></code> to change
+the display or tweak as you please. See the api link above for details.</p>
+</section>
+<section id="technical-notes">
+<h2>Technical notes<a class="headerlink" href="#technical-notes" title="Permalink to this headline">¶</a></h2>
+<p>Since it needs to search so different types of data, the help system has to
+collect all possibilities in memory before searching through the entire set. It
+uses the <a class="reference external" href="https://github.com/yeraydiazdiaz/lunr.py">Lunr</a> search engine to
+search through the main bulk of help entries. Lunr is a mature engine used for
+web-pages and produces much more sensible results than previous solutions.</p>
+<p>Once the main entry has been found, subtopics are then searched with
+simple <code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">startswith</span></code> and <code class="docutils literal notranslate"><span class="pre">in</span></code> matching (there are so relatively few of them
+at that point).</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0: </span>Replaced the old bag-of-words algorithm with lunr package.</p>
+</div>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Permissions.html" title="Permissions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Prototypes.html" title="Spawner and Prototypes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Help System</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,636 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.game_systems.crafting.example_recipes &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.crafting.tests" href="evennia.contrib.game_systems.crafting.tests.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.crafting.crafting" href="evennia.contrib.game_systems.crafting.crafting.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.crafting.tests.html" title="evennia.contrib.game_systems.crafting.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.crafting.crafting.html" title="evennia.contrib.game_systems.crafting.crafting"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.crafting.html" accesskey="U">evennia.contrib.game_systems.crafting</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.crafting.example_recipes</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.game_systems.crafting.example_recipes</a><ul>
+<li><a class="reference internal" href="#sword-crafting-tree">Sword crafting tree</a></li>
+<li><a class="reference internal" href="#recipes-used-for-spell-casting">Recipes used for spell casting</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.game_systems.crafting.crafting.html"
+                        title="previous chapter">evennia.contrib.game_systems.crafting.crafting</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.game_systems.crafting.tests.html"
+                        title="next chapter">evennia.contrib.game_systems.crafting.tests</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.crafting.example_recipes.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.game_systems.crafting.example_recipes.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.crafting.example_recipes">
+<span id="evennia-contrib-game-systems-crafting-example-recipes"></span><h1>evennia.contrib.game_systems.crafting.example_recipes<a class="headerlink" href="#module-evennia.contrib.game_systems.crafting.example_recipes" title="Permalink to this headline">¶</a></h1>
+<p>How to make a sword - example crafting tree for the crafting system.</p>
+<p>See the <strong>SwordSmithingBaseRecipe</strong> in this module for an example of extendng the
+recipe with a mocked ‘skill’ system (just random chance in our case). The skill
+system used is game-specific but likely to be needed for most ‘real’ crafting
+systems.</p>
+<p>Note that ‘tools’ are references to the tools used - they don’t need to be in
+the inventory of the crafter. So when ‘blast furnace’ is given below, it is a
+reference to a blast furnace used, not suggesting the crafter is carrying it
+around with them.</p>
+<section id="sword-crafting-tree">
+<h2>Sword crafting tree<a class="headerlink" href="#sword-crafting-tree" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># base materials (consumables)</span>
+
+<span class="n">iron</span> <span class="n">ore</span><span class="p">,</span> <span class="n">ash</span><span class="p">,</span> <span class="n">sand</span><span class="p">,</span> <span class="n">coal</span><span class="p">,</span> <span class="n">oak</span> <span class="n">wood</span><span class="p">,</span> <span class="n">water</span><span class="p">,</span> <span class="n">fur</span>
+
+<span class="c1"># base tools (marked with [T] for clarity and assumed to already exist)</span>
+
+<span class="n">blast</span> <span class="n">furnace</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">furnace</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">crucible</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">anvil</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+<span class="n">hammer</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">knife</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">cauldron</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+
+<span class="c1"># recipes for making a sword</span>
+
+<span class="n">pig</span> <span class="n">iron</span> <span class="o">=</span> <span class="n">iron</span> <span class="n">ore</span> <span class="o">+</span> <span class="mi">2</span><span class="n">xcoal</span> <span class="o">+</span> <span class="n">blast</span> <span class="n">furnace</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<span class="n">crucible_steel</span> <span class="o">=</span> <span class="n">pig</span> <span class="n">iron</span> <span class="o">+</span> <span class="n">ash</span> <span class="o">+</span> <span class="n">sand</span> <span class="o">+</span> <span class="mi">2</span><span class="n">xcoal</span> <span class="o">+</span> <span class="n">crucible</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<span class="n">sword</span> <span class="n">blade</span> <span class="o">=</span> <span class="n">crucible</span> <span class="n">steel</span> <span class="o">+</span> <span class="n">hammer</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">anvil</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">furnace</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<span class="n">sword</span> <span class="n">pommel</span> <span class="o">=</span> <span class="n">crucible</span> <span class="n">steel</span> <span class="o">+</span> <span class="n">hammer</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">anvil</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">furnace</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<span class="n">sword</span> <span class="n">guard</span> <span class="o">=</span> <span class="n">crucible</span> <span class="n">steel</span> <span class="o">+</span> <span class="n">hammer</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">anvil</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">furnace</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+
+<span class="n">rawhide</span> <span class="o">=</span> <span class="n">fur</span> <span class="o">+</span> <span class="n">knife</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<span class="n">oak</span> <span class="n">bark</span> <span class="o">+</span> <span class="n">cleaned</span> <span class="n">oak</span> <span class="n">wood</span> <span class="o">=</span> <span class="n">oak</span> <span class="n">wood</span> <span class="o">+</span> <span class="n">knife</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<span class="n">leather</span> <span class="o">=</span> <span class="n">rawhide</span> <span class="o">+</span> <span class="n">oak</span> <span class="n">bark</span> <span class="o">+</span> <span class="n">water</span> <span class="o">+</span> <span class="n">cauldron</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+
+<span class="n">sword</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">cleaned</span> <span class="n">oak</span> <span class="n">wood</span> <span class="o">+</span> <span class="n">knife</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+
+<span class="n">sword</span> <span class="o">=</span> <span class="n">sword</span> <span class="n">blade</span> <span class="o">+</span> <span class="n">sword</span> <span class="n">guard</span> <span class="o">+</span> <span class="n">sword</span> <span class="n">pommel</span>
+        <span class="o">+</span> <span class="n">sword</span> <span class="n">handle</span> <span class="o">+</span> <span class="n">leather</span> <span class="o">+</span> <span class="n">knife</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">hammer</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">+</span> <span class="n">furnace</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="recipes-used-for-spell-casting">
+<h2>Recipes used for spell casting<a class="headerlink" href="#recipes-used-for-spell-casting" title="Permalink to this headline">¶</a></h2>
+<p>This is a simple example modifying the base Recipe to use as a way
+to describe magical spells instead. It combines tools with
+a skill (an attribute on the caster) in order to produce a magical effect.</p>
+<p>The example <strong>CmdCast</strong> command can be added to the CharacterCmdset in
+<strong>mygame/commands/default_cmdsets</strong> to test it out. The ‘effects’ are
+just mocked for the example.</p>
+<dl>
+<dt>::</dt><dd><p># base tools (assumed to already exist)</p>
+<p>spellbook[T], wand[T]</p>
+<p># skill (stored as Attribute on caster)</p>
+<p>firemagic skill level10+</p>
+<p># recipe for fireball</p>
+<p>fireball = spellbook[T] + wand[T] + [firemagic skill lvl10+]</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<dl class="py function">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.random">
+<code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">random</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; x in the interval [0, 1).<a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.random" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">PigIronRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#PigIronRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe" title="evennia.contrib.game_systems.crafting.crafting.CraftingRecipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.crafting.CraftingRecipe</span></code></a></p>
+<p>Pig iron is a high-carbon result of melting iron in a blast furnace.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'pig iron'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['blast furnace']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['iron ore', 'coal', 'coal']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Pig Iron ingot', 'desc': 'An ingot of crude pig iron.', 'tags': [('pig iron', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">CrucibleSteelRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#CrucibleSteelRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe" title="evennia.contrib.game_systems.crafting.crafting.CraftingRecipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.crafting.CraftingRecipe</span></code></a></p>
+<p>Mixing pig iron with impurities like ash and sand and melting it in a
+crucible produces a medieval level of steel (like damascus steel).</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'crucible steel'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['crucible']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['pig iron', 'ash', 'sand', 'coal', 'coal']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Crucible steel ingot', 'desc': 'An ingot of multi-colored crucible steel.', 'tags': [('crucible steel', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">SwordBladeRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#SwordBladeRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.example_recipes._SwordSmithingBaseRecipe</span></code></p>
+<p>A [sword]blade requires hammering the steel out into shape using heat and
+force. This also includes the tang, which is the base for the hilt (the
+part of the sword you hold on to).</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'sword blade'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['hammer', 'anvil', 'furnace']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['crucible steel']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Sword blade', 'desc': 'A long blade that may one day become a sword.', 'tags': [('sword blade', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">SwordPommelRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#SwordPommelRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.example_recipes._SwordSmithingBaseRecipe</span></code></p>
+<p>The pommel is the ‘button’ or ‘ball’ etc the end of the sword hilt, holding
+it together.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'sword pommel'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['hammer', 'anvil', 'furnace']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['crucible steel']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Sword pommel', 'desc': 'The pommel for a future sword.', 'tags': [('sword pommel', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">SwordGuardRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#SwordGuardRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.example_recipes._SwordSmithingBaseRecipe</span></code></p>
+<p>The guard stops the hand from accidentally sliding off the hilt onto the
+sword’s blade and also protects the hand when parrying.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'sword guard'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['hammer', 'anvil', 'furnace']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['crucible steel']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Sword guard', 'desc': 'The cross-guard for a future sword.', 'tags': [('sword guard', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">RawhideRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#RawhideRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe" title="evennia.contrib.game_systems.crafting.crafting.CraftingRecipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.crafting.CraftingRecipe</span></code></a></p>
+<p>Rawhide is animal skin cleaned and stripped of hair.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'rawhide'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['knife']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['fur']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Rawhide', 'desc': 'Animal skin, cleaned and with hair removed.', 'tags': [('rawhide', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">OakBarkRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#OakBarkRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe" title="evennia.contrib.game_systems.crafting.crafting.CraftingRecipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.crafting.CraftingRecipe</span></code></a></p>
+<p>The actual thing needed for tanning leather is Tannin, but we skip
+the step of refining tannin from the bark and use the bark as-is.</p>
+<p>This produces two outputs - the bark and the cleaned wood.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'oak bark'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['knife']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['oak wood']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Oak bark', 'desc': 'Bark of oak, stripped from the core wood.', 'tags': [('oak bark', 'crafting_material')]}, {'key': 'Oak Wood (cleaned)', 'desc': 'Oakwood core, stripped of bark.', 'tags': [('cleaned oak wood', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">LeatherRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#LeatherRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe" title="evennia.contrib.game_systems.crafting.crafting.CraftingRecipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.crafting.CraftingRecipe</span></code></a></p>
+<p>Leather is produced by tanning rawhide in a process traditionally involving
+the chemical Tannin. Here we abbreviate this process a bit. Maybe a
+‘tanning rack’ tool should be required too …</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'leather'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['cauldron']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['rawhide', 'oak bark', 'water']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Piece of Leather', 'desc': 'A piece of leather.', 'tags': [('leather', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">SwordHandleRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#SwordHandleRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe" title="evennia.contrib.game_systems.crafting.crafting.CraftingRecipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.crafting.CraftingRecipe</span></code></a></p>
+<p>The handle is the part of the hilt between the guard and the pommel where
+you hold the sword. It consists of wooden pieces around the steel tang. It
+is wrapped in leather, but that will be added at the end.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'sword handle'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['knife']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['cleaned oak wood']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Sword handle', 'desc': &quot;Two pieces of wood to be be fitted onto a sword's tang as its handle.&quot;, 'tags': [('sword handle', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">SwordRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#SwordRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.example_recipes._SwordSmithingBaseRecipe</span></code></p>
+<p>A finished sword consists of a Blade ending in a non-sharp part called the
+Tang. The cross Guard is put over the tang against the edge of the blade.
+The Handle is put over the tang to give something easier to hold. The
+Pommel locks everything in place. The handle is wrapped in leather
+strips for better grip.</p>
+<p>This covers only a single ‘sword’ type.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'sword'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.tool_tags">
+<code class="sig-name descname">tool_tags</code><em class="property"> = ['hammer', 'furnace', 'knife']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.tool_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.consumable_tags">
+<code class="sig-name descname">consumable_tags</code><em class="property"> = ['sword blade', 'sword guard', 'sword pommel', 'sword handle', 'leather']</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.consumable_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.output_prototypes">
+<code class="sig-name descname">output_prototypes</code><em class="property"> = [{'key': 'Sword', 'desc': 'A bladed weapon.', 'tags': [('sword', 'crafting_material')]}]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.output_prototypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.exact_consumable_order">
+<code class="sig-name descname">exact_consumable_order</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.exact_consumable_order" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">FireballRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#FireballRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.example_recipes._MagicRecipe</span></code></p>
+<p>A Fireball is a magical effect that can be thrown at a target to cause damage.</p>
+<p>Note that the magic-effects are just examples, an actual rule system would
+need to be created to understand what they mean when used.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'fireball'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.skill_requirements">
+<code class="sig-name descname">skill_requirements</code><em class="property"> = [('firemagic', 10)]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.skill_requirements" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.skill_roll">
+<code class="sig-name descname">skill_roll</code><em class="property"> = 'firemagic'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.skill_roll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.success_message">
+<code class="sig-name descname">success_message</code><em class="property"> = 'A ball of flame appears!'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.success_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.desired_effects">
+<code class="sig-name descname">desired_effects</code><em class="property"> = [('target_fire_damage', 25), ('ranged_attack', -2), ('mana_cost', 12)]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.desired_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.failure_effects">
+<code class="sig-name descname">failure_effects</code><em class="property"> = [('self_fire_damage', 5), ('mana_cost', 5)]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.failure_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">HealingRecipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">crafter</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">inputs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#HealingRecipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.crafting.example_recipes._MagicRecipe</span></code></p>
+<p>Healing magic will restore a certain amount of health to the target over time.</p>
+<p>Note that the magic-effects are just examples, an actual rule system would
+need to be created to understand what they mean.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.name">
+<code class="sig-name descname">name</code><em class="property"> = 'heal'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.skill_requirements">
+<code class="sig-name descname">skill_requirements</code><em class="property"> = [('bodymagic', 5), ('empathy', 10)]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.skill_requirements" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.skill_roll">
+<code class="sig-name descname">skill_roll</code><em class="property"> = 'bodymagic'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.skill_roll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.success_message">
+<code class="sig-name descname">success_message</code><em class="property"> = 'You successfully extend your healing aura.'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.success_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.desired_effects">
+<code class="sig-name descname">desired_effects</code><em class="property"> = [('healing', 15), ('mana_cost', 5)]</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.desired_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.failure_effects">
+<code class="sig-name descname">failure_effects</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.failure_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CmdCast">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.crafting.example_recipes.</code><code class="sig-name descname">CmdCast</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#CmdCast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CmdCast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Cast a magical spell.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cast &lt;spell&gt; &lt;target&gt;</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CmdCast.key">
+<code class="sig-name descname">key</code><em class="property"> = 'cast'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CmdCast.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#CmdCast.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple parser, assuming spellname doesn’t have spaces.
+Stores result in self.target and self.spellname.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CmdCast.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/crafting/example_recipes.html#CmdCast.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the actual executing part of the command.  It is
+called directly after self.parse(). See the docstring of this
+module for which object properties are available (beyond those
+set in self.parse())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CmdCast.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CmdCast.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CmdCast.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.crafting.example_recipes.CmdCast.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'cast', 'no_prefix': ' ', 'tags': '', 'text': '\n    Cast a magical spell.\n\n    Usage:\n        cast &lt;spell&gt; &lt;target&gt;\n\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.crafting.tests.html" title="evennia.contrib.game_systems.crafting.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.crafting.crafting.html" title="evennia.contrib.game_systems.crafting.crafting"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.crafting.html" >evennia.contrib.game_systems.crafting</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.crafting.example_recipes</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

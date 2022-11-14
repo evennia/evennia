@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.server.portal.suppress_ga &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.suppress_ga</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="suppress_ga.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.portal.suppress_ga</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">SUPPRESS-GO-AHEAD</span>
+
+<span class="sd">This supports suppressing or activating Evennia</span>
+<span class="sd">the GO-AHEAD telnet operation after every server reply.</span>
+<span class="sd">If the client sends no explicit DONT SUPRESS GO-AHEAD,</span>
+<span class="sd">Evennia will default to supressing it since many clients</span>
+<span class="sd">will fail to use it and has no knowledge of this standard.</span>
+
+<span class="sd">It is set as the NOGOAHEAD protocol_flag option.</span>
+
+<span class="sd">http://www.faqs.org/rfcs/rfc858.html</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">SUPPRESS_GA</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># b&quot;\x03&quot;</span>
+
+<span class="c1"># default taken from telnet specification</span>
+
+<span class="c1"># try to get the customized mssp info, if it exists.</span>
+
+
+<div class="viewcode-block" id="SuppressGA"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA">[docs]</a><span class="k">class</span> <span class="nc">SuppressGA</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements the SUPRESS-GO-AHEAD protocol. Add this to a variable on the telnet</span>
+<span class="sd">    protocol to set it up.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SuppressGA.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize suppression of GO-AHEADs.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            protocol (Protocol): The active protocol instance.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span>
+            <span class="s2">&quot;NOPROMPTGOAHEAD&quot;</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Used to send a GA after a prompt line only, set in TTYPE (per client)</span>
+        <span class="c1"># tell the client that we prefer to suppress GA ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">will</span><span class="p">(</span><span class="n">SUPPRESS_GA</span><span class="p">)</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">will_suppress_ga</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wont_suppress_ga</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SuppressGA.wont_suppress_ga"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.wont_suppress_ga">[docs]</a>    <span class="k">def</span> <span class="nf">wont_suppress_ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when client requests to not suppress GA.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            option (Option): Not used.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SuppressGA.will_suppress_ga"><a class="viewcode-back" href="../../../../api/evennia.server.portal.suppress_ga.html#evennia.server.portal.suppress_ga.SuppressGA.will_suppress_ga">[docs]</a>    <span class="k">def</span> <span class="nf">will_suppress_ga</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Client will suppress GA</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            option (Option): Not used.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">protocol_flags</span><span class="p">[</span><span class="s2">&quot;NOGOAHEAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">handshake_done</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.suppress_ga</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

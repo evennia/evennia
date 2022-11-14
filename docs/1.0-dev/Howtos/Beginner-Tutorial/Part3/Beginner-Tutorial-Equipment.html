@@ -1,0 +1,708 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Handling Equipment &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Character Generation" href="Beginner-Tutorial-Chargen.html" />
+    <link rel="prev" title="In-game Objects and items" href="Beginner-Tutorial-Objects.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Chargen.html" title="Character Generation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Objects.html" title="In-game Objects and items"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Handling Equipment</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Handling Equipment</a><ul>
+<li><a class="reference internal" href="#equipmenthandler-that-saves">EquipmentHandler that saves</a></li>
+<li><a class="reference internal" href="#connecting-the-equipmenthandler">Connecting the EquipmentHandler</a></li>
+<li><a class="reference internal" href="#expanding-the-equipmenthandler">Expanding the Equipmenthandler</a></li>
+<li><a class="reference internal" href="#validate-slot-usage"><code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code></a><ul>
+<li><a class="reference internal" href="#max-slots"><code class="docutils literal notranslate"><span class="pre">.max_slots</span></code></a></li>
+<li><a class="reference internal" href="#count-slots"><code class="docutils literal notranslate"><span class="pre">.count_slots</span></code></a></li>
+<li><a class="reference internal" href="#validating-slots">Validating slots</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#add-and-remove"><code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code></a></li>
+<li><a class="reference internal" href="#moving-things-around">Moving things around</a></li>
+<li><a class="reference internal" href="#get-everything">Get everything</a></li>
+<li><a class="reference internal" href="#weapon-and-armor">Weapon and armor</a></li>
+<li><a class="reference internal" href="#extra-credits">Extra credits</a></li>
+<li><a class="reference internal" href="#unit-testing">Unit Testing</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Objects.html"
+                        title="previous chapter">In-game Objects and items</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Beginner-Tutorial-Chargen.html"
+                        title="next chapter">Character Generation</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Equipment.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Beginner-Tutorial-Equipment.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="handling-equipment">
+<h1>Handling Equipment<a class="headerlink" href="#handling-equipment" title="Permalink to this headline">¶</a></h1>
+<p>In <em>Knave</em>, you have a certain number of inventory “slots”. The amount of slots is given by <code class="docutils literal notranslate"><span class="pre">CON</span> <span class="pre">+</span> <span class="pre">10</span></code>.
+All items (except coins) have a <code class="docutils literal notranslate"><span class="pre">size</span></code>, indicating how many slots it uses. You can’t carry more items
+than you have slot-space for. Also items wielded or worn count towards the slots.</p>
+<p>We still need to track what the character is using however: What weapon they have readied affects the damage
+they can do. The shield, helmet and armor they use affects their defense.</p>
+<p>We have already set up the possible ‘wear/wield locations’ when we defined our Objects
+<a class="reference internal" href="Beginner-Tutorial-Objects.html"><span class="doc std std-doc">in the previous lesson</span></a>. This is what we have in <code class="docutils literal notranslate"><span class="pre">enums.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/enums.py</span>
+
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">WieldLocation</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    
+    <span class="n">BACKPACK</span> <span class="o">=</span> <span class="s2">&quot;backpack&quot;</span>
+    <span class="n">WEAPON_HAND</span> <span class="o">=</span> <span class="s2">&quot;weapon_hand&quot;</span>
+    <span class="n">SHIELD_HAND</span> <span class="o">=</span> <span class="s2">&quot;shield_hand&quot;</span>
+    <span class="n">TWO_HANDS</span> <span class="o">=</span> <span class="s2">&quot;two_handed_weapons&quot;</span>
+    <span class="n">BODY</span> <span class="o">=</span> <span class="s2">&quot;body&quot;</span>  <span class="c1"># armor</span>
+    <span class="n">HEAD</span> <span class="o">=</span> <span class="s2">&quot;head&quot;</span>  <span class="c1"># helmets</span>
+</pre></div>
+</div>
+<p>Basically, all the weapon/armor locations are exclusive - you can only have one item in each (or none).
+The BACKPACK is special - it contains any number of items (up to the maximum slot usage).</p>
+<section id="equipmenthandler-that-saves">
+<h2>EquipmentHandler that saves<a class="headerlink" href="#equipmenthandler-that-saves" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/equipment.py</span></code>.</p>
+</div></blockquote>
+<aside class="sidebar">
+<p>If you want to understand more about behind how Evennia uses handlers, there is a
+<a class="reference internal" href="../../Tutorial-Persistent-Handler.html"><span class="doc std std-doc">dedicated tutorial</span></a> talking about the principle.</p>
+</aside>
+<p>In default Evennia, everything you pick up will end up “inside” your character object (that is, have
+you as its <code class="docutils literal notranslate"><span class="pre">.location</span></code>). This is called your <em>inventory</em> and has no limit. We will keep ‘moving items into us’
+when we pick them up, but we will add more functionality using an <em>Equipment handler</em>.</p>
+<p>A handler is (for our purposes) an object that sits “on” another entity, containing functionality
+for doing one specific thing (managing equipment, in our case).</p>
+<p>This is the start of our handler:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/equipment.py </span>
+
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span>
+
+<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+    <span class="n">save_attribute</span> <span class="o">=</span> <span class="s2">&quot;inventory_slots&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span> 
+        <span class="c1"># here obj is the character we store the handler on </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span> 
+        
+    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load our data from an Attribute on `self.obj`&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_attribute</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="p">{</span>
+                <span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> 
+                <span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> 
+                <span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> 
+                <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">:</span> <span class="p">[]</span>
+            <span class="p">}</span> 
+        <span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save our data back to the same Attribute&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_attribute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;inventory&quot;</span><span class="p">)</span> 
+</pre></div>
+</div>
+<p>This is a compact and functional little handler. Before analyzing how it works, this is how
+we will add it to the Character:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/characters.py</span>
+
+<span class="c1"># ... </span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">.equipment</span> <span class="kn">import</span> <span class="n">EquipmentHandler</span> 
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span>
+    
+    <span class="c1"># ... </span>
+
+    <span class="nd">@lazy_property</span> 
+    <span class="k">def</span> <span class="nf">equipment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">EquipmentHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After reloading the server, the equipment-handler will now be accessible on character-instances as</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>character.equipment
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;lazy_property</span></code> works such that it will not load the handler until someone actually tries to
+fetch it with <code class="docutils literal notranslate"><span class="pre">character.equipment</span></code>. When that
+happens, we start up the handler and feed it <code class="docutils literal notranslate"><span class="pre">self</span></code> (the <code class="docutils literal notranslate"><span class="pre">Character</span></code> instance itself). This is what
+enters <code class="docutils literal notranslate"><span class="pre">__init__</span></code> as <code class="docutils literal notranslate"><span class="pre">.obj</span></code> in the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> code above.</p>
+<p>So we now have a handler on the character, and the handler has a back-reference to the character it sits
+on.</p>
+<p>Since the handler itself is just a regular Python object, we need to use the <code class="docutils literal notranslate"><span class="pre">Character</span></code> to store
+our data - our <em>Knave</em> “slots”. We must save them to the database, because we want the server to remember
+them even after reloading.</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">self.obj.attributes.add()</span></code> and <code class="docutils literal notranslate"><span class="pre">.get()</span></code> we save the data to the Character in a specially named
+<a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a>. Since we use a <code class="docutils literal notranslate"><span class="pre">category</span></code>, we are unlikely to collide with
+other Attributes.</p>
+<p>Our storage structure is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> with keys after our available <code class="docutils literal notranslate"><span class="pre">WieldLocation</span></code> enums. Each can only
+have one item except <code class="docutils literal notranslate"><span class="pre">WieldLocation.BACKPACK</span></code>, which is a list.</p>
+</section>
+<section id="connecting-the-equipmenthandler">
+<h2>Connecting the EquipmentHandler<a class="headerlink" href="#connecting-the-equipmenthandler" title="Permalink to this headline">¶</a></h2>
+<p>Whenever an object leaves from one location to the next, Evennia will call a set of <em>hooks</em> (methods) on the
+object that moves, on the source-location and on its destination. This is the same for all moving things -
+whether it’s a character moving between rooms or an item being dropping from your hand to the ground.</p>
+<p>We need to tie our new <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> into this system. By reading the doc page on <a class="reference internal" href="../../../Components/Objects.html"><span class="doc std std-doc">Objects</span></a>,
+or looking at the <a class="reference internal" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to" title="evennia.objects.objects.DefaultObject.move_to"><span class="xref myst py py-meth">DefaultObject.move_to</span></a> docstring, we’ll
+find out what hooks Evennia will call. Here <code class="docutils literal notranslate"><span class="pre">self</span></code> is the object being moved from
+<code class="docutils literal notranslate"><span class="pre">source_location</span></code> to <code class="docutils literal notranslate"><span class="pre">destination</span></code>:</p>
+<ol class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.at_pre_move(destination)</span></code> (abort if return False)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source_location.at_pre_object_leave(self,</span> <span class="pre">destination)</span></code> (abort if return False)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">destination.at_pre_object_receive(self,</span> <span class="pre">source_location)</span></code> (abort if return False)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source_location.at_object_leave(self,</span> <span class="pre">destination)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.announce_move_from(destination)</span></code></p></li>
+<li><p>(move happens here)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.announce_move_to(source_location)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">destination.at_object_receive(self,</span> <span class="pre">source_location)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.at_post_move(source_location)</span></code></p></li>
+</ol>
+<p>All of these hooks can be overridden to customize movement behavior. In this case we are interested in
+controlling how items ‘enter’ and ‘leave’ our character - being ‘inside’ the character is the same as
+them ‘carrying’ it. We have three good hook-candidates to use for this.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.at_pre_object_receive</span></code> - used to check if you can actually pick something up, or if your equipment-store is full.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.at_object_receive</span></code> - used to add the item to the equipmenthandler</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.at_object_leave</span></code> - used to remove the item from the equipmenthandler</p></li>
+</ul>
+<p>You could also picture using <code class="docutils literal notranslate"><span class="pre">.at_pre_object_leave</span></code> to restrict dropping (cursed?) items, but
+we will skip that for this tutorial.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/character.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EvAdventureCharacter</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+
+    <span class="c1"># ... </span>
+    
+    <span class="k">def</span> <span class="nf">at_pre_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot;Called by Evennia before object arrives &#39;in&#39; this character (that is,</span>
+<span class="sd">        if they pick up something). If it returns False, move is aborted.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">validate_slot_usage</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Called by Evennia when an object arrives &#39;in&#39; the character.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">at_object_leave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moved_object</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Called by Evennia when object leaves the Character. </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">moved_object</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Above we have assumed the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> (<code class="docutils literal notranslate"><span class="pre">.equipment</span></code>) has methods <code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code>. But we haven’t actually added them yet - we just put some reasonable names! Before
+we can use this, we need to go actually adding those methods.</p>
+</section>
+<section id="expanding-the-equipmenthandler">
+<h2>Expanding the Equipmenthandler<a class="headerlink" href="#expanding-the-equipmenthandler" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="validate-slot-usage">
+<h2><code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code><a class="headerlink" href="#validate-slot-usage" title="Permalink to this headline">¶</a></h2>
+<p>Let’s start with implementing the first method we came up with above, <code class="docutils literal notranslate"><span class="pre">validate_slot_usage</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
+
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+
+<span class="k">class</span> <span class="nc">EquipmentError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;All types of equipment-errors&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+
+    <span class="c1"># ... </span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Max amount of slots, based on CON defense (CON + 10)&quot;&quot;&quot;</span> 
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CON</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span>
+        
+    <span class="k">def</span> <span class="nf">count_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Count current slot usage&quot;&quot;&quot;</span> 
+        <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
+        <span class="n">wield_usage</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">slotobj</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">slot</span><span class="p">,</span> <span class="n">slotobj</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span>
+        <span class="p">)</span>
+        <span class="n">backpack_usage</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">slotobj</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">slotobj</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">wield_usage</span> <span class="o">+</span> <span class="n">backpack_usage</span>
+    
+    <span class="k">def</span> <span class="nf">validate_slot_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+          <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">          Check if obj can fit in equipment, based on its size.</span>
+<span class="sd">          </span>
+<span class="sd">          &quot;&quot;&quot;</span>
+          <span class="k">if</span> <span class="ow">not</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">EvAdventureObject</span><span class="p">):</span>
+              <span class="c1"># in case we mix with non-evadventure objects</span>
+              <span class="k">raise</span> <span class="n">EquipmentError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not something that can be equipped.&quot;</span><span class="p">)</span>
+  
+         <span class="n">size</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">size</span>
+         <span class="n">max_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_slots</span>
+         <span class="n">current_slot_usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_slots</span><span class="p">()</span>
+         <span class="k">return</span> <span class="n">current_slot_usage</span> <span class="o">+</span> <span class="n">size</span> <span class="o">&lt;=</span> <span class="n">max_slots</span><span class="p">:</span>
+
+</pre></div>
+</div>
+<aside class="sidebar">
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;property</span></code> decorator turns a method into a property so you don’t need to ‘call’ it.
+That is, you can access <code class="docutils literal notranslate"><span class="pre">.max_slots</span></code> instead of <code class="docutils literal notranslate"><span class="pre">.max_slots()</span></code>. In this case, it’s just a
+little less to type.</p>
+</aside>
+<p>We add two helpers - the <code class="docutils literal notranslate"><span class="pre">max_slots</span></code> <em>property</em> and <code class="docutils literal notranslate"><span class="pre">count_slots</span></code>, a method that calculate the current
+slots being in use. Let’s figure out how they work.</p>
+<section id="max-slots">
+<h3><code class="docutils literal notranslate"><span class="pre">.max_slots</span></code><a class="headerlink" href="#max-slots" title="Permalink to this headline">¶</a></h3>
+<p>For <code class="docutils literal notranslate"><span class="pre">max_slots</span></code>, remember that <code class="docutils literal notranslate"><span class="pre">.obj</span></code> on the handler is a back-reference to the <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> we
+put this handler on. <code class="docutils literal notranslate"><span class="pre">getattr</span></code> is a Python method for retrieving a named property on an object.
+The <code class="docutils literal notranslate"><span class="pre">Enum</span></code> <code class="docutils literal notranslate"><span class="pre">Ability.CON.value</span></code> is the string <code class="docutils literal notranslate"><span class="pre">Constitution</span></code> (check out the
+<a class="reference internal" href="Beginner-Tutorial-Utilities.html"><span class="doc std std-doc">first Utility and Enums tutorial</span></a> if you don’t recall).</p>
+<p>So to be clear,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">Ability</span><span class="o">.</span><span class="n">CON</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>is the same as writing</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">getattr</span><span class="p">(</span><span class="n">your_character</span><span class="p">,</span> <span class="s2">&quot;Constitution&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span> 
+</pre></div>
+</div>
+<p>which is the same as doing something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">your_character</span><span class="o">.</span><span class="n">Constitution</span> <span class="o">+</span> <span class="mi">10</span> 
+</pre></div>
+</div>
+<p>In our code we write <code class="docutils literal notranslate"><span class="pre">getattr(self.obj,</span> <span class="pre">Ability.CON.value,</span> <span class="pre">1)</span></code> - that extra <code class="docutils literal notranslate"><span class="pre">1</span></code>   means that if there
+should happen to <em>not</em> be a property “Constitution” on <code class="docutils literal notranslate"><span class="pre">self.obj</span></code>, we should not error out but just
+return 1.</p>
+</section>
+<section id="count-slots">
+<h3><code class="docutils literal notranslate"><span class="pre">.count_slots</span></code><a class="headerlink" href="#count-slots" title="Permalink to this headline">¶</a></h3>
+<p>In this helper we use two Python tools - the <code class="docutils literal notranslate"><span class="pre">sum()</span></code> function and a
+<a class="reference external" href="https://www.w3schools.com/python/python_lists_comprehension.asp">list comprehension</a>. The former
+simply adds the values of any iterable together. The latter is a more efficient way to create a list:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>new_list = [item for item in some_iterable if condition]
+all_above_5 = [num for num in range(10) if num &gt; 5]  # [6, 7, 8, 9]
+all_below_5 = [num for num in range(10) if num &lt; 5]  # [0, 1, 2, 3, 4]
+</pre></div>
+</div>
+<p>To make it easier to understand, try reading the last line above as “for every number in the range 0-9,
+pick all with a value below 5 and make a list of them”. You can also embed such comprehensions
+directly in a function call like <code class="docutils literal notranslate"><span class="pre">sum()</span></code> without using <code class="docutils literal notranslate"><span class="pre">[]</span></code> around it.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">count_slots</span></code> we have this code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wield_usage</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="nb">getattr</span><span class="p">(</span><span class="n">slotobj</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">slot</span><span class="p">,</span> <span class="n">slotobj</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>We should be able to follow all except <code class="docutils literal notranslate"><span class="pre">slots.items()</span></code>. Since <code class="docutils literal notranslate"><span class="pre">slots</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code>, we can use <code class="docutils literal notranslate"><span class="pre">.items()</span></code>
+to get a sequence of <code class="docutils literal notranslate"><span class="pre">(key,</span> <span class="pre">value)</span></code> pairs. We store these in <code class="docutils literal notranslate"><span class="pre">slot</span></code> and <code class="docutils literal notranslate"><span class="pre">slotobj</span></code>. So the above can
+be understood as “for every <code class="docutils literal notranslate"><span class="pre">slot</span></code> and <code class="docutils literal notranslate"><span class="pre">slotobj</span></code>-pair in <code class="docutils literal notranslate"><span class="pre">slots</span></code>, check which slot location it is.
+If it is <em>not</em> in the backpack, get its size and add it to the list. Sum over all these
+sizes”.</p>
+<p>A less compact but maybe more readonable way to write this would be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">backpack_item_sizes</span> <span class="o">=</span> <span class="p">[]</span> 
+<span class="k">for</span> <span class="n">slot</span><span class="p">,</span> <span class="n">slotobj</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> 
+    <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">:</span>
+       <span class="n">size</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">slotobj</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> 
+       <span class="n">backpack_item_sizes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+<span class="n">wield_usage</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">backpack_item_sizes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The same is done for the items actually in the BACKPACK slot. The total sizes are added
+together.</p>
+</section>
+<section id="validating-slots">
+<h3>Validating slots<a class="headerlink" href="#validating-slots" title="Permalink to this headline">¶</a></h3>
+<p>With these helpers in place, <code class="docutils literal notranslate"><span class="pre">validate_slot_usage</span></code> now becomes simple. We use <code class="docutils literal notranslate"><span class="pre">max_slots</span></code> to see how much we can carry.
+We then get how many slots we are already using (with <code class="docutils literal notranslate"><span class="pre">count_slots</span></code>) and see if our new <code class="docutils literal notranslate"><span class="pre">obj</span></code>’s size
+would be too much for us.</p>
+</section>
+</section>
+<section id="add-and-remove">
+<h2><code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code><a class="headerlink" href="#add-and-remove" title="Permalink to this headline">¶</a></h2>
+<p>We will make it so <code class="docutils literal notranslate"><span class="pre">.add</span></code> puts something in the <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> location and <code class="docutils literal notranslate"><span class="pre">remove</span></code> drops it, wherever
+it is (even if it was in your hands).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
+
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+
+    <span class="c1"># ... </span>
+     
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put something in the backpack.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate_slot_usage</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove contents of a particular slot, for</span>
+<span class="sd">        example `equipment.remove(WieldLocation.SHIELD_HAND)`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">:</span>
+            <span class="c1"># empty entire backpack! </span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">])</span>
+            <span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">])</span>
+            <span class="n">slots</span><span class="p">[</span><span class="n">slot</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</pre></div>
+</div>
+<p>Both of these should be straight forward to follow. In <code class="docutils literal notranslate"><span class="pre">.add</span></code>, we make use of <code class="docutils literal notranslate"><span class="pre">validate_slot_usage</span></code> to
+double-check we can actually fit the thing, then we add the item to the backpack.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">.delete</span></code>, we allow emptying by <code class="docutils literal notranslate"><span class="pre">WieldLocation</span></code> - we figure out what slot it is and return
+the item within (if any). If we gave <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> as the slot, we empty the backpack and
+return all items.</p>
+<p>Whenever we change the equipment loadout we must make sure to <code class="docutils literal notranslate"><span class="pre">._save()</span></code> the result, or it will
+be lost after a server reload.</p>
+</section>
+<section id="moving-things-around">
+<h2>Moving things around<a class="headerlink" href="#moving-things-around" title="Permalink to this headline">¶</a></h2>
+<p>With the help of <code class="docutils literal notranslate"><span class="pre">.remove()</span></code> and <code class="docutils literal notranslate"><span class="pre">.add()</span></code>  we can get things in and out of the <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> equipment
+location. We also need to grab stuff from the backpack and wield or wear it. We add a <code class="docutils literal notranslate"><span class="pre">.move</span></code> method
+on the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> to do this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
+
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+
+    <span class="c1"># ... </span>
+    
+    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span> 
+         <span class="sd">&quot;&quot;&quot;Move object from backpack to its intended `inventory_use_slot`.&quot;&quot;&quot;</span> 
+         
+        <span class="c1"># make sure to remove from equipment/backpack first, to avoid double-adding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> 
+        
+        <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
+        <span class="n">use_slot</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;inventory_use_slot&quot;</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">)</span>
+
+        <span class="n">to_backpack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">use_slot</span> <span class="ow">is</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">:</span>
+            <span class="c1"># two-handed weapons can&#39;t co-exist with weapon/shield-hand used items</span>
+            <span class="n">to_backpack</span> <span class="o">=</span> <span class="p">[</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">],</span> <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">]]</span>
+            <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">]</span> <span class="o">=</span> <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">slots</span><span class="p">[</span><span class="n">use_slot</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">elif</span> <span class="n">use_slot</span> <span class="ow">in</span> <span class="p">(</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">):</span>
+            <span class="c1"># can&#39;t keep a two-handed weapon if adding a one-handed weapon or shield</span>
+            <span class="n">to_backpack</span> <span class="o">=</span> <span class="p">[</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">]]</span>
+            <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">slots</span><span class="p">[</span><span class="n">use_slot</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">elif</span> <span class="n">use_slot</span> <span class="ow">is</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">:</span>
+            <span class="c1"># it belongs in backpack, so goes back to it</span>
+            <span class="n">to_backpack</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># for others (body, head), just replace whatever&#39;s there</span>
+            <span class="n">replaced</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+            <span class="n">slots</span><span class="p">[</span><span class="n">use_slot</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+       
+        <span class="k">for</span> <span class="n">to_backpack_obj</span> <span class="ow">in</span> <span class="n">to_backpack</span><span class="p">:</span>
+            <span class="c1"># put stuff in backpack</span>
+            <span class="n">slots</span><span class="p">[</span><span class="n">use_slot</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_backpack_obj</span><span class="p">)</span>
+       
+        <span class="c1"># store new state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save</span><span class="p">()</span> 
+</pre></div>
+</div>
+<p>Here we remember that every <code class="docutils literal notranslate"><span class="pre">EvAdventureObject</span></code> has an <code class="docutils literal notranslate"><span class="pre">inventory_use_slot</span></code> property that tells us where
+it goes. So we just need to move the object to that slot, replacing whatever is in that place
+from before. Anything we replace goes back to the backpack.</p>
+</section>
+<section id="get-everything">
+<h2>Get everything<a class="headerlink" href="#get-everything" title="Permalink to this headline">¶</a></h2>
+<p>In order to visualize our inventory, we need some method to get everything we are carrying.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
+
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all objects in inventory, regardless of location.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
+        <span class="n">lst</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">],</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">],</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">],</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span><span class="p">],</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span><span class="p">],</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span><span class="p">),</span>
+        <span class="p">]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">item</span><span class="p">,</span> <span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">lst</span>
+</pre></div>
+</div>
+<p>Here we get all the equipment locations and add their contents together into a list of tuples
+<code class="docutils literal notranslate"><span class="pre">[(item,</span> <span class="pre">WieldLocation),</span> <span class="pre">...]</span></code>. This is convenient for display.</p>
+</section>
+<section id="weapon-and-armor">
+<h2>Weapon and armor<a class="headerlink" href="#weapon-and-armor" title="Permalink to this headline">¶</a></h2>
+<p>It’s convenient to have the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> easily tell you what weapon is currently wielded
+and what <em>armor</em> level all worn equipment provides. Otherwise you’d need to figure out what item is
+in which wield-slot and to add up armor slots manually every time you need to know.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
+
+<span class="kn">from</span> <span class="nn">.objects</span> <span class="kn">import</span> <span class="n">WeaponEmptyHand</span>
+<span class="kn">from</span> <span class="nn">.enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span><span class="p">,</span> <span class="n">Ability</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">EquipmentHandler</span><span class="p">:</span> 
+
+    <span class="c1"># ... </span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">armor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="c1"># armor is listed using its defense, so we remove 10 from it</span>
+                <span class="c1"># (11 is base no-armor value in Knave)</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BODY</span><span class="p">],</span> <span class="s2">&quot;armor&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="c1"># shields and helmets are listed by their bonus to armor</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">SHIELD_HAND</span><span class="p">],</span> <span class="s2">&quot;armor&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">HEAD</span><span class="p">],</span> <span class="s2">&quot;armor&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">weapon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># first checks two-handed wield, then one-handed; the two</span>
+        <span class="c1"># should never appear simultaneously anyhow (checked in `move` method).</span>
+        <span class="n">slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span>
+        <span class="n">weapon</span> <span class="o">=</span> <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">TWO_HANDS</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
+            <span class="n">weapon</span> <span class="o">=</span> <span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">WEAPON_HAND</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
+            <span class="n">weapon</span> <span class="o">=</span> <span class="n">WeaponEmptyHand</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">weapon</span>
+
+</pre></div>
+</div>
+<p>In the <code class="docutils literal notranslate"><span class="pre">.armor()</span></code> method we get the item (if any) out of each relevant wield-slot (body, shield, head),
+and grab their <code class="docutils literal notranslate"><span class="pre">armor</span></code> Attribute. We then <code class="docutils literal notranslate"><span class="pre">sum()</span></code> them all up.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">.weapon()</span></code>, we simply check which of the possible weapon slots (weapon-hand or two-hands) have
+something in them. If not we fall back to the ‘fake’ weapon <code class="docutils literal notranslate"><span class="pre">WeaponEmptyHand</span></code> which is just a ‘dummy’
+object that represents your bare hands with damage and all.
+(created in <a class="reference internal" href="Beginner-Tutorial-Objects.html#your-bare-hands"><span class="std std-doc">The Object tutorial</span></a> earlier).</p>
+</section>
+<section id="extra-credits">
+<h2>Extra credits<a class="headerlink" href="#extra-credits" title="Permalink to this headline">¶</a></h2>
+<p>This covers the basic functionality of the equipment handler. There are other useful methods that
+can be added:</p>
+<ul class="simple">
+<li><p>Given an item, figure out which equipment slot it is currently in</p></li>
+<li><p>Make a string representing the current loadout</p></li>
+<li><p>Get everything in the backpack (only)</p></li>
+<li><p>Get all wieldable items (weapons, shields) from backpack</p></li>
+<li><p>Get all usable items (items with a use-location of <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code>) from the backpack</p></li>
+</ul>
+<p>Experiment with adding those. A full example is found in
+<a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.equipment.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/equipment.py</span></a>.</p>
+</section>
+<section id="unit-testing">
+<h2>Unit Testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/tests/test_equipment.py</span></code>.</p>
+</div></blockquote>
+<aside class="sidebar">
+<p>See <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.tests.test_equipment.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/tests/test_equipment.py</span></a>
+for a finished testing example.</p>
+</aside>
+<p>To test the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code>, easiest is create an <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> (this should by now
+have <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> available on itself as <code class="docutils literal notranslate"><span class="pre">.equipment</span></code>) and a few test objects; then test
+passing these into the handler’s methods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/tests/test_equipment.py </span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span> 
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span> 
+
+<span class="kn">from</span> <span class="nn">..objects</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">WieldLocation</span>
+
+<span class="k">class</span> <span class="nc">TestEquipment</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span> 
+    
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;testchar&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">helmet</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureHelmet</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;helmet&quot;</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">EvAdventureWeapon</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;weapon&quot;</span><span class="p">)</span> 
+         
+    <span class="k">def</span> <span class="nf">test_add_remove</span><span class="p">):</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">],</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helmet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">equipment</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">WieldLocation</span><span class="o">.</span><span class="n">BACKPACK</span><span class="p">],</span> <span class="p">[])</span> 
+        
+    <span class="c1"># ... </span>
+</pre></div>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p><em>Handlers</em> are useful for grouping functionality together. Now that we spent our time making the
+<code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code>, we shouldn’t need to worry about item-slots anymore - the handler ‘handles’ all
+the details for us. As long as we call its methods, the details can be forgotten about.</p>
+<p>We also learned to use <em>hooks</em> to tie <em>Knave</em>’s custom equipment handling into Evennia.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">Characters</span></code>, <code class="docutils literal notranslate"><span class="pre">Objects</span></code> and now <code class="docutils literal notranslate"><span class="pre">Equipment</span></code> in place, we should be able to move on to character
+generation - where players get to make their own character!</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Chargen.html" title="Character Generation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Objects.html" title="In-game Objects and items"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Handling Equipment</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

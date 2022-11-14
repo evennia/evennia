@@ -1,0 +1,1009 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Beginner Tutorial &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Part 1: What we have" href="Part1/Beginner-Tutorial-Part1-Intro.html" />
+    <link rel="prev" title="Tutorials and Howto’s" href="../Howtos-Overview.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Part1/Beginner-Tutorial-Part1-Intro.html" title="Part 1: What we have"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../Howtos-Overview.html" title="Tutorials and Howto’s"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Beginner Tutorial</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Beginner Tutorial</a><ul>
+<li><a class="reference internal" href="#things-you-need">Things you need</a><ul>
+<li><a class="reference internal" href="#a-command-line">A Command line</a></li>
+<li><a class="reference internal" href="#a-mud-client">A MUD client</a></li>
+<li><a class="reference internal" href="#an-editor">An Editor</a></li>
+<li><a class="reference internal" href="#set-up-a-game-dir-for-the-tutorial">Set up a game dir for the tutorial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../Howtos-Overview.html"
+                        title="previous chapter">Tutorials and Howto’s</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Part1/Beginner-Tutorial-Part1-Intro.html"
+                        title="next chapter">Part 1: What we have</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Beginner-Tutorial-Intro.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="beginner-tutorial">
+<h1>Beginner Tutorial<a class="headerlink" href="#beginner-tutorial" title="Permalink to this headline">¶</a></h1>
+<aside class="sidebar">
+<p class="sidebar-title">Beginner Tutorial Parts</p>
+<ul class="simple">
+<li><p><strong><a class="reference internal" href="#"><span class="doc std std-doc">Introduction</span></a></strong>
+<br>Getting set up.</p></li>
+<li><p>Part 1: <a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Intro.html"><span class="doc std std-doc">What we have</span></a>
+<br>A tour of Evennia and how to use the tools, including an introduction to Python.</p></li>
+<li><p>Part 2: <a class="reference internal" href="Part2/Beginner-Tutorial-Part2-Intro.html"><span class="doc std std-doc">What we want</span></a>
+<br>Planning our tutorial game and what to think about when planning your own in the future.</p></li>
+<li><p>Part 3: <a class="reference internal" href="Part3/Beginner-Tutorial-Part3-Intro.html"><span class="doc std std-doc">How we get there</span></a>
+<br>Getting down to the meat of extending Evennia to make our game</p></li>
+<li><p>Part 4: <a class="reference internal" href="Part4/Beginner-Tutorial-Part4-Intro.html"><span class="doc std std-doc">Using what we created</span></a>
+<br>Building a tech-demo and world content to go with our code</p></li>
+<li><p>Part 5: <a class="reference internal" href="Part5/Beginner-Tutorial-Part5-Intro.html"><span class="doc std std-doc">Showing the world</span></a>
+<br>Taking our new game online and let players try it out</p></li>
+</ul>
+</aside>
+<p>Welcome to Evennia! This multi-part Beginner Tutorial will help you get off the ground. It consists
+of five parts, each with several lessons. You can pick what seems interesting, but if you
+follow through to the end you will have created a little online game of your own to play
+and share with others!</p>
+<p>Use the menu on the right to get the index of each tutorial-part. Use the <a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Intro.html"><span class="doc std std-doc">next</span></a>
+and <a class="reference internal" href="../Howtos-Overview.html"><span class="doc std std-doc">previous</span></a> links to step from lesson to lesson.</p>
+<section id="things-you-need">
+<h2>Things you need<a class="headerlink" href="#things-you-need" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>A Command line</p></li>
+<li><p>A MUD client (or web browser)</p></li>
+<li><p>A text-editor/IDE</p></li>
+<li><p>Evennia installed and a game-dir initialized</p></li>
+</ul>
+<section id="a-command-line">
+<h3>A Command line<a class="headerlink" href="#a-command-line" title="Permalink to this headline">¶</a></h3>
+<p>You need to know how to find your Terminal/Console in your OS. The Evennia server can be controlled
+from in-game, but you <em>will</em> need to use the command-line to get anywhere. Here are some starters:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://tutorial.djangogirls.org/en/intro_to_command_line/">Django-girls’ Intro to the Command line for different OS:es</a></p></li>
+</ul>
+<p>Note that we usually only show forward-slashes <code class="docutils literal notranslate"><span class="pre">/</span></code> for file system paths. Windows users should mentally convert this to
+back-slashes <code class="docutils literal notranslate"><span class="pre">\</span></code> instead.</p>
+</section>
+<section id="a-mud-client">
+<h3>A MUD client<a class="headerlink" href="#a-mud-client" title="Permalink to this headline">¶</a></h3>
+<p>You might already have a MUD-client you prefer. Check out the <a class="reference internal" href="../../Setup/Client-Support-Grid.html"><span class="doc std std-doc">grid of supported clients</span></a> for aid.
+If telnet’s not your thing, you can also just use Evennia’s web client in your browser.</p>
+<blockquote>
+<div><p>In this documentation we often use the terms ‘MUD’, ‘MU’ or ‘MU*’ interchangeably
+to represent all the historically different forms of text-based multiplayer game-styles,
+like MUD, MUX, MUSH, MUCK, MOO and others. Evennia can be used to create all those game-styles
+and more.</p>
+</div></blockquote>
+</section>
+<section id="an-editor">
+<h3>An Editor<a class="headerlink" href="#an-editor" title="Permalink to this headline">¶</a></h3>
+<p>You need a text-editor to edit Python source files. Most everything that can edit and output raw
+text works (so not Word).</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.elegantthemes.com/blog/resources/best-code-editors">Here’s a blog post summing up some of the alternatives</a> - these
+things don’t change much from year to year. Popular choices for Python are PyCharm, VSCode, Atom, Sublime Text and Notepad++.
+Evennia is to a very large degree coded in VIM, but that’s not suitable for beginners.</p></li>
+</ul>
+<blockquote>
+<div><p>Hint: When setting up your editor, make sure that pressing TAB inserts <em>4 spaces</em> rather than a Tab-character. Since
+Python is whitespace-aware, this will make your life a lot easier.</p>
+</div></blockquote>
+</section>
+<section id="set-up-a-game-dir-for-the-tutorial">
+<h3>Set up a game dir for the tutorial<a class="headerlink" href="#set-up-a-game-dir-for-the-tutorial" title="Permalink to this headline">¶</a></h3>
+<p>Next you should make sure you have <a class="reference internal" href="../../Setup/Installation.html"><span class="doc std std-doc">installed Evennia</span></a>. If you followed the instructions
+you will already have created a game-dir. You could use that for this tutorial or you may want to do the
+tutorial in its own, isolated game dir; it’s up to you.</p>
+<ul>
+<li><p>If you want a new gamedir for the tutorial game and already have Evennia running with another gamedir,
+first enter that gamedir and run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  evennia stop
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div><p>If you want to run two parallel servers, that’d be fine too, but one would have to use
+different ports from the defaults, or there’d be a clash. We will go into changing settings later.</p>
+</div></blockquote>
+<ul>
+<li><p>Now go to where you want to create your tutorial-game. We will always refer to it as <code class="docutils literal notranslate"><span class="pre">mygame</span></code> so
+it may be convenient if you do too:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia --init mygame
+ cd mygame
+ evennia migrate
+ evennia start --log
+</pre></div>
+</div>
+<p>Add your superuser name and password at the prompt (email is optional). Make sure you can
+go to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> in your MUD client or to <a class="reference external" href="http://localhost:4001">http://localhost:4001</a>
+in your web browser (Mac users: Try <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> instead of <code class="docutils literal notranslate"><span class="pre">localhost</span></code> if you have trouble).</p>
+<p>The above <code class="docutils literal notranslate"><span class="pre">--log</span></code> flag will have Evennia output all its logs to the terminal. This will block
+the terminal from other input. To leave the log-view, press <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (<code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> on Mac). To see
+the log again just run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia --log
+</pre></div>
+</div>
+</li>
+</ul>
+<p>You should now be good to go on to <a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Intro.html"><span class="doc std std-doc">the first part of the tutorial</span></a>.
+Good luck!</p>
+<details>
+<summary>
+Click here to expand a list of all Beginner-Tutorial sections (all parts).
+</summary>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Intro.html">Part 1: What we have</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Intro.html#lessons">Lessons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html">1. Using commands and building stuff</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#getting-help">1.1. Getting help</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#looking-around">1.2. Looking around</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#stepping-down-from-godhood">1.3. Stepping Down From Godhood</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#creating-an-object">1.4. Creating an Object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#get-a-personality">1.5. Get a Personality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#pushing-your-buttons">1.6. Pushing Your Buttons</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#making-yourself-a-house">1.7. Making Yourself a House</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#reshuffling-the-world">1.8. Reshuffling the World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#adding-a-help-entry">1.9. Adding a Help Entry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#adding-a-world">1.10. Adding a World</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html">2. The Tutorial World</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html#gameplay">2.1. Gameplay</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html#gameplay-hints">2.1.1. Gameplay hints</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html#once-you-are-done-or-had-enough">2.2. Once you are done (or had enough)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html#uninstall-the-tutorial-world">2.3. Uninstall the tutorial world</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html">3. Intro to using Python with Evennia</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#evennia-hello-world">3.1. Evennia Hello world</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#making-some-text-graphics">3.2. Making some text ‘graphics’</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#format">3.2.1. .format()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#f-strings">3.2.2. f-strings</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#colored-text">3.2.3. Colored text</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#importing-code-from-other-modules">3.3. Importing code from other modules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#our-first-own-function">3.3.1. Our first own function</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#sending-text-to-others">3.4. Sending text to others</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#parsing-python-errors">3.5. Parsing Python errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#passing-arguments-to-functions">3.6. Passing arguments to functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#finding-others-to-send-to">3.7. Finding others to send to</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#multi-line-py">3.8. Multi-line py</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#other-ways-to-test-python-code">3.9. Other ways to test Python code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#ipython">3.10. ipython</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#conclusions">3.11. Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html">4. Overview of your new Game Dir</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#commands">4.1. commands/</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#server">4.2. server/</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#server-logs">4.2.1. server/logs/</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#server-conf">4.2.2. server/conf/</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#typeclasses">4.2.3. typeclasses/</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#web">4.2.4. web/</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#world">4.2.5. world/</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html">5. Introduction to Python classes and objects</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#importing-things">5.1. Importing things</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#on-classes-and-objects">5.2. On classes and objects</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#classes-and-instances">5.2.1. Classes and instances</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#whats-so-good-about-objects">5.2.2. What’s so good about objects?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#classes-can-have-children">5.2.3. Classes can have children</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#summary">5.3. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Evennia-Library-Overview.html">6. Overview of the Evennia library</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Evennia-Library-Overview.html#where-is-it">6.1. Where is it?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Evennia-Library-Overview.html#an-example-of-exploring-the-library">6.2. An example of exploring the library</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html">7. Making objects persistent</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#our-first-persistent-object">7.1. Our first persistent object</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#making-a-new-object-by-calling-the-class">7.1.1. Making a new object by calling the class</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#creating-using-create-object">7.1.2. Creating using create_object</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#creating-using-create-command">7.1.3. Creating using create-command</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#typeclasses">7.2. Typeclasses</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#examining-and-defaults">7.2.1. Examining and defaults</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#modifying-ourselves">7.3. Modifying ourselves</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#a-method-on-ourselves">7.3.1. A method on ourselves</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#attributes">7.3.2. Attributes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#setting-things-on-new-characters">7.3.3. Setting things on new Characters</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#updating-all-characters-in-a-loop">7.3.4. Updating all Characters in a loop</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#extra-credits">7.4. Extra Credits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#conclusions">7.5. Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html">8. Adding custom commands</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html#creating-a-custom-command">8.1. Creating a custom command</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html#making-our-cmdset-persistent">8.1.1. Making our cmdset persistent</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html#figuring-out-who-to-hit">8.1.2. Figuring out who to hit</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html#summary">8.2. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html">9. Parsing Command input</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#more-advanced-parsing">9.1. More advanced parsing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#adding-a-command-to-an-object">9.2. Adding a Command to an object</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#you-need-to-hold-the-sword">9.2.1. You need to hold the sword!</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#adding-the-command-to-a-default-cmdset">9.3. Adding the Command to a default Cmdset</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#removing-commands">9.3.1. Removing Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#replace-a-default-command">9.4. Replace a default command</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#summary">9.5. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Creating-Things.html">10. Creating things</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Creating-Things.html#creating-objects">10.1. Creating Objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Creating-Things.html#creating-accounts">10.2. Creating Accounts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html">11. Searching for things</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#main-search-functions">11.1. Main search functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#searching-using-object-search">11.2. Searching using Object.search</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#what-can-be-searched-for">11.3. What can be searched for</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-key">11.3.1. Search by key</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-aliases">11.3.2. Search by aliases</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-location">11.3.3. Search by location</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-tags">11.3.4. Search by Tags</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-attribute">11.3.5. Search by Attribute</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-typeclass">11.3.6. Search by Typeclass</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-dbref">11.3.7. Search by dbref</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#finding-objects-relative-each-other">11.4. Finding objects relative each other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#summary">11.5. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html">12. Advanced searching - Django Database queries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#queryset-field-lookups">12.1. Queryset field lookups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#get-that-werewolf">12.2. Get that werewolf …</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#complex-queries">12.3. Complex queries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#annotations">12.4. Annotations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#f-objects">12.5. F-objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#grouping-and-returning-only-certain-properties">12.6. Grouping and returning only certain properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#conclusions">12.7. Conclusions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Part1/Beginner-Tutorial-Part1-Intro.html#table-of-contents">Table of Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html">1. Using commands and building stuff</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#getting-help">1.1. Getting help</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#looking-around">1.2. Looking around</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#stepping-down-from-godhood">1.3. Stepping Down From Godhood</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#creating-an-object">1.4. Creating an Object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#get-a-personality">1.5. Get a Personality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#pushing-your-buttons">1.6. Pushing Your Buttons</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#making-yourself-a-house">1.7. Making Yourself a House</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#reshuffling-the-world">1.8. Reshuffling the World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#adding-a-help-entry">1.9. Adding a Help Entry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Building-Quickstart.html#adding-a-world">1.10. Adding a World</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html">2. The Tutorial World</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html#gameplay">2.1. Gameplay</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html#gameplay-hints">2.1.1. Gameplay hints</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html#once-you-are-done-or-had-enough">2.2. Once you are done (or had enough)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Tutorial-World.html#uninstall-the-tutorial-world">2.3. Uninstall the tutorial world</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html">3. Intro to using Python with Evennia</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#evennia-hello-world">3.1. Evennia Hello world</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#making-some-text-graphics">3.2. Making some text ‘graphics’</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#format">3.2.1. .format()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#f-strings">3.2.2. f-strings</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#colored-text">3.2.3. Colored text</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#importing-code-from-other-modules">3.3. Importing code from other modules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#our-first-own-function">3.3.1. Our first own function</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#sending-text-to-others">3.4. Sending text to others</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#parsing-python-errors">3.5. Parsing Python errors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#passing-arguments-to-functions">3.6. Passing arguments to functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#finding-others-to-send-to">3.7. Finding others to send to</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#multi-line-py">3.8. Multi-line py</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#other-ways-to-test-python-code">3.9. Other ways to test Python code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#ipython">3.10. ipython</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-basic-introduction.html#conclusions">3.11. Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html">4. Overview of your new Game Dir</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#commands">4.1. commands/</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#server">4.2. server/</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#server-logs">4.2.1. server/logs/</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#server-conf">4.2.2. server/conf/</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#typeclasses">4.2.3. typeclasses/</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#web">4.2.4. web/</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Gamedir-Overview.html#world">4.2.5. world/</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html">5. Introduction to Python classes and objects</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#importing-things">5.1. Importing things</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#on-classes-and-objects">5.2. On classes and objects</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#classes-and-instances">5.2.1. Classes and instances</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#whats-so-good-about-objects">5.2.2. What’s so good about objects?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#classes-can-have-children">5.2.3. Classes can have children</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Python-classes-and-objects.html#summary">5.3. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Evennia-Library-Overview.html">6. Overview of the Evennia library</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Evennia-Library-Overview.html#where-is-it">6.1. Where is it?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Evennia-Library-Overview.html#an-example-of-exploring-the-library">6.2. An example of exploring the library</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html">7. Making objects persistent</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#our-first-persistent-object">7.1. Our first persistent object</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#making-a-new-object-by-calling-the-class">7.1.1. Making a new object by calling the class</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#creating-using-create-object">7.1.2. Creating using create_object</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#creating-using-create-command">7.1.3. Creating using create-command</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#typeclasses">7.2. Typeclasses</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#examining-and-defaults">7.2.1. Examining and defaults</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#modifying-ourselves">7.3. Modifying ourselves</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#a-method-on-ourselves">7.3.1. A method on ourselves</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#attributes">7.3.2. Attributes</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#setting-things-on-new-characters">7.3.3. Setting things on new Characters</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#updating-all-characters-in-a-loop">7.3.4. Updating all Characters in a loop</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#extra-credits">7.4. Extra Credits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Learning-Typeclasses.html#conclusions">7.5. Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html">8. Adding custom commands</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html#creating-a-custom-command">8.1. Creating a custom command</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html#making-our-cmdset-persistent">8.1.1. Making our cmdset persistent</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html#figuring-out-who-to-hit">8.1.2. Figuring out who to hit</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Adding-Commands.html#summary">8.2. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html">9. Parsing Command input</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#more-advanced-parsing">9.1. More advanced parsing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#adding-a-command-to-an-object">9.2. Adding a Command to an object</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#you-need-to-hold-the-sword">9.2.1. You need to hold the sword!</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#adding-the-command-to-a-default-cmdset">9.3. Adding the Command to a default Cmdset</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#removing-commands">9.3.1. Removing Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#replace-a-default-command">9.4. Replace a default command</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-More-on-Commands.html#summary">9.5. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Creating-Things.html">10. Creating things</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Creating-Things.html#creating-objects">10.1. Creating Objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Creating-Things.html#creating-accounts">10.2. Creating Accounts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html">11. Searching for things</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#main-search-functions">11.1. Main search functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#searching-using-object-search">11.2. Searching using Object.search</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#what-can-be-searched-for">11.3. What can be searched for</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-key">11.3.1. Search by key</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-aliases">11.3.2. Search by aliases</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-location">11.3.3. Search by location</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-tags">11.3.4. Search by Tags</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-attribute">11.3.5. Search by Attribute</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-typeclass">11.3.6. Search by Typeclass</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#search-by-dbref">11.3.7. Search by dbref</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#finding-objects-relative-each-other">11.4. Finding objects relative each other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Searching-Things.html#summary">11.5. Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html">12. Advanced searching - Django Database queries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#queryset-field-lookups">12.1. Queryset field lookups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#get-that-werewolf">12.2. Get that werewolf …</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#complex-queries">12.3. Complex queries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#annotations">12.4. Annotations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#f-objects">12.5. F-objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#grouping-and-returning-only-certain-properties">12.6. Grouping and returning only certain properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part1/Beginner-Tutorial-Django-queries.html#conclusions">12.7. Conclusions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Part2/Beginner-Tutorial-Part2-Intro.html">Part 2: What we want</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Part2/Beginner-Tutorial-Part2-Intro.html#lessons">Lessons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html">Where do I begin?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#what-is-your-motivation-for-doing-this">What is your motivation for doing this?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#what-are-your-skills">What are your skills?</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#the-game-engine">The game engine</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#asset-creation">Asset creation</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#so-where-do-i-begin-then">So, where do I begin, then?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#conclusions">Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html">On Planning a Game</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#the-steps">The steps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#planning">Planning</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#administration">Administration</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#building">Building</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#systems">Systems</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#rooms">Rooms</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#objects-items">Objects / items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#characters">Characters</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#coding-and-tech-demo">Coding and Tech demo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#world-building">World Building</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#alpha-release">Alpha Release</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#beta-release-perpetual-beta">Beta Release/Perpetual Beta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#congratulate-yourself">Congratulate yourself!</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#planning-our-tutorial-game">Planning our tutorial game</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html">Planning our tutorial game</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#game-concept">Game concept</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#administration">Administration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters">Should your game rules be enforced by coded systems by human game masters?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else">What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards">Should players be able to post out-of-characters on channels and via other means like bulletin-boards?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#building">Building</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-will-the-world-be-built">How will the world be built?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability">Can only privileged Builders create things or should regular players also have limited build-capability?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#systems">Systems</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own">Do you base your game off an existing RPG system or make up your own?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails">What are the game mechanics? How do you decide if an action succeeds or fails?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons">Does the flow of time matter in your game - does night and day change? What about seasons?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay">Do you want changing, global weather or should weather just be set manually in roleplay?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all">Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-have-concepts-like-reputation-and-influence">Do you have concepts like reputation and influence?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance">Will your characters be known by their name or only by their physical appearance?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#rooms">Rooms</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#is-a-simple-room-description-enough-or-should-the-description-be-able-to-change">Is a simple room description enough or should the description be able to change?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-the-room-have-different-statuses">Should the room have different statuses?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room">Can objects be hidden in the room? Can a person hide in the room?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#objects">Objects</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props">How numerous are your objects? Do you want large loot-lists or are objects just role playing props?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value">Is each coin a separate object or do you just store a bank account value?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-multiple-similar-objects-form-stack-and-how-are-those-stacks-handled-in-that-case">Do multiple similar objects form stack and how are those stacks handled in that case?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them">Does an object have weight or volume (so you cannot carry an infinite amount of them)?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-objects-be-broken-can-they-be-repaired">Can objects be broken? Can they be repaired?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing">Can you fight with a chair or a flower or must you use a special ‘weapon’ kind of thing?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#will-characters-be-able-to-craft-new-objects">Will characters be able to craft new objects?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-mobs-npcs-have-some-sort-of-ai">Should mobs/NPCs have some sort of AI?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#are-npcs-and-mobs-different-entities-how-do-they-differ">Are NPCs and mobs different entities? How do they differ?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status">_Should there be NPCs giving quests? If so, how do you track Quest status?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#characters">Characters</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play">Can players have more than one Character active at a time or are they allowed to multi-play?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-does-the-character-generation-work">How does the character-generation work?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-do-you-implement-different-classes-or-races">How do you implement different “classes” or “races”?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected">If a Character can hide in a room, what skill will decide if they are detected?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying">What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#may-player-characters-attack-each-other-pvp">May player-characters attack each other (PvP)?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison">What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#conclusions">Conclusions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Part2/Beginner-Tutorial-Part2-Intro.html#table-of-contents">Table of Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html">Where do I begin?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#what-is-your-motivation-for-doing-this">What is your motivation for doing this?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#what-are-your-skills">What are your skills?</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#the-game-engine">The game engine</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#asset-creation">Asset creation</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#so-where-do-i-begin-then">So, where do I begin, then?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-Where-Do-I-Begin.html#conclusions">Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html">On Planning a Game</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#the-steps">The steps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#planning">Planning</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#administration">Administration</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#building">Building</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#systems">Systems</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#rooms">Rooms</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#objects-items">Objects / items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#characters">Characters</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#coding-and-tech-demo">Coding and Tech demo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#world-building">World Building</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#alpha-release">Alpha Release</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#beta-release-perpetual-beta">Beta Release/Perpetual Beta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#congratulate-yourself">Congratulate yourself!</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Game-Planning.html#planning-our-tutorial-game">Planning our tutorial game</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html">Planning our tutorial game</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#game-concept">Game concept</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#administration">Administration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters">Should your game rules be enforced by coded systems by human game masters?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else">What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards">Should players be able to post out-of-characters on channels and via other means like bulletin-boards?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#building">Building</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-will-the-world-be-built">How will the world be built?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability">Can only privileged Builders create things or should regular players also have limited build-capability?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#systems">Systems</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own">Do you base your game off an existing RPG system or make up your own?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails">What are the game mechanics? How do you decide if an action succeeds or fails?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons">Does the flow of time matter in your game - does night and day change? What about seasons?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay">Do you want changing, global weather or should weather just be set manually in roleplay?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all">Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-you-have-concepts-like-reputation-and-influence">Do you have concepts like reputation and influence?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance">Will your characters be known by their name or only by their physical appearance?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#rooms">Rooms</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#is-a-simple-room-description-enough-or-should-the-description-be-able-to-change">Is a simple room description enough or should the description be able to change?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-the-room-have-different-statuses">Should the room have different statuses?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room">Can objects be hidden in the room? Can a person hide in the room?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#objects">Objects</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props">How numerous are your objects? Do you want large loot-lists or are objects just role playing props?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value">Is each coin a separate object or do you just store a bank account value?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#do-multiple-similar-objects-form-stack-and-how-are-those-stacks-handled-in-that-case">Do multiple similar objects form stack and how are those stacks handled in that case?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them">Does an object have weight or volume (so you cannot carry an infinite amount of them)?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-objects-be-broken-can-they-be-repaired">Can objects be broken? Can they be repaired?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing">Can you fight with a chair or a flower or must you use a special ‘weapon’ kind of thing?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#will-characters-be-able-to-craft-new-objects">Will characters be able to craft new objects?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-mobs-npcs-have-some-sort-of-ai">Should mobs/NPCs have some sort of AI?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#are-npcs-and-mobs-different-entities-how-do-they-differ">Are NPCs and mobs different entities? How do they differ?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status">_Should there be NPCs giving quests? If so, how do you track Quest status?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#characters">Characters</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play">Can players have more than one Character active at a time or are they allowed to multi-play?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-does-the-character-generation-work">How does the character-generation work?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#how-do-you-implement-different-classes-or-races">How do you implement different “classes” or “races”?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected">If a Character can hide in a room, what skill will decide if they are detected?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying">What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#may-player-characters-attack-each-other-pvp">May player-characters attack each other (PvP)?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison">What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part2/Beginner-Tutorial-Planning-The-Tutorial-Game.html#conclusions">Conclusions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Part3/Beginner-Tutorial-Part3-Intro.html">Part 3: How we get there</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Part3/Beginner-Tutorial-Part3-Intro.html#lessons">Lessons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html">Code structure and Utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#folder-structure">Folder structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#enums">Enums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#utility-module">Utility module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#testing">Testing</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#running-your-test">Running your test</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html">Rules and dice rolling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#summary-of-knave-rules">Summary of <em>Knave</em> rules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#making-a-rule-module">Making a rule module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#rolling-dice">Rolling dice</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#generic-dice-roller">Generic dice roller</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#rolling-with-advantage">Rolling with advantage</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#saving-throws">Saving throws</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#opposed-saving-throw">Opposed saving throw</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#morale-check">Morale check</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#roll-for-healing">Roll for Healing</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#rolling-on-a-table">Rolling on a table</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#roll-for-death">Roll for death</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#testing">Testing</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#mocking-and-patching">Mocking and patching</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html">Player Characters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#inheritance-structure">Inheritance structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#living-mixin-class">Living mixin class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#character-class">Character class</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#funcparser-inlines">Funcparser inlines</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#backtracking">Backtracking</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#connecting-the-character-with-evennia">Connecting the Character with Evennia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#unit-testing">Unit Testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#about-races-and-classes">About races and classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html">In-game Objects and items</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#new-enums">New Enums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#the-base-object">The base object</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#using-attributes-or-not">Using Attributes or not</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#creating-tags-in-at-object-creation">Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#other-object-types">Other object types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#consumables">Consumables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#weapons">Weapons</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#magic">Magic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#armor">Armor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#your-bare-hands">Your Bare hands</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#testing-and-extra-credits">Testing and Extra credits</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html">Handling Equipment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#equipmenthandler-that-saves">EquipmentHandler that saves</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#connecting-the-equipmenthandler">Connecting the EquipmentHandler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#expanding-the-equipmenthandler">Expanding the Equipmenthandler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#validate-slot-usage"><code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#max-slots"><code class="docutils literal notranslate"><span class="pre">.max_slots</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#count-slots"><code class="docutils literal notranslate"><span class="pre">.count_slots</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#validating-slots">Validating slots</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#add-and-remove"><code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#moving-things-around">Moving things around</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#get-everything">Get everything</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#weapon-and-armor">Weapon and armor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#extra-credits">Extra credits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#unit-testing">Unit Testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html">Character Generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#how-it-will-work">How it will work</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#random-tables">Random tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#storing-state-of-the-menu">Storing state of the menu</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#showing-the-sheet">Showing the sheet</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#apply-character">Apply character</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#initializing-evmenu">Initializing EvMenu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#main-node-choosing-what-to-do">Main Node: Choosing what to do</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#node-changing-your-name">Node: Changing your name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#node-swapping-abilities-around">Node: Swapping Abilities around</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#node-creating-the-character">Node: Creating the Character</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#tying-the-nodes-together">Tying the nodes together</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#conclusions">Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Rooms.html">In-game Rooms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-NPCs.html">Non-Player-Characters (NPCs)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Quests.html">Game Quests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Shops.html">In-game Shops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Dungeon.html">Dynamically generated Dungeon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Commands.html">In-game Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Part3/Beginner-Tutorial-Part3-Intro.html#table-of-contents">Table of Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html">Code structure and Utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#folder-structure">Folder structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#enums">Enums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#utility-module">Utility module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#testing">Testing</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#running-your-test">Running your test</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Utilities.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html">Rules and dice rolling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#summary-of-knave-rules">Summary of <em>Knave</em> rules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#making-a-rule-module">Making a rule module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#rolling-dice">Rolling dice</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#generic-dice-roller">Generic dice roller</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#rolling-with-advantage">Rolling with advantage</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#saving-throws">Saving throws</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#opposed-saving-throw">Opposed saving throw</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#morale-check">Morale check</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#roll-for-healing">Roll for Healing</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#rolling-on-a-table">Rolling on a table</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#roll-for-death">Roll for death</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#testing">Testing</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#mocking-and-patching">Mocking and patching</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Rules.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html">Player Characters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#inheritance-structure">Inheritance structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#living-mixin-class">Living mixin class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#character-class">Character class</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#funcparser-inlines">Funcparser inlines</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#backtracking">Backtracking</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#connecting-the-character-with-evennia">Connecting the Character with Evennia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#unit-testing">Unit Testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#about-races-and-classes">About races and classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Characters.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html">In-game Objects and items</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#new-enums">New Enums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#the-base-object">The base object</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#using-attributes-or-not">Using Attributes or not</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#creating-tags-in-at-object-creation">Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#other-object-types">Other object types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#consumables">Consumables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#weapons">Weapons</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#magic">Magic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#armor">Armor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#your-bare-hands">Your Bare hands</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Objects.html#testing-and-extra-credits">Testing and Extra credits</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html">Handling Equipment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#equipmenthandler-that-saves">EquipmentHandler that saves</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#connecting-the-equipmenthandler">Connecting the EquipmentHandler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#expanding-the-equipmenthandler">Expanding the Equipmenthandler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#validate-slot-usage"><code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#max-slots"><code class="docutils literal notranslate"><span class="pre">.max_slots</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#count-slots"><code class="docutils literal notranslate"><span class="pre">.count_slots</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#validating-slots">Validating slots</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#add-and-remove"><code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#moving-things-around">Moving things around</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#get-everything">Get everything</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#weapon-and-armor">Weapon and armor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#extra-credits">Extra credits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#unit-testing">Unit Testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Equipment.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html">Character Generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#how-it-will-work">How it will work</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#random-tables">Random tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#storing-state-of-the-menu">Storing state of the menu</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#showing-the-sheet">Showing the sheet</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#apply-character">Apply character</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#initializing-evmenu">Initializing EvMenu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#main-node-choosing-what-to-do">Main Node: Choosing what to do</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#node-changing-your-name">Node: Changing your name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#node-swapping-abilities-around">Node: Swapping Abilities around</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#node-creating-the-character">Node: Creating the Character</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#tying-the-nodes-together">Tying the nodes together</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part3/Beginner-Tutorial-Chargen.html#conclusions">Conclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Rooms.html">In-game Rooms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-NPCs.html">Non-Player-Characters (NPCs)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Quests.html">Game Quests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Shops.html">In-game Shops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Dungeon.html">Dynamically generated Dungeon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Part3/Beginner-Tutorial-Commands.html">In-game Commands</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Part4/Beginner-Tutorial-Part4-Intro.html">Part 4: Using what we created</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Part4/Beginner-Tutorial-Part4-Intro.html#lessons">Lessons</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Part4/Beginner-Tutorial-Part4-Intro.html#table-of-contents">Table of Contents</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Part5/Beginner-Tutorial-Part5-Intro.html">Part 5: Showing the world</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Part5/Beginner-Tutorial-Part5-Intro.html#lessons">Lessons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Part5/Add-a-simple-new-web-page.html">Add a simple new web page</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Add-a-simple-new-web-page.html#create-the-view">Create the view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Add-a-simple-new-web-page.html#the-html-page">The HTML page</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Add-a-simple-new-web-page.html#the-url">The URL</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part5/Web-Tutorial.html">Web Tutorial</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Web-Tutorial.html#a-basic-overview">A Basic Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Web-Tutorial.html#changing-the-logo-on-the-front-page">Changing the logo on the front page</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Web-Tutorial.html#changing-the-front-pages-text">Changing the Front Page’s Text</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Web-Tutorial.html#further-reading">Further reading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Part5/Beginner-Tutorial-Part5-Intro.html#table-of-contents">Table of Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Part5/Add-a-simple-new-web-page.html">Add a simple new web page</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Add-a-simple-new-web-page.html#create-the-view">Create the view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Add-a-simple-new-web-page.html#the-html-page">The HTML page</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Add-a-simple-new-web-page.html#the-url">The URL</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Part5/Web-Tutorial.html">Web Tutorial</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Web-Tutorial.html#a-basic-overview">A Basic Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Web-Tutorial.html#changing-the-logo-on-the-front-page">Changing the logo on the front page</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Web-Tutorial.html#changing-the-front-pages-text">Changing the Front Page’s Text</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Part5/Web-Tutorial.html#further-reading">Further reading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</details></section>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Part1/Beginner-Tutorial-Part1-Intro.html" title="Part 1: What we have"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../Howtos-Overview.html" title="Tutorials and Howto’s"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Beginner Tutorial</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

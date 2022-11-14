@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.tutorials.evadventure.dungeon &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.dungeon</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="dungeon.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.tutorials.evadventure.dungeon</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dungeon system</span>
+
+<span class="sd">This creates a procedurally generated dungeon.</span>
+
+<span class="sd">The dungone originates in an entrance room with exits that spawn a new dungeon connection every X</span>
+<span class="sd">minutes. As long as characters go through the same exit within that time, they will all end up in</span>
+<span class="sd">the same dungeon &#39;branch&#39;, otherwise they will go into separate, un-connected dungeon &#39;branches&#39;.</span>
+<span class="sd">They can always go back to the start room, but this will become a one-way exit back.</span>
+
+<span class="sd">When moving through the dungeon, a new room is not generated until characters</span>
+<span class="sd">decided to go in that direction. Each room is tagged with the specific &#39;instance&#39;</span>
+<span class="sd">id of that particular branch of dungon. When no characters remain in the branch,</span>
+<span class="sd">the branch is deleted.</span>
+
+<span class="sd">Each room in the dungeon starts with a Tag `not_clear`; while this is set, all exits out</span>
+<span class="sd">of the room (not the one they came from) is blocked. When whatever problem the room</span>
+<span class="sd">offers has been solved (such as a puzzle or a battle), the tag is removed and the player(s)</span>
+<span class="sd">can choose which exit to leave through.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span><span class="p">,</span> <span class="n">random</span><span class="p">,</span> <span class="n">shuffle</span>
+
+<span class="kn">from</span> <span class="nn">evennia.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultExit</span>
+<span class="kn">from</span> <span class="nn">evennia.scripts.scripts</span> <span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="kn">from</span> <span class="nn">evennia.typeclasses.attributes</span> <span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">search</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">inherits_from</span>
+
+<span class="kn">from</span> <span class="nn">.rooms</span> <span class="kn">import</span> <span class="n">EvAdventureRoom</span>
+
+<span class="c1"># aliases for cardinal directions</span>
+<span class="n">_AVAILABLE_DIRECTIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">,</span>
+    <span class="c1"># commented out to make the dungeon simpler to navigate</span>
+    <span class="c1"># &quot;northeast&quot;, &quot;southeast&quot;, &quot;southwest&quot;, &quot;northwest&quot;,</span>
+<span class="p">]</span>
+
+<span class="n">_EXIT_ALIASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;northeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;ne&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;southeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;se&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;southwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;sw&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;northwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;nw&quot;</span><span class="p">,),</span>
+<span class="p">}</span>
+<span class="c1"># finding the reverse cardinal direction</span>
+<span class="n">_EXIT_REVERSE_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="s2">&quot;south&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="s2">&quot;west&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="s2">&quot;north&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="s2">&quot;east&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;northeast&quot;</span><span class="p">:</span> <span class="s2">&quot;southwest&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;southeast&quot;</span><span class="p">:</span> <span class="s2">&quot;northwest&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;southwest&quot;</span><span class="p">:</span> <span class="s2">&quot;northeast&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;northwest&quot;</span><span class="p">:</span> <span class="s2">&quot;southeast&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># how xy coordinate shifts by going in direction</span>
+<span class="n">_EXIT_GRID_SHIFT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;northeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;southeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;southwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;northwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<span class="c1"># --------------------------------------------------</span>
+<span class="c1"># Dungeon orchestrator and room / exits</span>
+<span class="c1"># --------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="EvAdventureDungeonRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonRoom</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dangerous dungeon room.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">allow_combat</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">allow_death</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># dungeon generation attributes; set when room is created</span>
+    <span class="n">back_exit</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">dungeon_orchestrator</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">xy_coords</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_room_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="EvAdventureDungeonRoom.clear_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.clear_room">[docs]</a>    <span class="k">def</span> <span class="nf">clear_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonRoom.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the `not_clear` tag on the room. This is removed when the room is</span>
+<span class="sd">        &#39;cleared&#39;, whatever that means for each room.</span>
+
+<span class="sd">        We put this here rather than in the room-creation code so we can override</span>
+<span class="sd">        easier (for example we may want an empty room which auto-clears).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonRoom.get_display_footer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonRoom.get_display_footer">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show if the room is &#39;cleared&#39; or not as part of its description.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_room_clear</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;|rThe path forwards is blocked!|n&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="EvAdventureDungeonExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dungeon exit. This will not create the target room until it&#39;s traversed.</span>
+<span class="sd">    It must be created referencing the dungeon_orchestrator it belongs to.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EvAdventureDungeonExit.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We want to block progressing forward unless the room is clear.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;traverse:not objloctag(not_clear, dungeon_room)&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonExit.at_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when traversing. `target_location` will be None if the</span>
+<span class="sd">        target was not yet created.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">target_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span>
+                <span class="bp">self</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonExit.at_failed_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonExit.at_failed_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when failing to traverse.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get through this way yet!&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="room_generator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.room_generator">[docs]</a><span class="k">def</span> <span class="nf">room_generator</span><span class="p">(</span><span class="n">dungeon_orchestrator</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plugin room generator</span>
+
+<span class="sd">    This default one returns the same empty room.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dungeon_orchestrator (EvAdventureDungeonOrchestrator): The current orchestrator.</span>
+<span class="sd">        depth (int): The &#39;depth&#39; of the dungeon (radial distance from start room) this</span>
+<span class="sd">            new room will be placed at.</span>
+<span class="sd">        coords (tuple): The `(x,y)` coords that the new room will be created at.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">EvAdventureDungeonRoom</span>
+
+    <span class="c1"># simple map of depth to name and desc of room</span>
+    <span class="n">name_depth_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Water-logged passage&quot;</span><span class="p">,</span> <span class="s2">&quot;This earth-walled passage is dripping of water.&quot;</span><span class="p">),</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Passage with roots&quot;</span><span class="p">,</span> <span class="s2">&quot;Roots are pushing through the earth walls.&quot;</span><span class="p">),</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Hardened clay passage&quot;</span><span class="p">,</span> <span class="s2">&quot;The walls of this passage is of hardened clay.&quot;</span><span class="p">),</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Clay with stones&quot;</span><span class="p">,</span> <span class="s2">&quot;This passage has clay with pieces of stone embedded.&quot;</span><span class="p">),</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Stone passage&quot;</span><span class="p">,</span> <span class="s2">&quot;Walls are crumbling stone, with roots passing through it.&quot;</span><span class="p">),</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Stone hallway&quot;</span><span class="p">,</span> <span class="s2">&quot;Walls are cut from rough stone.&quot;</span><span class="p">),</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Stone rooms&quot;</span><span class="p">,</span> <span class="s2">&quot;A stone room, built from crude and heavy blocks.&quot;</span><span class="p">),</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Granite hall&quot;</span><span class="p">,</span> <span class="s2">&quot;The walls are of well-fitted granite blocks.&quot;</span><span class="p">),</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Marble passages&quot;</span><span class="p">,</span> <span class="s2">&quot;The walls are blank and shiny marble.&quot;</span><span class="p">),</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Furnished rooms&quot;</span><span class="p">,</span> <span class="s2">&quot;The marble walls have tapestries and furnishings.&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">key</span><span class="p">,</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">name_depth_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Dark rooms&quot;</span><span class="p">,</span> <span class="s2">&quot;There is very dark here.&quot;</span><span class="p">))</span>
+
+    <span class="n">new_room</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
+        <span class="n">room_typeclass</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;xy_coords&quot;</span><span class="p">,</span> <span class="n">coords</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;dungeon_orchestrator&quot;</span><span class="p">,</span> <span class="n">dungeon_orchestrator</span><span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_room</span></div>
+
+
+<div class="viewcode-block" id="EvAdventureDungeonOrchestrator"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonOrchestrator</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    One script is created per dungeon &#39;branch&#39; created. The orchestrator is</span>
+<span class="sd">    responsible for determining what is created next when a character enters an</span>
+<span class="sd">    exit within the dungeon.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># this determines how branching the dungeon will be</span>
+    <span class="n">max_unexplored_exits</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">max_new_exits_per_room</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">rooms</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">())</span>
+    <span class="n">unvisited_exits</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">())</span>
+    <span class="n">highest_depth</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">last_updated</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())</span>
+
+    <span class="c1"># the room-generator function; copied from the same-name value on the start-room when the</span>
+    <span class="c1"># orchestrator is first created</span>
+    <span class="n">room_generator</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># (x,y): room coordinates used up by orchestrator</span>
+    <span class="n">xy_grid</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">dict</span><span class="p">())</span>
+    <span class="n">start_room</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EvAdventureDungeonOrchestrator.register_exit_traversed"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.register_exit_traversed">[docs]</a>    <span class="k">def</span> <span class="nf">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tell the system the given exit was traversed. This allows us to track how many unvisited</span>
+<span class="sd">        paths we have so as to not have it grow exponentially.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonOrchestrator.create_out_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.create_out_exit">[docs]</a>    <span class="k">def</span> <span class="nf">create_out_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">exit_direction</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create outgoing exit from a room. The target room is not yet created.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out_exit</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
+            <span class="n">EvAdventureDungeonExit</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">exit_direction</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+            <span class="n">aliases</span><span class="o">=</span><span class="n">_EXIT_ALIASES</span><span class="p">[</span><span class="n">exit_direction</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_exit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonOrchestrator.delete"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clean up the entire dungeon along with the orchestrator.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># first secure all characters in this branch back to the start room</span>
+        <span class="n">characters</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
+        <span class="n">start_room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_room</span>
+        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+            <span class="n">start_room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+                <span class="s2">&quot;Suddenly someone stumbles out of a dark exit, covered in dust!&quot;</span>
+            <span class="p">)</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">start_room</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;|rAfter a long time of silence, the room suddenly rumbles and then collapses! &quot;</span>
+                <span class="s2">&quot;All turns dark ...|n</span><span class="se">\n\n</span><span class="s2">Then you realize you are back where you started.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
+        <span class="c1"># next delete all rooms in the dungeon (this will also delete exits)</span>
+        <span class="n">rooms</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">rooms</span><span class="p">:</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="c1"># finally delete the orchestrator itself</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonOrchestrator.new_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonOrchestrator.new_room">[docs]</a>    <span class="k">def</span> <span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new Dungeon room leading from the provided exit.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_exit (Exit): The exit leading to this new room.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="c1"># figure out coordinate of old room and figure out what coord the</span>
+        <span class="c1"># new one would get</span>
+        <span class="n">source_location</span> <span class="o">=</span> <span class="n">from_exit</span><span class="o">.</span><span class="n">location</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">source_location</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xy_coords&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_EXIT_GRID_SHIFT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">from_exit</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span>
+
+        <span class="c1"># the dungeon&#39;s depth acts as a measure of the current difficulty level. This is the radial</span>
+        <span class="c1"># distance from the (0, 0) (the entrance). The Orchestrator also tracks the highest</span>
+        <span class="c1"># depth achieved.</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">new_x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">new_y</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">new_room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="p">(</span><span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xy_grid</span><span class="p">[(</span><span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">)]</span> <span class="o">=</span> <span class="n">new_room</span>
+
+        <span class="c1"># always make a return exit back to where we came from</span>
+        <span class="n">back_exit_key</span> <span class="o">=</span> <span class="n">_EXIT_REVERSE_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">from_exit</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">)</span>
+        <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
+            <span class="n">EvAdventureDungeonExit</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">back_exit_key</span><span class="p">,</span>
+            <span class="n">aliases</span><span class="o">=</span><span class="n">_EXIT_ALIASES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">back_exit_key</span><span class="p">,</span> <span class="p">()),</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">new_room</span><span class="p">,</span>
+            <span class="n">destination</span><span class="o">=</span><span class="n">from_exit</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;desc&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;A dark passage.&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="c1"># we default to allowing back-tracking (also used for fleeing)</span>
+            <span class="n">locks</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;traverse: true()&quot;</span><span class="p">,),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># figure out what other exits should be here, if any</span>
+        <span class="n">n_unexplored</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n_unexplored</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_unexplored_exits</span><span class="p">:</span>
+            <span class="c1"># we have a budget of unexplored exits to open</span>
+            <span class="n">n_exits</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_new_exits_per_room</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_unexplored_exits</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_exits</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">n_exits</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_exits</span><span class="p">)</span>
+            <span class="n">available_directions</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">direction</span> <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DIRECTIONS</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">!=</span> <span class="n">back_exit_key</span>
+            <span class="p">]</span>
+            <span class="c1"># randomize order of exits</span>
+            <span class="n">shuffle</span><span class="p">(</span><span class="n">available_directions</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_exits</span><span class="p">):</span>
+                <span class="k">while</span> <span class="n">available_directions</span><span class="p">:</span>
+                    <span class="c1"># get a random direction and check so there isn&#39;t a room already</span>
+                    <span class="c1"># created in that direction</span>
+                    <span class="n">direction</span> <span class="o">=</span> <span class="n">available_directions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_EXIT_GRID_SHIFT</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+                    <span class="n">target_coord</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">new_y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">target_coord</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">xy_grid</span> <span class="ow">and</span> <span class="n">target_coord</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                        <span class="c1"># no room there (and not back to start room) - make an exit to it</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">create_out_exit</span><span class="p">(</span><span class="n">new_room</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+                        <span class="c1"># we create this to avoid other rooms linking here, but don&#39;t create the</span>
+                        <span class="c1"># room yet</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">xy_grid</span><span class="p">[</span><span class="n">target_coord</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">highest_depth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highest_depth</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_room</span></div></div>
+
+
+<span class="c1"># --------------------------------------------------</span>
+<span class="c1"># Start room</span>
+<span class="c1"># --------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="EvAdventureDungeonStartRoomExit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoomExit">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonStartRoomExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Traversing this exit will either lead to an existing dungeon branch or create</span>
+<span class="sd">    a new one.</span>
+
+<span class="sd">    Since exits need to have a destination, we start out having them loop back to</span>
+<span class="sd">    the same location and change this whenever someone actually traverse them. The</span>
+<span class="sd">    act of passing through creates a room on the other side.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EvAdventureDungeonStartRoomExit.reset_exit"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoomExit.reset_exit">[docs]</a>    <span class="k">def</span> <span class="nf">reset_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flush the exit, so next traversal creates a new dungeon branch.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonStartRoomExit.at_traverse"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoomExit.at_traverse">[docs]</a>    <span class="k">def</span> <span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When traversing create a new orchestrator if one is not already assigned.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">target_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="c1"># make a global orchestrator script for this dungeon branch</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">room_generator</span>
+            <span class="n">dungeon_orchestrator</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
+                <span class="n">EvAdventureDungeonOrchestrator</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;dungeon_orchestrator_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;start_room&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;room_generator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">room_generator</span><span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="c1"># make sure to tag character when entering so we can find them again later</span>
+            <span class="n">traversing_object</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dungeon_orchestrator</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="EvAdventureStartRoomResetter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureStartRoomResetter">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureStartRoomResetter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple ticker-script. Introduces a chance of the room&#39;s exits cycling every interval.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EvAdventureStartRoomResetter.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureStartRoomResetter.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure_dungeon_startroom_resetter&quot;</span></div>
+
+<div class="viewcode-block" id="EvAdventureStartRoomResetter.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureStartRoomResetter.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called every time the script repeats.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+        <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">exi</span><span class="p">,</span> <span class="n">EvAdventureDungeonStartRoomExit</span><span class="p">)</span> <span class="ow">and</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                <span class="n">exi</span><span class="o">.</span><span class="n">reset_exit</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonBranchDeleter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleanup script. After some time a dungeon branch will &#39;collapse&#39;, forcing all players in it</span>
+<span class="sd">    back to the start room.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># set at creation time when the start room is created</span>
+    <span class="n">branch_max_life</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter.at_script_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_script_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure_dungeon_branch_deleter&quot;</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonBranchDeleter.at_repeat"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonBranchDeleter.at_repeat">[docs]</a>    <span class="k">def</span> <span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Go through all dungeon-orchestrators and find which ones are too old.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">max_dt</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_max_life</span><span class="p">)</span>
+        <span class="n">max_allowed_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">max_dt</span>
+
+        <span class="k">for</span> <span class="n">orchestrator</span> <span class="ow">in</span> <span class="n">EvAdventureDungeonOrchestrator</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">orchestrator</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">&lt;</span> <span class="n">max_allowed_date</span><span class="p">:</span>
+                <span class="c1"># orchestrator is too old; tell it to clean up and delete itself</span>
+                <span class="n">orchestrator</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="EvAdventureDungeonStartRoom"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoom">[docs]</a><span class="k">class</span> <span class="nc">EvAdventureDungeonStartRoom</span><span class="p">(</span><span class="n">EvAdventureDungeonRoom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The start room is the only permanent part of the dungeon. Exits leading from this room (except</span>
+<span class="sd">    one leading back outside) each create/links to a separate dungeon branch/instance.</span>
+
+<span class="sd">    - A script will reset each exit every 5 mins; after that time, entering the exit will spawn</span>
+<span class="sd">        a new branch-instance instead of leading to the one before.</span>
+<span class="sd">    - Another script will check age of branch instance every hour; once an instance has been</span>
+<span class="sd">        inactive for a week, it will &#39;collapse&#39;, forcing everyone inside back to the start room.</span>
+
+<span class="sd">    The actual exits should be created in the build script.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">recycle_time</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># 5 mins</span>
+    <span class="n">branch_check_time</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>  <span class="c1"># one hour</span>
+    <span class="n">branch_max_life</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">7</span>  <span class="c1"># 1 week</span>
+
+    <span class="c1"># allow for a custom room_generator function</span>
+    <span class="n">room_generator</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">room_generator</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EvAdventureDungeonStartRoom.get_display_footer"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoom.get_display_footer">[docs]</a>    <span class="k">def</span> <span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;|yYou sense that if you want to team up, &quot;</span>
+            <span class="s2">&quot;you must all pick the same path from here ... or you&#39;ll quickly get separated.|n&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonStartRoom.at_object_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoom.at_object_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># want to set the script interval on creation time, so we use create_script with obj=self</span>
+        <span class="c1"># instead of self.scripts.add() here</span>
+        <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
+            <span class="n">EvAdventureStartRoomResetter</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recycle_time</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
+            <span class="n">EvAdventureDungeonBranchDeleter</span><span class="p">,</span>
+            <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_check_time</span><span class="p">,</span>
+            <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="p">((</span><span class="s2">&quot;branch_max_life&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_max_life</span><span class="p">),),</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EvAdventureDungeonStartRoom.at_object_receive"><a class="viewcode-back" href="../../../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia.contrib.tutorials.evadventure.dungeon.EvAdventureDungeonStartRoom.at_object_receive">[docs]</a>    <span class="k">def</span> <span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure to clean the dungeon branch-tag from characters when leaving a dungeon branch.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.dungeon</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

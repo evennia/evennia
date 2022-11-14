@@ -1,0 +1,875 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Making a sittable object &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Core Components" href="../Components/Components-Overview.html" />
+    <link rel="prev" title="Turn based Combat System" href="Turn-based-Combat-System.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../Components/Components-Overview.html" title="Core Components"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Turn-based-Combat-System.html" title="Turn based Combat System"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Making a sittable object</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Making a sittable object</a><ul>
+<li><a class="reference internal" href="#dont-move-us-when-resting">Don’t move us when resting</a></li>
+<li><a class="reference internal" href="#making-the-chair-itself">Making the Chair itself</a></li>
+<li><a class="reference internal" href="#command-variant-1-commands-on-the-chair">Command variant 1: Commands on the chair</a></li>
+<li><a class="reference internal" href="#command-variant-2-command-on-character">Command variant 2: Command on Character</a></li>
+<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Turn-based-Combat-System.html"
+                        title="previous chapter">Turn based Combat System</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../Components/Components-Overview.html"
+                        title="next chapter">Core Components</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Howtos/A-Sittable-Object.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="A-Sittable-Object.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p><a class="reference internal" href="../Unimplemented.html"><span class="doc std std-doc">prev lesson</span></a> | <a class="reference internal" href="../Unimplemented.html"><span class="doc std std-doc">next lesson</span></a></p>
+<section class="tex2jax_ignore mathjax_ignore" id="making-a-sittable-object">
+<h1>Making a sittable object<a class="headerlink" href="#making-a-sittable-object" title="Permalink to this headline">¶</a></h1>
+<p>In this lesson we will go through how to make a chair you can sit on. Sounds easy, right?
+Well it is. But in the process of making the chair we will need to consider the various ways
+to do it depending on how we want our game to work.</p>
+<p>The goals of this lesson are as follows:</p>
+<ul class="simple">
+<li><p>We want a new ‘sittable’ object, a Chair in particular”.</p></li>
+<li><p>We want to be able to use a command to sit in the chair.</p></li>
+<li><p>Once we are sitting in the chair it should affect us somehow. To demonstrate this we’ll
+set a flag “Resting” on the Character sitting in the Chair.</p></li>
+<li><p>When you sit down you should not be able to walk to another room without first standing up.</p></li>
+<li><p>A character should be able to stand up and move away from the chair.</p></li>
+</ul>
+<p>There are two main ways to design the commands for sitting and standing up.</p>
+<ul class="simple">
+<li><p>You can store the commands on the chair so they are only available when a chair is in the room</p></li>
+<li><p>You can store the commands on the Character so they are always available and you must always specify
+which chair to sit on.</p></li>
+</ul>
+<p>Both of these are very useful to know about, so in this lesson we’ll try both. But first
+we need to handle some basics.</p>
+<section id="dont-move-us-when-resting">
+<h2>Don’t move us when resting<a class="headerlink" href="#dont-move-us-when-resting" title="Permalink to this headline">¶</a></h2>
+<p>When you are sitting in a chair you can’t just walk off without first standing up.
+This requires a change to our Character typeclass. Open <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+    <span class="k">def</span> <span class="nf">at_pre_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Called by self.move_to when trying to move somewhere. If this returns</span>
+<span class="sd">       False, the move is immediately cancelled.</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+       <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span><span class="p">:</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t go anywhere while resting.&quot;</span><span class="p">)</span>
+           <span class="k">return</span> <span class="kc">False</span>
+       <span class="k">return</span> <span class="kc">True</span>
+
+</pre></div>
+</div>
+<p>When moving somewhere, <a class="reference internal" href="../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to" title="evennia.objects.objects.DefaultObject.move_to"><span class="xref myst py py-meth">character.move_to</span></a> is called. This in turn
+will call <code class="docutils literal notranslate"><span class="pre">character.at_pre_move</span></code>. Here we look for an Attribute <code class="docutils literal notranslate"><span class="pre">is_resting</span></code> (which we will assign below)
+to determine if we are stuck on the chair or not.</p>
+</section>
+<section id="making-the-chair-itself">
+<h2>Making the Chair itself<a class="headerlink" href="#making-the-chair-itself" title="Permalink to this headline">¶</a></h2>
+<p>Next we need the Chair itself, or rather a whole family of “things you can sit on” that we will call
+<em>sittables</em>. We can’t just use a default Object since we want a sittable to contain some custom code. We need
+a new, custom Typeclass. Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/sittables.py</span></code> with the following content:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+
+<span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">do_sit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when trying to sit on/in this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sitter (Object): The one trying to sit down.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
+        <span class="k">if</span> <span class="n">current</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="n">sitter</span><span class="p">:</span>
+                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are already sitting on </span><span class="si">{self.key}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You can&#39;t sit on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is already sitting there!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="n">sitter</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stander</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when trying to stand from this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stander (Object): The one trying to stand up.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stander</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we have a small Typeclass that handles someone trying to sit on it. It has two methods that we can simply
+call from a Command later. We set the <code class="docutils literal notranslate"><span class="pre">is_resting</span></code> Attribute on the one sitting down.</p>
+<p>One could imagine that one could have the future <code class="docutils literal notranslate"><span class="pre">sit</span></code> command check if someone is already sitting in the
+chair instead. This would work too, but letting the <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> class handle the logic around who can sit on it makes
+logical sense.</p>
+<p>We let the typeclass handle the logic, and also let it do all the return messaging. This makes it easy to churn out
+a bunch of chairs for people to sit on. But it’s not perfect. The <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> class is general. What if you want to
+make an armchair. You sit “in” an armchair rather than “on” it. We <em>could</em> make a child class of <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> named
+<code class="docutils literal notranslate"><span class="pre">SittableIn</span></code> that makes this change, but that feels excessive. Instead we will make it so that Sittables can
+modify this per-instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+
+<span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># do you sit &quot;on&quot; or &quot;in&quot; this object?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span>
+
+    <span class="k">def</span> <span class="nf">do_sit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when trying to sit on/in this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sitter (Object): The one trying to sit down.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">adjective</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
+        <span class="k">if</span> <span class="n">current</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="n">sitter</span><span class="p">:</span>
+                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are already sitting </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;You can&#39;t sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is already sitting there!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="n">sitter</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stander</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when trying to stand from this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stander (Object): The one trying to stand up.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stander</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We added a new Attribute <code class="docutils literal notranslate"><span class="pre">adjective</span></code> which will probably usually be <code class="docutils literal notranslate"><span class="pre">in</span></code> or <code class="docutils literal notranslate"><span class="pre">on</span></code> but could also be <code class="docutils literal notranslate"><span class="pre">at</span></code> if you
+want to be able to sit <em>at a desk</em> for example. A regular builder would use it like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop armchair : sittables.Sittable
+&gt; set armchair/adjective = in
+</pre></div>
+</div>
+<p>This is probably enough. But all those strings are hard-coded. What if we want some more dramatic flair when you
+sit down?</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You sit down and a whoopie cushion makes a loud fart noise!
+</pre></div>
+</div>
+<p>For this we need to allow some further customization. Let’s let the current strings be defaults that
+we can replace.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+
+<span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object one can sit on</span>
+
+<span class="sd">    Customizable Attributes:</span>
+<span class="sd">       adjective: How to sit (on, in, at etc)</span>
+<span class="sd">    Return messages (set as Attributes):</span>
+<span class="sd">       msg_already_sitting: Already sitting here</span>
+<span class="sd">            format tokens {adjective} and {key}</span>
+<span class="sd">       msg_other_sitting: Someone else is sitting here.</span>
+<span class="sd">            format tokens {adjective}, {key} and {other}</span>
+<span class="sd">       msg_sitting_down: Successfully sit down</span>
+<span class="sd">            format tokens {adjective}, {key}</span>
+<span class="sd">       msg_standing_fail: Fail to stand because not sitting.</span>
+<span class="sd">            format tokens {adjective}, {key}</span>
+<span class="sd">       msg_standing_up: Successfully stand up</span>
+<span class="sd">            format tokens {adjective}, {key}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># do you sit &quot;on&quot; or &quot;in&quot; this object?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span>
+
+    <span class="k">def</span> <span class="nf">do_sit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when trying to sit on/in this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sitter (Object): The one trying to sit down.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">adjective</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
+        <span class="k">if</span> <span class="n">current</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">current</span> <span class="o">==</span> <span class="n">sitter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_already_sitting</span><span class="p">:</span>
+                    <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_already_sitting</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">adjective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are already sitting </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_other_sitting</span><span class="p">:</span>
+                    <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_already_sitting</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">other</span><span class="o">=</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">adjective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You can&#39;t sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">current</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> is already sitting there!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="n">sitter</span>
+        <span class="n">sitter</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_sitting_down</span><span class="p">:</span>
+            <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_sitting_down</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">adjective</span><span class="o">=</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sitter</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You sit </span><span class="si">{</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stander</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when trying to stand from this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stander (Object): The one trying to stand up.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stander</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_standing_fail</span><span class="p">:</span>
+                <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_standing_fail</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">adjective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You are not sitting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">stander</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">is_resting</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_standing_up</span><span class="p">:</span>
+                <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">msg_standing_up</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">adjective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">stander</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You stand up from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we really went all out with flexibility. If you need this much is up to you.
+We added a bunch of optional Attributes to hold alternative versions of all the messages.
+There are some things to note:</p>
+<ul>
+<li><p>We don’t actually initiate those Attributes in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>. This is a simple
+optimization. The assumption is that <em>most</em> chairs will probably not be this customized.
+So initiating a bunch of Attributes to, say, empty strings would be a lot of useless database calls.
+The drawback is that the available Attributes become less visible when reading the code. So we add a long
+describing docstring to the end to explain all you can use.</p></li>
+<li><p>We use <code class="docutils literal notranslate"><span class="pre">.format</span></code> to inject formatting-tokens in the text. The good thing about such formatting
+markers is that they are <em>optional</em>. They are there if you want them, but Python will not complain
+if you don’t include some or any of them. Let’s see an example:</p>
+<blockquote>
+<div><p>reload   # if you have new code
+create/drop armchair : sittables.Sittable
+set armchair/adjective = in
+set armchair/msg_sitting_down = As you sit down {adjective} {key}, life feels easier.
+set armchair/msg_standing_up = You stand up from {key}. Life resumes.</p>
+</div></blockquote>
+</li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">{key}</span></code> and <code class="docutils literal notranslate"><span class="pre">{adjective}</span></code> are examples of optional formatting markers. Whenever the message is
+returned, the format-tokens within will be replaced with <code class="docutils literal notranslate"><span class="pre">armchair</span></code> and <code class="docutils literal notranslate"><span class="pre">in</span></code> respectively. Should we
+rename the chair later, this will show in the messages automatically (since <code class="docutils literal notranslate"><span class="pre">{key}</span></code> will change).</p>
+<p>We have no Command to use this chair yet. But we can try it out with <code class="docutils literal notranslate"><span class="pre">py</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.search(&quot;armchair&quot;).do_sit(self)
+As you sit down in armchair, life feels easier.
+&gt; self.db.resting
+True
+&gt; py self.search(&quot;armchair&quot;).do_stand(self)
+You stand up from armchair. Life resumes
+&gt; self.db.resting
+False
+</pre></div>
+</div>
+<p>If you follow along and get a result like this, all seems to be working well!</p>
+</section>
+<section id="command-variant-1-commands-on-the-chair">
+<h2>Command variant 1: Commands on the chair<a class="headerlink" href="#command-variant-1-commands-on-the-chair" title="Permalink to this headline">¶</a></h2>
+<p>This way to implement <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> puts new cmdsets on the Sittable itself.
+As we’ve learned before, commands on objects are made available to others in the room.
+This makes the command easy but instead adds some complexity in the management of the CmdSet.</p>
+<p>This is how it will look if <code class="docutils literal notranslate"><span class="pre">armchair</span></code> is in the room:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit
+As you sit down in armchair, life feels easier.
+</pre></div>
+</div>
+<p>What happens if there are sittables <code class="docutils literal notranslate"><span class="pre">sofa</span></code> and <code class="docutils literal notranslate"><span class="pre">barstool</span></code> also in the room? Evennia will automatically
+handle this for us and allow us to specify which one we want:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit
+More than one match for &#39;sit&#39; (please narrow target):
+ sit-1 (armchair)
+ sit-2 (sofa)
+ sit-3 (barstool)
+&gt; sit-1
+As you sit down in armchair, life feels easier.
+</pre></div>
+</div>
+<p>To keep things separate we’ll make a new module <code class="docutils literal notranslate"><span class="pre">mygame/commands/sittables.py</span></code>:</p>
+<aside class="sidebar">
+<p class="sidebar-title">Separate Commands and Typeclasses?</p>
+<p>You can organize these things as you like. If you wanted you could put the sit-command + cmdset together with the <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> typeclass in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/sittables.py</span></code>. That has the advantage of keeping everything related to sitting in one place. But there is also some organizational merit to keeping all Commands in one place as we do here.</p>
+</aside>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
+
+<span class="k">class</span> <span class="nc">CmdSit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sit down.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;sit&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">CmdStand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Stand up.</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;stand&quot;</span>
+     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CmdSetSit</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdStand</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>As seen, the commands are nearly trivial. <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> is the object to which we added the cmdset with this
+Command (so for example a chair). We just call the <code class="docutils literal notranslate"><span class="pre">do_sit/stand</span></code> on that object and the <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> will
+do the rest.</p>
+<p>Why that <code class="docutils literal notranslate"><span class="pre">priority</span> <span class="pre">=</span> <span class="pre">1</span></code> on <code class="docutils literal notranslate"><span class="pre">CmdSetSit</span></code>? This makes same-named Commands from this cmdset merge with a bit higher
+priority than Commands from the Character-cmdset. Why this is a good idea will become clear shortly.</p>
+<p>We also need to make a change to our <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> typeclass. Open <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/sittables.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">commands.sittables</span> <span class="kn">import</span> <span class="n">CmdSetSit</span>  <span class="c1"># &lt;- new</span>
+
+<span class="k">class</span> <span class="nc">Sittable</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (docstring)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># do you sit &quot;on&quot; or &quot;in&quot; this object?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">adjective</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">CmdSetSit</span><span class="p">)</span>  <span class="c1"># &lt;- new</span>
+</pre></div>
+</div>
+<p>Any <em>new</em> Sittables will now have your <code class="docutils literal notranslate"><span class="pre">sit</span></code> Command. Your existing <code class="docutils literal notranslate"><span class="pre">armchair</span></code> will not,
+since <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> will not re-run for already existing objects. We can update it manually:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; update armchair
+</pre></div>
+</div>
+<p>We could also update all existing sittables (all on one line):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py from typeclasses.sittables import Sittable ;
+       [sittable.at_object_creation() for sittable in Sittable.objects.all()]
+</pre></div>
+</div>
+<blockquote>
+<div><p>The above shows an example of a <em>list comprehension</em>. Think of it as an efficient way to construct a new list
+all in one line. You can read more about list comprehensions
+<a class="reference external" href="https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions">here in the Python docs</a>.</p>
+</div></blockquote>
+<p>We should now be able to use <code class="docutils literal notranslate"><span class="pre">sit</span></code> while in the room with the armchair.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit
+As you sit down in armchair, life feels easier.
+&gt; stand
+You stand up from armchair.
+</pre></div>
+</div>
+<p>One issue with placing the <code class="docutils literal notranslate"><span class="pre">sit</span></code> (or <code class="docutils literal notranslate"><span class="pre">stand</span></code>) Command “on” the chair is that it will not be available when in a
+room without a Sittable object:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit
+Command &#39;sit&#39; is not available. ...
+</pre></div>
+</div>
+<p>This is practical but not so good-looking; it makes it harder for the user to know a <code class="docutils literal notranslate"><span class="pre">sit</span></code> action is at all
+possible. Here is a trick for fixing this. Let’s add <em>another</em> Command to the bottom
+of <code class="docutils literal notranslate"><span class="pre">mygame/commands/sittables.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">CmdNoSitStand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sit down or Stand up</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;sit&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;stand&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdname</span> <span class="o">==</span> <span class="s2">&quot;sit&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have nothing to sit on.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not sitting down.&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Here we have a Command that is actually two - it will answer to both <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> since we
+added <code class="docutils literal notranslate"><span class="pre">stand</span></code> to its <code class="docutils literal notranslate"><span class="pre">aliases</span></code>. In the command we look at <code class="docutils literal notranslate"><span class="pre">self.cmdname</span></code>, which is the string
+<em>actually used</em> to call this command. We use this to return different messages.</p>
+<p>We don’t need a separate CmdSet for this, instead we will add this
+to the default Character cmdset. Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">sittables</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (docstring)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sittables</span><span class="o">.</span><span class="n">CmdNoSitStand</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>To test we’ll build a new location without any comfy armchairs and go there:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; tunnel n = kitchen
+north
+&gt; sit
+You have nothing to sit on.
+&gt; south
+sit
+As you sit down in armchair, life feels easier.
+</pre></div>
+</div>
+<p>We now have a fully functioning <code class="docutils literal notranslate"><span class="pre">sit</span></code> action that is contained with the chair itself. When no chair is around, a
+default error message is shown.</p>
+<p>How does this work? There are two cmdsets at play, both of which have a <code class="docutils literal notranslate"><span class="pre">sit</span></code> Command. As you may remember we
+set the chair’s cmdset to <code class="docutils literal notranslate"><span class="pre">priority</span> <span class="pre">=</span> <span class="pre">1</span></code>. This is where that matters. The default Character cmdset has a
+priority of 0. This means that whenever we enter a room with a Sittable thing, the <code class="docutils literal notranslate"><span class="pre">sit</span></code> command
+from <em>its</em> cmdset will take <em>precedence</em> over the Character cmdset’s version. So we are actually picking
+<em>different</em> <code class="docutils literal notranslate"><span class="pre">sit</span></code> commands depending on circumstance! The user will never be the wiser.</p>
+<p>So this handles <code class="docutils literal notranslate"><span class="pre">sit</span></code>. What about <code class="docutils literal notranslate"><span class="pre">stand</span></code>? That will work just fine:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; stand
+You stand up from armchair.
+&gt; north
+&gt; stand
+You are not sitting down.
+</pre></div>
+</div>
+<p>We have one remaining problem with <code class="docutils literal notranslate"><span class="pre">stand</span></code> though - what happens when you are sitting down and try to
+<code class="docutils literal notranslate"><span class="pre">stand</span></code> in a room with more than one chair:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; stand
+More than one match for &#39;stand&#39; (please narrow target):
+ stand-1 (armchair)
+ stand-2 (sofa)
+ stand-3 (barstool)
+</pre></div>
+</div>
+<p>Since all the sittables have the <code class="docutils literal notranslate"><span class="pre">stand</span></code> Command on them, you’ll get a multi-match error. This <em>works</em>  … but
+you could pick <em>any</em> of those sittables to “stand up from”. That’s really weird and non-intuitive. With <code class="docutils literal notranslate"><span class="pre">sit</span></code> it
+was okay to get a choice - Evennia can’t know which chair we intended to sit on. But we know which chair we
+sit on so we should only get <em>its</em> <code class="docutils literal notranslate"><span class="pre">stand</span></code> command.</p>
+<p>We will fix this with a <code class="docutils literal notranslate"><span class="pre">lock</span></code> and a custom <code class="docutils literal notranslate"><span class="pre">lock</span> <span class="pre">function</span></code>. We want a lock on the <code class="docutils literal notranslate"><span class="pre">stand</span></code> Command that only
+makes it available when the caller is actually sitting on the chair the <code class="docutils literal notranslate"><span class="pre">stand</span></code> command is on.</p>
+<p>First let’s add the lock so we see what we want. Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/sittables.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+
+<span class="k">class</span> <span class="nc">CmdStand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Stand up.</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;stand&quot;</span>
+     <span class="n">lock</span> <span class="o">=</span> <span class="s2">&quot;cmd:sitsonthis()&quot;</span>  <span class="c1"># &lt; this is new</span>
+
+     <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">do_stand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>We define a <a class="reference internal" href="../Components/Locks.html"><span class="doc std std-doc">Lock</span></a> on the command. The <code class="docutils literal notranslate"><span class="pre">cmd:</span></code> is in what situation Evennia will check
+the lock. The <code class="docutils literal notranslate"><span class="pre">cmd</span></code> means that it will check the lock when determining if a user has access to this command or not.
+What will be checked is the <code class="docutils literal notranslate"><span class="pre">sitsonthis</span></code> <em>lock function</em> which doesn’t exist yet.</p>
+<p>Open <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/lockfuncs.py</span></code> to add it!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">(module lockstring)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">sitsonthis</span><span class="p">(</span><span class="n">accessing_obj</span><span class="p">,</span> <span class="n">accessed_obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    True if accessing_obj is sitting on/in the accessed_obj.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">accessed_obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">sitting</span> <span class="o">==</span> <span class="n">accessing_obj</span>
+
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>Evennia knows that all functions in <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/lockfuncs</span></code> should be possible to use in a lock definition.
+The arguments are required and Evennia will pass all relevant objects to them:</p>
+<aside class="sidebar">
+<p class="sidebar-title">Lockfuncs</p>
+<p>Evennia provides a large number of default lockfuncs, such as checking permission-levels, if you are carrying or are inside the accessed object etc. There is no concept of ‘sitting’ in default Evennia however, so this we need to specify ourselves.</p>
+</aside>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">accessing_obj</span></code> is the one trying to access the lock. So us, in this case.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">accessed_obj</span></code> is the entity we are trying to gain a particular type of access to. So the chair.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> is a tuple holding any arguments passed to the lockfunc. Since we use <code class="docutils literal notranslate"><span class="pre">sitsondthis()</span></code> this will
+be empty (and if we add anything, it will be ignored).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> is a tuple of keyword arguments passed to the lockfuncs. This will be empty as well in our example.</p></li>
+</ul>
+<p>If you are superuser, it’s important that you <code class="docutils literal notranslate"><span class="pre">quell</span></code> yourself before trying this out. This is because the superuser
+bypasses all locks - it can never get locked out, but it means it will also not see the effects of a lock like this.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; quell
+&gt; stand
+You stand up from armchair
+</pre></div>
+</div>
+<p>None of the other sittables’ <code class="docutils literal notranslate"><span class="pre">stand</span></code> commands passed the lock and only the one we are actually sitting on did.</p>
+<p>Adding a Command to the chair object like this is powerful and a good technique to know. It does come with some
+caveats though that one needs to keep in mind.</p>
+<p>We’ll now try another way to add the <code class="docutils literal notranslate"><span class="pre">sit/stand</span></code> commands.</p>
+</section>
+<section id="command-variant-2-command-on-character">
+<h2>Command variant 2: Command on Character<a class="headerlink" href="#command-variant-2-command-on-character" title="Permalink to this headline">¶</a></h2>
+<p>Before we start with this, delete the chairs you’ve created (<code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">armchair</span></code> etc) and then do the following
+changes:</p>
+<ul class="simple">
+<li><p>In <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/sittables.py</span></code>, comment out the line <code class="docutils literal notranslate"><span class="pre">self.cmdset.add_default(CmdSetSit)</span></code>.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>, comment out the line <code class="docutils literal notranslate"><span class="pre">self.add(sittables.CmdNoSitStand)</span></code>.</p></li>
+</ul>
+<p>This disables the on-object command solution so we can try an alternative. Make sure to <code class="docutils literal notranslate"><span class="pre">reload</span></code> so the
+changes are known to Evennia.</p>
+<p>In this variation we will put the <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> commands on the <code class="docutils literal notranslate"><span class="pre">Character</span></code> instead of on the chair. This
+makes some things easier, but makes the Commands themselves more complex because they will not know which
+chair to sit on. We can’t just do <code class="docutils literal notranslate"><span class="pre">sit</span></code> anymore. This is how it will work.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; sit &lt;chair&gt;
+You sit on chair.
+&gt; stand
+You stand up from chair.
+</pre></div>
+</div>
+<p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands.sittables.py</span></code> again. We’ll add a new sit-command. We name the class <code class="docutils literal notranslate"><span class="pre">CmdSit2</span></code> since
+we already have <code class="docutils literal notranslate"><span class="pre">CmdSit</span></code> from the previous example. We put everything at the end of the module to
+keep it separate.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">InterruptCommand</span>  <span class="c1"># &lt;- this is new</span>
+
+<span class="k">class</span> <span class="nc">CmdSit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+<span class="c1"># ...</span>
+
+<span class="c1"># new from here</span>
+
+<span class="k">class</span> <span class="nc">CmdSit2</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sit down.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        sit &lt;sittable&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;sit&quot;</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Sit on what?&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InterruptCommand</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># self.search handles all error messages etc.</span>
+        <span class="n">sittable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sittable</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sittable</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t sit on that!&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>With this Command-variation we need to search for the sittable. A series of methods on the Command
+are run in sequence:</p>
+<ol class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Command.at_pre_command</span></code> - this is not used by default</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Command.parse</span></code> - this should parse the input</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Command.func</span></code> - this should implement the actual Command functionality</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Command.at_post_func</span></code> - this is not used by default</p></li>
+</ol>
+<p>So if we just <code class="docutils literal notranslate"><span class="pre">return</span></code> in <code class="docutils literal notranslate"><span class="pre">.parse</span></code>, <code class="docutils literal notranslate"><span class="pre">.func</span></code> will still run, which is not what we want. To immediately
+abort this sequence we need to <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">InterruptCommand</span></code>.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Raising exceptions</p>
+<p>Raising an exception allows for immediately interrupting the current program flow. Python automatically raises error-exceptions when detecting problems with the code. It will be raised up through the sequence of called code (the ‘stack’) until it’s either <code class="docutils literal notranslate"><span class="pre">caught</span></code> with a <code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">...</span> <span class="pre">except</span></code> or reaches the outermost scope where it’ll be logged or displayed.</p>
+</aside>
+<p><code class="docutils literal notranslate"><span class="pre">InterruptCommand</span></code> is an <em>exception</em> that the Command-system catches with the understanding that we want
+to do a clean abort. In the <code class="docutils literal notranslate"><span class="pre">.parse</span></code> method we strip any whitespaces from the argument and
+sure there actuall <em>is</em> an argument. We abort immediately if there isn’t.</p>
+<p>We we get to <code class="docutils literal notranslate"><span class="pre">.func</span></code> at all, we know that we have an argument. We search for this and abort if we there was
+a problem finding the target.</p>
+<blockquote>
+<div><p>We could have done <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">InterruptCommand</span></code> in <code class="docutils literal notranslate"><span class="pre">.func</span></code> as well, but <code class="docutils literal notranslate"><span class="pre">return</span></code> is a little shorter to write
+and there is no harm done if <code class="docutils literal notranslate"><span class="pre">at_post_func</span></code> runs since it’s empty.</p>
+</div></blockquote>
+<p>Next we call the found sittable’s <code class="docutils literal notranslate"><span class="pre">do_sit</span></code> method. Note that we wrap this call like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># code</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="c1"># stuff to do if AttributeError exception was raised</span>
+</pre></div>
+</div>
+<p>The reason is that <code class="docutils literal notranslate"><span class="pre">caller.search</span></code> has no idea we are looking for a Sittable. The user could have tried
+<code class="docutils literal notranslate"><span class="pre">sit</span> <span class="pre">wall</span></code> or <code class="docutils literal notranslate"><span class="pre">sit</span> <span class="pre">sword</span></code>. These don’t have a <code class="docutils literal notranslate"><span class="pre">do_sit</span></code> method <em>but we call it anyway and handle the error</em>.
+This is a very “Pythonic” thing to do. The concept is often called “leap before you look” or “it’s easier to
+ask for forgiveness than for permission”. If <code class="docutils literal notranslate"><span class="pre">sittable.do_sit</span></code> does not exist, Python will raise an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code>.
+We catch this with <code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">...</span> <span class="pre">except</span> <span class="pre">AttributeError</span></code> and convert it to a proper error message.</p>
+<p>While it’s useful to learn about <code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">...</span> <span class="pre">except</span></code>, there is also a way to leverage Evennia to do this without
+<code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">...</span> <span class="pre">except</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+    <span class="c1"># ...</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># self.search handles all error messages etc.</span>
+        <span class="n">sittable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                         <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.sittables.Sittable&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sittable</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">sittable</span><span class="o">.</span><span class="n">do_sit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Continuing across multiple lines</p>
+<p>Note how the <code class="docutils literal notranslate"><span class="pre">.search()</span></code> method’s arguments are spread out over multiple lines. This works for all lists, tuples and other listings and is a good way to avoid very long and hard-to-read lines.</p>
+</aside>
+<p>The <code class="docutils literal notranslate"><span class="pre">caller.search</span></code> method has an keyword argument <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> that can take either a python-path to a
+typeclass, the typeclass itself, or a list of either to widen the allowed options. In this case we know
+for sure that the <code class="docutils literal notranslate"><span class="pre">sittable</span></code> we get is actually a <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> class and we can call <code class="docutils literal notranslate"><span class="pre">sittable.do_sit</span></code> without
+needing to worry about catching errors.</p>
+<p>Let’s do the <code class="docutils literal notranslate"><span class="pre">stand</span></code> command while we are at it. Again, since the Command is external to the chair we don’t
+know which object we are sitting in and have to search for it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">class</span> <span class="nc">CmdStand2</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stand up.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        stand</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;stand&quot;</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="c1"># find the thing we are sitting on/in, by finding the object</span>
+        <span class="c1"># in the current location that as an Attribute &quot;sitter&quot; set</span>
+        <span class="c1"># to the caller</span>
+        <span class="n">sittable</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                         <span class="n">caller</span><span class="p">,</span>
+                         <span class="n">candidates</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span><span class="p">,</span>
+                         <span class="n">attribute_name</span><span class="o">=</span><span class="s2">&quot;sitter&quot;</span><span class="p">,</span>
+                         <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.sittables.Sittable&quot;</span><span class="p">)</span>
+        <span class="c1"># if this is None, the error was already reported to user</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sittable</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">sittable</span><span class="o">.</span><span class="n">do_stand</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>This forced us to to use the full power of the <code class="docutils literal notranslate"><span class="pre">caller.search</span></code> method. If we wanted to search for something
+more complex we would likely need to break out a <a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Django-queries.html"><span class="doc std std-doc">Django query</span></a> to do it. The key here is that
+we know that the object we are looking for is a <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> and that it must have an Attribute named <code class="docutils literal notranslate"><span class="pre">sitter</span></code>
+which should be set to us, the one sitting on/in the thing. Once we have that we just call <code class="docutils literal notranslate"><span class="pre">.do_stand</span></code> on it
+and let the Typeclass handle the rest.</p>
+<p>All that is left now is to make this available to us. This type of Command should be available to us all the time
+so we can put it in the default Cmdset<code class="docutils literal notranslate"><span class="pre">on</span> <span class="pre">the</span> <span class="pre">Character.</span> <span class="pre">Open</span></code>mygame/default_cmdsets.py`</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
+<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">sittables</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (docstring)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sittables</span><span class="o">.</span><span class="n">CmdSit2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sittables</span><span class="o">.</span><span class="n">CmdStand2</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Now let’s try it out:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
+&gt; create/drop sofa : sittables.Sittable
+&gt; sit sofa
+You sit down on sofa.
+&gt; stand
+You stand up from sofa.
+</pre></div>
+</div>
+</section>
+<section id="conclusions">
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<p>In this lesson we accomplished quite a bit:</p>
+<ul class="simple">
+<li><p>We modified our <code class="docutils literal notranslate"><span class="pre">Character</span></code> class to avoid moving when sitting down.</p></li>
+<li><p>We made a new <code class="docutils literal notranslate"><span class="pre">Sittable</span></code> typeclass</p></li>
+<li><p>We tried two ways to allow a user to interact with sittables using <code class="docutils literal notranslate"><span class="pre">sit</span></code> and <code class="docutils literal notranslate"><span class="pre">stand</span></code> commands.</p></li>
+</ul>
+<p>Eagle-eyed readers will notice that the <code class="docutils literal notranslate"><span class="pre">stand</span></code> command sitting “on” the chair (variant 1) would work just fine
+together with the <code class="docutils literal notranslate"><span class="pre">sit</span></code> command sitting “on” the Character (variant 2). There is nothing stopping you from
+mixing them, or even try a third solution that better fits what you have in mind.</p>
+<p><a class="reference internal" href="../Unimplemented.html"><span class="doc std std-doc">prev lesson</span></a> | <a class="reference internal" href="../Unimplemented.html"><span class="doc std std-doc">next lesson</span></a></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../Components/Components-Overview.html" title="Core Components"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Turn-based-Combat-System.html" title="Turn based Combat System"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Making a sittable object</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

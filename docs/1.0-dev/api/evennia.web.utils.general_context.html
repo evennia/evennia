@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.web.utils.general_context &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.web.utils.middleware" href="evennia.web.utils.middleware.html" />
+    <link rel="prev" title="evennia.web.utils.backends" href="evennia.web.utils.backends.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.utils.middleware.html" title="evennia.web.utils.middleware"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.utils.backends.html" title="evennia.web.utils.backends"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.utils.html" accesskey="U">evennia.web.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.utils.general_context</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.web.utils.backends.html"
+                        title="previous chapter">evennia.web.utils.backends</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.web.utils.middleware.html"
+                        title="next chapter">evennia.web.utils.middleware</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.web.utils.general_context.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.web.utils.general_context.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.web.utils.general_context.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.utils.general_context">
+<span id="evennia-web-utils-general-context"></span><h1>evennia.web.utils.general_context<a class="headerlink" href="#module-evennia.web.utils.general_context" title="Permalink to this headline">¶</a></h1>
+<p>This file defines global variables that will always be available in a view
+context without having to repeatedly include it.</p>
+<p>For this to work, this file is included in the settings file, in the
+TEMPLATES[“OPTIONS”][“context_processors”] list.</p>
+<dl class="py function">
+<dt id="evennia.web.utils.general_context.load_game_settings">
+<code class="sig-prename descclassname">evennia.web.utils.general_context.</code><code class="sig-name descname">load_game_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/general_context.html#load_game_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.general_context.load_game_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and cache game settings.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.web.utils.general_context.general_context">
+<code class="sig-prename descclassname">evennia.web.utils.general_context.</code><code class="sig-name descname">general_context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/utils/general_context.html#general_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.utils.general_context.general_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns common Evennia-related context stuff, which is automatically added
+to context of all views.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.utils.middleware.html" title="evennia.web.utils.middleware"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.utils.backends.html" title="evennia.web.utils.backends"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.utils.html" >evennia.web.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.utils.general_context</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

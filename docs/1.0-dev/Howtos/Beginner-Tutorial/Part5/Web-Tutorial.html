@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Web Tutorial &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Coding FAQ" href="../../Coding-FAQ.html" />
+    <link rel="prev" title="Add a simple new web page" href="Add-a-simple-new-web-page.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../Coding-FAQ.html" title="Coding FAQ"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Add-a-simple-new-web-page.html" title="Add a simple new web page"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part5-Intro.html" accesskey="U">Part 5: Showing the world</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Web Tutorial</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Web Tutorial</a><ul>
+<li><a class="reference internal" href="#a-basic-overview">A Basic Overview</a></li>
+<li><a class="reference internal" href="#changing-the-logo-on-the-front-page">Changing the logo on the front page</a></li>
+<li><a class="reference internal" href="#changing-the-front-pages-text">Changing the Front Page’s Text</a></li>
+<li><a class="reference internal" href="#further-reading">Further reading</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Add-a-simple-new-web-page.html"
+                        title="previous chapter">Add a simple new web page</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../Coding-FAQ.html"
+                        title="next chapter">Coding FAQ</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part5/Web-Tutorial.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Web-Tutorial.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="web-tutorial">
+<h1>Web Tutorial<a class="headerlink" href="#web-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>Evennia uses the <a class="reference external" href="https://www.djangoproject.com/">Django</a> web framework as the basis of both its
+database configuration and the website it provides. While a full understanding of Django requires
+reading the Django documentation, we have provided this tutorial to get you running with the basics
+and how they pertain to Evennia. This text details getting everything set up. The
+<a class="reference internal" href="../../Web-Character-View-Tutorial.html"><span class="doc std std-doc">Web-based Character view Tutorial</span></a> gives a more explicit example of making a
+custom web page connected to your game, and you may want to read that after finishing this guide.</p>
+<section id="a-basic-overview">
+<h2>A Basic Overview<a class="headerlink" href="#a-basic-overview" title="Permalink to this headline">¶</a></h2>
+<p>Django is a web framework. It gives you a set of development tools for building a website quickly
+and easily.</p>
+<p>Django projects are split up into <em>apps</em> and these apps all contribute to one project. For instance,
+you might have an app for conducting polls, or an app for showing news posts or, like us, one for
+creating a web client.</p>
+<p>Each of these applications has a <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> file, which specifies what
+<a class="reference external" href="https://en.wikipedia.org/wiki/Uniform_resource_locator">URL</a>s are used by the app, a <code class="docutils literal notranslate"><span class="pre">views.py</span></code> file
+for the code that the URLs activate, a <code class="docutils literal notranslate"><span class="pre">templates</span></code> directory for displaying the results of that code
+in <a class="reference external" href="https://en.wikipedia.org/wiki/Html">HTML</a> for the user, and a <code class="docutils literal notranslate"><span class="pre">static</span></code> folder that holds assets
+like <a class="reference external" href="https://en.wikipedia.org/wiki/CSS">CSS</a>, <a class="reference external" href="https://en.wikipedia.org/wiki/Javascript">Javascript</a>,
+and Image files (You may note your mygame/web folder does not have a <code class="docutils literal notranslate"><span class="pre">static</span></code> or <code class="docutils literal notranslate"><span class="pre">template</span></code> folder.
+This is intended and explained further below). Django applications may also have a <code class="docutils literal notranslate"><span class="pre">models.py</span></code> file
+for storing information in the database. We will not change any models here, take a look at the
+<a class="reference internal" href="../../../Concepts/New-Models.html"><span class="doc std std-doc">New Models</span></a> page (as well as the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/db/models/">Django docs</a> on models) if you are interested.</p>
+<p>There is also a root <code class="docutils literal notranslate"><span class="pre">urls.py</span></code> that determines the URL structure for the entire project. A starter
+<code class="docutils literal notranslate"><span class="pre">urls.py</span></code> is included in the default game template, and automatically imports all of Evennia’s
+default URLs for you. This is located in <code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code>.</p>
+</section>
+<section id="changing-the-logo-on-the-front-page">
+<h2>Changing the logo on the front page<a class="headerlink" href="#changing-the-logo-on-the-front-page" title="Permalink to this headline">¶</a></h2>
+<p>Evennia’s default logo is a fun little googly-eyed snake wrapped around a gear globe. As cute as it
+is, it probably doesn’t represent your game. So one of the first things you may wish to do is
+replace it with a logo of your own.</p>
+<p>Django web apps all have <em>static assets</em>: CSS files, Javascript files, and Image files. In order to
+make sure the final project has all the static files it needs, the system collects the files from
+every app’s <code class="docutils literal notranslate"><span class="pre">static</span></code> folder and places it in the <code class="docutils literal notranslate"><span class="pre">STATIC_ROOT</span></code> defined in <code class="docutils literal notranslate"><span class="pre">settings.py</span></code>. By default,
+the Evennia <code class="docutils literal notranslate"><span class="pre">STATIC_ROOT</span></code> is in <code class="docutils literal notranslate"><span class="pre">web/static</span></code>.</p>
+<p>Because Django pulls files from all of those separate places and puts them in one folder, it’s
+possible for one file to overwrite another. We will use this to plug in our own files without having
+to change anything in the Evennia itself.</p>
+<p>By default, Evennia is configured to pull files you put in the <code class="docutils literal notranslate"><span class="pre">web/static_overrides</span></code> <em>after</em> all
+other static files. That means that files in <code class="docutils literal notranslate"><span class="pre">static_overrides</span></code> folder will overwrite any previously
+loaded files <em>having the same path under its static folder</em>. This last part is important to repeat:
+To overload the static resource from a standard <code class="docutils literal notranslate"><span class="pre">static</span></code> folder you need to replicate the path of
+folders and file names from that <code class="docutils literal notranslate"><span class="pre">static</span></code> folder in exactly the same way inside <code class="docutils literal notranslate"><span class="pre">static_overrides</span></code>.</p>
+<p>Let’s see how this works for our logo. The default web application is in the Evennia library itself,
+in <code class="docutils literal notranslate"><span class="pre">evennia/web/</span></code>. We can see that there is a <code class="docutils literal notranslate"><span class="pre">static</span></code> folder here. If we browse down, we’ll
+eventually find the full path to the Evennia logo file:
+<code class="docutils literal notranslate"><span class="pre">evennia/web/static/evennia_general/images/evennia_logo.png</span></code>.</p>
+<p>Inside our <code class="docutils literal notranslate"><span class="pre">static_overrides</span></code> we must replicate the part of the path inside the <code class="docutils literal notranslate"><span class="pre">static</span></code> folder, in
+other words, we must replicate <code class="docutils literal notranslate"><span class="pre">evennia_general/images/evennia_logo.png</span></code>.</p>
+<p>So, to change the logo, we need to create the folder path <code class="docutils literal notranslate"><span class="pre">evennia_general/images/</span></code> in
+<code class="docutils literal notranslate"><span class="pre">static_overrides</span></code>. We then rename our own logo file to <code class="docutils literal notranslate"><span class="pre">evennia_logo.png</span></code> and copy it there. The
+final path for this file would thus be:
+<code class="docutils literal notranslate"><span class="pre">web/static_overrides/evennia_general/images/evennia_logo.png</span></code> in your local game folder.</p>
+<p>To get this file pulled in, just change to your own game directory and reload the server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">reload</span>
+</pre></div>
+</div>
+<p>This will reload the configuration and bring in the new static file(s). If you didn’t want to reload
+the server you could instead use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evennia</span> <span class="n">collectstatic</span>
+</pre></div>
+</div>
+<p>to only update the static files without any other changes.</p>
+<blockquote>
+<div><p><strong>Note</strong>: Evennia will collect static files automatically during startup. So if <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">collectstatic</span></code> reports finding 0 files to collect, make sure you didn’t start the engine at some
+point - if so the collector has already done its work! To make sure, connect to the website and
+check so the logo has actually changed to your own version.</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>Note</strong>: Sometimes the static asset collector can get confused. If no matter what you do, your
+overridden files aren’t getting copied over the defaults, try removing the target file (or
+everything) in the <code class="docutils literal notranslate"><span class="pre">web/static</span></code> directory, and re-running <code class="docutils literal notranslate"><span class="pre">collectstatic</span></code> to gather everything from
+scratch.</p>
+</div></blockquote>
+</section>
+<section id="changing-the-front-pages-text">
+<h2>Changing the Front Page’s Text<a class="headerlink" href="#changing-the-front-pages-text" title="Permalink to this headline">¶</a></h2>
+<p>The default front page for Evennia contains information about the Evennia project. You’ll probably
+want to replace this information with information about your own project. Changing the page template
+is done in a similar way to changing static resources.</p>
+<p>Like static files, Django looks through a series of template folders to find the file it wants. The
+difference is that Django does not copy all of the template files into one place, it just searches
+through the template folders until it finds a template that matches what it’s looking for. This
+means that when you edit a template, the changes are instant. You don’t have to reload the server or
+run any extra commands to see these changes - reloading the web page in your browser is enough.</p>
+<p>To replace the index page’s text, we’ll need to find the template for it. We’ll go into more detail
+about how to determine which template is used for rendering a page in the
+<a class="reference internal" href="../../Web-Character-View-Tutorial.html"><span class="doc std std-doc">Web-based Character view Tutorial</span></a>. For now, you should know that the template we want to change
+is stored in <code class="docutils literal notranslate"><span class="pre">evennia/web/website/templates/website/index.html</span></code>.</p>
+<p>To replace this template file, you will put your changed template inside the
+<code class="docutils literal notranslate"><span class="pre">web/template_overrides/website</span></code> directory in your game folder. In the same way as with static
+resources you must replicate the path inside the default <code class="docutils literal notranslate"><span class="pre">template</span></code> directory exactly. So we must
+copy our replacement template named <code class="docutils literal notranslate"><span class="pre">index.html</span></code> there (or create the <code class="docutils literal notranslate"><span class="pre">website</span></code> directory in
+web/template_overrides<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">it</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">exist,</span> <span class="pre">first).</span> <span class="pre">The</span> <span class="pre">final</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">file</span> <span class="pre">should</span> <span class="pre">thus</span> <span class="pre">be:</span></code>web/template_overrides/website/index.html` within your game directory.</p>
+<p>Note that it is usually easier to just copy the original template over and edit it in place. The
+original file already has all the markup and tags, ready for editing.</p>
+</section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<p>For further hints on working with the web presence, you could now continue to the
+<a class="reference internal" href="../../Web-Character-View-Tutorial.html"><span class="doc std std-doc">Web-based Character view Tutorial</span></a> where you learn to make a web page that
+displays in-game character stats. You can also look at <a class="reference external" href="https://docs.djangoproject.com/en/1.7/intro/tutorial01/">Django’s own
+tutorial</a> to get more insight in how Django
+works and what possibilities exist.</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../Coding-FAQ.html" title="Coding FAQ"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Add-a-simple-new-web-page.html" title="Add a simple new web page"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part5-Intro.html" >Part 5: Showing the world</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Web Tutorial</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

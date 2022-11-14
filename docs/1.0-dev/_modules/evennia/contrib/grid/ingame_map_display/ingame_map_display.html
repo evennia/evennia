@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.grid.ingame_map_display.ingame_map_display &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.ingame_map_display.ingame_map_display</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="ingame_map_display.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.grid.ingame_map_display.ingame_map_display</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Basic Map - helpme 2022</span>
+
+<span class="sd">This adds an ascii `map` to a given room which can be viewed with the `map` command.</span>
+<span class="sd">You can easily alter it to add special characters, room colors etc. The map shown is</span>
+<span class="sd">dynamically generated on use, and supports all compass directions and up/down. Other</span>
+<span class="sd">directions are ignored.</span>
+
+<span class="sd">If you don&#39;t expect the map to be updated frequently, you could choose to save the</span>
+<span class="sd">calculated map as a .ndb value on the room and render that instead of running mapping</span>
+<span class="sd">calculations anew each time.</span>
+
+<span class="sd">An example map:</span>
+<span class="sd">```</span>
+<span class="sd">       |</span>
+<span class="sd">     -[-]-</span>
+<span class="sd">       |</span>
+<span class="sd">       |</span>
+<span class="sd">-[-]--[-]--[-]--[-]</span>
+<span class="sd">  |    |    |    |</span>
+<span class="sd">       |    |    |</span>
+<span class="sd">     -[-]--[-]  [-]</span>
+<span class="sd">       | \/ |    |</span>
+<span class="sd">     \ | /\ |</span>
+<span class="sd">     -[-]--[-]</span>
+<span class="sd">```</span>
+
+<span class="sd">Installation:</span>
+
+<span class="sd">Adding the `MapDisplayCmdSet` to the default character cmdset will add the `map` command.</span>
+
+<span class="sd">Specifically, in `mygame/commands/default_cmdsets.py`:</span>
+
+<span class="sd">```</span>
+<span class="sd">...</span>
+<span class="sd">from evennia.contrib.grid.ingame_map_display import MapDisplayCmdSet  # &lt;---</span>
+
+<span class="sd">class CharacterCmdset(default_cmds.Character_CmdSet):</span>
+<span class="sd">    ...</span>
+<span class="sd">    def at_cmdset_creation(self):</span>
+<span class="sd">        ...</span>
+<span class="sd">        self.add(MapDisplayCmdSet)  # &lt;---</span>
+
+<span class="sd">```</span>
+
+<span class="sd">Then `reload` to make the new commands available.</span>
+
+<span class="sd">Additional Settings:</span>
+
+<span class="sd">In order to change your default map size, you can add to `mygame/server/settings.py`:</span>
+
+<span class="sd">BASIC_MAP_SIZE = 5</span>
+
+<span class="sd">This changes the default map width/height. 2-5 for most clients is sensible.</span>
+
+<span class="sd">If you don&#39;t want the player to be able to specify the size of the map, ignore any</span>
+<span class="sd">arguments passed into the Map command.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
+
+<span class="n">_BASIC_MAP_SIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASIC_MAP_SIZE</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;BASIC_MAP_SIZE&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">2</span>
+<span class="n">_MAX_MAP_SIZE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">BASIC_MAP_SIZE</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;MAX_MAP_SIZE&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">10</span>
+
+<span class="c1"># _COMPASS_DIRECTIONS specifies which way to move the pointer on the x/y axes and what characters to use to depict the exits on the map.</span>
+<span class="n">_COMPASS_DIRECTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot; | &quot;</span><span class="p">),</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot; | &quot;</span><span class="p">),</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;northeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;northwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;southeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;southwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;up&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;down&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="Map"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map">[docs]</a><span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Map.__init__"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">_BASIC_MAP_SIZE</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            caller (object): Any object, though generally a puppeted character.</span>
+<span class="sd">            size (int): The seed size of the map, which will be multiplied to get the final grid size.</span>
+<span class="sd">            location (object): The location at the map&#39;s center (will default to caller.location if none provided).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># This must be an odd number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span>  <span class="c1"># This must be an odd number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_mapped</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span> <span class="ow">or</span> <span class="n">caller</span><span class="o">.</span><span class="n">location</span></div>
+
+<div class="viewcode-block" id="Map.create_grid"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.create_grid">[docs]</a>    <span class="k">def</span> <span class="nf">create_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the empty grid for the map based on the configured size</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The created grid, a list of lists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">board</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">):</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+            <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)):</span>
+                <span class="n">board</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;   &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">board</span></div>
+
+<div class="viewcode-block" id="Map.exit_name_as_ordinal"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.exit_name_as_ordinal">[docs]</a>    <span class="k">def</span> <span class="nf">exit_name_as_ordinal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ex</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the exit name as a compass direction if possible</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ex (Exit): The current exit being mapped.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            string: The exit name as a compass direction or an empty string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exit_name</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">exit_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="p">:</span>
+            <span class="n">compass_aliases</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">direction</span> <span class="ow">in</span> <span class="n">ex</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">compass_aliases</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">exit_name</span> <span class="o">=</span> <span class="n">compass_aliases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">exit_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">exit_name</span></div>
+
+<div class="viewcode-block" id="Map.update_pos"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.update_pos">[docs]</a>    <span class="k">def</span> <span class="nf">update_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">exit_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the position pointer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            room (Room): The current location.</span>
+<span class="sd">            exit_name (str): The name of the exit to to use in this room. This must</span>
+<span class="sd">                be a valid compass direction, or an error will be raised.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyError: If providing a non-compass exit name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Update the pointer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_mapped</span><span class="p">[</span><span class="n">room</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_mapped</span><span class="p">[</span><span class="n">room</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Move the pointer depending on which direction the exit lies</span>
+        <span class="c1"># exit_name has already been validated as an ordinal direction at this point</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">+=</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="p">[</span><span class="n">exit_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span> <span class="o">+=</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="p">[</span><span class="n">exit_name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Map.has_drawn"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.has_drawn">[docs]</a>    <span class="k">def</span> <span class="nf">has_drawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the given room has already been drawn or not</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            room (Room): Room to check.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Whether or not the room has been drawn.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_mapped</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Map.draw_room_on_map"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw_room_on_map">[docs]</a>    <span class="k">def</span> <span class="nf">draw_room_on_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">max_distance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw the room and its exits on the map recursively</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            room (Room): The room to draw out.</span>
+<span class="sd">            max_distance (int): How extensive the map is.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_exits</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">max_distance</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check if the caller has access to the room in question. If not, don&#39;t draw it.</span>
+        <span class="c1"># Additionally, if the name of the exit is not ordinal but an alias of it is, use that.</span>
+        <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">)]:</span>
+            <span class="n">ex_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_name_as_ordinal</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ex_name</span> <span class="ow">or</span> <span class="n">ex_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;down&quot;</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_drawn</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">destination</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_pos</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">ex_name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_room_on_map</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">destination</span><span class="p">,</span> <span class="n">max_distance</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Map.draw_exits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw_exits">[docs]</a>    <span class="k">def</span> <span class="nf">draw_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw a given room&#39;s exit paths</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            room (Room): The room to draw exits of.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curY</span>
+        <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
+            <span class="n">ex_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_name_as_ordinal</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ex_name</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">ex_character</span> <span class="o">=</span> <span class="n">_COMPASS_DIRECTIONS</span><span class="p">[</span><span class="n">ex_name</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">delta_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_COMPASS_DIRECTIONS</span><span class="p">[</span><span class="n">ex_name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">delta_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_COMPASS_DIRECTIONS</span><span class="p">[</span><span class="n">ex_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+
+            <span class="c1"># Make modifications if the exit has BOTH up and down exits</span>
+            <span class="k">if</span> <span class="n">ex_name</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;v&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">render_room</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="n">p2</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">render_room</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">here</span><span class="o">=</span><span class="s2">&quot;^&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ex_name</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;^&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">render_room</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="n">p2</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">render_room</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">here</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="n">delta_x</span><span class="p">][</span><span class="n">y</span> <span class="o">+</span> <span class="n">delta_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">ex_character</span></div>
+
+<div class="viewcode-block" id="Map.draw"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw the map starting from a given room and add it to the cache of mapped rooms</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            room (Room): The room to render.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># draw initial caller location on map first!</span>
+        <span class="k">if</span> <span class="n">room</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_loc_on_grid</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">has_mapped</span><span class="p">[</span><span class="n">room</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">curX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curY</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># map all other rooms</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">has_mapped</span><span class="p">[</span><span class="n">room</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">curX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curY</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">render_room</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curY</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Map.render_room"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.render_room">[docs]</a>    <span class="k">def</span> <span class="nf">render_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="n">p2</span><span class="o">=</span><span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="n">here</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Draw a given room with ascii characters</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            room (Room): The room to render.</span>
+<span class="sd">            x (int): The x-value of the room on the grid (horizontally, east/west).</span>
+<span class="sd">            y (int): The y-value of the room on the grid (vertically, north/south).</span>
+<span class="sd">            p1 (str): The first character of the 3-character room depiction.</span>
+<span class="sd">            p2 (str): The last character of the 3-character room depiction.</span>
+<span class="sd">            here (str): Defaults to none, a special character depicting the room.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Note: This is where you would set colors, symbols etc.</span>
+        <span class="c1"># Render the room</span>
+        <span class="n">you</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="s2">&quot;[ ]&quot;</span><span class="p">)</span>
+
+        <span class="n">you</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p1</span><span class="si">}</span><span class="s2">|n&quot;</span>
+        <span class="n">you</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">here</span> <span class="k">if</span> <span class="n">here</span> <span class="k">else</span> <span class="n">you</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">room</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="n">you</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;|[x|co|n&quot;</span>  <span class="c1"># Highlight the location you are currently in</span>
+        <span class="n">you</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p2</span><span class="si">}</span><span class="s2">|n&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">you</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Map.start_loc_on_grid"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.start_loc_on_grid">[docs]</a>    <span class="k">def</span> <span class="nf">start_loc_on_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">room</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the starting location on the grid based on the maximum width and length</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            room (Room): The room to begin with.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">*</span> <span class="mf">0.6</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">render_room</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">curY</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+
+<div class="viewcode-block" id="Map.show_map"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.show_map">[docs]</a>    <span class="k">def</span> <span class="nf">show_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and show the map, piecing it all together in the end</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            debug (bool): Whether or not to return the time taken to build the map.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">map_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_room_on_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">:</span>
+            <span class="n">map_row</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">map_row</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">map_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">map_row</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="n">map_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Took </span><span class="si">{</span><span class="n">elapsed</span><span class="si">}</span><span class="s2">ms to render the map.</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">map_string</span></div></div>
+
+
+<div class="viewcode-block" id="CmdMap"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap">[docs]</a><span class="k">class</span> <span class="nc">CmdMap</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check the local map around you.</span>
+
+<span class="sd">    Usage: map (optional size)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;map&quot;</span>
+
+<div class="viewcode-block" id="CmdMap.func"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">_BASIC_MAP_SIZE</span>
+        <span class="n">max_size</span> <span class="o">=</span> <span class="n">_MAX_MAP_SIZE</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">max_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
+
+        <span class="c1"># You can run show_map(debug=True) to see how long it takes.</span>
+        <span class="n">map_here</span> <span class="o">=</span> <span class="n">Map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">show_map</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">((</span><span class="n">map_here</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;map&quot;</span><span class="p">}))</span></div></div>
+
+
+<span class="c1"># CmdSet for easily install all commands</span>
+<div class="viewcode-block" id="MapDisplayCmdSet"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet">[docs]</a><span class="k">class</span> <span class="nc">MapDisplayCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The map command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MapDisplayCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.ingame_map_display.ingame_map_display.html#evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdMap</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.ingame_map_display.ingame_map_display</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

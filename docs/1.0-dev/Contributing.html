@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>How To Contribute And Get Help &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing to Evennia Docs" href="Contributing-Docs.html" />
+    <link rel="prev" title="Easy menu selection tree" href="Contribs/Contrib-Tree-Select.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contributing-Docs.html" title="Contributing to Evennia Docs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contribs/Contrib-Tree-Select.html" title="Easy menu selection tree"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">How To Contribute And Get Help</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">How To Contribute And Get Help</a><ul>
+<li><a class="reference internal" href="#community-and-spreading-the-word">Community and Spreading the word</a></li>
+<li><a class="reference internal" href="#help-with-documentation">Help with Documentation</a></li>
+<li><a class="reference internal" href="#helping-with-code">Helping with code</a><ul>
+<li><a class="reference internal" href="#using-a-forked-reposity">Using a Forked reposity</a></li>
+<li><a class="reference internal" href="#contributing-with-patches">Contributing with Patches</a></li>
+<li><a class="reference internal" href="#making-an-evennia-contrib">Making an Evennia contrib</a><ul>
+<li><a class="reference internal" href="#guidelines-for-making-a-contrib">Guidelines for making a contrib</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#donations">Donations</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contribs/Contrib-Tree-Select.html"
+                        title="previous chapter">Easy menu selection tree</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contributing-Docs.html"
+                        title="next chapter">Contributing to Evennia Docs</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="_sources/Contributing.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contributing.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../0.9.5/Contributing.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="how-to-contribute-and-get-help">
+<h1>How To Contribute And Get Help<a class="headerlink" href="#how-to-contribute-and-get-help" title="Permalink to this headline">¶</a></h1>
+<p>If you cannot find what you are looking for in the documentation, here’s what to do:</p>
+<ul class="simple">
+<li><p>If you need help, want to start a discussion or get some input on something
+you are working on, make a post to the <a class="reference external" href="https://github.com/evennia/evennia/discussions">discussions forum</a>.</p></li>
+<li><p>If you want more direct discussions with developers and other users, drop
+into our very friendly <a class="reference external" href="https://discord.com/invite/AJJpcRUhtF">Discord channel</a>.</p></li>
+<li><p>If you think the documentation is not clear enough, create a <a class="reference external" href="https://github.com/evennia/evennia/issues">documentation issue</a></p></li>
+<li><p>If you have trouble with a missing feature or a problem you think is a bug,
+<a class="reference external" href="https://github.com/evennia/evennia/issues">request or report it</a>.</p></li>
+</ul>
+<section id="community-and-spreading-the-word">
+<h2>Community and Spreading the word<a class="headerlink" href="#community-and-spreading-the-word" title="Permalink to this headline">¶</a></h2>
+<p>Being active and helpful in the <a class="reference external" href="https://github.com/evennia/evennia/discussions">forums</a> or <a class="reference external" href="https://discord.com/invite/AJJpcRUhtF">chat</a> is already a big
+help.</p>
+<p>Consider writing about Evennia on your blog or in your favorite (relevant)
+forum. Write a review somewhere (good or bad, we like feedback either way). Rate
+it on listings. Talk about it to your friends … that kind of thing.</p>
+</section>
+<section id="help-with-documentation">
+<h2>Help with Documentation<a class="headerlink" href="#help-with-documentation" title="Permalink to this headline">¶</a></h2>
+<p>Evennia depends heavily on good documentation and we are always looking for
+extra eyes and hands to improve it. Even small things such as fixing typos are a
+great help!</p>
+<ul class="simple">
+<li><p>Easiest is to just <a class="reference external" href="https://github.com/evennia/evennia/issues">report documentation issues</a> as you find them. If
+we don’t know about them, we can’t fix them!</p></li>
+<li><p>If you want to help edit the docs directly, <a class="reference internal" href="Contributing-Docs.html"><span class="doc std std-doc">check here</span></a>
+on how to do it.</p></li>
+<li><p>If you have knowledge to share, how about writing a new <a class="reference internal" href="Howtos/Howtos-Overview.html"><span class="doc std std-doc">Tutorial</span></a>?</p></li>
+</ul>
+</section>
+<section id="helping-with-code">
+<h2>Helping with code<a class="headerlink" href="#helping-with-code" title="Permalink to this headline">¶</a></h2>
+<p>If you find bugs, or have a feature-request, <a class="reference external" href="https://github.com/evennia/evennia/issues">make an issue</a> for it. If
+it’s not in an issue, the issue will most likely be forgotten.</p>
+<p>Even if you don’t feel confident with tackling a <a class="reference external" href="https://github.com/evennia/evennia/issues">bug or feature</a>, just
+correcting typos, adjusting formatting or simply <em>using</em> the thing and reporting
+when stuff doesn’t make sense helps us a lot.</p>
+<ul class="simple">
+<li><p>The code itself should follow Evennia’s <a class="reference external" href="https://github.com/evennia/evennia/blob/master/CODING_STYLE.md">Code style guidelines</a> both
+for code and documentation. You should write code for that others can read an understand.</p></li>
+<li><p>Before merging, your code will be reviewed. Merging of your code into Evennia
+is not guaranteed. Be ready to receive feedback and to be asked to make
+corrections or fix bugs or any documentation issues and possibly tests (this
+is normal and nothing to worry about).</p></li>
+</ul>
+<section id="using-a-forked-reposity">
+<h3>Using a Forked reposity<a class="headerlink" href="#using-a-forked-reposity" title="Permalink to this headline">¶</a></h3>
+<p>The most elegant way to contribute code to Evennia is to use GitHub to create a
+<em>fork</em> of the Evennia repository and make your changes to that. Refer to the
+<a class="reference internal" href="Coding/Version-Control.html#forking-evennia"><span class="std std-doc">Forking Evennia</span></a> version control instructions
+for detailed instructions.</p>
+<p>Once you have a fork set up, you can not only work on your own game in a
+separate branch, you can also commit your fixes to Evennia itself.</p>
+<ul class="simple">
+<li><p>Make separate branches for all Evennia additions you do - don’t edit your
+local <code class="docutils literal notranslate"><span class="pre">master</span></code> or <code class="docutils literal notranslate"><span class="pre">develop</span></code> branches directly. It will make your life a lot
+easier.</p></li>
+<li><p>If you have a change that you think is suitable for the main Evennia
+repository, issue a <a class="reference external" href="https://github.com/evennia/evennia/pulls">Pull Request</a>. This will let Evennia
+devs know you have stuff to share.</p></li>
+<li><p>Bug fixes should generally be done against the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch of Evennia,
+while new features/contribs should go into the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch. If you are
+unsure, just pick one and we’ll figure it out.</p></li>
+</ul>
+</section>
+<section id="contributing-with-patches">
+<h3>Contributing with Patches<a class="headerlink" href="#contributing-with-patches" title="Permalink to this headline">¶</a></h3>
+<p>To help with Evennia development it’s strongly recommended to do so using a
+forked repository as described above. But for small, well isolated fixes you are
+also welcome to submit your suggested Evennia fixes/addendums as a
+<a class="reference external" href="https://secure.wikimedia.org/wikipedia/en/wiki/Patch_%28computing%29">patch</a>.</p>
+<p>You can include your patch in an Issue or a Mailing list post. Please avoid
+pasting the full patch text directly in your post though, best is to use a site
+like <a class="reference external" href="https://pastebin.com/">Pastebin</a> and just supply the link.</p>
+</section>
+<section id="making-an-evennia-contrib">
+<h3>Making an Evennia contrib<a class="headerlink" href="#making-an-evennia-contrib" title="Permalink to this headline">¶</a></h3>
+<p>Evennia has a <a class="reference internal" href="Contribs/Contribs-Overview.html"><span class="doc std std-doc">contrib</span></a> directory which contains
+user-shared code organized by category. You can contribute anything that you
+think may be useful to another dev, also highly game-specific code. A contrib
+must always be added via a forked repository.</p>
+<section id="guidelines-for-making-a-contrib">
+<h4>Guidelines for making a contrib<a class="headerlink" href="#guidelines-for-making-a-contrib" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p>If you are unsure about if your contrib idea is suitable or sound, <em>ask in
+discussions or chat before putting any work into it</em>. We are, for example,
+unlikely to accept contribs that require large modifications of the game
+directory structure.</p></li>
+<li><p>If your code is intended <em>primarily</em> as an example or to show a
+concept/principle rather than a working system, you <em>can</em> add to the
+<code class="docutils literal notranslate"><span class="pre">contribs/tutorials/</span></code> subfolder, but consider if it may be better to instead
+write a new tutorial doc page.</p></li>
+<li><p>The contribution should preferably work in isolation from other contribs (only
+make use of core Evennia) so it can easily be dropped into use. If it does
+depend on other contribs or third-party modules, these must be clearly
+documented and part of the installation instructions.</p></li>
+<li><p>The contrib must be contained within a separate folder under one of the
+contrib categories (<code class="docutils literal notranslate"><span class="pre">game_systems</span></code>, <code class="docutils literal notranslate"><span class="pre">rpg</span></code>, <code class="docutils literal notranslate"><span class="pre">utils</span></code> etc). Ask if you are
+unsure which category to put your contrib under.</p></li>
+<li><p>The folder (package) should be on the following form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mycontribname</span><span class="o">/</span>
+    <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">README</span><span class="o">.</span><span class="n">md</span>
+    <span class="n">module1</span><span class="o">.</span><span class="n">py</span>
+    <span class="n">module2</span><span class="o">.</span><span class="n">py</span>
+    <span class="o">...</span>
+    <span class="n">tests</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>It’s often a good idea to import useful resources in <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> to make
+it easier to access them (this may vary though).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">README.md</span></code> will be parsed and converted into a document linked from
+<a class="reference internal" href="Contribs/Contribs-Overview.html"><span class="doc std std-doc">the contrib overview page</span></a>. It should follow
+the following structure:</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="gh"># MyContribName</span>
+
+Contribution by &lt;yourname&gt;, &lt;year&gt;
+
+A paragraph (can be multi-line)
+summarizing the contrib (required)
+
+Optional other text
+
+<span class="gu">## Installation</span>
+
+Detailed installation instructions for using the contrib (required)
+
+<span class="gu">## Usage</span>
+
+<span class="gu">## Examples</span>
+
+etc.
+</pre></div>
+</div>
+<p>The credit and first paragraph-summary will be used on the index page. Every
+contrib’s readme must contain an installation instruction. See existing contribs
+for help.</p>
+</li>
+<li><p>If possible, try to make contribution as genre-agnostic as possible and assume
+your code will be applied to a very different game than you had in mind when creating it.</p></li>
+<li><p>To make the licensing situation clear we assume all contributions are released
+with the same <a class="reference internal" href="Licensing.html"><span class="doc std std-doc">license as Evennia</span></a>. If this is not possible
+for some reason, talk to us and we’ll handle it on a case-by-case basis.</p></li>
+<li><p>Your contribution must be covered by <a class="reference internal" href="Coding/Unit-Testing.html"><span class="doc std std-doc">unit tests</span></a>. Put
+your tests in a module <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> under your contrib folder - Evennia will
+find them automatically.</p></li>
+<li><p>In addition to the normal review process, it’s worth noting that merging a
+contrib means the Evennia project takes on the responsibility of maintaining
+and supporting it. For various reasons this may be deemed beyond our manpower.</p></li>
+<li><p>If your code were to <em>not</em> be accepted for some reason, you can ask us to
+instead link to your repo from our link page so people can find your code that
+way.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="donations">
+<h2>Donations<a class="headerlink" href="#donations" title="Permalink to this headline">¶</a></h2>
+<p>Evennia is a free, open-source project and any monetary donations you want to
+offer are <em>completely voluntary</em>. See it as a way of showing appreciation by
+dropping a few coins in the cup.</p>
+<ul class="simple">
+<li><p>You can support Evennia as an <a class="reference external" href="https://www.patreon.com/griatch">Evennia patreon</a>. A patreon donates a
+(usually small) sum every month to show continued support.</p></li>
+<li><p>If a monthly donation is not your thing, you can also show your appreciation
+by doing a <a class="reference external" href="https://www.paypal.com/donate?token=zbU72YdRqPgsbpTw3M_4vR-5QJ7XvUhL9W6JlnPJw70M9LOqY1xD7xKGx0V1jLFSthY3xAztQpSsqW9n">one-time donation</a> (this is a PayPal link but you don’t need
+PayPal yourself to use it).</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contributing-Docs.html" title="Contributing to Evennia Docs"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contribs/Contrib-Tree-Select.html" title="Easy menu selection tree"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Evennia 1.0-dev</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">How To Contribute And Get Help</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

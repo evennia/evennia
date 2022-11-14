@@ -1,0 +1,531 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.rpg.buffs.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.buffs.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.rpg.buffs.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests for the buff system contrib</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.buffs</span> <span class="kn">import</span> <span class="n">buff</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+
+<span class="kn">from</span> <span class="nn">.buff</span> <span class="kn">import</span> <span class="n">BaseBuff</span><span class="p">,</span> <span class="n">BuffableProperty</span><span class="p">,</span> <span class="n">BuffHandler</span><span class="p">,</span> <span class="n">Mod</span>
+<span class="kn">from</span> <span class="nn">.samplebuffs</span> <span class="kn">import</span> <span class="n">StatBuff</span>
+
+
+<span class="k">class</span> <span class="nc">_EmptyBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;empty&quot;</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">_TestDivBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tdb&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;tdb&quot;</span>
+    <span class="n">flavor</span> <span class="o">=</span> <span class="s2">&quot;divverbuff&quot;</span>
+    <span class="n">mods</span> <span class="o">=</span> <span class="p">[</span><span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;stat1&quot;</span><span class="p">,</span> <span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">_TestModBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tmb&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;tmb&quot;</span>
+    <span class="n">flavor</span> <span class="o">=</span> <span class="s2">&quot;modderbuff&quot;</span>
+    <span class="n">maxstacks</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">mods</span> <span class="o">=</span> <span class="p">[</span><span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;stat1&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;stat2&quot;</span><span class="p">,</span> <span class="s2">&quot;mult&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">_TestModBuff2</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tmb2&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;tmb2&quot;</span>
+    <span class="n">flavor</span> <span class="o">=</span> <span class="s2">&quot;modderbuff2&quot;</span>
+    <span class="n">maxstacks</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">mods</span> <span class="o">=</span> <span class="p">[</span><span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;stat1&quot;</span><span class="p">,</span> <span class="s2">&quot;mult&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;stat1&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">_TestTrigBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;ttb&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;ttb&quot;</span>
+    <span class="n">flavor</span> <span class="o">=</span> <span class="s2">&quot;triggerbuff&quot;</span>
+    <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;test1&quot;</span><span class="p">,</span> <span class="s2">&quot;test2&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">trigger</span> <span class="o">==</span> <span class="s2">&quot;test1&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">triggertest1</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">trigger</span> <span class="o">==</span> <span class="s2">&quot;test2&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">triggertest2</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="k">class</span> <span class="nc">_TestConBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tcb&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;tcb&quot;</span>
+    <span class="n">flavor</span> <span class="o">=</span> <span class="s2">&quot;condbuff&quot;</span>
+    <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;condtest&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">conditional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cond1</span>
+
+    <span class="k">def</span> <span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attacker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defender</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">damage</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">att</span><span class="p">,</span> <span class="n">defender</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dmg</span> <span class="o">=</span> <span class="n">attacker</span><span class="p">,</span> <span class="n">damage</span>
+
+
+<span class="k">class</span> <span class="nc">_TestComplexBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;tcomb&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;complex&quot;</span>
+    <span class="n">flavor</span> <span class="o">=</span> <span class="s2">&quot;combuff&quot;</span>
+    <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;comtest&quot;</span><span class="p">,</span> <span class="s2">&quot;complextest&quot;</span><span class="p">]</span>
+
+    <span class="n">mods</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;com1&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+        <span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;com1&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
+        <span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;com1&quot;</span><span class="p">,</span> <span class="s2">&quot;mult&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;com2&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">conditional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cond</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">cond</span>
+
+    <span class="k">def</span> <span class="nf">at_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trigger</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">trigger</span> <span class="o">==</span> <span class="s2">&quot;comtest&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cond&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="k">class</span> <span class="nc">_TestTimeBuff</span><span class="p">(</span><span class="n">BaseBuff</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;ttib&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;ttib&quot;</span>
+    <span class="n">flavor</span> <span class="o">=</span> <span class="s2">&quot;timerbuff&quot;</span>
+    <span class="n">maxstacks</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">tickrate</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">mods</span> <span class="o">=</span> <span class="p">[</span><span class="n">Mod</span><span class="p">(</span><span class="s2">&quot;timetest&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="mi">665</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">at_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ticktest</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="BuffableObject"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject">[docs]</a><span class="k">class</span> <span class="nc">BuffableObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+    <span class="n">stat1</span> <span class="o">=</span> <span class="n">BuffableProperty</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BuffableObject.buffs"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.buffs">[docs]</a>    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">buffs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BuffHandler</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">BuffHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BuffableObject.at_init"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.at_init">[docs]</a>    <span class="k">def</span> <span class="nf">at_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stat1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_init</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TestBuffsAndHandler"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler">[docs]</a><span class="k">class</span> <span class="nc">TestBuffsAndHandler</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+    <span class="s2">&quot;This tests a number of things about buffs.&quot;</span>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span><span class="n">BuffableObject</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;testobj&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.tearDown"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;done after every test_* method below&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_addremove"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_addremove">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_addremove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests adding and removing buffs&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="c1"># add</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">,</span> <span class="n">to_cache</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cachetest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestTrigBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="p">[</span><span class="s2">&quot;tmb&quot;</span><span class="p">][</span><span class="s2">&quot;ref&quot;</span><span class="p">],</span> <span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="p">[</span><span class="s2">&quot;tmb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cachetest&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="p">[</span><span class="s2">&quot;ttb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cachetest&quot;</span><span class="p">))</span>
+        <span class="c1"># has</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">_EmptyBuff</span><span class="p">))</span>
+        <span class="c1"># remove</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">))</span>
+        <span class="c1"># remove stacks</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">,</span> <span class="n">stacks</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">,</span> <span class="n">stacks</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">))</span>
+        <span class="c1"># remove by type</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">remove_by_type</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">))</span>
+        <span class="c1"># remove by buff instance</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">all</span><span class="p">[</span><span class="s2">&quot;tmb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">))</span>
+        <span class="c1"># remove by source</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">remove_by_source</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">))</span>
+        <span class="c1"># remove by cachevalue</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">remove_by_cachevalue</span><span class="p">(</span><span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">))</span>
+        <span class="c1"># remove all</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">all</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_getters"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_getters">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_getters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests all built-in getters&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestTrigBuff</span><span class="p">,</span> <span class="n">to_cache</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ttbcache&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="c1"># normal getter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">),</span> <span class="n">_TestModBuff</span><span class="p">))</span>
+        <span class="c1"># stat getters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get_by_stat</span><span class="p">(</span><span class="s2">&quot;stat1&quot;</span><span class="p">)[</span><span class="s2">&quot;tmb&quot;</span><span class="p">],</span> <span class="n">_TestModBuff</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get_by_stat</span><span class="p">(</span><span class="s2">&quot;nullstat&quot;</span><span class="p">))</span>
+        <span class="c1"># trigger getters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;ttb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_trigger</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="s2">&quot;ttb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_trigger</span><span class="p">(</span><span class="s2">&quot;nulltrig&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="c1"># type getters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_type</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_type</span><span class="p">(</span><span class="n">_EmptyBuff</span><span class="p">))</span>
+        <span class="c1"># source getter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_source</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="s2">&quot;ttb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_source</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">))</span>
+        <span class="c1"># cachevalue getter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_cachevalue</span><span class="p">(</span><span class="s2">&quot;ttbcache&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;ttb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_cachevalue</span><span class="p">(</span><span class="s2">&quot;ttbcache&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;ttb&quot;</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">get_by_cachevalue</span><span class="p">(</span><span class="s2">&quot;ttbcache&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_details"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_details">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests that buff details like name and flavor are correct; also test modifier viewing&quot;&quot;&quot;</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestTrigBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">flavor</span><span class="p">,</span> <span class="s2">&quot;modderbuff&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ttb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;ttb&quot;</span><span class="p">)</span>
+        <span class="n">mods</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">view_modifiers</span><span class="p">(</span><span class="s2">&quot;stat1&quot;</span><span class="p">)</span>
+        <span class="n">_testmods</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;add&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s2">&quot;strongest&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">},</span>
+            <span class="s2">&quot;mult&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;strongest&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="s2">&quot;div&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;strongest&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">mods</span><span class="p">,</span> <span class="n">_testmods</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_modify"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_modify">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_modify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests to ensure that values are modified correctly, and stack across mods&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="n">_stat1</span><span class="p">,</span> <span class="n">_stat2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="c1"># stat1 and 2 basic mods</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat2</span><span class="p">,</span> <span class="s2">&quot;stat2&quot;</span><span class="p">),</span> <span class="mi">15</span><span class="p">)</span>
+        <span class="c1"># checks can take any base value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat2&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat2</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">25</span><span class="p">)</span>
+        <span class="c1"># change to base stat reflected in check</span>
+        <span class="n">_stat1</span> <span class="o">+=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="n">_stat2</span> <span class="o">+=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat2</span><span class="p">,</span> <span class="s2">&quot;stat2&quot;</span><span class="p">),</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="c1"># test stacking; single stack, multiple stack, max stacks</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">25</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">,</span> <span class="n">stacks</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">,</span> <span class="n">stacks</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="c1"># stat2 mod doesn&#39;t stack</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat2</span><span class="p">,</span> <span class="s2">&quot;stat2&quot;</span><span class="p">),</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="c1"># layers with second mod</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat2</span><span class="p">,</span> <span class="s2">&quot;stat2&quot;</span><span class="p">),</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="c1"># apply only the strongest value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">,</span> <span class="n">strongest</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="c1"># removing mod properly reduces value, doesn&#39;t affect other mods</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">remove_by_type</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat2</span><span class="p">,</span> <span class="s2">&quot;stat2&quot;</span><span class="p">),</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="c1"># divider mod test</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestDivBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">_stat1</span><span class="p">,</span> <span class="s2">&quot;stat1&quot;</span><span class="p">),</span> <span class="mi">15</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_trigger"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_trigger">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests to ensure triggers correctly fire&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestTrigBuff</span><span class="p">)</span>
+        <span class="c1"># trigger buffs</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;nulltest&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">triggertest1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">triggertest2</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">triggertest1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">triggertest2</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;test2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">triggertest1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">triggertest2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_context_conditional"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_context_conditional">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_context_conditional</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests to ensure context is passed to buffs, and also tests conditionals&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestConBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cond1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">att</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dmg</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="c1"># context to pass, containing basic event data and a little extra to be ignored</span>
+        <span class="n">_testcontext</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;attacker&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">,</span>
+            <span class="s2">&quot;defender&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="p">,</span>
+            <span class="s2">&quot;damage&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;overflow&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># test negative conditional</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">get_by_type</span><span class="p">(</span><span class="n">_TestConBuff</span><span class="p">)[</span><span class="s2">&quot;tcb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span><span class="o">**</span><span class="n">_testcontext</span><span class="p">),</span> <span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;condtest&quot;</span><span class="p">,</span> <span class="n">_testcontext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">att</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dmg</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># test positive conditional + context passing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">cond1</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get_by_type</span><span class="p">(</span><span class="n">_TestConBuff</span><span class="p">)[</span><span class="s2">&quot;tcb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span><span class="o">**</span><span class="n">_testcontext</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;condtest&quot;</span><span class="p">,</span> <span class="n">_testcontext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">att</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dmg</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_complex"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_complex">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests a complex mod (conditionals, multiple triggers/mods)&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comone</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtwo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{}</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestComplexBuff</span><span class="p">)</span>
+        <span class="c1"># stat checks work correctly and separately</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comone</span><span class="p">,</span> <span class="s2">&quot;com1&quot;</span><span class="p">),</span> <span class="mi">105</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtwo</span><span class="p">,</span> <span class="s2">&quot;com2&quot;</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="c1"># stat checks don&#39;t happen if the conditional is true</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;comtest&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;cond&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">get_by_type</span><span class="p">(</span><span class="n">_TestComplexBuff</span><span class="p">)[</span><span class="s2">&quot;tcomb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">),</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comone</span><span class="p">,</span> <span class="s2">&quot;com1&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">),</span> <span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtwo</span><span class="p">,</span> <span class="s2">&quot;com2&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">),</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;complextest&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comone</span><span class="p">,</span> <span class="s2">&quot;com1&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">),</span> <span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtwo</span><span class="p">,</span> <span class="s2">&quot;com2&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">),</span> <span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="c1"># separate trigger follows different codepath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cond&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;complextest&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comone</span><span class="p">,</span> <span class="s2">&quot;com1&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">),</span> <span class="mi">105</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtwo</span><span class="p">,</span> <span class="s2">&quot;com2&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">comtext</span><span class="p">),</span> <span class="mi">100</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_timing"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_timing">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_timing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_delay</span><span class="p">:</span> <span class="n">Mock</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests timing-related features, such as ticking and duration&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="n">mock_delay</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">handler</span><span class="o">.</span><span class="n">cleanup</span><span class="p">]</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestTimeBuff</span><span class="p">)</span>
+        <span class="n">calls</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">call</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="n">buff</span><span class="o">.</span><span class="n">tick_buff</span><span class="p">,</span>
+                <span class="n">handler</span><span class="o">=</span><span class="n">handler</span><span class="p">,</span>
+                <span class="n">buffkey</span><span class="o">=</span><span class="s2">&quot;ttib&quot;</span><span class="p">,</span>
+                <span class="n">context</span><span class="o">=</span><span class="p">{},</span>
+                <span class="n">initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">call</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">handler</span><span class="o">.</span><span class="n">cleanup</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="n">mock_delay</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">(</span><span class="n">calls</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">timetest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ticktest</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="c1"># test duration and ticking</span>
+        <span class="n">_instance</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ttib&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">_instance</span><span class="o">.</span><span class="n">ticking</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">_instance</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">_instance</span><span class="o">.</span><span class="n">at_tick</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">ticktest</span><span class="p">)</span>
+        <span class="c1"># test duration modification and cleanup</span>
+        <span class="n">_instance</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ttib&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ttib&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_cacheattrlink"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_cacheattrlink">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_cacheattrlink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests the link between the instance attribute and the cache attribute&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_EmptyBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="s2">&quot;empty&quot;</span><span class="p">][</span><span class="s2">&quot;duration&quot;</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">empty</span><span class="p">:</span> <span class="n">_EmptyBuff</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;empty&quot;</span><span class="p">)</span>
+        <span class="n">empty</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">buffcache</span><span class="p">[</span><span class="s2">&quot;empty&quot;</span><span class="p">][</span><span class="s2">&quot;duration&quot;</span><span class="p">],</span> <span class="mi">30</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_buffableproperty"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_buffableproperty">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_buffableproperty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests buffable properties&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">stat1</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;tmb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">stat1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_stresstest"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_stresstest">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_stresstest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;tests large amounts of buffs, and related removal methods&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;test&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_TestTrigBuff</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;trig&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">stat1</span><span class="p">,</span> <span class="mi">295</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">remove_by_type</span><span class="p">(</span><span class="n">_TestModBuff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">stat1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span><span class="o">.</span><span class="n">all</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBuffsAndHandler.test_modgen"><a class="viewcode-back" href="../../../../../api/evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_modgen">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.rpg.buffs.buff.utils.delay&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">Mock</span><span class="p">())</span>
+    <span class="k">def</span> <span class="nf">test_modgen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;test generating mods on the fly&quot;&quot;&quot;</span>
+        <span class="c1"># setup</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">BuffHandler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">buffs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gentest</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gentest</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">tc</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;modgen&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gentest&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">StatBuff</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;gentest&quot;</span><span class="p">,</span> <span class="n">to_cache</span><span class="o">=</span><span class="n">tc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gentest</span><span class="p">,</span> <span class="s2">&quot;gentest&quot;</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">tc</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;modgen&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;gentest&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">StatBuff</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;gentest&quot;</span><span class="p">,</span> <span class="n">to_cache</span><span class="o">=</span><span class="n">tc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">testobj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gentest</span><span class="p">,</span> <span class="s2">&quot;gentest&quot;</span><span class="p">),</span> <span class="mi">15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gentest&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">flavor</span><span class="p">,</span> <span class="s2">&quot;This buff affects the following stats: gentest&quot;</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.buffs.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

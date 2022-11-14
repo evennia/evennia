@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.utils.verb_conjugation.conjugate &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.verb_conjugation.conjugate</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="conjugate.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.verb_conjugation.conjugate</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">English verb conjugation</span>
+
+<span class="sd">Original Author: Tom De Smedt &lt;tomdesmedt@organisms.be&gt; of Nodebox</span>
+<span class="sd">Refactored by Griatch 2021, for Evennia.</span>
+
+<span class="sd">This is distributed under the GPL2 license. See ./LICENSE.txt for details.</span>
+
+<span class="sd">The verb.txt morphology was adopted from the XTAG morph_englis.flat:</span>
+<span class="sd">http://www.cis.upenn.edu/~xtag/</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">_VERBS_FILE</span> <span class="o">=</span> <span class="s2">&quot;verbs.txt&quot;</span>
+
+<span class="c1"># Each verb and its tenses is a list in verbs.txt,</span>
+<span class="c1"># indexed according to the following keys:</span>
+<span class="c1"># the negated forms (for supported verbs) are ind+11.</span>
+
+<span class="n">verb_tenses_keys</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;infinitive&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;1st singular present&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;2nd singular present&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;3rd singular present&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;present plural&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;present participle&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;1st singular past&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;2nd singular past&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;3rd singular past&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;past plural&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;past&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;past participle&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># allow to specify tenses with a shorter notation</span>
+<span class="n">verb_tenses_aliases</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;inf&quot;</span><span class="p">:</span> <span class="s2">&quot;infinitive&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1sgpres&quot;</span><span class="p">:</span> <span class="s2">&quot;1st singular present&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;2sgpres&quot;</span><span class="p">:</span> <span class="s2">&quot;2nd singular present&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;3sgpres&quot;</span><span class="p">:</span> <span class="s2">&quot;3rd singular present&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pl&quot;</span><span class="p">:</span> <span class="s2">&quot;present plural&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prog&quot;</span><span class="p">:</span> <span class="s2">&quot;present participle&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1sgpast&quot;</span><span class="p">:</span> <span class="s2">&quot;1st singular past&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;2sgpast&quot;</span><span class="p">:</span> <span class="s2">&quot;2nd singular past&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;3sgpast&quot;</span><span class="p">:</span> <span class="s2">&quot;3rd singular past&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pastpl&quot;</span><span class="p">:</span> <span class="s2">&quot;past plural&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ppart&quot;</span><span class="p">:</span> <span class="s2">&quot;past participle&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Each verb has morphs for infinitve,</span>
+<span class="c1"># 3rd singular present, present participle,</span>
+<span class="c1"># past and past participle.</span>
+<span class="c1"># Verbs like &quot;be&quot; have other morphs as well</span>
+<span class="c1"># (i.e. I am, you are, she is, they aren&#39;t)</span>
+<span class="c1"># Additionally, the following verbs can be negated:</span>
+<span class="c1"># be, can, do, will, must, have, may, need, dare, ought.</span>
+
+<span class="c1"># load the conjugation forms from ./verbs.txt</span>
+<span class="n">verb_tenses</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">_VERBS_FILE</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fil</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+        <span class="n">wordlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+        <span class="n">verb_tenses</span><span class="p">[</span><span class="n">wordlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">wordlist</span>
+
+<span class="c1"># Each verb can be lemmatised:</span>
+<span class="c1"># inflected morphs of the verb point</span>
+<span class="c1"># to its infinitive in this dictionary.</span>
+<span class="n">verb_lemmas</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">infinitive</span> <span class="ow">in</span> <span class="n">verb_tenses</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">tense</span> <span class="ow">in</span> <span class="n">verb_tenses</span><span class="p">[</span><span class="n">infinitive</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">tense</span><span class="p">:</span>
+            <span class="n">verb_lemmas</span><span class="p">[</span><span class="n">tense</span><span class="p">]</span> <span class="o">=</span> <span class="n">infinitive</span>
+
+
+<div class="viewcode-block" id="verb_infinitive"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_infinitive">[docs]</a><span class="k">def</span> <span class="nf">verb_infinitive</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the uninflected form of the verb, like &#39;are&#39; -&gt; &#39;be&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to get the uninflected form of.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The uninflected verb form of `verb`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">verb_lemmas</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="verb_conjugate"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_conjugate">[docs]</a><span class="k">def</span> <span class="nf">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">tense</span><span class="o">=</span><span class="s2">&quot;infinitive&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inflects the verb to the given tense.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The single verb to conjugate.</span>
+<span class="sd">        tense (str): The tense to convert to. This can be given either as a long or short form</span>
+<span class="sd">            - &quot;infinitive&quot; (&quot;inf&quot;) - be</span>
+<span class="sd">            - &quot;1st/2nd/3rd singular present&quot; (&quot;1/2/3sgpres&quot;) - am/are/is</span>
+<span class="sd">            - &quot;present plural&quot; (&quot;pl&quot;) - are</span>
+<span class="sd">            - &quot;present participle&quot; (&quot;prog&quot;) - being</span>
+<span class="sd">            - &quot;1st/2nd/3rd singular past&quot; (&quot;1/2/3sgpast&quot;) - was/were/was</span>
+<span class="sd">            - &quot;past plural&quot; (&quot;pastpl&quot;) - were</span>
+<span class="sd">            - &quot;past&quot; - were</span>
+<span class="sd">            - &quot;past participle&quot; (&quot;ppart&quot;) - been</span>
+<span class="sd">        negate (bool): Negates the verb. This only supported</span>
+<span class="sd">            for a limited number of verbs: be, can, do, will, must, have, may,</span>
+<span class="sd">            need, dare, ought.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The conjugated verb. If conjugation fails, the original verb is returned.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        The verb &#39;be&#39;:</span>
+<span class="sd">        - present: I am, you are, she is,</span>
+<span class="sd">        - present participle: being,</span>
+<span class="sd">        - past: I was, you were, he was,</span>
+<span class="sd">        - past participle: been,</span>
+<span class="sd">        - negated present: I am not, you aren&#39;t, it isn&#39;t.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tense</span> <span class="o">=</span> <span class="n">verb_tenses_aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tense</span><span class="p">,</span> <span class="n">tense</span><span class="p">)</span>
+    <span class="n">verb</span> <span class="o">=</span> <span class="n">verb_infinitive</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">verb_tenses_keys</span><span class="p">[</span><span class="n">tense</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">negate</span><span class="p">:</span>
+        <span class="n">ind</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">verb_tenses_keys</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">verb_tenses</span><span class="p">[</span><span class="n">verb</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="c1"># TODO implement simple algorithm here with +s for certain tenses?</span>
+        <span class="k">return</span> <span class="n">verb</span></div>
+
+
+<div class="viewcode-block" id="verb_present"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_present">[docs]</a><span class="k">def</span> <span class="nf">verb_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inflects the verb in the present tense.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        person (str or int): This can be 1, 2, 3, &quot;1st&quot;, &quot;2nd&quot;, &quot;3rd&quot;, &quot;plural&quot; or &quot;*&quot;.</span>
+<span class="sd">        negate (bool):  Some verbs like be, have, must, can be negated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The present tense verb.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        had -&gt; have</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">person</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">person</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;pl&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;stndrgural&quot;</span><span class="p">)</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="s2">&quot;1st singular present&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="s2">&quot;2nd singular present&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="s2">&quot;3rd singular present&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="s2">&quot;present plural&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="ow">and</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">mapping</span><span class="p">[</span><span class="n">person</span><span class="p">],</span> <span class="n">negate</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">mapping</span><span class="p">[</span><span class="n">person</span><span class="p">],</span> <span class="n">negate</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;infinitive&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="verb_present_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_present_participle">[docs]</a><span class="k">def</span> <span class="nf">verb_present_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inflects the verb in the present participle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to inflect.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The inflected verb.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        give -&gt; giving, be -&gt; being, swim -&gt; swimming</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;present participle&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="verb_past"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_past">[docs]</a><span class="k">def</span> <span class="nf">verb_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Inflects the verb in the past tense.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to inflect.</span>
+<span class="sd">        person (str, optional): The person can be specified with 1, 2, 3,</span>
+<span class="sd">            &quot;1st&quot;, &quot;2nd&quot;, &quot;3rd&quot;, &quot;plural&quot;, &quot;*&quot;.</span>
+<span class="sd">        negate (bool, optional):  Some verbs like be, have, must, can be negated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The inflected verb.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        give -&gt; gave, be -&gt; was, swim -&gt; swam</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">person</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">person</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;pl&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;stndrgural&quot;</span><span class="p">)</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="s2">&quot;1st singular past&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="s2">&quot;2nd singular past&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="s2">&quot;3rd singular past&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="s2">&quot;past plural&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="ow">and</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">mapping</span><span class="p">[</span><span class="n">person</span><span class="p">],</span> <span class="n">negate</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">mapping</span><span class="p">[</span><span class="n">person</span><span class="p">],</span> <span class="n">negate</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;past&quot;</span><span class="p">,</span> <span class="n">negate</span><span class="o">=</span><span class="n">negate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="verb_past_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_past_participle">[docs]</a><span class="k">def</span> <span class="nf">verb_past_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inflects the verb in the present participle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to inflect.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The inflected verb.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        give -&gt; given, be -&gt; been, swim -&gt; swum</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">verb_conjugate</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="s2">&quot;past participle&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="verb_all_tenses"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_all_tenses">[docs]</a><span class="k">def</span> <span class="nf">verb_all_tenses</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get all all possible verb tenses.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list if string names.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">verb_tenses_keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="verb_tense"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_tense">[docs]</a><span class="k">def</span> <span class="nf">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a string from verb_tenses_keys representing the verb&#39;s tense.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to check the tense of.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The tense.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        given -&gt; &quot;past participle&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">infinitive</span> <span class="o">=</span> <span class="n">verb_infinitive</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">verb_tenses</span><span class="p">[</span><span class="n">infinitive</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">tense</span> <span class="ow">in</span> <span class="n">verb_tenses_keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">verb_tenses_keys</span><span class="p">[</span><span class="n">tense</span><span class="p">]]</span> <span class="o">==</span> <span class="n">verb</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tense</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">verb_tenses_keys</span><span class="p">[</span><span class="n">tense</span><span class="p">]</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">verb_tenses_keys</span><span class="p">)]</span> <span class="o">==</span> <span class="n">verb</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tense</span></div>
+
+
+<div class="viewcode-block" id="verb_is_tense"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_tense">[docs]</a><span class="k">def</span> <span class="nf">verb_is_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">tense</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks whether the verb is in the given tense.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to check.</span>
+<span class="sd">        tense (str): The tense to check.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        bool: If verb matches given tense.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tense</span> <span class="o">=</span> <span class="n">verb_tenses_aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tense</span><span class="p">,</span> <span class="n">tense</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span> <span class="o">==</span> <span class="n">tense</span></div>
+
+
+<div class="viewcode-block" id="verb_is_present"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_present">[docs]</a><span class="k">def</span> <span class="nf">verb_is_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks whether the verb is in the present tense.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to check.</span>
+<span class="sd">        person (str): Check which person.</span>
+<span class="sd">        negated (bool): Check if verb was negated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: If verb was in present tense.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">person</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">person</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;plural&quot;</span><span class="p">)</span>
+    <span class="n">tense</span> <span class="o">=</span> <span class="n">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tense</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;present&quot;</span> <span class="ow">in</span> <span class="n">tense</span> <span class="ow">and</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">tense</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">negated</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="s2">&quot;n&#39;t&quot;</span> <span class="ow">in</span> <span class="n">verb</span> <span class="ow">or</span> <span class="s2">&quot; not&quot;</span> <span class="ow">in</span> <span class="n">verb</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="verb_is_present_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_present_participle">[docs]</a><span class="k">def</span> <span class="nf">verb_is_present_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks whether the verb is in present participle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Result of check.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tense</span> <span class="o">=</span> <span class="n">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tense</span> <span class="o">==</span> <span class="s2">&quot;present participle&quot;</span></div>
+
+
+<div class="viewcode-block" id="verb_is_past"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_past">[docs]</a><span class="k">def</span> <span class="nf">verb_is_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">negated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks whether the verb is in the past tense.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to check.</span>
+<span class="sd">        person (str): The person to check.</span>
+<span class="sd">        negated (bool): Check if verb is negated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Result of check.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">person</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">person</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;plural&quot;</span><span class="p">)</span>
+    <span class="n">tense</span> <span class="o">=</span> <span class="n">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tense</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;past&quot;</span> <span class="ow">in</span> <span class="n">tense</span> <span class="ow">and</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">tense</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">negated</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="s2">&quot;n&#39;t&quot;</span> <span class="ow">in</span> <span class="n">verb</span> <span class="ow">or</span> <span class="s2">&quot; not&quot;</span> <span class="ow">in</span> <span class="n">verb</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="verb_is_past_participle"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_is_past_participle">[docs]</a><span class="k">def</span> <span class="nf">verb_is_past_participle</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks whether the verb is in past participle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: The result of the check.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tense</span> <span class="o">=</span> <span class="n">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tense</span> <span class="o">==</span> <span class="s2">&quot;past participle&quot;</span></div>
+
+
+<div class="viewcode-block" id="verb_actor_stance_components"><a class="viewcode-back" href="../../../../api/evennia.utils.verb_conjugation.conjugate.html#evennia.utils.verb_conjugation.conjugate.verb_actor_stance_components">[docs]</a><span class="k">def</span> <span class="nf">verb_actor_stance_components</span><span class="p">(</span><span class="n">verb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Figure out actor stance components of a verb.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        verb (str): The verb to analyze</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: The 2nd person (you) and 3rd person forms of the verb,</span>
+<span class="sd">            in the same tense as the ingoing verb.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tense</span> <span class="o">=</span> <span class="n">verb_tense</span><span class="p">(</span><span class="n">verb</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;participle&quot;</span> <span class="ow">in</span> <span class="n">tense</span> <span class="ow">or</span> <span class="s2">&quot;plural&quot;</span> <span class="ow">in</span> <span class="n">tense</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">verb</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tense</span> <span class="o">==</span> <span class="s2">&quot;infinitive&quot;</span> <span class="ow">or</span> <span class="s2">&quot;present&quot;</span> <span class="ow">in</span> <span class="n">tense</span><span class="p">:</span>
+        <span class="n">you_str</span> <span class="o">=</span> <span class="n">verb_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span>
+        <span class="n">them_str</span> <span class="o">=</span> <span class="n">verb_present</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">you_str</span> <span class="o">=</span> <span class="n">verb_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span>
+        <span class="n">them_str</span> <span class="o">=</span> <span class="n">verb_past</span><span class="p">(</span><span class="n">verb</span><span class="p">,</span> <span class="n">person</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">verb</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">you_str</span><span class="p">,</span> <span class="n">them_str</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.verb_conjugation.conjugate</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

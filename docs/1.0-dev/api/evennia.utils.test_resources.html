@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.utils.test_resources &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.utils.text2html" href="evennia.utils.text2html.html" />
+    <link rel="prev" title="evennia.utils.search" href="evennia.utils.search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.text2html.html" title="evennia.utils.text2html"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.search.html" title="evennia.utils.search"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" accesskey="U">evennia.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.test_resources</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.utils.search.html"
+                        title="previous chapter">evennia.utils.search</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.utils.text2html.html"
+                        title="next chapter">evennia.utils.text2html</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.test_resources.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.utils.test_resources.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.utils.test_resources.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.utils.test_resources">
+<span id="evennia-utils-test-resources"></span><h1>evennia.utils.test_resources<a class="headerlink" href="#module-evennia.utils.test_resources" title="Permalink to this headline">¶</a></h1>
+<p>Various helper resources for writing unittests.</p>
+<p>Classes for testing Evennia core:</p>
+<ul class="simple">
+<li><p><strong>BaseEvenniaTestCase</strong> - no default objects, only enforced default settings</p></li>
+<li><p><strong>BaseEvenniaTest</strong> - all default objects, enforced default settings</p></li>
+<li><p><strong>BaseEvenniaCommandTest</strong> - for testing Commands, enforced default settings</p></li>
+</ul>
+<p>Classes for testing game folder content:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>EvenniaTestCase</strong> - no default objects, using gamedir settings (identical to</dt><dd><p>standard Python TestCase)</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>EvenniaTest</strong> - all default objects, using gamedir settings</p></li>
+<li><p><strong>EvenniaCommandTest</strong> - for testing game folder commands, using gamedir settings</p></li>
+</ul>
+<p>Other:</p>
+<ul class="simple">
+<li><p><strong>EvenniaTestMixin</strong> - A class mixin for creating the test environment objects, for
+making custom tests.</p></li>
+<li><p><strong>EvenniaCommandMixin</strong> - A class mixin that adds support for command testing with the .call()
+helper. Used by the command-test classes, but can be used for making a customt test class.</p></li>
+</ul>
+<dl class="py function">
+<dt id="evennia.utils.test_resources.mockdelay">
+<code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">mockdelay</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timedelay</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#mockdelay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.mockdelay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.test_resources.mockdeferLater">
+<code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">mockdeferLater</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reactor</span></em>, <em class="sig-param"><span class="n">timedelay</span></em>, <em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#mockdeferLater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.mockdeferLater" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="evennia.utils.test_resources.unload_module">
+<code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">unload_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#unload_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.unload_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset import so one can mock global constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>module</strong> (<em>module</em><em>, </em><em>object</em><em> or </em><em>str</em>) – The module will
+be removed so it will have to be imported again. If given
+an object, the module in which that object sits will be unloaded. A string
+should directly give the module pathname to unload.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># (in a test method)</span>
+<span class="n">unload_module</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;foo.GLOBALTHING&quot;</span><span class="p">,</span> <span class="s2">&quot;mockval&quot;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">foo</span>
+    <span class="o">...</span> <span class="c1"># test code using foo.GLOBALTHING, now set to &#39;mockval&#39;</span>
+</pre></div>
+</div>
+<p>This allows for mocking constants global to the module, since
+otherwise those would not be mocked (since a module is only
+loaded once).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaTestMixin</code><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Evennia test environment mixin</p>
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.account_typeclass">
+<code class="sig-name descname">account_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.account_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.accounts.accounts.html#evennia.accounts.accounts.DefaultAccount" title="evennia.accounts.accounts.DefaultAccount"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.accounts.DefaultAccount</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.object_typeclass">
+<code class="sig-name descname">object_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.object_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.character_typeclass">
+<code class="sig-name descname">character_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.character_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.exit_typeclass">
+<code class="sig-name descname">exit_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.exit_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.room_typeclass">
+<code class="sig-name descname">room_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.room_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom" title="evennia.objects.objects.DefaultRoom"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultRoom</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.script_typeclass">
+<code class="sig-name descname">script_typeclass</code><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.script_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_accounts">
+<code class="sig-name descname">create_accounts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_accounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.teardown_accounts">
+<code class="sig-name descname">teardown_accounts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.teardown_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.teardown_accounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_rooms">
+<code class="sig-name descname">create_rooms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_rooms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_rooms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_objs">
+<code class="sig-name descname">create_objs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_objs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_objs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_chars">
+<code class="sig-name descname">create_chars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_chars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_chars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.create_script">
+<code class="sig-name descname">create_script</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.create_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.create_script" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.setup_session">
+<code class="sig-name descname">setup_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.setup_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.setup_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.teardown_session">
+<code class="sig-name descname">teardown_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.teardown_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.teardown_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaTestMixin.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestMixin.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestMixin.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaCommandTestMixin">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaCommandTestMixin</code><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaCommandTestMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaCommandTestMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mixin to add to a test in order to provide the <strong>.call</strong> helper for
+testing the execution and returns of a command.</p>
+<p>Tests a Command by running it and comparing what messages it sends with
+expected values. This tests without actually spinning up the cmdhandler
+for every test, which is more controlled.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands.echo</span> <span class="kn">import</span> <span class="n">CmdEcho</span>
+
+<span class="k">class</span> <span class="nc">MyCommandTest</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">,</span> <span class="n">CommandTestMixin</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Test that the echo command really returns</span>
+<span class="sd">        what you pass into it.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">MyCommand</span><span class="p">(),</span> <span class="s2">&quot;hello world!&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;You hear your echo: &#39;Hello world!&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="evennia.utils.test_resources.EvenniaCommandTestMixin.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdobj</span></em>, <em class="sig-param"><span class="n">input_args</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmdset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">noansi</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">receiver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cmdstring</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raw_string</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaCommandTestMixin.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaCommandTestMixin.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test a command by assigning all the needed properties to a cmdobj and
+running the sequence. The resulting <strong>.msg</strong> calls will be mocked and
+the text= calls to them compared to a expected output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdobj</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a>) – The command object to use.</p></li>
+<li><p><strong>input_args</strong> (<em>str</em>) – This should be the full input the Command should
+see, such as ‘look here’. This will become <strong>.args</strong> for the Command
+instance to parse.</p></li>
+<li><p><strong>msg</strong> (<em>str</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – This is the expected return value(s)
+returned through <strong>caller.msg(text=…)</strong> calls in the command. If a string, the
+receiver is controlled with the <strong>receiver</strong> kwarg (defaults to <strong>caller</strong>).
+If this is a <strong>dict</strong>, it is a mapping
+<strong>{receiver1: “expected1”, receiver2: “expected2”,…}</strong> and <strong>receiver</strong> is
+ignored. The message(s) are compared with the actual messages returned
+to the receiver(s) as the Command runs. Each check uses <strong>.startswith</strong>,
+so you can choose to only include the first part of the
+returned message if that’s enough to verify a correct result. EvMenu
+decorations (like borders) are stripped and should not be included. This
+should also not include color tags unless <strong>noansi=False</strong>.
+If the command returns texts in multiple separate <strong>.msg</strong>-
+calls to a receiver, separate these with <strong>|</strong> if <strong>noansi=True</strong>
+(default) and <strong>||</strong> if <strong>noansi=False</strong>. If no <strong>msg</strong> is given (<strong>None</strong>),
+then no automatic comparison will be done.</p></li>
+<li><p><strong>cmdset</strong> (<em>str</em><em>, </em><em>optional</em>) – If given, make <strong>.cmdset</strong> available on the Command
+instance as it runs. While <strong>.cmdset</strong> is normally available on the
+Command instance by default, this is usually only used by
+commands that explicitly operates/displays cmdsets, like
+<strong>examine</strong>.</p></li>
+<li><p><strong>noansi</strong> (<em>str</em><em>, </em><em>optional</em>) – By default the color tags of the <strong>msg</strong> is
+ignored, this makes them significant. If unset, <strong>msg</strong> must contain
+the same color tags as the actual return message.</p></li>
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – By default <strong>self.char1</strong> is used as the
+command-caller (the <strong>.caller</strong> property on the Command). This allows to
+execute with another caller, most commonly an Account.</p></li>
+<li><p><strong>receiver</strong> (<em>Object</em><em> or </em><em>Account</em><em>, </em><em>optional</em>) – This is the object to receive the
+return messages we want to test. By default this is the same as <strong>caller</strong>
+(which in turn defaults to is <strong>self.char1</strong>). Note that if <strong>msg</strong> is
+a <strong>dict</strong>, this is ignored since the receiver is already specified there.</p></li>
+<li><p><strong>cmdstring</strong> (<em>str</em><em>, </em><em>optional</em>) – Normally this is the Command’s <strong>key</strong>.
+This allows for tweaking the <strong>.cmdname</strong> property of the
+Command**.  This isb used for commands with multiple aliases,
+where the command explicitly checs which alias was used to
+determine its functionality.</p></li>
+<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>optional</em>) – This sets the <strong>.obj</strong> property of the Command - the
+object on which the Command ‘sits’. By default this is the same as <strong>caller</strong>.
+This can be used for testing on-object Command interactions.</p></li>
+<li><p><strong>inputs</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of strings to pass to functions that pause to
+take input from the user (normally using <strong>&#64;interactive</strong> and
+<strong>ret = yield(question)</strong> or <strong>evmenu.get_input</strong>). Each  element of the
+list will be passed into the command as if the user answered each prompt
+in that order.</p></li>
+<li><p><strong>raw_string</strong> (<em>str</em><em>, </em><em>optional</em>) – Normally the <strong>.raw_string</strong> property  is set as
+a combination of your <strong>key/cmdname</strong> and <strong>input_args</strong>. This allows
+direct control of what this is, for example for testing edge cases
+or malformed inputs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str or dict</em> –</p>
+<dl class="simple">
+<dt>The message sent to <strong>receiver</strong>, or a dict of</dt><dd><p><strong>{receiver: “msg”, …}</strong> if multiple are given. This is usually
+only used with <strong>msg=None</strong> to do the validation externally.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>AssertionError</strong> – If the returns of <strong>.msg</strong> calls (tested with <strong>.startswith</strong>) does not
+match <strong>expected_input</strong>.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>As part of the tests, all methods of the Command will be called in
+the proper order:</p>
+<ul class="simple">
+<li><p>cmdobj.at_pre_cmd()</p></li>
+<li><p>cmdobj.parse()</p></li>
+<li><p>cmdobj.func()</p></li>
+<li><p>cmdobj.at_post_cmd()</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.BaseEvenniaTestCase">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">BaseEvenniaTestCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#BaseEvenniaTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.BaseEvenniaTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>Base test (with no default objects) but with enforced default settings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaTestCase">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaTestCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>For use with gamedir settings; Just like the normal test case, only for naming consistency.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.BaseEvenniaTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">BaseEvenniaTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#BaseEvenniaTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.BaseEvenniaTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.EvenniaTestMixin" title="evennia.utils.test_resources.EvenniaTestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTestMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>This class parent has all default objects and uses only default settings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.EvenniaTestMixin" title="evennia.utils.test_resources.EvenniaTestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTestMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.test.testcases.TestCase</span></code></p>
+<p>This test class is intended for inheriting in mygame tests.
+It helps ensure your tests are run with your own objects
+and settings from your game folder.</p>
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTest.account_typeclass">
+<code class="sig-name descname">account_typeclass</code><em class="property"> = 'typeclasses.accounts.Account'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.account_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTest.object_typeclass">
+<code class="sig-name descname">object_typeclass</code><em class="property"> = 'typeclasses.objects.Object'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.object_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTest.character_typeclass">
+<code class="sig-name descname">character_typeclass</code><em class="property"> = 'typeclasses.characters.Character'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.character_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTest.exit_typeclass">
+<code class="sig-name descname">exit_typeclass</code><em class="property"> = 'typeclasses.exits.Exit'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.exit_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTest.room_typeclass">
+<code class="sig-name descname">room_typeclass</code><em class="property"> = 'typeclasses.rooms.Room'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.room_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.utils.test_resources.EvenniaTest.script_typeclass">
+<code class="sig-name descname">script_typeclass</code><em class="property"> = 'typeclasses.scripts.Script'</em><a class="headerlink" href="#evennia.utils.test_resources.EvenniaTest.script_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.BaseEvenniaCommandTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">BaseEvenniaCommandTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#BaseEvenniaCommandTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.BaseEvenniaCommandTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a>, <a class="reference internal" href="#evennia.utils.test_resources.EvenniaCommandTestMixin" title="evennia.utils.test_resources.EvenniaCommandTestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaCommandTestMixin</span></code></a></p>
+<p>Commands only using the default settings.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.utils.test_resources.EvenniaCommandTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.utils.test_resources.</code><code class="sig-name descname">EvenniaCommandTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/test_resources.html#EvenniaCommandTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.test_resources.EvenniaCommandTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a>, <a class="reference internal" href="#evennia.utils.test_resources.EvenniaCommandTestMixin" title="evennia.utils.test_resources.EvenniaCommandTestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaCommandTestMixin</span></code></a></p>
+<p>Parent class to inherit from - makes tests use your own
+classes and settings in mygame.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.text2html.html" title="evennia.utils.text2html"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.search.html" title="evennia.utils.search"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" >evennia.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.test_resources</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.accounts.manager &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.accounts.models" href="evennia.accounts.models.html" />
+    <link rel="prev" title="evennia.accounts.bots" href="evennia.accounts.bots.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.accounts.models.html" title="evennia.accounts.models"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.accounts.bots.html" title="evennia.accounts.bots"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.accounts.html" accesskey="U">evennia.accounts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.accounts.manager</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.accounts.bots.html"
+                        title="previous chapter">evennia.accounts.bots</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.accounts.models.html"
+                        title="next chapter">evennia.accounts.models</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.accounts.manager.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.accounts.manager.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/api/evennia.accounts.manager.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.accounts.manager">
+<span id="evennia-accounts-manager"></span><h1>evennia.accounts.manager<a class="headerlink" href="#module-evennia.accounts.manager" title="Permalink to this headline">¶</a></h1>
+<p>The managers for the custom Account object and permissions.</p>
+<dl class="py class">
+<dt id="evennia.accounts.manager.AccountManager">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.accounts.manager.</code><code class="sig-name descname">AccountManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.accounts.manager.AccountDBManager" title="evennia.accounts.manager.AccountDBManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.accounts.manager.AccountDBManager</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.managers.TypeclassManager</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.accounts.manager.AccountDBManager">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.accounts.manager.</code><code class="sig-name descname">AccountDBManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager" title="evennia.typeclasses.managers.TypedObjectManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.typeclasses.managers.TypedObjectManager</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.UserManager</span></code></p>
+<p>This AccountManager implements methods for searching
+and manipulating Accounts directly from the database.</p>
+<p>Evennia-specific search methods (will return Characters if
+possible or a Typeclass/list of Typeclassed objects, whereas
+Django-general methods will return Querysets or database objects):</p>
+<p>dbref (converter)
+dbref_search
+get_dbref_range
+object_totals
+typeclass_search
+num_total_accounts
+get_connected_accounts
+get_recently_created_accounts
+get_recently_connected_accounts
+get_account_from_email
+get_account_from_uid
+get_account_from_name
+account_search (equivalent to evennia.search_account)</p>
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.num_total_accounts">
+<code class="sig-name descname">num_total_accounts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.num_total_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.num_total_accounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get total number of accounts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>count (int)</em> – The total number of registered accounts.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.get_connected_accounts">
+<code class="sig-name descname">get_connected_accounts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.get_connected_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.get_connected_accounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all currently connected accounts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>count (list)</em> –</p>
+<dl class="simple">
+<dt>Account objects with currently</dt><dd><p>connected sessions.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.get_recently_created_accounts">
+<code class="sig-name descname">get_recently_created_accounts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">days</span><span class="o">=</span><span class="default_value">7</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.get_recently_created_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.get_recently_created_accounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get accounts recently created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>days</strong> (<em>int</em><em>, </em><em>optional</em>) – How many days in the past “recently” means.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>accounts (list)</em> – The Accounts created the last <strong>days</strong> interval.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.get_recently_connected_accounts">
+<code class="sig-name descname">get_recently_connected_accounts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">days</span><span class="o">=</span><span class="default_value">7</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.get_recently_connected_accounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.get_recently_connected_accounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get accounts recently connected to the game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>days</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of days backwards to check</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>accounts (list)</em> –</p>
+<dl class="simple">
+<dt>The Accounts connected to the game in the</dt><dd><p>last <strong>days</strong> interval.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.get_account_from_email">
+<code class="sig-name descname">get_account_from_email</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uemail</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.get_account_from_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.get_account_from_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search account by
+Returns an account object based on email address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uemail</strong> (<em>str</em>) – An email address to search for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>account (Account)</em> – A found account, if found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.get_account_from_uid">
+<code class="sig-name descname">get_account_from_uid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.get_account_from_uid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.get_account_from_uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an account by id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uid</strong> (<em>int</em>) – Account database id.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>account (Account)</em> – The result.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.get_account_from_name">
+<code class="sig-name descname">get_account_from_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.get_account_from_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.get_account_from_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get account object based on name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uname</strong> (<em>str</em>) – The Account name to search for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>account (Account)</em> – The found account.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.search_account">
+<code class="sig-name descname">search_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.search_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.search_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches for a particular account by name or
+database id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ostring</strong> (<em>str</em><em> or </em><em>int</em>) – A key string or database id.</p></li>
+<li><p><strong>exact</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only valid for string matches. If
+<strong>True</strong>, requires exact (non-case-sensitive) match,
+otherwise also match also keys containing the <strong>ostring</strong>
+(non-case-sensitive fuzzy match).</p></li>
+<li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>Typeclass</em><em>, </em><em>optional</em>) – Limit the search only to
+accounts of this typeclass.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – A queryset (an iterable) with 0, 1 or more matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.create_account">
+<code class="sig-name descname">create_account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_superuser</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">locks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">permissions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_to</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/manager.html#AccountDBManager.create_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.create_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>This creates a new account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The account’s name. This should be unique.</p></li>
+<li><p><strong>email</strong> (<em>str</em><em> or </em><em>None</em>) – Email on valid <a class="reference external" href="mailto:addr&#37;&#52;&#48;addr&#46;domain">addr<span>&#64;</span>addr<span>&#46;</span>domain</a> form. If
+the empty string, will be set to None.</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – Password in cleartext.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>typeclass</strong> (<em>str</em>) – The typeclass to use for the account.</p></li>
+<li><p><strong>is_superuser</strong> (<em>bool</em>) – Whether or not this account is to be a superuser</p></li>
+<li><p><strong>locks</strong> (<em>str</em>) – Lockstring.</p></li>
+<li><p><strong>permission</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of permission strings.</p></li>
+<li><p><strong>tags</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of Tags on form <strong>(key, category[, data])</strong></p></li>
+<li><p><strong>attributes</strong> (<a class="reference internal" href="evennia.contrib.game_systems.barter.barter.html#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="evennia.contrib.game_systems.barter.barter.TradeHandler.list"><em>list</em></a>) – List of Attributes on form
+<strong>(key, value [, category, [,lockstring [, default_pass]]])</strong></p></li>
+<li><p><strong>report_to</strong> (<em>Object</em>) – An object with a msg() method to report
+errors to. If not given, errors will be logged.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>Account</em> – The newly created Account.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <strong>key</strong> already exists in database.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Usually only the server admin should need to be superuser, all
+other access levels can be handled with more fine-grained
+permissions or groups. A superuser bypasses all lock checking
+operations and is thus not suitable for play-testing the game.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.accounts.manager.AccountDBManager.account_search">
+<code class="sig-name descname">account_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ostring</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">typeclass</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.accounts.manager.AccountDBManager.account_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches for a particular account by name or
+database id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ostring</strong> (<em>str</em><em> or </em><em>int</em>) – A key string or database id.</p></li>
+<li><p><strong>exact</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only valid for string matches. If
+<strong>True</strong>, requires exact (non-case-sensitive) match,
+otherwise also match also keys containing the <strong>ostring</strong>
+(non-case-sensitive fuzzy match).</p></li>
+<li><p><strong>typeclass</strong> (<em>str</em><em> or </em><em>Typeclass</em><em>, </em><em>optional</em>) – Limit the search only to
+accounts of this typeclass.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Queryset</em> – A queryset (an iterable) with 0, 1 or more matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.accounts.models.html" title="evennia.accounts.models"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.accounts.bots.html" title="evennia.accounts.bots"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.accounts.html" >evennia.accounts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.accounts.manager</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

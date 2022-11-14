@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Input/Output Auditing &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Easy fillable form" href="Contrib-Fieldfill.html" />
+    <link rel="prev" title="Evennia Tutorial World" href="Contrib-Tutorial-World.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Fieldfill.html" title="Easy fillable form"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Tutorial-World.html" title="Evennia Tutorial World"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Input/Output Auditing</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Input/Output Auditing</a><ul>
+<li><a class="reference internal" href="#installation-configuration">Installation/Configuration:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Tutorial-World.html"
+                        title="previous chapter">Evennia Tutorial World</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Fieldfill.html"
+                        title="next chapter">Easy fillable form</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Auditing.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Auditing.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="input-output-auditing">
+<h1>Input/Output Auditing<a class="headerlink" href="#input-output-auditing" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by Johnny, 2017</p>
+<p>Utility that taps and intercepts all data sent to/from clients and the
+server and passes it to a callback of your choosing. This is intended for
+quality assurance, post-incident investigations and debugging.</p>
+<p>Note that this should be used with care since it can obviously be abused. All
+data is recorded in cleartext. Please be ethical, and if you are unwilling to
+properly deal with the implications of recording user passwords or private
+communications, please do not enable this module.</p>
+<p>Some checks have been implemented to protect the privacy of users.</p>
+<p>Files included in this module:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>outputs.py - Example callback methods. This module ships with examples of
+        callbacks that send data as JSON to a file in your game/server/logs
+        dir or to your native Linux syslog daemon. You can of course write
+        your own to do other things like post them to Kafka topics.
+
+server.py - Extends the Evennia ServerSession object to pipe data to the
+        callback upon receipt.
+
+tests.py - Unit tests that check to make sure commands with sensitive
+        arguments are having their PII scrubbed.
+</pre></div>
+</div>
+<section id="installation-configuration">
+<h2>Installation/Configuration:<a class="headerlink" href="#installation-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Deployment is completed by configuring a few settings in server.conf. This line
+is required:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SERVER_SESSION_CLASS = &#39;evennia.contrib.utils.auditing.server.AuditedServerSession&#39;
+</pre></div>
+</div>
+<p>This tells Evennia to use this ServerSession instead of its own. Below are the
+other possible options along with the default value that will be used if unset.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Where to send logs? Define the path to a module containing your callback
+# function. It should take a single dict argument as input
+AUDIT_CALLBACK = &#39;evennia.contrib.utils.auditing.outputs.to_file&#39;
+
+# Log user input? Be ethical about this; it will log all private and
+# public communications between players and/or admins (default: False).
+AUDIT_IN = False
+
+# Log server output? This will result in logging of ALL system
+# messages and ALL broadcasts to connected players, so on a busy game any
+# broadcast to all users will yield a single event for every connected user!
+AUDIT_OUT = False
+
+# The default output is a dict. Do you want to allow key:value pairs with
+# null/blank values? If you&#39;re just writing to disk, disabling this saves
+# some disk space, but whether you *want* sparse values or not is more of a
+# consideration if you&#39;re shipping logs to a NoSQL/schemaless database.
+# (default: False)
+AUDIT_ALLOW_SPARSE = False
+
+# If you write custom commands that handle sensitive data like passwords,
+# you must write a regular expression to remove that before writing to log.
+# AUDIT_MASKS is a list of dictionaries that define the names of commands
+# and the regexes needed to scrub them.
+# The system already has defaults to filter out sensitive login/creation
+# commands in the default command set. Your list of AUDIT_MASKS will be appended
+# to those defaults.
+#
+# In the regex, the sensitive data itself must be captured in a named group with a
+# label of &#39;secret&#39; (see the Python docs on the `re` module for more info). For
+# example: `{&#39;authentication&#39;: r&quot;^@auth\s+(?P&lt;secret&gt;[\w]+)&quot;}`
+AUDIT_MASKS = []
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/utils/auditing/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Fieldfill.html" title="Easy fillable form"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Tutorial-World.html" title="Evennia Tutorial World"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Input/Output Auditing</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

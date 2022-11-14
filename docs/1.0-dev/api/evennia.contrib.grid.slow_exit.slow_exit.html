@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.grid.slow_exit.slow_exit &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.grid.slow_exit.tests" href="evennia.contrib.grid.slow_exit.tests.html" />
+    <link rel="prev" title="evennia.contrib.grid.slow_exit" href="evennia.contrib.grid.slow_exit.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.slow_exit.tests.html" title="evennia.contrib.grid.slow_exit.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.slow_exit.html" title="evennia.contrib.grid.slow_exit"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.grid.slow_exit.html" accesskey="U">evennia.contrib.grid.slow_exit</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.slow_exit.slow_exit</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.grid.slow_exit.slow_exit</a><ul>
+<li><a class="reference internal" href="#installation">Installation:</a><ul>
+<li><a class="reference internal" href="#in-mygame-typeclasses-exits-py">in mygame/typeclasses/exits.py</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#notes">Notes:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.grid.slow_exit.html"
+                        title="previous chapter">evennia.contrib.grid.slow_exit</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.grid.slow_exit.tests.html"
+                        title="next chapter">evennia.contrib.grid.slow_exit.tests</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.grid.slow_exit.slow_exit.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.grid.slow_exit.slow_exit.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.grid.slow_exit.slow_exit">
+<span id="evennia-contrib-grid-slow-exit-slow-exit"></span><h1>evennia.contrib.grid.slow_exit.slow_exit<a class="headerlink" href="#module-evennia.contrib.grid.slow_exit.slow_exit" title="Permalink to this headline">¶</a></h1>
+<p>Slow Exit typeclass</p>
+<p>Contribution - Griatch 2014</p>
+<p>This is an example of an Exit-type that delays its traversal. This
+simulates slow movement, common in many different types of games. The
+contrib also contains two commands, <strong>CmdSetSpeed</strong> and CmdStop for changing
+the movement speed and abort an ongoing traversal, respectively.</p>
+<section id="installation">
+<h2>Installation:<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To try out an exit of this type, you could connect two existing rooms
+using something like this:</p>
+<p>&#64;open north:contrib.grid.slow_exit.SlowExit = &lt;destination&gt;</p>
+<p>To make this your new default exit, modify <strong>mygame/typeclasses/exits.py</strong>
+to import this module and change the default <strong>Exit</strong> class to inherit
+from <strong>SlowExit</strong> instead.</p>
+<section id="in-mygame-typeclasses-exits-py">
+<h3>in mygame/typeclasses/exits.py<a class="headerlink" href="#in-mygame-typeclasses-exits-py" title="Permalink to this headline">¶</a></h3>
+<p>from evennia.contrib.grid.slowexit import SlowExit</p>
+<dl class="simple">
+<dt>class Exit(SlowExit):</dt><dd><p># …</p>
+</dd>
+</dl>
+<p>To get the ability to change your speed and abort your movement, import</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
+
+<span class="kn">from</span> <span class="nn">evennia.contrib.grid</span> <span class="kn">import</span> <span class="n">slow_exit</span>  <span class="o">&lt;---</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">slow_exit</span><span class="o">.</span><span class="n">SlowDoorCmdSet</span><span class="p">)</span>  <span class="o">&lt;---</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="notes">
+<h2>Notes:<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>This implementation is efficient but not persistent; so incomplete
+movement will be lost in a server reload. This is acceptable for most
+game types - to simulate longer travel times (more than the couple of
+seconds assumed here), a more persistent variant using Scripts or the
+TickerHandler might be better.</p>
+<dl class="py class">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExit">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.slow_exit.slow_exit.</code><code class="sig-name descname">SlowExit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/slow_exit/slow_exit.html#SlowExit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit</span></code></a></p>
+<p>This overloads the way moving happens.</p>
+<dl class="py method">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExit.at_traverse">
+<code class="sig-name descname">at_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">traversing_object</span></em>, <em class="sig-param"><span class="n">target_location</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/slow_exit/slow_exit.html#SlowExit.at_traverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExit.at_traverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the actual traversal, using utils.delay to delay the move_to.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExit.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExit.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist" title="evennia.objects.objects.DefaultExit.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExit.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExit.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultExit.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExit.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.grid.slow_exit.slow_exit.SlowExit'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExit.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExit.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'SlowExit'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExit.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.slow_exit.slow_exit.</code><code class="sig-name descname">CmdSetSpeed</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/slow_exit/slow_exit.html#CmdSetSpeed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>set your movement speed</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>setspeed stroll|walk|run|sprint</p>
+</dd>
+</dl>
+<p>This will set your movement speed, determining how long time
+it takes to traverse exits. If no speed is set, ‘walk’ speed
+is assumed.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.key">
+<code class="sig-name descname">key</code><em class="property"> = 'setspeed'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/slow_exit/slow_exit.html#CmdSetSpeed.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply sets an Attribute used by the SlowExit above.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'setspeed', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    set your movement speed\n\n    Usage:\n      setspeed stroll|walk|run|sprint\n\n    This will set your movement speed, determining how long time\n    it takes to traverse exits. If no speed is set, 'walk' speed\n    is assumed.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdSetSpeed.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdStop">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.slow_exit.slow_exit.</code><code class="sig-name descname">CmdStop</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/slow_exit/slow_exit.html#CmdStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdStop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>stop moving</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>stop</p>
+</dd>
+</dl>
+<p>Stops the current movement, if any.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdStop.key">
+<code class="sig-name descname">key</code><em class="property"> = 'stop'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdStop.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdStop.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/slow_exit/slow_exit.html#CmdStop.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdStop.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a very simple command, using the
+stored deferred from the exit traversal above.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdStop.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdStop.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdStop.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdStop.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdStop.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdStop.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.CmdStop.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'stop', 'no_prefix': ' ', 'tags': '', 'text': '\n    stop moving\n\n    Usage:\n      stop\n\n    Stops the current movement, if any.\n    '}</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.CmdStop.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.slow_exit.slow_exit.</code><code class="sig-name descname">SlowExitCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/slow_exit/slow_exit.html#SlowExitCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/slow_exit/slow_exit.html#SlowExitCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet'</em><a class="headerlink" href="#evennia.contrib.grid.slow_exit.slow_exit.SlowExitCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.slow_exit.tests.html" title="evennia.contrib.grid.slow_exit.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.slow_exit.html" title="evennia.contrib.grid.slow_exit"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.grid.slow_exit.html" >evennia.contrib.grid.slow_exit</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.slow_exit.slow_exit</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

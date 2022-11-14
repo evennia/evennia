@@ -1,0 +1,989 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.game_systems.turnbattle.tb_equip &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.turnbattle.tb_items" href="evennia.contrib.game_systems.turnbattle.tb_items.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.turnbattle.tb_basic" href="evennia.contrib.game_systems.turnbattle.tb_basic.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_items.html" title="evennia.contrib.game_systems.turnbattle.tb_items"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_basic.html" title="evennia.contrib.game_systems.turnbattle.tb_basic"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.turnbattle.html" accesskey="U">evennia.contrib.game_systems.turnbattle</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.turnbattle.tb_equip</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.game_systems.turnbattle.tb_basic.html"
+                        title="previous chapter">evennia.contrib.game_systems.turnbattle.tb_basic</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.game_systems.turnbattle.tb_items.html"
+                        title="next chapter">evennia.contrib.game_systems.turnbattle.tb_items</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.turnbattle.tb_equip.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.game_systems.turnbattle.tb_equip.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.turnbattle.tb_equip">
+<span id="evennia-contrib-game-systems-turnbattle-tb-equip"></span><h1>evennia.contrib.game_systems.turnbattle.tb_equip<a class="headerlink" href="#module-evennia.contrib.game_systems.turnbattle.tb_equip" title="Permalink to this headline">¶</a></h1>
+<p>Simple turn-based combat system with equipment</p>
+<p>Contrib - Tim Ashley Jenkins 2017, Refactor by Griatch 2022</p>
+<p>This is a version of the ‘turnbattle’ contrib with a basic system for
+weapons and armor implemented. Weapons can have unique damage ranges
+and accuracy modifiers, while armor can reduce incoming damage and
+change one’s chance of getting hit. The ‘wield’ command is used to
+equip weapons and the ‘don’ command is used to equip armor.</p>
+<p>Some prototypes are included at the end of this module - feel free to
+copy them into your game’s prototypes.py module in your ‘world’ folder
+and create them with the &#64;spawn command. (See the tutorial for using
+the &#64;spawn command for details.)</p>
+<p>For the example equipment given, heavier weapons deal more damage
+but are less accurate, while light weapons are more accurate but
+deal less damage. Similarly, heavy armor reduces incoming damage by
+a lot but increases your chance of getting hit, while light armor is
+easier to dodge in but reduces incoming damage less. Light weapons are
+more effective against lightly armored opponents and heavy weapons are
+more damaging against heavily armored foes, but heavy weapons and armor
+are slightly better than light weapons and armor overall.</p>
+<p>This is a fairly bare implementation of equipment that is meant to be
+expanded to fit your game - weapon and armor slots, damage types and
+damage bonuses, etc. should be fairly simple to implement according to
+the rules of your preferred system or the needs of your own game.</p>
+<p>To install and test, import this module’s TBEquipCharacter object into
+your game’s character.py module:</p>
+<blockquote>
+<div><p>from evennia.contrib.game_systems.turnbattle.tb_equip import TBEquipCharacter</p>
+</div></blockquote>
+<p>And change your game’s character typeclass to inherit from TBEquipCharacter
+instead of the default:</p>
+<blockquote>
+<div><p>class Character(TBEquipCharacter):</p>
+</div></blockquote>
+<p>Next, import this module into your default_cmdsets.py module:</p>
+<blockquote>
+<div><p>from evennia.contrib.game_systems.turnbattle import tb_equip</p>
+</div></blockquote>
+<p>And add the battle command set to your default command set:</p>
+<blockquote>
+<div><p>#
+# any commands you add below will overload the default ones.
+#
+self.add(tb_equip.BattleCmdSet())</p>
+</div></blockquote>
+<p>This module is meant to be heavily expanded on, so you may want to copy it
+to your game’s ‘world’ folder and modify it there rather than importing it
+in your game and using it as-is.</p>
+<dl class="py data">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.ACTIONS_PER_TURN">
+<code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">ACTIONS_PER_TURN</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.ACTIONS_PER_TURN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">EquipmentCombatRules</code><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#EquipmentCombatRules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules" title="evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules</span></code></a></p>
+<p>Has all the methods of the basic combat, with the addition of equipment.</p>
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_attack">
+<code class="sig-name descname">get_attack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">defender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#EquipmentCombatRules.get_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a value for an attack roll.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attacker</strong> (<em>obj</em>) – Character doing the attacking</p></li>
+<li><p><strong>defender</strong> (<em>obj</em>) – Character being attacked</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>attack_value (int)</em> –</p>
+<dl class="simple">
+<dt>Attack roll value, compared against a defense value</dt><dd><p>to determine whether an attack hits or misses.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>In this example, a weapon’s accuracy bonus is factored into the attack
+roll. Lighter weapons are more accurate but less damaging, and heavier
+weapons are less accurate but deal more damage. Of course, you can
+change this paradigm completely in your own game.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_defense">
+<code class="sig-name descname">get_defense</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">defender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#EquipmentCombatRules.get_defense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_defense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a value for defense, which an attack roll must equal or exceed in order
+for an attack to hit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attacker</strong> (<em>obj</em>) – Character doing the attacking</p></li>
+<li><p><strong>defender</strong> (<em>obj</em>) – Character being attacked</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>defense_value (int)</em> –</p>
+<dl class="simple">
+<dt>Defense value, compared against an attack roll</dt><dd><p>to determine whether an attack hits or misses.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Characters are given a default defense value of 50 which can be
+modified up or down by armor. In this example, wearing armor actually
+makes you a little easier to hit, but reduces incoming damage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_damage">
+<code class="sig-name descname">get_damage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">defender</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#EquipmentCombatRules.get_damage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_damage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a value for damage to be deducted from the defender’s HP after abilities
+successful hit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attacker</strong> (<em>obj</em>) – Character doing the attacking</p></li>
+<li><p><strong>defender</strong> (<em>obj</em>) – Character being damaged</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>damage_value (int)</em> –</p>
+<dl class="simple">
+<dt>Damage value, which is to be deducted from the defending</dt><dd><p>character’s HP.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Damage is determined by the attacker’s wielded weapon, or the attacker’s
+unarmed damage range if no weapon is wielded. Incoming damage is reduced
+by the defender’s armor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.resolve_attack">
+<code class="sig-name descname">resolve_attack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attacker</span></em>, <em class="sig-param"><span class="n">defender</span></em>, <em class="sig-param"><span class="n">attack_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">defense_value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#EquipmentCombatRules.resolve_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.resolve_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolves an attack and outputs the result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attacker</strong> (<em>obj</em>) – Character doing the attacking</p></li>
+<li><p><strong>defender</strong> (<em>obj</em>) – Character being attacked</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Even though the attack and defense values are calculated
+extremely simply, they are separated out into their own functions
+so that they are easier to expand upon.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.COMBAT_RULES">
+<code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">COMBAT_RULES</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.COMBAT_RULES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">TBEquipTurnHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEquipTurnHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler</span></code></a></p>
+<p>This is the script that handles the progression of combat through turns.
+On creation (when a fight is started) it adds all combat-ready characters
+to its roster and then sorts them into a turn order. There can only be one
+fight going on in a single room at a time, so the script is assigned to a
+room as its object.</p>
+<p>Fights persist until only one participant is left with any HP or all
+remaining participants choose to end the combat with the ‘disengage’ command.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.DoesNotExist" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.MultipleObjectsReturned" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'TBEquipTurnHandler'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">TBEWeapon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEWeapon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
+<p>A weapon which can be wielded in combat with the ‘wield’ command.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEWeapon.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once, when this object is first created. This is the
+normal hook to overload for most object types.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_drop">
+<code class="sig-name descname">at_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEWeapon.at_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_drop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop being wielded if dropped.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_give">
+<code class="sig-name descname">at_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEWeapon.at_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_give" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop being wielded if given.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'TBEWeapon'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">TBEArmor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEArmor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
+<p>A set of armor which can be worn with the ‘don’ command.</p>
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEArmor.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once, when this object is first created. This is the
+normal hook to overload for most object types.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_pre_drop">
+<code class="sig-name descname">at_pre_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEArmor.at_pre_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_pre_drop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can’t drop in combat.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_drop">
+<code class="sig-name descname">at_drop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dropper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEArmor.at_drop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_drop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop being wielded if dropped.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_pre_give">
+<code class="sig-name descname">at_pre_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEArmor.at_pre_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_pre_give" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can’t give away in combat.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_give">
+<code class="sig-name descname">at_give</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">giver</span></em>, <em class="sig-param"><span class="n">getter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEArmor.at_give"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_give" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop being wielded if given.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'TBEArmor'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">TBEquipCharacter</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEquipCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter</span></code></a></p>
+<p>A character able to participate in turn-based combat. Has attributes for current
+and maximum HP, and access to combat commands.</p>
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.at_object_creation">
+<code class="sig-name descname">at_object_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#TBEquipCharacter.at_object_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.at_object_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called once, when this object is first created. This is the
+normal hook to overload for most object types.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.DoesNotExist" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.MultipleObjectsReturned" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'TBEquipCharacter'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdFight</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdFight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight</span></code></a></p>
+<p>Starts a fight with everyone in the same room as you.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>fight</p>
+</dd>
+</dl>
+<p>When you start a fight, everyone in the room who is able to
+fight is added to combat, and a turn order is randomly rolled.
+When it’s your turn, you can attack other characters.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.key">
+<code class="sig-name descname">key</code><em class="property"> = 'fight'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.command_handler_class">
+<code class="sig-name descname">command_handler_class</code><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.command_handler_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler" title="evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">TBEquipTurnHandler</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'fight', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    Starts a fight with everyone in the same room as you.\n\n    Usage:\n      fight\n\n    When you start a fight, everyone in the room who is able to\n    fight is added to combat, and a turn order is randomly rolled.\n    When it's your turn, you can attack other characters.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdAttack</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack</span></code></a></p>
+<p>Attacks another character.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>attack &lt;target&gt;</p>
+</dd>
+</dl>
+<p>When in a fight, you may attack another character. The attack has
+a chance to hit, and if successful, will deal damage.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.key">
+<code class="sig-name descname">key</code><em class="property"> = 'attack'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'attack', 'no_prefix': ' ', 'tags': '', 'text': '\n    Attacks another character.\n\n    Usage:\n      attack &lt;target&gt;\n\n    When in a fight, you may attack another character. The attack has\n    a chance to hit, and if successful, will deal damage.\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdPass</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdPass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass</span></code></a></p>
+<p>Passes on your turn.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>pass</p>
+</dd>
+</dl>
+<p>When in a fight, you can use this command to end your turn early, even
+if there are still any actions you can take.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.key">
+<code class="sig-name descname">key</code><em class="property"> = 'pass'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['wait', 'hold']</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'wait hold', 'category': 'combat', 'key': 'pass', 'no_prefix': ' wait hold', 'tags': '', 'text': '\n    Passes on your turn.\n\n    Usage:\n      pass\n\n    When in a fight, you can use this command to end your turn early, even\n    if there are still any actions you can take.\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdDisengage</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdDisengage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage</span></code></a></p>
+<p>Passes your turn and attempts to end combat.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>disengage</p>
+</dd>
+</dl>
+<p>Ends your turn early and signals that you’re trying to end
+the fight. If all participants in a fight disengage, the
+fight ends.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.key">
+<code class="sig-name descname">key</code><em class="property"> = 'disengage'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['spare']</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'spare', 'category': 'combat', 'key': 'disengage', 'no_prefix': ' spare', 'tags': '', 'text': &quot;\n    Passes your turn and attempts to end combat.\n\n    Usage:\n      disengage\n\n    Ends your turn early and signals that you're trying to end\n    the fight. If all participants in a fight disengage, the\n    fight ends.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdRest</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdRest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest</span></code></a></p>
+<p>Recovers damage.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>rest</p>
+</dd>
+</dl>
+<p>Resting recovers your HP to its maximum, but you can only
+rest if you’re not in a fight.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.key">
+<code class="sig-name descname">key</code><em class="property"> = 'rest'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'rest', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    Recovers damage.\n\n    Usage:\n      rest\n\n    Resting recovers your HP to its maximum, but you can only\n    rest if you're not in a fight.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdCombatHelp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdCombatHelp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp</span></code></a></p>
+<p>View help or a list of topics</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>help &lt;topic or command&gt;
+help list
+help all</p>
+</dd>
+</dl>
+<p>This will search for help on commands and other
+topics related to the game.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ['?']</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.key">
+<code class="sig-name descname">key</code><em class="property"> = 'help'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all()'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '?', 'category': 'general', 'key': 'help', 'no_prefix': ' ?', 'tags': '', 'text': '\n    View help or a list of topics\n\n    Usage:\n      help &lt;topic or command&gt;\n      help list\n      help all\n\n    This will search for help on commands and other\n    topics related to the game.\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdWield</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdWield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Wield a weapon you are carrying</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>wield &lt;weapon&gt;</p>
+</dd>
+</dl>
+<p>Select a weapon you are carrying to wield in combat. If
+you are already wielding another weapon, you will switch
+to the weapon you specify instead. Using this command in
+combat will spend your action for your turn. Use the
+“unwield” command to stop wielding any weapon you are
+currently wielding.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.key">
+<code class="sig-name descname">key</code><em class="property"> = 'wield'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdWield.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'wield', 'no_prefix': ' ', 'tags': '', 'text': '\n    Wield a weapon you are carrying\n\n    Usage:\n      wield &lt;weapon&gt;\n\n    Select a weapon you are carrying to wield in combat. If\n    you are already wielding another weapon, you will switch\n    to the weapon you specify instead. Using this command in\n    combat will spend your action for your turn. Use the\n    &quot;unwield&quot; command to stop wielding any weapon you are\n    currently wielding.\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdUnwield</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdUnwield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Stop wielding a weapon.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>unwield</p>
+</dd>
+</dl>
+<p>After using this command, you will stop wielding any
+weapon you are currently wielding and become unarmed.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.key">
+<code class="sig-name descname">key</code><em class="property"> = 'unwield'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdUnwield.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'unwield', 'no_prefix': ' ', 'tags': '', 'text': '\n    Stop wielding a weapon.\n\n    Usage:\n      unwield\n\n    After using this command, you will stop wielding any\n    weapon you are currently wielding and become unarmed.\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdDon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdDon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Don armor that you are carrying</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>don &lt;armor&gt;</p>
+</dd>
+</dl>
+<p>Select armor to wear in combat. You can’t use this
+command in the middle of a fight. Use the “doff”
+command to remove any armor you are wearing.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.key">
+<code class="sig-name descname">key</code><em class="property"> = 'don'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdDon.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'don', 'no_prefix': ' ', 'tags': '', 'text': '\n    Don armor that you are carrying\n\n    Usage:\n      don &lt;armor&gt;\n\n    Select armor to wear in combat. You can\'t use this\n    command in the middle of a fight. Use the &quot;doff&quot;\n    command to remove any armor you are wearing.\n    '}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">CmdDoff</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdDoff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.command.Command</span></code></a></p>
+<p>Stop wearing armor.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>doff</p>
+</dd>
+</dl>
+<p>After using this command, you will stop wearing any
+armor you are currently using and become unarmored.
+You can’t use this command in combat.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.key">
+<code class="sig-name descname">key</code><em class="property"> = 'doff'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'combat'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.rules">
+<code class="sig-name descname">rules</code><em class="property"> = &lt;evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules object&gt;</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.rules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#CmdDoff.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'combat', 'key': 'doff', 'no_prefix': ' ', 'tags': '', 'text': &quot;\n    Stop wearing armor.\n\n    Usage:\n      doff\n\n    After using this command, you will stop wearing any\n    armor you are currently using and become unarmored.\n    You can't use this command in combat.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.game_systems.turnbattle.tb_equip.</code><code class="sig-name descname">BattleCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#BattleCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.cmdset_character.html#evennia.commands.default.cmdset_character.CharacterCmdSet" title="evennia.commands.default.cmdset_character.CharacterCmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.cmdset_character.CharacterCmdSet</span></code></a></p>
+<p>This command set includes all the commmands used in the battle system.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.key">
+<code class="sig-name descname">key</code><em class="property"> = 'DefaultCharacter'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_equip.html#BattleCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populates the cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet'</em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_items.html" title="evennia.contrib.game_systems.turnbattle.tb_items"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_basic.html" title="evennia.contrib.game_systems.turnbattle.tb_basic"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.turnbattle.html" >evennia.contrib.game_systems.turnbattle</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.turnbattle.tb_equip</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.typeclasses.tags &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.tags</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tags.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.typeclasses.tags</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tags are entities that are attached to objects in the same way as</span>
+<span class="sd">Attributes. But contrary to Attributes, which are unique to an</span>
+<span class="sd">individual object, a single Tag can be attached to any number of</span>
+<span class="sd">objects at the same time.</span>
+
+<span class="sd">Tags are used for tagging, obviously, but the data structure is also</span>
+<span class="sd">used for storing Aliases and Permissions. This module contains the</span>
+<span class="sd">respective handlers.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="kn">from</span> <span class="nn">evennia.locks.lockfuncs</span> <span class="kn">import</span> <span class="n">perm</span> <span class="k">as</span> <span class="n">perm_lockfunc</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span>
+
+<span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TYPECLASS_AGGRESSIVE_CACHE</span>
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1">#</span>
+<span class="c1"># Tags</span>
+<span class="c1">#</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Tag"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.Tag">[docs]</a><span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tags are quick markers for objects in-game. An typeobject can have</span>
+<span class="sd">    any number of tags, stored via its db_tags property.  Tagging</span>
+<span class="sd">    similar objects will make it easier to quickly locate the group</span>
+<span class="sd">    later (such as when implementing zones). The main advantage of</span>
+<span class="sd">    tagging as opposed to using tags is speed; a tag is very</span>
+<span class="sd">    limited in what data it can hold, and the tag key+category is</span>
+<span class="sd">    indexed for efficient lookup in the database. Tags are shared</span>
+<span class="sd">    between objects - a new tag is only created if the key+category</span>
+<span class="sd">    combination did not previously exist, making them unsuitable for</span>
+<span class="sd">    storing object-related data (for this a regular Attribute should be</span>
+<span class="sd">    used).</span>
+
+<span class="sd">    The &#39;db_data&#39; field is intended as a documentation field for the</span>
+<span class="sd">    tag itself, such as to document what this tag+category stands for</span>
+<span class="sd">    and display that in a web interface or similar.</span>
+
+<span class="sd">    The main default use for Tags is to implement Aliases for objects.</span>
+<span class="sd">    this uses the &#39;aliases&#39; tag category, which is also checked by the</span>
+<span class="sd">    default search functions of Evennia to allow quick searches by alias.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">db_key</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tag identifier&quot;</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">db_category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;tag category&quot;</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">db_data</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span>
+        <span class="s2">&quot;data&quot;</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;optional data field with extra information. This is not searched for.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># this is &quot;objectdb&quot; etc. Required behind the scenes</span>
+    <span class="n">db_model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;database model to Tag&quot;</span><span class="p">,</span> <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="c1"># this is None, alias or permission</span>
+    <span class="n">db_tagtype</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="s2">&quot;tagtype&quot;</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;overall type of Tag&quot;</span><span class="p">,</span>
+        <span class="n">db_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="s2">&quot;Define Django meta options&quot;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Tag&quot;</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tagtype&quot;</span><span class="p">,</span> <span class="s2">&quot;db_model&quot;</span><span class="p">),)</span>
+        <span class="n">index_together</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;db_key&quot;</span><span class="p">,</span> <span class="s2">&quot;db_category&quot;</span><span class="p">,</span> <span class="s2">&quot;db_tagtype&quot;</span><span class="p">,</span> <span class="s2">&quot;db_model&quot;</span><span class="p">),)</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="s2">&quot;&lt;Tag: </span><span class="si">%s%s</span><span class="s2">&gt;&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="s2">&quot;(category:</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_category</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_category</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># Handlers making use of the Tags model</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="TagProperty"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagProperty">[docs]</a><span class="k">class</span> <span class="nc">TagProperty</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tag property descriptor. Allows for setting tags on an object as Django-like &#39;fields&#39;</span>
+<span class="sd">    on the class level. Since Tags are almost always used for querying, Tags are always</span>
+<span class="sd">    created/assigned along with the object. Make sure the property/tagname does not collide</span>
+<span class="sd">    with an existing method/property on the class. If it does, you must use tags.add()</span>
+<span class="sd">    instead.</span>
+
+<span class="sd">    Note that while you _can_ check e.g. `obj.tagname,this will give an AttributeError</span>
+<span class="sd">    if the Tag is not set. Most often you want to use `obj.tags.get(&quot;tagname&quot;)` to check</span>
+<span class="sd">    if a tag is set on an object.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    ::</span>
+
+<span class="sd">            class Character(DefaultCharacter):</span>
+<span class="sd">                mytag = TagProperty()  # category=None</span>
+<span class="sd">                mytag2 = TagProperty(category=&quot;tagcategory&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">taghandler_name</span> <span class="o">=</span> <span class="s2">&quot;tags&quot;</span>
+
+<div class="viewcode-block" id="TagProperty.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagProperty.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_category</span> <span class="o">=</span> <span class="n">category</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+    <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when descriptor is first assigned to the class (not the instance!).</span>
+<span class="sd">        It is called with the name of the field.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when accessing the tag as a property on the instance.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign a new category to the tag. It&#39;s not possible to set &#39;data&#39; this way.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_category</span> <span class="o">=</span> <span class="n">category</span>
+        <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when running `del` on the property. Will disconnect the object from</span>
+<span class="sd">        the Tag. Note that the tag will be readded on next fetch unless the</span>
+<span class="sd">        TagProperty is also removed in code!</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taghandler_name</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_category</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TagHandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler">[docs]</a><span class="k">class</span> <span class="nc">TagHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic tag-handler. Accessed via TypedObject.tags.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_m2m_fieldname</span> <span class="o">=</span> <span class="s2">&quot;db_tags&quot;</span>
+    <span class="n">_tagtype</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TagHandler.__init__"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tags are stored internally in the TypedObject.db_tags m2m</span>
+<span class="sd">        field with an tag.db_model based on the obj the taghandler is</span>
+<span class="sd">        stored on and with a tagtype given by self.handlertype</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (object): The object on which the handler is set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">__dbclass__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># store category names fully cached</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># full cache was run on all tags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="nf">_query_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all tags for this object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__id&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span><span class="p">,</span>
+            <span class="s2">&quot;tag__db_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
+            <span class="s2">&quot;tag__db_tagtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tagtype</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">tag</span>
+            <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_fullcache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cache all tags of this object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">to_str</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                    <span class="n">tag</span><span class="o">.</span><span class="n">db_category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">db_category</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">tag</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_getcache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve from cache or database (always caches)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str, optional): Tag key to query for</span>
+<span class="sd">            category (str, optional): Tag category</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            args (list): Returns a list of zero or more matches</span>
+<span class="sd">                found from cache or database.</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            When given a category only, a search for all objects</span>
+<span class="sd">            of that category is done and a the category *name* is is</span>
+<span class="sd">            stored. This tells the system on subsequent calls that the</span>
+<span class="sd">            list of cached tags of this category is up-to-date</span>
+<span class="sd">            and that the cache can be queried for category matches</span>
+<span class="sd">            without missing any.</span>
+<span class="sd">            The TYPECLASS_AGGRESSIVE_CACHE=False setting will turn off</span>
+<span class="sd">            caching, causing each tag access to trigger a</span>
+<span class="sd">            database lookup.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cachekey</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tag</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="s2">&quot;pk&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tag</span><span class="o">.</span><span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="c1"># clear out Tags deleted from elsewhere. We must search this anew.</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">tag</span><span class="p">]</span>  <span class="c1"># return cached entity</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__id&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span><span class="p">,</span>
+                    <span class="s2">&quot;tag__db_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
+                    <span class="s2">&quot;tag__db_tagtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tagtype</span><span class="p">,</span>
+                    <span class="s2">&quot;tag__db_key__iexact&quot;</span><span class="p">:</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                    <span class="s2">&quot;tag__db_category__iexact&quot;</span><span class="p">:</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">conn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">conn</span><span class="p">:</span>
+                    <span class="n">tag</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tag</span>
+                    <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="n">tag</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># only category given (even if it&#39;s None) - we can&#39;t</span>
+            <span class="c1"># assume the cache to be complete unless we have queried</span>
+            <span class="c1"># for this category before</span>
+            <span class="n">catkey</span> <span class="o">=</span> <span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">category</span>
+            <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span> <span class="ow">and</span> <span class="n">catkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">tag</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">catkey</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># we have to query to make this category up-date in the cache</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__id&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span><span class="p">,</span>
+                    <span class="s2">&quot;tag__db_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
+                    <span class="s2">&quot;tag__db_tagtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tagtype</span><span class="p">,</span>
+                    <span class="s2">&quot;tag__db_category__iexact&quot;</span><span class="p">:</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">conn</span><span class="o">.</span><span class="n">tag</span>
+                    <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                        <span class="o">**</span><span class="n">query</span>
+                    <span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
+                        <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
+                    <span class="c1"># mark category cache as up-to-date</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span><span class="p">[</span><span class="n">catkey</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">return</span> <span class="n">tags</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_setcache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">tag_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): A cleaned key string</span>
+<span class="sd">            category (str or None): A cleaned category name</span>
+<span class="sd">            tag_obj (tag): The newly saved tag</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>  <span class="c1"># don&#39;t allow an empty key in cache</span>
+            <span class="k">return</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="n">category</span><span class="p">)</span>
+        <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="n">catkey</span> <span class="o">=</span> <span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">category</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">cachekey</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag_obj</span>
+        <span class="c1"># mark that the category cache is no longer up-to-date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">catkey</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_delcache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove tag from cache</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): A cleaned key string</span>
+<span class="sd">            category (str or None): A cleaned category name</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="n">category</span><span class="p">)</span>
+        <span class="n">catkey</span> <span class="o">=</span> <span class="s2">&quot;-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">category</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">cachekey</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cachekey</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">catkey</span><span class="p">)]</span>
+        <span class="c1"># mark that the category cache is no longer up-to-date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">catkey</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="TagHandler.reset_cache"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.reset_cache">[docs]</a>    <span class="k">def</span> <span class="nf">reset_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the cache from the outside.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="TagHandler.add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new tag to the handler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or list): The name of the tag to add. If a list,</span>
+<span class="sd">                add several Tags.</span>
+<span class="sd">            category (str, optional): Category of Tag. `None` is the default category.</span>
+<span class="sd">            data (str, optional): Info text about the tag(s) added.</span>
+<span class="sd">                This can not be used to store object-unique info but only</span>
+<span class="sd">                eventual info about the tag itself.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            If the tag + category combination matches an already</span>
+<span class="sd">            existing Tag object, this will be re-used and no new Tag</span>
+<span class="sd">            will be created.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fullcache</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">tagstr</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">tagstr</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">tagstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tagstr</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">category</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="n">category</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="c1"># this will only create tag if no matches existed beforehand (it</span>
+            <span class="c1"># will overload data on an existing tag since that is not</span>
+            <span class="c1"># considered part of making the tag unique)</span>
+            <span class="n">tagobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_tag</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">tagstr</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">tagtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tagtype</span>
+            <span class="p">)</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tagobj</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setcache</span><span class="p">(</span><span class="n">tagstr</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">tagobj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TagHandler.has"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the given Tag (or list of Tags) exists on the object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or iterable): The Tag key or tags to check for.</span>
+<span class="sd">                If `None`, search by category.</span>
+<span class="sd">            category (str, optional): Limit the check to Tags with this</span>
+<span class="sd">                category (note, that `None` is the default category).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            has_tag (bool or list): If the Tag exists on this object or not.</span>
+<span class="sd">             If `tag` was given as an iterable then the return is a list of booleans.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If neither `tag` nor `category` is given.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tag_str</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">tag_str</span> <span class="o">=</span> <span class="n">tag_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getcache</span><span class="p">(</span><span class="n">tag_str</span><span class="p">,</span> <span class="n">category</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="n">category</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getcache</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either tag or category must be provided.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">return_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ret</span>
+
+        <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="TagHandler.get"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_tagobj</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the tag for the given key, category or combination of the two.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or list, optional): The tag or tags to retrieve.</span>
+<span class="sd">            default (any, optional): The value to return in case of no match.</span>
+<span class="sd">            category (str, optional): The Tag category to limit the</span>
+<span class="sd">                request to. Note that `None` is the valid, default</span>
+<span class="sd">                category. If no `key` is given, all tags of this category will be</span>
+<span class="sd">                returned.</span>
+<span class="sd">            return_tagobj (bool, optional): Return the Tag object itself</span>
+<span class="sd">                instead of a string representation of the Tag.</span>
+<span class="sd">            return_list (bool, optional): Always return a list, regardless</span>
+<span class="sd">                of number of matches.</span>
+<span class="sd">            raise_exception (bool, optional): Raise AttributeError if no matches</span>
+<span class="sd">                are found.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tags (list): The matches, either string</span>
+<span class="sd">                representations of the tags or the Tag objects themselves</span>
+<span class="sd">                depending on `return_tagobj`. If &#39;default&#39; is set, this</span>
+<span class="sd">                will be a list with the default value as its only element.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AttributeError: If finding no matches and `raise_exception` is True.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">keystr</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="c1"># note - the _getcache call removes case sensitivity for us</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">tag</span> <span class="k">if</span> <span class="n">return_tagobj</span> <span class="k">else</span> <span class="n">to_str</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getcache</span><span class="p">(</span><span class="n">keystr</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">raise_exception</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No tags found matching input </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">return_list</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">default</span><span class="p">]</span> <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+        <span class="k">return</span> <span class="n">ret</span> <span class="k">if</span> <span class="n">return_list</span> <span class="k">else</span> <span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ret</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TagHandler.remove"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a tag from the handler based ond key and/or category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str or list, optional): The tag or tags to retrieve.</span>
+<span class="sd">            category (str, optional): The Tag category to limit the</span>
+<span class="sd">                request to. Note that `None` is the valid, default</span>
+<span class="sd">                category</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            If neither key nor category is specified, this acts</span>
+<span class="sd">            as .clear().</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+            <span class="c1"># only category</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">key</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>  <span class="c1"># we don&#39;t allow empty tags</span>
+                <span class="k">continue</span>
+            <span class="n">tagstr</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">category</span> <span class="k">else</span> <span class="n">category</span>
+
+            <span class="c1"># This does not delete the tag object itself. Maybe it should do</span>
+            <span class="c1"># that when no objects reference the tag anymore (but how to check)?</span>
+            <span class="c1"># For now, tags are never deleted, only their connection to objects.</span>
+            <span class="n">tagobj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">db_key</span><span class="o">=</span><span class="n">tagstr</span><span class="p">,</span> <span class="n">db_category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">db_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="n">db_tagtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tagtype</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">tagobj</span><span class="p">:</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tagobj</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delcache</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TagHandler.clear"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove all tags from the handler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category (str, optional): The Tag category to limit the</span>
+<span class="sd">                request to. Note that `None` is the valid, default</span>
+<span class="sd">                category.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fullcache</span><span class="p">()</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">__id&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objid</span><span class="p">,</span>
+            <span class="s2">&quot;tag__db_model&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span>
+            <span class="s2">&quot;tag__db_tagtype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tagtype</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">&quot;tag__db_category&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m2m_fieldname</span><span class="p">)</span><span class="o">.</span><span class="n">through</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_catcache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="TagHandler.all"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_key_and_category</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_objs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all tags in this handler, regardless of category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            return_key_and_category (bool, optional): Return a list of</span>
+<span class="sd">                tuples `[(key, category), ...]`.</span>
+<span class="sd">            return_objs (bool, optional): Return tag objects.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tags (list): A list of tag keys `[tagkey, tagkey, ...]` or</span>
+<span class="sd">                a list of tuples `[(key, category), ...]` if</span>
+<span class="sd">                `return_key_and_category` is set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">_TYPECLASS_AGGRESSIVE_CACHE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_complete</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fullcache</span><span class="p">()</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_all</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">return_key_and_category</span><span class="p">:</span>
+            <span class="c1"># return tuple (key, category)</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">to_str</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span><span class="p">),</span> <span class="n">tag</span><span class="o">.</span><span class="n">db_category</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">return_objs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tags</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">to_str</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">db_key</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TagHandler.batch_add"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler.batch_add">[docs]</a>    <span class="k">def</span> <span class="nf">batch_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Batch-add tags from a list of tuples.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args (tuple or str): Each argument should be a `tagstr` keys or tuple</span>
+<span class="sd">                `(keystr, category)` or `(keystr, category, data)`. It&#39;s possible to mix input</span>
+<span class="sd">                types.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This will generate a mimimal number of self.add calls,</span>
+<span class="sd">            based on the number of categories involved (including</span>
+<span class="sd">            `None`) (data is not unique and may be overwritten by the content</span>
+<span class="sd">            of a latter tuple with the same category).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">tup</span> <span class="o">=</span> <span class="n">make_iter</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+            <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nlen</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># just a key</span>
+                <span class="n">keys</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">nlen</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">keys</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">keys</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># overwrite previous</span>
+        <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="AliasProperty"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.AliasProperty">[docs]</a><span class="k">class</span> <span class="nc">AliasProperty</span><span class="p">(</span><span class="n">TagProperty</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Allows for setting aliases like Django fields:</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        class Character(DefaultCharacter):</span>
+<span class="sd">            # note that every character will get the alias bob. Make sure</span>
+<span class="sd">            # the alias property does not collide with an existing method</span>
+<span class="sd">            # or property on the class.</span>
+<span class="sd">            bob = AliasProperty()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">taghandler_name</span> <span class="o">=</span> <span class="s2">&quot;aliases&quot;</span></div>
+
+
+<div class="viewcode-block" id="AliasHandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.AliasHandler">[docs]</a><span class="k">class</span> <span class="nc">AliasHandler</span><span class="p">(</span><span class="n">TagHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A handler for the Alias Tag type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_tagtype</span> <span class="o">=</span> <span class="s2">&quot;alias&quot;</span></div>
+
+
+<div class="viewcode-block" id="PermissionProperty"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.PermissionProperty">[docs]</a><span class="k">class</span> <span class="nc">PermissionProperty</span><span class="p">(</span><span class="n">TagProperty</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Allows for setting permissions like Django fields:</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        class Character(DefaultCharacter):</span>
+<span class="sd">            # note that every character will get this permission! Make</span>
+<span class="sd">            # sure it doesn&#39;t collide with an existing method or property.</span>
+<span class="sd">            myperm = PermissionProperty()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">taghandler_name</span> <span class="o">=</span> <span class="s2">&quot;permissions&quot;</span></div>
+
+
+<div class="viewcode-block" id="PermissionHandler"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.PermissionHandler">[docs]</a><span class="k">class</span> <span class="nc">PermissionHandler</span><span class="p">(</span><span class="n">TagHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A handler for the Permission Tag type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_tagtype</span> <span class="o">=</span> <span class="s2">&quot;permission&quot;</span>
+
+<div class="viewcode-block" id="PermissionHandler.check"><a class="viewcode-back" href="../../../api/evennia.typeclasses.tags.html#evennia.typeclasses.tags.PermissionHandler.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">permissions</span><span class="p">,</span> <span class="n">require_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Straight-up check the provided permission against this handler. The check will pass if</span>
+
+<span class="sd">        - any/all given permission exists on the handler (depending on if `require_all` is set).</span>
+<span class="sd">        - If handler sits on puppeted object and this is a hierarachical perm, the puppeting</span>
+<span class="sd">          Account&#39;s permission will also be included in the check, prioritizing the Account&#39;s perm</span>
+<span class="sd">          (this avoids escalation exploits by puppeting a too-high prio character)</span>
+<span class="sd">        - a permission is also considered to exist on the handler, if it is *lower* than</span>
+<span class="sd">          a permission on the handler and this is a &#39;hierarchical&#39; permission given</span>
+<span class="sd">          in `settings.PERMISSION_HIERARCHY`. Example: If the &#39;Developer&#39; hierarchical</span>
+<span class="sd">          perm perm is set on the handler, and we check for the &#39;Builder&#39; perm, the</span>
+<span class="sd">          check will pass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *permissions (str): Any number of permissions to check. By default,</span>
+<span class="sd">                the permission is passed if any of these (or higher, if a</span>
+<span class="sd">                hierarchical permission defined in settings.PERMISSION_HIERARCHY)</span>
+<span class="sd">                exists in the handler. Permissions are not case-sensitive.</span>
+<span class="sd">            require_all (bool): If set, *all* provided permissions much pass</span>
+<span class="sd">                the check for the entire check to pass. By default only one</span>
+<span class="sd">                needs to pass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If the provided permission(s) pass the check on this handler.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ::</span>
+<span class="sd">                can_enter = obj.permissions.check(&quot;Blacksmith&quot;, &quot;Builder&quot;)</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This works the same way as the `perms` lockfunc and could be</span>
+<span class="sd">            replicated with a lock check against the lockstring</span>
+
+<span class="sd">                &quot;locktype: perm(perm1) OR perm(perm2) OR ...&quot;</span>
+
+<span class="sd">            (using AND for the `require_all` condition).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">require_all</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">perm_lockfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">perm_lockfunc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permissions</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.typeclasses.tags</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

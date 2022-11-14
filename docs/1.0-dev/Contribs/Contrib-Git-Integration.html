@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>In-game Git Integration &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Random Name Generator" href="Contrib-Name-Generator.html" />
+    <link rel="prev" title="Easy fillable form" href="Contrib-Fieldfill.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Name-Generator.html" title="Random Name Generator"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Fieldfill.html" title="Easy fillable form"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" accesskey="U">Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">In-game Git Integration</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">In-game Git Integration</a><ul>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#settings-used">Settings Used</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Contrib-Fieldfill.html"
+                        title="previous chapter">Easy fillable form</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Contrib-Name-Generator.html"
+                        title="next chapter">Random Name Generator</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Contribs/Contrib-Git-Integration.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Contrib-Git-Integration.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="in-game-git-integration">
+<h1>In-game Git Integration<a class="headerlink" href="#in-game-git-integration" title="Permalink to this headline">¶</a></h1>
+<p>Contribution by helpme (2022)</p>
+<p>A module to integrate a stripped-down version of git within the game, allowing developers to view their git status, change branches, and pull updated code of both their local mygame repo and Evennia core. After a successful pull or checkout, the git command will reload the game: Manual restarts may be required to to apply certain changes that would impact persistent scripts etc.</p>
+<p>Once the contrib is set up, integrating remote changes is as simple as entering the following into your game:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">pull</span>
+</pre></div>
+</div>
+<p>The repositories you want to work with, be it only your local mygame repo, only Evennia core, or both, must be git directories for the command to function. If you are only interested in using this to get upstream Evennia changes, only the Evennia repository needs to be a git repository. <a class="reference external" href="https://www.evennia.com/docs/1.0-dev/Coding/Version-Control.html">Get started with version control here.</a></p>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>This package requires the dependency “gitpython”, a python library used to interact with git repositories. To install, it’s easiest to install Evennia’s extra requirements:</p>
+<ul class="simple">
+<li><p>Activate your <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the root of the Evennia repository. There should be an <code class="docutils literal notranslate"><span class="pre">requirements_extra.txt</span></code> file here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements_extra.txt</span></code></p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>This utility adds a simple assortment of ‘git’ commands. Import the module into your commands and add it to your command set to make it available.</p>
+<p>Specifically, in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.utils.git_integration</span> <span class="kn">import</span> <span class="n">GitCmdSet</span>   <span class="c1"># &lt;---</span>
+
+<span class="k">class</span> <span class="nc">CharacterCmdset</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">Character_CmdSet</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">GitCmdSet</span><span class="p">)</span>  <span class="c1"># &lt;---</span>
+
+</pre></div>
+</div>
+<p>Then <code class="docutils literal notranslate"><span class="pre">reload</span></code> to make the git command available.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>This utility will only work if the directory you wish to work with is a git directory. If they are not, you will be prompted to initiate your directory as a git repository using the following commands in your terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">init</span>
+<span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="s1">&#39;link to your repository&#39;</span>
+</pre></div>
+</div>
+<p>By default, the git commands are only available to those with Developer permissions and higher. You can change this by overriding the command and setting its locks from “cmd:pperm(Developer)” to the lock of your choice.</p>
+<p>The supported commands are:</p>
+<ul class="simple">
+<li><p>git status: An overview of your git repository, which files have been changed locally, and the commit you’re on.</p></li>
+<li><p>git branch: What branches are available for you to check out.</p></li>
+<li><p>git checkout ‘branch’: Checkout a branch.</p></li>
+<li><p>git pull: Pull the latest code from your current branch.</p></li>
+<li><p>All of these commands are also available with ‘evennia’, to serve the same functionality related to your Evennia directory. So:</p></li>
+<li><p>git evennia status</p></li>
+<li><p>git evennia branch</p></li>
+<li><p>git evennia checkout ‘branch’</p></li>
+<li><p>git evennia pull: Pull the latest Evennia code.</p></li>
+</ul>
+</section>
+<section id="settings-used">
+<h2>Settings Used<a class="headerlink" href="#settings-used" title="Permalink to this headline">¶</a></h2>
+<p>The utility uses the existing GAME_DIR and EVENNIA_DIR settings from <a class="reference external" href="http://settings.py">settings.py</a>. You should not need to alter these if you have a standard directory setup, they ought to exist without any setup required from you.</p>
+<hr class="docutils" />
+<p><small>This document page is generated from <code class="docutils literal notranslate"><span class="pre">evennia/contrib/utils/git_integration/README.md</span></code>. Changes to this
+file will be overwritten, so edit that file rather than this one.</small></p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Name-Generator.html" title="Random Name Generator"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Contrib-Fieldfill.html" title="Easy fillable form"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Contribs-Overview.html" >Contribs</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">In-game Git Integration</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

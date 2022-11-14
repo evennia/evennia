@@ -1,0 +1,540 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.server.profiling.dummyrunner &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.server.profiling.dummyrunner</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dummy client runner</span>
+
+<span class="sd">This module implements a stand-alone launcher for stress-testing</span>
+<span class="sd">an Evennia game. It will launch any number of fake clients. These</span>
+<span class="sd">clients will log into the server and start doing random operations.</span>
+<span class="sd">Customizing and weighing these operations differently depends on</span>
+<span class="sd">which type of game is tested. The module contains a testing module</span>
+<span class="sd">for plain Evennia.</span>
+
+<span class="sd">Please note that you shouldn&#39;t run this on a production server!</span>
+<span class="sd">Launch the program without any arguments or options to see a</span>
+<span class="sd">full step-by-step setup help.</span>
+
+<span class="sd">Basically (for testing default Evennia):</span>
+
+<span class="sd"> - Use an empty/testing database.</span>
+<span class="sd"> - set PERMISSION_ACCOUNT_DEFAULT = &quot;Builder&quot;</span>
+<span class="sd"> - start server, eventually with profiling active</span>
+<span class="sd"> - launch this client runner</span>
+
+<span class="sd">If you want to customize the runner&#39;s client actions</span>
+<span class="sd">(because you changed the cmdset or needs to better</span>
+<span class="sd">match your use cases or add more actions), you can</span>
+<span class="sd">change which actions by adding a path to</span>
+
+<span class="sd">   DUMMYRUNNER_ACTIONS_MODULE = &lt;path.to.your.module&gt;</span>
+
+<span class="sd">in your settings. See utils.dummyrunner_actions.py</span>
+<span class="sd">for instructions on how to define this module.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span class="kn">from</span> <span class="nn">twisted.conch</span> <span class="kn">import</span> <span class="n">telnet</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="kn">import</span> <span class="n">reactor</span><span class="p">,</span> <span class="n">protocol</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="kn">import</span> <span class="n">LoopingCall</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">mod_import</span><span class="p">,</span> <span class="n">time_format</span>
+
+<span class="c1"># Load the dummyrunner settings module</span>
+
+<span class="n">DUMMYRUNNER_SETTINGS</span> <span class="o">=</span> <span class="n">mod_import</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DUMMYRUNNER_SETTINGS_MODULE</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">DUMMYRUNNER_SETTINGS</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+        <span class="s2">&quot;Error: Dummyrunner could not find settings file at </span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">DUMMYRUNNER_SETTINGS_MODULE</span>
+    <span class="p">)</span>
+
+<span class="n">DATESTRING</span> <span class="o">=</span> <span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S&quot;</span>
+
+<span class="c1"># Settings</span>
+
+<span class="c1"># number of clients to launch if no input is given on command line</span>
+<span class="n">NCLIENTS</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># time between each &#39;tick&#39;, in seconds, if not set on command</span>
+<span class="c1"># line. All launched clients will be called upon to possibly do an</span>
+<span class="c1"># action with this frequency.</span>
+<span class="n">TIMESTEP</span> <span class="o">=</span> <span class="n">DUMMYRUNNER_SETTINGS</span><span class="o">.</span><span class="n">TIMESTEP</span>
+<span class="c1"># chance of a client performing an action, per timestep. This helps to</span>
+<span class="c1"># spread out usage randomly, like it would be in reality.</span>
+<span class="n">CHANCE_OF_ACTION</span> <span class="o">=</span> <span class="n">DUMMYRUNNER_SETTINGS</span><span class="o">.</span><span class="n">CHANCE_OF_ACTION</span>
+<span class="c1"># spread out the login action separately, having many accounts create accounts</span>
+<span class="c1"># and connect simultaneously is generally unlikely.</span>
+<span class="n">CHANCE_OF_LOGIN</span> <span class="o">=</span> <span class="n">DUMMYRUNNER_SETTINGS</span><span class="o">.</span><span class="n">CHANCE_OF_LOGIN</span>
+<span class="c1"># Port to use, if not specified on command line</span>
+<span class="n">TELNET_PORT</span> <span class="o">=</span> <span class="n">DUMMYRUNNER_SETTINGS</span><span class="o">.</span><span class="n">TELNET_PORT</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">TELNET_PORTS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1">#</span>
+<span class="n">NLOGGED_IN</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="c1"># Messages</span>
+
+
+<span class="n">INFO_STARTING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Dummyrunner starting using </span><span class="si">{N}</span><span class="s2"> dummy account(s). If you don&#39;t see</span>
+<span class="s2">    any connection messages, make sure that the Evennia server is</span>
+<span class="s2">    running.</span>
+
+<span class="s2">    Use Ctrl-C to stop/disconnect clients.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+<span class="n">ERROR_NO_MIXIN</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Error: Evennia is not set up for dummyrunner. Before starting the</span>
+<span class="s2">    server, make sure to include the following at *the end* of your</span>
+<span class="s2">    settings file (remove when not using dummyrunner!):</span>
+
+<span class="s2">        from evennia.server.profiling.settings_mixin import *</span>
+
+<span class="s2">    This will change the settings in the following way:</span>
+<span class="s2">        - change PERMISSION_ACCOUNT_DEFAULT to &#39;Developer&#39; to allow clients</span>
+<span class="s2">          to test all commands</span>
+<span class="s2">        - change PASSWORD_HASHERS to use a faster (but less safe) algorithm</span>
+<span class="s2">          when creating large numbers of accounts at the same time</span>
+
+<span class="s2">    If you don&#39;t want to use the custom settings of the mixin for some</span>
+<span class="s2">    reason, you can change their values manually after the import, or</span>
+<span class="s2">    add DUMMYRUNNER_MIXIN=True to your settings file to avoid this</span>
+<span class="s2">    error completely.</span>
+
+<span class="s2">    Warning: Don&#39;t run dummyrunner on a production database! It will</span>
+<span class="s2">    create a lot of spammy objects and accounts!</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+
+<span class="n">ERROR_FEW_ACTIONS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Dummyrunner settings error: The ACTIONS tuple is too short: it must</span>
+<span class="s2">    contain at least login- and logout functions.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+
+<span class="n">HELPTEXT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">DO NOT RUN THIS ON A PRODUCTION SERVER! USE A CLEAN/TESTING DATABASE!</span>
+
+<span class="s2">This stand-alone program launches dummy telnet clients against a</span>
+<span class="s2">running Evennia server. The idea is to mimic real accounts logging in</span>
+<span class="s2">and repeatedly doing resource-heavy commands so as to stress test the</span>
+<span class="s2">game. It uses the default command set to log in and issue commands, so</span>
+<span class="s2">if that was customized, some of the functionality will not be tested</span>
+<span class="s2">(it will not fail, the commands will just not be recognized).  The</span>
+<span class="s2">running clients will create new objects and rooms all over the place</span>
+<span class="s2">as part of their running, so using a clean/testing database is</span>
+<span class="s2">strongly recommended.</span>
+
+<span class="s2">Setup:</span>
+<span class="s2">  1) setup a fresh/clean database (if using sqlite, just safe-copy</span>
+<span class="s2">     away your real evennia.db3 file and create a new one with</span>
+<span class="s2">     `evennia migrate`)</span>
+<span class="s2">  2) in server/conf/settings.py, add</span>
+
+<span class="s2">        PERMISSION_ACCOUNT_DEFAULT=&quot;Builder&quot;</span>
+
+<span class="s2">     This is so that the dummy accounts can test building operations.</span>
+<span class="s2">     You can also customize the dummyrunner by modifying a setting</span>
+<span class="s2">     file specified by DUMMYRUNNER_SETTINGS_MODULE</span>
+
+<span class="s2">  3) Start Evennia like normal, optionally with profiling (--profile)</span>
+<span class="s2">  4) Run this dummy runner via the evennia launcher:</span>
+
+<span class="s2">        evennia --dummyrunner &lt;nr_of_clients&gt;</span>
+
+<span class="s2">  5) Log on and determine if game remains responsive despite the</span>
+<span class="s2">     heavier load. Note that if you activated profiling, there is a</span>
+<span class="s2">     considerate additional overhead from the profiler too so you</span>
+<span class="s2">     should usually not consider game responsivity when using the</span>
+<span class="s2">     profiler at the same time.</span>
+<span class="s2">  6) If you use profiling, let the game run long enough to gather</span>
+<span class="s2">     data, then stop the server cleanly using evennia stop or @shutdown.</span>
+<span class="s2">     @shutdown. The profile appears as</span>
+<span class="s2">     server/logs/server.prof/portal.prof (see Python&#39;s manual on</span>
+<span class="s2">     cProfiler).</span>
+
+<span class="s2">Notes:</span>
+
+<span class="s2">The dummyrunner tends to create a lot of accounts all at once, which is</span>
+<span class="s2">a very heavy operation. This is not a realistic use-case - what you want</span>
+<span class="s2">to test is performance during run. A large</span>
+<span class="s2">number of clients here may lock up the client until all have been</span>
+<span class="s2">created. It may be better to connect multiple dummyrunners instead of</span>
+<span class="s2">starting one single one with a lot of accounts. Exactly what this number</span>
+<span class="s2">is depends on your computer power. So start with 10-20 clients and increase</span>
+<span class="s2">until you see the initial login slows things too much.</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># Helper functions</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<span class="n">ICOUNT</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<div class="viewcode-block" id="idcounter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.idcounter">[docs]</a><span class="k">def</span> <span class="nf">idcounter</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes unique ids.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        count (int): A globally unique counter.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">ICOUNT</span>
+    <span class="n">ICOUNT</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ICOUNT</span><span class="p">)</span></div>
+
+
+<span class="n">GCOUNT</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<div class="viewcode-block" id="gidcounter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.gidcounter">[docs]</a><span class="k">def</span> <span class="nf">gidcounter</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes globally unique ids.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        count (int); A globally unique counter.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">GCOUNT</span>
+    <span class="n">GCOUNT</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATESTRING</span><span class="p">),</span> <span class="n">GCOUNT</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="makeiter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.makeiter">[docs]</a><span class="k">def</span> <span class="nf">makeiter</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes everything iterable.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (any): Object to turn iterable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        iterable (iterable): An iterable object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">obj</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span></div>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># Client classes</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="DummyClient"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient">[docs]</a><span class="k">class</span> <span class="nc">DummyClient</span><span class="p">(</span><span class="n">telnet</span><span class="o">.</span><span class="n">StatefulTelnetProtocol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles connection to a running Evennia server,</span>
+<span class="sd">    mimicking a real account by sending commands on</span>
+<span class="sd">    a timer.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DummyClient.connectionMade"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when connection is first established.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># public properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="n">idcounter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Dummy-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATESTRING</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">istep</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exits</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># exit names created</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># obj names created</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loggedin</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logging_out</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># already stepping in a cmd definition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_login</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">actions</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+
+        <span class="n">reactor</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DummyClient.dataReceived"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when data comes in over the protocol. We wait to start</span>
+<span class="sd">        stepping until the server actually responds</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (str): Incoming data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="mi">255</span><span class="p">)):</span>
+            <span class="c1"># wait until we actually get text back (not just telnet</span>
+            <span class="c1"># negotiation)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1"># start client tick</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+            <span class="c1"># dissipate exact step by up to +/- 0.5 second</span>
+            <span class="n">timestep</span> <span class="o">=</span> <span class="n">TIMESTEP</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">timestep</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DummyClient.connectionLost"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when loosing the connection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reason (str): Reason for loosing connection.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_out</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;client </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) lost connection (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DummyClient.error"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Error callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            err (Failure): Error instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DummyClient.counter"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.counter">[docs]</a>    <span class="k">def</span> <span class="nf">counter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produces a unique id, also between clients.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            counter (int): A unique counter.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">gidcounter</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DummyClient.logout"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.logout">[docs]</a>    <span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Causes the client to log out of the server. Triggered by ctrl-c signal.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logging_out</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;client </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">) logout (</span><span class="si">%s</span><span class="s2"> actions)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">istep</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DummyClient.step"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyClient.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a step. This is called repeatedly by the runner and</span>
+<span class="sd">        causes the client to issue commands to the server.  This holds</span>
+<span class="sd">        all &quot;intelligence&quot; of the dummy client.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">NLOGGED_IN</span>
+
+        <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span><span class="p">:</span>
+            <span class="c1"># no commands ready. Load some.</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loggedin</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="n">CHANCE_OF_LOGIN</span><span class="p">:</span>
+                    <span class="c1"># get the login commands</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">makeiter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_login</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+                    <span class="n">NLOGGED_IN</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># this is for book-keeping</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;connecting client </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%i</span><span class="s2">/</span><span class="si">%i</span><span class="s2">)...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">NLOGGED_IN</span><span class="p">,</span> <span class="n">NCLIENTS</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_loggedin</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># no login yet, so cmdlist not yet set</span>
+                    <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># we always pick a cumulatively random function</span>
+                <span class="n">crand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+                <span class="n">cfunc</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span> <span class="k">for</span> <span class="p">(</span><span class="n">cprob</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span> <span class="k">if</span> <span class="n">cprob</span> <span class="o">&gt;=</span> <span class="n">crand</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">makeiter</span><span class="p">(</span><span class="n">cfunc</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+
+        <span class="c1"># at this point we always have a list of commands</span>
+        <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="n">CHANCE_OF_ACTION</span><span class="p">:</span>
+            <span class="c1"># send to the game</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendLine</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmdlist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">istep</span> <span class="o">+=</span> <span class="mi">1</span></div></div>
+
+
+<div class="viewcode-block" id="DummyFactory"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyFactory">[docs]</a><span class="k">class</span> <span class="nc">DummyFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">ClientFactory</span><span class="p">):</span>
+    <span class="n">protocol</span> <span class="o">=</span> <span class="n">DummyClient</span>
+
+<div class="viewcode-block" id="DummyFactory.__init__"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.DummyFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="s2">&quot;Setup the factory base (shared by all clients)&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="n">actions</span></div></div>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># Access method:</span>
+<span class="c1"># Starts clients and connects them to a running server.</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="start_all_dummy_clients"><a class="viewcode-back" href="../../../../api/evennia.server.profiling.dummyrunner.html#evennia.server.profiling.dummyrunner.start_all_dummy_clients">[docs]</a><span class="k">def</span> <span class="nf">start_all_dummy_clients</span><span class="p">(</span><span class="n">nclients</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize all clients, connect them and start to step them</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nclients (int): Number of dummy clients to connect.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">NCLIENTS</span>
+    <span class="n">NCLIENTS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nclients</span><span class="p">)</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="n">DUMMYRUNNER_SETTINGS</span><span class="o">.</span><span class="n">ACTIONS</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_FEW_ACTIONS</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># make sure the probabilities add up to 1</span>
+    <span class="n">pratio</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="n">flogin</span><span class="p">,</span> <span class="n">flogout</span><span class="p">,</span> <span class="n">probs</span><span class="p">,</span> <span class="n">cfuncs</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">pratio</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">[</span><span class="mi">2</span><span class="p">:]],</span>
+        <span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">[</span><span class="mi">2</span><span class="p">:]],</span>
+    <span class="p">)</span>
+    <span class="c1"># create cumulative probabilies for the random actions</span>
+    <span class="n">cprobs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">probs</span><span class="p">))]</span>
+    <span class="c1"># rebuild a new, optimized action structure</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">(</span><span class="n">flogin</span><span class="p">,</span> <span class="n">flogout</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">cprobs</span><span class="p">,</span> <span class="n">cfuncs</span><span class="p">))</span>
+
+    <span class="c1"># setting up all clients (they are automatically started)</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">DummyFactory</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NCLIENTS</span><span class="p">):</span>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">connectTCP</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">TELNET_PORT</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
+    <span class="c1"># start reactor</span>
+    <span class="n">reactor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># Command line interface</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">DUMMYRUNNER_MIXIN</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_NO_MIXIN</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="c1"># parsing command line with default vals</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">HELPTEXT</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-N&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;nclients&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of clients to start&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">INFO_STARTING</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nclients</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="c1"># run the dummyrunner</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">start_all_dummy_clients</span><span class="p">(</span><span class="n">nclients</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nclients</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ttot</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+
+    <span class="c1"># output runtime</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;... dummy client runner stopped after </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">time_format</span><span class="p">(</span><span class="n">ttot</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="dummyrunner.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.profiling.dummyrunner</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

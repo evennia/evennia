@@ -1,0 +1,850 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.clothing &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.clothing</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.clothing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Clothing - Provides a typeclass and commands for wearable clothing,</span>
+<span class="sd">which is appended to a character&#39;s description when worn.</span>
+
+<span class="sd">Evennia contribution - Tim Ashley Jenkins 2017</span>
+
+<span class="sd">Clothing items, when worn, are added to the character&#39;s description</span>
+<span class="sd">in a list. For example, if wearing the following clothing items:</span>
+
+<span class="sd">    a thin and delicate necklace</span>
+<span class="sd">    a pair of regular ol&#39; shoes</span>
+<span class="sd">    one nice hat</span>
+<span class="sd">    a very pretty dress</span>
+
+<span class="sd">A character&#39;s description may look like this:</span>
+
+<span class="sd">    Superuser(#1)</span>
+<span class="sd">    This is User #1.</span>
+
+<span class="sd">    Superuser is wearing one nice hat, a thin and delicate necklace,</span>
+<span class="sd">    a very pretty dress and a pair of regular ol&#39; shoes.</span>
+
+<span class="sd">Characters can also specify the style of wear for their clothing - I.E.</span>
+<span class="sd">to wear a scarf &#39;tied into a tight knot around the neck&#39; or &#39;draped</span>
+<span class="sd">loosely across the shoulders&#39; - to add an easy avenue of customization.</span>
+<span class="sd">For example, after entering:</span>
+
+<span class="sd">    wear scarf draped loosely across the shoulders</span>
+
+<span class="sd">The garment appears like so in the description:</span>
+
+<span class="sd">    Superuser(#1)</span>
+<span class="sd">    This is User #1.</span>
+
+<span class="sd">    Superuser is wearing a fanciful-looking scarf draped loosely</span>
+<span class="sd">    across the shoulders.</span>
+
+<span class="sd">Items of clothing can be used to cover other items, and many options</span>
+<span class="sd">are provided to define your own clothing types and their limits and</span>
+<span class="sd">behaviors. For example, to have undergarments automatically covered</span>
+<span class="sd">by outerwear, or to put a limit on the number of each type of item</span>
+<span class="sd">that can be worn. The system as-is is fairly freeform - you</span>
+<span class="sd">can cover any garment with almost any other, for example - but it</span>
+<span class="sd">can easily be made more restrictive, and can even be tied into a</span>
+<span class="sd">system for armor or other equipment.</span>
+
+<span class="sd">To install, import this module and have your default character</span>
+<span class="sd">inherit from ClothedCharacter in your game&#39;s characters.py file:</span>
+
+<span class="sd">    from evennia.contrib.clothing import ClothedCharacter</span>
+
+<span class="sd">    class Character(ClothedCharacter):</span>
+
+<span class="sd">And then add ClothedCharacterCmdSet in your character set in your</span>
+<span class="sd">game&#39;s commands/default_cmdsets.py:</span>
+
+<span class="sd">    from evennia.contrib.clothing import ClothedCharacterCmdSet</span>
+
+<span class="sd">    class CharacterCmdSet(default_cmds.CharacterCmdSet):</span>
+<span class="sd">         ...</span>
+<span class="sd">         at_cmdset_creation(self):</span>
+
+<span class="sd">             super().at_cmdset_creation()</span>
+<span class="sd">             ...</span>
+<span class="sd">             self.add(ClothedCharacterCmdSet)    # &lt;-- add this</span>
+
+<span class="sd">From here, you can use the default builder commands to create clothes</span>
+<span class="sd">with which to test the system:</span>
+
+<span class="sd">    @create a pretty shirt : evennia.contrib.clothing.Clothing</span>
+<span class="sd">    @set shirt/clothing_type = &#39;top&#39;</span>
+<span class="sd">    wear shirt</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+<span class="kn">from</span> <span class="nn">evennia.commands.default.muxcommand</span> <span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">list_to_string</span>
+<span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">evtable</span>
+
+<span class="c1"># Options start here.</span>
+<span class="c1"># Maximum character length of &#39;wear style&#39; strings, or None for unlimited.</span>
+<span class="n">WEARSTYLE_MAXLENGTH</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1"># The rest of these options have to do with clothing types. Clothing types are optional,</span>
+<span class="c1"># but can be used to give better control over how different items of clothing behave. You</span>
+<span class="c1"># can freely add, remove, or change clothing types to suit the needs of your game and use</span>
+<span class="c1"># the options below to affect their behavior.</span>
+
+<span class="c1"># The order in which clothing types appear on the description. Untyped clothing or clothing</span>
+<span class="c1"># with a type not given in this list goes last.</span>
+<span class="n">CLOTHING_TYPE_ORDER</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;hat&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jewelry&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;top&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;undershirt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gloves&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fullbody&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;underpants&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;socks&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;shoes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;accessory&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="c1"># The maximum number of each type of clothes that can be worn. Unlimited if untyped or not specified.</span>
+<span class="n">CLOTHING_TYPE_LIMIT</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;hat&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;gloves&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;socks&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;shoes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="c1"># The maximum number of clothing items that can be worn, or None for unlimited.</span>
+<span class="n">CLOTHING_OVERALL_LIMIT</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="c1"># What types of clothes will automatically cover what other types of clothes when worn.</span>
+<span class="c1"># Note that clothing only gets auto-covered if it&#39;s already worn when you put something</span>
+<span class="c1"># on that auto-covers it - for example, it&#39;s perfectly possible to have your underpants</span>
+<span class="c1"># showing if you put them on after your pants!</span>
+<span class="n">CLOTHING_TYPE_AUTOCOVER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;undershirt&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;underpants&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;fullbody&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;undershirt&quot;</span><span class="p">,</span> <span class="s2">&quot;underpants&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;shoes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;socks&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+<span class="c1"># Types of clothes that can&#39;t be used to cover other clothes.</span>
+<span class="n">CLOTHING_TYPE_CANT_COVER_WITH</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;jewelry&quot;</span><span class="p">]</span>
+
+
+<span class="c1"># HELPER FUNCTIONS START HERE</span>
+
+
+<div class="viewcode-block" id="order_clothes_list"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.order_clothes_list">[docs]</a><span class="k">def</span> <span class="nf">order_clothes_list</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Orders a given clothes list by the order specified in CLOTHING_TYPE_ORDER.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        clothes_list (list): List of clothing items to put in order</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ordered_clothes_list (list): The same list as passed, but re-ordered</span>
+<span class="sd">                                     according to the hierarchy of clothing types</span>
+<span class="sd">                                     specified in CLOTHING_TYPE_ORDER.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ordered_clothes_list</span> <span class="o">=</span> <span class="n">clothes_list</span>
+    <span class="c1"># For each type of clothing that exists...</span>
+    <span class="k">for</span> <span class="n">current_type</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">CLOTHING_TYPE_ORDER</span><span class="p">):</span>
+        <span class="c1"># Check each item in the given clothes list.</span>
+        <span class="k">for</span> <span class="n">clothes</span> <span class="ow">in</span> <span class="n">clothes_list</span><span class="p">:</span>
+            <span class="c1"># If the item has a clothing type...</span>
+            <span class="k">if</span> <span class="n">clothes</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span><span class="p">:</span>
+                <span class="n">item_type</span> <span class="o">=</span> <span class="n">clothes</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span>
+                <span class="c1"># And the clothing type matches the current type...</span>
+                <span class="k">if</span> <span class="n">item_type</span> <span class="o">==</span> <span class="n">current_type</span><span class="p">:</span>
+                    <span class="c1"># Move it to the front of the list!</span>
+                    <span class="n">ordered_clothes_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">clothes</span><span class="p">)</span>
+                    <span class="n">ordered_clothes_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">clothes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ordered_clothes_list</span></div>
+
+
+<div class="viewcode-block" id="get_worn_clothes"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.get_worn_clothes">[docs]</a><span class="k">def</span> <span class="nf">get_worn_clothes</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="n">exclude_covered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a list of clothes worn by a given character.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        character (obj): The character to get a list of worn clothes from.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        exclude_covered (bool): If True, excludes clothes covered by other</span>
+<span class="sd">                                clothing from the returned list.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ordered_clothes_list (list): A list of clothing items worn by the</span>
+<span class="sd">                                     given character, ordered according to</span>
+<span class="sd">                                     the CLOTHING_TYPE_ORDER option specified</span>
+<span class="sd">                                     in this module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">clothes_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">character</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+        <span class="c1"># If uncovered or not excluding covered items</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="ow">or</span> <span class="n">exclude_covered</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="c1"># If &#39;worn&#39; is True, add to the list</span>
+            <span class="k">if</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+                <span class="n">clothes_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+    <span class="c1"># Might as well put them in order here too.</span>
+    <span class="n">ordered_clothes_list</span> <span class="o">=</span> <span class="n">order_clothes_list</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ordered_clothes_list</span></div>
+
+
+<div class="viewcode-block" id="clothing_type_count"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.clothing_type_count">[docs]</a><span class="k">def</span> <span class="nf">clothing_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dictionary of the number of each clothing type</span>
+<span class="sd">    in a given list of clothing objects.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        clothes_list (list): A list of clothing items from which</span>
+<span class="sd">                             to count the number of clothing types</span>
+<span class="sd">                             represented among them.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        types_count (dict): A dictionary of clothing types represented</span>
+<span class="sd">                            in the given list and the number of each</span>
+<span class="sd">                            clothing type represented.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">types_count</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">garment</span> <span class="ow">in</span> <span class="n">clothes_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span><span class="p">:</span>
+            <span class="nb">type</span> <span class="o">=</span> <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span>
+            <span class="k">if</span> <span class="nb">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">types_count</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">types_count</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">types_count</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">types_count</span></div>
+
+
+<div class="viewcode-block" id="single_type_count"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.single_type_count">[docs]</a><span class="k">def</span> <span class="nf">single_type_count</span><span class="p">(</span><span class="n">clothes_list</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an integer value of the number of a given type of clothing in a list.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        clothes_list (list): List of clothing objects to count from</span>
+<span class="sd">        type (str): Clothing type to count</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        type_count (int): Number of garments of the specified type in the given</span>
+<span class="sd">                          list of clothing objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">type_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">garment</span> <span class="ow">in</span> <span class="n">clothes_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="o">==</span> <span class="nb">type</span><span class="p">:</span>
+                <span class="n">type_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">type_count</span></div>
+
+
+<div class="viewcode-block" id="Clothing"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.Clothing">[docs]</a><span class="k">class</span> <span class="nc">Clothing</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Clothing.wear"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.Clothing.wear">[docs]</a>    <span class="k">def</span> <span class="nf">wear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets clothes to &#39;worn&#39; and optionally echoes to the room.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wearer (obj): character object wearing this clothing object</span>
+<span class="sd">            wearstyle (True or str): string describing the style of wear or True for none</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            quiet (bool): If false, does not message the room</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            Optionally sets db.worn with a &#39;wearstyle&#39; that appends a short passage to</span>
+<span class="sd">            the end of the name  of the clothing to describe how it&#39;s worn that shows</span>
+<span class="sd">            up in the wearer&#39;s desc - I.E. &#39;around his neck&#39; or &#39;tied loosely around</span>
+<span class="sd">            her waist&#39;. If db.worn is set to &#39;True&#39; then just the name will be shown.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Set clothing as worn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span> <span class="o">=</span> <span class="n">wearstyle</span>
+        <span class="c1"># Auto-cover appropirate clothing types, as specified above</span>
+        <span class="n">to_cover</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="ow">in</span> <span class="n">CLOTHING_TYPE_AUTOCOVER</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">garment</span> <span class="ow">in</span> <span class="n">get_worn_clothes</span><span class="p">(</span><span class="n">wearer</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span>
+                    <span class="ow">and</span> <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="ow">in</span> <span class="n">CLOTHING_TYPE_AUTOCOVER</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="n">to_cover</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">garment</span><span class="p">)</span>
+                    <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="c1"># Return if quiet</span>
+        <span class="k">if</span> <span class="n">quiet</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># Echo a message to the room</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> puts on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wearer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wearstyle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> wears </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wearer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">to_cover</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;, covering </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">to_cover</span><span class="p">)</span>
+        <span class="n">wearer</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Clothing.remove"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.Clothing.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wearer</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes worn clothes and optionally echoes to the room.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wearer (obj): character object wearing this clothing object</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            quiet (bool): If false, does not message the room</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">remove_message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> removes </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wearer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">uncovered_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Check to see if any other clothes are covered by this object.</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">wearer</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="c1"># If anything is covered by</span>
+            <span class="k">if</span> <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">thing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">uncovered_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">uncovered_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">remove_message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> removes </span><span class="si">%s</span><span class="s2">, revealing </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">wearer</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">list_to_string</span><span class="p">(</span><span class="n">uncovered_list</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="c1"># Echo a message to the room</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
+            <span class="n">wearer</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="n">remove_message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Clothing.at_get"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.Clothing.at_get">[docs]</a>    <span class="k">def</span> <span class="nf">at_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes absolutely sure clothes aren&#39;t already set as &#39;worn&#39;</span>
+<span class="sd">        when they&#39;re picked up, in case they&#39;ve somehow had their</span>
+<span class="sd">        location changed without getting removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span> <span class="o">=</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="ClothedCharacter"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.ClothedCharacter">[docs]</a><span class="k">class</span> <span class="nc">ClothedCharacter</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Character that displays worn clothing when looked at. You can also</span>
+<span class="sd">    just copy the return_appearance hook defined below to your own game&#39;s</span>
+<span class="sd">    character typeclass.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ClothedCharacter.return_appearance"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.ClothedCharacter.return_appearance">[docs]</a>    <span class="k">def</span> <span class="nf">return_appearance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This formats a description. It is the hook a &#39;look&#39; command</span>
+<span class="sd">        should call.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            looker (Object): Object doing the looking.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            The name of every clothing item carried and worn by the character</span>
+<span class="sd">            is appended to their description. If the clothing&#39;s db.worn value</span>
+<span class="sd">            is set to True, only the name is appended, but if the value is a</span>
+<span class="sd">            string, the string is appended to the end of the name, to allow</span>
+<span class="sd">            characters to specify how clothing is worn.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">looker</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># get description, build string</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|c</span><span class="si">%s</span><span class="s2">|n</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_display_name</span><span class="p">(</span><span class="n">looker</span><span class="p">)</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
+        <span class="n">worn_string_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">clothes_list</span> <span class="o">=</span> <span class="n">get_worn_clothes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_covered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Append worn, uncovered clothing to the description</span>
+        <span class="k">for</span> <span class="n">garment</span> <span class="ow">in</span> <span class="n">clothes_list</span><span class="p">:</span>
+            <span class="c1"># If &#39;worn&#39; is True, just append the name</span>
+            <span class="k">if</span> <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">worn_string_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">garment</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># Otherwise, append the name and the string value of &#39;worn&#39;</span>
+            <span class="k">elif</span> <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+                <span class="n">worn_string_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">garment</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">garment</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">desc</span>
+        <span class="c1"># Append worn clothes.</span>
+        <span class="k">if</span> <span class="n">worn_string_list</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;|/|/</span><span class="si">%s</span><span class="s2"> is wearing </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_to_string</span><span class="p">(</span><span class="n">worn_string_list</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;|/|/</span><span class="si">%s</span><span class="s2"> is not wearing anything.&quot;</span> <span class="o">%</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="n">string</span></div></div>
+
+
+<span class="c1"># COMMANDS START HERE</span>
+
+
+<div class="viewcode-block" id="CmdWear"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdWear">[docs]</a><span class="k">class</span> <span class="nc">CmdWear</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Puts on an item of clothing you are holding.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      wear &lt;obj&gt; [wear style]</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">      wear shirt</span>
+<span class="sd">      wear scarf wrapped loosely about the shoulders</span>
+
+<span class="sd">    All the clothes you are wearing are appended to your description.</span>
+<span class="sd">    If you provide a &#39;wear style&#39; after the command, the message you</span>
+<span class="sd">    provide will be displayed after the clothing&#39;s name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;wear&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
+
+<div class="viewcode-block" id="CmdWear.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdWear.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This performs the actual command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: wear &lt;obj&gt; [wear style]&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">clothing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="n">wearstyle</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">clothing</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Thing to wear must be in your inventory.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">clothing</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.clothing.Clothing&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;That&#39;s not clothes!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Enforce overall clothing limit.</span>
+        <span class="k">if</span> <span class="n">CLOTHING_OVERALL_LIMIT</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">get_worn_clothes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">CLOTHING_OVERALL_LIMIT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t wear any more clothes.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Apply individual clothing type limits.</span>
+        <span class="k">if</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+            <span class="n">type_count</span> <span class="o">=</span> <span class="n">single_type_count</span><span class="p">(</span><span class="n">get_worn_clothes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">),</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">CLOTHING_TYPE_LIMIT</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">type_count</span> <span class="o">&gt;=</span> <span class="n">CLOTHING_TYPE_LIMIT</span><span class="p">[</span><span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                        <span class="s2">&quot;You can&#39;t wear any more clothes of the type &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
+                        <span class="o">%</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;re already wearing </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="n">clothing</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># If wearstyle arguments given</span>
+            <span class="n">wearstyle_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arglist</span>  <span class="c1"># Split arguments into a list of words</span>
+            <span class="k">del</span> <span class="n">wearstyle_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Leave first argument (the clothing item) out of the wearstyle</span>
+            <span class="n">wearstring</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">wearstyle_list</span>
+            <span class="p">)</span>  <span class="c1"># Join list of args back into one string</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">WEARSTYLE_MAXLENGTH</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">wearstring</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">WEARSTYLE_MAXLENGTH</span>
+            <span class="p">):</span>  <span class="c1"># If length of wearstyle exceeds limit</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;Please keep your wear style message to less than </span><span class="si">%i</span><span class="s2"> characters.&quot;</span>
+                    <span class="o">%</span> <span class="n">WEARSTYLE_MAXLENGTH</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">wearstyle</span> <span class="o">=</span> <span class="n">wearstring</span>
+        <span class="n">clothing</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">wearstyle</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdRemove"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdRemove">[docs]</a><span class="k">class</span> <span class="nc">CmdRemove</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes off an item of clothing.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">       remove &lt;obj&gt;</span>
+
+<span class="sd">    Removes an item of clothing you are wearing. You can&#39;t remove</span>
+<span class="sd">    clothes that are covered up by something else - you must take</span>
+<span class="sd">    off the covering item first.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;remove&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
+
+<div class="viewcode-block" id="CmdRemove.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdRemove.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This performs the actual command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clothing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">clothing</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Thing to remove must be carried or worn.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;re not wearing that!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have to take off </span><span class="si">%s</span><span class="s2"> first.&quot;</span> <span class="o">%</span> <span class="n">clothing</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">clothing</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdCover"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdCover">[docs]</a><span class="k">class</span> <span class="nc">CmdCover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Covers a worn item of clothing with another you&#39;re holding or wearing.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        cover &lt;obj&gt; [with] &lt;obj&gt;</span>
+
+<span class="sd">    When you cover a clothing item, it is hidden and no longer appears in</span>
+<span class="sd">    your description until it&#39;s uncovered or the item covering it is removed.</span>
+<span class="sd">    You can&#39;t remove an item of clothing if it&#39;s covered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;cover&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
+
+<div class="viewcode-block" id="CmdCover.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdCover.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This performs the actual command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: cover &lt;worn clothing&gt; [with] &lt;clothing object&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Get rid of optional &#39;with&#39; syntax</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;with&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">to_cover</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="n">cover_with</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arglist</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_cover</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">cover_with</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_cover</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.clothing.Clothing&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> isn&#39;t clothes!&quot;</span> <span class="o">%</span> <span class="n">to_cover</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">is_typeclass</span><span class="p">(</span><span class="s2">&quot;evennia.contrib.clothing.Clothing&quot;</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> isn&#39;t clothes!&quot;</span> <span class="o">%</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">clothing_type</span> <span class="ow">in</span> <span class="n">CLOTHING_TYPE_CANT_COVER_WITH</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t cover anything with that!&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_cover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;re not wearing </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="n">to_cover</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">to_cover</span> <span class="o">==</span> <span class="n">cover_with</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t cover an item with itself!&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is covered by something else!&quot;</span> <span class="o">%</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">to_cover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is already covered by </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cover_with</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">to_cover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+            <span class="n">cover_with</span><span class="o">.</span><span class="n">wear</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="kc">True</span>
+            <span class="p">)</span>  <span class="c1"># Put on the item to cover with if it&#39;s not on already</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> covers </span><span class="si">%s</span><span class="s2"> with </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">to_cover</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">cover_with</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">to_cover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">=</span> <span class="n">cover_with</span></div></div>
+
+
+<div class="viewcode-block" id="CmdUncover"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdUncover">[docs]</a><span class="k">class</span> <span class="nc">CmdUncover</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reveals a worn item of clothing that&#39;s currently covered up.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        uncover &lt;obj&gt;</span>
+
+<span class="sd">    When you uncover an item of clothing, you allow it to appear in your</span>
+<span class="sd">    description without having to take off the garment that&#39;s currently</span>
+<span class="sd">    covering it. You can&#39;t uncover an item of clothing if the item covering</span>
+<span class="sd">    it is also covered by something else.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;uncover&quot;</span>
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;clothing&quot;</span>
+
+<div class="viewcode-block" id="CmdUncover.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdUncover.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This performs the actual command.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: uncover &lt;worn clothing object&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">to_uncover</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_uncover</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_uncover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You&#39;re not wearing </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="n">to_uncover</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_uncover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> isn&#39;t covered by anything!&quot;</span> <span class="o">%</span> <span class="n">to_uncover</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">covered_by</span> <span class="o">=</span> <span class="n">to_uncover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span>
+        <span class="k">if</span> <span class="n">covered_by</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is under too many layers to uncover.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">to_uncover</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> uncovers </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">,</span> <span class="n">to_uncover</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">to_uncover</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="CmdDrop"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdDrop">[docs]</a><span class="k">class</span> <span class="nc">CmdDrop</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    drop something</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      drop &lt;obj&gt;</span>
+
+<span class="sd">    Lets you drop an object from your inventory into the</span>
+<span class="sd">    location you are currently in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;drop&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdDrop.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdDrop.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement command&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Drop what?&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Because the DROP command by definition looks for items</span>
+        <span class="c1"># in inventory, call the search function using location = caller</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+            <span class="n">nofound_string</span><span class="o">=</span><span class="s2">&quot;You aren&#39;t carrying </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">multimatch_string</span><span class="o">=</span><span class="s2">&quot;You carry more than one </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># This part is new!</span>
+        <span class="c1"># You can&#39;t drop clothing items that are covered.</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t drop that because it&#39;s covered by </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Remove clothes if they&#39;re dropped.</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You drop </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,))</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> drops </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="n">caller</span><span class="p">)</span>
+        <span class="c1"># Call the object script&#39;s at_drop() method.</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">at_drop</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdGive"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdGive">[docs]</a><span class="k">class</span> <span class="nc">CmdGive</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    give away something to someone</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      give &lt;inventory obj&gt; = &lt;target&gt;</span>
+
+<span class="sd">    Gives an items from your inventory to another character,</span>
+<span class="sd">    placing it in their inventory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;give&quot;</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s|$&quot;</span>
+
+<div class="viewcode-block" id="CmdGive.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdGive.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Implement give&quot;&quot;&quot;</span>
+
+        <span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Usage: give &lt;inventory object&gt; = &lt;target&gt;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">to_give</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span>
+            <span class="n">nofound_string</span><span class="o">=</span><span class="s2">&quot;You aren&#39;t carrying </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span>
+            <span class="n">multimatch_string</span><span class="o">=</span><span class="s2">&quot;You carry more than one </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">to_give</span> <span class="ow">and</span> <span class="n">target</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="o">==</span> <span class="n">caller</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You keep </span><span class="si">%s</span><span class="s2"> to yourself.&quot;</span> <span class="o">%</span> <span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_give</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="n">caller</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not holding </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># This is new! Can&#39;t give away something that&#39;s worn.</span>
+        <span class="k">if</span> <span class="n">to_give</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span><span class="p">:</span>
+            <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;You can&#39;t give that away because it&#39;s covered by </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">to_give</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">covered_by</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Remove clothes if they&#39;re given.</span>
+        <span class="k">if</span> <span class="n">to_give</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+            <span class="n">to_give</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+        <span class="n">to_give</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># give object</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You give </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+        <span class="n">to_give</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> gives you </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">to_give</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+        <span class="c1"># Call the object script&#39;s at_give() method.</span>
+        <span class="n">to_give</span><span class="o">.</span><span class="n">at_give</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CmdInventory"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdInventory">[docs]</a><span class="k">class</span> <span class="nc">CmdInventory</span><span class="p">(</span><span class="n">MuxCommand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    view inventory</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">      inventory</span>
+<span class="sd">      inv</span>
+
+<span class="sd">    Shows your inventory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Alternate version of the inventory command which separates</span>
+    <span class="c1"># worn and carried items.</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;inventory&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;inv&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">]</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:all()&quot;</span>
+    <span class="n">arg_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;$&quot;</span>
+
+<div class="viewcode-block" id="CmdInventory.func"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.CmdInventory.func">[docs]</a>    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;check inventory&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You are not carrying or wearing anything.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">contents</span>
+
+        <span class="n">carry_table</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s2">&quot;header&quot;</span><span class="p">)</span>
+        <span class="n">wear_table</span> <span class="o">=</span> <span class="n">evtable</span><span class="o">.</span><span class="n">EvTable</span><span class="p">(</span><span class="n">border</span><span class="o">=</span><span class="s2">&quot;header&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+                <span class="n">carry_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s2">&quot;|C</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">carry_table</span><span class="o">.</span><span class="n">nrows</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">carry_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s2">&quot;|CNothing.|n&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;|wYou are carrying:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">carry_table</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">worn</span><span class="p">:</span>
+                <span class="n">wear_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s2">&quot;|C</span><span class="si">%s</span><span class="s2">|n&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wear_table</span><span class="o">.</span><span class="n">nrows</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">wear_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s2">&quot;|CNothing.|n&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;|/|wYou are wearing:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">wear_table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">string</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ClothedCharacterCmdSet"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.ClothedCharacterCmdSet">[docs]</a><span class="k">class</span> <span class="nc">ClothedCharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Command set for clothing, including new versions of &#39;give&#39; and &#39;drop&#39;</span>
+<span class="sd">    that take worn and covered clothing into account, as well as a new</span>
+<span class="sd">    version of &#39;inventory&#39; that differentiates between carried and worn</span>
+<span class="sd">    items.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;DefaultCharacter&quot;</span>
+
+<div class="viewcode-block" id="ClothedCharacterCmdSet.at_cmdset_creation"><a class="viewcode-back" href="../../../api/evennia.contrib.clothing.html#evennia.contrib.clothing.ClothedCharacterCmdSet.at_cmdset_creation">[docs]</a>    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Populates the cmdset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="c1"># any commands you add below will overload the default ones.</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdWear</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdRemove</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdCover</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdUncover</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdGive</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdDrop</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdInventory</span><span class="p">())</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="clothing.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.clothing</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

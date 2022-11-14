@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.grid.xyzgrid.xymap &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.grid.xyzgrid.xymap_legend" href="evennia.contrib.grid.xyzgrid.xymap_legend.html" />
+    <link rel="prev" title="evennia.contrib.grid.xyzgrid.utils" href="evennia.contrib.grid.xyzgrid.utils.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.xymap_legend.html" title="evennia.contrib.grid.xyzgrid.xymap_legend"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.utils.html" title="evennia.contrib.grid.xyzgrid.utils"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.grid.xyzgrid.html" accesskey="U">evennia.contrib.grid.xyzgrid</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid.xymap</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.grid.xyzgrid.xymap</a><ul>
+<li><a class="reference internal" href="#xymap">XYMap</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.grid.xyzgrid.utils.html"
+                        title="previous chapter">evennia.contrib.grid.xyzgrid.utils</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.grid.xyzgrid.xymap_legend.html"
+                        title="next chapter">evennia.contrib.grid.xyzgrid.xymap_legend</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.grid.xyzgrid.xymap.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.grid.xyzgrid.xymap.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.grid.xyzgrid.xymap">
+<span id="evennia-contrib-grid-xyzgrid-xymap"></span><h1>evennia.contrib.grid.xyzgrid.xymap<a class="headerlink" href="#module-evennia.contrib.grid.xyzgrid.xymap" title="Permalink to this headline">¶</a></h1>
+<section id="xymap">
+<h2>XYMap<a class="headerlink" href="#xymap" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>XYMap</strong> class represents one XY-grid of interconnected map-legend components. It’s built from an
+ASCII representation, where unique characters represents each type of component. The Map parses the
+map into an internal graph that can be efficiently used for pathfinding the shortest route between
+any two nodes (rooms).</p>
+<p>Each room (MapNode) can have exits (links) in 8 cardinal directions (north, northwest etc) as well
+as up and down. These are indicated in code as ‘n’, ‘ne’, ‘e’, ‘se’, ‘s’, ‘sw’, ‘w’,
+‘nw’, ‘u’ and ‘d’.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in module passed to &#39;Map&#39; class</span>
+
+<span class="n">MAP</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">                       1</span>
+<span class="s1"> + 0 1 2 3 4 5 6 7 8 9 0</span>
+
+<span class="s1">10 #   # # #     #-I-#</span>
+<span class="s1">    \  i i i     d</span>
+<span class="s1"> 9   #-#-#-#     |</span>
+<span class="s1">     |\    |     u</span>
+<span class="s1"> 8   #-#-#-#-----#b----o</span>
+<span class="s1">     |     |           |</span>
+<span class="s1"> 7   #-#---#-#-#-#-#   |</span>
+<span class="s1">     |         |x|x|   |</span>
+<span class="s1"> 6   o-#-#-#   #-#-#-#b#</span>
+<span class="s1">        \      |x|x|</span>
+<span class="s1"> 5   o---#-#&lt;--#-#-#</span>
+<span class="s1">    /    |</span>
+<span class="s1"> 4 #-----+-# #---#</span>
+<span class="s1">    \    | |  \ /</span>
+<span class="s1"> 3   #b#-#-#   x   #</span>
+<span class="s1">         | |  / \ u</span>
+<span class="s1"> 2       #-#-#---#</span>
+<span class="s1">         ^       d</span>
+<span class="s1"> 1       #-#     #</span>
+<span class="s1">         |</span>
+<span class="s1"> 0 #-#---o</span>
+
+<span class="s1"> + 0 1 2 3 4 5 6 7 8 9 1</span>
+<span class="s1">                       0</span>
+
+<span class="s1">&#39;&#39;&#39;</span>
+
+
+<span class="n">LEGEND</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;#&#39;</span><span class="p">:</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">MapNode</span><span class="p">,</span> <span class="s1">&#39;|&#39;</span><span class="p">:</span> <span class="n">xyzgrid</span><span class="o">.</span><span class="n">NSMapLink</span><span class="p">,</span><span class="o">...</span><span class="p">}</span>
+
+<span class="c1"># read by parser if XYMAP_DATA_LIST doesn&#39;t exist</span>
+<span class="n">XYMAP_DATA</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="n">MAP</span><span class="p">,</span>
+    <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="n">LEGEND</span><span class="p">,</span>
+    <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="s2">&quot;City of Foo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span> <span class="p">{</span> <span class="o">...</span> <span class="p">},</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span> <span class="p">{</span> <span class="o">...</span> <span class="p">},</span>
+        <span class="o">...</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="c1"># will be parsed first, allows for multiple map-data dicts from one module</span>
+<span class="n">XYMAP_DATA_LIST</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">XYMAP_DATA</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The two <strong>+</strong> signs  in the upper/lower left corners are required and marks the edge of the map area.
+The origo of the grid is always two steps right and two up from the bottom test marker and the grid
+extends to two lines below the top-left marker. Anything outside the grid is ignored, so numbering
+the coordinate axes is optional but recommended for readability.</p>
+<p>The XY positions represent coordinates positions in the game world. When existing, they are usually
+represented by Rooms in-game. The links between nodes would normally represent Exits, but the length
+of links on the map have no in-game equivalence except that traversing a multi-step link will place
+you in a location with an XY coordinate different from what you’d expect by a single step (most
+games don’t relay the XY position to the player anyway).</p>
+<p>In the map string, every XY coordinate must have exactly one spare space/line between them - this is
+used for node linkings. This finer grid which has 2x resolution of the <strong>XYgrid</strong> is only used by the
+mapper and is referred to as the <strong>xygrid</strong> (small xy) internally. Note that an XY position can also
+be held by a link (for example a passthrough).</p>
+<p>The nodes and links can be customized by add your own implementation of <strong>MapNode</strong> or <strong>MapLink</strong> to
+the LEGEND dict, mapping them to a particular character symbol. A <strong>MapNode</strong> can only be added
+on an even XY coordinate while <a href="#id1"><span class="problematic" id="id2">**</span></a>MapLink**s can be added anywhere on the xygrid.</p>
+<p>See <strong>./example.py</strong> for a full grid example.</p>
+<hr class="docutils" />
+<dl class="py class">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.xyzgrid.xymap.</code><code class="sig-name descname">XYMap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_module_or_dict</span></em>, <em class="sig-param"><span class="n">Z</span><span class="o">=</span><span class="default_value">'map'</span></em>, <em class="sig-param"><span class="n">xyzgrid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This represents a single map of interconnected nodes/rooms, parsed from a ASCII map
+representation.</p>
+<p>Each room is connected to each other as a directed graph with optional ‘weights’ between the the
+connections. It is created from a map string with symbols describing the topological layout. It
+also provides pathfinding using the Dijkstra algorithm.</p>
+<p>The map-string is read from a string or from a module.  The grid area of the string is marked by
+two <strong>+</strong> characters - one in the top left of the area and the other in the bottom left.
+The grid starts two spaces/lines in from the ‘open box’ created by these two markers and extend
+any width to the right.
+Any other markers or comments can be added outside of the grid - they will be ignored.  Every
+grid coordinate must always be separated by exactly one space/line since the space between
+are used for links.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                       1 1 1</span>
+<span class="sd"> + 0 1 2 3 4 5 6 7 8 9 0 1 2 ...</span>
+
+<span class="sd"> 4       #         #   #</span>
+<span class="sd">         |          \ /</span>
+<span class="sd"> 3     #-#-#     #   #</span>
+<span class="sd">       |          \ /</span>
+<span class="sd"> 2     #-#-#       #</span>
+<span class="sd">       |x|x|       |</span>
+<span class="sd"> 1     #-#-#-#-#-#-#</span>
+<span class="sd">      /</span>
+<span class="sd"> 0 #-#</span>
+
+<span class="sd"> + 0 1 2 3 4 5 6 7 8 9 1 1 1 ...</span>
+<span class="sd">                       0 1 2</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+</div>
+<p>So origo (0,0) is in the bottom-left and north is +y movement, south is -y movement
+while east/west is +/- x movement as expected. Adding numbers to axes is optional
+but recommended for readability!</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.mapcorner_symbol">
+<code class="sig-name descname">mapcorner_symbol</code><em class="property"> = '+'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.mapcorner_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.max_pathfinding_length">
+<code class="sig-name descname">max_pathfinding_length</code><em class="property"> = 500</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.max_pathfinding_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.empty_symbol">
+<code class="sig-name descname">empty_symbol</code><em class="property"> = ' '</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.empty_symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.legend_key_exceptions">
+<code class="sig-name descname">legend_key_exceptions</code><em class="property"> = '\\'</em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.legend_key_exceptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_module_or_dict</span></em>, <em class="sig-param"><span class="n">Z</span><span class="o">=</span><span class="default_value">'map'</span></em>, <em class="sig-param"><span class="n">xyzgrid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the map parser by feeding it the map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_module_or_dict</strong> (<em>str</em><em>, </em><em>module</em><em> or </em><em>dict</em>) – Path or module pointing to a map. If a dict,
+this should be a dict with a MAP_DATA key ‘map’ and optionally a ‘legend’
+dicts to specify the map structure.</p></li>
+<li><p><strong>Z</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – Name or Z-coord for for this map. Needed if the game uses
+more than one map. If not given, it can also be embedded in the
+<strong>map_module_or_dict</strong>. Used when referencing this map during map transitions,
+baking of pathfinding matrices etc.</p></li>
+<li><p><strong>xyzgrid</strong> (<em>xyzgrid.XYZgrid</em>) – A top-level grid this map is a part of.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Interally, the map deals with two sets of coordinate systems:
+- grid-coordinates x,y are the character positions in the map string.
+- world-coordinates X,Y are the in-world coordinates of nodes/rooms.</p>
+<blockquote>
+<div><p>There are fewer of these since they ignore the ‘link’ spaces between
+the nodes in the grid, s</p>
+<blockquote>
+<div><p>X = x // 2
+Y = y // 2</p>
+</div></blockquote>
+</div></blockquote>
+<ul class="simple">
+<li><p>The Z-coordinate, if given, is only used when transitioning between maps
+on the supplied <strong>grid</strong>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.log">
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.reload">
+<code class="sig-name descname">reload</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">map_module_or_dict</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.reload" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Re)Load a map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_module_or_dict</strong> (<em>str</em><em>, </em><em>module</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – See description for the variable
+in the class’ <strong>__init__</strong> function. If given, replace the already loaded
+map with a new one. If not given, the existing one given on class creation
+will be reloaded.</p></li>
+<li><p><strong>parse</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, auto-run <strong>.parse()</strong> on the newly loaded data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This will both (re)load the data and parse it into a new map structure, replacing any
+existing one. The valid mapstructure is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s2">&quot;zcoord&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">int</span> <span class="ow">or</span> <span class="nb">str</span><span class="o">&gt;</span><span class="p">,</span> <span class="c1"># optional</span>
+    <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">dict</span><span class="o">&gt;</span><span class="p">,</span>       <span class="c1"># optional</span>
+    <span class="s2">&quot;prototypes&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">dict</span><span class="o">&gt;</span>    <span class="c1"># optional</span>
+    <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">dict</span><span class="o">&gt;</span>       <span class="c1"># optional</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.parse">
+<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses the numerical grid from the string. The first pass means parsing out
+all nodes. The linking-together of nodes is not happening until the second pass
+(the reason for this is that maps can also link to other maps, so all maps need
+to have gone through their first parsing-passes before they can be linked together).</p>
+<p>See the class docstring for details of how the grid should be defined.</p>
+<p class="rubric">Notes</p>
+<p>In this parsing, the ‘xygrid’ is the full range of chraracters read from
+the string. The <strong>XYgrid</strong> is used to denote the game-world coordinates
+(which doesn’t include the links)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.calculate_path_matrix">
+<code class="sig-name descname">calculate_path_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.calculate_path_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.calculate_path_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve the pathfinding problem using Dijkstra’s algorithm. This will try to
+load the solution from disk if possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>bool</em><em>, </em><em>optional</em>) – If the cache should always be rebuilt.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_nodes">
+<code class="sig-name descname">spawn_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy</span><span class="o">=</span><span class="default_value">'*', '*'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.spawn_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the nodes of this XYMap into actual in-world rooms by spawning their
+related prototypes in the correct coordinate positions. This must be done <em>first</em>
+before spawning links (with <strong>spawn_links</strong> because exits require the target destination
+to exist. It’s also possible to only spawn a subset of the map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>xy</strong> (<em>tuple</em><em>, </em><em>optional</em>) – An (X,Y) coordinate of node(s). <strong>‘*’</strong> acts as a wildcard.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<ul class="simple">
+<li><p><a href="#id3"><span class="problematic" id="id4">**</span></a>xy=(1, 3) - spawn (1,3) coordinate only.</p></li>
+<li><p><a href="#id5"><span class="problematic" id="id6">**</span></a>xy=(‘*’, 1) - spawn all nodes in the first row of the map only.</p></li>
+<li><p><strong>xy=(‘*’, ‘*’)</strong> - spawn all nodes</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list</em> – A list of nodes that were spawned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_links">
+<code class="sig-name descname">spawn_links</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy</span><span class="o">=</span><span class="default_value">'*', '*'</span></em>, <em class="sig-param"><span class="n">nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">directions</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.spawn_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert links of this XYMap into actual in-game exits by spawning their related
+prototypes. It’s possible to only spawn a specic exit by specifying the node and</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> (<em>tuple</em><em>, </em><em>optional</em>) – An (X,Y) coordinate of node(s). <strong>‘*’</strong> acts as a wildcard.</p></li>
+<li><p><strong>nodes</strong> (<em>list</em><em>, </em><em>optional</em>) – If given, only consider links out of these nodes. This also
+affects <strong>xy</strong>, so that if there are no nodes of given coords in <strong>nodes</strong>, no
+links will be spawned at all.</p></li>
+<li><p><strong>directions</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of cardinal directions (‘n’, ‘ne’ etc). If given,
+sync only the exit in the given directions (<strong>xy</strong> limits which links out of which
+nodes should be considered). If unset, there are no limits to directions.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>xy=(1, 3 )</strong>, <strong>direction=’ne’</strong> - sync only the north-eastern exit</dt><dd><p>out of the (1, 3) node.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.get_node_from_coord">
+<code class="sig-name descname">get_node_from_coord</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.get_node_from_coord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_node_from_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a MapNode from a coordinate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>xy</strong> (<em>tuple</em>) – X,Y coordinate on XYgrid.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>MapNode</em> –</p>
+<dl class="simple">
+<dt>The node found at the given coordinates. Returns</dt><dd><p><strong>None</strong> if there is no mapnode at the given coordinate.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError" title="evennia.contrib.grid.xyzgrid.utils.MapError"><strong>MapError</strong></a> – If trying to specify an iX,iY outside
+of the grid’s maximum bounds.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.get_components_with_symbol">
+<code class="sig-name descname">get_components_with_symbol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">symbol</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.get_components_with_symbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_components_with_symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all map components (nodes, links) with a given symbol in this map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>symbol</strong> (<em>char</em>) – A single character-symbol to search for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list</em> – A list of MapNodes and/or MapLinks found with the matching symbol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.get_shortest_path">
+<code class="sig-name descname">get_shortest_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_xy</span></em>, <em class="sig-param"><span class="n">end_xy</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.get_shortest_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_shortest_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the shortest route between two points on the grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_xy</strong> (<em>tuple</em>) – A starting (X,Y) coordinate on the XYgrid (in-game coordinate) for
+where we start from.</p></li>
+<li><p><strong>end_xy</strong> (<em>tuple</em><em> or </em><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode" title="evennia.contrib.grid.xyzgrid.xymap_legend.MapNode"><em>MapNode</em></a>) – The end (X,Y) coordinate on the XYgrid (in-game coordinate)
+we want to find the shortest route to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – Two lists, first containing the list of directions as strings (n, ne etc) and
+the second is a mixed list of MapNodes and all MapLinks in a sequence describing
+the full path including the start- and end-node.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.xyzgrid.xymap.XYMap.get_visual_range">
+<code class="sig-name descname">get_visual_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy</span></em>, <em class="sig-param"><span class="n">dist</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'nodes'</span></em>, <em class="sig-param"><span class="n">character</span><span class="o">=</span><span class="default_value">'&#64;'</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_path_style</span><span class="o">=</span><span class="default_value">'|y{display_symbol}|n'</span></em>, <em class="sig-param"><span class="n">max_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">return_str</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/xymap.html#XYMap.get_visual_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_visual_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a part of the grid centered on a specific point and extended a certain number
+of nodes or grid points in every direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> (<em>tuple</em>) – (X,Y) in-world coordinate location. If this is not the location
+of a node on the grid, the <strong>character</strong> or the empty-space symbol (by default
+an empty space) will be shown.</p></li>
+<li><p><strong>dist</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of gridpoints distance to show. Which
+grid to use depends on the setting of <strong>only_nodes</strong>. Set to <strong>None</strong> to
+always show the entire grid.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – One of ‘scan’ or ‘nodes’. In ‘scan’ mode, dist measure
+number of xy grid points in all directions and doesn’t care about if visible
+nodes are reachable or not. If ‘nodes’, distance measure how many linked nodes
+away from the center coordinate to display.</p></li>
+<li><p><strong>character</strong> (<em>str</em><em>, </em><em>optional</em>) – Place this symbol at the <strong>xy</strong> position
+of the displayed map. The center node’s symbol is shown if this is falsy.</p></li>
+<li><p><strong>target</strong> (<em>tuple</em><em>, </em><em>optional</em>) – A target XY coordinate to go to. The path to this
+(or the beginning of said path, if outside of visual range) will be
+marked according to <strong>target_path_style</strong>.</p></li>
+<li><p><strong>target_path_style</strong> (<em>str</em><em> or </em><em>callable</em><em>, </em><em>optional</em>) – This is use for marking the path
+found when <strong>target</strong> is given. If a string, it accepts a formatting marker
+<strong>display_symbol</strong> which will be filled with the <strong>display_symbol</strong> of each node/link
+the path passes through. This allows e.g. to color the path. If a callable, this
+will receive the MapNode or MapLink object for every step of the path and and
+must return the suitable string to display at the position of the node/link.</p></li>
+<li><p><strong>max_size</strong> (<em>tuple</em><em>, </em><em>optional</em>) – A max <strong>(width, height)</strong> to crop the displayed
+return to. Make both odd numbers to get a perfect center. Set either of
+the tuple values to <strong>None</strong> to make that coordinate unlimited. Set entire
+tuple to None let display-size able to grow up to full size of grid.</p></li>
+<li><p><strong>indent</strong> (<em>int</em><em>, </em><em>optional</em>) – How far to the right to indent the map area (only
+applies to <strong>return_str=True</strong>).</p></li>
+<li><p><strong>return_str</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return result as an already formatted string
+or a 2D list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>str or list</em> –</p>
+<dl class="simple">
+<dt>Depending on value of <strong>return_str</strong>. If a list,</dt><dd><p>this is 2D grid of lines, [[str,str,str,…], […]] where
+each element is a single character in the display grid. To
+extract a character at (ix,iy) coordinate from it, use
+indexing <strong>outlist[iy][ix]</strong> in that order.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If outputting a list, the y-axis must first be reversed before printing since printing
+happens top-bottom and the y coordinate system goes bottom-up. This can be done simply
+with this before building the final string to send/print.</p>
+<blockquote>
+<div><p>printable_order_list = outlist[::-1]</p>
+</div></blockquote>
+<p>If mode=’nodes’, a <strong>dist</strong> of 2 will give the following result in a row of nodes:</p>
+<blockquote>
+<div><p>#-#-&#64;———-#-#</p>
+</div></blockquote>
+<p>This display may thus visually grow much bigger than expected (both horizontally and
+vertically). consider setting <strong>max_size</strong> if wanting to restrict the display size. Also
+note that link ‘weights’ are <em>included</em> in this estimate, so if links have weights &gt; 1,
+fewer nodes may be found for a given <strong>dist</strong>.</p>
+<p>If mode=**scan**, a dist of 2 on the above example would instead give</p>
+<blockquote>
+<div><p>#-&#64;–</p>
+</div></blockquote>
+<p>This mode simply shows a cut-out subsection of the map you are on. The <strong>dist</strong> is
+measured on xygrid, so two steps per XY coordinate. It does not consider links or
+weights and may also show nodes not actually reachable at the moment:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><a href="#id7"><span class="problematic" id="id8">|</span></a></div>
+</div>
+<p># &#64;-#</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.xymap_legend.html" title="evennia.contrib.grid.xyzgrid.xymap_legend"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.utils.html" title="evennia.contrib.grid.xyzgrid.utils"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.grid.xyzgrid.html" >evennia.contrib.grid.xyzgrid</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid.xymap</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

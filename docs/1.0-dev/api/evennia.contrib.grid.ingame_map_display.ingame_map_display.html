@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.grid.ingame_map_display.ingame_map_display &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.grid.ingame_map_display.tests" href="evennia.contrib.grid.ingame_map_display.tests.html" />
+    <link rel="prev" title="evennia.contrib.grid.ingame_map_display" href="evennia.contrib.grid.ingame_map_display.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.ingame_map_display.tests.html" title="evennia.contrib.grid.ingame_map_display.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.ingame_map_display.html" title="evennia.contrib.grid.ingame_map_display"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.grid.ingame_map_display.html" accesskey="U">evennia.contrib.grid.ingame_map_display</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.ingame_map_display.ingame_map_display</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.grid.ingame_map_display.html"
+                        title="previous chapter">evennia.contrib.grid.ingame_map_display</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.grid.ingame_map_display.tests.html"
+                        title="next chapter">evennia.contrib.grid.ingame_map_display.tests</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.grid.ingame_map_display.ingame_map_display.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.grid.ingame_map_display.ingame_map_display.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.grid.ingame_map_display.ingame_map_display">
+<span id="evennia-contrib-grid-ingame-map-display-ingame-map-display"></span><h1>evennia.contrib.grid.ingame_map_display.ingame_map_display<a class="headerlink" href="#module-evennia.contrib.grid.ingame_map_display.ingame_map_display" title="Permalink to this headline">¶</a></h1>
+<p>Basic Map - helpme 2022</p>
+<p>This adds an ascii <strong>map</strong> to a given room which can be viewed with the <strong>map</strong> command.
+You can easily alter it to add special characters, room colors etc. The map shown is
+dynamically generated on use, and supports all compass directions and up/down. Other
+directions are ignored.</p>
+<p>If you don’t expect the map to be updated frequently, you could choose to save the
+calculated map as a .ndb value on the room and render that instead of running mapping
+calculations anew each time.</p>
+<p>An example map:</p>
+<blockquote>
+<div><blockquote>
+<div><div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div></blockquote>
+<dl>
+<dt>-[-]-</dt><dd><div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+<dl>
+<dt>-[-]–[-]–[-]–[-]</dt><dd><div class="line-block">
+<div class="line">|    |    |
+  |    |    |
+-[-]–[-]  [-]
+  | / |    |
+| /|
+-[-]–[-]</div>
+</div>
+</dd>
+</dl>
+<p>Installation:</p>
+<p>Adding the <strong>MapDisplayCmdSet</strong> to the default character cmdset will add the <strong>map</strong> command.</p>
+<p>Specifically, in <strong>mygame/commands/default_cmdsets.py</strong>:</p>
+<p>…
+from evennia.contrib.grid.ingame_map_display import MapDisplayCmdSet  # &lt;—</p>
+<dl>
+<dt>class CharacterCmdset(default_cmds.Character_CmdSet):</dt><dd><p>…
+def at_cmdset_creation(self):</p>
+<blockquote>
+<div><p>…
+self.add(MapDisplayCmdSet)  # &lt;—</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>Then <strong>reload</strong> to make the new commands available.</p>
+<p>Additional Settings:</p>
+<p>In order to change your default map size, you can add to <strong>mygame/server/settings.py</strong>:</p>
+<p>BASIC_MAP_SIZE = 5</p>
+<p>This changes the default map width/height. 2-5 for most clients is sensible.</p>
+<p>If you don’t want the player to be able to specify the size of the map, ignore any
+arguments passed into the Map command.</p>
+<dl class="py class">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.ingame_map_display.ingame_map_display.</code><code class="sig-name descname">Map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>object</em>) – Any object, though generally a puppeted character.</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – The seed size of the map, which will be multiplied to get the final grid size.</p></li>
+<li><p><strong>location</strong> (<em>object</em>) – The location at the map’s center (will default to caller.location if none provided).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.create_grid">
+<code class="sig-name descname">create_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.create_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.create_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the empty grid for the map based on the configured size</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list</em> – The created grid, a list of lists.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.exit_name_as_ordinal">
+<code class="sig-name descname">exit_name_as_ordinal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ex</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.exit_name_as_ordinal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.exit_name_as_ordinal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the exit name as a compass direction if possible</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ex</strong> (<em>Exit</em>) – The current exit being mapped.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>string</em> – The exit name as a compass direction or an empty string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.update_pos">
+<code class="sig-name descname">update_pos</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em>, <em class="sig-param"><span class="n">exit_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.update_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.update_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the position pointer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>room</strong> (<em>Room</em>) – The current location.</p></li>
+<li><p><strong>exit_name</strong> (<em>str</em>) – The name of the exit to to use in this room. This must
+be a valid compass direction, or an error will be raised.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If providing a non-compass exit name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.has_drawn">
+<code class="sig-name descname">has_drawn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.has_drawn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.has_drawn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the given room has already been drawn or not</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>room</strong> (<em>Room</em>) – Room to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – Whether or not the room has been drawn.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw_room_on_map">
+<code class="sig-name descname">draw_room_on_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em>, <em class="sig-param"><span class="n">max_distance</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.draw_room_on_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw_room_on_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the room and its exits on the map recursively</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>room</strong> (<em>Room</em>) – The room to draw out.</p></li>
+<li><p><strong>max_distance</strong> (<em>int</em>) – How extensive the map is.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw_exits">
+<code class="sig-name descname">draw_exits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.draw_exits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw_exits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a given room’s exit paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>room</strong> (<em>Room</em>) – The room to draw exits of.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw">
+<code class="sig-name descname">draw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the map starting from a given room and add it to the cache of mapped rooms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>room</strong> (<em>Room</em>) – The room to render.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.render_room">
+<code class="sig-name descname">render_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">p1</span><span class="o">=</span><span class="default_value">'['</span></em>, <em class="sig-param"><span class="n">p2</span><span class="o">=</span><span class="default_value">']'</span></em>, <em class="sig-param"><span class="n">here</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.render_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.render_room" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a given room with ascii characters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>room</strong> (<em>Room</em>) – The room to render.</p></li>
+<li><p><strong>x</strong> (<em>int</em>) – The x-value of the room on the grid (horizontally, east/west).</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – The y-value of the room on the grid (vertically, north/south).</p></li>
+<li><p><strong>p1</strong> (<em>str</em>) – The first character of the 3-character room depiction.</p></li>
+<li><p><strong>p2</strong> (<em>str</em>) – The last character of the 3-character room depiction.</p></li>
+<li><p><strong>here</strong> (<em>str</em>) – Defaults to none, a special character depicting the room.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.start_loc_on_grid">
+<code class="sig-name descname">start_loc_on_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">room</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.start_loc_on_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.start_loc_on_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the starting location on the grid based on the maximum width and length</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>room</strong> (<em>Room</em>) – The room to begin with.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.show_map">
+<code class="sig-name descname">show_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#Map.show_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.Map.show_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and show the map, piecing it all together in the end</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>debug</strong> (<em>bool</em>) – Whether or not to return the time taken to build the map.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.ingame_map_display.ingame_map_display.</code><code class="sig-name descname">CmdMap</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#CmdMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.default.muxcommand.MuxCommand</span></code></a></p>
+<p>Check the local map around you.</p>
+<p>Usage: map (optional size)</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.key">
+<code class="sig-name descname">key</code><em class="property"> = 'map'</em><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#CmdMap.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the hook function that actually does all the work. It is called
+by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'map', 'no_prefix': ' ', 'tags': '', 'text': '\n    Check the local map around you.\n\n    Usage: map (optional size)\n    '}</em><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.CmdMap.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.grid.ingame_map_display.ingame_map_display.</code><code class="sig-name descname">MapDisplayCmdSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmdsetobj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#MapDisplayCmdSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.commands.cmdset.CmdSet</span></code></a></p>
+<p>The map command.</p>
+<dl class="py method">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet.at_cmdset_creation">
+<code class="sig-name descname">at_cmdset_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/ingame_map_display/ingame_map_display.html#MapDisplayCmdSet.at_cmdset_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet.at_cmdset_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet'</em><a class="headerlink" href="#evennia.contrib.grid.ingame_map_display.ingame_map_display.MapDisplayCmdSet.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.ingame_map_display.tests.html" title="evennia.contrib.grid.ingame_map_display.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.ingame_map_display.html" title="evennia.contrib.grid.ingame_map_display"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.grid.ingame_map_display.html" >evennia.contrib.grid.ingame_map_display</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.ingame_map_display.ingame_map_display</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.web.website.views.index &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.web.website.views.mixins" href="evennia.web.website.views.mixins.html" />
+    <link rel="prev" title="evennia.web.website.views.help" href="evennia.web.website.views.help.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.views.mixins.html" title="evennia.web.website.views.mixins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.views.help.html" title="evennia.web.website.views.help"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.website.html" >evennia.web.website</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.web.website.views.html" accesskey="U">evennia.web.website.views</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.index</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.web.website.views.help.html"
+                        title="previous chapter">evennia.web.website.views.help</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.web.website.views.mixins.html"
+                        title="next chapter">evennia.web.website.views.mixins</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.web.website.views.index.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.web.website.views.index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.website.views.index">
+<span id="evennia-web-website-views-index"></span><h1>evennia.web.website.views.index<a class="headerlink" href="#module-evennia.web.website.views.index" title="Permalink to this headline">¶</a></h1>
+<p>The main index page, including the game stats</p>
+<dl class="py class">
+<dt id="evennia.web.website.views.index.EvenniaIndexView">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.web.website.views.index.</code><code class="sig-name descname">EvenniaIndexView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/index.html#EvenniaIndexView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.index.EvenniaIndexView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
+<p>This is a basic example of a Django class-based view, which are functionally
+very similar to Evennia Commands but differ in structure. Commands are used
+to interface with users using a terminal client. Views are used to interface
+with users using a web browser.</p>
+<p>To use a class-based view, you need to have written a template in HTML, and
+then you write a view like this to tell Django what values to display on it.</p>
+<p>While there are simpler ways of writing views using plain functions (and
+Evennia currently contains a few examples of them), just like Commands,
+writing views as classes provides you with more flexibility– you can extend
+classes and change things to suit your needs rather than having to copy and
+paste entire code blocks over and over. Django also comes with many default
+views for displaying things, all of them implemented as classes.</p>
+<p>This particular example displays the index page.</p>
+<dl class="py attribute">
+<dt id="evennia.web.website.views.index.EvenniaIndexView.template_name">
+<code class="sig-name descname">template_name</code><em class="property"> = 'website/index.html'</em><a class="headerlink" href="#evennia.web.website.views.index.EvenniaIndexView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.web.website.views.index.EvenniaIndexView.get_context_data">
+<code class="sig-name descname">get_context_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/index.html#EvenniaIndexView.get_context_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.web.website.views.index.EvenniaIndexView.get_context_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a common Django method. Think of this as the website
+equivalent of the Evennia Command.func() method.</p>
+<p>If you just want to display a static page with no customization, you
+don’t need to define this method– just create a view, define
+template_name and you’re done.</p>
+<p>The only catch here is that if you extend or overwrite this method,
+you’ll always want to make sure you call the parent method to get a
+context object. It’s just a dict, but it comes prepopulated with all
+sorts of background data intended for display on the page.</p>
+<p>You can do whatever you want to it, but it must be returned at the end
+of this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>any</strong> (<em>any</em>) – Passed through.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>context (dict)</em> – Dictionary of data you want to display on the page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.views.mixins.html" title="evennia.web.website.views.mixins"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.views.help.html" title="evennia.web.website.views.help"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.website.html" >evennia.web.website</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.web.website.views.html" >evennia.web.website.views</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.index</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

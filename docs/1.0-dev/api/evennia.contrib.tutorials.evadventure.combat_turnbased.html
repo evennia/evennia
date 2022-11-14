@@ -1,0 +1,1138 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.tutorials.evadventure.combat_turnbased &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.tutorials.evadventure.commands" href="evennia.contrib.tutorials.evadventure.commands.html" />
+    <link rel="prev" title="evennia.contrib.tutorials.evadventure.chargen" href="evennia.contrib.tutorials.evadventure.chargen.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.commands.html" title="evennia.contrib.tutorials.evadventure.commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.chargen.html" title="evennia.contrib.tutorials.evadventure.chargen"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" accesskey="U">evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.combat_turnbased</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.chargen.html"
+                        title="previous chapter">evennia.contrib.tutorials.evadventure.chargen</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.commands.html"
+                        title="next chapter">evennia.contrib.tutorials.evadventure.commands</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tutorials.evadventure.combat_turnbased.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.tutorials.evadventure.combat_turnbased.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tutorials.evadventure.combat_turnbased">
+<span id="evennia-contrib-tutorials-evadventure-combat-turnbased"></span><h1>evennia.contrib.tutorials.evadventure.combat_turnbased<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.combat_turnbased" title="Permalink to this headline">¶</a></h1>
+<p>EvAdventure turn-based combat</p>
+<p>This implements a turn-based combat style, where both sides have a little longer time to
+choose their next action. If they don’t react before a timer runs out, the previous action
+will be repeated. This means that a ‘twitch’ style combat can be created using the same
+mechanism, by just speeding up each ‘turn’.</p>
+<p>The combat is handled with a <strong>Script</strong> shared between all combatants; this tracks the state
+of combat and handles all timing elements.</p>
+<p>Unlike in base _Knave_, the MUD version’s combat is simultaneous; everyone plans and executes
+their turns simultaneously with minimum downtime.</p>
+<p>This version is simplified to not worry about things like optimal range etc. So a bow can be used
+the same as a sword in battle. One could add a 1D range mechanism to add more strategy by requiring
+optimizal positioning.</p>
+<p>The combat is controlled through a menu:</p>
+<p>——————- main menu
+Combat</p>
+<p>You have 30 seconds to choose your next action. If you don’t decide, you will hesitate and do
+nothing. Available actions:</p>
+<p>1. [A]ttack/[C]ast spell at &lt;target&gt; using your equipped weapon/spell
+3. Make [S]tunt &lt;target/yourself&gt; (gain/give advantage/disadvantage for future attacks)
+4. S[W]ap weapon / spell rune
+5. [U]se &lt;item&gt;
+6. [F]lee/disengage (takes two turns)
+7. [B]lock &lt;target&gt; from fleeing
+8. [H]esitate/Do nothing</p>
+<p>You can also use say/emote between rounds.
+As soon as all combatants have made their choice (or time out), the round will be resolved
+simultaneusly.</p>
+<p>——————– attack/cast spell submenu</p>
+<p>Choose the target of your attack/spell:
+0: Yourself              3: &lt;enemy 3&gt; (wounded)
+1: &lt;enemy 1&gt; (hurt)
+2: &lt;enemy 2&gt; (unharmed)</p>
+<p>——————- make stunt submenu</p>
+<p>Stunts are special actions that don’t cause damage but grant advantage for you or
+an ally for future attacks - or grant disadvantage to your enemy’s future attacks.
+The effects of stunts start to apply <em>next</em> round. The effect does not stack, can only
+be used once and must be taken advantage of within 5 rounds.</p>
+<p>Choose stunt:
+1: Trip &lt;target&gt; (give disadvantage DEX)
+2: Feint &lt;target&gt; (get advantage DEX against target)
+3: …</p>
+<p>——————– make stunt target submenu</p>
+<p>Choose the target of your stunt:
+0: Yourself                  3: &lt;combatant 3&gt; (wounded)
+1: &lt;combatant 1&gt; (hurt)
+2: &lt;combatant 2&gt; (unharmed)</p>
+<p>——————-  swap weapon or spell run</p>
+<p>Choose the item to wield.
+1: &lt;item1&gt;
+2: &lt;item2&gt; (two hands)
+3: &lt;item3&gt;
+4: …</p>
+<p>——————- use item</p>
+<p>Choose item to use.
+1: Healing potion (+1d6 HP)
+2: Magic pebble (gain advantage, 1 use)
+3: Potion of glue (give disadvantage to target)</p>
+<p>——————- Hesitate/Do nothing</p>
+<p>You hang back, passively defending.</p>
+<p>——————- Disengage</p>
+<p>You retreat, getting ready to get out of combat. Use two times in a row to
+leave combat. You flee last in a round. If anyone Blocks your retreat, this counter resets.</p>
+<p>——————- Block Fleeing</p>
+<p>You move to block the escape route of an opponent. If you win a DEX challenge,
+you’ll negate the target’s disengage action(s).</p>
+<p>Choose who to block:
+1: &lt;enemy 1&gt;
+2: &lt;enemy 2&gt;
+3: …</p>
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatFailure">
+<em class="property">exception </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatFailure</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatFailure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatFailure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>Some failure during actions.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatAction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is the base of a combat-action, like ‘attack’  Inherit from this to make new actions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We want to store initialized version of this objects in the CombatHandler (in order to track
+usages, time limits etc), so we need to make sure we can serialize it into an Attribute. See
+<strong>Attribute</strong> documentation for more about <strong>__serialize_dbobjs__</strong> and
+<strong>__deserialize_dbobjs__</strong>.</p>
+</div>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Action'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.desc">
+<code class="sig-name descname">desc</code><em class="property"> = 'Option text'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.help_text">
+<code class="sig-name descname">help_text</code><em class="property"> = 'Combat action to perform.'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.next_menu_node">
+<code class="sig-name descname">next_menu_node</code><em class="property"> = 'node_select_action'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.next_menu_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.max_uses">
+<code class="sig-name descname">max_uses</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.max_uses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.priority">
+<code class="sig-name descname">priority</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatAction.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.msg">
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">broadcast</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatAction.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience route to the combathandler msg-sender mechanism.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – Message to send; use <strong>$You()</strong> and <strong>$You(other.key)</strong>
+to refer to the combatant doing the action and other combatants,
+respectively.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.get_help">
+<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatAction.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.get_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to customize help message on the fly. By default, just returns <strong>.help_text</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.can_use">
+<code class="sig-name descname">can_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatAction.can_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.can_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if combatant can use this action. In this implementation,
+it fails if already used up all of a usage-limited action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Any optional arguments.</p></li>
+<li><p><strong>**kwargs</strong> – Any optional keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>tuple</em> –</p>
+<dl class="simple">
+<dt>(bool, motivation) - if not available, will describe why,</dt><dd><p>if available, should describe what the action does.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.pre_use">
+<code class="sig-name descname">pre_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatAction.pre_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.pre_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called just before the main action.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatAction.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main activation of the action. This happens simultaneously to other actions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.post_use">
+<code class="sig-name descname">post_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatAction.post_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction.post_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called just after the action has been taken.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatActionAttack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction" title="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction</span></code></a></p>
+<p>A regular attack, using a wielded weapon. Depending on weapon type, this will be a ranged or
+melee attack.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Attack or Cast'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.desc">
+<code class="sig-name descname">desc</code><em class="property"> = '[A]ttack/[C]ast spell at &lt;target&gt;'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ('a', 'c', 'attack', 'cast')</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.help_text">
+<code class="sig-name descname">help_text</code><em class="property"> = 'Make an attack using your currently equipped weapon/spell rune'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.next_menu_node">
+<code class="sig-name descname">next_menu_node</code><em class="property"> = 'node_select_enemy_target'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.next_menu_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.priority">
+<code class="sig-name descname">priority</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">defender</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionAttack.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an attack against a defender.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatActionStunt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionStunt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction" title="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction</span></code></a></p>
+<p>Perform a stunt. A stunt grants an advantage to yours or another player for their next
+action, or a disadvantage to yours or an enemy’s next action.</p>
+<p>Note that while the check happens between the user and a target, another (the ‘beneficiary’
+could still gain the effect. This allows for boosting allies or making them better
+defend against an enemy.</p>
+<p>Note: We only count a use if the stunt is successful; they will still spend their turn, but
+won’t spend a use unless they succeed.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Perform a Stunt'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.desc">
+<code class="sig-name descname">desc</code><em class="property"> = 'Make [S]tunt against &lt;target&gt;'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ('s', 'stunt')</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.next_menu_node">
+<code class="sig-name descname">next_menu_node</code><em class="property"> = 'node_select_enemy_target'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.next_menu_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.give_advantage">
+<code class="sig-name descname">give_advantage</code><em class="property"> = True</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.give_advantage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.max_uses">
+<code class="sig-name descname">max_uses</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.max_uses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.priority">
+<code class="sig-name descname">priority</code><em class="property"> = -1</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.attack_type">
+<code class="sig-name descname">attack_type</code><em class="property"> = 'dexterity'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.attack_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.defense_type">
+<code class="sig-name descname">defense_type</code><em class="property"> = 'dexterity'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.defense_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.help_text">
+<code class="sig-name descname">help_text</code><em class="property"> = 'Perform a stunt against a target. This will give you an advantage or an enemy disadvantage on your next action.'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">defender</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionStunt.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main activation of the action. This happens simultaneously to other actions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatActionUseItem</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionUseItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction" title="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction</span></code></a></p>
+<p>Use an item in combat. This is meant for one-off or limited-use items, like potions, scrolls or
+wands.  We offload the usage checks and usability to the item’s own hooks. It’s generated
+dynamically from the items in the character’s inventory (you could also consider using items in
+the room this way).</p>
+<p>Each usable item results in one possible action.</p>
+<dl class="simple">
+<dt>It relies on the combat_* hooks on the item:</dt><dd><p>combat_get_help
+combat_can_use
+combat_pre_use
+combat_pre
+combat_post_use</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Use Item'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.desc">
+<code class="sig-name descname">desc</code><em class="property"> = '[U]se item'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ('u', 'item', 'use item')</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.help_text">
+<code class="sig-name descname">help_text</code><em class="property"> = 'Use an item from your inventory.'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.next_menu_node">
+<code class="sig-name descname">next_menu_node</code><em class="property"> = 'node_select_friendly_target'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.next_menu_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.get_help">
+<code class="sig-name descname">get_help</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionUseItem.get_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.get_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows to customize help message on the fly. By default, just returns <strong>.help_text</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionUseItem.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main activation of the action. This happens simultaneously to other actions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.post_use">
+<code class="sig-name descname">post_use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionUseItem.post_use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem.post_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called just after the action has been taken.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatActionSwapWieldedWeaponOrSpell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionSwapWieldedWeaponOrSpell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction" title="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction</span></code></a></p>
+<p>Swap Wielded weapon or spell.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Swap weapon/rune/shield'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.desc">
+<code class="sig-name descname">desc</code><em class="property"> = 'Swap currently wielded weapon, shield or spell-rune.'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ('s', 'swap', 'draw', 'swap weapon', 'draw weapon', 'swap rune', 'draw rune', 'swap spell', 'draw spell')</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.help_text">
+<code class="sig-name descname">help_text</code><em class="property"> = 'Draw a new weapon or spell-rune from your inventory, replacing your current loadout'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.next_menu_node">
+<code class="sig-name descname">next_menu_node</code><em class="property"> = 'node_select_wield_from_inventory'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.next_menu_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_</span></em>, <em class="sig-param"><span class="n">item</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionSwapWieldedWeaponOrSpell.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main activation of the action. This happens simultaneously to other actions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatActionFlee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionFlee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction" title="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction</span></code></a></p>
+<p>Fleeing/disengaging from combat means doing nothing but ‘running away’ for two turn. Unless
+someone attempts and succeeds in their ‘block’ action, you will leave combat by fleeing at the
+end of the second turn.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Flee/Disengage'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.desc">
+<code class="sig-name descname">desc</code><em class="property"> = '[F]lee/disengage from combat (takes two turns)'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ('d', 'disengage', 'flee')</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.next_menu_node">
+<code class="sig-name descname">next_menu_node</code><em class="property"> = 'node_confirm_register_action'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.next_menu_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.help_text">
+<code class="sig-name descname">help_text</code><em class="property"> = 'Disengage from combat. Use successfully two times in a row to leave combat at the end of the second round. If someone Blocks you successfully, this counter is reset.'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.priority">
+<code class="sig-name descname">priority</code><em class="property"> = -5</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionFlee.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main activation of the action. This happens simultaneously to other actions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatActionBlock</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction" title="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction</span></code></a></p>
+<p>Blocking is, in this context, a way to counter an enemy’s ‘Flee/Disengage’ action.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Block'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.desc">
+<code class="sig-name descname">desc</code><em class="property"> = '[B]lock &lt;target&gt; from fleeing'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ('b', 'block', 'chase')</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.help_text">
+<code class="sig-name descname">help_text</code><em class="property"> = &quot;Move to block a target from fleeing combat. If you succeed in a DEX vs DEX challenge, they don't get away.&quot;</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.next_menu_node">
+<code class="sig-name descname">next_menu_node</code><em class="property"> = 'node_select_enemy_target'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.next_menu_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.priority">
+<code class="sig-name descname">priority</code><em class="property"> = -1</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.attack_type">
+<code class="sig-name descname">attack_type</code><em class="property"> = 'dexterity'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.attack_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.defense_type">
+<code class="sig-name descname">defense_type</code><em class="property"> = 'dexterity'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.defense_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fleeing_target</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionBlock.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main activation of the action. This happens simultaneously to other actions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">CombatActionDoNothing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combathandler</span></em>, <em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionDoNothing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction" title="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.combat_turnbased.CombatAction</span></code></a></p>
+<p>Do nothing this turn.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.key">
+<code class="sig-name descname">key</code><em class="property"> = 'Hesitate'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.desc">
+<code class="sig-name descname">desc</code><em class="property"> = 'Do [N]othing/Hesitate'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = ('n', 'hesitate', 'nothing', 'do nothing')</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.help_text">
+<code class="sig-name descname">help_text</code><em class="property"> = 'Hold you position, doing nothing.'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.help_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.next_menu_node">
+<code class="sig-name descname">next_menu_node</code><em class="property"> = 'node_confirm_register_action'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.next_menu_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.post_action_text">
+<code class="sig-name descname">post_action_text</code><em class="property"> = '{combatant} does nothing this turn.'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.post_action_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.use">
+<code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#CombatActionDoNothing.use"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing.use" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main activation of the action. This happens simultaneously to other actions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">EvAdventureCombatHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript</span></code></a></p>
+<p>This script is created when combat is initialized and stores a queue
+of all active participants.</p>
+<p>It’s also possible to join (or leave) the fray later.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.stunt_duration">
+<code class="sig-name descname">stunt_duration</code><em class="property"> = 3</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.stunt_duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.default_action_classes">
+<code class="sig-name descname">default_action_classes</code><em class="property"> = [&lt;class 'evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionAttack'&gt;, &lt;class 'evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionStunt'&gt;, &lt;class 'evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionSwapWieldedWeaponOrSpell'&gt;, &lt;class 'evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionUseItem'&gt;, &lt;class 'evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionFlee'&gt;, &lt;class 'evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionBlock'&gt;, &lt;class 'evennia.contrib.tutorials.evadventure.combat_turnbased.CombatActionDoNothing'&gt;]</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.default_action_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.combatants">
+<code class="sig-name descname">combatants</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.combatants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.combatant_actions">
+<code class="sig-name descname">combatant_actions</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.combatant_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.action_queue">
+<code class="sig-name descname">action_queue</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.action_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.turn_stats">
+<code class="sig-name descname">turn_stats</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.turn_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.turn">
+<code class="sig-name descname">turn</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.turn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.advantage_matrix">
+<code class="sig-name descname">advantage_matrix</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.advantage_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.disadvantage_matrix">
+<code class="sig-name descname">disadvantage_matrix</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.disadvantage_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.fleeing_combatants">
+<code class="sig-name descname">fleeing_combatants</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.fleeing_combatants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.defeated_combatants">
+<code class="sig-name descname">defeated_combatants</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.defeated_combatants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute property descriptor. Allows for specifying Attributes as Django-like ‘fields’
+on the class level. Note that while one can set a lock on the Attribute,
+there is no way to <em>check</em> said lock when accessing via the property - use
+the full AttributeHandler if you need to do access checks.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.at_script_creation">
+<code class="sig-name descname">at_script_creation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.at_script_creation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.at_script_creation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only called once, when script is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.at_repeat">
+<code class="sig-name descname">at_repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.at_repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.at_repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called every self.interval seconds. The main tick of the script.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.add_combatant">
+<code class="sig-name descname">add_combatant</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.add_combatant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.add_combatant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add combatant to battle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combatant</strong> (<em>Object</em>) – The combatant to add.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – Session to use.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This adds them to the internal list and initiates
+all possible actions. If the combatant as an Attribute list
+<strong>custom_combat_actions</strong> containing <strong>CombatAction</strong> items, this
+will injected and if the <strong>.key</strong> matches, will replace the
+default action classes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.remove_combatant">
+<code class="sig-name descname">remove_combatant</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.remove_combatant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.remove_combatant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove combatant from battle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combatant</strong> (<em>Object</em>) – The combatant to remove.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.start_combat">
+<code class="sig-name descname">start_combat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.start_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.start_combat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the combat timer and get everyone going.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.stop_combat">
+<code class="sig-name descname">stop_combat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.stop_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.stop_combat" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used to stop the combat immediately.</p>
+<p>It can also be called from external systems, for example by
+monster AI can do this when only allied players remain.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.get_enemy_targets">
+<code class="sig-name descname">get_enemy_targets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="n">excluded</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">all_combatants</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.get_enemy_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.get_enemy_targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all valid targets the given combatant can target for an attack. This does not apply for
+‘friendly’ targeting (like wanting to cast a heal on someone). We assume there are two types
+of combatants - PCs (player-controlled characters and NPCs (AI-controlled). Here, we assume
+npcs can never attack one another (or themselves)</p>
+<p>For PCs to be able to target each other, the <strong>allow_pvp</strong>
+Attribute flag must be set on the current <strong>Room</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combatant</strong> (<em>Object</em>) – The combatant looking for targets.</p></li>
+<li><p><strong>excluded</strong> (<em>list</em><em>, </em><em>optional</em>) – If given, these are not valid targets - this can be used to
+avoid friendly NPCs.</p></li>
+<li><p><strong>all_combatants</strong> (<em>list</em><em>, </em><em>optional</em>) – If given, use this list to get all combatants, instead
+of using <strong>self.combatants</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.get_friendly_targets">
+<code class="sig-name descname">get_friendly_targets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="n">extra</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">all_combatants</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.get_friendly_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.get_friendly_targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all ‘friendly’ or neutral targets a combatant may target, including
+themselves.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combatant</strong> (<em>Object</em>) – The combatant looking for targets.</p></li>
+<li><p><strong>extra</strong> (<em>list</em><em>, </em><em>optional</em>) – If given, these are additional targets that can be
+considered target for allied effects (could be used for a friendly NPC).</p></li>
+<li><p><strong>all_combatants</strong> (<em>list</em><em>, </em><em>optional</em>) – If given, use this list to get all combatants, instead
+of using <strong>self.combatants</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.get_combat_summary">
+<code class="sig-name descname">get_combat_summary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.get_combat_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.get_combat_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a summary of the current combat state from the perspective of a
+given combatant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combatant</strong> (<em>Object</em>) – The combatant to get the summary for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The summary.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>You (5/10 health)
+Foo (Hurt) [Running away - use ‘block’ to stop them!]
+Bar (Perfect health)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.msg">
+<code class="sig-name descname">msg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">combatant</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">broadcast</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Central place for sending messages to combatants. This allows
+for adding any combat-specific text-decoration in one place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>str</em>) – The message to send.</p></li>
+<li><p><strong>combatant</strong> (<em>Object</em>) – The ‘You’ in the message, if any.</p></li>
+<li><p><strong>broadcast</strong> (<em>bool</em>) – If <strong>False</strong>, <strong>combatant</strong> must be included and
+will be the only one to see the message. If <strong>True</strong>, send to
+everyone in the location.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <strong>combatant</strong> is given, use <strong>$You/you()</strong> markup to create
+a message that looks different depending on who sees it. Use
+<strong>$You(combatant_key)</strong> to refer to other combatants.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.gain_advantage">
+<code class="sig-name descname">gain_advantage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.gain_advantage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.gain_advantage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gain advantage against target. Spent by actions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.gain_disadvantage">
+<code class="sig-name descname">gain_disadvantage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.gain_disadvantage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.gain_disadvantage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gain disadvantage against target. Spent by actions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.flee">
+<code class="sig-name descname">flee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.flee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.flee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.unflee">
+<code class="sig-name descname">unflee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.unflee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.unflee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.register_action">
+<code class="sig-name descname">register_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="n">action_key</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.register_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.register_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register an action based on its <strong>.key</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combatant</strong> (<em>Object</em>) – The one performing the action.</p></li>
+<li><p><strong>action_key</strong> (<em>str</em>) – The action to perform, by its <strong>.key</strong>.</p></li>
+<li><p><strong>*args</strong> – Arguments to pass to <strong>action.use</strong>.</p></li>
+<li><p><strong>**kwargs</strong> – Kwargs to pass to <strong>action.use</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.get_available_actions">
+<code class="sig-name descname">get_available_actions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">combatant</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#EvAdventureCombatHandler.get_available_actions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.get_available_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get only the actions available to a combatant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combatant</strong> (<em>Object</em>) – The combatant to get actions for.</p></li>
+<li><p><strong>*args</strong> – Passed to <strong>action.can_use()</strong></p></li>
+<li><p><strong>**kwargs</strong> – Passed to <strong>action.can_use()</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>list</em> –</p>
+<dl class="simple">
+<dt>The initiated CombatAction instances available to the</dt><dd><p>combatant right now.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We could filter this by <strong>.can_use</strong> return already here, but then it would just
+be removed from the menu. Instead we return all and use <strong>.can_use</strong> in the menu
+so we can include the option but gray it out.</p>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'EvAdventureCombatHandler'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.EvAdventureCombatHandler.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.node_confirm_register_action">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">node_confirm_register_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#node_confirm_register_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.node_confirm_register_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node where one can confirm registering the action or change one’s mind.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_enemy_target">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">node_select_enemy_target</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#node_select_enemy_target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_enemy_target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu node allowing for selecting an enemy target among all combatants. This combines
+with all other actions.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_friendly_target">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">node_select_friendly_target</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#node_select_friendly_target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_friendly_target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu node for selecting a friendly target among combatants (including oneself).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_wield_from_inventory">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">node_select_wield_from_inventory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#node_select_wield_from_inventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_wield_from_inventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu node allowing for wielding item(s) from inventory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_use_item_from_inventory">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">node_select_use_item_from_inventory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#node_select_use_item_from_inventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_use_item_from_inventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu item allowing for using usable items (like potions) from inventory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_action">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">node_select_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#node_select_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.node_select_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu node for selecting a combat action.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.node_wait_turn">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">node_wait_turn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#node_wait_turn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.node_wait_turn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu node routed to waiting for the round to end (for everyone to choose their actions).</p>
+<p>All menu actions route back to the same node. The CombatHandler will handle moving everyone back
+to the <strong>node_select_action</strong> node when the next round starts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.node_wait_start">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">node_wait_start</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#node_wait_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.node_wait_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu node entered when waiting for the combat to start. New players joining an existing
+combat will end up here until the previous round is over, at which point the combat handler
+will goto everyone to <strong>node_select_action</strong>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.combat_turnbased.join_combat">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.combat_turnbased.</code><code class="sig-name descname">join_combat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">targets</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/combat_turnbased.html#join_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.combat_turnbased.join_combat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join or create a new combat involving caller and at least one target. The combat
+is started on the current room location - this means there can only be one combat
+in each room (this is not hardcoded in the combat per-se, but it makes sense for
+this implementation).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em>) – The one starting the combat.</p></li>
+<li><p><strong>*targets</strong> (<em>Objects</em>) – Any other targets to pull into combat. At least one target
+is required if <strong>combathandler</strong> is not given (a new combat must have at least
+one opponent!).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – A player session to use. This is useful for multisession modes.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>EvAdventureCombatHandler</em> – A created or existing combat handler.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.commands.html" title="evennia.contrib.tutorials.evadventure.commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.chargen.html" title="evennia.contrib.tutorials.evadventure.chargen"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" >evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.combat_turnbased</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

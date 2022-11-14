@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.utils.verb_conjugation.pronouns &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.utils.verb_conjugation.tests" href="evennia.utils.verb_conjugation.tests.html" />
+    <link rel="prev" title="evennia.utils.verb_conjugation.conjugate" href="evennia.utils.verb_conjugation.conjugate.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.verb_conjugation.tests.html" title="evennia.utils.verb_conjugation.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.verb_conjugation.conjugate.html" title="evennia.utils.verb_conjugation.conjugate"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" >evennia.utils</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.utils.verb_conjugation.html" accesskey="U">evennia.utils.verb_conjugation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.verb_conjugation.pronouns</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.utils.verb_conjugation.conjugate.html"
+                        title="previous chapter">evennia.utils.verb_conjugation.conjugate</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.utils.verb_conjugation.tests.html"
+                        title="next chapter">evennia.utils.verb_conjugation.tests</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.verb_conjugation.pronouns.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.utils.verb_conjugation.pronouns.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.utils.verb_conjugation.pronouns">
+<span id="evennia-utils-verb-conjugation-pronouns"></span><h1>evennia.utils.verb_conjugation.pronouns<a class="headerlink" href="#module-evennia.utils.verb_conjugation.pronouns" title="Permalink to this headline">¶</a></h1>
+<p>English pronoun mapping between 1st/2nd person and 3rd person perspective (and vice-versa).</p>
+<p>This file is released under the Evennia regular BSD License.
+(Griatch 2021) - revised by InspectorCaracal 2022</p>
+<p>Pronouns are words you use instead of a proper name, such as ‘him’, ‘herself’, ‘theirs’ etc. These
+look different depending on who sees the outgoing string. This mapping maps between 1st/2nd case and
+the 3rd person case and back. In some cases, the mapping is not unique; it is assumed the system can
+differentiate between the options in some other way.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 11%" />
+<col style="width: 12%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>viewpoint/pronouns</p></th>
+<th class="head"><p>Subject
+Pronoun</p></th>
+<th class="head"><p>Object
+Pronoun</p></th>
+<th class="head"><p>Possessive
+Adjective</p></th>
+<th class="head"><p>Possessive
+Pronoun</p></th>
+<th class="head"><p>Reflexive
+Pronoun</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1st person</p></td>
+<td><p>I</p></td>
+<td><p>me</p></td>
+<td><p>my</p></td>
+<td><p>mine</p></td>
+<td><p>myself</p></td>
+</tr>
+<tr class="row-odd"><td><p>1st person plural</p></td>
+<td><p>we</p></td>
+<td><p>us</p></td>
+<td><p>our</p></td>
+<td><p>ours</p></td>
+<td><p>ourselves</p></td>
+</tr>
+<tr class="row-even"><td><p>2nd person</p></td>
+<td><p>you</p></td>
+<td><p>you</p></td>
+<td><p>your</p></td>
+<td><p>yours</p></td>
+<td><p>yourself</p></td>
+</tr>
+<tr class="row-odd"><td><p>2nd person plural</p></td>
+<td><p>you</p></td>
+<td><p>you</p></td>
+<td><p>your</p></td>
+<td><p>yours</p></td>
+<td><p>yourselves</p></td>
+</tr>
+<tr class="row-even"><td><p>3rd person male</p></td>
+<td><p>he</p></td>
+<td><p>him</p></td>
+<td><p>his</p></td>
+<td><p>his</p></td>
+<td><p>himself</p></td>
+</tr>
+<tr class="row-odd"><td><p>3rd person female</p></td>
+<td><p>she</p></td>
+<td><p>her</p></td>
+<td><p>her</p></td>
+<td><p>hers</p></td>
+<td><p>herself</p></td>
+</tr>
+<tr class="row-even"><td><p>3rd person neutral</p></td>
+<td><p>it</p></td>
+<td><p>it</p></td>
+<td><p>its</p></td>
+<td><p>its</p></td>
+<td><p>itself</p></td>
+</tr>
+<tr class="row-odd"><td><p>3rd person plural</p></td>
+<td><p>they</p></td>
+<td><p>them</p></td>
+<td><p>their</p></td>
+<td><p>theirs</p></td>
+<td><p>themselves</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt id="evennia.utils.verb_conjugation.pronouns.pronoun_to_viewpoints">
+<code class="sig-prename descclassname">evennia.utils.verb_conjugation.pronouns.</code><code class="sig-name descname">pronoun_to_viewpoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pronoun</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pronoun_type</span><span class="o">=</span><span class="default_value">'subject pronoun'</span></em>, <em class="sig-param"><span class="n">gender</span><span class="o">=</span><span class="default_value">'neutral'</span></em>, <em class="sig-param"><span class="n">viewpoint</span><span class="o">=</span><span class="default_value">'2nd person'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/verb_conjugation/pronouns.html#pronoun_to_viewpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.utils.verb_conjugation.pronouns.pronoun_to_viewpoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access function for determining the forms of a pronount from different viewpoints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pronoun</strong> (<em>str</em>) – A valid English pronoun, such as ‘you’, ‘his’, ‘themselves’ etc.</p></li>
+<li><p><strong>options</strong> (<em>str</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – A list or space-separated string of options to help
+the engine when there is no unique mapping to use. This could for example
+be “2nd female” (alias ‘f’) or “possessive adjective” (alias ‘pa’ or ‘a’).</p></li>
+<li><p><strong>pronoun_type</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>An explicit object pronoun to separate cases where
+there is no unique mapping. Pronoun types defined in <strong>options</strong> take precedence.
+Values are</p>
+<ul>
+<li><p><strong>subject pronoun</strong>/<strong>subject</strong>/<strong>sp</strong> (I, you, he, they)</p></li>
+<li><p><strong>object pronoun</strong>/<strong>object/</strong>/<strong>op</strong>  (me, you, him, them)</p></li>
+<li><p><strong>possessive adjective</strong>/<strong>adjective</strong>/<strong>pa</strong> (my, your, his, their)</p></li>
+<li><p><strong>possessive pronoun</strong>/<strong>pronoun</strong>/<strong>pp</strong> (mine, yours, his, theirs)</p></li>
+</ul>
+</p></li>
+<li><p><strong>gender</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Specific gender to use (plural counts a gender for this purpose).
+A gender specified in <strong>options</strong> takes precedence. Values and aliases are:</p>
+<ul>
+<li><p><strong>male</strong>/<strong>m</strong></p></li>
+<li><p><strong>female</strong>/<strong>f</strong></p></li>
+<li><p><strong>neutral</strong>/<strong>n</strong></p></li>
+<li><p><strong>plural</strong>/<strong>p</strong></p></li>
+</ul>
+</p></li>
+<li><p><strong>viewpoint</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>A specified viewpoint of the one talking, to use
+when there is no unique mapping. A viewpoint given in <strong>options</strong> take
+precedence. Values and aliases are:</p>
+<ul>
+<li><p><strong>1st person</strong>/<strong>1st</strong>/<strong>1</strong></p></li>
+<li><p><strong>2nd person</strong>/<strong>2nd</strong>/<strong>2</strong></p></li>
+<li><p><strong>3rd person</strong>/<strong>3rd</strong>/<strong>3</strong></p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>tuple</em> – A tuple <strong>(1st/2nd_person_pronoun, 3rd_person_pronoun)</strong> to show to the one sending the
+string and others respectively. If pronoun is invalid, the word is returned verbatim.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The capitalization of the original word will be retained.</p>
+</div>
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.verb_conjugation.tests.html" title="evennia.utils.verb_conjugation.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.verb_conjugation.conjugate.html" title="evennia.utils.verb_conjugation.conjugate"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" >evennia.utils</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.utils.verb_conjugation.html" >evennia.utils.verb_conjugation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.verb_conjugation.pronouns</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

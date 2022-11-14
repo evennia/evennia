@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Evennia REST API &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Web Admin" href="Web-Admin.html" />
+    <link rel="prev" title="Game website" href="Website.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Web-Admin.html" title="The Web Admin"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Website.html" title="Game website"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia REST API</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Evennia REST API</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#customizing-the-api">Customizing the API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Website.html"
+                        title="previous chapter">Game website</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Web-Admin.html"
+                        title="next chapter">The Web Admin</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/Web-API.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Web-API.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-rest-api">
+<h1>Evennia REST API<a class="headerlink" href="#evennia-rest-api" title="Permalink to this headline">¶</a></h1>
+<p>Evennia makes its database accessible via a REST API found on
+<a class="reference external" href="http://localhost:4001/api">http://localhost:4001/api</a> if running locally with
+default setup. The API allows you to retrieve, edit and create resources from
+outside the game, for example with your own custom client or game editor.</p>
+<p>While you can view and learn about the api in the web browser, it is really
+meant to be accessed in code, by other programs.</p>
+<p>The API is using <a class="reference external" href="https://www.django-rest-framework.org/">Django Rest Framework</a>. This automates the process
+of setting up <em>views</em> (Python code) to process the result of web requests.
+The process of retrieving data is similar to that explained on the
+<a class="reference internal" href="Webserver.html"><span class="doc std std-doc">Webserver</span></a> page, except the views will here return <a class="reference external" href="https://en.wikipedia.org/wiki/JSON">JSON</a>
+data for the resource you want. You can also <em>send</em> such JSON data
+in order to update the database from the outside.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>To activate the API, add this to your settings file.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>REST_API_ENABLED = True
+</pre></div>
+</div>
+<p>The main controlling setting is <code class="docutils literal notranslate"><span class="pre">REST_FRAMEWORK</span></code>, which is a dict. The keys
+<code class="docutils literal notranslate"><span class="pre">DEFAULT_LIST_PERMISSION</span></code> and <code class="docutils literal notranslate"><span class="pre">DEFAULT_CREATE_PERMISSIONS</span></code> control who may
+view and create new objects via the api respectively. By default, users with
+<a class="reference internal" href="Permissions.html"><span class="doc std std-doc">‘Builder’-level permission</span></a> or higher may access both actions.</p>
+<p>While the api is meant to be expanded upon, Evennia supplies several operations
+out of the box. If you click the <code class="docutils literal notranslate"><span class="pre">Autodoc</span></code> button in the upper right of the <code class="docutils literal notranslate"><span class="pre">/api</span></code>
+website you’ll get a fancy graphical presentation of the available endpoints.</p>
+<p>Here is an example of calling the api in Python using the standard <code class="docutils literal notranslate"><span class="pre">requests</span></code> library.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; import requests
+&gt;&gt;&gt; response = requests.get(&quot;https://www.mygame.com/api&quot;, auth=(&quot;MyUsername&quot;, &quot;password123&quot;))
+&gt;&gt;&gt; response.json()
+{&#39;accounts&#39;: &#39;http://www.mygame.com/api/accounts/&#39;,
+ &#39;objects&#39;: &#39;http://www.mygame.com/api/objects/&#39;,
+&#39;characters&#39;: &#39;http://www.mygame.comg/api/characters/&#39;,
+&#39;exits&#39;: &#39;http://www.mygame.com/api/exits/&#39;,
+&#39;rooms&#39;: &#39;http://www.mygame.com/api/rooms/&#39;,
+&#39;scripts&#39;: &#39;http://www.mygame.com/api/scripts/&#39;
+&#39;helpentries&#39;: &#39;http://www.mygame.com/api/helpentries/&#39; }
+</pre></div>
+</div>
+<p>To list a specific type of object:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; response = requests.get(&quot;https://www.mygame.com/api/objects&quot;,
+                            auth=(&quot;Myusername&quot;, &quot;password123&quot;))
+&gt;&gt;&gt; response.json()
+{
+&quot;count&quot;: 125,
+&quot;next&quot;: &quot;https://www.mygame.com/api/objects/?limit=25&amp;offset=25&quot;,
+&quot;previous&quot;: null,
+&quot;results&quot; : [{&quot;db_key&quot;: &quot;A rusty longsword&quot;, &quot;id&quot;: 57, &quot;db_location&quot;: 213, ...}]}
+</pre></div>
+</div>
+<p>In the above example, it now displays the objects inside the “results” array,
+while it has a “count” value for the number of total objects, and “next” and
+“previous” links for the next and previous page, if any.  This is called
+<a class="reference external" href="https://www.django-rest-framework.org/api-guide/pagination/">pagination</a>, and the link displays “limit” and “offset” as query
+parameters that can be added to the url to control the output.</p>
+<p>Other query parameters can be defined as <a class="reference external" href="https://www.django-rest-framework.org/api-guide/filtering/#filtering">filters</a> which allow you to
+further narrow the results. For example, to only get accounts with developer
+permissions:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; response = requests.get(&quot;https://www.mygame.com/api/accounts/?permission=developer&quot;,
+                            auth=(&quot;MyUserName&quot;, &quot;password123&quot;))
+&gt;&gt;&gt; response.json()
+{
+&quot;count&quot;: 1,
+&quot;results&quot;: [{&quot;username&quot;: &quot;bob&quot;,...}]
+}
+</pre></div>
+</div>
+<p>Now suppose that you want to use the API to create an <a class="reference internal" href="Objects.html"><span class="doc std std-doc">Object</span></a>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; data = {&quot;db_key&quot;: &quot;A shiny sword&quot;}
+&gt;&gt;&gt; response = requests.post(&quot;https://www.mygame.com/api/objects&quot;,
+                             data=data, auth=(&quot;Anotherusername&quot;, &quot;mypassword&quot;))
+&gt;&gt;&gt; response.json()
+{&quot;db_key&quot;: &quot;A shiny sword&quot;, &quot;id&quot;: 214, &quot;db_location&quot;: None, ...}
+</pre></div>
+</div>
+<p>Here we made a HTTP POST request to the <code class="docutils literal notranslate"><span class="pre">/api/objects</span></code> endpoint with the <code class="docutils literal notranslate"><span class="pre">db_key</span></code>
+we wanted. We got back info for the newly created object. You can now make
+another request with PUT (replace everything) or PATCH (replace only what you
+provide). By providing the id to the endpoint (<code class="docutils literal notranslate"><span class="pre">/api/objects/214</span></code>),
+we make sure to update the right sword:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; data = {&quot;db_key&quot;: &quot;An even SHINIER sword&quot;, &quot;db_location&quot;: 50}
+&gt;&gt;&gt; response = requests.put(&quot;https://www.mygame.com/api/objects/214&quot;,
+                            data=data, auth=(&quot;Anotherusername&quot;, &quot;mypassword&quot;))
+&gt;&gt;&gt; response.json()
+{&quot;db_key&quot;: &quot;An even SHINIER sword&quot;, &quot;id&quot;: 214, &quot;db_location&quot;: 50, ...}
+</pre></div>
+</div>
+<p>In most cases, you won’t be making API requests to the backend with Python,
+but with Javascript from some frontend application.
+There are many Javascript libraries which are meant to make this process
+easier for requests from the frontend, such as <a class="reference external" href="https://github.com/axios/axios">AXIOS</a>, or using
+the native <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">Fetch</a>.</p>
+</section>
+<section id="customizing-the-api">
+<h2>Customizing the API<a class="headerlink" href="#customizing-the-api" title="Permalink to this headline">¶</a></h2>
+<p>Overall, reading up on <a class="reference external" href="https://www.django-rest-framework.org/api-guide/viewsets">Django Rest Framework ViewSets</a> and
+other parts of their documentation is required for expanding and
+customizing the API.</p>
+<p>Check out the <a class="reference internal" href="Website.html"><span class="doc std std-doc">Website</span></a> page for help on how to override code, templates
+and static files.</p>
+<ul class="simple">
+<li><p>API templates (for the web-display) is located in <code class="docutils literal notranslate"><span class="pre">evennia/web/api/templates/rest_framework/</span></code> (it must
+be named such to allow override of the original REST framework templates).</p></li>
+<li><p>Static files is in <code class="docutils literal notranslate"><span class="pre">evennia/web/api/static/rest_framework/</span></code></p></li>
+<li><p>The api code is located in <code class="docutils literal notranslate"><span class="pre">evennia/web/api/</span></code> - the <code class="docutils literal notranslate"><span class="pre">url.py</span></code> file here is responsible for
+collecting all view-classes.</p></li>
+</ul>
+<p>Contrary to other web components, there is no pre-made <a class="reference external" href="http://urls.py">urls.py</a> set up for
+<code class="docutils literal notranslate"><span class="pre">mygame/web/api/</span></code>. This is because the registration of models with the api is
+strongly integrated with the REST api functionality. Easiest is probably to
+copy over <code class="docutils literal notranslate"><span class="pre">evennia/web/api/urls.py</span></code> and modify it in place.</p>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Web-Admin.html" title="The Web Admin"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Website.html" title="Game website"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia REST API</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

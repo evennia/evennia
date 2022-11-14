@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.utils.idmapper.tests &#8212; Evennia 0.9.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.idmapper.tests</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.utils.idmapper.tests</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">SharedMemoryModel</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<div class="viewcode-block" id="Category"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.Category">[docs]</a><span class="k">class</span> <span class="nc">Category</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RegularCategory"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.RegularCategory">[docs]</a><span class="k">class</span> <span class="nc">RegularCategory</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Article"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.Article">[docs]</a><span class="k">class</span> <span class="nc">Article</span><span class="p">(</span><span class="n">SharedMemoryModel</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Category</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">category2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">RegularCategory</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RegularArticle"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.RegularArticle">[docs]</a><span class="k">class</span> <span class="nc">RegularArticle</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Category</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">category2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">RegularCategory</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SharedMemorysTest"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.SharedMemorysTest">[docs]</a><span class="k">class</span> <span class="nc">SharedMemorysTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="c1"># TODO: test for cross model relation (singleton to regular)</span>
+
+<div class="viewcode-block" id="SharedMemorysTest.setUp"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.SharedMemorysTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">Category</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Category </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
+        <span class="n">regcategory</span> <span class="o">=</span> <span class="n">RegularCategory</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Category </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
+
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+            <span class="n">Article</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Article </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">category2</span><span class="o">=</span><span class="n">regcategory</span>
+            <span class="p">)</span>
+            <span class="n">RegularArticle</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Article </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span> <span class="n">category2</span><span class="o">=</span><span class="n">regcategory</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SharedMemorysTest.testSharedMemoryReferences"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.SharedMemorysTest.testSharedMemoryReferences">[docs]</a>    <span class="k">def</span> <span class="nf">testSharedMemoryReferences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">article_list</span> <span class="o">=</span> <span class="n">Article</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
+        <span class="n">last_article</span> <span class="o">=</span> <span class="n">article_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">article_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">article</span><span class="o">.</span><span class="n">category</span> <span class="ow">is</span> <span class="n">last_article</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">last_article</span> <span class="o">=</span> <span class="n">article</span></div>
+
+<div class="viewcode-block" id="SharedMemorysTest.testRegularReferences"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.SharedMemorysTest.testRegularReferences">[docs]</a>    <span class="k">def</span> <span class="nf">testRegularReferences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">article_list</span> <span class="o">=</span> <span class="n">RegularArticle</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
+        <span class="n">last_article</span> <span class="o">=</span> <span class="n">article_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">article_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">article</span><span class="o">.</span><span class="n">category2</span> <span class="ow">is</span> <span class="n">last_article</span><span class="o">.</span><span class="n">category2</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="n">last_article</span> <span class="o">=</span> <span class="n">article</span></div>
+
+<div class="viewcode-block" id="SharedMemorysTest.testMixedReferences"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.SharedMemorysTest.testMixedReferences">[docs]</a>    <span class="k">def</span> <span class="nf">testMixedReferences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">article_list</span> <span class="o">=</span> <span class="n">RegularArticle</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
+        <span class="n">last_article</span> <span class="o">=</span> <span class="n">article_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">article_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">article</span><span class="o">.</span><span class="n">category</span> <span class="ow">is</span> <span class="n">last_article</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">last_article</span> <span class="o">=</span> <span class="n">article</span></div>
+
+        <span class="c1"># article_list = Article.objects.all().select_related(&#39;category&#39;)</span>
+        <span class="c1"># last_article = article_list[0]</span>
+        <span class="c1"># for article in article_list[1:]:</span>
+        <span class="c1">#    self.assertEquals(article.category2 is last_article.category2, False)</span>
+        <span class="c1">#    last_article = article</span>
+
+<div class="viewcode-block" id="SharedMemorysTest.testObjectDeletion"><a class="viewcode-back" href="../../../../api/evennia.utils.idmapper.tests.html#evennia.utils.idmapper.tests.SharedMemorysTest.testObjectDeletion">[docs]</a>    <span class="k">def</span> <span class="nf">testObjectDeletion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># This must execute first so its guaranteed to be in memory.</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">Article</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">))</span>
+
+        <span class="n">article</span> <span class="o">=</span> <span class="n">Article</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="n">article</span><span class="o">.</span><span class="n">pk</span>
+        <span class="n">article</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pk</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Article</span><span class="o">.</span><span class="n">__instance_cache__</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li><a href="http://webchat.freenode.net/?channels=evennia&uio=MT1mYWxzZSY5PXRydWUmMTE9MTk1JjEyPXRydWUbb">IRC</a> - 
+    <a href="https://discord.gg/NecFePw">Discord</a> - 
+      <a href="https://groups.google.com/forum/#%21forum/evennia">Forums</a>
+  </li>
+  <li><a href="http://evennia.blogspot.com/">Evennia Dev blog</a> </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="../../../../../1.0-dev/index.html">1.0-dev (develop branch)</a></li>
+  <li><a href="tests.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 0.9.5</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.idmapper.tests</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

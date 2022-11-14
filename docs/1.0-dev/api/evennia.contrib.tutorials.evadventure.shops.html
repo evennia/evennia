@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>evennia.contrib.tutorials.evadventure.shops &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.tutorials.evadventure.utils" href="evennia.contrib.tutorials.evadventure.utils.html" />
+    <link rel="prev" title="evennia.contrib.tutorials.evadventure.rules" href="evennia.contrib.tutorials.evadventure.rules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.utils.html" title="evennia.contrib.tutorials.evadventure.utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.rules.html" title="evennia.contrib.tutorials.evadventure.rules"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" accesskey="U">evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.shops</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.rules.html"
+                        title="previous chapter">evennia.contrib.tutorials.evadventure.rules</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evennia.contrib.tutorials.evadventure.utils.html"
+                        title="next chapter">evennia.contrib.tutorials.evadventure.utils</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tutorials.evadventure.shops.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="evennia.contrib.tutorials.evadventure.shops.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tutorials.evadventure.shops">
+<span id="evennia-contrib-tutorials-evadventure-shops"></span><h1>evennia.contrib.tutorials.evadventure.shops<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.shops" title="Permalink to this headline">¶</a></h1>
+<p>EvAdventure Shop system.</p>
+<p>A shop is run by an NPC. It can provide one or more of several possible services:</p>
+<ul class="simple">
+<li><p>Buy from a pre-set list of (possibly randomized) items. Cost is based on the item’s value,
+adjusted by how stingy the shopkeeper is. When bought this way, the item is
+generated on the fly and passed to the player character’s inventory. Inventory files are
+a list of prototypes, normally from a prototype-file. A random selection of items from each
+inventory file is available.</p></li>
+<li><p>Sell items to the shop for a certain percent of their value. One could imagine being able
+to buy back items again, but we will instead _destroy_ sold items, so as to remove them
+from circulation. In-game we can say it’s because the merchants collect the best stuff
+to sell to collectors in the big city later. Each merchant buys a certain subset of items
+based on their tags.</p></li>
+<li><p>Buy a service. For a cost, a certain action is performed for the character; this applies
+immediately when bought. The most notable services are healing and converting coin to XP.</p></li>
+<li><p>Buy rumors - this is echoed to the player for a price. Different merchants could have
+different rumors (or randomized ones).</p></li>
+<li><p>Quest - gain or hand in a quest for a merchant.</p></li>
+</ul>
+<p>All shops are menu-driven. One starts talking to the npc and will then end up in their shop
+interface.</p>
+<p>This is a series of menu nodes meant to be added as a mapping via
+<strong>EvAdventureShopKeeper.create(menudata={},…)</strong>.</p>
+<p>To make this pluggable, the shopkeeper start page will analyze the available nodes
+and auto-add options to all nodes in the three named <strong>node_start_*</strong>. The last part of the
+node name will be the name of the option capitalized, with underscores replaced by spaces, so
+<strong>node_start_sell_items</strong> will become a top-level option <strong>Sell items</strong>.</p>
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.shops.</code><code class="sig-name descname">BuyItem</code><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/shops.html#BuyItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Storage container for storing generic info about an item for sale. This means it can be used
+both for real objects and for prototypes without constantly having to track which is which.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.key">
+<code class="sig-name descname">key</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.desc">
+<code class="sig-name descname">desc</code><em class="property"> = ''</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.obj_type">
+<code class="sig-name descname">obj_type</code><em class="property"> = 'gear'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.obj_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.size">
+<code class="sig-name descname">size</code><em class="property"> = 1</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.value">
+<code class="sig-name descname">value</code><em class="property"> = 0</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.use_slot">
+<code class="sig-name descname">use_slot</code><em class="property"> = 'backpack'</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.use_slot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.uses">
+<code class="sig-name descname">uses</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.uses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.quality">
+<code class="sig-name descname">quality</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.quality" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.attack_type">
+<code class="sig-name descname">attack_type</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.attack_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.defense_type">
+<code class="sig-name descname">defense_type</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.defense_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.damage_roll">
+<code class="sig-name descname">damage_roll</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.damage_roll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.obj">
+<code class="sig-name descname">obj</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.prototype">
+<code class="sig-name descname">prototype</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.prototype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.create_from_obj">
+<em class="property">static </em><code class="sig-name descname">create_from_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">shopkeeper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/shops.html#BuyItem.create_from_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.create_from_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a new BuyItem container from a real db obj.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<a class="reference internal" href="evennia.contrib.tutorials.evadventure.objects.html#evennia.contrib.tutorials.evadventure.objects.EvAdventureObject" title="evennia.contrib.tutorials.evadventure.objects.EvAdventureObject"><em>EvAdventureObject</em></a>) – An object to analyze.</p></li>
+<li><p><strong>shopkeeper</strong> (<a class="reference internal" href="evennia.contrib.tutorials.evadventure.npcs.html#evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper" title="evennia.contrib.tutorials.evadventure.npcs.EvAdventureShopKeeper"><em>EvAdventureShopKeeper</em></a>) – The shopkeeper.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>BuyItem</em> – A general representation of the original data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.create_from_prototype">
+<em class="property">static </em><code class="sig-name descname">create_from_prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">prototype_or_key</span></em>, <em class="sig-param"><span class="n">shopkeeper</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/shops.html#BuyItem.create_from_prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.create_from_prototype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a new BuyItem container from a prototype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prototype</strong> (<em>dict</em><em> or </em><em>key</em>) – An Evennia prototype dict or the key of one
+registered with the system. This is assumed to be a full prototype,
+including having parsed and included parentage.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>BuyItem</em> – A general representation of the original data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.get_detail">
+<code class="sig-name descname">get_detail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/shops.html#BuyItem.get_detail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.get_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get more info when looking at the item.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.to_obj">
+<code class="sig-name descname">to_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/shops.html#BuyItem.to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.to_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this into an actual database object that we can trade. This either means
+using the stored <strong>.prototype</strong> to spawn a new instance of the object, or to
+use the <strong>.obj</strong> reference to get the already existing object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.shops.BuyItem.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.BuyItem.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.shops.node_confirm_buy">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.shops.</code><code class="sig-name descname">node_confirm_buy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/shops.html#node_confirm_buy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.node_confirm_buy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu node reached when a user selects an item in the buy menu. The <strong>item</strong> passed
+along in <strong>**kwargs</strong> is the selected item (see <strong>_select_ware_to_buy</strong>, where this is injected).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="evennia.contrib.tutorials.evadventure.shops.node_confirm_sell">
+<code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.shops.</code><code class="sig-name descname">node_confirm_sell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em>, <em class="sig-param"><span class="n">raw_string</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/shops.html#node_confirm_sell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.shops.node_confirm_sell" title="Permalink to this definition">¶</a></dt>
+<dd><p>In this node we confirm the sell by first investigating the item we are about to sell.</p>
+<p>We have <strong>item</strong> and <strong>value</strong> available in kwargs here, added by <strong>_select_ware_to_sell</strong> earler.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.utils.html" title="evennia.contrib.tutorials.evadventure.utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.evadventure.rules.html" title="evennia.contrib.tutorials.evadventure.rules"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.evadventure.html" >evennia.contrib.tutorials.evadventure</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.evadventure.shops</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

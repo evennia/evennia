@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.grid.wilderness.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.wilderness.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+  <li><a href="../../../../../../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.grid.wilderness.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test wilderness</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_object</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">wilderness</span>
+
+
+<div class="viewcode-block" id="TestWilderness"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness">[docs]</a><span class="k">class</span> <span class="nc">TestWilderness</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestWilderness.setUp"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;char1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;char2&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestWilderness.get_wilderness_script"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.get_wilderness_script">[docs]</a>    <span class="k">def</span> <span class="nf">get_wilderness_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">wilderness</span><span class="o">.</span><span class="n">WildernessScript</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">w</span></div>
+
+<div class="viewcode-block" id="TestWilderness.test_create_wilderness_default_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.test_create_wilderness_default_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_create_wilderness_default_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">create_wilderness</span><span class="p">()</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wilderness_script</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">w</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestWilderness.test_create_wilderness_custom_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.test_create_wilderness_custom_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_create_wilderness_custom_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;customname&quot;</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">create_wilderness</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wilderness_script</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">w</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestWilderness.test_enter_wilderness"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.test_enter_wilderness">[docs]</a>    <span class="k">def</span> <span class="nf">test_enter_wilderness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">create_wilderness</span><span class="p">()</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">enter_wilderness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">wilderness</span><span class="o">.</span><span class="n">WildernessRoom</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wilderness_script</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">],</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestWilderness.test_enter_wilderness_custom_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.test_enter_wilderness_custom_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">test_enter_wilderness_custom_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">create_wilderness</span><span class="p">()</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">enter_wilderness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">wilderness</span><span class="o">.</span><span class="n">WildernessRoom</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wilderness_script</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">itemcoordinates</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestWilderness.test_enter_wilderness_custom_name"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.test_enter_wilderness_custom_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_enter_wilderness_custom_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;customnname&quot;</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">create_wilderness</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">enter_wilderness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">wilderness</span><span class="o">.</span><span class="n">WildernessRoom</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestWilderness.test_wilderness_correct_exits"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.test_wilderness_correct_exits">[docs]</a>    <span class="k">def</span> <span class="nf">test_wilderness_correct_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">create_wilderness</span><span class="p">()</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">enter_wilderness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span>
+
+        <span class="c1"># By default we enter at a corner (0, 0), so only a few exits should</span>
+        <span class="c1"># be visible / traversable</span>
+        <span class="n">exits</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">destination</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">i</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">exits</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">exitsok</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;north&quot;</span><span class="p">,</span> <span class="s2">&quot;northeast&quot;</span><span class="p">,</span> <span class="s2">&quot;east&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">each_exit</span> <span class="ow">in</span> <span class="n">exitsok</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exits</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">each_exit</span><span class="p">]))</span>
+
+        <span class="c1"># If we move to another location not on an edge, then all directions</span>
+        <span class="c1"># should be visible / traversable</span>
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">enter_wilderness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="n">coordinates</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">exits</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">destination</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">i</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">exits</span><span class="p">),</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">exitsok</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;north&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;northeast&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;east&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;southeast&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;south&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;southwest&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;west&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;northwest&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">each_exit</span> <span class="ow">in</span> <span class="n">exitsok</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">any</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exits</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">each_exit</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="TestWilderness.test_room_creation"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.test_room_creation">[docs]</a>    <span class="k">def</span> <span class="nf">test_room_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Pretend that both char1 and char2 are connected...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">has_account</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">has_account</span><span class="p">)</span>
+
+        <span class="n">wilderness</span><span class="o">.</span><span class="n">create_wilderness</span><span class="p">()</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wilderness_script</span><span class="p">()</span>
+
+        <span class="c1"># We should have no unused room after moving the first account in.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">move_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># And also no unused room after moving the second one in.</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">move_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># But if char2 moves into char1&#39;s room, we should have one unused room</span>
+        <span class="c1"># Which should be char2&#39;s old room that got created.</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">move_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+
+        <span class="c1"># And if char2 moves back out, that unused room should be put back to</span>
+        <span class="c1"># use again.</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">move_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">unused_rooms</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestWilderness.test_get_new_coordinates"><a class="viewcode-back" href="../../../../../api/evennia.contrib.grid.wilderness.tests.html#evennia.contrib.grid.wilderness.tests.TestWilderness.test_get_new_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_new_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">directions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;northeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;southeast&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;southwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;northwest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">correct_loc</span><span class="p">)</span> <span class="ow">in</span> <span class="n">directions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># Not compatible with Python 3</span>
+            <span class="n">new_loc</span> <span class="o">=</span> <span class="n">wilderness</span><span class="o">.</span><span class="n">get_new_coordinates</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">new_loc</span><span class="p">,</span> <span class="n">correct_loc</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.wilderness.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
