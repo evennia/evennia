@@ -59,11 +59,15 @@ smv_outputdir_format = "{config.release}"
 # don't make docs for tags
 smv_tag_whitelist = r"^$"
 
-# used to fill in versioning.html links for versions that are not actually built
+# used to fill in versioning.html links for versions that are not actually built.
+# These are also read from the deploy.py script. These are also the names of
+# the folders built in the gh-pages evennia branch, under docs/.
+latest_version = "0.9.5"
 legacy_versions = ["0.9.5"]
 
 
 def add_legacy_versions_to_html_page_context(app, pagename, templatename, context, doctree):
+    # this is read by versioning.html template (sidebar)
     LVersion = namedtuple("legacy_version", ["release", "name", "url"])
     context["legacy_versions"] = [
         LVersion(release=f"{vers}", name=f"v{vers}", url=f"../{vers}/index.html")
