@@ -186,9 +186,16 @@ class RandomStringGenerator:
             regex (str): the regular expression.
 
         """
+        try:
+            # python 3.11
+            regex_parser = re._parser
+        except AttributeError:
+            # python <3.11
+            regex_parser = re.sre_parse
+
         self.total = 1
         self.elements = []
-        tree = re._parser.parse(regex).data  # note - sre_parse removed in py3.11
+        tree = regex_parser.parse(regex).data  # note - sre_parse removed in py3.11
         # `tree` contains a list of elements in the regular expression
         for element in tree:
             # `element` is also a list, the first element is a string
