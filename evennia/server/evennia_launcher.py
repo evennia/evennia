@@ -260,16 +260,10 @@ ERROR_DATABASE = """
 
 ERROR_WINDOWS_WIN32API = """
     ERROR: Unable to import win32api, which Twisted requires to run.
-    You may download it from:
+    You may download it with pip in your Python environment:
 
-    http://sourceforge.net/projects/pywin32/files/pywin32/
+    pip install --upgrade pywin32
 
-    If you are running in a virtual environment, browse to the
-    location of the latest win32api exe file for your computer and
-    Python version and copy the url to it; then paste it into a call
-    to easy_install:
-
-        easy_install http://<url to win32api exe>
     """
 
 INFO_WINDOWS_BATFILE = """
