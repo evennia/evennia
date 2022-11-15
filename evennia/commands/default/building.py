@@ -3460,7 +3460,7 @@ class CmdScripts(COMMAND_DEFAULT_CLASS):
 
             if not scripts:
                 scripts = ScriptDB.objects.filter(db_obj=obj).exclude(
-                    db_typeclass_paths__in=self.hide_script_paths
+                    db_typeclass_path__in=self.hide_script_paths
                 )
 
             if scripts.count() > 1:

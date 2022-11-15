@@ -95,7 +95,7 @@ PYTHON_MIN = None
 PYTHON_MAX_TESTED = None
 TWISTED_MIN = None
 DJANGO_MIN = None
-DJANGO_LT = None
+DJANGO_MAX_TESTED = None
 
 with open(os.path.join(EVENNIA_LIB, "VERSION_REQS.txt")) as fil:
     for line in fil.readlines():
@@ -110,8 +110,8 @@ with open(os.path.join(EVENNIA_LIB, "VERSION_REQS.txt")) as fil:
             TWISTED_MIN = value[0] if value else "0"
         elif key == "DJANGO_MIN":
             DJANGO_MIN = value[0] if value else "0"
-        elif key == "DJANGO_LT":
-            DJANGO_LT = value[0] if value else "100"
+        elif key == "DJANGO_MAX_TESTED":
+            DJANGO_MAX_TESTED = value[0] if value else "100"
 
 try:
     sys.path[1] = EVENNIA_ROOT
@@ -1307,12 +1307,12 @@ def check_main_evennia_dependencies():
         if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
             print(
                 ERROR_DJANGO_MIN.format(
-                    dversion=dversion_main, django_min=DJANGO_MIN, django_lt=DJANGO_LT
+                    dversion=dversion_main, django_min=DJANGO_MIN, django_lt=DJANGO_MAX_TESTED
                 )
             )
             error = True
-        elif LooseVersion(DJANGO_LT) <= LooseVersion(dversion_main):
-            print(NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_LT))
+        elif LooseVersion(DJANGO_MAX_TESTED) <= LooseVersion(dversion_main):
+            print(NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_MAX_TESTED))
     except ImportError:
         print(ERROR_NODJANGO)
         error = True

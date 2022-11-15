@@ -188,7 +188,7 @@ class RandomStringGenerator:
         """
         self.total = 1
         self.elements = []
-        tree = re.sre_parse.parse(regex).data
+        tree = re._parser.parse(regex).data  # note - sre_parse removed in py3.11
         # `tree` contains a list of elements in the regular expression
         for element in tree:
             # `element` is also a list, the first element is a string
