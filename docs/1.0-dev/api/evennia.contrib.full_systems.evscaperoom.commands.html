@@ -91,8 +91,9 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.full_systems.evscaperoom.commands.html">1.0-dev (develop branch)</a></li>
-   <ul>
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
 </ul>
 
         </div>
@@ -210,7 +211,7 @@ the operation will be general or on the room.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['quit', 'abort', 'chicken out', 'q']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['q', 'abort', 'quit', 'chicken out']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -234,7 +235,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'quit abort chicken out q', 'category': 'evscaperoom', 'key': 'give up', 'no_prefix': ' quit abort chicken out q', 'tags': '', 'text': '\n    Give up\n\n    Usage:\n      give up\n\n    Abandons your attempts at escaping and of ever winning the pie-eating contest.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'q abort quit chicken out', 'category': 'evscaperoom', 'key': 'give up', 'no_prefix': ' q abort quit chicken out', 'tags': '', 'text': '\n    Give up\n\n    Usage:\n      give up\n\n    Abandons your attempts at escaping and of ever winning the pie-eating contest.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdGiveUp.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -370,7 +371,7 @@ shout</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = [';', 'shout', 'whisper']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['whisper', 'shout', ';']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -399,7 +400,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '; shout whisper', 'category': 'general', 'key': 'say', 'no_prefix': ' ; shout whisper', 'tags': '', 'text': '\n    Perform an communication action.\n\n    Usage:\n      say &lt;text&gt;\n      whisper\n      shout\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'whisper shout ;', 'category': 'general', 'key': 'say', 'no_prefix': ' whisper shout ;', 'tags': '', 'text': '\n    Perform an communication action.\n\n    Usage:\n      say &lt;text&gt;\n      whisper\n      shout\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdSpeak.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -427,7 +428,7 @@ emote /me points to /box and /lever.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['pose', ':']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = [':', 'pose']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -466,7 +467,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'pose :', 'category': 'general', 'key': 'emote', 'no_prefix': ' pose :', 'tags': '', 'text': '\n    Perform a free-form emote. Use /me to\n    include yourself in the emote and /name\n    to include other objects or characters.\n    Use &quot;...&quot; to enact speech.\n\n    Usage:\n        emote &lt;emote&gt;\n        :&lt;emote\n\n    Example:\n        emote /me smiles at /peter\n        emote /me points to /box and /lever.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': ': pose', 'category': 'general', 'key': 'emote', 'no_prefix': ' : pose', 'tags': '', 'text': '\n    Perform a free-form emote. Use /me to\n    include yourself in the emote and /name\n    to include other objects or characters.\n    Use &quot;...&quot; to enact speech.\n\n    Usage:\n        emote &lt;emote&gt;\n        :&lt;emote\n\n    Example:\n        emote /me smiles at /peter\n        emote /me points to /box and /lever.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdEmote.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -489,7 +490,7 @@ looks and what actions is available.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['unfocus', 'e', 'ex', 'examine']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['e', 'unfocus', 'ex', 'examine']</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -518,7 +519,7 @@ set in self.parse())</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'unfocus e ex examine', 'category': 'evscaperoom', 'key': 'focus', 'no_prefix': ' unfocus e ex examine', 'tags': '', 'text': '\n    Focus your attention on a target.\n\n    Usage:\n      focus &lt;obj&gt;\n\n    Once focusing on an object, use look to get more information about how it\n    looks and what actions is available.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'e unfocus ex examine', 'category': 'evscaperoom', 'key': 'focus', 'no_prefix': ' e unfocus ex examine', 'tags': '', 'text': '\n    Focus your attention on a target.\n\n    Usage:\n      focus &lt;obj&gt;\n\n    Once focusing on an object, use look to get more information about how it\n    looks and what actions is available.\n\n    '}</em><a class="headerlink" href="#evennia.contrib.full_systems.evscaperoom.commands.CmdFocus.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

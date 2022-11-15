@@ -101,8 +101,9 @@
 <h3>Versions</h3>
 <ul>
   <li><a href="evennia.contrib.rpg.dice.dice.html">1.0-dev (develop branch)</a></li>
-   <ul>
-    <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
 </ul>
 
         </div>
@@ -304,7 +305,7 @@ everyone but the person rolling.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.dice.dice.CmdDice.aliases">
-<code class="sig-name descname">aliases</code><em class="property"> = ['roll', '&#64;dice']</em><a class="headerlink" href="#evennia.contrib.rpg.dice.dice.CmdDice.aliases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">aliases</code><em class="property"> = ['&#64;dice', 'roll']</em><a class="headerlink" href="#evennia.contrib.rpg.dice.dice.CmdDice.aliases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -330,7 +331,7 @@ everyone but the person rolling.</p>
 
 <dl class="py attribute">
 <dt id="evennia.contrib.rpg.dice.dice.CmdDice.search_index_entry">
-<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': 'roll &#64;dice', 'category': 'general', 'key': 'dice', 'no_prefix': ' roll dice', 'tags': '', 'text': &quot;\n    roll dice\n\n    Usage:\n      dice[/switch] &lt;nr&gt;d&lt;sides&gt; [modifier] [success condition]\n\n    Switch:\n      hidden - tell the room the roll is being done, but don't show the result\n      secret - don't inform the room about neither roll nor result\n\n    Examples:\n      dice 3d6 + 4\n      dice 1d100 - 2 &lt; 50\n\n    This will roll the given number of dice with given sides and modifiers.\n    So e.g. 2d6 + 3 means to 'roll a 6-sided die 2 times and add the result,\n    then add 3 to the total'.\n    Accepted modifiers are +, -, * and /.\n    A success condition is given as normal Python conditionals\n    (&lt;,&gt;,&lt;=,&gt;=,==,!=). So e.g. 2d6 + 3 &gt; 10 means that the roll will succeed\n    only if the final result is above 8. If a success condition is given, the\n    outcome (pass/fail) will be echoed along with how much it succeeded/failed\n    with. The hidden/secret switches will hide all or parts of the roll from\n    everyone but the person rolling.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.rpg.dice.dice.CmdDice.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '&#64;dice roll', 'category': 'general', 'key': 'dice', 'no_prefix': ' dice roll', 'tags': '', 'text': &quot;\n    roll dice\n\n    Usage:\n      dice[/switch] &lt;nr&gt;d&lt;sides&gt; [modifier] [success condition]\n\n    Switch:\n      hidden - tell the room the roll is being done, but don't show the result\n      secret - don't inform the room about neither roll nor result\n\n    Examples:\n      dice 3d6 + 4\n      dice 1d100 - 2 &lt; 50\n\n    This will roll the given number of dice with given sides and modifiers.\n    So e.g. 2d6 + 3 means to 'roll a 6-sided die 2 times and add the result,\n    then add 3 to the total'.\n    Accepted modifiers are +, -, * and /.\n    A success condition is given as normal Python conditionals\n    (&lt;,&gt;,&lt;=,&gt;=,==,!=). So e.g. 2d6 + 3 &gt; 10 means that the roll will succeed\n    only if the final result is above 8. If a success condition is given, the\n    outcome (pass/fail) will be echoed along with how much it succeeded/failed\n    with. The hidden/secret switches will hide all or parts of the roll from\n    everyone but the person rolling.\n    &quot;}</em><a class="headerlink" href="#evennia.contrib.rpg.dice.dice.CmdDice.search_index_entry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
