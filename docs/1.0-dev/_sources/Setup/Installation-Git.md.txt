@@ -19,11 +19,11 @@ the 0.9.5 version. To install 1.0-dev, you need to add a step `git checkout deve
 3 and 4 below.
 ```
 
-1. Install Python, GIT and python-virtualenv. Start a Console/Terminal.
+1. Install Python and GIT. Start a Console/Terminal.
 2. `cd` to some place you want to do your development (like a folder
    `/home/anna/muddev/` on Linux or a folder in your personal user directory on Windows).
 3. `git clone https://github.com/evennia/evennia.git`  (a new folder `evennia` is created)
-4. `python3.10 -m venv evenv`  (a new folder `evenv` is created)
+4. `python3.11 -m venv evenv`  (a new folder `evenv` is created)
 5. `source evenv/bin/activate` (Linux, Mac), `evenv\Scripts\activate` (Windows)
 6. `pip install -e evennia`
 7. `evennia --init mygame`
@@ -42,7 +42,7 @@ install the requirements:
 
 ```
 sudo apt-get update
-sudo apt-get install python3.10 python3.10-venv python3.10-dev gcc
+sudo apt-get install python3.11 python3.11-venv python3.11-dev gcc
 ```
 You should make sure to *not* be `root` after this step, running as `root` is a
 security risk. Now create a folder where you want to do all your Evennia

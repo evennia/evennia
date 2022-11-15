@@ -266,7 +266,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">tree</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sre_parse</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># note - sre_parse removed in py3.11</span>
         <span class="c1"># `tree` contains a list of elements in the regular expression</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
             <span class="c1"># `element` is also a list, the first element is a string</span>

@@ -93,7 +93,6 @@
 
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">django.db.utils</span> <span class="kn">import</span> <span class="n">OperationalError</span><span class="p">,</span> <span class="n">ProgrammingError</span>
-
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">callables_from_module</span><span class="p">,</span> <span class="n">class_from_module</span>
 
@@ -304,6 +303,13 @@
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scripts</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">typeclass_storage</span><span class="p">:</span>
+                    <span class="c1"># this means we are trying to load in a loop</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Trying to access `GLOBAL_SCRIPTS.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">` before scripts have finished &quot;</span>
+                        <span class="s2">&quot;initializing. This can happen if accessing GLOBAL_SCRIPTS from the same &quot;</span>
+                        <span class="s2">&quot;module the script is defined in.&quot;</span>
+                    <span class="p">)</span>
                 <span class="c1"># recreate if we have the info</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_script</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">or</span> <span class="n">default</span>
             <span class="k">return</span> <span class="n">default</span>

@@ -173,7 +173,7 @@
 <span class="n">PYTHON_MAX_TESTED</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">TWISTED_MIN</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">DJANGO_MIN</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">DJANGO_LT</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">DJANGO_MAX_TESTED</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">EVENNIA_LIB</span><span class="p">,</span> <span class="s2">&quot;VERSION_REQS.txt&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fil</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
@@ -188,8 +188,8 @@
             <span class="n">TWISTED_MIN</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
         <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;DJANGO_MIN&quot;</span><span class="p">:</span>
             <span class="n">DJANGO_MIN</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span>
-        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;DJANGO_LT&quot;</span><span class="p">:</span>
-            <span class="n">DJANGO_LT</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;100&quot;</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;DJANGO_MAX_TESTED&quot;</span><span class="p">:</span>
+            <span class="n">DJANGO_MAX_TESTED</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s2">&quot;100&quot;</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">EVENNIA_ROOT</span>
@@ -1385,12 +1385,12 @@
         <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">dversion</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">DJANGO_MIN</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span>
                 <span class="n">ERROR_DJANGO_MIN</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">dversion</span><span class="o">=</span><span class="n">dversion_main</span><span class="p">,</span> <span class="n">django_min</span><span class="o">=</span><span class="n">DJANGO_MIN</span><span class="p">,</span> <span class="n">django_lt</span><span class="o">=</span><span class="n">DJANGO_LT</span>
+                    <span class="n">dversion</span><span class="o">=</span><span class="n">dversion_main</span><span class="p">,</span> <span class="n">django_min</span><span class="o">=</span><span class="n">DJANGO_MIN</span><span class="p">,</span> <span class="n">django_lt</span><span class="o">=</span><span class="n">DJANGO_MAX_TESTED</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">DJANGO_LT</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">dversion_main</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">NOTE_DJANGO_NEW</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dversion</span><span class="o">=</span><span class="n">dversion_main</span><span class="p">,</span> <span class="n">django_rec</span><span class="o">=</span><span class="n">DJANGO_LT</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">DJANGO_MAX_TESTED</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">dversion_main</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">NOTE_DJANGO_NEW</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dversion</span><span class="o">=</span><span class="n">dversion_main</span><span class="p">,</span> <span class="n">django_rec</span><span class="o">=</span><span class="n">DJANGO_MAX_TESTED</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_NODJANGO</span><span class="p">)</span>
         <span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
