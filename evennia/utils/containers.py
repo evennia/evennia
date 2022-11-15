@@ -15,7 +15,6 @@ from pickle import dumps
 
 from django.conf import settings
 from django.db.utils import OperationalError, ProgrammingError
-
 from evennia.utils import logger
 from evennia.utils.utils import callables_from_module, class_from_module
 
@@ -226,6 +225,13 @@ class GlobalScriptContainer(Container):
         res = self._get_scripts(key)
         if not res:
             if key in self.loaded_data:
+                if key not in self.typeclass_storage:
+                    # this means we are trying to load in a loop
+                    raise RuntimeError(
+                        f"Trying to access `GLOBAL_SCRIPTS.{key}` before scripts have finished "
+                        "initializing. This can happen if accessing GLOBAL_SCRIPTS from the same "
+                        "module the script is defined in."
+                    )
                 # recreate if we have the info
                 return self._load_script(key) or default
             return default
