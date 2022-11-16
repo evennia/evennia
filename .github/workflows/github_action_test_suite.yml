@@ -85,7 +85,7 @@ jobs:
     # get logs from db start
     - name: Database container logs
       if: matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql'
-      uses: jwalton/gh-docker-logs@v1.0.0
+      uses: jwalton/gh-docker-logs@v2
 
     - name: Check running containers
       if: matrix.TESTING_DB == 'postgresql' || matrix.TESTING_DB == 'mysql'
