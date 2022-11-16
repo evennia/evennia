@@ -145,6 +145,7 @@ jobs:
       run: |
         evennia test \
           --settings=settings \
+          --keepdb \
           --parallel 4 \
           --timing \
           evennia
