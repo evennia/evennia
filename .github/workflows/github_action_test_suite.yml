@@ -29,7 +29,7 @@ jobs:
       uses: harmon758/postgresql-action@v1
       if: ${{ matrix.TESTING_DB == 'postgresql' }}
       with:
-        postgresql version: '10.7'
+        postgresql version: '11'
         postgresql db: 'evennia'
         postgresql user: 'evennia'
         postgresql password: 'password'
