@@ -2,7 +2,7 @@
 
 # general
 attrs >= 19.2.0
-django >= 4.0.2, < 4.1
+django >= 4.1.3, < 4.2
 twisted >= 21.7.0, < 22.0.0
 pytz
 djangorestframework >= 3.13.1, < 3.14

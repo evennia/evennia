@@ -371,18 +371,18 @@ ERROR_LOGDIR_MISSING = """
     """
 
 ERROR_PYTHON_VERSION = """
-    ERROR: Python {pversion} used. Evennia requires version
+    ERROR: Python {python_version} used. Evennia requires version
     {python_min} or higher.
     """
 
 WARNING_PYTHON_MAX_TESTED_VERSION = """
-    WARNING: Python {pversion} used. Evennia is only tested with Python
+    WARNING: Python {python_version} used. Evennia is only tested with Python
     versions {python_min} to {python_max_tested}. If you see unexpected errors, try
     reinstalling with a tested Python version instead.
     """
 
 ERROR_TWISTED_VERSION = """
-    ERROR: Twisted {tversion} found. Evennia requires
+    ERROR: Twisted {twisted_version} found. Evennia requires
     version {twisted_min} or higher.
     """
 
@@ -391,8 +391,8 @@ ERROR_NOTWISTED = """
     """
 
 ERROR_DJANGO_MIN = """
-    ERROR: Django {dversion} found. Evennia requires at least version {django_min} (but
-    below version {django_lt}).
+    ERROR: Django {django_version} found. Evennia supports Django
+    {django_min} - {django_max_tested}. Using an older version is not supported.
 
     If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where
     `evennia` is the folder to where you cloned the Evennia library. If not
@@ -404,8 +404,8 @@ ERROR_DJANGO_MIN = """
     """
 
 NOTE_DJANGO_NEW = """
-    NOTE: Django {dversion} found. This is newer than Evennia's
-    recommended version ({django_rec}). It might work, but is new
+    NOTE: Django {django_version} found. This is newer than Evennia's
+    recommended version ({django_max_tested}). It might work, but is new
     enough to not be fully tested yet. Report any issues.
     """
 
@@ -1274,53 +1274,85 @@ def check_main_evennia_dependencies():
         not_error (bool): True if no dependency error was found.
 
     """
-    error = False
 
-    # Python
-    pversion = ".".join(str(num) for num in sys.version_info if isinstance(num, int))
-    if LooseVersion(pversion) < LooseVersion(PYTHON_MIN):
-        print(ERROR_PYTHON_VERSION.format(pversion=pversion, python_min=PYTHON_MIN))
-        error = True
-    if LooseVersion(pversion) > LooseVersion(PYTHON_MAX_TESTED):
-        print(
-            WARNING_PYTHON_MAX_TESTED_VERSION.format(
-                pversion=pversion, python_min=PYTHON_MIN, python_max_tested=PYTHON_MAX_TESTED
-            )
-        )
+    def _test_python_version():
+        """Test Python version"""
+        python_version = ".".join(str(num) for num in sys.version_info if isinstance(num, int))
+        python_curr = LooseVersion(python_version)
+        python_min = LooseVersion(PYTHON_MIN)
+        python_max = LooseVersion(PYTHON_MAX_TESTED)
 
-    # Twisted
-    try:
-        import twisted
-
-        tversion = twisted.version.short()
-        if LooseVersion(tversion) < LooseVersion(TWISTED_MIN):
-            print(ERROR_TWISTED_VERSION.format(tversion=tversion, twisted_min=TWISTED_MIN))
-            error = True
-    except ImportError:
-        print(ERROR_NOTWISTED)
-        error = True
-    # Django
-    try:
-        dversion = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
-        # only the main version (1.5, not 1.5.4.0)
-        dversion_main = ".".join(dversion.split(".")[:2])
-        if LooseVersion(dversion) < LooseVersion(DJANGO_MIN):
+        if python_curr < python_min:
+            print(ERROR_PYTHON_VERSION.format(python_version=python_version, python_min=PYTHON_MIN))
+            return False
+        elif python_curr > python_max:
             print(
-                ERROR_DJANGO_MIN.format(
-                    dversion=dversion_main, django_min=DJANGO_MIN, django_lt=DJANGO_MAX_TESTED
+                WARNING_PYTHON_MAX_TESTED_VERSION.format(
+                    python_version=python_version,
+                    python_min=PYTHON_MIN,
+                    python_max_tested=PYTHON_MAX_TESTED,
                 )
             )
-            error = True
-        elif LooseVersion(DJANGO_MAX_TESTED) <= LooseVersion(dversion_main):
-            print(NOTE_DJANGO_NEW.format(dversion=dversion_main, django_rec=DJANGO_MAX_TESTED))
-    except ImportError:
-        print(ERROR_NODJANGO)
-        error = True
-    if error:
-        sys.exit()
+        return True
+
+    def _test_twisted_version():
+        """Test Twisted version"""
+        try:
+            import twisted
+        except ImportError:
+            print(ERROR_NOTWISTED)
+            return False
+        else:
+            twisted_version = twisted.version.short()
+            twisted_curr = LooseVersion(twisted_version)
+            twisted_min = LooseVersion(TWISTED_MIN)
+
+            if twisted_curr < twisted_min:
+                print(
+                    ERROR_TWISTED_VERSION.format(
+                        twisted_version=twisted_version, twisted_min=TWISTED_MIN
+                    )
+                )
+                return False
+            else:
+                return True
+
+    def _test_django_version():
+        """Test Django version"""
+        try:
+            import django
+        except ImportError:
+            print(ERROR_NODJANGO)
+            return False
+        else:
+            django_version = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
+            # only the main version (1.5, not 1.5.4.0)
+            django_version = ".".join(django_version.split(".")[:2])
+            django_curr = LooseVersion(django_version)
+            django_min = LooseVersion(DJANGO_MIN)
+            django_max = LooseVersion(DJANGO_MAX_TESTED)
+
+            print(django_version, django_curr, django_max, DJANGO_MAX_TESTED)
+
+            if django_curr < django_min:
+                print(
+                    ERROR_DJANGO_MIN.format(
+                        django_version=django_version,
+                        django_min=DJANGO_MIN,
+                        django_max_tested=DJANGO_MAX_TESTED,
+                    )
+                )
+                return False
+            elif django_curr > django_max:
+                print(
+                    NOTE_DJANGO_NEW.format(
+                        django_version=django_version, django_max_tested=DJANGO_MAX_TESTED
+                    )
+                )
+            return True
 
     # return True/False if error was reported or not
-    return not error
+    return all((_test_python_version(), _test_twisted_version(), _test_django_version()))
 
 
 def set_gamedir(path):
