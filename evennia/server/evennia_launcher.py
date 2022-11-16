@@ -1332,8 +1332,6 @@ def check_main_evennia_dependencies():
             django_min = LooseVersion(DJANGO_MIN)
             django_max = LooseVersion(DJANGO_MAX_TESTED)
 
-            print(django_version, django_curr, django_max, DJANGO_MAX_TESTED)
-
             if django_curr < django_min:
                 print(
                     ERROR_DJANGO_MIN.format(
