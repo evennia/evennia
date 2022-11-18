@@ -477,7 +477,7 @@ class TestDefaultCallables(TestCase):
             ("male", "Char1 smiles at himself"),
             ("female", "Char1 smiles at herself"),
             ("neutral", "Char1 smiles at itself"),
-            ("plural", "Char1 smiles at itself"),
+            ("plural", "Char1 smiles at themselves"),
         ]
     )
     def test_pronoun_gender(self, gender, expected):
