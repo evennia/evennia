@@ -275,7 +275,7 @@ class TestPronounMapping(TestCase):
 
     @parameterized.expand(
         [
-            ("you", "you", "it"), # default 3rd is "neutral"
+            ("you", "you", "it"),  # default 3rd is "neutral"
             ("I", "I", "it"),
             ("Me", "Me", "It"),
             ("ours", "ours", "theirs"),
@@ -289,16 +289,12 @@ class TestPronounMapping(TestCase):
             ("themselves", "yourselves", "themselves"),
         ]
     )
-    def test_default_mapping(
-        self, pronoun, expected_1st_or_2nd_person, expected_3rd_person
-    ):
+    def test_default_mapping(self, pronoun, expected_1st_or_2nd_person, expected_3rd_person):
         """
         Test the pronoun mapper.
 
         """
-        received_1st_or_2nd_person, received_3rd_person = pronouns.pronoun_to_viewpoints(
-            pronoun
-        )
+        received_1st_or_2nd_person, received_3rd_person = pronouns.pronoun_to_viewpoints(pronoun)
 
         self.assertEqual(expected_1st_or_2nd_person, received_1st_or_2nd_person)
         self.assertEqual(expected_3rd_person, received_3rd_person)
@@ -315,8 +311,8 @@ class TestPronounMapping(TestCase):
             ("yourself", "f", "yourself", "herself"),
             ("yourselves", "", "yourselves", "themselves"),
             ("he", "1", "I", "he"),
-            ("he", "1 p", "we", "he"), # royal we
-            ("we", "m", "we", "he"), # royal we, other way
+            ("he", "1 p", "we", "he"),  # royal we
+            ("we", "m", "we", "he"),  # royal we, other way
             ("her", "p", "you", "her"),
             ("her", "pa", "your", "her"),
             ("their", "ma", "your", "their"),

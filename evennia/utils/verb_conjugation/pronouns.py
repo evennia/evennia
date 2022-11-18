@@ -59,10 +59,7 @@ PRONOUN_MAPPING = {
             "neutral": "mine",
             "plural": "ours",
         },
-        "reflexive pronoun": {
-            "neutral": "myself",
-            "plural": "ourselves"
-        }
+        "reflexive pronoun": {"neutral": "myself", "plural": "ourselves"},
     },
     "2nd person": {
         "subject pronoun": {
@@ -80,26 +77,16 @@ PRONOUN_MAPPING = {
         "reflexive pronoun": {
             "neutral": "yourself",
             "plural": "yourselves",
-        }
+        },
     },
     "3rd person": {
-        "subject pronoun": {
-            "male": "he",
-            "female": "she",
-            "neutral": "it",
-            "plural": "they"
-        },
-        "object pronoun": {
-            "male": "him",
-            "female": "her",
-            "neutral": "it",
-            "plural": "them"
-        },
+        "subject pronoun": {"male": "he", "female": "she", "neutral": "it", "plural": "they"},
+        "object pronoun": {"male": "him", "female": "her", "neutral": "it", "plural": "them"},
         "possessive adjective": {
             "male": "his",
             "female": "her",
             "neutral": "its",
-            "plural": "their"
+            "plural": "their",
         },
         "possessive pronoun": {
             "male": "his",
@@ -113,166 +100,61 @@ PRONOUN_MAPPING = {
             "neutral": "itself",
             "plural": "themselves",
         },
-    }
+    },
 }
 
 PRONOUN_TABLE = {
-    "I": (
-            "1st person",
-            ("neutral", "male", "female", "plural"),
-            "subject pronoun"
-        ),
-    "me": (
-            "1st person",
-            ("neutral", "male", "female", "plural"),
-            "object pronoun"
-        ),
-    "my": (
-            "1st person",
-            ("neutral", "male", "female", "plural"),
-            "possessive adjective"
-        ),
-    "mine": (
-            "1st person",
-            ("neutral", "male", "female", "plural"),
-            "possessive pronoun"
-        ),
-    "myself": (
-            "1st person",
-            ("neutral", "male", "female", "plural"),
-            "reflexive pronoun"
-        ),
-
-    "we": (
-            "1st person",
-            "plural",
-            "subject pronoun"
-        ),
-    "us": (
-            "1st person",
-            "plural",
-            "object pronoun"
-        ),
-    "our": (
-            "1st person",
-            "plural",
-            "possessive adjective"
-        ),
-    "ours": (
-            "1st person",
-            "plural",
-            "possessive pronoun"
-        ),
-    "ourselves": (
-            "1st person",
-            "plural",
-            "reflexive pronoun"
-        ),
+    "I": ("1st person", ("neutral", "male", "female", "plural"), "subject pronoun"),
+    "me": ("1st person", ("neutral", "male", "female", "plural"), "object pronoun"),
+    "my": ("1st person", ("neutral", "male", "female", "plural"), "possessive adjective"),
+    "mine": ("1st person", ("neutral", "male", "female", "plural"), "possessive pronoun"),
+    "myself": ("1st person", ("neutral", "male", "female", "plural"), "reflexive pronoun"),
+    "we": ("1st person", "plural", "subject pronoun"),
+    "us": ("1st person", "plural", "object pronoun"),
+    "our": ("1st person", "plural", "possessive adjective"),
+    "ours": ("1st person", "plural", "possessive pronoun"),
+    "ourselves": ("1st person", "plural", "reflexive pronoun"),
     "you": (
-            "2nd person",
-            ("neutral", "male", "female", "plural"),
-            ("subject pronoun", "object pronoun")
-        ),
-    "your": (
-            "2nd person",
-            ("neutral", "male", "female", "plural"),
-            "possessive adjective"
-        ),
-    "yours": (
-            "2nd person",
-            ("neutral", "male", "female", "plural"),
-            "possessive pronoun"
-        ),
-    "yourself": (
-            "2nd person",
-            ("neutral", "male", "female"),
-            "reflexive pronoun"
-        ),
-    "yourselves": (
-            "2nd person",
-            "plural",
-            "reflexive pronoun"
-        ),
-    "he": (
-            "3rd person",
-            "male",
-            "subject pronoun"
-        ),
-    "him": (
-            "3rd person",
-            "male",
-            "object pronoun"
-        ),
-    "his":(
-            "3rd person",
-            "male",
-            ("possessive pronoun","possessive adjective"),
-        ),
-    "himself": (
-            "3rd person",
-            "male",
-            "reflexive pronoun"
-        ),
-    "she": (
-            "3rd person",
-            "female",
-            "subject pronoun"
-        ),
+        "2nd person",
+        ("neutral", "male", "female", "plural"),
+        ("subject pronoun", "object pronoun"),
+    ),
+    "your": ("2nd person", ("neutral", "male", "female", "plural"), "possessive adjective"),
+    "yours": ("2nd person", ("neutral", "male", "female", "plural"), "possessive pronoun"),
+    "yourself": ("2nd person", ("neutral", "male", "female"), "reflexive pronoun"),
+    "yourselves": ("2nd person", "plural", "reflexive pronoun"),
+    "he": ("3rd person", "male", "subject pronoun"),
+    "him": ("3rd person", "male", "object pronoun"),
+    "his": (
+        "3rd person",
+        "male",
+        ("possessive pronoun", "possessive adjective"),
+    ),
+    "himself": ("3rd person", "male", "reflexive pronoun"),
+    "she": ("3rd person", "female", "subject pronoun"),
     "her": (
-            "3rd person",
-            "female",
-            ("object pronoun", "possessive adjective"),
-        ),
-    "hers": (
-            "3rd person",
-            "female",
-            "possessive pronoun"
-        ),
-    "herself": (
-            "3rd person",
-            "female",
-            "reflexive pronoun"
-        ),
+        "3rd person",
+        "female",
+        ("object pronoun", "possessive adjective"),
+    ),
+    "hers": ("3rd person", "female", "possessive pronoun"),
+    "herself": ("3rd person", "female", "reflexive pronoun"),
     "it": (
-            "3rd person",
-            "neutral",
-            ("subject pronoun", "object pronoun"),
-        ),
+        "3rd person",
+        "neutral",
+        ("subject pronoun", "object pronoun"),
+    ),
     "its": (
-            "3rd person",
-            "neutral",
-            ("possessive pronoun", "possessive adjective"),
-        ),
-    "itself": (
-            "3rd person",
-            "neutral",
-            "reflexive pronoun"
-        ),
-    "they": (
-            "3rd person",
-            "plural",
-            "subject pronoun"
-        ),
-    "them": (
-            "3rd person",
-            "plural",
-            "object pronoun"
-        ),
-    "their": (
-            "3rd person",
-            "plural",
-            "possessive adjective"
-        ),
-    "theirs": (
-            "3rd person",
-            "plural",
-            "possessive pronoun"
-        ),
-    "themselves": (
-            "3rd person",
-            "plural",
-            "reflexive pronoun"
-        ),
+        "3rd person",
+        "neutral",
+        ("possessive pronoun", "possessive adjective"),
+    ),
+    "itself": ("3rd person", "neutral", "reflexive pronoun"),
+    "they": ("3rd person", "plural", "subject pronoun"),
+    "them": ("3rd person", "plural", "object pronoun"),
+    "their": ("3rd person", "plural", "possessive adjective"),
+    "theirs": ("3rd person", "plural", "possessive pronoun"),
+    "themselves": ("3rd person", "plural", "reflexive pronoun"),
 }
 
 # define the default viewpoint conversions
@@ -303,9 +185,7 @@ ALIASES = {
 }
 
 
-def pronoun_to_viewpoints(
-    pronoun, options=None, pronoun_type=None, gender=None, viewpoint=None
-):
+def pronoun_to_viewpoints(pronoun, options=None, pronoun_type=None, gender=None, viewpoint=None):
     """
     Access function for determining the forms of a pronoun from different viewpoints.
 
@@ -365,7 +245,7 @@ def pronoun_to_viewpoints(
         viewpoint = source_viewpoint
     if gender not in GENDERS:
         gender = source_gender[0] if is_iter(source_gender) else source_gender
-    
+
     if options:
         # option string/list will override the kwargs differentiators given
         if isinstance(options, str):
