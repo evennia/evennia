@@ -1251,7 +1251,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         """
         plural_category = "plural_key"
-        key = kwargs.get("key", self.key)
+        key = kwargs.get("key", self.name)
         key = ansi.ANSIString(key)  # this is needed to allow inflection of colored names
         try:
             plural = _INFLECT.plural(key, count)
