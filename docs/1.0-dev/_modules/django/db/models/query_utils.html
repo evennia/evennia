@@ -85,11 +85,15 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
 <span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">FieldError</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">DEFAULT_DB_ALIAS</span><span class="p">,</span> <span class="n">DatabaseError</span><span class="p">,</span> <span class="n">connections</span>
 <span class="kn">from</span> <span class="nn">django.db.models.constants</span> <span class="kn">import</span> <span class="n">LOOKUP_SEP</span>
 <span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">tree</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;django.db.models&quot;</span><span class="p">)</span>
 
 <span class="c1"># PathInfo is used when converting lookups (fk__somecol). The contents</span>
 <span class="c1"># describe the relation in Model terms (model Options and Fields for both</span>
@@ -115,6 +119,7 @@
     <span class="c1"># Connection types</span>
     <span class="n">AND</span> <span class="o">=</span> <span class="s2">&quot;AND&quot;</span>
     <span class="n">OR</span> <span class="o">=</span> <span class="s2">&quot;OR&quot;</span>
+    <span class="n">XOR</span> <span class="o">=</span> <span class="s2">&quot;XOR&quot;</span>
     <span class="n">default</span> <span class="o">=</span> <span class="n">AND</span>
     <span class="n">conditional</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -147,6 +152,9 @@
     <span class="k">def</span> <span class="fm">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_combine</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">AND</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="fm">__xor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_combine</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">XOR</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)()</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">AND</span><span class="p">)</span>
@@ -167,6 +175,50 @@
         <span class="p">)</span>
         <span class="n">query</span><span class="o">.</span><span class="n">promote_joins</span><span class="p">(</span><span class="n">joins</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">clause</span>
+
+    <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recursively yield this Q object and all subexpressions, in depth-first</span>
+<span class="sd">        order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">yield</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="c1"># Use the lookup.</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="n">child</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="s2">&quot;flatten&quot;</span><span class="p">):</span>
+                <span class="k">yield from</span> <span class="n">child</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">child</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">against</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="n">DEFAULT_DB_ALIAS</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do a database query to check if the expressions of the Q instance</span>
+<span class="sd">        matches against the expressions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Avoid circular imports.</span>
+        <span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">BooleanField</span><span class="p">,</span> <span class="n">Value</span>
+        <span class="kn">from</span> <span class="nn">django.db.models.functions</span> <span class="kn">import</span> <span class="n">Coalesce</span>
+        <span class="kn">from</span> <span class="nn">django.db.models.sql</span> <span class="kn">import</span> <span class="n">Query</span>
+        <span class="kn">from</span> <span class="nn">django.db.models.sql.constants</span> <span class="kn">import</span> <span class="n">SINGLE</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">against</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;resolve_expression&quot;</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">query</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span><span class="n">Value</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;_check&quot;</span><span class="p">)</span>
+        <span class="c1"># This will raise a FieldError if a field is missing in &quot;against&quot;.</span>
+        <span class="k">if</span> <span class="n">connections</span><span class="p">[</span><span class="n">using</span><span class="p">]</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">supports_comparing_boolean_expr</span><span class="p">:</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">add_q</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">Coalesce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">output_field</span><span class="o">=</span><span class="n">BooleanField</span><span class="p">())))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">add_q</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">compiler</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">get_compiler</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="n">using</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">compiler</span><span class="o">.</span><span class="n">execute_sql</span><span class="p">(</span><span class="n">SINGLE</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="n">DatabaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Got a database error calling check() on </span><span class="si">%r</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">deconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
@@ -290,14 +342,15 @@
         <span class="k">if</span> <span class="n">lookup_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">lookup_name</span> <span class="o">=</span> <span class="n">lookup</span><span class="o">.</span><span class="n">lookup_name</span>
         <span class="k">del</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_lookups</span><span class="p">[</span><span class="n">lookup_name</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_clear_cached_lookups</span><span class="p">()</span>
 
 
 <span class="k">def</span> <span class="nf">select_related_descend</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">restricted</span><span class="p">,</span> <span class="n">requested</span><span class="p">,</span> <span class="n">load_fields</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True if this field should be used to descend deeper for</span>
 <span class="sd">    select_related() purposes. Used by both the query construction code</span>
-<span class="sd">    (sql.query.fill_related_selections()) and the model instance creation code</span>
-<span class="sd">    (query.get_klass_info()).</span>
+<span class="sd">    (compiler.get_related_selections()) and the model instance creation code</span>
+<span class="sd">    (compiler.klass_info).</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">     * field - the field to be checked</span>

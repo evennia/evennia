@@ -87,7 +87,9 @@
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ScriptDB</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.custom_gametime</span> <span class="kn">import</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">gametime_to_realtime</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.custom_gametime</span> <span class="kn">import</span> <span class="n">real_seconds_until</span> <span class="k">as</span> <span class="n">custom_rsu</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.custom_gametime</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">real_seconds_until</span> <span class="k">as</span> <span class="n">custom_rsu</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_script</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.gametime</span> <span class="kn">import</span> <span class="n">real_seconds_until</span> <span class="k">as</span> <span class="n">standard_rsu</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>

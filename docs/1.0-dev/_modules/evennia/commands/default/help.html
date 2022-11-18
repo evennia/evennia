@@ -98,7 +98,13 @@
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">evmore</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">ANSIString</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.eveditor</span> <span class="kn">import</span> <span class="n">EvEditor</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">dedent</span><span class="p">,</span> <span class="n">format_grid</span><span class="p">,</span> <span class="n">inherits_from</span><span class="p">,</span> <span class="n">pad</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">class_from_module</span><span class="p">,</span>
+    <span class="n">dedent</span><span class="p">,</span>
+    <span class="n">format_grid</span><span class="p">,</span>
+    <span class="n">inherits_from</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">CMD_IGNORE_PREFIXES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">CMD_IGNORE_PREFIXES</span>
 <span class="n">COMMAND_DEFAULT_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>

@@ -116,7 +116,13 @@
 <span class="kn">from</span> <span class="nn">evennia.typeclasses.models</span> <span class="kn">import</span> <span class="n">TypeclassBase</span>
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.optionhandler</span> <span class="kn">import</span> <span class="n">OptionHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">lazy_property</span><span class="p">,</span> <span class="n">make_iter</span><span class="p">,</span> <span class="n">to_str</span><span class="p">,</span> <span class="n">variable_from_module</span>
+<span class="kn">from</span> <span class="nn">evennia.utils.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">is_iter</span><span class="p">,</span>
+    <span class="n">lazy_property</span><span class="p">,</span>
+    <span class="n">make_iter</span><span class="p">,</span>
+    <span class="n">to_str</span><span class="p">,</span>
+    <span class="n">variable_from_module</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DefaultAccount&quot;</span><span class="p">,</span> <span class="s2">&quot;DefaultGuest&quot;</span><span class="p">)</span>
 

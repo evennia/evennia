@@ -449,18 +449,18 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
 <span class="n">ERROR_PYTHON_VERSION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    ERROR: Python </span><span class="si">{pversion}</span><span class="s2"> used. Evennia requires version</span>
+<span class="s2">    ERROR: Python </span><span class="si">{python_version}</span><span class="s2"> used. Evennia requires version</span>
 <span class="s2">    </span><span class="si">{python_min}</span><span class="s2"> or higher.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
 <span class="n">WARNING_PYTHON_MAX_TESTED_VERSION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    WARNING: Python </span><span class="si">{pversion}</span><span class="s2"> used. Evennia is only tested with Python</span>
+<span class="s2">    WARNING: Python </span><span class="si">{python_version}</span><span class="s2"> used. Evennia is only tested with Python</span>
 <span class="s2">    versions </span><span class="si">{python_min}</span><span class="s2"> to </span><span class="si">{python_max_tested}</span><span class="s2">. If you see unexpected errors, try</span>
 <span class="s2">    reinstalling with a tested Python version instead.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
 <span class="n">ERROR_TWISTED_VERSION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    ERROR: Twisted </span><span class="si">{tversion}</span><span class="s2"> found. Evennia requires</span>
+<span class="s2">    ERROR: Twisted </span><span class="si">{twisted_version}</span><span class="s2"> found. Evennia requires</span>
 <span class="s2">    version </span><span class="si">{twisted_min}</span><span class="s2"> or higher.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
@@ -469,8 +469,8 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
 <span class="n">ERROR_DJANGO_MIN</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    ERROR: Django </span><span class="si">{dversion}</span><span class="s2"> found. Evennia requires at least version </span><span class="si">{django_min}</span><span class="s2"> (but</span>
-<span class="s2">    below version </span><span class="si">{django_lt}</span><span class="s2">).</span>
+<span class="s2">    ERROR: Django </span><span class="si">{django_version}</span><span class="s2"> found. Evennia supports Django</span>
+<span class="s2">    </span><span class="si">{django_min}</span><span class="s2"> - </span><span class="si">{django_max_tested}</span><span class="s2">. Using an older version is not supported.</span>
 
 <span class="s2">    If you are using a virtualenv, use the command `pip install --upgrade -e evennia` where</span>
 <span class="s2">    `evennia` is the folder to where you cloned the Evennia library. If not</span>
@@ -482,8 +482,8 @@
 <span class="s2">    &quot;&quot;&quot;</span>
 
 <span class="n">NOTE_DJANGO_NEW</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    NOTE: Django </span><span class="si">{dversion}</span><span class="s2"> found. This is newer than Evennia&#39;s</span>
-<span class="s2">    recommended version (</span><span class="si">{django_rec}</span><span class="s2">). It might work, but is new</span>
+<span class="s2">    NOTE: Django </span><span class="si">{django_version}</span><span class="s2"> found. This is newer than Evennia&#39;s</span>
+<span class="s2">    recommended version (</span><span class="si">{django_max_tested}</span><span class="s2">). It might work, but is new</span>
 <span class="s2">    enough to not be fully tested yet. Report any issues.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
@@ -1352,53 +1352,83 @@
 <span class="sd">        not_error (bool): True if no dependency error was found.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">error</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="c1"># Python</span>
-    <span class="n">pversion</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">pversion</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">PYTHON_MIN</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_PYTHON_VERSION</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pversion</span><span class="o">=</span><span class="n">pversion</span><span class="p">,</span> <span class="n">python_min</span><span class="o">=</span><span class="n">PYTHON_MIN</span><span class="p">))</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">pversion</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">PYTHON_MAX_TESTED</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="n">WARNING_PYTHON_MAX_TESTED_VERSION</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">pversion</span><span class="o">=</span><span class="n">pversion</span><span class="p">,</span> <span class="n">python_min</span><span class="o">=</span><span class="n">PYTHON_MIN</span><span class="p">,</span> <span class="n">python_max_tested</span><span class="o">=</span><span class="n">PYTHON_MAX_TESTED</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_test_python_version</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Test Python version&quot;&quot;&quot;</span>
+        <span class="n">python_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="n">python_curr</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">python_version</span><span class="p">)</span>
+        <span class="n">python_min</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">PYTHON_MIN</span><span class="p">)</span>
+        <span class="n">python_max</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">PYTHON_MAX_TESTED</span><span class="p">)</span>
 
-    <span class="c1"># Twisted</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">twisted</span>
-
-        <span class="n">tversion</span> <span class="o">=</span> <span class="n">twisted</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">short</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">tversion</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">TWISTED_MIN</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_TWISTED_VERSION</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tversion</span><span class="o">=</span><span class="n">tversion</span><span class="p">,</span> <span class="n">twisted_min</span><span class="o">=</span><span class="n">TWISTED_MIN</span><span class="p">))</span>
-            <span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_NOTWISTED</span><span class="p">)</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="c1"># Django</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">dversion</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">django</span><span class="o">.</span><span class="n">VERSION</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
-        <span class="c1"># only the main version (1.5, not 1.5.4.0)</span>
-        <span class="n">dversion_main</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dversion</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">dversion</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">DJANGO_MIN</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">python_curr</span> <span class="o">&lt;</span> <span class="n">python_min</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_PYTHON_VERSION</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="n">python_version</span><span class="p">,</span> <span class="n">python_min</span><span class="o">=</span><span class="n">PYTHON_MIN</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">python_curr</span> <span class="o">&gt;</span> <span class="n">python_max</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="n">ERROR_DJANGO_MIN</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">dversion</span><span class="o">=</span><span class="n">dversion_main</span><span class="p">,</span> <span class="n">django_min</span><span class="o">=</span><span class="n">DJANGO_MIN</span><span class="p">,</span> <span class="n">django_lt</span><span class="o">=</span><span class="n">DJANGO_MAX_TESTED</span>
+                <span class="n">WARNING_PYTHON_MAX_TESTED_VERSION</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">python_version</span><span class="o">=</span><span class="n">python_version</span><span class="p">,</span>
+                    <span class="n">python_min</span><span class="o">=</span><span class="n">PYTHON_MIN</span><span class="p">,</span>
+                    <span class="n">python_max_tested</span><span class="o">=</span><span class="n">PYTHON_MAX_TESTED</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">DJANGO_MAX_TESTED</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">dversion_main</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">NOTE_DJANGO_NEW</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dversion</span><span class="o">=</span><span class="n">dversion_main</span><span class="p">,</span> <span class="n">django_rec</span><span class="o">=</span><span class="n">DJANGO_MAX_TESTED</span><span class="p">))</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_NODJANGO</span><span class="p">)</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_test_twisted_version</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Test Twisted version&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">twisted</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_NOTWISTED</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">twisted_version</span> <span class="o">=</span> <span class="n">twisted</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">short</span><span class="p">()</span>
+            <span class="n">twisted_curr</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">twisted_version</span><span class="p">)</span>
+            <span class="n">twisted_min</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">TWISTED_MIN</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">twisted_curr</span> <span class="o">&lt;</span> <span class="n">twisted_min</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">ERROR_TWISTED_VERSION</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">twisted_version</span><span class="o">=</span><span class="n">twisted_version</span><span class="p">,</span> <span class="n">twisted_min</span><span class="o">=</span><span class="n">TWISTED_MIN</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_test_django_version</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Test Django version&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">django</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ERROR_NODJANGO</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">django_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">django</span><span class="o">.</span><span class="n">VERSION</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+            <span class="c1"># only the main version (1.5, not 1.5.4.0)</span>
+            <span class="n">django_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">django_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">django_curr</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">django_version</span><span class="p">)</span>
+            <span class="n">django_min</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">DJANGO_MIN</span><span class="p">)</span>
+            <span class="n">django_max</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">DJANGO_MAX_TESTED</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">django_curr</span> <span class="o">&lt;</span> <span class="n">django_min</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">ERROR_DJANGO_MIN</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">django_version</span><span class="o">=</span><span class="n">django_version</span><span class="p">,</span>
+                        <span class="n">django_min</span><span class="o">=</span><span class="n">DJANGO_MIN</span><span class="p">,</span>
+                        <span class="n">django_max_tested</span><span class="o">=</span><span class="n">DJANGO_MAX_TESTED</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">django_curr</span> <span class="o">&gt;</span> <span class="n">django_max</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">NOTE_DJANGO_NEW</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">django_version</span><span class="o">=</span><span class="n">django_version</span><span class="p">,</span> <span class="n">django_max_tested</span><span class="o">=</span><span class="n">DJANGO_MAX_TESTED</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
 
     <span class="c1"># return True/False if error was reported or not</span>
-    <span class="k">return</span> <span class="ow">not</span> <span class="n">error</span></div>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">((</span><span class="n">_test_python_version</span><span class="p">(),</span> <span class="n">_test_twisted_version</span><span class="p">(),</span> <span class="n">_test_django_version</span><span class="p">()))</span></div>
 
 
 <div class="viewcode-block" id="set_gamedir"><a class="viewcode-back" href="../../../api/evennia.server.evennia_launcher.html#evennia.server.evennia_launcher.set_gamedir">[docs]</a><span class="k">def</span> <span class="nf">set_gamedir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>

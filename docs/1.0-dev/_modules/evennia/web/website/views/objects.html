@@ -92,7 +92,12 @@
 
 <span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">class_from_module</span>
 
-<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">EvenniaCreateView</span><span class="p">,</span> <span class="n">EvenniaDeleteView</span><span class="p">,</span> <span class="n">EvenniaDetailView</span><span class="p">,</span> <span class="n">EvenniaUpdateView</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">EvenniaCreateView</span><span class="p">,</span>
+    <span class="n">EvenniaDeleteView</span><span class="p">,</span>
+    <span class="n">EvenniaDetailView</span><span class="p">,</span>
+    <span class="n">EvenniaUpdateView</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="ObjectDetailView"><a class="viewcode-back" href="../../../../../api/evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView">[docs]</a><span class="k">class</span> <span class="nc">ObjectDetailView</span><span class="p">(</span><span class="n">EvenniaDetailView</span><span class="p">):</span>

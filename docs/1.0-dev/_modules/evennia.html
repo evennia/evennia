@@ -249,7 +249,12 @@
     <span class="kn">from</span> <span class="nn">.comms.models</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">Msg</span>
     <span class="kn">from</span> <span class="nn">.locks</span> <span class="kn">import</span> <span class="n">lockfuncs</span>
     <span class="kn">from</span> <span class="nn">.objects.models</span> <span class="kn">import</span> <span class="n">ObjectDB</span>
-    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">DefaultExit</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultRoom</span>
+    <span class="kn">from</span> <span class="nn">.objects.objects</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">DefaultCharacter</span><span class="p">,</span>
+        <span class="n">DefaultExit</span><span class="p">,</span>
+        <span class="n">DefaultObject</span><span class="p">,</span>
+        <span class="n">DefaultRoom</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">.prototypes.spawner</span> <span class="kn">import</span> <span class="n">spawn</span>
     <span class="kn">from</span> <span class="nn">.scripts.models</span> <span class="kn">import</span> <span class="n">ScriptDB</span>
     <span class="kn">from</span> <span class="nn">.scripts.monitorhandler</span> <span class="kn">import</span> <span class="n">MONITOR_HANDLER</span>

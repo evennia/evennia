@@ -78,6 +78,7 @@
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">total_ordering</span><span class="p">,</span> <span class="n">wraps</span>
 
 
@@ -88,8 +89,6 @@
 
 <span class="sd">    A cached property can be made out of an existing method:</span>
 <span class="sd">    (e.g. ``url = cached_property(get_absolute_url)``).</span>
-<span class="sd">    The optional ``name`` argument is obsolete as of Python 3.6 and will be</span>
-<span class="sd">    deprecated in Django 4.0 (#30127).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
@@ -102,6 +101,15 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.utils.deprecation</span> <span class="kn">import</span> <span class="n">RemovedInDjango50Warning</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The name argument is deprecated as it&#39;s unnecessary as of &quot;</span>
+                <span class="s2">&quot;Python 3.6.&quot;</span><span class="p">,</span>
+                <span class="n">RemovedInDjango50Warning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">real_func</span> <span class="o">=</span> <span class="n">func</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;__doc__&quot;</span><span class="p">)</span>
 
@@ -331,10 +339,12 @@
 
 <span class="k">def</span> <span class="nf">new_method_proxy</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="ow">is</span> <span class="n">empty</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_wrapped</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">)</span> <span class="ow">is</span> <span class="n">empty</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">_wrapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">_wrapped</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
+    <span class="n">inner</span><span class="o">.</span><span class="n">_mask_wrapped</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="n">inner</span>
 
 
@@ -354,6 +364,17 @@
         <span class="c1"># Note: if a subclass overrides __init__(), it will likely need to</span>
         <span class="c1"># override __copy__() and __deepcopy__() as well.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span> <span class="o">=</span> <span class="n">empty</span>
+
+    <span class="k">def</span> <span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;_wrapped&quot;</span><span class="p">:</span>
+            <span class="c1"># Avoid recursion when getting wrapped object.</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># If attribute is a proxy method, raise an AttributeError to call</span>
+        <span class="c1"># __getattr__() and use the wrapped object method.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;_mask_wrapped&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span>
+        <span class="k">return</span> <span class="n">value</span>
 
     <span class="fm">__getattr__</span> <span class="o">=</span> <span class="n">new_method_proxy</span><span class="p">(</span><span class="nb">getattr</span><span class="p">)</span>
 
@@ -500,6 +521,12 @@
             <span class="n">memo</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)]</span> <span class="o">=</span> <span class="n">result</span>
             <span class="k">return</span> <span class="n">result</span>
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">,</span> <span class="n">memo</span><span class="p">)</span>
+
+    <span class="fm">__add__</span> <span class="o">=</span> <span class="n">new_method_proxy</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">)</span>
+
+    <span class="nd">@new_method_proxy</span>
+    <span class="k">def</span> <span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">other</span> <span class="o">+</span> <span class="bp">self</span>
 
 
 <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="n">predicate</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>

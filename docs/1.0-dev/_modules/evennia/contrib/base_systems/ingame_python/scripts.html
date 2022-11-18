@@ -90,7 +90,11 @@
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">ChannelDB</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">DefaultScript</span><span class="p">,</span> <span class="n">ScriptDB</span><span class="p">,</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.callbackhandler</span> <span class="kn">import</span> <span class="n">CallbackHandler</span>
-<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.utils</span> <span class="kn">import</span> <span class="n">EVENTS</span><span class="p">,</span> <span class="n">InterruptEvent</span><span class="p">,</span> <span class="n">get_next_wait</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.base_systems.ingame_python.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">EVENTS</span><span class="p">,</span>
+    <span class="n">InterruptEvent</span><span class="p">,</span>
+    <span class="n">get_next_wait</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.ansi</span> <span class="kn">import</span> <span class="n">raw</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.create</span> <span class="kn">import</span> <span class="n">create_channel</span>
 <span class="kn">from</span> <span class="nn">evennia.utils.dbserialize</span> <span class="kn">import</span> <span class="n">dbserialize</span>
