@@ -1,9 +1,7 @@
 # Installing on Android
 
 
-This page describes how to install and run the Evennia server on an Android phone. This will involve
-installing a slew of third-party programs from the Google Play store, so make sure you are okay with
-this before starting.
+This page describes how to install and run the Evennia server on an Android phone. This will involve installing a slew of third-party programs from the Google Play store, so make sure you are okay with this before starting.
 
 ```{warning}
 Android installation is experimental and not tested with later versions of Android. 
@@ -12,23 +10,16 @@ Report your findings.
 
 ## Install Termux
 
-The first thing to do is install a terminal emulator that allows a "full" version of linux to be
-run. Note that Android is essentially running on top of linux so if you have a rooted phone, you may
-be able to skip this step. You *don't* require a rooted phone to install Evennia though.
+The first thing to do is install a terminal emulator that allows a "full" version of linux to be run. Note that Android is essentially running on top of linux so if you have a rooted phone, you may be able to skip this step. You *don't* require a rooted phone to install Evennia though.
 
-Assuming we do not have root, we will install
-[Termux](https://play.google.com/store/apps/details?id=com.termux&hl=en).
-Termux provides a base installation of Linux essentials, including apt and Python, and makes them
-available under a writeable directory. It also gives us a terminal where we can enter commands. By
-default, Android doesn't give you permissions to the root folder, so Termux pretends that its own
-installation directory is the root directory.
+Assuming we do not have root, we will install [Termux](https://play.google.com/store/apps/details?id=com.termux&hl=en). Termux provides a base installation of Linux essentials, including apt and Python, and makes them available under a writeable directory. It also gives us a terminal where we can enter commands. By default, Android doesn't give you permissions to the root folder, so Termux pretends that its own installation directory is the root directory.
 
-Termux will set up a base system for us on first launch, but we will need to install some
-prerequisites for Evennia. Commands you should run in Termux will look like this:
+Termux will set up a base system for us on first launch, but we will need to install some prerequisites for Evennia. Commands you should run in Termux will look like this:
 
 ```
 $ cat file.txt
 ```
+
 The `$` symbol is your prompt - do not include it when running commands.
 
 ## Prerequisites
