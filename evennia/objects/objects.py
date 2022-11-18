@@ -1239,7 +1239,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             looker (Object): Onlooker. Not used by default.
 
         Keyword Args:
-            key (str): Optional key to pluralize, if given, use this instead of the object's key.
+            key (str): Optional key to pluralize. If not given, the object's `.name` property is
+                used.
 
         Returns:
             tuple: This is a tuple `(str, str)` with the singular and plural forms of the key
