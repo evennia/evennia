@@ -104,11 +104,11 @@ PRONOUN_MAPPING = {
 }
 
 PRONOUN_TABLE = {
-    "I": ("1st person", ("neutral", "male", "female"), "subject pronoun"),
-    "me": ("1st person", ("neutral", "male", "female"), "object pronoun"),
-    "my": ("1st person", ("neutral", "male", "female"), "possessive adjective"),
-    "mine": ("1st person", ("neutral", "male", "female"), "possessive pronoun"),
-    "myself": ("1st person", ("neutral", "male", "female"), "reflexive pronoun"),
+    "I": ("1st person", ("neutral", "male", "female", "plural"), "subject pronoun"),
+    "me": ("1st person", ("neutral", "male", "female", "plural"), "object pronoun"),
+    "my": ("1st person", ("neutral", "male", "female", "plural"), "possessive adjective"),
+    "mine": ("1st person", ("neutral", "male", "female", "plural"), "possessive pronoun"),
+    "myself": ("1st person", ("neutral", "male", "female", "plural"), "reflexive pronoun"),
     "we": ("1st person", "plural", "subject pronoun"),
     "us": ("1st person", "plural", "object pronoun"),
     "our": ("1st person", "plural", "possessive adjective"),
@@ -161,7 +161,7 @@ PRONOUN_TABLE = {
 VIEWPOINT_CONVERSION = {
     "1st person": "3rd person",
     "2nd person": "3rd person",
-    "3rd person": ("1st person", "2nd person"),
+    "3rd person": ("2nd person", "1st person"),
 }
 
 ALIASES = {
@@ -185,15 +185,9 @@ ALIASES = {
 }
 
 
-def pronoun_to_viewpoints(
-    pronoun,
-    options=None,
-    pronoun_type=DEFAULT_PRONOUN_TYPE,
-    gender=DEFAULT_GENDER,
-    viewpoint=DEFAULT_VIEWPOINT,
-):
+def pronoun_to_viewpoints(pronoun, options=None, pronoun_type=None, gender=None, viewpoint=None):
     """
-    Access function for determining the forms of a pronount from different viewpoints.
+    Access function for determining the forms of a pronoun from different viewpoints.
 
     Args:
         pronoun (str): A valid English pronoun, such as 'you', 'his', 'themselves' etc.
@@ -244,13 +238,13 @@ def pronoun_to_viewpoints(
     # get the default data for the input pronoun
     source_viewpoint, source_gender, source_type = PRONOUN_TABLE[pronoun_lower]
 
-    # differentiators
+    # use the source pronoun's attributes as defaults
     if pronoun_type not in PRONOUN_TYPES:
-        pronoun_type = DEFAULT_PRONOUN_TYPE
+        pronoun_type = source_type[0] if is_iter(source_type) else source_type
     if viewpoint not in VIEWPOINTS:
-        viewpoint = DEFAULT_VIEWPOINT
+        viewpoint = source_viewpoint
     if gender not in GENDERS:
-        gender = DEFAULT_GENDER
+        gender = source_gender[0] if is_iter(source_gender) else source_gender
 
     if options:
         # option string/list will override the kwargs differentiators given
@@ -279,19 +273,8 @@ def pronoun_to_viewpoints(
     else:
         viewpoint = target_viewpoint
 
-    # special handling for the royal "we"
-    if is_iter(source_gender):
-        gender_opts = list(source_gender)
-    else:
-        gender_opts = [source_gender]
-    if viewpoint == "1st person":
-        # make sure plural is always an option when converting to 1st person
-        # it doesn't matter if it's in the list twice, so don't bother checking
-        gender_opts.append("plural")
-    # if the gender is still not in the extended options, fall back to source pronoun's default
-    gender = gender if gender in gender_opts else gender_opts[0]
-
-    # step down into the mapping
+    # by this point, gender will be a valid option from GENDERS and type/viewpoint will be validated
+    # step down into the mapping to get the converted pronoun
     viewpoint_map = PRONOUN_MAPPING[viewpoint]
     pronouns = viewpoint_map.get(pronoun_type, viewpoint_map[DEFAULT_PRONOUN_TYPE])
     mapped_pronoun = pronouns.get(gender, pronouns[DEFAULT_GENDER])

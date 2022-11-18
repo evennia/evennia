@@ -3,9 +3,8 @@ Unit tests for verb conjugation.
 
 """
 
-from django.test import TestCase
 from parameterized import parameterized
-
+from django.test import TestCase
 from . import conjugate, pronouns
 
 
@@ -272,33 +271,51 @@ class TestVerbConjugate(TestCase):
 class TestPronounMapping(TestCase):
     """
     Test pronoun viewpoint mapping
-
     """
+
+    @parameterized.expand(
+        [
+            ("you", "you", "it"),  # default 3rd is "neutral"
+            ("I", "I", "it"),
+            ("Me", "Me", "It"),
+            ("ours", "ours", "theirs"),
+            ("yourself", "yourself", "itself"),
+            ("yourselves", "yourselves", "themselves"),
+            ("he", "you", "he"),  # assume 2nd person
+            ("her", "you", "her"),
+            ("their", "your", "their"),
+            ("itself", "yourself", "itself"),
+            ("herself", "yourself", "herself"),
+            ("themselves", "yourselves", "themselves"),
+        ]
+    )
+    def test_default_mapping(self, pronoun, expected_1st_or_2nd_person, expected_3rd_person):
+        """
+        Test the pronoun mapper.
+
+        """
+        received_1st_or_2nd_person, received_3rd_person = pronouns.pronoun_to_viewpoints(pronoun)
+
+        self.assertEqual(expected_1st_or_2nd_person, received_1st_or_2nd_person)
+        self.assertEqual(expected_3rd_person, received_3rd_person)
 
     @parameterized.expand(
         [
             ("you", "m", "you", "he"),
             ("you", "f op", "you", "her"),
-            ("I", "", "I", "it"),
-            ("I", "p", "I", "it"),  # plural is invalid
+            ("you", "p op", "you", "them"),
             ("I", "m", "I", "he"),
             ("Me", "n", "Me", "It"),
             ("your", "p", "your", "their"),
-            ("ours", "", "ours", "theirs"),
-            ("yourself", "", "yourself", "itself"),
             ("yourself", "m", "yourself", "himself"),
             ("yourself", "f", "yourself", "herself"),
-            ("yourself", "p", "yourself", "itself"),  # plural is invalid
             ("yourselves", "", "yourselves", "themselves"),
-            ("he", "", "you", "he"),  # assume 2nd person
             ("he", "1", "I", "he"),
-            ("he", "1 p", "we", "he"),
+            ("he", "1 p", "we", "he"),  # royal we
+            ("we", "m", "we", "he"),  # royal we, other way
             ("her", "p", "you", "her"),
             ("her", "pa", "your", "her"),
-            ("their", "pa", "your", "their"),
-            ("itself", "", "yourself", "itself"),
-            ("themselves", "", "yourselves", "themselves"),
-            ("herself", "", "yourself", "herself"),
+            ("their", "ma", "your", "their"),
         ]
     )
     def test_mapping_with_options(
@@ -311,5 +328,32 @@ class TestPronounMapping(TestCase):
         received_1st_or_2nd_person, received_3rd_person = pronouns.pronoun_to_viewpoints(
             pronoun, options
         )
+        self.assertEqual(expected_1st_or_2nd_person, received_1st_or_2nd_person)
+        self.assertEqual(expected_3rd_person, received_3rd_person)
+
+    @parameterized.expand(
+        [
+            ("you", "p", "you", "they"),
+            ("I", "p", "I", "they"),
+            ("Me", "p", "Me", "Them"),
+            ("your", "p", "your", "their"),
+            ("they", "1 p", "we", "they"),
+            ("they", "", "you", "they"),
+            ("yourself", "p", "yourself", "themselves"),
+            ("myself", "p", "myself", "themselves"),
+        ]
+    )
+    def test_colloquial_plurals(
+        self, pronoun, options, expected_1st_or_2nd_person, expected_3rd_person
+    ):
+        """
+        The use of this module by the funcparser expects a default person-pronoun
+        of the neutral "they", which is categorized here by the plural.
+
+        """
+        received_1st_or_2nd_person, received_3rd_person = pronouns.pronoun_to_viewpoints(
+            pronoun, options
+        )
+
         self.assertEqual(expected_1st_or_2nd_person, received_1st_or_2nd_person)
         self.assertEqual(expected_3rd_person, received_3rd_person)
