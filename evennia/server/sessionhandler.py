@@ -27,7 +27,13 @@ from evennia.server.signals import (
     SIGNAL_ACCOUNT_POST_LOGOUT,
 )
 from evennia.utils.logger import log_trace
-from evennia.utils.utils import callables_from_module, class_from_module, delay, is_iter, make_iter
+from evennia.utils.utils import (
+    callables_from_module,
+    class_from_module,
+    delay,
+    is_iter,
+    make_iter,
+)
 
 _FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
 _BROADCAST_SERVER_RESTART_MESSAGES = settings.BROADCAST_SERVER_RESTART_MESSAGES

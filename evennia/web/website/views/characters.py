@@ -17,7 +17,12 @@ from evennia.utils import class_from_module
 from evennia.web.website import forms
 
 from .mixins import TypeclassMixin
-from .objects import ObjectCreateView, ObjectDeleteView, ObjectDetailView, ObjectUpdateView
+from .objects import (
+    ObjectCreateView,
+    ObjectDeleteView,
+    ObjectDetailView,
+    ObjectUpdateView,
+)
 
 
 class CharacterMixin(TypeclassMixin):

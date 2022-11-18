@@ -1,7 +1,6 @@
 # This is used with `make <option>` and is used for running various
 # administration operations on the code.
 
-BLACK_FORMAT_CONFIGS = --target-version py37 --line-length 100 --exclude=/docs
 TEST_GAME_DIR = .test_game_dir
 TESTS ?= evennia
 
@@ -22,8 +21,10 @@ installextra:
 	pip install -e .
 	pip install -r requirements_extra.txt
 
+# black is configured from pyproject.toml
 format:
-	black $(BLACK_FORMAT_CONFIGS) evennia
+	black evennia
+	isort . --profile black
 
 fmt: format
 

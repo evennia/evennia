@@ -172,7 +172,12 @@ def _init():
     from .comms.models import ChannelDB, Msg
     from .locks import lockfuncs
     from .objects.models import ObjectDB
-    from .objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
+    from .objects.objects import (
+        DefaultCharacter,
+        DefaultExit,
+        DefaultObject,
+        DefaultRoom,
+    )
     from .prototypes.spawner import spawn
     from .scripts.models import ScriptDB
     from .scripts.monitorhandler import MONITOR_HANDLER

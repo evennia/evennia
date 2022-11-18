@@ -6,7 +6,11 @@ from unittest import TestCase
 from django.test import override_settings
 from mock import MagicMock, Mock, patch
 
-from evennia.accounts.accounts import AccountSessionHandler, DefaultAccount, DefaultGuest
+from evennia.accounts.accounts import (
+    AccountSessionHandler,
+    DefaultAccount,
+    DefaultGuest,
+)
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils.utils import uses_database

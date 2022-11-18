@@ -25,7 +25,8 @@ attrs >= 19.2.0
 model_mommy
 mock >= 1.0.1
 anything==0.2.1
-black 
+black >= 22.6
+isort >= 5.10
 wheel
 parameterized==0.8.1
 

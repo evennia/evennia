@@ -31,7 +31,14 @@ import re
 
 from django.conf import settings
 
-from evennia import SESSION_HANDLER, CmdSet, Command, InterruptCommand, default_cmds, syscmdkeys
+from evennia import (
+    SESSION_HANDLER,
+    CmdSet,
+    Command,
+    InterruptCommand,
+    default_cmds,
+    syscmdkeys,
+)
 from evennia.utils import variable_from_module
 
 from .utils import create_evscaperoom_object

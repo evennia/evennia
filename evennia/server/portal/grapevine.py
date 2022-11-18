@@ -11,7 +11,11 @@ the grapevine client to in-game channels.
 
 import json
 
-from autobahn.twisted.websocket import WebSocketClientFactory, WebSocketClientProtocol, connectWS
+from autobahn.twisted.websocket import (
+    WebSocketClientFactory,
+    WebSocketClientProtocol,
+    connectWS,
+)
 from django.conf import settings
 from twisted.internet import protocol
 
