@@ -1,6 +1,112 @@
 [build-system]
-requires = ["setuptools>40.8.0", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__" 
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evennia"
+version = "1.0rc3"
+maintainers = [
+    { name="Griatch", email="griatch@gmail.com" },
+]
+description = "A full-featured toolkit and server for text-based multiplayer games (MUDs, MU*)."
+requires-python = ">=3.9"
+readme = { file="README.md", content-type="text/markdown" }
+license = { text="BSD" }
+keywords = [
+    "MUD", "MUSH", "MUX", "MMO", "text-only", "multiplayer", "online", "rpg", "game", "engine",
+    "framework", "text", "adventure", "telnet", "websocket", "blind", "accessible", "ascii",
+    "utf-8", "terminal", "online", "server", "beginner", "tutorials"
+]
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: JavaScript",
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: BSD License",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Twisted",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Database",
+    "Topic :: Education",
+    "Topic :: Games/Entertainment :: Multi-User Dungeons (MUD)",
+    "Topic :: Games/Entertainment :: Puzzle Games",
+    "Topic :: Games/Entertainment :: Role-Playing",
+    "Topic :: Games/Entertainment :: Simulation",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Server"
+]
+dependencies = [
+    # core dependencies
+    "django >= 4.1.3, < 4.2",
+    "twisted >= 22.10, < 23",
+    "pytz >= 2022.6",
+    "djangorestframework >= 3.14, < 3.15",
+    "pyyaml >= 6.0",
+    "django-filter == 2.4",
+    "django-sekizai == 2.0.0",
+    "inflect >= 5.2.0",
+    "autobahn >= 20.7.1, < 21.0.0",
+    "lunr == 0.6.0",
+    "simpleeval <= 1.0",
+    "uritemplate == 4.1.1",
+    "Jinja2 < 3.1",
+    "tzdata >= 2022.6",
+    # for unit tests and code formatting
+    "model_mommy >= 2.0",
+    "anything ==0.2.1",
+    "black >= 22.6",
+    "isort >= 5.10",
+    "parameterized ==0.8.1",
+]
+
+[project.optional-dependencies]
+
+extra = [
+    # contrib optional dependencies
+    # install with 'pip install evennia[extra]`
+
+    # crypto libraries for ssh support
+    "cryptography >= 2.8",
+    "pyasn1 >= 0.4.8",
+    "bcrypt >= 3.1.7",
+
+    # Telnet-SSL support
+    "pyopenssl >= 19.1",
+    "service_identity >= 18.1.0",
+
+    # AWS storage contrib
+    "boto3 >= 1.4.4",
+    "botocore >= 1.15",
+
+    # Jupyter Notebook support
+    "jupyter >= 1.0.0",
+    "ipython >= 7.19.0",
+    "django-extensions >= 3.1.0",
+
+    # xyzroom contrib
+    "scipy == 1.9.3",
+
+    # Git contrib
+    "gitpython >= 3.1.27"
+]
+
+[project.urls]
+"Homepage" = "https://www.evennia.com"
+"Github" = "https://github.com/evennia/evennia"
+"Documentation" = "https://www.evennia.com/docs/latest/index.html"
+"Live Demo" = "https://demo.evennia.com/"
+"Forums" = "https://github.com/evennia/evennia/discussions"
+"Discord" = "https://discord.gg/AJJpcRUhtF"
+"Dev Blog" = "https://www.evennia.com/devblog/index.html"
+"Game Index" = "http://games.evennia.com"
+"Issue tracker" = "https://github.com/evennia/evennia/issues"
+"Patreon" = "https://www.patreon.com/griatch"
 
 [tool.black]
 line-length = 100
@@ -21,7 +127,7 @@ exclude = '''
       | dist
     )/
     | migrations
-    | docs 
-     
+    | docs
+
   )
 '''
