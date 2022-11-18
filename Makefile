@@ -24,7 +24,7 @@ installextra:
 # black is configured from pyproject.toml
 format:
 	black evennia
-	isort . --profile black
+	isort --profile black .
 
 fmt: format
 
