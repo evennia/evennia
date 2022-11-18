@@ -26,7 +26,10 @@ from evennia.contrib.tutorials.evadventure.dungeon import (
     EvAdventureDungeonStartRoomExit,
 )
 from evennia.contrib.tutorials.evadventure.objects import EvAdventureWeapon
-from evennia.contrib.tutorials.evadventure.rooms import EvAdventurePvPRoom, EvAdventureRoom
+from evennia.contrib.tutorials.evadventure.rooms import (
+    EvAdventurePvPRoom,
+    EvAdventureRoom,
+)
 
 # CODE
 

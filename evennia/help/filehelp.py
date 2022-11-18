@@ -73,7 +73,12 @@ from django.utils.text import slugify
 
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils import logger
-from evennia.utils.utils import all_from_module, lazy_property, make_iter, variable_from_module
+from evennia.utils.utils import (
+    all_from_module,
+    lazy_property,
+    make_iter,
+    variable_from_module,
+)
 
 _DEFAULT_HELP_CATEGORY = settings.DEFAULT_HELP_CATEGORY
 

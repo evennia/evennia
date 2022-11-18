@@ -29,7 +29,12 @@ evennia._init()
 from evennia.server.portal.portalsessionhandler import PORTAL_SESSIONS
 from evennia.server.webserver import EvenniaReverseProxyResource
 from evennia.utils import logger
-from evennia.utils.utils import class_from_module, get_evennia_version, make_iter, mod_import
+from evennia.utils.utils import (
+    class_from_module,
+    get_evennia_version,
+    make_iter,
+    mod_import,
+)
 
 # we don't need a connection to the database so close it right away
 try:

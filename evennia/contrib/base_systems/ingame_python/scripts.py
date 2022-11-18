@@ -12,7 +12,11 @@ from django.conf import settings
 
 from evennia import ChannelDB, DefaultObject, DefaultScript, ScriptDB, logger
 from evennia.contrib.base_systems.ingame_python.callbackhandler import CallbackHandler
-from evennia.contrib.base_systems.ingame_python.utils import EVENTS, InterruptEvent, get_next_wait
+from evennia.contrib.base_systems.ingame_python.utils import (
+    EVENTS,
+    InterruptEvent,
+    get_next_wait,
+)
 from evennia.utils.ansi import raw
 from evennia.utils.create import create_channel
 from evennia.utils.dbserialize import dbserialize

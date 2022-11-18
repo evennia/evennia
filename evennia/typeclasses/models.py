@@ -46,7 +46,13 @@ from evennia.typeclasses.attributes import (
     InMemoryAttributeBackend,
     ModelAttributeBackend,
 )
-from evennia.typeclasses.tags import AliasHandler, PermissionHandler, Tag, TagHandler, TagProperty
+from evennia.typeclasses.tags import (
+    AliasHandler,
+    PermissionHandler,
+    Tag,
+    TagHandler,
+    TagProperty,
+)
 from evennia.utils.idmapper.models import SharedMemoryModel, SharedMemoryModelBase
 from evennia.utils.logger import log_trace
 from evennia.utils.utils import class_from_module, inherits_from, is_iter, lazy_property

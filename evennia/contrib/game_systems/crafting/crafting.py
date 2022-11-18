@@ -126,7 +126,12 @@ from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command
 from evennia.prototypes.spawner import spawn
 from evennia.utils.create import create_object
-from evennia.utils.utils import callables_from_module, inherits_from, iter_to_str, make_iter
+from evennia.utils.utils import (
+    callables_from_module,
+    inherits_from,
+    iter_to_str,
+    make_iter,
+)
 
 _RECIPE_CLASSES = {}
 

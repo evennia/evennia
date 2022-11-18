@@ -5,7 +5,14 @@ communication-commands are instead put on the account level, in the
 Account cmdset. Account commands remain available also to Characters.
 """
 from evennia.commands.cmdset import CmdSet
-from evennia.commands.default import admin, batchprocess, building, general, help, system
+from evennia.commands.default import (
+    admin,
+    batchprocess,
+    building,
+    general,
+    help,
+    system,
+)
 
 
 class CharacterCmdSet(CmdSet):

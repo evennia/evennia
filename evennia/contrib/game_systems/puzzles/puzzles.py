@@ -74,7 +74,14 @@ are spawened on their corresponding location.
 import itertools
 from random import choice
 
-from evennia import CmdSet, DefaultCharacter, DefaultExit, DefaultRoom, DefaultScript, create_script
+from evennia import (
+    CmdSet,
+    DefaultCharacter,
+    DefaultExit,
+    DefaultRoom,
+    DefaultScript,
+    create_script,
+)
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.prototypes.spawner import spawn
 from evennia.utils import logger, search, utils

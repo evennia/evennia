@@ -38,7 +38,13 @@ from evennia.typeclasses.attributes import ModelAttributeBackend, NickHandler
 from evennia.typeclasses.models import TypeclassBase
 from evennia.utils import class_from_module, create, logger
 from evennia.utils.optionhandler import OptionHandler
-from evennia.utils.utils import is_iter, lazy_property, make_iter, to_str, variable_from_module
+from evennia.utils.utils import (
+    is_iter,
+    lazy_property,
+    make_iter,
+    to_str,
+    variable_from_module,
+)
 
 __all__ = ("DefaultAccount", "DefaultGuest")
 

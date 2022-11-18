@@ -9,7 +9,9 @@ from django.conf import settings
 
 from evennia import ScriptDB, logger
 from evennia.contrib.base_systems.custom_gametime import UNITS, gametime_to_realtime
-from evennia.contrib.base_systems.custom_gametime import real_seconds_until as custom_rsu
+from evennia.contrib.base_systems.custom_gametime import (
+    real_seconds_until as custom_rsu,
+)
 from evennia.utils.create import create_script
 from evennia.utils.gametime import real_seconds_until as standard_rsu
 from evennia.utils.utils import class_from_module

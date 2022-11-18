@@ -14,7 +14,12 @@ from django.utils.text import slugify
 
 from evennia.utils import class_from_module
 
-from .mixins import EvenniaCreateView, EvenniaDeleteView, EvenniaDetailView, EvenniaUpdateView
+from .mixins import (
+    EvenniaCreateView,
+    EvenniaDeleteView,
+    EvenniaDetailView,
+    EvenniaUpdateView,
+)
 
 
 class ObjectDetailView(EvenniaDetailView):

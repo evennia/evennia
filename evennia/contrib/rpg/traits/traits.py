@@ -460,7 +460,12 @@ from django.conf import settings
 
 from evennia.utils import logger
 from evennia.utils.dbserialize import _SaverDict
-from evennia.utils.utils import class_from_module, inherits_from, list_to_string, percent
+from evennia.utils.utils import (
+    class_from_module,
+    inherits_from,
+    list_to_string,
+    percent,
+)
 
 # Available Trait classes.
 # This way the user can easily supply their own. Each
