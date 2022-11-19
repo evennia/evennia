@@ -1,12 +1,12 @@
 # This Evennia workflow will deploy the Evennia package automatically to
-# test-pypi and to pypi (if tag was given). 
+# pypi if vNN tag was given.
 #
 
 name: publish-evennia
 
 on: 
   push:
-    branches: [ master, develop ] 
+    tags: ['v*']
 
 jobs: 
   build-and-publish: 
