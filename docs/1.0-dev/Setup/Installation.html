@@ -118,13 +118,16 @@
 </div>
 <p>Installing Evennia doesn’t make anything visible online. Apart from installation and updating, you can develop your game without any internet connection.</p>
 <ul class="simple">
-<li><p>Evennia supports <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9, 3.10 or 3.11.</p></li>
-<li><p>Using a <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">Python virtualenv</span></a> is optional, but <em>highly recommended</em> in order to keep your
-Evennia installation independent from the system libraries.</p></li>
+<li><p>Evennia requires <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9, 3.10 or 3.11 (recommended)</p>
+<ul>
+<li><p>Windows: In the installer, make sure you select <code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">python</span> <span class="pre">to</span> <span class="pre">path</span></code>.  If you have multiple versions of Python installed, use <code class="docutils literal notranslate"><span class="pre">py</span></code> command instead of <code class="docutils literal notranslate"><span class="pre">python</span></code> to have Windows automatically use the latest.</p></li>
+</ul>
+</li>
+<li><p>Using a light-weight  <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">Python virtual environment</span></a> _ is optional, but <em>highly recommended</em> in order to keep your Evennia installation independent from the system libraries. This comes with Python.</p></li>
 <li><p>Don’t install Evennia as administrator or superuser.</p></li>
 <li><p>If you run into trouble, see <a class="reference internal" href="Installation-Troubleshooting.html"><span class="doc std std-doc">installation troubleshooting</span></a>.</p></li>
 </ul>
-<p>Evennia  is managed from the terminal (console/CMD on Windows).  If you have a suitable Python installed, you can install it with</p>
+<p>Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you install Evennia with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia
 </pre></div>
 </div>

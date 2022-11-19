@@ -1,0 +1,296 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.web.api.tests &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.api.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="tests.html">1.0-dev (develop branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.web.api.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests for the REST API.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ObjectDoesNotExist</span>
+<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">reverse</span>
+<span class="kn">from</span> <span class="nn">rest_framework.test</span> <span class="kn">import</span> <span class="n">APIClient</span>
+
+<span class="kn">from</span> <span class="nn">evennia.utils.test_resources</span> <span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+<span class="kn">from</span> <span class="nn">evennia.web.api</span> <span class="kn">import</span> <span class="n">serializers</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;evennia.web.website.urls&quot;</span><span class="p">)),</span>
+    <span class="n">path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^api/&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;evennia.web.api.urls&quot;</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;api&quot;</span><span class="p">)),</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="TestEvenniaRESTApi"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi">[docs]</a><span class="nd">@override_settings</span><span class="p">(</span><span class="n">REST_API_ENABLED</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ROOT_URLCONF</span><span class="o">=</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">AUTH_USERNAME_VALIDATORS</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">class</span> <span class="nc">TestEvenniaRESTApi</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+    <span class="n">client_class</span> <span class="o">=</span> <span class="n">APIClient</span>
+    <span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.setUp"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">is_superuser</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">force_login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">)</span>
+        <span class="c1"># scripts do not have default locks. Without them, even superuser access check fails</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;edit: perm(Admin); examine: perm(Admin); delete: perm(Admin)&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.tearDown"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">ObjectDoesNotExist</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.get_view_details"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.get_view_details">[docs]</a>    <span class="k">def</span> <span class="nf">get_view_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function for generating list of named tuples&quot;&quot;&quot;</span>
+        <span class="n">View</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
+            <span class="s2">&quot;View&quot;</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;view_name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;obj&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;list&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;serializer&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;list_serializer&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;create_data&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;retrieve_data&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">View</span><span class="p">(</span>
+                <span class="s2">&quot;object-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">action</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">],</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectDBSerializer</span><span class="p">,</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectListSerializer</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;object-create-test-name&quot;</span><span class="p">},</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectDBSerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">View</span><span class="p">(</span>
+                <span class="s2">&quot;character-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">action</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2</span><span class="p">],</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectDBSerializer</span><span class="p">,</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectListSerializer</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;character-create-test-name&quot;</span><span class="p">},</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectDBSerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">View</span><span class="p">(</span>
+                <span class="s2">&quot;exit-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">action</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">],</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectDBSerializer</span><span class="p">,</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectListSerializer</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;exit-create-test-name&quot;</span><span class="p">},</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectDBSerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">View</span><span class="p">(</span>
+                <span class="s2">&quot;room-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">action</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">room2</span><span class="p">],</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectDBSerializer</span><span class="p">,</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectListSerializer</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;room-create-test-name&quot;</span><span class="p">},</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ObjectDBSerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">room1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">View</span><span class="p">(</span>
+                <span class="s2">&quot;script-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">action</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="p">,</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="p">],</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ScriptDBSerializer</span><span class="p">,</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ScriptListSerializer</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="s2">&quot;script-create-test-name&quot;</span><span class="p">},</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">ScriptDBSerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">script</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">View</span><span class="p">(</span>
+                <span class="s2">&quot;account-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">action</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="p">,</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="p">],</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">AccountSerializer</span><span class="p">,</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">AccountListSerializer</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;account-create-test-name&quot;</span><span class="p">},</span>
+                <span class="n">serializers</span><span class="o">.</span><span class="n">AccountSerializer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account2</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">views</span></div>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.test_retrieve"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.test_retrieve">[docs]</a>    <span class="k">def</span> <span class="nf">test_retrieve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_view_details</span><span class="p">(</span><span class="s2">&quot;detail&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">views</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Testing </span><span class="si">{}</span><span class="s2"> retrieve&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="p">)):</span>
+                <span class="n">view_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;api:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="p">),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view_url</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">view</span><span class="o">.</span><span class="n">retrieve_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.test_update"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.test_update">[docs]</a>    <span class="k">def</span> <span class="nf">test_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_view_details</span><span class="p">(</span><span class="s2">&quot;detail&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">views</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Testing </span><span class="si">{}</span><span class="s2"> update&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="p">)):</span>
+                <span class="n">view_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;api:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="p">),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+                <span class="c1"># test both PUT (update) and PATCH (partial update) here</span>
+                <span class="k">for</span> <span class="n">new_key</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;foobar&quot;</span><span class="p">,</span> <span class="s2">&quot;put&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;fizzbuzz&quot;</span><span class="p">,</span> <span class="s2">&quot;patch&quot;</span><span class="p">)):</span>
+                    <span class="n">field</span> <span class="o">=</span> <span class="s2">&quot;username&quot;</span> <span class="k">if</span> <span class="s2">&quot;account&quot;</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">view_name</span> <span class="k">else</span> <span class="s2">&quot;db_key&quot;</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span><span class="p">:</span> <span class="n">new_key</span><span class="p">}</span>
+                    <span class="n">response</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span><span class="n">view_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+                    <span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">field</span><span class="p">),</span> <span class="n">new_key</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">],</span> <span class="n">new_key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.test_delete"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.test_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_view_details</span><span class="p">(</span><span class="s2">&quot;detail&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">views</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Testing </span><span class="si">{}</span><span class="s2"> delete&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="p">)):</span>
+                <span class="n">view_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s2">&quot;api:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="p">),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">view_url</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">204</span><span class="p">)</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">ObjectDoesNotExist</span><span class="p">):</span>
+                    <span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.test_list"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.test_list">[docs]</a>    <span class="k">def</span> <span class="nf">test_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_view_details</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">views</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Testing </span><span class="si">{</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">):</span>
+                <span class="n">view_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api:</span><span class="si">{</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">view_url</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertCountEqual</span><span class="p">(</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">view</span><span class="o">.</span><span class="n">list_serializer</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">list</span><span class="p">]</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.test_create"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.test_create">[docs]</a>    <span class="k">def</span> <span class="nf">test_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_view_details</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">views</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Testing </span><span class="si">{</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="si">}</span><span class="s2"> create&quot;</span><span class="p">):</span>
+                <span class="c1"># create is a POST request off of &lt;type&gt;-list</span>
+                <span class="n">view_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api:</span><span class="si">{</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># check failures from not sending required fields</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">view_url</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+                <span class="c1"># check success when sending the required data</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">view_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">view</span><span class="o">.</span><span class="n">create_data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Response was </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestEvenniaRESTApi.test_set_attribute"><a class="viewcode-back" href="../../../../api/evennia.web.api.tests.html#evennia.web.api.tests.TestEvenniaRESTApi.test_set_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">test_set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_view_details</span><span class="p">(</span><span class="s2">&quot;set-attribute&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">views</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">subTest</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Testing </span><span class="si">{</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+                <span class="n">view_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api:</span><span class="si">{</span><span class="n">view</span><span class="o">.</span><span class="n">view_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
+                <span class="c1"># check failures from not sending required fields</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">view_url</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Response was: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># test adding an attribute</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">some_test_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;some_test_attr&quot;</span>
+                <span class="n">attr_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="n">attr_name</span><span class="p">,</span> <span class="s2">&quot;db_value&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">}</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">view_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">attr_data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Response was: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">),</span> <span class="s2">&quot;test_value&quot;</span><span class="p">)</span>
+                <span class="c1"># now test removing it</span>
+                <span class="n">attr_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;db_key&quot;</span><span class="p">:</span> <span class="n">attr_name</span><span class="p">}</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">view_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">attr_data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Response was: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.api.tests</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

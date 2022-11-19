@@ -101,8 +101,71 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-base-systems-unixcommand-tests">
-<h1>evennia.contrib.base_systems.unixcommand.tests<a class="headerlink" href="#evennia-contrib-base-systems-unixcommand-tests" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.base_systems.unixcommand.tests">
+<span id="evennia-contrib-base-systems-unixcommand-tests"></span><h1>evennia.contrib.base_systems.unixcommand.tests<a class="headerlink" href="#module-evennia.contrib.base_systems.unixcommand.tests" title="Permalink to this headline">¶</a></h1>
+<p>Test of the Unixcommand.</p>
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.CmdDummy">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.unixcommand.tests.</code><code class="sig-name descname">CmdDummy</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/unixcommand/tests.html#CmdDummy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.CmdDummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.base_systems.unixcommand.unixcommand.html#evennia.contrib.base_systems.unixcommand.unixcommand.UnixCommand" title="evennia.contrib.base_systems.unixcommand.unixcommand.UnixCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.unixcommand.unixcommand.UnixCommand</span></code></a></p>
+<p>A dummy UnixCommand.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.CmdDummy.key">
+<code class="sig-name descname">key</code><em class="property"> = 'dummy'</em><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.CmdDummy.init_parser">
+<code class="sig-name descname">init_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/unixcommand/tests.html#CmdDummy.init_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.init_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill out options.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.CmdDummy.func">
+<code class="sig-name descname">func</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/unixcommand/tests.html#CmdDummy.func"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to handle the command execution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.CmdDummy.aliases">
+<code class="sig-name descname">aliases</code><em class="property"> = []</em><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.aliases" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.CmdDummy.help_category">
+<code class="sig-name descname">help_category</code><em class="property"> = 'general'</em><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.help_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.CmdDummy.lock_storage">
+<code class="sig-name descname">lock_storage</code><em class="property"> = 'cmd:all();'</em><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.lock_storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.CmdDummy.search_index_entry">
+<code class="sig-name descname">search_index_entry</code><em class="property"> = {'aliases': '', 'category': 'general', 'key': 'dummy', 'no_prefix': ' ', 'tags': '', 'text': 'A dummy UnixCommand.'}</em><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.CmdDummy.search_index_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.unixcommand.tests.</code><code class="sig-name descname">TestUnixCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/unixcommand/tests.html#TestUnixCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaCommandTest" title="evennia.utils.test_resources.BaseEvenniaCommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaCommandTest</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand.test_success">
+<code class="sig-name descname">test_success</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/unixcommand/tests.html#TestUnixCommand.test_success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand.test_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>See the command parsing succeed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand.test_failure">
+<code class="sig-name descname">test_failure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/unixcommand/tests.html#TestUnixCommand.test_failure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.unixcommand.tests.TestUnixCommand.test_failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>If not provided with the right info, should fail.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

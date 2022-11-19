@@ -102,8 +102,34 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-tutorials-evadventure-tests-test-dungeon">
-<h1>evennia.contrib.tutorials.evadventure.tests.test_dungeon<a class="headerlink" href="#evennia-contrib-tutorials-evadventure-tests-test-dungeon" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.tutorials.evadventure.tests.test_dungeon">
+<span id="evennia-contrib-tutorials-evadventure-tests-test-dungeon"></span><h1>evennia.contrib.tutorials.evadventure.tests.test_dungeon<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.tests.test_dungeon" title="Permalink to this headline">¶</a></h1>
+<p>Test Dungeon orchestrator / procedurally generated dungeon rooms.</p>
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.tests.test_dungeon.</code><code class="sig-name descname">TestDungeon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_dungeon.html#TestDungeon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorials.evadventure.tests.mixins.html#evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin" title="evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin</span></code></a>, <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a></p>
+<p>Test with a starting room and a character moving through the dungeon,
+generating more and more rooms as they go.</p>
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_dungeon.html#TestDungeon.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a start room with exits leading away from it</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon.test_start_room">
+<code class="sig-name descname">test_start_room</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_dungeon.html#TestDungeon.test_start_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon.test_start_room" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test move through one of the start room exits.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon.test_different_start_directions">
+<code class="sig-name descname">test_different_start_directions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_dungeon.html#TestDungeon.test_different_start_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_dungeon.TestDungeon.test_different_start_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

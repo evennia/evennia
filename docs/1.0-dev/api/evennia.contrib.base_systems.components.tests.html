@@ -101,8 +101,493 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-base-systems-components-tests">
-<h1>evennia.contrib.base_systems.components.tests<a class="headerlink" href="#evennia-contrib-base-systems-components-tests" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.base_systems.components.tests">
+<span id="evennia-contrib-base-systems-components-tests"></span><h1>evennia.contrib.base_systems.components.tests<a class="headerlink" href="#module-evennia.contrib.base_systems.components.tests" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestA">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">ComponentTestA</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#ComponentTestA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.component.Component</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestA.name">
+<code class="sig-name descname">name</code><em class="property"> = 'test_a'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestA.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestA.my_int">
+<code class="sig-name descname">my_int</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestA.my_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Attribute Descriptor.
+Allows you to set attributes related to a component on the class.
+It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestA.my_list">
+<code class="sig-name descname">my_list</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestA.my_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Attribute Descriptor.
+Allows you to set attributes related to a component on the class.
+It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestB">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">ComponentTestB</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#ComponentTestB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.component.Component</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestB.name">
+<code class="sig-name descname">name</code><em class="property"> = 'test_b'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestB.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestB.my_int">
+<code class="sig-name descname">my_int</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestB.my_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Attribute Descriptor.
+Allows you to set attributes related to a component on the class.
+It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestB.my_list">
+<code class="sig-name descname">my_list</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestB.my_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Attribute Descriptor.
+Allows you to set attributes related to a component on the class.
+It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestB.default_tag">
+<code class="sig-name descname">default_tag</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestB.default_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Tags Descriptor.
+Allows you to set Tags related to a component on the class.
+The tags are set with a prefixed category, so it can support
+multiple tags or enforce a single one.</p>
+<p>Default value of a tag is added when the component is registered.
+Tags are removed if the component itself is removed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestB.single_tag">
+<code class="sig-name descname">single_tag</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestB.single_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Tags Descriptor.
+Allows you to set Tags related to a component on the class.
+The tags are set with a prefixed category, so it can support
+multiple tags or enforce a single one.</p>
+<p>Default value of a tag is added when the component is registered.
+Tags are removed if the component itself is removed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestB.multiple_tags">
+<code class="sig-name descname">multiple_tags</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestB.multiple_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Tags Descriptor.
+Allows you to set Tags related to a component on the class.
+The tags are set with a prefixed category, so it can support
+multiple tags or enforce a single one.</p>
+<p>Default value of a tag is added when the component is registered.
+Tags are removed if the component itself is removed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentTestB.default_single_tag">
+<code class="sig-name descname">default_single_tag</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentTestB.default_single_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Tags Descriptor.
+Allows you to set Tags related to a component on the class.
+The tags are set with a prefixed category, so it can support
+multiple tags or enforce a single one.</p>
+<p>Default value of a tag is added when the component is registered.
+Tags are removed if the component itself is removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.RuntimeComponentTestC">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">RuntimeComponentTestC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#RuntimeComponentTestC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.RuntimeComponentTestC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.component.Component</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.RuntimeComponentTestC.name">
+<code class="sig-name descname">name</code><em class="property"> = 'test_c'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.RuntimeComponentTestC.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.RuntimeComponentTestC.my_int">
+<code class="sig-name descname">my_int</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.RuntimeComponentTestC.my_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Attribute Descriptor.
+Allows you to set attributes related to a component on the class.
+It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.RuntimeComponentTestC.my_dict">
+<code class="sig-name descname">my_dict</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.RuntimeComponentTestC.my_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Attribute Descriptor.
+Allows you to set attributes related to a component on the class.
+It uses AttributeProperty under the hood but prefixes the key with the component name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.RuntimeComponentTestC.added_tag">
+<code class="sig-name descname">added_tag</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.RuntimeComponentTestC.added_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component Tags Descriptor.
+Allows you to set Tags related to a component on the class.
+The tags are set with a prefixed category, so it can support
+multiple tags or enforce a single one.</p>
+<p>Default value of a tag is added when the component is registered.
+Tags are removed if the component itself is removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.CharacterWithComponents">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">CharacterWithComponents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">db_key</span></em>, <em class="sig-param"><span class="n">db_typeclass_path</span></em>, <em class="sig-param"><span class="n">db_date_created</span></em>, <em class="sig-param"><span class="n">db_lock_storage</span></em>, <em class="sig-param"><span class="n">db_account</span></em>, <em class="sig-param"><span class="n">db_sessid</span></em>, <em class="sig-param"><span class="n">db_location</span></em>, <em class="sig-param"><span class="n">db_home</span></em>, <em class="sig-param"><span class="n">db_destination</span></em>, <em class="sig-param"><span class="n">db_cmdset_storage</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#CharacterWithComponents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHolderMixin" title="evennia.contrib.base_systems.components.holder.ComponentHolderMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.holder.ComponentHolderMixin</span></code></a>, <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.CharacterWithComponents.test_a">
+<code class="sig-name descname">test_a</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents.test_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows you to register a component on a typeclass.
+Components registered with this property are automatically added
+to any instance of this typeclass.</p>
+<p>Defaults can be overridden for this typeclass by passing kwargs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.CharacterWithComponents.test_b">
+<code class="sig-name descname">test_b</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents.test_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>This allows you to register a component on a typeclass.
+Components registered with this property are automatically added
+to any instance of this typeclass.</p>
+<p>Defaults can be overridden for this typeclass by passing kwargs</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.tests.CharacterWithComponents.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.DoesNotExist" title="evennia.objects.objects.DefaultCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.tests.CharacterWithComponents.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned" title="evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.CharacterWithComponents.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.base_systems.components.tests.CharacterWithComponents'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.CharacterWithComponents.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'CharacterWithComponents'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">TestComponents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.character_typeclass">
+<code class="sig-name descname">character_typeclass</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.character_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.contrib.base_systems.components.tests.CharacterWithComponents" title="evennia.contrib.base_systems.components.tests.CharacterWithComponents"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterWithComponents</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_character_has_class_components">
+<code class="sig-name descname">test_character_has_class_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_character_has_class_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_character_has_class_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_character_instances_components_properly">
+<code class="sig-name descname">test_character_instances_components_properly</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_character_instances_components_properly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_character_instances_components_properly" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_character_assigns_default_value">
+<code class="sig-name descname">test_character_assigns_default_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_character_assigns_default_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_character_assigns_default_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_character_assigns_default_provided_values">
+<code class="sig-name descname">test_character_assigns_default_provided_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_character_assigns_default_provided_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_character_assigns_default_provided_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_character_can_register_runtime_component">
+<code class="sig-name descname">test_character_can_register_runtime_component</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_character_can_register_runtime_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_character_can_register_runtime_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_handler_can_add_default_component">
+<code class="sig-name descname">test_handler_can_add_default_component</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_handler_can_add_default_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_handler_can_add_default_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_handler_has_returns_true_for_any_components">
+<code class="sig-name descname">test_handler_has_returns_true_for_any_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_handler_has_returns_true_for_any_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_handler_has_returns_true_for_any_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_can_remove_component">
+<code class="sig-name descname">test_can_remove_component</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_can_remove_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_can_remove_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_can_remove_component_by_name">
+<code class="sig-name descname">test_can_remove_component_by_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_can_remove_component_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_can_remove_component_by_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_cannot_replace_component">
+<code class="sig-name descname">test_cannot_replace_component</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_cannot_replace_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_cannot_replace_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_can_get_component">
+<code class="sig-name descname">test_can_get_component</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_can_get_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_can_get_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_can_access_component_regular_get">
+<code class="sig-name descname">test_can_access_component_regular_get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_can_access_component_regular_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_can_access_component_regular_get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_returns_none_with_regular_get_when_no_attribute">
+<code class="sig-name descname">test_returns_none_with_regular_get_when_no_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_returns_none_with_regular_get_when_no_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_returns_none_with_regular_get_when_no_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_host_has_class_component_tags">
+<code class="sig-name descname">test_host_has_class_component_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_host_has_class_component_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_host_has_class_component_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_host_has_added_component_tags">
+<code class="sig-name descname">test_host_has_added_component_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_host_has_added_component_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_host_has_added_component_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_host_has_added_default_component_tags">
+<code class="sig-name descname">test_host_has_added_default_component_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_host_has_added_default_component_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_host_has_added_default_component_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_host_remove_component_tags">
+<code class="sig-name descname">test_host_remove_component_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_host_remove_component_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_host_remove_component_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_host_remove_by_name_component_tags">
+<code class="sig-name descname">test_host_remove_by_name_component_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_host_remove_by_name_component_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_host_remove_by_name_component_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_component_tags_only_hold_one_value_when_enforce_single">
+<code class="sig-name descname">test_component_tags_only_hold_one_value_when_enforce_single</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_component_tags_only_hold_one_value_when_enforce_single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_component_tags_only_hold_one_value_when_enforce_single" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_component_tags_default_value_is_overridden_when_enforce_single">
+<code class="sig-name descname">test_component_tags_default_value_is_overridden_when_enforce_single</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_component_tags_default_value_is_overridden_when_enforce_single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_component_tags_default_value_is_overridden_when_enforce_single" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponents.test_component_tags_support_multiple_values_by_default">
+<code class="sig-name descname">test_component_tags_support_multiple_values_by_default</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponents.test_component_tags_support_multiple_values_by_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponents.test_component_tags_support_multiple_values_by_default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">CharWithSignal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">db_key</span></em>, <em class="sig-param"><span class="n">db_typeclass_path</span></em>, <em class="sig-param"><span class="n">db_date_created</span></em>, <em class="sig-param"><span class="n">db_lock_storage</span></em>, <em class="sig-param"><span class="n">db_account</span></em>, <em class="sig-param"><span class="n">db_sessid</span></em>, <em class="sig-param"><span class="n">db_location</span></em>, <em class="sig-param"><span class="n">db_home</span></em>, <em class="sig-param"><span class="n">db_destination</span></em>, <em class="sig-param"><span class="n">db_cmdset_storage</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#CharWithSignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.base_systems.components.holder.html#evennia.contrib.base_systems.components.holder.ComponentHolderMixin" title="evennia.contrib.base_systems.components.holder.ComponentHolderMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.holder.ComponentHolderMixin</span></code></a>, <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal.my_signal">
+<code class="sig-name descname">my_signal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#CharWithSignal.my_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal.my_signal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal.my_other_signal">
+<code class="sig-name descname">my_other_signal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#CharWithSignal.my_other_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal.my_other_signal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal.my_response">
+<code class="sig-name descname">my_response</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#CharWithSignal.my_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal.my_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal.my_other_response">
+<code class="sig-name descname">my_other_response</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#CharWithSignal.my_other_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal.my_other_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.DoesNotExist" title="evennia.objects.objects.DefaultCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned" title="evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.base_systems.components.tests.CharWithSignal'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.CharWithSignal.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'CharWithSignal'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.CharWithSignal.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentWithSignal">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">ComponentWithSignal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#ComponentWithSignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentWithSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.base_systems.components.component.html#evennia.contrib.base_systems.components.component.Component" title="evennia.contrib.base_systems.components.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.components.component.Component</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentWithSignal.name">
+<code class="sig-name descname">name</code><em class="property"> = 'test_signal_a'</em><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentWithSignal.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_signal">
+<code class="sig-name descname">my_signal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#ComponentWithSignal.my_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_signal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_other_signal">
+<code class="sig-name descname">my_other_signal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#ComponentWithSignal.my_other_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_other_signal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_response">
+<code class="sig-name descname">my_response</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#ComponentWithSignal.my_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_other_response">
+<code class="sig-name descname">my_other_response</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#ComponentWithSignal.my_other_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_other_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_component_response">
+<code class="sig-name descname">my_component_response</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#ComponentWithSignal.my_component_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.ComponentWithSignal.my_component_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.components.tests.</code><code class="sig-name descname">TestComponentSignals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a></p>
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_host_can_register_as_listener">
+<code class="sig-name descname">test_host_can_register_as_listener</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_host_can_register_as_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_host_can_register_as_listener" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_host_can_register_as_responder">
+<code class="sig-name descname">test_host_can_register_as_responder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_host_can_register_as_responder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_host_can_register_as_responder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_can_register_as_listener">
+<code class="sig-name descname">test_component_can_register_as_listener</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_component_can_register_as_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_can_register_as_listener" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_can_register_as_responder">
+<code class="sig-name descname">test_component_can_register_as_responder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_component_can_register_as_responder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_can_register_as_responder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_add_listener">
+<code class="sig-name descname">test_signals_can_add_listener</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_can_add_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_add_listener" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_add_responder">
+<code class="sig-name descname">test_signals_can_add_responder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_can_add_responder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_add_responder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_remove_listener">
+<code class="sig-name descname">test_signals_can_remove_listener</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_can_remove_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_remove_listener" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_remove_responder">
+<code class="sig-name descname">test_signals_can_remove_responder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_can_remove_responder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_remove_responder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_trigger_with_args">
+<code class="sig-name descname">test_signals_can_trigger_with_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_can_trigger_with_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_trigger_with_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_query_with_args">
+<code class="sig-name descname">test_signals_can_query_with_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_can_query_with_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_query_with_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_trigger_does_not_fail_without_listener">
+<code class="sig-name descname">test_signals_trigger_does_not_fail_without_listener</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_trigger_does_not_fail_without_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_trigger_does_not_fail_without_listener" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_query_does_not_fail_wihout_responders">
+<code class="sig-name descname">test_signals_query_does_not_fail_wihout_responders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_query_does_not_fail_wihout_responders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_query_does_not_fail_wihout_responders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_query_with_aggregate">
+<code class="sig-name descname">test_signals_query_with_aggregate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_query_with_aggregate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_query_with_aggregate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_add_object_listeners_and_responders">
+<code class="sig-name descname">test_signals_can_add_object_listeners_and_responders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_can_add_object_listeners_and_responders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_add_object_listeners_and_responders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_remove_object_listeners_and_responders">
+<code class="sig-name descname">test_signals_can_remove_object_listeners_and_responders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_signals_can_remove_object_listeners_and_responders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_signals_can_remove_object_listeners_and_responders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_handler_signals_connected_when_adding_default_component">
+<code class="sig-name descname">test_component_handler_signals_connected_when_adding_default_component</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_component_handler_signals_connected_when_adding_default_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_handler_signals_connected_when_adding_default_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_handler_signals_disconnected_when_removing_component">
+<code class="sig-name descname">test_component_handler_signals_disconnected_when_removing_component</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_component_handler_signals_disconnected_when_removing_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_handler_signals_disconnected_when_removing_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_handler_signals_disconnected_when_removing_component_by_name">
+<code class="sig-name descname">test_component_handler_signals_disconnected_when_removing_component_by_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/tests.html#TestComponentSignals.test_component_handler_signals_disconnected_when_removing_component_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.tests.TestComponentSignals.test_component_handler_signals_disconnected_when_removing_component_by_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

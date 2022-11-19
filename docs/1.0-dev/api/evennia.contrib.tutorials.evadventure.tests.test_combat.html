@@ -102,8 +102,170 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-tutorials-evadventure-tests-test-combat">
-<h1>evennia.contrib.tutorials.evadventure.tests.test_combat<a class="headerlink" href="#evennia-contrib-tutorials-evadventure-tests-test-combat" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.tutorials.evadventure.tests.test_combat">
+<span id="evennia-contrib-tutorials-evadventure-tests-test-combat"></span><h1>evennia.contrib.tutorials.evadventure.tests.test_combat<a class="headerlink" href="#module-evennia.contrib.tutorials.evadventure.tests.test_combat" title="Permalink to this headline">¶</a></h1>
+<p>Test EvAdventure combat.</p>
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.tests.test_combat.</code><code class="sig-name descname">EvAdventureTurnbasedCombatHandlerTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorials.evadventure.tests.mixins.html#evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin" title="evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin</span></code></a>, <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a></p>
+<p>Test methods on the turn-based combat handler.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.maxDiff">
+<code class="sig-name descname">maxDiff</code><em class="property"> = None</em><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.maxDiff" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_remove_combatant">
+<code class="sig-name descname">test_remove_combatant</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_remove_combatant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_remove_combatant" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_start_turn">
+<code class="sig-name descname">test_start_turn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_start_turn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_start_turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_end_of_turn__empty">
+<code class="sig-name descname">test_end_of_turn__empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_end_of_turn__empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_end_of_turn__empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_add_combatant">
+<code class="sig-name descname">test_add_combatant</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_add_combatant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_add_combatant" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_start_combat">
+<code class="sig-name descname">test_start_combat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_start_combat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_start_combat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_combat_summary">
+<code class="sig-name descname">test_combat_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_combat_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_combat_summary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_msg">
+<code class="sig-name descname">test_msg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_msg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_gain_advantage">
+<code class="sig-name descname">test_gain_advantage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_gain_advantage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_gain_advantage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_gain_disadvantage">
+<code class="sig-name descname">test_gain_disadvantage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_gain_disadvantage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_gain_disadvantage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_flee">
+<code class="sig-name descname">test_flee</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_flee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_flee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_unflee">
+<code class="sig-name descname">test_unflee</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_unflee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_unflee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_register_and_run_action">
+<code class="sig-name descname">test_register_and_run_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_register_and_run_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_register_and_run_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_get_available_actions">
+<code class="sig-name descname">test_get_available_actions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatHandlerTest.test_get_available_actions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatHandlerTest.test_get_available_actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.tutorials.evadventure.tests.test_combat.</code><code class="sig-name descname">EvAdventureTurnbasedCombatActionTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.tutorials.evadventure.tests.mixins.html#evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin" title="evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.tutorials.evadventure.tests.mixins.EvAdventureMixin</span></code></a>, <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTest</span></code></a></p>
+<p>Test actions in turn_based combat.</p>
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_do_nothing">
+<code class="sig-name descname">test_do_nothing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_do_nothing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_do_nothing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_attack__miss">
+<code class="sig-name descname">test_attack__miss</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_randint</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_attack__miss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_attack__miss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_attack__success__still_alive">
+<code class="sig-name descname">test_attack__success__still_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_randint</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_attack__success__still_alive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_attack__success__still_alive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_attack__success__kill">
+<code class="sig-name descname">test_attack__success__kill</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_randint</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_attack__success__kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_attack__success__kill" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_stunt_fail">
+<code class="sig-name descname">test_stunt_fail</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_randint</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_stunt_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_stunt_fail" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_stunt_advantage__success">
+<code class="sig-name descname">test_stunt_advantage__success</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_randint</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_stunt_advantage__success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_stunt_advantage__success" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_stunt_disadvantage__success">
+<code class="sig-name descname">test_stunt_disadvantage__success</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_randint</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_stunt_disadvantage__success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_stunt_disadvantage__success" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_use_item">
+<code class="sig-name descname">test_use_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_use_item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_use_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use up a potion during combat.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_swap_wielded_weapon_or_spell">
+<code class="sig-name descname">test_swap_wielded_weapon_or_spell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_swap_wielded_weapon_or_spell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_swap_wielded_weapon_or_spell" title="Permalink to this definition">¶</a></dt>
+<dd><p>First draw a weapon (from empty fists), then swap that out to another weapon, then
+swap to a spell rune.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_flee__success">
+<code class="sig-name descname">test_flee__success</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_flee__success"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_flee__success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test fleeing twice, leading to leaving combat.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_flee__blocked">
+<code class="sig-name descname">test_flee__blocked</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_randint</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/evadventure/tests/test_combat.html#EvAdventureTurnbasedCombatActionTest.test_flee__blocked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.tutorials.evadventure.tests.test_combat.EvAdventureTurnbasedCombatActionTest.test_flee__blocked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

@@ -101,8 +101,149 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-rpg-buffs-tests">
-<h1>evennia.contrib.rpg.buffs.tests<a class="headerlink" href="#evennia-contrib-rpg-buffs-tests" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.rpg.buffs.tests">
+<span id="evennia-contrib-rpg-buffs-tests"></span><h1>evennia.contrib.rpg.buffs.tests<a class="headerlink" href="#module-evennia.contrib.rpg.buffs.tests" title="Permalink to this headline">¶</a></h1>
+<p>Tests for the buff system contrib</p>
+<dl class="py class">
+<dt id="evennia.contrib.rpg.buffs.tests.BuffableObject">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.buffs.tests.</code><code class="sig-name descname">BuffableObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">db_key</span></em>, <em class="sig-param"><span class="n">db_typeclass_path</span></em>, <em class="sig-param"><span class="n">db_date_created</span></em>, <em class="sig-param"><span class="n">db_lock_storage</span></em>, <em class="sig-param"><span class="n">db_account</span></em>, <em class="sig-param"><span class="n">db_sessid</span></em>, <em class="sig-param"><span class="n">db_location</span></em>, <em class="sig-param"><span class="n">db_home</span></em>, <em class="sig-param"><span class="n">db_destination</span></em>, <em class="sig-param"><span class="n">db_cmdset_storage</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#BuffableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.BuffableObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.tests.BuffableObject.stat1">
+<code class="sig-name descname">stat1</code><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.BuffableObject.stat1" title="Permalink to this definition">¶</a></dt>
+<dd><p>An example of a way you can extend AttributeProperty to create properties that automatically check buffs for you.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.tests.BuffableObject.buffs">
+<code class="sig-name descname">buffs</code><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#BuffableObject.buffs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.BuffableObject.buffs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.BuffableObject.at_init">
+<code class="sig-name descname">at_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#BuffableObject.at_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.BuffableObject.at_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is always called whenever this object is initiated –
+that is, whenever it its typeclass is cached from memory. This
+happens on-demand first time the object is used or activated
+in some way after being created but also after each server
+restart or reload.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.rpg.buffs.tests.BuffableObject.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.BuffableObject.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.rpg.buffs.tests.BuffableObject.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.BuffableObject.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultObject.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.tests.BuffableObject.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.rpg.buffs.tests.BuffableObject'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.BuffableObject.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.buffs.tests.BuffableObject.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'BuffableObject'</em><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.BuffableObject.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.buffs.tests.</code><code class="sig-name descname">TestBuffsAndHandler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a></p>
+<p>This tests a number of things about buffs.</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>done after every test_* method below</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_addremove">
+<code class="sig-name descname">test_addremove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_addremove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_addremove" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests adding and removing buffs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_getters">
+<code class="sig-name descname">test_getters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_getters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_getters" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests all built-in getters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_details">
+<code class="sig-name descname">test_details</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests that buff details like name and flavor are correct; also test modifier viewing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_modify">
+<code class="sig-name descname">test_modify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_modify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_modify" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests to ensure that values are modified correctly, and stack across mods</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_trigger">
+<code class="sig-name descname">test_trigger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests to ensure triggers correctly fire</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_context_conditional">
+<code class="sig-name descname">test_context_conditional</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_context_conditional"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_context_conditional" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests to ensure context is passed to buffs, and also tests conditionals</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_complex">
+<code class="sig-name descname">test_complex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_complex" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests a complex mod (conditionals, multiple triggers/mods)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_timing">
+<code class="sig-name descname">test_timing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_delay</span><span class="p">:</span> <span class="n">unittest.mock.Mock</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_timing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_timing" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests timing-related features, such as ticking and duration</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_cacheattrlink">
+<code class="sig-name descname">test_cacheattrlink</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_cacheattrlink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_cacheattrlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests the link between the instance attribute and the cache attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_buffableproperty">
+<code class="sig-name descname">test_buffableproperty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_buffableproperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_buffableproperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests buffable properties</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_stresstest">
+<code class="sig-name descname">test_stresstest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_stresstest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_stresstest" title="Permalink to this definition">¶</a></dt>
+<dd><p>tests large amounts of buffs, and related removal methods</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_modgen">
+<code class="sig-name descname">test_modgen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/buffs/tests.html#TestBuffsAndHandler.test_modgen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_modgen" title="Permalink to this definition">¶</a></dt>
+<dd><p>test generating mods on the fly</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

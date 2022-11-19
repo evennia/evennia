@@ -101,8 +101,579 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="evennia-contrib-rpg-traits-tests">
-<h1>evennia.contrib.rpg.traits.tests<a class="headerlink" href="#evennia-contrib-rpg-traits-tests" title="Permalink to this headline">¶</a></h1>
+  <section id="module-evennia.contrib.rpg.traits.tests">
+<span id="evennia-contrib-rpg-traits-tests"></span><h1>evennia.contrib.rpg.traits.tests<a class="headerlink" href="#module-evennia.contrib.rpg.traits.tests" title="Permalink to this headline">¶</a></h1>
+<p>Unit test module for Trait classes.</p>
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TraitHandlerTest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.tests._TraitHandlerBase</span></code></p>
+<p>Testing for TraitHandler</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_add_trait">
+<code class="sig-name descname">test_add_trait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.test_add_trait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_add_trait" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_cache">
+<code class="sig-name descname">test_cache</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.test_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cache should not be set until first get</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_setting">
+<code class="sig-name descname">test_setting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.test_setting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_setting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don’t allow setting stuff on traithandler</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_getting">
+<code class="sig-name descname">test_getting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.test_getting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_getting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test we are getting data from the dbstore</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_all">
+<code class="sig-name descname">test_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.test_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test all method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_remove">
+<code class="sig-name descname">test_remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.test_remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test remove method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_clear">
+<code class="sig-name descname">test_clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.test_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test clear method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_trait_db_connection">
+<code class="sig-name descname">test_trait_db_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitHandlerTest.test_trait_db_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_trait_db_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that updating a trait property actually updates value in db</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TestTrait">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TestTrait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTrait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTrait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.tests._TraitHandlerBase</span></code></p>
+<p>Test the base Trait class</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTrait.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTrait.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTrait.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTrait.test_init">
+<code class="sig-name descname">test_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTrait.test_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTrait.test_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTrait.test_validate_input__valid">
+<code class="sig-name descname">test_validate_input__valid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTrait.test_validate_input__valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTrait.test_validate_input__valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test valid validation input</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTrait.test_validate_input__fail">
+<code class="sig-name descname">test_validate_input__fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTrait.test_validate_input__fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTrait.test_validate_input__fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test failing validation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTrait.test_trait_getset">
+<code class="sig-name descname">test_trait_getset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTrait.test_trait_getset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTrait.test_trait_getset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get-set-del operations on trait</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTrait.test_repr">
+<code class="sig-name descname">test_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTrait.test_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTrait.test_repr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitStatic">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TestTraitStatic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitStatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitStatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.tests._TraitHandlerBase</span></code></p>
+<p>Test for static Traits</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitStatic.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitStatic.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitStatic.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitStatic.test_init">
+<code class="sig-name descname">test_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitStatic.test_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitStatic.test_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitStatic.test_value">
+<code class="sig-name descname">test_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitStatic.test_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitStatic.test_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>value is (base + mod) * mult</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitStatic.test_delete">
+<code class="sig-name descname">test_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitStatic.test_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitStatic.test_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deleting resets to default.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TestTraitCounter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.tests._TraitHandlerBase</span></code></p>
+<p>Test for counter- Traits</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_init">
+<code class="sig-name descname">test_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_value">
+<code class="sig-name descname">test_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>value is (current + mod) * mult, where current defaults to base</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__minmax">
+<code class="sig-name descname">test_boundaries__minmax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_boundaries__minmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__minmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test range</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__bigmod">
+<code class="sig-name descname">test_boundaries__bigmod</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_boundaries__bigmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__bigmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>add a big mod</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__change_boundaries">
+<code class="sig-name descname">test_boundaries__change_boundaries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_boundaries__change_boundaries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__change_boundaries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change boundaries after base/mod change</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__disable">
+<code class="sig-name descname">test_boundaries__disable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_boundaries__disable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__disable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable and re-enable boundaries</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__inverse">
+<code class="sig-name descname">test_boundaries__inverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_boundaries__inverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__inverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set inverse boundaries - limited by base</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_current">
+<code class="sig-name descname">test_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifying current value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_delete">
+<code class="sig-name descname">test_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deleting resets to default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_percentage">
+<code class="sig-name descname">test_percentage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_percentage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_percentage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test percentage calculation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounter.test_descs">
+<code class="sig-name descname">test_descs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounter.test_descs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_descs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test descriptions</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounterTimed">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TestTraitCounterTimed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounterTimed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounterTimed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.tests._TraitHandlerBase</span></code></p>
+<p>Test for trait with timer component</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounterTimed.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.test_timer_rate">
+<code class="sig-name descname">test_timer_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounterTimed.test_timer_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.test_timer_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test time stepping</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.test_timer_ratetarget">
+<code class="sig-name descname">test_timer_ratetarget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitCounterTimed.test_timer_ratetarget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.test_timer_ratetarget" title="Permalink to this definition">¶</a></dt>
+<dd><p>test ratetarget</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TestTraitGauge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.tests._TraitHandlerBase</span></code></p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_init">
+<code class="sig-name descname">test_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_value">
+<code class="sig-name descname">test_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>value is current, where current defaults to base + mod</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__minmax">
+<code class="sig-name descname">test_boundaries__minmax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_boundaries__minmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__minmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test range</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__bigmod">
+<code class="sig-name descname">test_boundaries__bigmod</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_boundaries__bigmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__bigmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>add a big mod</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__change_boundaries">
+<code class="sig-name descname">test_boundaries__change_boundaries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_boundaries__change_boundaries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__change_boundaries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change boundaries after current change</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__disable">
+<code class="sig-name descname">test_boundaries__disable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_boundaries__disable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__disable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable and re-enable boundary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__inverse">
+<code class="sig-name descname">test_boundaries__inverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_boundaries__inverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__inverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to set reversed boundaries</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_current">
+<code class="sig-name descname">test_current</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifying current value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_delete">
+<code class="sig-name descname">test_delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deleting resets to default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_percentage">
+<code class="sig-name descname">test_percentage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_percentage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_percentage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test percentage calculation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGauge.test_descs">
+<code class="sig-name descname">test_descs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGauge.test_descs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_descs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test descriptions</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TestTraitGaugeTimed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGaugeTimed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.tests._TraitHandlerBase</span></code></p>
+<p>Test for trait with timer component</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGaugeTimed.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.test_timer_rate">
+<code class="sig-name descname">test_timer_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGaugeTimed.test_timer_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.test_timer_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test time stepping</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.test_timer_ratetarget">
+<code class="sig-name descname">test_timer_ratetarget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mock_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitGaugeTimed.test_timer_ratetarget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.test_timer_ratetarget" title="Permalink to this definition">¶</a></dt>
+<dd><p>test ratetarget</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TestNumericTraitOperators</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase" title="evennia.utils.test_resources.BaseEvenniaTestCase"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTestCase</span></code></a></p>
+<p>Test case for numeric magic method implementations.</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_pos_shortcut">
+<code class="sig-name descname">test_pos_shortcut</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.test_pos_shortcut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_pos_shortcut" title="Permalink to this definition">¶</a></dt>
+<dd><p>overridden unary + operator returns <strong>value</strong> property</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_add_traits">
+<code class="sig-name descname">test_add_traits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.test_add_traits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_add_traits" title="Permalink to this definition">¶</a></dt>
+<dd><p>test addition of <strong>Trait</strong> objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_sub_traits">
+<code class="sig-name descname">test_sub_traits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.test_sub_traits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_sub_traits" title="Permalink to this definition">¶</a></dt>
+<dd><p>test subtraction of <strong>Trait</strong> objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_mul_traits">
+<code class="sig-name descname">test_mul_traits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.test_mul_traits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_mul_traits" title="Permalink to this definition">¶</a></dt>
+<dd><p>test multiplication of <strong>Trait</strong> objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_floordiv">
+<code class="sig-name descname">test_floordiv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.test_floordiv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_floordiv" title="Permalink to this definition">¶</a></dt>
+<dd><p>test floor division of <strong>Trait</strong> objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_comparisons_traits">
+<code class="sig-name descname">test_comparisons_traits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.test_comparisons_traits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_comparisons_traits" title="Permalink to this definition">¶</a></dt>
+<dd><p>test equality comparison between <strong>Trait</strong> objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_comparisons_numeric">
+<code class="sig-name descname">test_comparisons_numeric</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestNumericTraitOperators.test_comparisons_numeric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_comparisons_numeric" title="Permalink to this definition">¶</a></dt>
+<dd><p>equality comparisons between <strong>Trait</strong> and numeric</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.DummyCharacter">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">DummyCharacter</code><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#DummyCharacter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.DummyCharacter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.rpg.traits.tests._MockObj</span></code></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.traits.tests.DummyCharacter.strength">
+<code class="sig-name descname">strength</code><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.DummyCharacter.strength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows for applying traits as individual properties directly on the parent class
+instead for properties on the <strong>.traits</strong> handler. So with this you could access data e.g. as
+<strong>character.hp.value</strong> instead of <strong>character.traits.hp.value</strong>. This still uses the traitshandler
+under the hood.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;STR&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                            <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Optional extra</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.traits.tests.DummyCharacter.hunting">
+<code class="sig-name descname">hunting</code><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.DummyCharacter.hunting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows for applying traits as individual properties directly on the parent class
+instead for properties on the <strong>.traits</strong> handler. So with this you could access data e.g. as
+<strong>character.hp.value</strong> instead of <strong>character.traits.hp.value</strong>. This still uses the traitshandler
+under the hood.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;STR&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                            <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Optional extra</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.traits.tests.DummyCharacter.health">
+<code class="sig-name descname">health</code><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.DummyCharacter.health" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows for applying traits as individual properties directly on the parent class
+instead for properties on the <strong>.traits</strong> handler. So with this you could access data e.g. as
+<strong>character.hp.value</strong> instead of <strong>character.traits.hp.value</strong>. This still uses the traitshandler
+under the hood.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;STR&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                            <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Optional extra</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitFields">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TestTraitFields</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitFields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTestCase" title="evennia.utils.test_resources.BaseEvenniaTestCase"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaTestCase</span></code></a></p>
+<p>Test the TraitField class.</p>
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TestTraitFields.test_traitfields">
+<code class="sig-name descname">test_traitfields</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TestTraitFields.test_traitfields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TestTraitFields.test_traitfields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TraitContribTestingChar">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TraitContribTestingChar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">db_key</span></em>, <em class="sig-param"><span class="n">db_typeclass_path</span></em>, <em class="sig-param"><span class="n">db_date_created</span></em>, <em class="sig-param"><span class="n">db_lock_storage</span></em>, <em class="sig-param"><span class="n">db_account</span></em>, <em class="sig-param"><span class="n">db_sessid</span></em>, <em class="sig-param"><span class="n">db_location</span></em>, <em class="sig-param"><span class="n">db_home</span></em>, <em class="sig-param"><span class="n">db_destination</span></em>, <em class="sig-param"><span class="n">db_cmdset_storage</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitContribTestingChar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitContribTestingChar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter" title="evennia.objects.objects.DefaultCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter</span></code></a></p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.traits.tests.TraitContribTestingChar.HP">
+<code class="sig-name descname">HP</code><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.HP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows for applying traits as individual properties directly on the parent class
+instead for properties on the <strong>.traits</strong> handler. So with this you could access data e.g. as
+<strong>character.hp.value</strong> instead of <strong>character.traits.hp.value</strong>. This still uses the traitshandler
+under the hood.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span> <span class="nn">evennia.contrib.rpg.traits</span> <span class="kn">import</span> <span class="n">TraitProperty</span>
+
+<span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">DefaultCharacter</span><span class="p">):</span>
+
+    <span class="n">strength</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;STR&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">hunting</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="s2">&quot;Hunting Skill&quot;</span><span class="p">,</span> <span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;counter&quot;</span><span class="p">,</span>
+                            <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">health</span> <span class="o">=</span> <span class="n">TraitProperty</span><span class="p">(</span><span class="n">trait_type</span><span class="o">=</span><span class="s2">&quot;gauge&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Optional extra</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.rpg.traits.tests.TraitContribTestingChar.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.DoesNotExist" title="evennia.objects.objects.DefaultCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="evennia.contrib.rpg.traits.tests.TraitContribTestingChar.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned" title="evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.traits.tests.TraitContribTestingChar.path">
+<code class="sig-name descname">path</code><em class="property"> = 'evennia.contrib.rpg.traits.tests.TraitContribTestingChar'</em><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.traits.tests.TraitContribTestingChar.typename">
+<code class="sig-name descname">typename</code><em class="property"> = 'TraitContribTestingChar'</em><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.typename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="evennia.contrib.rpg.traits.tests.TraitPropertyTestCase">
+<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.rpg.traits.tests.</code><code class="sig-name descname">TraitPropertyTestCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitPropertyTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.EvenniaTest" title="evennia.utils.test_resources.EvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.EvenniaTest</span></code></a></p>
+<p>Test atomic updating.</p>
+<dl class="py attribute">
+<dt id="evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.character_typeclass">
+<code class="sig-name descname">character_typeclass</code><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.character_typeclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.contrib.rpg.traits.tests.TraitContribTestingChar" title="evennia.contrib.rpg.traits.tests.TraitContribTestingChar"><code class="xref py py-class docutils literal notranslate"><span class="pre">TraitContribTestingChar</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.test_round1">
+<code class="sig-name descname">test_round1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitPropertyTestCase.test_round1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.test_round1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.test_round2">
+<code class="sig-name descname">test_round2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/rpg/traits/tests.html#TraitPropertyTestCase.test_round2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.test_round2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

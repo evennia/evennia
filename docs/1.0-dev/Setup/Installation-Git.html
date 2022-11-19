@@ -147,9 +147,13 @@ not recognize <code class="docutils literal notranslate"><span class="pre">local
 <section id="virtualenv">
 <h2>Virtualenv<a class="headerlink" href="#virtualenv" title="Permalink to this headline">¶</a></h2>
 <p>A Python <a class="reference external" href="https://docs.python.org/3/library/venv.html">virtual environment</a> allows you to install Evennia in its own little folder, separate from the rest of the system. You also won’t need any extra permissions. It’s optional to use a virtualenv, but it’s highly recommended. Python supports this natively:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> python3.11 -m venv evenv 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> python3.11 -m venv evenv   (linux/mac)
+ python -m venv venv evenv  (Windows)
 </pre></div>
 </div>
+<blockquote>
+<div><p>If you have older versions of Python installed on Windows, you should instead use <code class="docutils literal notranslate"><span class="pre">py</span></code> instead of <code class="docutils literal notranslate"><span class="pre">python</span></code> - the <code class="docutils literal notranslate"><span class="pre">py</span></code> launcher automatically selects the latest python version among those you installed.</p>
+</div></blockquote>
 <p>This will create a new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> in your current directory.
 Activate it like this:</p>
 <p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">evenv/bin/activate</span></code> (Linux, Mac)
