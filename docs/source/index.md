@@ -16,9 +16,9 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 - [Evennia Introduction](./Evennia-Introduction.md)
 - [How to contribute and get help](./Contributing.md)
 
-## Setup 
+## Setup
 
-- [Installation](Setup/Installation.md)  
+- [Installation](Setup/Installation.md)
 - [Starting, Stopping and Reloading](Setup/Start-Stop-Reload.md)  - how to manage the Evennia server
 - [Configurations](Setup/Setup-Overview.md) - how to run, maintain and release
 
@@ -35,7 +35,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 - [Default Commands](Components/Default-Commands.md) - list of game commands included out of the box
 - [Coding](Coding/Coding-Overview.md) - coding and development hints and resources
 
-## Contributions and Info 
+## Contributions and Info
 
 - [Contribs](Contribs/Contribs-Overview.md) - game-specific code and snippets to use for your game
 - [How to contribute to these docs](./Contributing-Docs.md) - if you want to help out
@@ -46,7 +46,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 ## All Sections
 
-<details> 
+<details>
 <summary>
     Click here to expand the full list of Documentation sections.
 </summary>
