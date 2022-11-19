@@ -1,4 +1,4 @@
-# Character Creator contrib
+# Character Creator
 
 Commands for managing and initiating an in-game character-creation menu.
 
