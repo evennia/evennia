@@ -31,6 +31,8 @@ Once installed, make sure the `evennia` command works. Use `evennia -h` for usag
 
 ## Initialize a new game
 
+> Windows users: You need to first run `python -m evennia` once. This should permanently add the evennia launcher to your environment, making the `evennia` command available.
+
 Use `cd` to enter a folder where you want to do your game development. Here (and in
 the rest of the Evennia documentation) we call this folder `mygame`, but you should of course
 name your game whatever you like.
