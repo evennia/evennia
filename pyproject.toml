@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "evennia"
-version = "1.0rc3"
+version = "1.0rc4"
 maintainers = [
     { name="Griatch", email="griatch@gmail.com" },
 ]
@@ -58,6 +58,7 @@ dependencies = [
     "Jinja2 < 3.1",
     "tzdata >= 2022.6",
     # for unit tests and code formatting
+    "mock >= 4.0.3",
     "model_mommy >= 2.0",
     "anything ==0.2.1",
     "black >= 22.6",
