@@ -8,7 +8,7 @@ Notably, this should work also if evennia is installed with pip but
 the executable is not on the path (so the plain `evennia` command
 doesn't work).
 
-For windows, this will try to inject the evennia launcher into the executable path
+For Windows, this will try to inject the evennia launcher into the executable path
 to make the `evennia` command available.
 
 """
@@ -40,13 +40,16 @@ main()
         try:
             with open(pyscript_path, "w") as fil:
                 fil.write(pyscript)
+                print(f"... Created launcher {pyscript_path}.")
         except FileNotFoundError:
             print("Failed to add evennia_launcher.py to {pyscript_path}.")
     if not os.path.exists(batfile_path):
         try:
             with open(batfile_path, "w") as fil:
                 fil.write(batfile)
+                print(f"... Created batfile {batfile_path}.")
         except FileNotFoundError:
             print("Failed to add evennia.bat to {batfile_path}.")
 
+# forward to the evennia launcher itself
 main()
