@@ -39,7 +39,10 @@ not recognize `localhost`).
 
 A Python [virtual environment](https://docs.python.org/3/library/venv.html) allows you to install Evennia in its own little folder, separate from the rest of the system. You also won't need any extra permissions. It's optional to use a virtualenv, but it's highly recommended. Python supports this natively: 
 
-     python3.11 -m venv evenv 
+     python3.11 -m venv evenv   (linux/mac)
+	 python -m venv venv evenv  (Windows)
+
+ > If you have older versions of Python installed on Windows, you should instead use `py` instead of `python` - the `py` launcher automatically selects the latest python version among those you installed.
 
 This will create a new folder `evenv` in your current directory. 
 Activate it like this: 
