@@ -11,16 +11,17 @@
 # Evennia Documentation
 
 This is the manual of [Evennia](https://www.evennia.com), the open source Python
-`MU*` creation system.
+`MU*` creation system. Use the Searchbar on the left to discover interesting articles.
 
 - [Evennia Introduction](./Evennia-Introduction.md)
 - [How to contribute and get help](./Contributing.md)
 
 ## Setup
 
-- [Installation](Setup/Installation.md)
+- [Installation](Setup/Installation.md#installation-running)
 - [Starting, Stopping and Reloading](Setup/Start-Stop-Reload.md)  - how to manage the Evennia server
-- [Configurations](Setup/Setup-Overview.md) - how to run, maintain and release
+- [Settings and configurations](Setup/Setup-Overview.md#configuring) - how to configure the server and integrations
+- [Going public](Setup/Setup-Overview.md#going-public) - taking your game online
 
 ## Howtos and Tutorials
 

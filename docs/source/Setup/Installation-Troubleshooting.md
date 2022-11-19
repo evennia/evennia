@@ -26,7 +26,7 @@ everything in the following sections.
 
 ## Confusion of location (GIT installation)
 
-When doing the [Git installation](Installation-Git), some may be confused and install Evennia in the wrong location. After following the instructions (and using a virtualenv), the folder structure should look like this: 
+When doing the [Git installation](./Installation-Git.md), some may be confused and install Evennia in the wrong location. After following the instructions (and using a virtualenv), the folder structure should look like this: 
 
 ```
 muddev/
@@ -83,7 +83,7 @@ If `localhost` doesn't work when trying to connect to your local game, try `127.
 
 ## Windows Troubleshooting
 
-- If you install with `pip install evennia` and find that the `evennia` command is not available, run `py -m evennia` once. This should add the evennia binary to your environment. If this fails, make sure you are using a [virtualenv](Installation-Git#virtualenv). Worst case, you can keep using `py -m evennia` in the places where the `evennia` command is used.
+- If you install with `pip install evennia` and find that the `evennia` command is not available, run `py -m evennia` once. This should add the evennia binary to your environment. If this fails, make sure you are using a [virtualenv](./Installation-Git.md#virtualenv). Worst case, you can keep using `py -m evennia` in the places where the `evennia` command is used.
 - Install Python [from the Python homepage](https://www.python.org/downloads/windows/). You will  need to be a Windows Administrator to install packages. 
 - When installing Python, make sure to check-mark *all* install options, especially the one about making Python  available on the path (you may have to scroll to see it). This allows you to
   just write `python` in any console without first finding where the `python`   program actually sits on your hard drive.

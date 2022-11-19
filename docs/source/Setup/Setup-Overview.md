@@ -17,7 +17,7 @@ Installation-Non-Interactive
 Start-Stop-Reload
 ```
 
-## Configuring
+## Settings and configuration
 
 ```{toctree}
 :maxdepth: 2

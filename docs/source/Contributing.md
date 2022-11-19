@@ -6,14 +6,13 @@ If you cannot find what you are looking for in the documentation, here's what to
   you are working on, make a post to the [discussions forum][forum].
 - If you want more direct discussions with developers and other users, drop
   into our very friendly [Discord channel][chat].
-- If you think the documentation is not clear enough, create a [documentation issue][issues]
+- If you think the documentation is not clear enough, create a [documentation issue][issues].
 - If you have trouble with a missing feature or a problem you think is a bug,
-  [request or report it][issues].
+  [request, or report it][issues].
 
 ## Community and Spreading the word
 
-Being active and helpful in the [forums][forum] or [chat][chat] is already a big
-help.
+Being active and helpful in the [discssion forums][forum] or [chat][chat] is already a big help.
 
 Consider writing about Evennia on your blog or in your favorite (relevant)
 forum. Write a review somewhere (good or bad, we like feedback either way). Rate
@@ -27,8 +26,7 @@ great help!
 
 - Easiest is to just [report documentation issues][issues] as you find them. If
   we don't know about them, we can't fix them!
-- If you want to help edit the docs directly, [check here](./Contributing-Docs.md)
-  on how to do it.
+- If you want to help editing the docs directly, [check here](./Contributing-Docs.md) on how to do it.
 - If you have knowledge to share, how about writing a new [Tutorial](Howtos/Howtos-Overview.md)?
 
 ## Helping with code
@@ -36,7 +34,7 @@ great help!
 If you find bugs, or have a feature-request, [make an issue][issues] for it. If
 it's not in an issue, the issue will most likely be forgotten.
 
-Even if you don't feel confident with tackling a [bug or feature][issues], just
+Even if you don't feel confident with tackling a bug or feature, just
 correcting typos, adjusting formatting or simply *using* the thing and reporting
 when stuff doesn't make sense helps us a lot.
 
@@ -51,18 +49,15 @@ when stuff doesn't make sense helps us a lot.
 
 The most elegant way to contribute code to Evennia is to use GitHub to create a
 *fork* of the Evennia repository and make your changes to that. Refer to the
-[Forking Evennia](Coding/Version-Control.md#forking-evennia) version control instructions
-for detailed instructions.
+[Forking Evennia](Coding/Version-Control.md#forking-evennia) version control instructions for detailed instructions.
 
 Once you have a fork set up, you can not only work on your own game in a
 separate branch, you can also commit your fixes to Evennia itself.
 
 - Make separate branches for all Evennia additions you do - don't edit your
-  local `master` or `develop` branches directly. It will make your life a lot
-  easier.
+  local `master` or `develop` branches directly. It will make your life a lot easier.
 - If you have a change that you think is suitable for the main Evennia
-  repository, issue a [Pull Request][pullrequest]. This will let Evennia
-  devs know you have stuff to share.
+  repository, issue a [Pull Request][pullrequest]. This will let Evennia devs know you have stuff to share.
 - Bug fixes should generally be done against the `master` branch of Evennia,
   while new features/contribs should go into the `develop` branch. If you are
   unsure, just pick one and we'll figure it out.
