@@ -6,13 +6,13 @@ If you are converting an existing game from a previous Evennia version, [see her
 
 Installing Evennia doesn't make anything visible online. Apart from installation and updating, you can develop your game without any internet connection.
 
-- Evennia supports [Python](https://www.python.org/downloads/) 3.9, 3.10 or 3.11. 
-- Using a [Python virtualenv](Installation-Git#virtualenv) is optional, but _highly recommended_ in order to keep your
-Evennia installation independent from the system libraries. 
+- Evennia requires [Python](https://www.python.org/downloads/) 3.9, 3.10 or 3.11 (recommended)
+	- Windows: In the installer, make sure you select `add python to path`.  If you have multiple versions of Python installed, use `py` command instead of `python` to have Windows automatically use the latest.
+- Using a light-weight  [Python virtual environment](Installation-Git#virtualenv) _ is optional, but _highly recommended_ in order to keep your Evennia installation independent from the system libraries. This comes with Python.
 - Don't install Evennia as administrator or superuser. 
 - If you run into trouble, see [installation troubleshooting](Installation-Troubleshooting).
 
-Evennia  is managed from the terminal (console/CMD on Windows).  If you have a suitable Python installed, you can install it with
+Evennia  is managed from the terminal (console/Command Prompt on Windows). Once you have Python, you install Evennia with
 
     pip install evennia
 
