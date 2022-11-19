@@ -41,8 +41,8 @@ jobs:
       # full game dir needed for mv-local
       - name: Set up evennia game dir
         run: |
-          pip install -e .
-          pip install -r requirements_extra.txt
+          pip install .
+          pip install .[extra]
           cd ..
           evennia --init gamedir
           cd gamedir

@@ -96,8 +96,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: pip
         cache-dependency-path: |
-          requirements.txt
-          requirements_extra.txt
+          pyproject.toml 
 
     - name: Install package dependencies
       run: |
@@ -107,10 +106,8 @@ jobs:
         pip install mysqlclient
         pip install coveralls
         pip install tblib
-        pip install -e .
-
-    - name: Install extra dependencies
-      run: pip install -r requirements_extra.txt
+        pip install .
+        pip install .[extra]
 
     - name: Initialize evennia
       run: |
