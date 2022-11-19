@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "evennia"
-version = "1.0rc5"
+version = "1.0rc6"
 maintainers = [
     { name="Griatch", email="griatch@gmail.com" },
 ]
