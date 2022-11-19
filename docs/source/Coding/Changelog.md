@@ -5,7 +5,7 @@
 > Not released yet
 > 2019-2022 develop branch (WIP)
 
-Up requirements to Django 4.0+, Twisted 22+, Python 3.9 or 3.10
+Increase requirements: Django 4.1+, Twisted 22.10+ Python 3.9, 3.10, 3.11.  PostgreSQL 11+.
 
 - New `drop:holds()` lock default to limit dropping nonsensical things. Access check
   defaults to True for backwards-compatibility in 0.9, will be False in 1.0

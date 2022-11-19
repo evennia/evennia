@@ -1,4 +1,4 @@
-# Game Settings and Configuration direcotry
+# Game Settings and Configuration directory
 
 Evennia runs out of the box without any changes to its settings. But there are several important
 ways to customize the server and expand it with your own plugins.

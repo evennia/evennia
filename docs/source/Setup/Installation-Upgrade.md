@@ -1,6 +1,6 @@
 # Upgrading an existing installation
 
-This is relevant to you already having code in an older Evennia version. If you are new, or don't have much code yet, it may be easier to just start fresh with the [Installation](Installation) instructions and copy 
+This is relevant to you already having code in an older Evennia version. If you are new, or don't have much code yet, it may be easier to just start fresh with the [Installation](./Installation.md) instructions and copy 
 over things manually.
 
 ## Evennia v0.9.5 to 1.0
@@ -15,7 +15,7 @@ assume that you have a cloned `evennia` repo and use a virtualenv (best practice
 - Make a _backup_ of your entire `mygame` folder, just to be sure!
 - Install Python 3.11 (recommended). Follow the [Git-installation](./Installation-Git.md) for your OS if needed.
 - Delete the old virtualenv `evenv` folder, or rename it (in case you want to keep using 0.9.5 for a while).
-- Make _new_ `evenv` virtualenv (see the [virtualenv instructions](Installation-Git#virtualenv) for help)
+- Make _new_ `evenv` virtualenv (see the [virtualenv instructions](./Installation-Git.md#virtualenv) for help)
 - `cd` into your `evennia/` root folder (you want to see the `docs/` and  `bin/` directories as well as a nested `evennia/` folder)
 - `git pull`
 - `pip install -e .`

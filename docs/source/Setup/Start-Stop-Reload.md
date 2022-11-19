@@ -6,7 +6,7 @@ program. If the `evennia` program is not available on the command line you must 
 Evennia as described on the [Installation](./Installation.md) page.
 
 ```{sidebar} evennia not found?
-If you ever try the `evennia` command and get an error complaining that the command is not available, make sure your [virtualenv](../Glossary.md#virtualenv) is active. 
+If you ever try the `evennia` command and get an error complaining that the command is not available, make sure your [virtualenv](../Glossary.md#virtualenv) is active. On Windows you may need to to run `py -m evennia` once first.
 ```
 
 Below are described the various management options. Run
@@ -21,11 +21,7 @@ to give you a menu with options.
 
 ## Starting Evennia
 
-Evennia consists of two components, the Evennia [Portal and Server](../Components/Portal-And-Server.md).  Briefly,
-the  *Server* is what is running the mud. It handles all game-specific things but doesn't care
-exactly how players connect, only that they have. The *Portal* is a gateway to which players
-connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the
-game. Both are required for a functioning mud.
+Evennia consists of two components, the Evennia [Portal and Server](../Components/Portal-And-Server.md).  Briefly, the  *Server* is what is running the mud. It handles all game-specific things but doesn't care exactly how players connect, only that they have. The *Portal* is a gateway to which players connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the game. Both are required for a functioning game.
 
      evennia start
 
@@ -37,40 +33,32 @@ Will start following the logs of an already running server. When starting Evenni
 
      evennia start -l
 
-> To stop viewing the log files, press `Ctrl-C`.
+> To stop viewing the log files, press `Ctrl-C` (`Cmd-C` on Mac).
 
 ## Reloading
 
-The act of *reloading* means the Portal will tell the Server to shut down and then boot it back up
-again. Everyone will get a message and the game will be briefly paused for all accounts as the
-server
-reboots. Since they are connected to the *Portal*, their connections are not lost.
+The act of *reloading* means the Portal will tell the Server to shut down and then boot it back up again. Everyone will get a message and the game will be briefly paused for all accounts as the server reboots. Since they are connected to the *Portal*, their connections are not lost.
 
 
-Reloading is as close to a "warm reboot" you can get. It reinitializes all code of Evennia, but
-doesn't kill "persistent" [Scripts](../Components/Scripts.md). It also calls `at_server_reload()` hooks on all
-objects so you
-can save eventual temporary properties you want.
+Reloading is as close to a "warm reboot" you can get. It reinitializes all code of Evennia, but doesn't kill "persistent" [Scripts](../Components/Scripts.md). It also calls `at_server_reload()` hooks on all objects so you can save eventual temporary properties you want.
 
-From in-game the `@reload` command is used. You can also reload the server from outside the game:
+From in-game the `reload` command is used. You can also reload the server from outside the game:
 
      evennia reload
 
-Sometimes reloading from "the outside" is necessary in case you have added some sort of bug that
-blocks in-game input.
+Sometimes reloading from "the outside" is necessary in case you have added some sort of bug that blocks in-game input.
 
 ## Stopping
 
 A full shutdown closes Evennia completely, both Server and Portal. All accounts will be booted and
 systems saved and turned off cleanly.
 
-From inside the game you initiate a shutdown with the `@shutdown` command.  From command line you do
+From inside the game you initiate a shutdown with the `shutdown` command.  From command line you do
 
      evennia stop
 
 You will see messages of both Server and Portal closing down. All accounts will see the shutdown
-message and then be disconnected. The same effect happens if you press `Ctrl+C` while the server
-runs in interactive mode.
+message and then be disconnected.
 
 
 ## Foreground mode
@@ -89,15 +77,14 @@ will start/restart the *Server* in interactive mode. This is required if you wan
 
 will start the *Portal* in interactive mode. 
 
+If you do `Ctrl-C`/`Cmd-C` in foreground mode, the component will stop. You'll need to run `evennia start` to get the game going again.
+
 ## Resetting
 
 *Resetting* is the equivalent of a "cold reboot" - the Server will shut down and then restarted
-again, but will behave as if it was fully shut down. As opposed to a "real" shutdown, no accounts
-will be disconnected during a
-reset. A reset will however purge all non-persistent scripts and will call `at_server_shutdown()`
-hooks. It can be a good way to clean unsafe scripts during development, for example.
+again, but will behave as if it was fully shut down. As opposed to a "real" shutdown, no accounts will be disconnected during a reset. A reset will however purge all non-persistent scripts and will call `at_server_shutdown()` hooks. It can be a good way to clean unsafe scripts during development, for example.
 
-From in-game the `@reset` command is used. From the terminal:
+From in-game the `reset` command is used. From the terminal:
 
     evennia reset
 
@@ -170,8 +157,7 @@ related to Evennia:
 During development, you will usually modify code and then reload the server to see your changes.
 This is done by Evennia re-importing your custom modules from disk. Usually bugs in a module will
 just have you see a traceback in the game, in the log or on the command line.  For some really
-serious syntax errors though, your module might not even be recognized as valid Python. Evennia may
-then fail to restart correctly.
+serious syntax errors though, your module might not even be recognized as valid Python. Evennia may then fail to restart correctly.
 
 From inside the game you see a text about the Server restarting followed by an ever growing list of
 "...". Usually this only lasts a very short time (up to a few seconds). If it seems to go on, it
