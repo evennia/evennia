@@ -25,13 +25,15 @@ To update Evennia later, do
 
     pip install --upgrade evennia
 
-Once installed, make sure the `evennia` command works. Use `evennia -h` for usage help. If you are using a  virtualenv, make sure it's active whenever you need to use the `evennia` command.
+Once installed, make sure the `evennia` command works. Use `evennia -h` for usage help.
+
+> Windows users: You need to first run `python -m evennia` once. This should permanently add the evennia launcher to your environment, making the `evennia` command available.
+
+If you are using a  virtualenv, make sure it's active whenever you need to use the `evennia` command.
 
 > You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
 
 ## Initialize a new game
-
-> Windows users: You need to first run `python -m evennia` once. This should permanently add the evennia launcher to your environment, making the `evennia` command available.
 
 Use `cd` to enter a folder where you want to do your game development. Here (and in
 the rest of the Evennia documentation) we call this folder `mygame`, but you should of course
