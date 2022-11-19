@@ -16,7 +16,7 @@ Evennia  is managed from the terminal (console/Command Prompt on Windows). Once 
 
     pip install evennia
 
-Optional: If you use a [contrib](Contribs) that warns you that it needs additional packages, you can 
+Optional: If you use a [contrib](../Contribs/Contribs-Overview.md) that warns you that it needs additional packages, you can 
 install all extra dependencies with 
 
 	pip install evennia[extra]
