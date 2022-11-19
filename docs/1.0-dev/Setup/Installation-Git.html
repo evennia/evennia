@@ -64,6 +64,7 @@
   <ul>
 <li><a class="reference internal" href="#">Installing with GIT</a><ul>
 <li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#virtualenv">Virtualenv</a></li>
 <li><a class="reference internal" href="#linux-install">Linux Install</a></li>
 <li><a class="reference internal" href="#mac-install">Mac Install</a></li>
 <li><a class="reference internal" href="#windows-install">Windows Install</a></li>
@@ -143,6 +144,26 @@ the 0.9.5 version. To install 1.0-dev, you need to add a step <code class="docut
 <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code> or a MUD telnet client to <code class="docutils literal notranslate"><span class="pre">localhost:4000</span></code> (use <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> if your OS does
 not recognize <code class="docutils literal notranslate"><span class="pre">localhost</span></code>).</p>
 </section>
+<section id="virtualenv">
+<h2>Virtualenv<a class="headerlink" href="#virtualenv" title="Permalink to this headline">¶</a></h2>
+<p>A Python <a class="reference external" href="https://docs.python.org/3/library/venv.html">virtual environment</a> allows you to install Evennia in its own little folder, separate from the rest of the system. You also won’t need any extra permissions. It’s optional to use a virtualenv, but it’s highly recommended. Python supports this natively:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> python3.11 -m venv evenv 
+</pre></div>
+</div>
+<p>This will create a new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> in your current directory.
+Activate it like this:</p>
+<p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">evenv/bin/activate</span></code> (Linux, Mac)
+<code class="docutils literal notranslate"><span class="pre">evenv\Scripts\activate</span></code> (Windows)
+<code class="docutils literal notranslate"><span class="pre">.\evenv\scripts\activate</span></code> (Windows with PS Shell, Git Bash etc)</p>
+<p>The text <code class="docutils literal notranslate"><span class="pre">(evenv)</span></code> should appear next to your prompt to show that the virtual
+environment is active. You <em>don’t</em> need to actually be in or near the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> folder for
+the environment to be active.</p>
+<blockquote>
+<div><p>Remember that you need to re-activate the virtualenv like this <em>every time</em> you
+start a new terminal/console to get access to the Python packages (notably the
+important <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program) you installed in the virtualenv!</p>
+</div></blockquote>
+</section>
 <section id="linux-install">
 <h2>Linux Install<a class="headerlink" href="#linux-install" title="Permalink to this headline">¶</a></h2>
 <p>For Debian-derived systems (like Ubuntu, Mint etc), start a terminal and
@@ -163,36 +184,14 @@ development:</p>
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">evennia</span></code> will appear containing the Evennia library. This only
-contains the source code though, it is not <em>installed</em> yet. To isolate the
-Evennia install and its dependencies from the rest of the system, it is good
-Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Glossary entry on
-virtualenv</span></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="mf">.10</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">evenv</span>
-</pre></div>
-</div>
-<p>A new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> will appear (we could have called it anything). This
-folder will hold a self-contained setup of Python packages without interfering
-with default Python packages on your system (or the Linux distro lagging behind
-on Python package versions). It will also always use the right version of Python.
-Activate the virtualenv:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">evenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
-</pre></div>
-</div>
-<p>The text <code class="docutils literal notranslate"><span class="pre">(evenv)</span></code> should appear next to your prompt to show that the virtual
-environment is active.</p>
-<blockquote>
-<div><p>Remember that you need to activate the virtualenv like this <em>every time</em> you
-start a new terminal to get access to the Python packages (notably the
-important <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program) we are about to install.</p>
-</div></blockquote>
-<p>Next, install Evennia into your active virtualenv. Make sure you are standing
-at the top of your mud directory tree (so you see the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> and <code class="docutils literal notranslate"><span class="pre">evenv/</span></code>
-folders) and run</p>
+contains the source code though, it is not <em>installed</em> yet.</p>
+<p>At this point it’s now optional but recommended that you initialize and activate a <a class="reference internal" href="#virtualenv"><span class="std std-doc">virtualenv</span></a>.</p>
+<p>Next, install Evennia (system-wide, or into your active virtualenv). Make sure you are standing
+at the top of your mud directory tree (so you see the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> folder, and likely the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> virtualenv folder) and do</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
-<p>Test that you can run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command everywhere while your virtualenv (evenv) is active.</p>
+<p>Test that you can run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p>
 <p>Next you can continue initializing your game from the regular <a class="reference internal" href="Installation.html"><span class="doc std std-doc">Installation instructions</span></a>.</p>
 </section>
 <section id="mac-install">
@@ -203,9 +202,8 @@ terminal</a>
 if you are unsure how it works.</p>
 <ul class="simple">
 <li><p>Python should already be installed but you must make sure it’s a high enough version - go for
-3.10.
-(<a class="reference external" href="https://docs.python-guide.org/en/latest/starting/install/osx/">This</a> discusses
-how you may upgrade it).</p></li>
+3.11.
+(<a class="reference external" href="https://docs.python-guide.org/en/latest/starting/install/osx/">This</a> discusses how you may upgrade it).</p></li>
 <li><p>GIT can be obtained with
 <a class="reference external" href="https://code.google.com/p/git-osx-installer/">git-osx-installer</a> or via MacPorts <a class="reference external" href="https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac">as described
 here</a>.</p></li>
@@ -223,70 +221,39 @@ install gcc and the Python headers.</p></li>
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">evennia</span></code> will appear containing the Evennia library. This only
-contains the source code though, it is not <em>installed</em> yet. To isolate the
-Evennia install and its dependencies from the rest of the system, it is good
-Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Glossary entry on virtualenv</span></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="mf">.10</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">evenv</span>
-</pre></div>
-</div>
-<p>A new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> will appear (we could have called it anything). This
-folder will hold a self-contained setup of Python packages without interfering
-with default Python packages on your system. Activate the virtualenv:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">evenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
-</pre></div>
-</div>
-<p>The text <code class="docutils literal notranslate"><span class="pre">(evenv)</span></code> should appear next to your prompt to show the virtual
-environment is active.</p>
-<blockquote>
-<div><p>Remember that you need to activate the virtualenv like this <em>every time</em> you
-start a new terminal to get access to the Python packages (notably the
-important <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program) we are about to install.</p>
-</div></blockquote>
-<p>Next, install Evennia into your active virtualenv. Make sure you are standing
-at the top of your mud directory tree (so you see the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> and <code class="docutils literal notranslate"><span class="pre">evenv/</span></code>
-folders) and run</p>
+contains the source code though, it is not <em>installed</em> yet.</p>
+<p>At this point it’s now optional but recommended that you initialize and activate a <a class="reference internal" href="#virtualenv"><span class="std std-doc">virtualenv</span></a>.</p>
+<p>Next, install Evennia (system-wide, or into your active virtualenv). Make sure you are standing
+at the top of your mud directory tree (so you see the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code>, and likely the <code class="docutils literal notranslate"><span class="pre">evenv</span></code> virtualenv
+folder) and do</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>   <span class="c1"># Old pip versions may be an issue on Mac.</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">setuptools</span>   <span class="c1"># Ditto concerning Mac issues.</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>
-<p>Test that you can run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command everywhere while your virtualenv (evenv) is active.</p>
+<p>Test that you can run the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p>
 <p>Next you can continue initializing your game from the regular <a class="reference internal" href="Installation.html"><span class="doc std std-doc">Installation instructions</span></a>.</p>
 </section>
 <section id="windows-install">
 <h2>Windows Install<a class="headerlink" href="#windows-install" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>If you are running Windows10, consider using the <em>Windows Subsystem for Linux</em>
-(<a class="reference external" href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">WSL</a>) instead.
-Just set up WSL with an Ubuntu image and follow the Linux install instructions above.</p>
+(<a class="reference external" href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">WSL</a>) instead. Just set up WSL with an Ubuntu image and follow the Linux install instructions above.</p>
 </div></blockquote>
 <p>The Evennia server itself is a command line program. In the Windows launch
 menu, start <em>All Programs -&gt; Accessories -&gt; command prompt</em> and you will get
-the Windows command line interface. Here is <a class="reference external" href="https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/">one of many tutorials on using the Windows command
-line</a>
-if you are unfamiliar with it.</p>
+the Windows command line interface. Here is <a class="reference external" href="https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/">one of many tutorials on using the Windows command line</a> if you are unfamiliar with it.</p>
 <ul class="simple">
-<li><p>Install Python <a class="reference external" href="https://www.python.org/downloads/windows/">from the Python homepage</a>. You will
-need to be a
-Windows Administrator to install packages. Get Python any version of Python <strong>3.10</strong>, usually
+<li><p>Install Python <a class="reference external" href="https://www.python.org/downloads/windows/">from the Python homepage</a>. You will need to be a
+Windows Administrator to install packages. Get Python <strong>3.11</strong>, usually
 the 64-bit version (although it doesn’t matter too much). <strong>When installing, make sure
 to check-mark <em>all</em> install options, especially the one about making Python
 available on the path (you may have to scroll to see it)</strong>. This allows you to
-just write <code class="docutils literal notranslate"><span class="pre">python</span></code> in any console without first finding where the <code class="docutils literal notranslate"><span class="pre">python</span></code>
+just write <code class="docutils literal notranslate"><span class="pre">python</span></code> (or possibly <code class="docutils literal notranslate"><span class="pre">py</span></code>) in any console without first finding where the <code class="docutils literal notranslate"><span class="pre">python</span></code>
 program actually sits on your hard drive.</p></li>
-<li><p>You need to also get <a class="reference external" href="https://git-scm.com/downloads">GIT</a> and install it. You
-can use the default install options but when you get asked to “Adjust your PATH
-environment”, you should select the second option “Use Git from the Windows
-Command Prompt”, which gives you more freedom as to where you can use the
-program.</p></li>
-<li><p>Finally you must install the <a class="reference external" href="https://aka.ms/vs/16/release/vs_buildtools.exe">Microsoft Visual C++ compiler for
-Python</a>. Download and run the linked installer and
-install the C++ tools. Keep all the defaults. Allow the install of the “Win10 SDK”, even if you are
-on Win7 (not tested on older Windows versions). If you later have issues with installing Evennia due
-to a failure to build the “Twisted wheels”, this is where you are missing things.</p></li>
-<li><p>You <em>may</em> need the <a class="reference external" href="https://pypi.python.org/pypi/pypiwin32">pypiwin32</a> Python headers. Install
-these only if you have issues.</p></li>
+<li><p>You need to also get <a class="reference external" href="https://git-scm.com/downloads">GIT</a> and install it. You can use the default install options but when you get asked to “Adjust your PATH environment”, you should select the second option “Use Git from the Windows Command Prompt”, which gives you more freedom as to where you can use the program.</p></li>
+<li><p>Finally you must install the <a class="reference external" href="https://aka.ms/vs/16/release/vs_buildtools.exe">Microsoft Visual C++ compiler for Python</a>. Download and run the linked installer and install the C++ tools. Keep all the defaults. Allow the install of the “Win10 SDK”, even if you are on Win7 (not tested on older Windows versions). If you later have issues with installing Evennia due to a failure to build the “Twisted wheels”, this is where you are missing things.</p></li>
+<li><p>You <em>may</em> need the <a class="reference external" href="https://pypi.python.org/pypi/pypiwin32">pypiwin32</a> Python headers. Install these only if you have issues.</p></li>
 </ul>
 <p>You can install Evennia wherever you want. <code class="docutils literal notranslate"><span class="pre">cd</span></code> to that location and create a
 new folder for all your Evennia development (let’s call it <code class="docutils literal notranslate"><span class="pre">muddev</span></code>).</p>
@@ -303,33 +270,10 @@ directory change.</p>
 </pre></div>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">evennia</span></code> will appear containing the Evennia library. This only
-contains the source code though, it is not <em>installed</em> yet. To isolate the
-Evennia install and its dependencies from the rest of the system, it is good
-Python practice to install into a <em>virtualenv</em>. If you are unsure about what a
-virtualenv is and why it’s useful, see the <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Glossary entry on virtualenv</span></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span><span class="mf">.10</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">evenv</span>
-</pre></div>
-</div>
-<p>A new folder <code class="docutils literal notranslate"><span class="pre">evenv</span></code> will appear (we could have called it anything). This
-folder will hold a self-contained setup of Python packages without interfering
-with default Python packages on your system. Activate the virtualenv:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are using a standard command prompt, you can use the following:</span>
-<span class="n">evenv</span>\<span class="n">scripts</span>\<span class="n">activate</span><span class="o">.</span><span class="n">bat</span>
-
-<span class="c1"># If you are using a PS Shell, Git Bash, or other, you can use the following:</span>
-<span class="o">.</span>\<span class="n">evenv</span>\<span class="n">scripts</span>\<span class="n">activate</span>
-</pre></div>
-</div>
-<p>The text <code class="docutils literal notranslate"><span class="pre">(evenv)</span></code> should appear next to your prompt to show the virtual
-environment is active.</p>
-<blockquote>
-<div><p>Remember that you need to activate the virtualenv like this <em>every time</em> you
-start a new console window if you want to get access to the Python packages
-(notably the important <code class="docutils literal notranslate"><span class="pre">evennia</span></code> program) we are about to install.</p>
-</div></blockquote>
-<p>Next, install Evennia into your active virtualenv. Make sure you are standing
-at the top of your mud directory tree (so you see the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> and <code class="docutils literal notranslate"><span class="pre">evenv</span></code>
-folders when you use the <code class="docutils literal notranslate"><span class="pre">dir</span></code> command) and run</p>
+contains the source code though, it is not <em>installed</em> yet.</p>
+<p>At this point it’s optional but recommended that you initialize and activate a <a class="reference internal" href="#virtualenv"><span class="std std-doc">virtualenv</span></a>.</p>
+<p>Next, install Evennia (system wide, or into the virtualenv). Make sure you are standing
+at the top of your mud directory tree (so you see <code class="docutils literal notranslate"><span class="pre">evennia</span></code>, and likely the <code class="docutils literal notranslate"><span class="pre">evenv</span></code>  virtualenv folder when running the <code class="docutils literal notranslate"><span class="pre">dir</span></code> command). Then do:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">evennia</span>
 </pre></div>
 </div>

@@ -112,31 +112,34 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>pip install evennia is not yet available in develop branch. Use the <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">git installation</span></a>.</p>
-</div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>If you are converting an existing game from a previous version, <a class="reference internal" href="Installation-Upgrade.html"><span class="doc std std-doc">see here</span></a>.</p>
+<p>If you are converting an existing game from a previous Evennia version, <a class="reference internal" href="Installation-Upgrade.html"><span class="doc std std-doc">see here</span></a>.</p>
 </div>
+<p>Installing Evennia doesn’t make anything visible online. Apart from installation and updating, you can develop your game without any internet connection.</p>
 <ul class="simple">
-<li><p>Evennia requires <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9 or 3.10.</p></li>
-<li><p>Using a <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">Python virtualenv</span></a> is highly recommended in order to keep your
+<li><p>Evennia supports <a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.9, 3.10 or 3.11.</p></li>
+<li><p>Using a <a class="reference internal" href="Installation-Git.html#virtualenv"><span class="std std-doc">Python virtualenv</span></a> is optional, but <em>highly recommended</em> in order to keep your
 Evennia installation independent from the system libraries.</p></li>
-<li><p>Don’t install Evennia as
-administrator or superuser.</p></li>
+<li><p>Don’t install Evennia as administrator or superuser.</p></li>
+<li><p>If you run into trouble, see <a class="reference internal" href="Installation-Troubleshooting.html"><span class="doc std std-doc">installation troubleshooting</span></a>.</p></li>
 </ul>
-<p>Evennia  is managed from the terminal (console/CMD on Windows).  If you have a suitable Python installed, you can install with</p>
+<p>Evennia  is managed from the terminal (console/CMD on Windows).  If you have a suitable Python installed, you can install it with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia
 </pre></div>
 </div>
-<p>Alternatively, you can <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">install Evennia from github</span></a> or use <a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">docker</span></a>.</p>
-<p>Installing doesn’t make anything visible online. Apart from installation and updating, you can develop your game without any internet connection.</p>
+<p>Optional: If you use a <span class="xref myst">contrib</span> that warns you that it needs additional packages, you can
+install all extra dependencies with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install evennia[extra]
+</pre></div>
+</div>
+<p>To update Evennia later, do</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install --upgrade evennia
+</pre></div>
+</div>
 <p>Once installed, make sure the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command works. Use <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-h</span></code> for usage help. If you are using a  virtualenv, make sure it’s active whenever you need to use the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command.</p>
 <blockquote>
-<div><p>Check out <a class="reference internal" href="Installation-Troubleshooting.html"><span class="doc std std-doc">installation troubleshooting</span></a> if you run into problems. Some
-users have also experimented with <a class="reference internal" href="Installation-Android.html"><span class="doc std std-doc">installing Evennia on Android</span></a>.</p>
+<div><p>You can also  <a class="reference internal" href="Installation-Git.html"><span class="doc std std-doc">clone Evennia from github</span></a>  or use <a class="reference internal" href="Installation-Docker.html"><span class="doc std std-doc">docker</span></a>.  Some users have also experimented with <a class="reference internal" href="Installation-Android.html"><span class="doc std std-doc">installing Evennia on Android</span></a>.</p>
 </div></blockquote>
 <section id="initialize-a-new-game">
 <h2>Initialize a new game<a class="headerlink" href="#initialize-a-new-game" title="Permalink to this headline">¶</a></h2>
@@ -191,11 +194,11 @@ evennia migrate
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia -l
 </pre></div>
 </div>
-<p>You can start viewing the log immediately when running <code class="docutils literal notranslate"><span class="pre">evennia</span></code> commands, such as</p>
+<p>Stop viewing the log by pressing <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (<code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> for Mac).</p>
+<p>You can start viewing the log immediately by adding <code class="docutils literal notranslate"><span class="pre">-l/--log</span></code> to <code class="docutils literal notranslate"><span class="pre">evennia</span></code> commands, such as</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia start -l
 </pre></div>
 </div>
-<p>To exit the log tailing, enter <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (<code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> for Mac). This will not affect the server.</p>
 </section>
 <section id="server-configuration">
 <h2>Server configuration<a class="headerlink" href="#server-configuration" title="Permalink to this headline">¶</a></h2>
@@ -203,7 +206,7 @@ evennia migrate
 </section>
 <section id="register-with-the-evennia-game-index-optional">
 <h2>Register with the Evennia Game Index (optional)<a class="headerlink" href="#register-with-the-evennia-game-index-optional" title="Permalink to this headline">¶</a></h2>
-<p>You can optionally let the world know that you are working on a new Evennia-based game by
+<p>You can let the world know that you are working on a new Evennia-based game by
 registering your server with the <em>Evennia game index</em>. You don’t have to be
 open for players to do this - you just mark your game as closed and “pre-alpha”.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia connections 

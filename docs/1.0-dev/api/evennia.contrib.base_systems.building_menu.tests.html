@@ -101,79 +101,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-evennia.contrib.base_systems.building_menu.tests">
-<span id="evennia-contrib-base-systems-building-menu-tests"></span><h1>evennia.contrib.base_systems.building_menu.tests<a class="headerlink" href="#module-evennia.contrib.base_systems.building_menu.tests" title="Permalink to this headline">¶</a></h1>
-<p>Building menu tests.</p>
-<dl class="py class">
-<dt id="evennia.contrib.base_systems.building_menu.tests.Submenu">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.building_menu.tests.</code><code class="sig-name descname">Submenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Building menu: {obj}'</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parents</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">persistent</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#Submenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.Submenu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu" title="evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu</span></code></a></p>
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.building_menu.tests.Submenu.init">
-<code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exit</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#Submenu.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.Submenu.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create the sub-menu to edit the specified object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<em>Object</em>) – the object to edit.</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This method is probably to be overridden in your subclasses.
-Use <strong>add_choice</strong> and its variants to create menu choices.</p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu">
-<em class="property">class </em><code class="sig-prename descclassname">evennia.contrib.base_systems.building_menu.tests.</code><code class="sig-name descname">TestBuildingMenu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#TestBuildingMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaCommandTest" title="evennia.utils.test_resources.BaseEvenniaCommandTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">evennia.utils.test_resources.BaseEvenniaCommandTest</span></code></a></p>
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.setUp">
-<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#TestBuildingMenu.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.setUp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets up testing environment</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_quit">
-<code class="sig-name descname">test_quit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#TestBuildingMenu.test_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_quit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Try to quit the building menu.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_setattr">
-<code class="sig-name descname">test_setattr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#TestBuildingMenu.test_setattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_setattr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test the simple setattr provided by building menus.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_add_choice_without_key">
-<code class="sig-name descname">test_add_choice_without_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#TestBuildingMenu.test_add_choice_without_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_add_choice_without_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>Try to add choices without keys.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_callbacks">
-<code class="sig-name descname">test_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#TestBuildingMenu.test_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_callbacks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test callbacks in menus.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_multi_level">
-<code class="sig-name descname">test_multi_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#TestBuildingMenu.test_multi_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_multi_level" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test multi-level choices.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_submenu">
-<code class="sig-name descname">test_submenu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/building_menu/tests.html#TestBuildingMenu.test_submenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_submenu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test to add sub-menus.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="evennia-contrib-base-systems-building-menu-tests">
+<h1>evennia.contrib.base_systems.building_menu.tests<a class="headerlink" href="#evennia-contrib-base-systems-building-menu-tests" title="Permalink to this headline">¶</a></h1>
 </section>
 
 
