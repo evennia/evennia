@@ -24,21 +24,8 @@ to bring your game online so you can invite your first players.
 _TODO_
 
 ```{toctree} 
-:maxdepth: 1
-
+:numbered:
+:maxdepth: 2
 Add-a-simple-new-web-page.md
 Web-Tutorial.md
-
-```
-
-
-## Table of Contents
-
-_TODO_
-
-```{toctree} 
-
-Add-a-simple-new-web-page.md
-Web-Tutorial.md
-
 ```

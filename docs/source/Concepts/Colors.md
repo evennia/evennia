@@ -173,4 +173,4 @@ into a few blocks of colors, it means Xterm256 is not supported and ANSI are use
 
 ## More reading
 
-There is an [Understanding Color Tags](../Howtos/Understanding-Color-Tags.md) tutorial which expands on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.
+There is an [Understanding Color Tags](../Howtos/Tutorial-Understanding-Color-Tags.md) tutorial which expands on the use of ANSI color tags and the pitfalls of mixing ANSI and Xterms256 color tags in the same context.

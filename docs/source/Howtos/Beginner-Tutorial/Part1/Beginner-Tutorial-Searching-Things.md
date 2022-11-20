@@ -85,6 +85,10 @@ You can use `.search` to find anything, not just stuff in the same room:
 
     volcano = self.caller.search("Vesuvio", global=True)
 
+You can limit your matches to particular typeclasses: 
+
+	water_glass = self.caller.search("glass", typeclass="typeclasses.objects.WaterGlass")
+
 If you only want to search for a specific list of things, you can do so too:
 
     stone = self.caller.search("MyStone", candidates=[obj1, obj2, obj3, obj4])

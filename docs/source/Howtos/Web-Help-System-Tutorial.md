@@ -1,9 +1,7 @@
 # Help System Tutorial
 
 
-**Before doing this tutorial you will probably want to read the intro in [Basic Web tutorial](Web-
-Tutorial).**  Reading the three first parts of the [Django
-tutorial](https://docs.djangoproject.com/en/4.0/intro/tutorial01/) might help as well.
+**Before doing this tutorial you will probably want to read the intro in [Basic Web tutorial](Web- Tutorial).**  Reading the three first parts of the [Django tutorial](https://docs.djangoproject.com/en/4.0/intro/tutorial01/) might help as well.
 
 This tutorial will show you how to access the help system through your website.  Both help commands
 and regular help entries will be visible, depending on the logged-in user or an anonymous character.

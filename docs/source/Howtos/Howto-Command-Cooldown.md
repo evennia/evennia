@@ -7,8 +7,7 @@ offer a chance of lots of damage at the cost of not being able to re-do it for
 a while. Such effects are called *cooldowns*.
 
 This page exemplifies a very resource-efficient way to do cooldowns. A more
-'active' way is to use asynchronous delays as in the [command duration
-tutorial](./Command-Duration.md#blocking-commands), the two might be useful to
+'active' way is to use asynchronous delays as in the [](Howto-Command-Duration.md#blocking-commands), the two might be useful to
 combine if you want to echo some message to the user after the cooldown ends.
 
 ## The Cooldown Contrib

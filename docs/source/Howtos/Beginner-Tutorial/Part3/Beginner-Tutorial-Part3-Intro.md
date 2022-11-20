@@ -1,4 +1,4 @@
-# Part 3: How we get there
+# Part 3: How we get there (example game)
 
 ```{warning}
 The tutorial game is under development and is not yet complete, nor tested. Use the existing 
@@ -42,26 +42,8 @@ Fully coded examples of all code we make in this part can be found in the
 
 
 ```{toctree} 
-:maxdepth: 1
-
-Beginner-Tutorial-Utilities
-Beginner-Tutorial-Rules
-Beginner-Tutorial-Characters
-Beginner-Tutorial-Objects
-Beginner-Tutorial-Equipment
-Beginner-Tutorial-Chargen
-Beginner-Tutorial-Rooms
-Beginner-Tutorial-NPCs
-Beginner-Tutorial-Turnbased-Combat
-Beginner-Tutorial-Quests
-Beginner-Tutorial-Shops
-Beginner-Tutorial-Dungeon
-Beginner-Tutorial-Commands
-```
-
-## Table of Contents
-
-```{toctree} 
+:numbered:
+:maxdepth: 2
 
 Beginner-Tutorial-Utilities
 Beginner-Tutorial-Rules
