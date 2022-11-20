@@ -12,6 +12,7 @@ evennia.contrib.rpg
    :maxdepth: 6
 
    evennia.contrib.rpg.buffs
+   evennia.contrib.rpg.character_creator
    evennia.contrib.rpg.dice
    evennia.contrib.rpg.health_bar
    evennia.contrib.rpg.rpsystem

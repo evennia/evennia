@@ -1,9 +1,9 @@
 # Adding custom commands
 
-In this lesson we'll learn how to create our own Evennia _Commands_. If you are new to Python you'll also learn some more basics about how to manipulate strings and get information out of Evennia.
+In this lesson we'll learn how to create our own Evennia [Commands](../../../Components/Commands.md) If you are new to Python you'll also learn some more basics about how to manipulate strings and get information out of Evennia.
 
 A Command is something that handles the input from a user and causes a result to happen.
-An example is `look`, which examines your current location and tells how it looks like and
+An example is `look`, which examines your current location and tells you what it looks like and
 what is in it.
 
 ```{sidebar} Commands are not typeclassed
@@ -14,20 +14,11 @@ database. They are "just" normal Python classes.
 ```
 
 In Evennia, a Command is a Python _class_. If you are unsure about what a class is, review the
-previous lessons! A Command inherits from `evennia.Command` or from one of the alternative command-
-classes, such as `MuxCommand` which is what most default commands use.
+[previous lesson about it](./Beginner-Tutorial-Python-classes-and-objects.md)! A Command inherits from `evennia.Command` or from one of the alternative command- classes, such as `MuxCommand` which is what most default commands use. 
 
-All Commands are in turn grouped in another class called a _Command Set_. Think of a Command Set
-as a bag holding many different commands. One CmdSet could for example hold all commands for
-combat, another for building etc. By default, Evennia groups all character-commands into one
-big cmdset.
+All Commands are grouped in another class called a _Command Set_. Think of a Command Set as a bag holding many different commands. One CmdSet could for example hold all commands for combat, another for building etc. 
 
-Command-Sets are then associated with objects, for example with your Character. Doing so makes the
-commands in that cmdset available to the object. So, to summarize:
-
-- Commands are classes
-- A group of Commands is stored in a CmdSet
-- CmdSets are stored on objects - this defines which commands are available to that object.
+Command-Sets are then associated with objects, for example with your Character. Doing so makes the commands in that cmdset available to the object. By default, Evennia groups all character-commands into one big cmdset called the `CharacterCmdSet`. It sits on `DefaultCharacter` (and thus, through inheritance, on `typeclasses.characters.Character`). 
 
 ## Creating a custom command
 
@@ -53,18 +44,14 @@ class Command(BaseCommand):
 
 Ignoring the docstrings (which you can read if you want), this is the only really active code in the module.
 
-We can see that we import `Command` from `evennia` and use the `from ... import ... as ...` form to rename it
-to `BaseCommand`. This is so we can let our child class also be named `Command` for reference.  The class
-itself doesn't do anything, it just has `pass`. So in the same way as `Object` in the previous lesson, this
-class is identical to its parent.
+We can see that we import `Command` from `evennia` and use the `from ... import ... as ...` form to rename it to `BaseCommand`. This is so we can let our child class also be named `Command` to make it easier to reference.  The class itself doesn't do anything, it just has `pass`. So in the same way as `Object` and `Character` in the previous lessons, this class is identical to its parent.
 
-> The commented out `default_cmds` gives us access to Evennia's default commands for easy overriding. We'll try
-> that a little later.
+> The commented out `default_cmds` gives us access to Evennia's default commands for easy overriding. We'll try that a little later.
 
-We could modify this module directly, but to train imports we'll work in a separate module. Open a new file
-`mygame/commands/mycommands.py` and add the following code:
+We could modify this module directly, but let's work in a separate module just for the heck of it. Open a new file `mygame/commands/mycommands.py` and add the following code:
 
 ```python
+# in mygame/commands/mycommands.py
 
 from commands.command import Command
 
@@ -95,15 +82,13 @@ class MyCmdSet(CmdSet):
 
 ```
 
-Our `EchoCmdSet` class must have an `at_cmdset_creation` method, named exactly
-like this - this is what Evennia will be looking for when setting up the cmdset later, so
-if you didn't set it up, it will use the parent's version, which is empty. Inside we add the
-command class to the cmdset by `self.add()`. If you wanted to add more commands to this CmdSet you
-could just add more lines of `self.add` after this.
+Our `EchoCmdSet` class must have an `at_cmdset_creation` method, named exactly like this - this is what Evennia will be looking for when setting up the cmdset later, so if you didn't set it up, it will use the parent's version, which is empty. Inside we add the command class to the cmdset by `self.add()`. If you wanted to add more commands to this CmdSet you could just add more lines of `self.add` after this.
 
 Finally, let's add this command to ourselves so we can try it out. In-game you can experiment with `py` again:
 
-    > py self.cmdset.add("commands.mycommands.MyCmdSet")
+    > py me.cmdset.add("commands.mycommands.MyCmdSet")
+
+The `me.cmdset` is the store of all cmdsets stored on us. By giving the path to our CmdSet class, it will be added. 
 
 Now try
 
@@ -112,9 +97,7 @@ Now try
     ...
     ...
 
-You should be getting a long list of outputs. The reason for this is that your `echo` function is not really
-"doing" anything yet and the default function is then to show all useful resources available to you when you
-use your Command. Let's look at some of those listed:
+`echo` works! You should be getting a long list of outputs. The reason for this is that your `echo` function is not really "doing" anything yet and the default function is then to show all useful resources available to you when you use your Command. Let's look at some of those listed:
 
     Command echo has no defined `func()` - showing on-command variables:
     obj (<class 'typeclasses.characters.Character'>): YourName
@@ -146,17 +129,13 @@ use your Command. Let's look at some of those listed:
     command string given (self.cmdstring): echo
     current cmdset (self.cmdset): ChannelCmdSet
 
-These are all properties you can access with `.` on the Command instance, such as `.key`, `.args` and so on.
-Evennia makes these available to you and they will be different every time a command is run. The most
-important ones we will make use of now are:
+These are all properties you can access with `.` on the Command instance, such as `.key`, `.args` and so on. Evennia makes these available to you and they will be different every time a command is run. The most important ones we will make use of now are:
 
  - `caller` - this is 'you', the person calling the command.
- - `args` - this is all arguments to the command. Now it's empty, but if you tried `echo foo bar` you'd find
-   that this would be `" foo bar"`.
+ - `args` - this is all arguments to the command. Now it's empty, but if you tried `echo foo bar` you'd find that this would be `" foo bar"`.
  - `obj` - this is object on which this Command (and CmdSet) "sits". So you, in this case.
 
-The reason our command doesn't do anything yet is because it's missing a `func` method. This is what Evennia
-looks for to figure out what a Command actually does. Modify your `CmdEcho` class:
+The reason our command doesn't do anything yet is because it's missing a `func` method. This is what Evennia looks for to figure out what a Command actually does. Modify your `CmdEcho` class:
 
 ```python
 # ...
@@ -177,15 +156,15 @@ class CmdEcho(Command):
 # ...
 ```
 
-First we added a docstring. This is always a good thing to do in general, but for a Command class, it will also
-automatically become the in-game help entry! Next we add the `func` method. It has one active line where it
-makes use of some of those variables we found the Command offers to us. If you did the
-[basic Python tutorial](./Beginner-Tutorial-Python-basic-introduction.md), you will recognize `.msg` - this will send a message
-to the object it is attached to us - in this case `self.caller`, that is, us. We grab `self.args` and includes
-that in the message.
+First we added a docstring. This is always a good thing to do in general, but for a Command class, it will also automatically become the in-game help entry! 
 
-Since we haven't changed `MyCmdSet`, that will work as before. Reload and re-add this command to ourselves to
-try out the new version:
+```{sidebar} Use Command.msg 
+In a Command class, the `self.msg()` acts as a convenient shortcut for `self.caller.msg()`. Not only is it shorter, it also has some advantages because the command can include more metadata with the message. So using `self.msg()` is usually better. For this tutorial though, `self.caller.msg()` is more explicit in showing what is going on.
+```
+
+Next we add the `func` method. It has one active line where it makes use of some of those variables the Command class offers to us. If you did the [basic Python tutorial](./Beginner-Tutorial-Python-basic-introduction.md), you will recognize `.msg` - this will send a message to the object it is attached to us - in this case `self.caller`, that is, us. We grab `self.args` and includes that in the message.
+
+Since we haven't changed `MyCmdSet`, that will work as before. Reload and re-add this command to ourselves to try out the new version:
 
     > reload
     > py self.cmdset.add("commands.mycommands.MyCmdSet")
@@ -197,14 +176,12 @@ Try to pass an argument:
     > echo Woo Tang!
     Echo: ' Woo Tang!'
 
-Note that there is an extra space before `Woo!`. That is because self.args contains the _everything_ after
-the command name, including spaces. Evennia will happily understand if you skip that space too:
+Note that there is an extra space before `Woo!`. That is because self.args contains _everything_ after the command name, including spaces. Evennia will happily understand if you skip that space too:
 
     > echoWoo Tang!
     Echo: 'Woo Tang!'
 
-There are ways to force Evennia to _require_ an initial space, but right now we want to just ignore it since
-it looks a bit weird for our echo example. Tweak the code:
+There are ways to force Evennia to _require_ an initial space, but right now we want to just ignore it since it looks a bit weird for our echo example. Tweak the code:
 
 ```python
 # ...
@@ -225,9 +202,7 @@ class CmdEcho(Command):
 # ...
 ```
 
-The only difference is that we called `.strip()` on `self.args`. This is a helper method available on all
-strings - it strips out all whitespace before and after the string. Now the Command-argument will no longer
-have any space in front of it.
+The only difference is that we called `.strip()` on `self.args`. This is a helper method available on all strings - it strips out all whitespace before and after the string. Now the Command-argument will no longer have any space in front of it.
 
     > reload
     > py self.cmdset.add("commands.mycommands.MyCmdSet")
@@ -238,7 +213,7 @@ Don't forget to look at the help for the echo command:
 
     > help echo
 
-You will get the docstring you put in your Command-class.
+You will get the docstring you put in your Command-class! 
 
 ### Making our cmdset persistent
 
@@ -248,7 +223,7 @@ enough to make `echo` a _persistent_ change though:
     > py self.cmdset.add("commands.mycommands.MyCmdSet", persistent=True)
 
 Now you can `reload` as much as you want and your code changes will be available directly without
-needing to re-add the MyCmdSet again. To remove the cmdset again, do
+needing to re-add the MyCmdSet again. To remove the cmdset again, you'd do
 
     > py self.cmdset.remove("commands.mycommands.MyCmdSet")
 
@@ -262,7 +237,7 @@ someone in the face! This is how we want it to work:
     > hit <target>
     You hit <target> with full force!
 
-Not only that, we want the <target> to see
+Not only that, we want the `<target>` to see
 
     You got hit by <hitter> with full force!
 
@@ -324,9 +299,7 @@ the `else` condition is given, it will run if none of the other conditions was t
 the `if..elif..else` structure also serves the same function as `case` in some other languages.
 
 ```
-- **Line 15** has our first _conditional_, an `if` statement. This is written on the form `if <condition>:` and only
-    if that condition is 'truthy' will the indented code block under the `if` statement run. To learn what is truthy in
-    Python it's usually easier to learn what is "falsy":
+- **Line 15** has our first _conditional_, an `if` statement. This is written on the form `if <condition>:` and only if that condition is 'truthy' will the indented code block under the `if` statement run. To learn what is truthy in Python it's usually easier to learn what is "falsy":
     - `False` - this is a reserved boolean word in Python. The opposite is `True`.
     - `None` - another reserved word. This represents nothing, a null-result or value.
     - `0` or `0.0`
@@ -334,13 +307,11 @@ the `if..elif..else` structure also serves the same function as `case` in some o
     - Empty _iterables_ we haven't seen yet, like empty lists `[]`, empty tuples `()` and empty dicts `{}`.
     - Everything else is "truthy".
 
-   Line 16's condition is `not args`. The `not` _inverses_ the result, so if `args` is the empty string (falsy), the
-   whole conditional becomes truthy. Let's continue in the code:
+- **Line 16**'s condition is `not args`. The `not` _inverses_ the result, so if `args` is the empty string (falsy), the whole conditional becomes truthy. Let's continue in the code:
 - **Lines 16-17**: This code will only run if the `if` statement is truthy, in this case if `args` is the empty string.
 - **Line 17**: `return` is a reserved Python word that exits `func` immediately.
 - **Line 18**: We use `self.caller.search` to look for the target in the current location.
-- **Lines 19-20**: A feature of `.search` is that it will already inform `self.caller` if it couldn't find the target.
-   In that case, `target` will be `None` and we should just directly `return`.
+- **Lines 19-20**: A feature of `.search` is that it will already inform `self.caller` if it couldn't find the target. In that case, `target` will be `None` and we should just directly `return`.
 - **Lines 21-22**: At this point we have a suitable target and can send our punching strings to each.
 
 Finally we must also add this to a CmdSet. Let's add it to `MyCmdSet` which we made persistent earlier.
@@ -361,10 +332,7 @@ class MyCmdSet(CmdSet):
 With longer code snippets to try, it gets more and more likely you'll
 make an error and get a `traceback` when you reload. This will either appear
 directly in-game or in your log (view it with `evennia -l` in a terminal).
-Don't panic; tracebacks are your friends - they are to be read bottom-up and usually describe
-exactly where your problem is. Refer to `The Python intro <Python-basic-introduction.html>`_ for
-more hints. If you get stuck, reach out to the Evennia community for help.
-
+Don't panic; tracebacks are your friends - they are to be read bottom-up and usually describe exactly where your problem is. Refer to [The Python introduction lesson](./Beginner-Tutorial-Python-basic-introduction.md) for more hints. If you get stuck, reach out to the Evennia community for help.
 ```
 
 Next we reload to let Evennia know of these code changes and try it out:
@@ -387,8 +355,7 @@ You won't see the second string. Only Smaug sees that (and is not amused).
 
 ## Summary
 
-In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves.
-We also upset a dragon.
+In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves. We also upset a dragon.
 
 In the next lesson we'll learn how to hit Smaug with different weapons. We'll also
 get into how we replace and extend Evennia's default Commands.

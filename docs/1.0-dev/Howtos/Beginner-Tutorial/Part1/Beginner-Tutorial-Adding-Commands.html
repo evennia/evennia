@@ -113,9 +113,9 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="adding-custom-commands">
 <h1><span class="section-number">8. </span>Adding custom commands<a class="headerlink" href="#adding-custom-commands" title="Permalink to this headline">¶</a></h1>
-<p>In this lesson we’ll learn how to create our own Evennia <em>Commands</em>. If you are new to Python you’ll also learn some more basics about how to manipulate strings and get information out of Evennia.</p>
+<p>In this lesson we’ll learn how to create our own Evennia <a class="reference internal" href="../../../Components/Commands.html"><span class="doc std std-doc">Commands</span></a> If you are new to Python you’ll also learn some more basics about how to manipulate strings and get information out of Evennia.</p>
 <p>A Command is something that handles the input from a user and causes a result to happen.
-An example is <code class="docutils literal notranslate"><span class="pre">look</span></code>, which examines your current location and tells how it looks like and
+An example is <code class="docutils literal notranslate"><span class="pre">look</span></code>, which examines your current location and tells you what it looks like and
 what is in it.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Commands are not typeclassed</p>
@@ -124,19 +124,9 @@ CommandSets are not <code class="docutils literal notranslate"><span class="pre"
 database. They are “just” normal Python classes.</p>
 </aside>
 <p>In Evennia, a Command is a Python <em>class</em>. If you are unsure about what a class is, review the
-previous lessons! A Command inherits from <code class="docutils literal notranslate"><span class="pre">evennia.Command</span></code> or from one of the alternative command-
-classes, such as <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> which is what most default commands use.</p>
-<p>All Commands are in turn grouped in another class called a <em>Command Set</em>. Think of a Command Set
-as a bag holding many different commands. One CmdSet could for example hold all commands for
-combat, another for building etc. By default, Evennia groups all character-commands into one
-big cmdset.</p>
-<p>Command-Sets are then associated with objects, for example with your Character. Doing so makes the
-commands in that cmdset available to the object. So, to summarize:</p>
-<ul class="simple">
-<li><p>Commands are classes</p></li>
-<li><p>A group of Commands is stored in a CmdSet</p></li>
-<li><p>CmdSets are stored on objects - this defines which commands are available to that object.</p></li>
-</ul>
+<a class="reference internal" href="Beginner-Tutorial-Python-classes-and-objects.html"><span class="doc std std-doc">previous lesson about it</span></a>! A Command inherits from <code class="docutils literal notranslate"><span class="pre">evennia.Command</span></code> or from one of the alternative command- classes, such as <code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code> which is what most default commands use.</p>
+<p>All Commands are grouped in another class called a <em>Command Set</em>. Think of a Command Set as a bag holding many different commands. One CmdSet could for example hold all commands for combat, another for building etc.</p>
+<p>Command-Sets are then associated with objects, for example with your Character. Doing so makes the commands in that cmdset available to the object. By default, Evennia groups all character-commands into one big cmdset called the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>. It sits on <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> (and thus, through inheritance, on <code class="docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code>).</p>
 <section id="creating-a-custom-command">
 <h2><span class="section-number">8.1. </span>Creating a custom command<a class="headerlink" href="#creating-a-custom-command" title="Permalink to this headline">¶</a></h2>
 <p>Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/command.py</span></code>:</p>
@@ -158,17 +148,13 @@ commands in that cmdset available to the object. So, to summarize:</p>
 </pre></div>
 </div>
 <p>Ignoring the docstrings (which you can read if you want), this is the only really active code in the module.</p>
-<p>We can see that we import <code class="docutils literal notranslate"><span class="pre">Command</span></code> from <code class="docutils literal notranslate"><span class="pre">evennia</span></code> and use the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">...</span> <span class="pre">import</span> <span class="pre">...</span> <span class="pre">as</span> <span class="pre">...</span></code> form to rename it
-to <code class="docutils literal notranslate"><span class="pre">BaseCommand</span></code>. This is so we can let our child class also be named <code class="docutils literal notranslate"><span class="pre">Command</span></code> for reference.  The class
-itself doesn’t do anything, it just has <code class="docutils literal notranslate"><span class="pre">pass</span></code>. So in the same way as <code class="docutils literal notranslate"><span class="pre">Object</span></code> in the previous lesson, this
-class is identical to its parent.</p>
+<p>We can see that we import <code class="docutils literal notranslate"><span class="pre">Command</span></code> from <code class="docutils literal notranslate"><span class="pre">evennia</span></code> and use the <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">...</span> <span class="pre">import</span> <span class="pre">...</span> <span class="pre">as</span> <span class="pre">...</span></code> form to rename it to <code class="docutils literal notranslate"><span class="pre">BaseCommand</span></code>. This is so we can let our child class also be named <code class="docutils literal notranslate"><span class="pre">Command</span></code> to make it easier to reference.  The class itself doesn’t do anything, it just has <code class="docutils literal notranslate"><span class="pre">pass</span></code>. So in the same way as <code class="docutils literal notranslate"><span class="pre">Object</span></code> and <code class="docutils literal notranslate"><span class="pre">Character</span></code> in the previous lessons, this class is identical to its parent.</p>
 <blockquote>
-<div><p>The commented out <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> gives us access to Evennia’s default commands for easy overriding. We’ll try
-that a little later.</p>
+<div><p>The commented out <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> gives us access to Evennia’s default commands for easy overriding. We’ll try that a little later.</p>
 </div></blockquote>
-<p>We could modify this module directly, but to train imports we’ll work in a separate module. Open a new file
-<code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> and add the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<p>We could modify this module directly, but let’s work in a separate module just for the heck of it. Open a new file <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> and add the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/mycommands.py</span>
+
 <span class="kn">from</span> <span class="nn">commands.command</span> <span class="kn">import</span> <span class="n">Command</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -194,15 +180,12 @@ what you will use to call this command later.</p>
 
 </pre></div>
 </div>
-<p>Our <code class="docutils literal notranslate"><span class="pre">EchoCmdSet</span></code> class must have an <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code> method, named exactly
-like this - this is what Evennia will be looking for when setting up the cmdset later, so
-if you didn’t set it up, it will use the parent’s version, which is empty. Inside we add the
-command class to the cmdset by <code class="docutils literal notranslate"><span class="pre">self.add()</span></code>. If you wanted to add more commands to this CmdSet you
-could just add more lines of <code class="docutils literal notranslate"><span class="pre">self.add</span></code> after this.</p>
+<p>Our <code class="docutils literal notranslate"><span class="pre">EchoCmdSet</span></code> class must have an <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code> method, named exactly like this - this is what Evennia will be looking for when setting up the cmdset later, so if you didn’t set it up, it will use the parent’s version, which is empty. Inside we add the command class to the cmdset by <code class="docutils literal notranslate"><span class="pre">self.add()</span></code>. If you wanted to add more commands to this CmdSet you could just add more lines of <code class="docutils literal notranslate"><span class="pre">self.add</span></code> after this.</p>
 <p>Finally, let’s add this command to ourselves so we can try it out. In-game you can experiment with <code class="docutils literal notranslate"><span class="pre">py</span></code> again:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;)
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">me.cmdset</span></code> is the store of all cmdsets stored on us. By giving the path to our CmdSet class, it will be added.</p>
 <p>Now try</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; echo
 Command echo has no defined `func()` - showing on-command variables:
@@ -210,9 +193,7 @@ Command echo has no defined `func()` - showing on-command variables:
 ...
 </pre></div>
 </div>
-<p>You should be getting a long list of outputs. The reason for this is that your <code class="docutils literal notranslate"><span class="pre">echo</span></code> function is not really
-“doing” anything yet and the default function is then to show all useful resources available to you when you
-use your Command. Let’s look at some of those listed:</p>
+<p><code class="docutils literal notranslate"><span class="pre">echo</span></code> works! You should be getting a long list of outputs. The reason for this is that your <code class="docutils literal notranslate"><span class="pre">echo</span></code> function is not really “doing” anything yet and the default function is then to show all useful resources available to you when you use your Command. Let’s look at some of those listed:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Command echo has no defined `func()` - showing on-command variables:
 obj (&lt;class &#39;typeclasses.characters.Character&#39;&gt;): YourName
 lockhandler (&lt;class &#39;evennia.locks.lockhandler.LockHandler&#39;&gt;): cmd:all()
@@ -244,17 +225,13 @@ command string given (self.cmdstring): echo
 current cmdset (self.cmdset): ChannelCmdSet
 </pre></div>
 </div>
-<p>These are all properties you can access with <code class="docutils literal notranslate"><span class="pre">.</span></code> on the Command instance, such as <code class="docutils literal notranslate"><span class="pre">.key</span></code>, <code class="docutils literal notranslate"><span class="pre">.args</span></code> and so on.
-Evennia makes these available to you and they will be different every time a command is run. The most
-important ones we will make use of now are:</p>
+<p>These are all properties you can access with <code class="docutils literal notranslate"><span class="pre">.</span></code> on the Command instance, such as <code class="docutils literal notranslate"><span class="pre">.key</span></code>, <code class="docutils literal notranslate"><span class="pre">.args</span></code> and so on. Evennia makes these available to you and they will be different every time a command is run. The most important ones we will make use of now are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">caller</span></code> - this is ‘you’, the person calling the command.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> - this is all arguments to the command. Now it’s empty, but if you tried <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">foo</span> <span class="pre">bar</span></code> you’d find
-that this would be <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">foo</span> <span class="pre">bar&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">args</span></code> - this is all arguments to the command. Now it’s empty, but if you tried <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">foo</span> <span class="pre">bar</span></code> you’d find that this would be <code class="docutils literal notranslate"><span class="pre">&quot;</span> <span class="pre">foo</span> <span class="pre">bar&quot;</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">obj</span></code> - this is object on which this Command (and CmdSet) “sits”. So you, in this case.</p></li>
 </ul>
-<p>The reason our command doesn’t do anything yet is because it’s missing a <code class="docutils literal notranslate"><span class="pre">func</span></code> method. This is what Evennia
-looks for to figure out what a Command actually does. Modify your <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> class:</p>
+<p>The reason our command doesn’t do anything yet is because it’s missing a <code class="docutils literal notranslate"><span class="pre">func</span></code> method. This is what Evennia looks for to figure out what a Command actually does. Modify your <code class="docutils literal notranslate"><span class="pre">CmdEcho</span></code> class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -273,14 +250,13 @@ looks for to figure out what a Command actually does. Modify your <code class="d
 <span class="c1"># ...</span>
 </pre></div>
 </div>
-<p>First we added a docstring. This is always a good thing to do in general, but for a Command class, it will also
-automatically become the in-game help entry! Next we add the <code class="docutils literal notranslate"><span class="pre">func</span></code> method. It has one active line where it
-makes use of some of those variables we found the Command offers to us. If you did the
-<a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html"><span class="doc std std-doc">basic Python tutorial</span></a>, you will recognize <code class="docutils literal notranslate"><span class="pre">.msg</span></code> - this will send a message
-to the object it is attached to us - in this case <code class="docutils literal notranslate"><span class="pre">self.caller</span></code>, that is, us. We grab <code class="docutils literal notranslate"><span class="pre">self.args</span></code> and includes
-that in the message.</p>
-<p>Since we haven’t changed <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>, that will work as before. Reload and re-add this command to ourselves to
-try out the new version:</p>
+<p>First we added a docstring. This is always a good thing to do in general, but for a Command class, it will also automatically become the in-game help entry!</p>
+<aside class="sidebar">
+<p class="sidebar-title">Use Command.msg </p>
+<p>In a Command class, the <code class="docutils literal notranslate"><span class="pre">self.msg()</span></code> acts as a convenient shortcut for <code class="docutils literal notranslate"><span class="pre">self.caller.msg()</span></code>. Not only is it shorter, it also has some advantages because the command can include more metadata with the message. So using <code class="docutils literal notranslate"><span class="pre">self.msg()</span></code> is usually better. For this tutorial though, <code class="docutils literal notranslate"><span class="pre">self.caller.msg()</span></code> is more explicit in showing what is going on.</p>
+</aside>
+<p>Next we add the <code class="docutils literal notranslate"><span class="pre">func</span></code> method. It has one active line where it makes use of some of those variables the Command class offers to us. If you did the <a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html"><span class="doc std std-doc">basic Python tutorial</span></a>, you will recognize <code class="docutils literal notranslate"><span class="pre">.msg</span></code> - this will send a message to the object it is attached to us - in this case <code class="docutils literal notranslate"><span class="pre">self.caller</span></code>, that is, us. We grab <code class="docutils literal notranslate"><span class="pre">self.args</span></code> and includes that in the message.</p>
+<p>Since we haven’t changed <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code>, that will work as before. Reload and re-add this command to ourselves to try out the new version:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; py self.cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;)
 &gt; echo
@@ -292,14 +268,12 @@ Echo: &#39;&#39;
 Echo: &#39; Woo Tang!&#39;
 </pre></div>
 </div>
-<p>Note that there is an extra space before <code class="docutils literal notranslate"><span class="pre">Woo!</span></code>. That is because self.args contains the <em>everything</em> after
-the command name, including spaces. Evennia will happily understand if you skip that space too:</p>
+<p>Note that there is an extra space before <code class="docutils literal notranslate"><span class="pre">Woo!</span></code>. That is because self.args contains <em>everything</em> after the command name, including spaces. Evennia will happily understand if you skip that space too:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; echoWoo Tang!
 Echo: &#39;Woo Tang!&#39;
 </pre></div>
 </div>
-<p>There are ways to force Evennia to <em>require</em> an initial space, but right now we want to just ignore it since
-it looks a bit weird for our echo example. Tweak the code:</p>
+<p>There are ways to force Evennia to <em>require</em> an initial space, but right now we want to just ignore it since it looks a bit weird for our echo example. Tweak the code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
 <span class="k">class</span> <span class="nc">CmdEcho</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -318,9 +292,7 @@ it looks a bit weird for our echo example. Tweak the code:</p>
 <span class="c1"># ...</span>
 </pre></div>
 </div>
-<p>The only difference is that we called <code class="docutils literal notranslate"><span class="pre">.strip()</span></code> on <code class="docutils literal notranslate"><span class="pre">self.args</span></code>. This is a helper method available on all
-strings - it strips out all whitespace before and after the string. Now the Command-argument will no longer
-have any space in front of it.</p>
+<p>The only difference is that we called <code class="docutils literal notranslate"><span class="pre">.strip()</span></code> on <code class="docutils literal notranslate"><span class="pre">self.args</span></code>. This is a helper method available on all strings - it strips out all whitespace before and after the string. Now the Command-argument will no longer have any space in front of it.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
 &gt; py self.cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;)
 &gt; echo Woo Tang!
@@ -331,7 +303,7 @@ Echo: &#39;Woo Tang!&#39;
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; help echo
 </pre></div>
 </div>
-<p>You will get the docstring you put in your Command-class.</p>
+<p>You will get the docstring you put in your Command-class!</p>
 <section id="making-our-cmdset-persistent">
 <h3><span class="section-number">8.1.1. </span>Making our cmdset persistent<a class="headerlink" href="#making-our-cmdset-persistent" title="Permalink to this headline">¶</a></h3>
 <p>It’s getting a little annoying to have to re-add our cmdset every time we reload, right? It’s simple
@@ -340,7 +312,7 @@ enough to make <code class="docutils literal notranslate"><span class="pre">echo
 </pre></div>
 </div>
 <p>Now you can <code class="docutils literal notranslate"><span class="pre">reload</span></code> as much as you want and your code changes will be available directly without
-needing to re-add the MyCmdSet again. To remove the cmdset again, do</p>
+needing to re-add the MyCmdSet again. To remove the cmdset again, you’d do</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.cmdset.remove(&quot;commands.mycommands.MyCmdSet&quot;)
 </pre></div>
 </div>
@@ -354,7 +326,7 @@ someone in the face! This is how we want it to work:</p>
 You hit &lt;target&gt; with full force!
 </pre></div>
 </div>
-<p>Not only that, we want the <target> to see</p>
+<p>Not only that, we want the <code class="docutils literal notranslate"><span class="pre">&lt;target&gt;</span></code> to see</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You got hit by &lt;hitter&gt; with full force!
 </pre></div>
 </div>
@@ -432,11 +404,9 @@ else:
 the <code class="docutils literal notranslate"><span class="pre">else</span></code> condition is given, it will run if none of the other conditions was truthy. In Python
 the <code class="docutils literal notranslate"><span class="pre">if..elif..else</span></code> structure also serves the same function as <code class="docutils literal notranslate"><span class="pre">case</span></code> in some other languages.</p>
 </aside>
-<ul>
-<li><p><strong>Line 15</strong> has our first <em>conditional</em>, an <code class="docutils literal notranslate"><span class="pre">if</span></code> statement. This is written on the form <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">&lt;condition&gt;:</span></code> and only
-if that condition is ‘truthy’ will the indented code block under the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement run. To learn what is truthy in
-Python it’s usually easier to learn what is “falsy”:</p>
 <ul class="simple">
+<li><p><strong>Line 15</strong> has our first <em>conditional</em>, an <code class="docutils literal notranslate"><span class="pre">if</span></code> statement. This is written on the form <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">&lt;condition&gt;:</span></code> and only if that condition is ‘truthy’ will the indented code block under the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement run. To learn what is truthy in Python it’s usually easier to learn what is “falsy”:</p>
+<ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">False</span></code> - this is a reserved boolean word in Python. The opposite is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - another reserved word. This represents nothing, a null-result or value.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></li>
@@ -444,14 +414,12 @@ Python it’s usually easier to learn what is “falsy”:</p>
 <li><p>Empty <em>iterables</em> we haven’t seen yet, like empty lists <code class="docutils literal notranslate"><span class="pre">[]</span></code>, empty tuples <code class="docutils literal notranslate"><span class="pre">()</span></code> and empty dicts <code class="docutils literal notranslate"><span class="pre">{}</span></code>.</p></li>
 <li><p>Everything else is “truthy”.</p></li>
 </ul>
-<p>Line 16’s condition is <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">args</span></code>. The <code class="docutils literal notranslate"><span class="pre">not</span></code> <em>inverses</em> the result, so if <code class="docutils literal notranslate"><span class="pre">args</span></code> is the empty string (falsy), the
-whole conditional becomes truthy. Let’s continue in the code:</p>
 </li>
+<li><p><strong>Line 16</strong>’s condition is <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">args</span></code>. The <code class="docutils literal notranslate"><span class="pre">not</span></code> <em>inverses</em> the result, so if <code class="docutils literal notranslate"><span class="pre">args</span></code> is the empty string (falsy), the whole conditional becomes truthy. Let’s continue in the code:</p></li>
 <li><p><strong>Lines 16-17</strong>: This code will only run if the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement is truthy, in this case if <code class="docutils literal notranslate"><span class="pre">args</span></code> is the empty string.</p></li>
 <li><p><strong>Line 17</strong>: <code class="docutils literal notranslate"><span class="pre">return</span></code> is a reserved Python word that exits <code class="docutils literal notranslate"><span class="pre">func</span></code> immediately.</p></li>
 <li><p><strong>Line 18</strong>: We use <code class="docutils literal notranslate"><span class="pre">self.caller.search</span></code> to look for the target in the current location.</p></li>
-<li><p><strong>Lines 19-20</strong>: A feature of <code class="docutils literal notranslate"><span class="pre">.search</span></code> is that it will already inform <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> if it couldn’t find the target.
-In that case, <code class="docutils literal notranslate"><span class="pre">target</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> and we should just directly <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p></li>
+<li><p><strong>Lines 19-20</strong>: A feature of <code class="docutils literal notranslate"><span class="pre">.search</span></code> is that it will already inform <code class="docutils literal notranslate"><span class="pre">self.caller</span></code> if it couldn’t find the target. In that case, <code class="docutils literal notranslate"><span class="pre">target</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code> and we should just directly <code class="docutils literal notranslate"><span class="pre">return</span></code>.</p></li>
 <li><p><strong>Lines 21-22</strong>: At this point we have a suitable target and can send our punching strings to each.</p></li>
 </ul>
 <p>Finally we must also add this to a CmdSet. Let’s add it to <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> which we made persistent earlier.</p>
@@ -470,9 +438,7 @@ In that case, <code class="docutils literal notranslate"><span class="pre">targe
 <p>With longer code snippets to try, it gets more and more likely you’ll
 make an error and get a <code class="docutils literal notranslate"><span class="pre">traceback</span></code> when you reload. This will either appear
 directly in-game or in your log (view it with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">-l</span></code> in a terminal).
-Don’t panic; tracebacks are your friends - they are to be read bottom-up and usually describe
-exactly where your problem is. Refer to <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">Python</span> <span class="pre">intro</span> <span class="pre">&lt;Python-basic-introduction.html&gt;</span></code>_ for
-more hints. If you get stuck, reach out to the Evennia community for help.</p>
+Don’t panic; tracebacks are your friends - they are to be read bottom-up and usually describe exactly where your problem is. Refer to <a class="reference internal" href="Beginner-Tutorial-Python-basic-introduction.html"><span class="doc std std-doc">The Python introduction lesson</span></a> for more hints. If you get stuck, reach out to the Evennia community for help.</p>
 </aside>
 <p>Next we reload to let Evennia know of these code changes and try it out:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
@@ -494,8 +460,7 @@ You hit Smaug with full force!
 </section>
 <section id="summary">
 <h2><span class="section-number">8.2. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves.
-We also upset a dragon.</p>
+<p>In this lesson we learned how to create our own Command, add it to a CmdSet and then to ourselves. We also upset a dragon.</p>
 <p>In the next lesson we’ll learn how to hit Smaug with different weapons. We’ll also
 get into how we replace and extend Evennia’s default Commands.</p>
 </section>

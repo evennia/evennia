@@ -62,11 +62,10 @@
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Core Components</a><ul>
-<li><a class="reference internal" href="#database-entites">Database entites</a></li>
+<li><a class="reference internal" href="#basic-entites">Basic entites</a></li>
 <li><a class="reference internal" href="#commands">Commands</a></li>
 <li><a class="reference internal" href="#utils-and-tools">Utils and tools</a></li>
 <li><a class="reference internal" href="#web-components">Web components</a></li>
-<li><a class="reference internal" href="#server-and-network">Server and network</a></li>
 </ul>
 </li>
 </ul>
@@ -110,8 +109,9 @@
   <section class="tex2jax_ignore mathjax_ignore" id="core-components">
 <h1>Core Components<a class="headerlink" href="#core-components" title="Permalink to this headline">¶</a></h1>
 <p>These are the ‘building blocks’ out of which Evennia is built. This documentation is complementary to, and often goes deeper than, the doc-strings of each component in the <a class="reference internal" href="../Evennia-API.html"><span class="doc std std-doc">API</span></a>.</p>
-<section id="database-entites">
-<h2>Database entites<a class="headerlink" href="#database-entites" title="Permalink to this headline">¶</a></h2>
+<section id="basic-entites">
+<h2>Basic entites<a class="headerlink" href="#basic-entites" title="Permalink to this headline">¶</a></h2>
+<p>These are base pieces used to make an Evennia game. Most are long-lived and are persisted in the database.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Typeclasses.html">Typeclasses</a><ul>
@@ -218,11 +218,13 @@
 <li class="toctree-l2"><a class="reference internal" href="Permissions.html#quelling">Quelling</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Portal-And-Server.html">Portal And Server</a></li>
 </ul>
 </div>
 </section>
 <section id="commands">
 <h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<p>Evennia’s Command system handle everything sent to the server by the user.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Command-System.html">Command System</a></li>
@@ -271,11 +273,19 @@
 <li class="toctree-l2"><a class="reference internal" href="Batch-Command-Processor.html#assorted-notes">Assorted notes</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Inputfuncs.html">Inputfuncs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#adding-your-own-inputfuncs">Adding your own inputfuncs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#default-inputfuncs">Default inputfuncs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#unmonitor">unmonitor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Outputfuncs.html">Outputfuncs</a></li>
 </ul>
 </div>
 </section>
 <section id="utils-and-tools">
 <h2>Utils and tools<a class="headerlink" href="#utils-and-tools" title="Permalink to this headline">¶</a></h2>
+<p>Evennia provides a library of code resources to help the creation of a game.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Coding-Utils.html">Coding Utils</a><ul>
@@ -350,6 +360,7 @@
 </section>
 <section id="web-components">
 <h2>Web components<a class="headerlink" href="#web-components" title="Permalink to this headline">¶</a></h2>
+<p>Evennia is also its own webserver, with a website and in-browser webclient you can expand on.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Website.html">Game website</a><ul>
@@ -359,9 +370,12 @@
 <li class="toctree-l2"><a class="reference internal" href="Website.html#user-forms">User forms</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Web-API.html">Evennia REST API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Web-API.html#usage">Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Web-API.html#customizing-the-api">Customizing the API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Webclient.html">Web Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Webclient.html#customizing-the-web-client">Customizing the web client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Webclient.html#evennia-web-client-api-from-evennia-js">Evennia Web Client API (from evennia.js)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Webclient.html#plugin-manager-api-from-webclient-gui-js">Plugin Manager API (from webclient_gui.js)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Webclient.html#plugin-callbacks-api">Plugin callbacks API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Webclient.html#writing-your-own-plugins">Writing your own Plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Web-Admin.html">The Web Admin</a><ul>
@@ -370,47 +384,18 @@
 <li class="toctree-l2"><a class="reference internal" href="Web-Admin.html#customizing-the-web-admin">Customizing the web admin</a></li>
 </ul>
 </li>
-</ul>
-</div>
-</section>
-<section id="server-and-network">
-<h2>Server and network<a class="headerlink" href="#server-and-network" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Portal-And-Server.html">Portal And Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Inputfuncs.html">Inputfuncs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#adding-your-own-inputfuncs">Adding your own inputfuncs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#default-inputfuncs">Default inputfuncs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Inputfuncs.html#unmonitor">unmonitor</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Outputfuncs.html">Outputfuncs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Server.html">Server component</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Webserver.html">Webserver</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Webserver.html#basic-webserver-data-flow">Basic Webserver data flow</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Webclient.html">Web Client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Webclient.html#customizing-the-web-client">Customizing the web client</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Webclient.html#evennia-web-client-api-from-evennia-js">Evennia Web Client API (from evennia.js)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Webclient.html#plugin-manager-api-from-webclient-gui-js">Plugin Manager API (from webclient_gui.js)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Webclient.html#plugin-callbacks-api">Plugin callbacks API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Webclient.html#example-default-plugins-plugins-js">Example/Default Plugins (plugins/*.js)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Webclient.html#a-side-note-on-html-messages-vrs-text2html-messages">A side note on html messages vrs text2html messages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Webclient.html#writing-your-own-plugins">Writing your own Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Webclient.html#goldenlayout">GoldenLayout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Web-API.html">Evennia REST API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Web-API.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Web-API.html#customizing-the-api">Customizing the API</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Bootstrap-Components-and-Utilities.html">Bootstrap Components and Utilities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Bootstrap-Components-and-Utilities.html#general-styling">General Styling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Bootstrap-Components-and-Utilities.html#components">Components</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Signals.html">Signals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Signals.html#attaching-a-handler-to-a-signal">Attaching a handler to a signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Signals.html#available-signals">Available signals</a></li>
 </ul>
 </li>
 </ul>

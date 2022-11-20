@@ -2,7 +2,7 @@
 
 In this lesson we will test out what we can do in-game out-of-the-box. Evennia ships with
 [around 90 default commands](../../../Components/Default-Commands.md), and while you can override those as you please,
-they can be quite useful.
+the defaults can be quite useful.
 
 Connect and log into your new game and you will end up in the "Limbo" location. This
 is the only room in the game at this point. Let's explore the commands a little.

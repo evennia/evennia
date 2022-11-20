@@ -72,7 +72,8 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#typeclasses">7.2. Typeclasses</a><ul>
-<li><a class="reference internal" href="#examining-and-defaults">7.2.1. Examining and defaults</a></li>
+<li><a class="reference internal" href="#examining-objects">7.2.1. Examining objects</a></li>
+<li><a class="reference internal" href="#default-typeclasses">7.2.2. Default typeclasses</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#modifying-ourselves">7.3. Modifying ourselves</a><ul>
@@ -170,25 +171,23 @@ open it:</p>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultObject</span>
 
-<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ObjectParent</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    class docstring </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="n">ObjectParent</span><span class="p">,</span> <span class="n">DefaultObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    class docstring</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
 </pre></div>
 </div>
-<p>So we have a class <code class="docutils literal notranslate"><span class="pre">Object</span></code> that <em>inherits</em> from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, which we have imported from Evennia.
-The class itself doesn’t do anything (it just <code class="docutils literal notranslate"><span class="pre">pass</span></code>es) but that doesn’t mean it’s useless. As we’ve seen,
-it inherits all the functionality of its parent. It’s in fact an <em>exact replica</em> of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> right now.
-If we knew what kind of methods and resources were available on <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> we could add our own and
-change the way it works!</p>
-<blockquote>
-<div><p>Hint: We will get back to this, but to learn what resources an Evennia parent like <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> offers,
-easiest is to peek at its <a class="reference internal" href="../../../api/evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><span class="xref myst py py-class">API documentation</span></a>. The docstring for
-the <code class="docutils literal notranslate"><span class="pre">Object</span></code> class can also help.</p>
-</div></blockquote>
-<p>One thing that Evennia classes offers and which you don’t get with vanilla Python classes is <em>persistence</em>. As
-you’ve found, Fluffy, Cuddly and Smaug are gone once we reload the server. Let’s see if we can fix this.</p>
+<p>So we have a class <code class="docutils literal notranslate"><span class="pre">Object</span></code> that <em>inherits</em> from <code class="docutils literal notranslate"><span class="pre">ObjectParent</span></code> (which is empty) and <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, which we have imported from Evennia. The <code class="docutils literal notranslate"><span class="pre">ObjectParent</span></code> acts as a place to put code you want all
+of your <code class="docutils literal notranslate"><span class="pre">Objects</span></code> to have. We’ll focus on <code class="docutils literal notranslate"><span class="pre">Object</span></code> and <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> for now.</p>
+<p>The class itself doesn’t do anything (it just <code class="docutils literal notranslate"><span class="pre">pass</span></code>es) but that doesn’t mean it’s useless. As we’ve seen, it inherits all the functionality of its parent. It’s in fact an <em>exact replica</em> of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> right now.  Once we know what kind of methods and resources are available on <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> we could add our own and  change the way it works!</p>
+<p>One thing that Evennia classes offers and which you don’t get with vanilla Python classes is <em>persistence</em> - they survive a server reload since they are stored in the database.</p>
 <p>Go back to <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/monsters.py</span></code>. Change it as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
@@ -218,15 +217,13 @@ you’ve found, Fluffy, Cuddly and Smaug are gone once we reload the server. Let
 
 </pre></div>
 </div>
-<p>Don’t forget to save. We removed <code class="docutils literal notranslate"><span class="pre">Monster.__init__</span></code> and made <code class="docutils literal notranslate"><span class="pre">Monster</span></code> inherit from Evennia’s <code class="docutils literal notranslate"><span class="pre">Object</span></code> (which in turn
-inherits from Evennia’s <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, as we saw). By extension, this means that <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> also inherits
-from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, just from further away!</p>
+<p>Don’t forget to save. We removed <code class="docutils literal notranslate"><span class="pre">Monster.__init__</span></code> and made <code class="docutils literal notranslate"><span class="pre">Monster</span></code> inherit from Evennia’s <code class="docutils literal notranslate"><span class="pre">Object</span></code> (which in turn  inherits from Evennia’s <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, as we saw). By extension, this means that <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> also inherits  from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>, just from further away!</p>
 <section id="making-a-new-object-by-calling-the-class">
 <h3><span class="section-number">7.1.1. </span>Making a new object by calling the class<a class="headerlink" href="#making-a-new-object-by-calling-the-class" title="Permalink to this headline">¶</a></h3>
 <p>First reload the server as usual. We will need to create the dragon a little differently this time:</p>
 <aside class="sidebar">
 <p class="sidebar-title">Keyword arguments</p>
-<p>Keyword arguments (like <code class="docutils literal notranslate"><span class="pre">db_key=&quot;Smaug&quot;</span></code>) is a way to  name the input arguments to a function or method. They make  things easier to read but also allows for conveniently setting defaults for values not given explicitly.</p>
+<p><em>Keyword arguments</em> (like <code class="docutils literal notranslate"><span class="pre">db_key=&quot;Smaug&quot;</span></code>) is a way to  name the input arguments to a function or method. They make  things easier to read but also allows for conveniently setting defaults for values not given explicitly. We saw them previously in use for <code class="docutils literal notranslate"><span class="pre">.format()</span></code>.</p>
 </aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
 &gt; from typeclasses.monsters import Dragon
@@ -239,6 +236,10 @@ The world trembles.
 </div>
 <p>Smaug works the same as before, but we created him differently: first we used
 <code class="docutils literal notranslate"><span class="pre">Dragon(db_key=&quot;Smaug&quot;,</span> <span class="pre">db_location=here)</span></code> to create the object, and then we used <code class="docutils literal notranslate"><span class="pre">smaug.save()</span></code> afterwards.</p>
+<aside class="sidebar">
+<p class="sidebar-title">here</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">here</span></code> used in <code class="docutils literal notranslate"><span class="pre">db_location=here</span></code> is a shortcut for your current location. This <code class="docutils literal notranslate"><span class="pre">here</span></code> (similar to <code class="docutils literal notranslate"><span class="pre">me</span></code>) is <em>only</em> available to use in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command; you can’t use it in other Python code you write unless you define it yourself.</p>
+</aside>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; quit()
 Python Console is closing.
 &gt; look 
@@ -249,9 +250,7 @@ Python Console is closing.
 &gt; look 
 </pre></div>
 </div>
-<p><em>He’s still there</em>… What we just did was to create a new entry in the database for Smaug. We gave the object
-its name (key) and set its location to our current location (remember that <code class="docutils literal notranslate"><span class="pre">here</span></code> is just something available
-in the <code class="docutils literal notranslate"><span class="pre">py</span></code> command, you can’t use it elsewhere).</p>
+<p><em>He’s still there</em>… What we just did was to create a new entry in the database for Smaug. We gave the object  its name (key) and set its location to our current location.</p>
 <p>To make use of Smaug in code we must first find him in the database. For an object in the current
 location we can easily do this in <code class="docutils literal notranslate"><span class="pre">py</span></code> by using <code class="docutils literal notranslate"><span class="pre">me.search()</span></code>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py smaug = me.search(&quot;Smaug&quot;) ; smaug.firebreath()
@@ -264,83 +263,103 @@ Smaug breathes fire!
 <p>Creating Smaug like we did above is nice because it’s similar to how we created non-database
 bound Python instances before. But you need to use <code class="docutils literal notranslate"><span class="pre">db_key</span></code> instead of <code class="docutils literal notranslate"><span class="pre">key</span></code> and you also have to
 remember to call <code class="docutils literal notranslate"><span class="pre">.save()</span></code> afterwards. Evennia has a helper function that is more common to use,
-called <code class="docutils literal notranslate"><span class="pre">create_object</span></code>:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py fluffy = evennia.create_object(&#39;typeclases.monster.Monster&#39;, key=&quot;Fluffy&quot;, location=here)
+called <code class="docutils literal notranslate"><span class="pre">create_object</span></code>. Let’s recreate Cuddly this time:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py evennia.create_object(&#39;typeclasses.monster.Monster&#39;, key=&quot;Cuddly&quot;, location=here)
 &gt; look 
 </pre></div>
 </div>
-<p>Boom, Fluffy should now be in the room with you, a little less scary than Smaug. You specify the
-python-path to the code you want and then set the key and location. Evennia sets things up and saves for you.</p>
-<p>If you want to find Fluffy from anywhere, you can use Evennia’s <code class="docutils literal notranslate"><span class="pre">search_object</span></code> helper:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; fluffy = evennia.search_object(&quot;Fluffy&quot;)[0] ; fluffy.move_around()
-Fluffy is moving! 
+<p>Boom, Cuddly should now be in the room with you, a little less scary than Smaug. You specify the
+python-path to the code you want and then set the key and location (if you had the <code class="docutils literal notranslate"><span class="pre">Monster</span></code> class already imported, you could have passed that too). Evennia sets things up and saves for you.</p>
+<p>If you want to find Smaug from anywhere (not just in the same room), you can use Evennia’s <code class="docutils literal notranslate"><span class="pre">search_object</span></code> function:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; cuddly = evennia.search_object(&quot;Cuddly&quot;)[0] ; cuddly.move_around()
+Cuddly is moving!
 </pre></div>
 </div>
 <blockquote>
-<div><p>The <code class="docutils literal notranslate"><span class="pre">[0]</span></code> is because <code class="docutils literal notranslate"><span class="pre">search_object</span></code> always returns a <em>list</em> of zero, one or more found objects. The <code class="docutils literal notranslate"><span class="pre">[0]</span></code>
-means that we want the first element of this list (counting in Python always starts from 0). If there were
-multiple Fluffies we could get the second one with <code class="docutils literal notranslate"><span class="pre">[1]</span></code>.</p>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">[0]</span></code> is because <code class="docutils literal notranslate"><span class="pre">search_object</span></code> always returns a <em>list</em> of zero, one or more found objects. The <code class="docutils literal notranslate"><span class="pre">[0]</span></code> means that we want the first element of this list (counting in Python always starts from 0). If there were  multiple Cuddlies we could get the second one with <code class="docutils literal notranslate"><span class="pre">[1]</span></code>.</p>
 </div></blockquote>
 </section>
 <section id="creating-using-create-command">
 <h3><span class="section-number">7.1.3. </span>Creating using create-command<a class="headerlink" href="#creating-using-create-command" title="Permalink to this headline">¶</a></h3>
-<p>Finally, you can also create a new Dragon using the familiar builder-commands we explored a few lessons ago:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop Cuddly:typeclasses.monsters.Monster
+<p>Finally, you can also create a new dragon using the familiar builder-commands we explored a few lessons ago:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop Fluffy:typeclasses.monsters.Dragon
 </pre></div>
 </div>
-<p>Cuddly is now in the room. After learning about how objects are created you’ll realize that all this command really
-does is to parse your input, figure out that <code class="docutils literal notranslate"><span class="pre">/drop</span></code> means to “give the object the same location as the caller”,
-and then do a call akin to</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia.create_object(&quot;typeclasses.monsters.Monster&quot;, key=&quot;Cuddly&quot;, location=here)
+<p>Fluffy is now in the room. After learning about how objects are created you’ll realize that all this command really does is to parse your input, figure out that <code class="docutils literal notranslate"><span class="pre">/drop</span></code> means to “give the object the same location as the caller”, and then do a call very similar to</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia.create_object(&quot;typeclasses.monsters.Dragon&quot;, key=&quot;Cuddly&quot;, location=here)
 </pre></div>
 </div>
-<p>That’s pretty much all there is to the mighty <code class="docutils literal notranslate"><span class="pre">create</span></code> command! The rest is just parsing for the command
-to understand just what the user wants to create.</p>
+<p>That’s pretty much all there is to the mighty <code class="docutils literal notranslate"><span class="pre">create</span></code> command! The rest is just parsing for the command to understand just what the user wants to create.</p>
 </section>
 </section>
 <section id="typeclasses">
 <h2><span class="section-number">7.2. </span>Typeclasses<a class="headerlink" href="#typeclasses" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">Object</span></code> (and <code class="docutils literal notranslate"><span class="pre">DefafultObject</span></code> class we inherited from above is what we refer to as a <em>Typeclass</em>. This
-is an Evennia thing. The instance of a typeclass saves itself to the database when it is created, and after
-that you can just search for it to get it back. We use the term <em>typeclass</em> or <em>typeclassed</em> to differentiate
-these types of classes and objects from the normal Python classes, whose instances go away on a reload.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Object</span></code> (and <code class="docutils literal notranslate"><span class="pre">DefafultObject</span></code> class we inherited from above is what we refer to as a <em>Typeclass</em>. This is an Evennia thing. The instance of a typeclass saves itself to the database when it is created, and after that you can just search for it to get it back.</p>
+<p>We use the term <em>typeclass</em> or <em>typeclassed</em> to differentiate these types of classes and objects from the normal Python classes, whose instances go away on a reload.</p>
 <p>The number of typeclasses in Evennia are so few they can be learned by heart:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code>: This is the parent of all in-game entities - everything with a location. Evennia makes
-a few very useful child classes of this class:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code>: The default entity represening a player avatar in-game.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultRoom</span></code>: A location in the game world.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultExit</span></code>: A link between locations.</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultAccount</span></code>: The OOC representation of a player, holds password and account info.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultChannel</span></code>: In-game channels. These could be used for all sorts of in-game communication.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultScript</span></code>: Out-of-game objects, with no presence in the game world. Anything you want to create that
-needs to be persistent can be stored with these entities, such as combat state, economic systems or what have you.</p></li>
-</ul>
-<p>If you take a look in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/</span></code> you’ll find modules for each of these. Each contains an empty child
-class ready that already inherits from the right parent, ready for you to modify or build from:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code> has <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Object(DefaultObject)</span></code>, a class directly inheriting the basic in-game entity, this
-works as a base for any object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> has <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Character(DefaultCharacter)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/rooms.py</span></code> has <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Room(DefaultRoom)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/exits.py</span></code> has <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Exit(DefaultExit)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/accounts.py</span></code> has <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Account(DefaultAccount)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/channels.py</span></code> has <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Channel(DefaultChannel)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/scripts.py</span></code> has <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Script(DefaultScript)</span></code></p></li>
-</ul>
-<blockquote>
-<div><p>Notice that the classes in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/</span></code> are <em>not inheriting from each other</em>. For example,
-<code class="docutils literal notranslate"><span class="pre">Character</span></code> is inheriting from <code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code> and not from <code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>.
-So if you change <code class="docutils literal notranslate"><span class="pre">Object</span></code> you will not cause any change in the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class. If you want that you
-can easily just change the child classes to inherit in that way instead; Evennia doesn’t care.</p>
-</div></blockquote>
-<p>As seen with our <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> example, you don’t <em>have</em> to modify these modules directly. You can just make your
-own modules and import the base class.</p>
-<section id="examining-and-defaults">
-<h3><span class="section-number">7.2.1. </span>Examining and defaults<a class="headerlink" href="#examining-and-defaults" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Evennia base typeclass</p></th>
+<th class="head"><p>mygame.typeclasses child</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code></p></td>
+<td><p>Everything with a location</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code> (child of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code></p></td>
+<td><p>Player avatars</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultRoom</span></code> (child of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.rooms.Room</span></code></p></td>
+<td><p>In-game locations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultExit</span></code> (chld of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.exits.Exit</span></code></p></td>
+<td><p>Links between rooms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultAccount</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.accounts.Account</span></code></p></td>
+<td><p>A player account</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultChannel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.channels.Channel</span></code></p></td>
+<td><p>In-game comms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultScript</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.scripts.Script</span></code></p></td>
+<td><p>Entities with no location</p></td>
+</tr>
+</tbody>
+</table>
+<p>The child classes under <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/</span></code> are meant for you to conveniently modify and
+work with.  Every class inheriting (at any distance) from a Evennia base typeclass is also considered a typeclass.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">somewhere</span> <span class="kn">import</span> <span class="n">Something</span> 
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">DefaultScript</span> 
+
+<span class="k">class</span> <span class="nc">MyOwnClass</span><span class="p">(</span><span class="n">Something</span><span class="p">):</span> 
+    <span class="c1"># not inheriting from an Evennia core typeclass, so this </span>
+    <span class="c1"># is just a &#39;normal&#39; Python class inheriting from somewhere</span>
+    <span class="k">pass</span> 
+
+<span class="k">class</span> <span class="nc">MyOwnClass2</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+    <span class="c1"># inherits from one of the core Evennia typeclasses, so </span>
+    <span class="c1"># this is also considered a &#39;typeclass&#39;.</span>
+    <span class="k">pass</span>
+
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Why invent the name ‘typeclass’?</p>
+<p>We separate ‘regular classes’ from ‘typeclasses’ because while typeclasses act <em>almost</em> like normal Python classes, <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc">there are some differences</span></a>. We will gloss over those differences for now, but they are worth to read up on when you want to do more advanced things later.</p>
+</aside>
+<p>Notice that the classes in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/</span></code> are <em>not inheriting from each other</em>. For example,   <code class="docutils literal notranslate"><span class="pre">Character</span></code> is inheriting from <code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code> and not from <code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>.  So if you change <code class="docutils literal notranslate"><span class="pre">Object</span></code> you will not cause any change in the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class. If you want that you can easily just change the child classes to inherit in that way instead; Evennia doesn’t care.</p>
+<p>As seen with our <code class="docutils literal notranslate"><span class="pre">Dragon</span></code> example, you don’t <em>have</em> to modify these modules directly. You can just make your  own modules and import the base class.</p>
+<section id="examining-objects">
+<h3><span class="section-number">7.2.1. </span>Examining objects<a class="headerlink" href="#examining-objects" title="Permalink to this headline">¶</a></h3>
 <p>When you do</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop giantess:typeclasses.monsters.Monster
 You create a new Monster: giantess.
@@ -372,19 +391,17 @@ may be more useful to us:</p>
 <li><p><strong>Name/key</strong> - The name of this thing. The value <code class="docutils literal notranslate"><span class="pre">(#14)</span></code> is probably different for you. This is the
 unique ‘primary key’ or <em>dbref</em> for this entity in the database.</p></li>
 <li><p><strong>Typeclass</strong>: This show the typeclass we specified, and the path to it.</p></li>
-<li><p><strong>Location</strong>: We are in Limbo. If you moved elsewhere you’ll see that instead. Also the <code class="docutils literal notranslate"><span class="pre">#dbref</span></code> is shown.</p></li>
-<li><p><strong>Permissions</strong>: <em>Permissions</em> are like the inverse to <em>Locks</em> - they are like keys to unlock access to other things.
-The giantess have no such keys (maybe fortunately).</p></li>
-<li><p><strong>Locks</strong>: Locks are the inverse of <em>Permissions</em> - specify what criterion <em>other</em> objects must fulfill in order to
-access the <code class="docutils literal notranslate"><span class="pre">giantess</span></code> object. This uses a very flexible mini-language. For examine, the line <code class="docutils literal notranslate"><span class="pre">examine:perm(Builders)</span></code>
-is read as “Only those with permission <em>Builder</em> or higher can <em>examine</em> this object”. Since we are the superuser
-we pass (even bypass) such locks with ease.</p></li>
-<li><p><strong>Persistent attributes</strong>: This allows for storing arbitrary, persistent data on the typeclassed entity. We’ll get
-to those in the next section.</p></li>
+<li><p><strong>Location</strong>: We are in Limbo. If you moved elsewhere you’ll see that instead. Also the <code class="docutils literal notranslate"><span class="pre">#dbref</span></code> of Limbo is shown.</p></li>
+<li><p><strong>Home</strong>: All objects with a location (inheriting from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>) must have a home location. This is a backup to move the object to if its current location is deleted.</p></li>
+<li><p><strong>Permissions</strong>: <em>Permissions</em> are like the inverse to <em>Locks</em> - they are like keys to unlock access to other things. The giantess have no such keys (maybe fortunately). The <a class="reference internal" href="../../../Components/Permissions.html"><span class="doc std std-doc">Permissions</span></a> has more info.</p></li>
+<li><p><strong>Locks</strong>: Locks are the inverse of <em>Permissions</em> - specify what criterion <em>other</em> objects must fulfill in order to  access the <code class="docutils literal notranslate"><span class="pre">giantess</span></code> object. This uses a very flexible mini-language. For examine, the line <code class="docutils literal notranslate"><span class="pre">examine:perm(Builders)</span></code> is read as “Only those with permission <em>Builder</em> or higher can <em>examine</em> this object”. Since we are the superuser we pass (even bypass) such locks with ease. See the <a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">Locks</span></a> documentation for more info.</p></li>
+<li><p><strong>Persistent attributes</strong>: This allows for storing arbitrary, persistent data on the typeclassed entity. We’ll get  to those in the next section.</p></li>
 </ul>
-<p>Note how the <strong>Typeclass</strong> line describes exactly where to find the code of this object? This is very useful for
-understanding how any object in Evennia works.</p>
-<p>What happens if we <em>don’t</em> specify the typeclass though?</p>
+<p>Note how the <strong>Typeclass</strong> line describes exactly where to find the code of this object? This is very useful for  understanding how any object in Evennia works.</p>
+</section>
+<section id="default-typeclasses">
+<h3><span class="section-number">7.2.2. </span>Default typeclasses<a class="headerlink" href="#default-typeclasses" title="Permalink to this headline">¶</a></h3>
+<p>What happens if we  create an object and <em>don’t</em> specify its typeclass though?</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create/drop box 
 You create a new Object: box.
 </pre></div>
@@ -401,20 +418,14 @@ You create a new Object: box.
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Typeclass: Object (typeclasses.objects.Object) 
 </pre></div>
 </div>
-<p>So when you didn’t specify a typeclass, Evennia used a default, more specifically the (so far) empty <code class="docutils literal notranslate"><span class="pre">Object</span></code> class in
-<code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code>. This is usually what you want, especially since you can tweak that class as much
-as you like.</p>
-<p>But the reason Evennia knows to fall back to this class is not hard-coded - it’s a setting. The default is
-in <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/settings_default.py#L465">evennia/settings_default.py</a>,
-with the name <code class="docutils literal notranslate"><span class="pre">BASE_OBJECT_TYPECLASS</span></code>, which is set to <code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>.</p>
+<p>So when you didn’t specify a typeclass, Evennia used a default, more specifically the (so far) empty <code class="docutils literal notranslate"><span class="pre">Object</span></code> class in  <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/objects.py</span></code>. This is usually what you want, especially since you can tweak that class as much  as you like.</p>
+<p>But the reason Evennia knows to fall back to this class is not hard-coded - it’s a setting. The default is  in <a class="reference internal" href="../../../Setup/Settings-Default.html"><span class="doc std std-doc">evennia/settings_default.py</span></a>,  with the name <code class="docutils literal notranslate"><span class="pre">BASE_OBJECT_TYPECLASS</span></code>, which is set to <code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Changing things</p>
-<p>While it’s tempting to change folders around to your liking, this can make it harder to follow tutorials and may confuse if you are asking others for help. So don’t overdo it unless you really  know what you are doing.</p>
+<p>While it’s tempting to change folders around to your liking, this can make it harder to follow tutorials and may confuse if you are asking others for help. So don’t overdo it unless you really know what you are doing.</p>
 </aside>
 <p>So if you wanted the creation commands and methods to default to some other class you could
-add your own <code class="docutils literal notranslate"><span class="pre">BASE_OBJECT_TYPECLASS</span></code> line to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>. The same is true for all the other
-typeclasseses, like characters, rooms and accounts. This way you can change the
-layout of your game dir considerably if you wanted. You just need to tell Evennia where everything is.</p>
+add your own <code class="docutils literal notranslate"><span class="pre">BASE_OBJECT_TYPECLASS</span></code> line to <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>. The same is true for all the other typeclasseses, like characters, rooms and accounts. This way you can change the  layout of your game dir considerably if you wanted. You just need to tell Evennia where everything is.</p>
 </section>
 </section>
 <section id="modifying-ourselves">
@@ -432,8 +443,7 @@ layout of your game dir considerably if you wanted. You just need to tell Evenni
     <span class="k">pass</span>
 </pre></div>
 </div>
-<p>This looks quite familiar now - an empty class inheriting from the Evennia base typeclass. As you would expect,
-this is also the default typeclass used for creating Characters if you don’t specify it. You can verify it:</p>
+<p>This looks quite familiar now - an empty class inheriting from the Evennia base typeclass (it’s even easier than <code class="docutils literal notranslate"><span class="pre">Object</span></code> since there is no equvalent  <code class="docutils literal notranslate"><span class="pre">ParentObject</span></code> mixin class here). As you would expect, this is also the default typeclass used for creating Characters if you don’t specify it. You can verify it:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; examine me
 ------------------------------------------------------------------------------
 Name/key: YourName (#1)
@@ -461,17 +471,15 @@ Non-Persistent attributes:
 ------------------------------------------------------------------------------
 </pre></div>
 </div>
-<p>You got a lot longer output this time. You have a lot more going on than a simple Object. Here are some new fields of note:</p>
+<p>Yes, the <code class="docutils literal notranslate"><span class="pre">examine</span></code> command understands <code class="docutils literal notranslate"><span class="pre">me</span></code>. You got a lot longer output this time. You have a lot more going on than a simple Object. Here are some new fields of note:</p>
 <ul class="simple">
 <li><p><strong>Session id(s)</strong>: This identifies the <em>Session</em> (that is, the individual connection to a player’s game client).</p></li>
 <li><p><strong>Account</strong> shows, well the <code class="docutils literal notranslate"><span class="pre">Account</span></code> object associated with this Character and Session.</p></li>
-<li><p><strong>Stored/Merged Cmdsets</strong> and <strong>Commands available</strong> is related to which <em>Commands</em> are stored on you. We will
-get to them in the <a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">next lesson</span></a>. For now it’s enough to know these consitute all the
+<li><p><strong>Stored/Merged Cmdsets</strong> and <strong>Commands available</strong> is related to which <em>Commands</em> are stored on you. We will get to them in the <a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">next lesson</span></a>. For now it’s enough to know these consitute all the
 commands available to you at a given moment.</p></li>
 <li><p><strong>Non-Persistent attributes</strong> are Attributes that are only stored temporarily and will go away on next reload.</p></li>
 </ul>
-<p>Look at the <strong>Typeclass</strong> field and you’ll find that it points to <code class="docutils literal notranslate"><span class="pre">typeclasses.character.Character</span></code> as expected.
-So if we modify this class we’ll also modify ourselves.</p>
+<p>Look at the <strong>Typeclass</strong> field and you’ll find that it points to <code class="docutils literal notranslate"><span class="pre">typeclasses.character.Character</span></code> as expected. So if we modify this class we’ll also modify ourselves.</p>
 <section id="a-method-on-ourselves">
 <h3><span class="section-number">7.3.1. </span>A method on ourselves<a class="headerlink" href="#a-method-on-ourselves" title="Permalink to this headline">¶</a></h3>
 <p>Let’s try something simple first. Back in <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code>:</p>
@@ -481,15 +489,15 @@ So if we modify this class we’ll also modify ourselves.</p>
 <span class="sd">    (class docstring)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nb">str</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="n">dex</span> <span class="o">=</span> <span class="mi">12</span>
-    <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">strength</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">dexterity</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">intelligence</span> <span class="o">=</span> <span class="mi">15</span>
 
     <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the main stats of this character</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">int</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dexterity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">intelligence</span>
 
 </pre></div>
 </div>
@@ -505,9 +513,7 @@ So if we modify this class we’ll also modify ourselves.</p>
 <li><p>A <code class="docutils literal notranslate"><span class="pre">tuple</span></code> is written <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">...)</span></code>. It cannot be modified once created.</p></li>
 </ul>
 </aside>
-<p>We made a new method, gave it a docstring and had it <code class="docutils literal notranslate"><span class="pre">return</span></code> the RP-esque values we set. It comes back as a
-<em>tuple</em> <code class="docutils literal notranslate"><span class="pre">(10,</span> <span class="pre">12,</span> <span class="pre">15)</span></code>. To get a specific value you could specify the <em>index</em> of the value you want,
-starting from zero:</p>
+<p>We made a new method, gave it a docstring and had it <code class="docutils literal notranslate"><span class="pre">return</span></code> the RP-esque values we set. It comes back as a <em>tuple</em> <code class="docutils literal notranslate"><span class="pre">(10,</span> <span class="pre">12,</span> <span class="pre">15)</span></code>. To get a specific value you could specify the <em>index</em> of the value you want, starting from zero:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py stats = self.get_stats() ; print(f&quot;Strength is {stats[0]}.&quot;)
 Strength is 10.
 </pre></div>
@@ -516,15 +522,14 @@ Strength is 10.
 <section id="attributes">
 <h3><span class="section-number">7.3.2. </span>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
 <p>So what happens when we increase our strength? This would be one way:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.str = self.str + 1
-&gt; py self.str
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.strength = self.str + 1
+&gt; py self.strength
 11
 </pre></div>
 </div>
-<p>Here we set the strength equal to its previous value + 1. A shorter way to write this is to use Python’s <code class="docutils literal notranslate"><span class="pre">+=</span></code>
-operator:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.str += 1
-&gt; py self.str 
+<p>Here we set the strength equal to its previous value + 1. A shorter way to write this is to use Python’s <code class="docutils literal notranslate"><span class="pre">+=</span></code> operator:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.strength += 1
+&gt; py self.strength
 12     
 &gt; py self.get_stats()
 (12, 12, 15)
@@ -536,12 +541,8 @@ operator:</p>
 (10, 12, 15)
 </pre></div>
 </div>
-<p>After a reload all our changes were forgotten. When we change properties like this, it only changes in memory,
-not in the database (nor do we modify the python module’s code). So when we reloaded, the ‘fresh’ <code class="docutils literal notranslate"><span class="pre">Character</span></code>
-class was loaded, and it still has the original stats we wrote to it.</p>
-<p>In principle we could change the python code. But we don’t want to do that manually every time. And more importantly
-since we have the stats hardcoded in the class, <em>every</em> character instance in the game will have exactly the
-same <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">dex</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code> now! This is clearly not what we want.</p>
+<p>After a reload all our changes were forgotten. When we change properties like this, it only changes in memory, not in the database (nor do we modify the python module’s code). So when we reloaded, the ‘fresh’ <code class="docutils literal notranslate"><span class="pre">Character</span></code>  class was loaded, and it still has the original stats we wrote in it.</p>
+<p>In principle we could change the python code. But we don’t want to do that manually every time. And more importantly since we have the stats hardcoded in the class, <em>every</em> character instance in the game will have exactly the  same <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">dex</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code> now! This is clearly not what we want.</p>
 <p>Evennia offers a special, persistent type of property for this, called an <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>. Rework your
 <code class="docutils literal notranslate"><span class="pre">mygame/typeclasses/characters.py</span></code> like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
@@ -554,42 +555,38 @@ same <code class="docutils literal notranslate"><span class="pre">str</span></co
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the main stats of this character</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">int</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dexterity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">intelligence</span>
 </pre></div>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Spaces in Attribute name?</p>
-<p>What if you want spaces in your Attribute name? Or you want to assign the  name of the Attribute on-the fly? Then you can use <code class="docutils literal notranslate"><span class="pre">.attributes.add(name,</span> <span class="pre">value)</span></code> instead, for example <code class="docutils literal notranslate"><span class="pre">self.attributes.add(&quot;str&quot;,</span> <span class="pre">10)</span></code>.</p>
+<p>What if you want spaces in your Attribute name? Or you want to assign the  name of the Attribute on-the fly? Then you can use <code class="docutils literal notranslate"><span class="pre">.attributes.add(name,</span> <span class="pre">value)</span></code> instead, for example <code class="docutils literal notranslate"><span class="pre">self.attributes.add(&quot;emotional</span> <span class="pre">intelligence&quot;,</span> <span class="pre">10)</span></code>. You read it out again with <code class="docutils literal notranslate"><span class="pre">self.attributes.get(&quot;emotional</span> <span class="pre">intelligence&quot;</span></code>.</p>
 </aside>
-<p>We removed the hard-coded stats and added added <code class="docutils literal notranslate"><span class="pre">.db</span></code> for every stat. The <code class="docutils literal notranslate"><span class="pre">.db</span></code> handler makes the stat
-into an an Evennia <code class="docutils literal notranslate"><span class="pre">Attribute</span></code>.</p>
+<p>We removed the hard-coded stats and added added <code class="docutils literal notranslate"><span class="pre">.db</span></code> for every stat. The <code class="docutils literal notranslate"><span class="pre">.db</span></code> handler makes the stat into an an Evennia <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a>.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload 
 &gt; py self.get_stats()
 (None, None, None) 
 </pre></div>
 </div>
-<p>Since we removed the hard-coded values, Evennia don’t know what they should be (yet). So all we get back
-is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is a Python reserved word to represent nothing, a no-value. This is different from a normal python
-property:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.str
-AttributeError: &#39;Character&#39; object has no attribute &#39;str&#39;
-&gt; py self.db.str
+<p>Since we removed the hard-coded values, Evennia don’t know what they should be (yet). So all we get back  is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is a Python reserved word to represent nothing, a no-value. This is different from a normal python  property:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.strength
+AttributeError: &#39;Character&#39; object has no attribute &#39;strength&#39;
+&gt; py me.db.strength
 (nothing will be displayed, because it&#39;s None)
 </pre></div>
 </div>
-<p>Trying to get an unknown normal Python property will give an error. Getting an unknown Evennia <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> will
-never give an error, but only result in <code class="docutils literal notranslate"><span class="pre">None</span></code> being returned. This is often very practical.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.db.str, self.db.dex, self.db.int = 10, 12, 15
-&gt; py self.get_stats()
+<p>Trying to get an unknown normal Python property will give an error. Getting an unknown Evennia <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> will  never give an error, but only result in <code class="docutils literal notranslate"><span class="pre">None</span></code> being returned. This is often very practical.</p>
+<p>Next, let us test out assigning those Attributes</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py me.db.strength, me.db.dexterity, me.db.intelligence = 10, 12, 15
+&gt; py me.get_stats()
 (10, 12, 15)
 &gt; reload 
-&gt; py self.get_stats()
+&gt; py me.get_stats()
 (10, 12, 15)
 </pre></div>
 </div>
-<p>Now we set the Attributes to the right values. We can see that things work the same as before, also after a
-server reload. Let’s modify the strength:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.db.str += 2 
+<p>Now we set the Attributes to the right values, and they survive a server reload! Let’s modify the strength:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.db.strength += 2 
 &gt; py self.get_stats()
 (12, 12, 15)
 &gt; reload 
@@ -597,19 +594,12 @@ server reload. Let’s modify the strength:</p>
 (12, 12, 15)
 </pre></div>
 </div>
-<p>Our change now survives a reload since Evennia automatically saves the Attribute to the database for us.</p>
+<p>Also our change now survives a reload since Evennia automatically saves the Attribute to the database for us.</p>
 </section>
 <section id="setting-things-on-new-characters">
 <h3><span class="section-number">7.3.3. </span>Setting things on new Characters<a class="headerlink" href="#setting-things-on-new-characters" title="Permalink to this headline">¶</a></h3>
-<p>Things a looking better, but one thing remains strange - the stats start out with a value <code class="docutils literal notranslate"><span class="pre">None</span></code> and we
-have to manually set them to something reasonable. In a later lesson we will investigate character-creation
-in more detail. For now, let’s give every new character some random stats to start with.</p>
-<p>We want those stats to be set only once, when the object is first created. For the Character, this method
-is called <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>.</p>
-<aside class="sidebar">
-<p class="sidebar-title"><strong>init</strong> vs at_object_creation</p>
-<p>For the <code class="docutils literal notranslate"><span class="pre">Monster</span></code> class we used <code class="docutils literal notranslate"><span class="pre">__init__</span></code> to set up the class. We can’t use this for a typeclass because it will be called more than once, at the very least after every reload and maybe more depending on caching. Even if you are familiar with Python, avoid touching <code class="docutils literal notranslate"><span class="pre">__init__</span></code> for typeclasses, the results will not be what you expect.</p>
-</aside>
+<p>Things are looking better, but one thing remains strange - the stats start out with a value <code class="docutils literal notranslate"><span class="pre">None</span></code> and we  have to manually set them to something reasonable. In a later lesson we will investigate character-creation  in more detail. For now, let’s give every new character some random stats to start with.</p>
+<p>We want those stats to be set only once, when the object is first created. For the Character, this method  is called <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># up by the other imports</span>
 <span class="kn">import</span> <span class="nn">random</span> 
 
@@ -619,15 +609,15 @@ is called <code class="docutils literal notranslate"><span class="pre">at_object
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>       
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">str</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dex</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">int</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dexterity</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">intelligence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the main stats of this character</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">int</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dexterity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">intelligence</span>
 </pre></div>
 </div>
 <p>We imported a new module, <code class="docutils literal notranslate"><span class="pre">random</span></code>. This is part of Python’s standard library. We used <code class="docutils literal notranslate"><span class="pre">random.randint</span></code> to
@@ -637,9 +627,11 @@ set a random value from 3 to 18 to each stat. Simple, but for some classical RPG
 (12, 12, 15)
 </pre></div>
 </div>
-<p>Hm, this is the same values we set before. They are not random. The reason for this is of course that, as said,
-<code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> only runs <em>once</em>, the very first time a character is created. Our character object was already
-created long before, so it will not be called again.</p>
+<aside class="sidebar">
+<p class="sidebar-title"><strong>init</strong> vs at_object_creation</p>
+<p>For the <code class="docutils literal notranslate"><span class="pre">Monster</span></code> class we used <code class="docutils literal notranslate"><span class="pre">__init__</span></code> to set up the class. We can’t use this for a typeclass because it will be called more than once, at the very least after every reload and maybe more depending on caching. Even if you are familiar with Python, avoid touching <code class="docutils literal notranslate"><span class="pre">__init__</span></code> for typeclasses, the results will not be what you expect.</p>
+</aside>
+<p>Hm, this is the same values we set before. They are not random. The reason for this is of course that, as said, <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> only runs <em>once</em>, the very first time a character is created. Our character object was already  created long before, so it will not be called again.</p>
 <p>It’s simple enough to run it manually though:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.at_object_creation()
 &gt; py self.get_stats()
@@ -656,21 +648,22 @@ created long before, so it will not be called again.</p>
 </section>
 <section id="updating-all-characters-in-a-loop">
 <h3><span class="section-number">7.3.4. </span>Updating all Characters in a loop<a class="headerlink" href="#updating-all-characters-in-a-loop" title="Permalink to this headline">¶</a></h3>
-<p>Needless to say, for your game you are wise to have a feel for what you want to go into the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook
-before you create a lot of objects (characters in this case). But should it come to that you don’t want to have to
-go around and re-run the method on everyone manually. For the Python beginner, doing this will also give a chance to
-try out Python <em>loops</em>. We try them out in multi-line Python mode:</p>
+<aside class="sidebar">
+<p class="sidebar-title">AttributeProperties</p>
+<p>There is another way to define Attributes on a class, known as <a class="reference internal" href="../../../Components/Attributes.html#using-attributeproperty"><span class="std std-doc">AttributeProperties</span></a>. They can make it easier to maintain static default Attribute values on a typeclass. We will show them off when we make our game later in this tutorial series.</p>
+</aside>
+<p>Needless to say, you are wise to have a feel for what you want to go into the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook <em>before</em> you create a lot of objects (characters in this case).</p>
+<p>Luckily you only need to update objects once, and you don’t have to go around and re-run the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method on everyone manually. For this we’ll try out a Python <em>loop</em>. Let’s go into multi-line Python mode:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
-&gt; for a in [1, 2, &quot;foo&quot;]:     &gt;     print(a)
+&gt; for a in [1, 2, &quot;foo&quot;]:   
+&gt;     print(a)
 1
 2
 foo
 </pre></div>
 </div>
-<p>A python <em>for-loop</em> allows us to loop over something. Above, we made a <em>list</em> of two numbers and a string. In
-every iteration of the loop, the variable <code class="docutils literal notranslate"><span class="pre">a</span></code> becomes one element in turn, and we print that.</p>
-<p>For our list, we want to loop over all Characters, and want to call <code class="docutils literal notranslate"><span class="pre">.at_object_creation</span></code> on each. This is how
-this is done (still in python multi-line mode):</p>
+<p>A python <em>for-loop</em> allows us to loop over something. Above, we made a <em>list</em> of two numbers and a string. In every iteration of the loop, the variable <code class="docutils literal notranslate"><span class="pre">a</span></code> becomes one element in turn, and we print that.</p>
+<p>For our list, we want to loop over all Characters, and want to call <code class="docutils literal notranslate"><span class="pre">.at_object_creation</span></code> on each. This is how  this is done (still in python multi-line mode):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; from typeclasses.characters import Character
 &gt; for char in Character.objects.all()
 &gt;     char.at_object_creation()
@@ -678,7 +671,7 @@ this is done (still in python multi-line mode):</p>
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Database queries</p>
-<p><code class="docutils literal notranslate"><span class="pre">Character.objects.all()</span></code> is an example of a database query expressed in Python. This will be converted into a database query under the hood. This syntax is part of <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/db/queries/">Django’s query language</a>. You don’t need to know Django to use Evennia, but if you ever need more specific database queries, this is always available when you need it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Character.objects.all()</span></code> is an example of a database query expressed in Python. This will be converted into a database query under the hood. This syntax is part of <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/db/queries/">Django’s query language</a>. You don’t need to know Django to use Evennia, but if you ever need more specific database queries, this is always available when you need it. We’ll get back to database queries in a later lesson.</p>
 </aside>
 <p>We import the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class and then we use <code class="docutils literal notranslate"><span class="pre">.objects.all()</span></code> to get all <code class="docutils literal notranslate"><span class="pre">Character</span></code> instances. Simplified,
 <code class="docutils literal notranslate"><span class="pre">.objects</span></code> is a resource from which one can <em>query</em> for all <code class="docutils literal notranslate"><span class="pre">Characters</span></code>. Using <code class="docutils literal notranslate"><span class="pre">.all()</span></code> gets us a listing
@@ -693,19 +686,13 @@ Closing the Python console.
 </section>
 <section id="extra-credits">
 <h2><span class="section-number">7.4. </span>Extra Credits<a class="headerlink" href="#extra-credits" title="Permalink to this headline">¶</a></h2>
-<p>This principle is the same for other typeclasses. So using the tools explored in this lesson, try to expand
-the default room with an <code class="docutils literal notranslate"><span class="pre">is_dark</span></code> flag. It can be either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.
-Have all new rooms start with <code class="docutils literal notranslate"><span class="pre">is_dark</span> <span class="pre">=</span> <span class="pre">False</span></code> and make it so that once you change it, it survives a reload.
+<p>This principle is the same for other typeclasses. So using the tools explored in this lesson, try to expand  the default room with an <code class="docutils literal notranslate"><span class="pre">is_dark</span></code> flag. It can be either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.  Have all new rooms start with <code class="docutils literal notranslate"><span class="pre">is_dark</span> <span class="pre">=</span> <span class="pre">False</span></code> and make it so that once you change it, it survives a reload.
 Oh, and if you created any other rooms before, make sure they get the new flag too!</p>
 </section>
 <section id="conclusions">
 <h2><span class="section-number">7.5. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
-<p>In this lesson we created database-persistent dragons by having their classes inherit from one <code class="docutils literal notranslate"><span class="pre">Object</span></code>, one
-of Evennia’s <em>typeclasses</em>. We explored where Evennia looks for typeclasses if we don’t specify the path
-explicitly. We then modified ourselves - via the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class - to give us some simple RPG stats. This
-led to the need to use Evennia’s <em>Attributes</em>, settable via <code class="docutils literal notranslate"><span class="pre">.db</span></code> and to use a for-loop to update ourselves.</p>
-<p>Typeclasses are a fundamental part of Evennia and we will see a lot of more uses of them in the course of
-this tutorial. But that’s enough of them for now. It’s time to take some action. Let’s learn about <em>Commands</em>.</p>
+<p>In this lesson we created database-persistent dragons by having their classes inherit from one <code class="docutils literal notranslate"><span class="pre">Object</span></code>, one  of Evennia’s <em>typeclasses</em>. We explored where Evennia looks for typeclasses if we don’t specify the path  explicitly. We then modified ourselves - via the <code class="docutils literal notranslate"><span class="pre">Character</span></code> class - to give us some simple RPG stats. This  led to the need to use Evennia’s <em>Attributes</em>, settable via <code class="docutils literal notranslate"><span class="pre">.db</span></code> and to use a for-loop to update ourselves.</p>
+<p>Typeclasses are a fundamental part of Evennia and we will see a lot of more uses of them in the course of  this tutorial. But that’s enough of them for now. It’s time to take some action. Let’s learn about <em>Commands</em>.</p>
 </section>
 </section>
 

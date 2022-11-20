@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Game Settings and Configuration direcotry" href="Settings.html" />
+    <link rel="next" title="Game Settings and Configuration directory" href="Settings.html" />
     <link rel="prev" title="Non-interactive setup" href="Installation-Non-Interactive.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,7 +30,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Settings.html" title="Game Settings and Configuration direcotry"
+          <a href="Settings.html" title="Game Settings and Configuration directory"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Installation-Non-Interactive.html" title="Non-interactive setup"
@@ -85,7 +85,7 @@
                         title="previous chapter">Non-interactive setup</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Settings.html"
-                        title="next chapter">Game Settings and Configuration direcotry</a></p>
+                        title="next chapter">Game Settings and Configuration directory</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -123,7 +123,7 @@ program. If the <code class="docutils literal notranslate"><span class="pre">eve
 Evennia as described on the <a class="reference internal" href="Installation.html"><span class="doc std std-doc">Installation</span></a> page.</p>
 <aside class="sidebar">
 <p class="sidebar-title">evennia not found?</p>
-<p>If you ever try the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command and get an error complaining that the command is not available, make sure your <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">virtualenv</span></a> is active.</p>
+<p>If you ever try the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command and get an error complaining that the command is not available, make sure your <a class="reference internal" href="../Glossary.html#virtualenv"><span class="std std-doc">virtualenv</span></a> is active. On Windows you may need to to run <code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">-m</span> <span class="pre">evennia</span></code> once first.</p>
 </aside>
 <p>Below are described the various management options. Run</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia -h
@@ -136,11 +136,7 @@ Evennia as described on the <a class="reference internal" href="Installation.htm
 <p>to give you a menu with options.</p>
 <section id="starting-evennia">
 <h2>Starting Evennia<a class="headerlink" href="#starting-evennia" title="Permalink to this headline">¶</a></h2>
-<p>Evennia consists of two components, the Evennia <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="doc std std-doc">Portal and Server</span></a>.  Briefly,
-the  <em>Server</em> is what is running the mud. It handles all game-specific things but doesn’t care
-exactly how players connect, only that they have. The <em>Portal</em> is a gateway to which players
-connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the
-game. Both are required for a functioning mud.</p>
+<p>Evennia consists of two components, the Evennia <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="doc std std-doc">Portal and Server</span></a>.  Briefly, the  <em>Server</em> is what is running the mud. It handles all game-specific things but doesn’t care exactly how players connect, only that they have. The <em>Portal</em> is a gateway to which players connect. It knows everything about telnet, ssh, webclient protocols etc but very little about the game. Both are required for a functioning game.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia start
 </pre></div>
 </div>
@@ -153,37 +149,29 @@ game. Both are required for a functioning mud.</p>
 </pre></div>
 </div>
 <blockquote>
-<div><p>To stop viewing the log files, press <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>.</p>
+<div><p>To stop viewing the log files, press <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> (<code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> on Mac).</p>
 </div></blockquote>
 </section>
 <section id="reloading">
 <h2>Reloading<a class="headerlink" href="#reloading" title="Permalink to this headline">¶</a></h2>
-<p>The act of <em>reloading</em> means the Portal will tell the Server to shut down and then boot it back up
-again. Everyone will get a message and the game will be briefly paused for all accounts as the
-server
-reboots. Since they are connected to the <em>Portal</em>, their connections are not lost.</p>
-<p>Reloading is as close to a “warm reboot” you can get. It reinitializes all code of Evennia, but
-doesn’t kill “persistent” <a class="reference internal" href="../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a>. It also calls <code class="docutils literal notranslate"><span class="pre">at_server_reload()</span></code> hooks on all
-objects so you
-can save eventual temporary properties you want.</p>
-<p>From in-game the <code class="docutils literal notranslate"><span class="pre">&#64;reload</span></code> command is used. You can also reload the server from outside the game:</p>
+<p>The act of <em>reloading</em> means the Portal will tell the Server to shut down and then boot it back up again. Everyone will get a message and the game will be briefly paused for all accounts as the server reboots. Since they are connected to the <em>Portal</em>, their connections are not lost.</p>
+<p>Reloading is as close to a “warm reboot” you can get. It reinitializes all code of Evennia, but doesn’t kill “persistent” <a class="reference internal" href="../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a>. It also calls <code class="docutils literal notranslate"><span class="pre">at_server_reload()</span></code> hooks on all objects so you can save eventual temporary properties you want.</p>
+<p>From in-game the <code class="docutils literal notranslate"><span class="pre">reload</span></code> command is used. You can also reload the server from outside the game:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia reload
 </pre></div>
 </div>
-<p>Sometimes reloading from “the outside” is necessary in case you have added some sort of bug that
-blocks in-game input.</p>
+<p>Sometimes reloading from “the outside” is necessary in case you have added some sort of bug that blocks in-game input.</p>
 </section>
 <section id="stopping">
 <h2>Stopping<a class="headerlink" href="#stopping" title="Permalink to this headline">¶</a></h2>
 <p>A full shutdown closes Evennia completely, both Server and Portal. All accounts will be booted and
 systems saved and turned off cleanly.</p>
-<p>From inside the game you initiate a shutdown with the <code class="docutils literal notranslate"><span class="pre">&#64;shutdown</span></code> command.  From command line you do</p>
+<p>From inside the game you initiate a shutdown with the <code class="docutils literal notranslate"><span class="pre">shutdown</span></code> command.  From command line you do</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia stop
 </pre></div>
 </div>
 <p>You will see messages of both Server and Portal closing down. All accounts will see the shutdown
-message and then be disconnected. The same effect happens if you press <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> while the server
-runs in interactive mode.</p>
+message and then be disconnected.</p>
 </section>
 <section id="foreground-mode">
 <h2>Foreground mode<a class="headerlink" href="#foreground-mode" title="Permalink to this headline">¶</a></h2>
@@ -200,15 +188,13 @@ kill the process (not just the log-file view) with <code class="docutils literal
 </pre></div>
 </div>
 <p>will start the <em>Portal</em> in interactive mode.</p>
+<p>If you do <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code>/<code class="docutils literal notranslate"><span class="pre">Cmd-C</span></code> in foreground mode, the component will stop. You’ll need to run <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> to get the game going again.</p>
 </section>
 <section id="resetting">
 <h2>Resetting<a class="headerlink" href="#resetting" title="Permalink to this headline">¶</a></h2>
 <p><em>Resetting</em> is the equivalent of a “cold reboot” - the Server will shut down and then restarted
-again, but will behave as if it was fully shut down. As opposed to a “real” shutdown, no accounts
-will be disconnected during a
-reset. A reset will however purge all non-persistent scripts and will call <code class="docutils literal notranslate"><span class="pre">at_server_shutdown()</span></code>
-hooks. It can be a good way to clean unsafe scripts during development, for example.</p>
-<p>From in-game the <code class="docutils literal notranslate"><span class="pre">&#64;reset</span></code> command is used. From the terminal:</p>
+again, but will behave as if it was fully shut down. As opposed to a “real” shutdown, no accounts will be disconnected during a reset. A reset will however purge all non-persistent scripts and will call <code class="docutils literal notranslate"><span class="pre">at_server_shutdown()</span></code> hooks. It can be a good way to clean unsafe scripts during development, for example.</p>
+<p>From in-game the <code class="docutils literal notranslate"><span class="pre">reset</span></code> command is used. From the terminal:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia reset
 </pre></div>
 </div>
@@ -276,8 +262,7 @@ related to Evennia:</p>
 <p>During development, you will usually modify code and then reload the server to see your changes.
 This is done by Evennia re-importing your custom modules from disk. Usually bugs in a module will
 just have you see a traceback in the game, in the log or on the command line.  For some really
-serious syntax errors though, your module might not even be recognized as valid Python. Evennia may
-then fail to restart correctly.</p>
+serious syntax errors though, your module might not even be recognized as valid Python. Evennia may then fail to restart correctly.</p>
 <p>From inside the game you see a text about the Server restarting followed by an ever growing list of
 “…”. Usually this only lasts a very short time (up to a few seconds). If it seems to go on, it
 means the Portal is still running (you are still connected to the game) but the Server-component of
@@ -310,7 +295,7 @@ In-game you should now get the message that the Server has successfully restarte
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Settings.html" title="Game Settings and Configuration direcotry"
+          <a href="Settings.html" title="Game Settings and Configuration directory"
              >next</a> |</li>
         <li class="right" >
           <a href="Installation-Non-Interactive.html" title="Non-interactive setup"

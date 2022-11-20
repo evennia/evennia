@@ -116,30 +116,24 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="overview-of-your-new-game-dir">
 <h1><span class="section-number">4. </span>Overview of your new Game Dir<a class="headerlink" href="#overview-of-your-new-game-dir" title="Permalink to this headline">¶</a></h1>
-<p>Next we will take a little detour to look at the <em>Tutorial World</em>. This is a little solo adventure
-that comes with Evennia, a showcase for some of the things that are possible.</p>
-<p>Now we have ‘run the game’ a bit and started with our forays into Python from inside Evennia.
-It is time to start to look at how things look ‘outside of the game’. Let’s do a tour of your game-dir
-Like everywhere in the docs we’ll assume it’s called <code class="docutils literal notranslate"><span class="pre">mygame</span></code>.</p>
+<p>Until now we have ‘run the game’ a bit and started playing with Python inside Evennia.
+It is time to start to look at how things look ‘outside of the game’.</p>
+<p>Let’s do a tour of your game-dir (we assume it’s called <code class="docutils literal notranslate"><span class="pre">mygame</span></code>).</p>
 <blockquote>
 <div><p>When looking through files, ignore files ending with <code class="docutils literal notranslate"><span class="pre">.pyc</span></code> and the
 <code class="docutils literal notranslate"><span class="pre">__pycache__</span></code> folder if it exists. This is internal Python compilation files that you should never
 need to touch. Files <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> is also often empty and can be ignored (they have to do with
 Python package management).</p>
 </div></blockquote>
-<p>You may have noticed when we were building things in-game that we would often refer to code through
-“python paths”, such as</p>
+<p>You may have noticed when we were building things in-game that we would often refer to code through  “python paths”, such as</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop button:tutorial_examples.red_button.RedButton
+</pre></div>
+</div>
+<p>This is a fundamental aspect of coding Evennia - <em>you create code and then you tell Evennia where that code is and when it should be used</em>. Above we told it to create a red button by pulling from specific code  in the <code class="docutils literal notranslate"><span class="pre">contrib/</span></code> folder. The same principle is true everywhere. So it’s important to know where code is and how you point to it correctly.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Python-paths</p>
 <p>A ‘python path’ uses ‘.’ instead of ‘/’ or ‘<code class="docutils literal notranslate"><span class="pre">\\</span></code>’ and skips the <code class="docutils literal notranslate"><span class="pre">.py</span></code> ending of files. It can also point to  the code contents of python files. Since Evennia is already  looking for code in your game dir, your python paths can start  from there. So a path <code class="docutils literal notranslate"><span class="pre">/home/foo/devel/mygame/commands/command.py</span></code> would translate to a Python-path <code class="docutils literal notranslate"><span class="pre">commands.command</span></code>.</p>
 </aside>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>create/drop button:tutorial_examples.red_button.RedButton
-</pre></div>
-</div>
-<p>This is a fundamental aspect of coding Evennia - <em>you create code and then you tell Evennia where that
-code is and when it should be used</em>. Above we told it to create a red button by pulling from specific code
-in the <code class="docutils literal notranslate"><span class="pre">contribs/</span></code> folder but the same principle is true everywhere. So it’s important to know where code is
-and how you point to it correctly.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">mygame/</span></code></p>
 <ul>
@@ -163,11 +157,8 @@ building, such as build scripts and rules modules that don’t fit with one of t
 </li>
 </ul>
 <blockquote>
-<div><p>The <code class="docutils literal notranslate"><span class="pre">server/</span></code> subfolder should remain the way it is - Evennia expects this. But you could in
-principle change the structure of the rest of your game dir as best fits your preference.
-Maybe you don’t need a world/ folder but prefer many folders with different aspects of your world?
-Or a new folder ‘rules’ for your RPG rules? This is fine. If you move things around you just need
-to update Evennia’s default settings to point to the right places in the new structure.</p>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">server/</span></code> subfolder should remain the way it is - Evennia expects this. But you can change the structure of the rest of your game dir as best fits your preferences.
+Maybe you don’t want a single world/ folder but prefer many folders with different aspects of your world? A new folder ‘rules’ for your RPG rules? Group your commands with your objects instead of having them separate? This is fine. If you move things around you just need  to update Evennia’s default settings to point to the right places in the new structure.</p>
 </div></blockquote>
 <section id="commands">
 <h2><span class="section-number">4.1. </span>commands/<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
@@ -211,9 +202,8 @@ means that they must be extended with valid Python. You can also add logic to th
 knows where they are and will read them to configure itself at startup.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">settings.py</span></code> - this is by far the most important file. It’s nearly empty by default, rather you
-are expected to copy&amp;paste the changes you need from <a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/default_settings.py">evennia/default_settings.py</a>.
-The default settings file is extensively documented. Importing/accessing the values in the settings
-file is done in a special way, like this:</p>
+are expected to copy&amp;paste the changes you need from <a class="reference internal" href="../../../Setup/Settings-Default.html"><span class="doc std std-doc">evennia/default_settings.py</span></a>.
+The default settings file is extensively documented. Importing/accessing the values in the settings file is done in a special way, like this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  from django.conf import settings 
 </pre></div>
 </div>
@@ -221,8 +211,7 @@ file is done in a special way, like this:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  telnet_port = settings.TELNET_PORT
 </pre></div>
 </div>
-<p>You cannot assign to the settings file dynamically; you must change the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file directly to
-change a setting.</p>
+<p>You cannot assign to the settings file dynamically; you must change the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file directly to  change a setting. See <a class="reference internal" href="../../../Setup/Settings.html"><span class="doc std std-doc">Settings</span></a> documentation for more details.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> - If you are making your code effort public, you may not want to share all settings online.
 There may be server-specific secrets or just fine-tuning for your game systems that you prefer be kept secret
@@ -284,14 +273,12 @@ an entire planet or an actual dungeon room.</p></li>
 <a class="reference internal" href="../../../Components/Objects.html#exits"><span class="std std-doc">Exits</span></a> is another subclass of Object. Exits link one Room to another.</p></li>
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/typeclasses/scripts.py">scripts.py</a> (Python-path: <code class="docutils literal notranslate"><span class="pre">typeclasses.scripts</span></code>) -
 <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Scripts</span></a> are ‘out-of-character’ objects. They have no location in-game and can serve as basis for
-anything that needs database persistence, such as combat, weather, or economic systems. They also
-have the ability to execute code repeatedly, on a timer.</p></li>
+anything that needs database persistence, such as combat, weather, or economic systems. They also have the ability to execute code repeatedly, on a timer.</p></li>
 </ul>
 </section>
 <section id="web">
 <h3><span class="section-number">4.2.4. </span>web/<a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h3>
-<p>This folder contains folders for overriding the default web-presence of Evennia with your own designs.
-Most of these folders are empty except for a README file or a subset of other empty folders.</p>
+<p>This folder contains folders for overriding the default web-presence of Evennia with your own designs. Most of these folders are empty except for a README file or a subset of other empty folders. See <a class="reference internal" href="../../../Components/Components-Overview.html#web-components"><span class="std std-doc">the Web overview</span></a> for more details (we’ll also get back to the web later in this beginner tutorial).</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">media/</span></code> - this empty folder is where you can place your own images or other media files you want the
 web server to serve. If you are releasing your game with a lot of media (especially if you want videos) you
@@ -316,10 +303,7 @@ people change and re-structure this in various ways to better fit their ideas.</
 <li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/world/batch_cmds.ev">batch_cmds.ev</a> - This is an <code class="docutils literal notranslate"><span class="pre">.ev</span></code> file, which is essentially
 just a list of Evennia commands to execute in sequence. This one is empty and ready to expand on. The
 <a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html"><span class="doc std std-doc">Tutorial World</span></a> was built with such a batch-file.</p></li>
-<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/world/prototypes.py">prototypes.py</a> - A <a class="reference internal" href="../../../Components/Prototypes.html"><span class="doc std std-doc">prototype</span></a> is a way
-to easily vary objects without changing their base typeclass. For example, one could use prototypes to
-tell that Two goblins, while both of the class ‘Goblin’ (so they follow the same code logic), should have different
-equipment, stats and looks.</p></li>
+<li><p><a class="reference external" href="https://github.com/evennia/evennia/blob/master/evennia/game_template/world/prototypes.py">prototypes.py</a> - A <a class="reference internal" href="../../../Components/Prototypes.html"><span class="doc std std-doc">prototype</span></a> is a way to easily vary objects without changing their base typeclass. For example, one could use prototypes to  tell that Two goblins, while both of the class ‘Goblin’ (so they follow the same code logic), should have different  equipment, stats and looks.</p></li>
 </ul>
 </section>
 </section>
