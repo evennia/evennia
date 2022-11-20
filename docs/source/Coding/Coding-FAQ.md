@@ -28,7 +28,7 @@ Character [Command Set](../Components/Command-Sets.md)?
 
 **A:** Go to `mygame/commands/default_cmdsets.py`. Find the `CharacterCmdSet` class. It has one
 method named `at_cmdset_creation`. At the end of that method, add the following line:
-`self.remove(default_cmds.CmdGet())`. See the [Adding Commands Tutorial](Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md)
+`self.remove(default_cmds.CmdGet())`. See the [Adding Commands Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md)
 for more info.
 
 ## Preventing character from moving based on a condition
@@ -156,7 +156,7 @@ class CmdWerewolf(Command):
     def func(self):
         # ...
 ```
-Add this to the [default cmdset as usual](Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md). The `is_full_moon` [lock
+Add this to the [default cmdset as usual](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.md). The `is_full_moon` [lock
 function](../Components/Locks.md#lock-functions) does not yet exist. We must create that:
 
 ```python

@@ -45,7 +45,7 @@ Zones.md
 
 Internationalization.md
 Text-Encodings.md
-TextTags.md
+Inline-Tags-and-Functions.md
 Change-Messages-Per-Receiver.md
 Clickable-Links.md
 Colors.md

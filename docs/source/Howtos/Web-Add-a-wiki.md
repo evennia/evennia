@@ -9,8 +9,7 @@ Fortunately, you don't have to create the features manually, since it has been d
 we can integrate their work quite easily with Django.  I have decided to focus on
 the [Django-wiki](https://django-wiki.readthedocs.io/).
 
-The [Django-wiki](https://django-wiki.readthedocs.io/) offers a lot of features associated with
-wikis, is actively maintained (at this time, anyway), and isn't too difficult to install in Evennia.  You can
+The [Django-wiki](https://django-wiki.readthedocs.io/) offers a lot of features associated with wikis, is actively maintained (at this time, anyway), and isn't too difficult to install in Evennia.  You can
 see a [demonstration of Django-wiki here](https://demo.django-wiki.org).
 
 ## Basic installation
@@ -144,8 +143,7 @@ always have read/write permissions on that article. Additionally, the article wi
 permissions and general permissions.
 
 By default, Evennia's permission groups *won't* be recognized by the wiki, so you'll have to create your own.
-Go to the Groups page of your game's Django admin panel (e.g. http://localhost:4001/admin/auth/group )
-and add whichever permission groups you want for your wiki here.
+Go to the Groups page of your game's Django admin panel  and add whichever permission groups you want for your wiki here.
 
 ***Note:*** *If you want to connect those groups to your game's permission levels, you'll need to modify the game to apply both to accounts.*
 
@@ -204,7 +202,6 @@ WIKI_CAN_READ = is_player
 WIKI_ANONYMOUS_WRITE = False
 ```
 
-The permission functions can check anything you like on the accessing user, so long as the function
-returns either True (they're allowed) or False (they're not).
+The permission functions can check anything you like on the accessing user, so long as the function returns either True (they're allowed) or False (they're not).
 
 For a full list of possible settings, you can check out [the django-wiki documentation](https://django-wiki.readthedocs.io/en/latest/settings.html).

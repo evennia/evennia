@@ -186,8 +186,7 @@ while they are running. If you are in the process of crafting a helmet you shoul
 start crafting a shield at the same time, or if you just did a huge power-swing with your weapon you
 should not be able to do it again immediately.
 
-The simplest way of implementing blocking is to use the technique covered in the [Command
-Cooldown](./Command-Cooldown.md) tutorial. In that tutorial we implemented cooldowns by having the
+The simplest way of implementing blocking is to use the technique covered in the [](Howto-Command-Cooldown.md) tutorial. In that tutorial we implemented cooldowns by having the
 Command store the current time. Next time the Command was called, we compared the current time to
 the stored time to determine if enough time had passed for a renewed use. This is a *very*
 efficient, reliable and passive solution. The drawback is that there is nothing to tell the Player

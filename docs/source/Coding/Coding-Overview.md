@@ -1,8 +1,7 @@
 # Coding and development help
 
 This documentation aims to help you set up a sane development environment to
-make your game, also if you never coded before. If you are an experienced coder, much of this will be familiar
-to you, but some things may still be useful. 
+make your game, also if you never coded before. If you are an experienced coder, much of this will be familiar to you, but some things may still be useful. 
 
 
 ## Setting up a workflow
@@ -23,6 +22,7 @@ Updating-Your-Game.md
 :maxdepth: 2
 
 Coding-Introduction.md
+Coding-FAQ.md
 Debugging.md
 Unit-Testing.md
 Profiling.md

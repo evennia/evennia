@@ -22,7 +22,7 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 - [Configuration](Setup/Setup-Overview.md#configuration) - how to set up your server the way you like it
 - [Going public](Setup/Setup-Overview.md#going-public) - taking your game online
 
-## Howtos and Tutorials
+## Tutorials and Howtos
 
 - [The Beginner Tutorial](Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.md) - learn the basics and build a small game (in progress)
 - [Tutorials and Howto's](Howtos/Howtos-Overview.md) - mixed tutorials to learn Evennia

@@ -31,7 +31,7 @@ allows for emoting as part of combat which is an advantage for roleplay-heavy ga
 To implement a freeform combat system all you need is a dice roller and a roleplaying rulebook. See
 [contrib/dice.py](https://github.com/evennia/evennia/blob/master/evennia/contrib/dice.py) for an
 example dice roller. To implement at twitch-based system you basically need a few combat
-[commands](../Components/Commands.md), possibly ones with a [cooldown](./Command-Cooldown.md). You also need a [game rule
+[commands](../Components/Commands.md), possibly ones with a [cooldown](./Howto-Command-Cooldown.md). You also need a [game rule
 module](./Implementing-a-game-rule-system.md) that makes use of it. We will focus on the turn-based
 variety here.
 

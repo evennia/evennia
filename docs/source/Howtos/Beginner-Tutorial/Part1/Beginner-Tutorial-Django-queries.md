@@ -409,7 +409,3 @@ in a format like the following:
 ## Conclusions
 
 We have covered a lot of ground in this lesson and covered several more complex topics. Knowing how to query using Django is a powerful skill to have. 
-
-This concludes the first part of the Evennia starting tutorial - "What we have".
-Now we have a good foundation to understand how to plan what our tutorial game
-will be about.

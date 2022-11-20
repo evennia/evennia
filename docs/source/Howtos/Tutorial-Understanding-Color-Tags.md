@@ -2,17 +2,12 @@
 
 This tutorial aims at dispelling confusions regarding the use of color tags within Evennia.
 
-Correct understanding of this topic requires having read the [TextTags](../Concepts/TextTags.md) page and learned
-Evennia's color tags. Here we'll explain by examples the reasons behind the unexpected (or
-apparently incoherent) behaviors of some color tags, as mentioned _en passant_ in the
-[TextTags](../Concepts/TextTags.md) page.
-
+Correct understanding of this topic requires having read the  Evennia's color tags. Here we'll explain by examples the reasons behind the unexpected (or apparently incoherent) behaviors of some color tags, as mentioned _en passant_ in the [Colors](../Concepts/Colors.md) page.
 
 All you'll need for this tutorial is access to a running instance of Evennia via a color-enabled
 client. The examples provided are just commands that you can type in your client.
 
-Evennia, ANSI and Xterm256
-==========================
+## Evennia, ANSI and Xterm256
 
 All modern MUD clients support colors; nevertheless, the standards to which all clients abide dates
 back to old day of terminals, and when it comes to colors we are dealing with ANSI and Xterm256
@@ -32,8 +27,7 @@ pitfalls. ANSI and Xterm256 coexist without conflicts in Evennia, but in many wa
 each other: ANSI-specific color tags will have no effect on Xterm-defined colors, as we shall see
 here.
 
-ANSI
-====
+## ANSI
 
 ANSI has a set of 16 colors, to be more precise: ANSI has 8 basic colors which come in _dark_ and
 _bright_ flavours—with _dark_ being _normal_. The colors are: red, green, yellow, blue, magenta,
@@ -51,8 +45,7 @@ Also, it's important to remember that the 16 ANSI colors are a convention, and t
 always customize their appearance—he might decide to have green show as red, and dark green as blue,
 etc.
 
-Xterm256
-========
+## Xterm256
 
 The 16 colors of ANSI should be more than enough to handle simple coloring of text. But when an
 author wants to be sure that a given color will show as he intended it, she might choose to rely on
@@ -61,8 +54,7 @@ Xterm256 colors.
 Xterm256 doesn't rely on a palette of named colors, it instead represent colors by their values. So,
 a red color could be `|[500` (bright and pure red), or `|[300` (darker red), and so on.
 
-ANSI Color Tags in Evennia
-==========================
+## ANSI Color Tags in Evennia
 
 >   NOTE: for ease of reading, the examples contain extra white spaces after the
 >   color tags (eg: `|g green |b blue` ). This is done only so that it's easier
@@ -193,6 +185,5 @@ Shows that `|*` only works once in a row and will not (and should not!) revert b
 Nor it will have any effect until the `|n` tag is called to "reset" ANSI back to normal. This is how
 it is meant to work.
 
-ANSI operates according to a simple states-based mechanism, and it's important to understand the
-positive effect of resetting with the `|n` tag, and not try to
+ANSI operates according to a simple states-based mechanism, and it's important to understand the positive effect of resetting with the `|n` tag, and not try to
 push it over the limit, so to speak.

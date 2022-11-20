@@ -24,16 +24,8 @@ and "what to think about" when creating a multiplayer online text game.
 ## Lessons
 
 ```{toctree}
-:maxdepth: 1
-
-Beginner-Tutorial-Planning-Where-Do-I-Begin.md
-Beginner-Tutorial-Game-Planning.md
-Beginner-Tutorial-Planning-The-Tutorial-Game.md
-```
-
-## Table of Contents
-
-```{toctree}
+:numbered:
+:maxdepth: 2
 
 Beginner-Tutorial-Planning-Where-Do-I-Begin.md
 Beginner-Tutorial-Game-Planning.md

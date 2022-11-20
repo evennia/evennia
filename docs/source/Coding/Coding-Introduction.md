@@ -8,24 +8,13 @@ Here are some pointers to get you going.
 ## Start with the tutorial
 
 It's highly recommended that you jump in on the [Starting Tutorial](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro.md). Even if
-you only the beginning or some part of it, it covers much of the things needed to get started.
-
-## Python
-
-Evennia is developed using Python. Even if you are more of a designer than a coder, it is wise to
-learn how to read and understand basic Python code. If you are new to Python, or need a refresher,
-take a look at our [Python introduction](../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Python-basic-introduction.md).
+you only the beginning or some part of it, it covers much of the things needed to get started, including giving you are first introduction to Python.
 
 ## Explore Evennia interactively
 
-When new to Evennia it can be hard to find things or figure out what is available. Evennia offers a
-special interactive python shell that allows you to experiment and try out things. It's recommended
-to use [ipython](https://ipython.org/) for this since the vanilla python prompt is very limited. Here
-are some simple commands to get started:
+As mentioned in the Starting tutorial, it's a good idea to use [ipython](https://ipython.org/) to explore things using a python shell: 
 
     # [open a new console/terminal]
-    # [activate your evennia virtualenv in this console/terminal]
-    pip install -r requirements_extra.txt  # install ipython etc
     cd mygame
     evennia shell
 
@@ -33,10 +22,6 @@ This will open an Evennia-aware python shell (using ipython). From within this s
 
     import evennia
     evennia.<TAB>
-
-That is, enter `evennia.` and press the `<TAB>` key. This will show you all the resources made
-available at the top level of Evennia's  "flat API". See the [flat API](../Evennia-API.md) page for more
-info on how to explore it efficiently.
 
 ### Jupyter Notebook Support
 
@@ -101,9 +86,7 @@ home. You should *never* need to modify anything in the `evennia` library (anyth
 from us, really). You import useful functionality from here and if you see code you like, copy&paste
 it out into your game folder and edit it there.
 
-If you find that Evennia doesn't support some functionality you need, make a [Feature
-Request](github:issue) about it. Same goes for [bugs][bug]. If you add features or fix bugs
-yourself, please consider [Contributing](../Contributing.md) your changes upstream!
+If you find that Evennia doesn't support some functionality you need, make a Feature Request about it. Same goes for bugs. If you add features or fix bugs yourself, please consider [Contributing](../Contributing.md) your changes upstream!
 
 ## Learn to read tracebacks
 
@@ -136,6 +119,3 @@ chat](https://webchat.freenode.net/?channels=evennia) are also there for you.
 ## The most important point
 
 And finally, of course, have fun!
-
-[feature-request]: (https://github.com/evennia/evennia/issues/new?title=Feature+Request%3a+%3Cdescriptive+title+here%3E&body=%23%23%23%23+Description+of+the+suggested+feature+and+how+it+is+supposed+to+work+for+the+admin%2fend+user%3a%0D%0A%0D%0A%0D%0A%23%23%23%23+A+list+of+arguments+for+why+you+think+this+new+feature+should+be+included+in+Evennia%3a%0D%0A%0D%0A1.%0D%0A2.%0D%0A%0D%0A%23%23%23%23+Extra+information%2c+such+as+requirements+or+ideas+on+implementation%3a%0D%0A%0D%0A
-[bug](https://github.com/evennia/evennia/issues/new?title=Bug%3a+%3Cdescriptive+title+here%3E&body=%23%23%23%23+Steps+to+reproduce+the+issue%3a%0D%0A%0D%0A1.+%0D%0A2.+%0D%0A3.+%0D%0A%0D%0A%23%23%23%23+What+I+expect+to+see+and+what+I+actually+see+%28tracebacks%2c+error+messages+etc%29%3a%0D%0A%0D%0A%0D%0A%0D%0A%23%23%23%23+Extra+information%2c+such+as+Evennia+revision%2frepo%2fbranch%2c+operating+system+and+ideas+for+how+to+solve%3a%0D%0A%0D%0A)
