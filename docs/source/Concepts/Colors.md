@@ -23,7 +23,7 @@ Evennia supports two color standards:
 
 To see which colours your client support, use the default `color` command. This will list all
 available colours for ANSI and Xterm256 along with the codes you use for them. The 
-central ansi/xterm256 parser is located in  [evennia/utils/ansi.py](api:evennia.utils.ansi).
+central ansi/xterm256 parser is located in  [evennia/utils/ansi.py](evennia.utils.ansi).
 
 ## ANSI colours
 

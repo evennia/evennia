@@ -228,7 +228,16 @@ p.admonition-title {
 
 div.highlight {
     background-color: #f1f1ef;
+    border-left: 4px;
+    border-color: #7ea6b3;
+    border-left-style: double;
 }
+
+.highlight .hll {
+    background-color: #ffffcc54 !important;
+    border-radius: 5px;
+}
+
 
 div.note {
     background-color: #eee;
@@ -325,9 +334,10 @@ code {
     background-color: #ecf0f3;
     color: #6e0e0e;
     /* padding: 1px 2px; */
-    font-size: 0.8em;
+    font-size: 0.9em;
 	  font-family: "Courier Prime", Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
     font-weight: bold;
+    background-color: #f7f7f7;
 }
 
 .viewcode-back {
@@ -417,6 +427,13 @@ code.descname {
 .exception {
   background-color: #fff9f9;
   padding: 5px;
+}
+
+div.linenodiv>pre {
+    font-size: 0.9em;
+    line-height: 153%;
+    padding-right: 0;
+    padding-top: 8px;
 }
 
 /* The develop-branch warning header */

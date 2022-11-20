@@ -247,6 +247,7 @@ Still in `mygame/commands/mycommands.py`, add a new class, between `CmdEcho` and
 
 ```{code-block} python
 :linenos:
+:emphasize-lines: 3,4,11,14,15,17,18,19,21
 
 # ...
 
