@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Code structure and Utilities &#8212; Evennia 1.0-dev documentation</title>
+    <title>1. Code structure and Utilities &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Rules and dice rolling" href="Beginner-Tutorial-Rules.html" />
-    <link rel="prev" title="Part 3: How we get there" href="Beginner-Tutorial-Part3-Intro.html" /> 
+    <link rel="next" title="2. Rules and dice rolling" href="Beginner-Tutorial-Rules.html" />
+    <link rel="prev" title="Part 3: How we get there (example game)" href="Beginner-Tutorial-Part3-Intro.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,16 +30,16 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Rules.html" title="Rules and dice rolling"
+          <a href="Beginner-Tutorial-Rules.html" title="2. Rules and dice rolling"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Part3-Intro.html" title="Part 3: How we get there"
+          <a href="Beginner-Tutorial-Part3-Intro.html" title="Part 3: How we get there (example game)"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Code structure and Utilities</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Code structure and Utilities</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,25 +64,25 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Code structure and Utilities</a><ul>
-<li><a class="reference internal" href="#folder-structure">Folder structure</a></li>
-<li><a class="reference internal" href="#enums">Enums</a></li>
-<li><a class="reference internal" href="#utility-module">Utility module</a></li>
-<li><a class="reference internal" href="#testing">Testing</a><ul>
-<li><a class="reference internal" href="#running-your-test">Running your test</a></li>
+<li><a class="reference internal" href="#">1. Code structure and Utilities</a><ul>
+<li><a class="reference internal" href="#folder-structure">1.1. Folder structure</a></li>
+<li><a class="reference internal" href="#enums">1.2. Enums</a></li>
+<li><a class="reference internal" href="#utility-module">1.3. Utility module</a></li>
+<li><a class="reference internal" href="#testing">1.4. Testing</a><ul>
+<li><a class="reference internal" href="#running-your-test">1.4.1. Running your test</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#summary">1.5. Summary</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Part3-Intro.html"
-                        title="previous chapter">Part 3: How we get there</a></p>
+                        title="previous chapter">Part 3: How we get there (example game)</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Rules.html"
-                        title="next chapter">Rules and dice rolling</a></p>
+                        title="next chapter"><span class="section-number">2. </span>Rules and dice rolling</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -114,11 +114,11 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="code-structure-and-utilities">
-<h1>Code structure and Utilities<a class="headerlink" href="#code-structure-and-utilities" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">1. </span>Code structure and Utilities<a class="headerlink" href="#code-structure-and-utilities" title="Permalink to this headline">¶</a></h1>
 <p>In this lesson we will set up the file structure for <em>EvAdventure</em>. We will make some
 utilities that will be useful later. We will also learn how to write <em>tests</em>.</p>
 <section id="folder-structure">
-<h2>Folder structure<a class="headerlink" href="#folder-structure" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.1. </span>Folder structure<a class="headerlink" href="#folder-structure" title="Permalink to this headline">¶</a></h2>
 <p>Create a new folder under your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder, named <code class="docutils literal notranslate"><span class="pre">evadventure</span></code>. Inside it, create
 another folder <code class="docutils literal notranslate"><span class="pre">tests/</span></code> and make sure to put empty <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files in both. This turns both
 folders into packages Python understands to import from.</p>
@@ -155,7 +155,7 @@ folders into packages Python understands to import from.</p>
 </div>
 </section>
 <section id="enums">
-<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.2. </span>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p>A full example of the enum module is found in
 <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.enums.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/enums.py</span></a>.</p>
@@ -227,7 +227,7 @@ likely gradually expand on your enums as you figure out what you’ll need).</p>
 <p>Here the <code class="docutils literal notranslate"><span class="pre">Ability</span></code> class holds basic properties of a character sheet.</p>
 </section>
 <section id="utility-module">
-<h2>Utility module<a class="headerlink" href="#utility-module" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.3. </span>Utility module<a class="headerlink" href="#utility-module" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/utils.py</span></code></p>
 </div></blockquote>
@@ -302,7 +302,7 @@ hold its description (this is how it is in default Evennia).</p>
 So we just set them to dummy values. We’ll need to get back to this when we have more code in place!</p>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.4. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>It’s useful for any game dev to know how to effectively test their code. So we’ll try to include a
@@ -377,7 +377,7 @@ tuple <code class="docutils literal notranslate"><span class="pre">(name,</span>
 to the string we specify. If they are the same, the test <em>passes</em>, otherwise it <em>fails</em> and we
 need to investigate what went wrong.</p>
 <section id="running-your-test">
-<h3>Running your test<a class="headerlink" href="#running-your-test" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">1.4.1. </span>Running your test<a class="headerlink" href="#running-your-test" title="Permalink to this headline">¶</a></h3>
 <p>To run your test you need to stand inside your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder and execute the following command:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia test --settings settings.py .evadventure.tests
 </pre></div>
@@ -392,7 +392,7 @@ your return string doesn’t quite match what you expected.</p>
 </section>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>It’s very important to understand how you import code between modules in Python, so if this is still
 confusing to you, it’s worth to read up on this more.</p>
 <p>That said, many newcomers are confused with how to begin, so by creating the folder structure, some
@@ -416,16 +416,16 @@ small modules and even making your first unit test, you are off to a great start
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Rules.html" title="Rules and dice rolling"
+          <a href="Beginner-Tutorial-Rules.html" title="2. Rules and dice rolling"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Part3-Intro.html" title="Part 3: How we get there"
+          <a href="Beginner-Tutorial-Part3-Intro.html" title="Part 3: How we get there (example game)"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Code structure and Utilities</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Code structure and Utilities</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

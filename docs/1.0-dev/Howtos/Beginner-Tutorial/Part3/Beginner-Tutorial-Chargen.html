@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Character Generation &#8212; Evennia 1.0-dev documentation</title>
+    <title>6. Character Generation &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="In-game Rooms" href="Beginner-Tutorial-Rooms.html" />
-    <link rel="prev" title="Handling Equipment" href="Beginner-Tutorial-Equipment.html" /> 
+    <link rel="next" title="7. In-game Rooms" href="Beginner-Tutorial-Rooms.html" />
+    <link rel="prev" title="5. Handling Equipment" href="Beginner-Tutorial-Equipment.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,16 +30,16 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Rooms.html" title="In-game Rooms"
+          <a href="Beginner-Tutorial-Rooms.html" title="7. In-game Rooms"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Equipment.html" title="Handling Equipment"
+          <a href="Beginner-Tutorial-Equipment.html" title="5. Handling Equipment"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Character Generation</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>Character Generation</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,31 +64,31 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Character Generation</a><ul>
-<li><a class="reference internal" href="#how-it-will-work">How it will work</a></li>
-<li><a class="reference internal" href="#random-tables">Random tables</a></li>
-<li><a class="reference internal" href="#storing-state-of-the-menu">Storing state of the menu</a><ul>
-<li><a class="reference internal" href="#showing-the-sheet">Showing the sheet</a></li>
-<li><a class="reference internal" href="#apply-character">Apply character</a></li>
+<li><a class="reference internal" href="#">6. Character Generation</a><ul>
+<li><a class="reference internal" href="#how-it-will-work">6.1. How it will work</a></li>
+<li><a class="reference internal" href="#random-tables">6.2. Random tables</a></li>
+<li><a class="reference internal" href="#storing-state-of-the-menu">6.3. Storing state of the menu</a><ul>
+<li><a class="reference internal" href="#showing-the-sheet">6.3.1. Showing the sheet</a></li>
+<li><a class="reference internal" href="#apply-character">6.3.2. Apply character</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#initializing-evmenu">Initializing EvMenu</a></li>
-<li><a class="reference internal" href="#main-node-choosing-what-to-do">Main Node: Choosing what to do</a></li>
-<li><a class="reference internal" href="#node-changing-your-name">Node: Changing your name</a></li>
-<li><a class="reference internal" href="#node-swapping-abilities-around">Node: Swapping Abilities around</a></li>
-<li><a class="reference internal" href="#node-creating-the-character">Node: Creating the Character</a></li>
-<li><a class="reference internal" href="#tying-the-nodes-together">Tying the nodes together</a></li>
-<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
+<li><a class="reference internal" href="#initializing-evmenu">6.4. Initializing EvMenu</a></li>
+<li><a class="reference internal" href="#main-node-choosing-what-to-do">6.5. Main Node: Choosing what to do</a></li>
+<li><a class="reference internal" href="#node-changing-your-name">6.6. Node: Changing your name</a></li>
+<li><a class="reference internal" href="#node-swapping-abilities-around">6.7. Node: Swapping Abilities around</a></li>
+<li><a class="reference internal" href="#node-creating-the-character">6.8. Node: Creating the Character</a></li>
+<li><a class="reference internal" href="#tying-the-nodes-together">6.9. Tying the nodes together</a></li>
+<li><a class="reference internal" href="#conclusions">6.10. Conclusions</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Equipment.html"
-                        title="previous chapter">Handling Equipment</a></p>
+                        title="previous chapter"><span class="section-number">5. </span>Handling Equipment</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Rooms.html"
-                        title="next chapter">In-game Rooms</a></p>
+                        title="next chapter"><span class="section-number">7. </span>In-game Rooms</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -120,11 +120,11 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="character-generation">
-<h1>Character Generation<a class="headerlink" href="#character-generation" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">6. </span>Character Generation<a class="headerlink" href="#character-generation" title="Permalink to this headline">¶</a></h1>
 <p>In previous lessons we have established how a character looks. Now we need to give the player a
 chance to create one.</p>
 <section id="how-it-will-work">
-<h2>How it will work<a class="headerlink" href="#how-it-will-work" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.1. </span>How it will work<a class="headerlink" href="#how-it-will-work" title="Permalink to this headline">¶</a></h2>
 <p>A fresh Evennia install will automatically create a new Character with the same name as your
 Account when you log in. This is quick and simple and mimics older MUD styles. You could picture
 doing this, and then customizing the Character in-place.</p>
@@ -199,7 +199,7 @@ and you’ll leave the menu;</p>
 </div>
 </section>
 <section id="random-tables">
-<h2>Random tables<a class="headerlink" href="#random-tables" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.2. </span>Random tables<a class="headerlink" href="#random-tables" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p>Full Knave random tables are found in
 <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.random_tables.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/random_tables.py</span></a>.</p>
@@ -230,7 +230,7 @@ from the <em>Knave</em> rulebook. While we added the ability to roll on a random
 keep in here.</p>
 </section>
 <section id="storing-state-of-the-menu">
-<h2>Storing state of the menu<a class="headerlink" href="#storing-state-of-the-menu" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.3. </span>Storing state of the menu<a class="headerlink" href="#storing-state-of-the-menu" title="Permalink to this headline">¶</a></h2>
 <aside class="sidebar">
 <p>There is a full implementation of the chargen in
 <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.chargen.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/chargen.py</span></a>.</p>
@@ -317,7 +317,7 @@ you can pick whatever you like).</p>
 <p>We also initialize <code class="docutils literal notranslate"><span class="pre">.ability_changes</span> <span class="pre">=</span> <span class="pre">0</span></code>. Knave only allows us to swap the values of two
 Abilities <em>once</em>. We will use this to know if it has been done or not.</p>
 <section id="showing-the-sheet">
-<h3>Showing the sheet<a class="headerlink" href="#showing-the-sheet" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">6.3.1. </span>Showing the sheet<a class="headerlink" href="#showing-the-sheet" title="Permalink to this headline">¶</a></h3>
 <p>Now that we have our temporary character sheet, we should make it easy to visualize it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
 
@@ -367,7 +367,7 @@ form. Making a ‘template’ string like <code class="docutils literal notransl
 to change how things look.</p>
 </section>
 <section id="apply-character">
-<h3>Apply character<a class="headerlink" href="#apply-character" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">6.3.2. </span>Apply character<a class="headerlink" href="#apply-character" title="Permalink to this headline">¶</a></h3>
 <p>Once we are happy with our character, we need to actually create it with the stats we chose.
 This is a bit more involved.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
@@ -437,7 +437,7 @@ created in the <a class="reference internal" href="Beginner-Tutorial-Equipment.h
 </section>
 </section>
 <section id="initializing-evmenu">
-<h2>Initializing EvMenu<a class="headerlink" href="#initializing-evmenu" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.4. </span>Initializing EvMenu<a class="headerlink" href="#initializing-evmenu" title="Permalink to this headline">¶</a></h2>
 <p>Evennia comes with a full menu-generation system based on <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc std std-doc">Command sets</span></a>, called
 <a class="reference internal" href="../../../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py</span>
@@ -478,7 +478,7 @@ feed all this into <code class="docutils literal notranslate"><span class="pre">
 between.</p>
 </section>
 <section id="main-node-choosing-what-to-do">
-<h2>Main Node: Choosing what to do<a class="headerlink" href="#main-node-choosing-what-to-do" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.5. </span>Main Node: Choosing what to do<a class="headerlink" href="#main-node-choosing-what-to-do" title="Permalink to this headline">¶</a></h2>
 <p>This is the first menu node. It will act as a central hub, from which one can choose different
 actions.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
@@ -550,7 +550,7 @@ to each node, since that contains our temporary character sheet.</p>
 know this, we check the <code class="docutils literal notranslate"><span class="pre">.ability_changes</span></code> property to make sure it’s still 0.</p>
 </section>
 <section id="node-changing-your-name">
-<h2>Node: Changing your name<a class="headerlink" href="#node-changing-your-name" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.6. </span>Node: Changing your name<a class="headerlink" href="#node-changing-your-name" title="Permalink to this headline">¶</a></h2>
 <p>This is where you end up if you opted to change your name in <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py</span>
 
@@ -614,7 +614,7 @@ were at.</p>
 </div></blockquote>
 </section>
 <section id="node-swapping-abilities-around">
-<h2>Node: Swapping Abilities around<a class="headerlink" href="#node-swapping-abilities-around" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.7. </span>Node: Swapping Abilities around<a class="headerlink" href="#node-swapping-abilities-around" title="Permalink to this headline">¶</a></h2>
 <p>You get here by selecting the second option from the <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> node.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/chargen.py </span>
 
@@ -708,7 +708,7 @@ node.</p>
 <p>Finally, we return to <code class="docutils literal notranslate"><span class="pre">node_chargen</span></code> again.</p>
 </section>
 <section id="node-creating-the-character">
-<h2>Node: Creating the Character<a class="headerlink" href="#node-creating-the-character" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.8. </span>Node: Creating the Character<a class="headerlink" href="#node-creating-the-character" title="Permalink to this headline">¶</a></h2>
 <p>We get here from the main node by opting to finish chargen.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_apply_character</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;                              </span>
@@ -733,7 +733,7 @@ found on that screen are the ones listed in the <code class="docutils literal no
 also the new character to it.</p>
 </section>
 <section id="tying-the-nodes-together">
-<h2>Tying the nodes together<a class="headerlink" href="#tying-the-nodes-together" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.9. </span>Tying the nodes together<a class="headerlink" href="#tying-the-nodes-together" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">start_chargen</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This is a start point for spinning up the chargen from a command later.</span>
@@ -763,7 +763,7 @@ should use to point to nodes from inside the menu (and we did).</p>
 to first jump into that node when the menu is starting up.</p>
 </section>
 <section id="conclusions">
-<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.10. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>This lesson taught us how to use <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> to make an interactive character generator. In an RPG
 more complex than <em>Knave</em>, the menu would be bigger and more intricate, but the same principles
 apply.</p>
@@ -789,16 +789,16 @@ characters - how they store their stats, handle their equipment and how to creat
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Rooms.html" title="In-game Rooms"
+          <a href="Beginner-Tutorial-Rooms.html" title="7. In-game Rooms"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Equipment.html" title="Handling Equipment"
+          <a href="Beginner-Tutorial-Equipment.html" title="5. Handling Equipment"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Character Generation</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>Character Generation</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

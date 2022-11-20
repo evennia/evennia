@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Command Prompt" href="Command-Prompt.html" />
-    <link rel="prev" title="Web Tutorial" href="Beginner-Tutorial/Part5/Web-Tutorial.html" /> 
+    <link rel="next" title="Debugging" href="Debugging.html" />
+    <link rel="prev" title="Coding Introduction" href="Coding-Introduction.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,13 +30,13 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Command-Prompt.html" title="Command Prompt"
+          <a href="Debugging.html" title="Debugging"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial/Part5/Web-Tutorial.html" title="Web Tutorial"
+          <a href="Coding-Introduction.html" title="Coding Introduction"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Coding-Overview.html" accesskey="U">Coding and development help</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Coding FAQ</a></li> 
       </ul>
         <div class="develop">develop branch</div>
@@ -80,15 +80,15 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Beginner-Tutorial/Part5/Web-Tutorial.html"
-                        title="previous chapter">Web Tutorial</a></p>
+  <p class="topless"><a href="Coding-Introduction.html"
+                        title="previous chapter">Coding Introduction</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Command-Prompt.html"
-                        title="next chapter">Command Prompt</a></p>
+  <p class="topless"><a href="Debugging.html"
+                        title="next chapter">Debugging</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Howtos/Coding-FAQ.md.txt"
+      <li><a href="../_sources/Coding/Coding-FAQ.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -145,7 +145,7 @@ reloading)</p></li>
 Character <a class="reference internal" href="../Components/Command-Sets.html"><span class="doc std std-doc">Command Set</span></a>?</p>
 <p><strong>A:</strong> Go to <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>. Find the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> class. It has one
 method named <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code>. At the end of that method, add the following line:
-<code class="docutils literal notranslate"><span class="pre">self.remove(default_cmds.CmdGet())</span></code>. See the <a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">Adding Commands Tutorial</span></a>
+<code class="docutils literal notranslate"><span class="pre">self.remove(default_cmds.CmdGet())</span></code>. See the <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">Adding Commands Tutorial</span></a>
 for more info.</p>
 </section>
 <section id="preventing-character-from-moving-based-on-a-condition">
@@ -264,7 +264,7 @@ command be available.</p>
         <span class="c1"># ...</span>
 </pre></div>
 </div>
-<p>Add this to the <a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">default cmdset as usual</span></a>. The <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> <a class="reference internal" href="../Components/Locks.html#lock-functions"><span class="std std-doc">lock
+<p>Add this to the <a class="reference internal" href="../Howtos/Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">default cmdset as usual</span></a>. The <code class="docutils literal notranslate"><span class="pre">is_full_moon</span></code> <a class="reference internal" href="../Components/Locks.html#lock-functions"><span class="std std-doc">lock
 function</span></a> does not yet exist. We must create that:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/server/conf/lockfuncs.py</span>
 
@@ -485,13 +485,13 @@ discussion</a> where some suitable fonts are suggested.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Command-Prompt.html" title="Command Prompt"
+          <a href="Debugging.html" title="Debugging"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial/Part5/Web-Tutorial.html" title="Web Tutorial"
+          <a href="Coding-Introduction.html" title="Coding Introduction"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Coding-Overview.html" >Coding and development help</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Coding FAQ</a></li> 
       </ul>
         <div class="develop">develop branch</div>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Handling Equipment &#8212; Evennia 1.0-dev documentation</title>
+    <title>5. Handling Equipment &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Character Generation" href="Beginner-Tutorial-Chargen.html" />
-    <link rel="prev" title="In-game Objects and items" href="Beginner-Tutorial-Objects.html" /> 
+    <link rel="next" title="6. Character Generation" href="Beginner-Tutorial-Chargen.html" />
+    <link rel="prev" title="4. In-game Objects and items" href="Beginner-Tutorial-Objects.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,16 +30,16 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Chargen.html" title="Character Generation"
+          <a href="Beginner-Tutorial-Chargen.html" title="6. Character Generation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Objects.html" title="In-game Objects and items"
+          <a href="Beginner-Tutorial-Objects.html" title="4. In-game Objects and items"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Handling Equipment</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">5. </span>Handling Equipment</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,33 +64,33 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Handling Equipment</a><ul>
-<li><a class="reference internal" href="#equipmenthandler-that-saves">EquipmentHandler that saves</a></li>
-<li><a class="reference internal" href="#connecting-the-equipmenthandler">Connecting the EquipmentHandler</a></li>
-<li><a class="reference internal" href="#expanding-the-equipmenthandler">Expanding the Equipmenthandler</a></li>
-<li><a class="reference internal" href="#validate-slot-usage"><code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code></a><ul>
-<li><a class="reference internal" href="#max-slots"><code class="docutils literal notranslate"><span class="pre">.max_slots</span></code></a></li>
-<li><a class="reference internal" href="#count-slots"><code class="docutils literal notranslate"><span class="pre">.count_slots</span></code></a></li>
-<li><a class="reference internal" href="#validating-slots">Validating slots</a></li>
+<li><a class="reference internal" href="#">5. Handling Equipment</a><ul>
+<li><a class="reference internal" href="#equipmenthandler-that-saves">5.1. EquipmentHandler that saves</a></li>
+<li><a class="reference internal" href="#connecting-the-equipmenthandler">5.2. Connecting the EquipmentHandler</a></li>
+<li><a class="reference internal" href="#expanding-the-equipmenthandler">5.3. Expanding the Equipmenthandler</a></li>
+<li><a class="reference internal" href="#validate-slot-usage">5.4. <code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code></a><ul>
+<li><a class="reference internal" href="#max-slots">5.4.1. <code class="docutils literal notranslate"><span class="pre">.max_slots</span></code></a></li>
+<li><a class="reference internal" href="#count-slots">5.4.2. <code class="docutils literal notranslate"><span class="pre">.count_slots</span></code></a></li>
+<li><a class="reference internal" href="#validating-slots">5.4.3. Validating slots</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#add-and-remove"><code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code></a></li>
-<li><a class="reference internal" href="#moving-things-around">Moving things around</a></li>
-<li><a class="reference internal" href="#get-everything">Get everything</a></li>
-<li><a class="reference internal" href="#weapon-and-armor">Weapon and armor</a></li>
-<li><a class="reference internal" href="#extra-credits">Extra credits</a></li>
-<li><a class="reference internal" href="#unit-testing">Unit Testing</a></li>
-<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#add-and-remove">5.5. <code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code></a></li>
+<li><a class="reference internal" href="#moving-things-around">5.6. Moving things around</a></li>
+<li><a class="reference internal" href="#get-everything">5.7. Get everything</a></li>
+<li><a class="reference internal" href="#weapon-and-armor">5.8. Weapon and armor</a></li>
+<li><a class="reference internal" href="#extra-credits">5.9. Extra credits</a></li>
+<li><a class="reference internal" href="#unit-testing">5.10. Unit Testing</a></li>
+<li><a class="reference internal" href="#summary">5.11. Summary</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Objects.html"
-                        title="previous chapter">In-game Objects and items</a></p>
+                        title="previous chapter"><span class="section-number">4. </span>In-game Objects and items</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Chargen.html"
-                        title="next chapter">Character Generation</a></p>
+                        title="next chapter"><span class="section-number">6. </span>Character Generation</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -122,7 +122,7 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="handling-equipment">
-<h1>Handling Equipment<a class="headerlink" href="#handling-equipment" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">5. </span>Handling Equipment<a class="headerlink" href="#handling-equipment" title="Permalink to this headline">¶</a></h1>
 <p>In <em>Knave</em>, you have a certain number of inventory “slots”. The amount of slots is given by <code class="docutils literal notranslate"><span class="pre">CON</span> <span class="pre">+</span> <span class="pre">10</span></code>.
 All items (except coins) have a <code class="docutils literal notranslate"><span class="pre">size</span></code>, indicating how many slots it uses. You can’t carry more items
 than you have slot-space for. Also items wielded or worn count towards the slots.</p>
@@ -147,7 +147,7 @@ they can do. The shield, helmet and armor they use affects their defense.</p>
 <p>Basically, all the weapon/armor locations are exclusive - you can only have one item in each (or none).
 The BACKPACK is special - it contains any number of items (up to the maximum slot usage).</p>
 <section id="equipmenthandler-that-saves">
-<h2>EquipmentHandler that saves<a class="headerlink" href="#equipmenthandler-that-saves" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.1. </span>EquipmentHandler that saves<a class="headerlink" href="#equipmenthandler-that-saves" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/equipment.py</span></code>.</p>
 </div></blockquote>
@@ -233,7 +233,7 @@ other Attributes.</p>
 have one item except <code class="docutils literal notranslate"><span class="pre">WieldLocation.BACKPACK</span></code>, which is a list.</p>
 </section>
 <section id="connecting-the-equipmenthandler">
-<h2>Connecting the EquipmentHandler<a class="headerlink" href="#connecting-the-equipmenthandler" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.2. </span>Connecting the EquipmentHandler<a class="headerlink" href="#connecting-the-equipmenthandler" title="Permalink to this headline">¶</a></h2>
 <p>Whenever an object leaves from one location to the next, Evennia will call a set of <em>hooks</em> (methods) on the
 object that moves, on the source-location and on its destination. This is the same for all moving things -
 whether it’s a character moving between rooms or an item being dropping from your hand to the ground.</p>
@@ -297,10 +297,10 @@ we will skip that for this tutorial.</p>
 we can use this, we need to go actually adding those methods.</p>
 </section>
 <section id="expanding-the-equipmenthandler">
-<h2>Expanding the Equipmenthandler<a class="headerlink" href="#expanding-the-equipmenthandler" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.3. </span>Expanding the Equipmenthandler<a class="headerlink" href="#expanding-the-equipmenthandler" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="validate-slot-usage">
-<h2><code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code><a class="headerlink" href="#validate-slot-usage" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.4. </span><code class="docutils literal notranslate"><span class="pre">.validate_slot_usage</span></code><a class="headerlink" href="#validate-slot-usage" title="Permalink to this headline">¶</a></h2>
 <p>Let’s start with implementing the first method we came up with above, <code class="docutils literal notranslate"><span class="pre">validate_slot_usage</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
 
@@ -356,7 +356,7 @@ little less to type.</p>
 <p>We add two helpers - the <code class="docutils literal notranslate"><span class="pre">max_slots</span></code> <em>property</em> and <code class="docutils literal notranslate"><span class="pre">count_slots</span></code>, a method that calculate the current
 slots being in use. Let’s figure out how they work.</p>
 <section id="max-slots">
-<h3><code class="docutils literal notranslate"><span class="pre">.max_slots</span></code><a class="headerlink" href="#max-slots" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.4.1. </span><code class="docutils literal notranslate"><span class="pre">.max_slots</span></code><a class="headerlink" href="#max-slots" title="Permalink to this headline">¶</a></h3>
 <p>For <code class="docutils literal notranslate"><span class="pre">max_slots</span></code>, remember that <code class="docutils literal notranslate"><span class="pre">.obj</span></code> on the handler is a back-reference to the <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> we
 put this handler on. <code class="docutils literal notranslate"><span class="pre">getattr</span></code> is a Python method for retrieving a named property on an object.
 The <code class="docutils literal notranslate"><span class="pre">Enum</span></code> <code class="docutils literal notranslate"><span class="pre">Ability.CON.value</span></code> is the string <code class="docutils literal notranslate"><span class="pre">Constitution</span></code> (check out the
@@ -378,7 +378,7 @@ should happen to <em>not</em> be a property “Constitution” on <code class="d
 return 1.</p>
 </section>
 <section id="count-slots">
-<h3><code class="docutils literal notranslate"><span class="pre">.count_slots</span></code><a class="headerlink" href="#count-slots" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.4.2. </span><code class="docutils literal notranslate"><span class="pre">.count_slots</span></code><a class="headerlink" href="#count-slots" title="Permalink to this headline">¶</a></h3>
 <p>In this helper we use two Python tools - the <code class="docutils literal notranslate"><span class="pre">sum()</span></code> function and a
 <a class="reference external" href="https://www.w3schools.com/python/python_lists_comprehension.asp">list comprehension</a>. The former
 simply adds the values of any iterable together. The latter is a more efficient way to create a list:</p>
@@ -416,14 +416,14 @@ sizes”.</p>
 together.</p>
 </section>
 <section id="validating-slots">
-<h3>Validating slots<a class="headerlink" href="#validating-slots" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.4.3. </span>Validating slots<a class="headerlink" href="#validating-slots" title="Permalink to this headline">¶</a></h3>
 <p>With these helpers in place, <code class="docutils literal notranslate"><span class="pre">validate_slot_usage</span></code> now becomes simple. We use <code class="docutils literal notranslate"><span class="pre">max_slots</span></code> to see how much we can carry.
 We then get how many slots we are already using (with <code class="docutils literal notranslate"><span class="pre">count_slots</span></code>) and see if our new <code class="docutils literal notranslate"><span class="pre">obj</span></code>’s size
 would be too much for us.</p>
 </section>
 </section>
 <section id="add-and-remove">
-<h2><code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code><a class="headerlink" href="#add-and-remove" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.5. </span><code class="docutils literal notranslate"><span class="pre">.add</span></code> and <code class="docutils literal notranslate"><span class="pre">.remove</span></code><a class="headerlink" href="#add-and-remove" title="Permalink to this headline">¶</a></h2>
 <p>We will make it so <code class="docutils literal notranslate"><span class="pre">.add</span></code> puts something in the <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> location and <code class="docutils literal notranslate"><span class="pre">remove</span></code> drops it, wherever
 it is (even if it was in your hands).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
@@ -472,7 +472,7 @@ return all items.</p>
 be lost after a server reload.</p>
 </section>
 <section id="moving-things-around">
-<h2>Moving things around<a class="headerlink" href="#moving-things-around" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.6. </span>Moving things around<a class="headerlink" href="#moving-things-around" title="Permalink to this headline">¶</a></h2>
 <p>With the help of <code class="docutils literal notranslate"><span class="pre">.remove()</span></code> and <code class="docutils literal notranslate"><span class="pre">.add()</span></code>  we can get things in and out of the <code class="docutils literal notranslate"><span class="pre">BACKPACK</span></code> equipment
 location. We also need to grab stuff from the backpack and wield or wear it. We add a <code class="docutils literal notranslate"><span class="pre">.move</span></code> method
 on the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> to do this:</p>
@@ -527,7 +527,7 @@ it goes. So we just need to move the object to that slot, replacing whatever is 
 from before. Anything we replace goes back to the backpack.</p>
 </section>
 <section id="get-everything">
-<h2>Get everything<a class="headerlink" href="#get-everything" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.7. </span>Get everything<a class="headerlink" href="#get-everything" title="Permalink to this headline">¶</a></h2>
 <p>In order to visualize our inventory, we need some method to get everything we are carrying.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/equipment.py </span>
 
@@ -558,7 +558,7 @@ from before. Anything we replace goes back to the backpack.</p>
 <code class="docutils literal notranslate"><span class="pre">[(item,</span> <span class="pre">WieldLocation),</span> <span class="pre">...]</span></code>. This is convenient for display.</p>
 </section>
 <section id="weapon-and-armor">
-<h2>Weapon and armor<a class="headerlink" href="#weapon-and-armor" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.8. </span>Weapon and armor<a class="headerlink" href="#weapon-and-armor" title="Permalink to this headline">¶</a></h2>
 <p>It’s convenient to have the <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code> easily tell you what weapon is currently wielded
 and what <em>armor</em> level all worn equipment provides. Otherwise you’d need to figure out what item is
 in which wield-slot and to add up armor slots manually every time you need to know.</p>
@@ -609,7 +609,7 @@ object that represents your bare hands with damage and all.
 (created in <a class="reference internal" href="Beginner-Tutorial-Objects.html#your-bare-hands"><span class="std std-doc">The Object tutorial</span></a> earlier).</p>
 </section>
 <section id="extra-credits">
-<h2>Extra credits<a class="headerlink" href="#extra-credits" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.9. </span>Extra credits<a class="headerlink" href="#extra-credits" title="Permalink to this headline">¶</a></h2>
 <p>This covers the basic functionality of the equipment handler. There are other useful methods that
 can be added:</p>
 <ul class="simple">
@@ -623,7 +623,7 @@ can be added:</p>
 <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.equipment.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/equipment.py</span></a>.</p>
 </section>
 <section id="unit-testing">
-<h2>Unit Testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.10. </span>Unit Testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/tests/test_equipment.py</span></code>.</p>
 </div></blockquote>
@@ -663,7 +663,7 @@ passing these into the handler’s methods.</p>
 </div>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.11. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p><em>Handlers</em> are useful for grouping functionality together. Now that we spent our time making the
 <code class="docutils literal notranslate"><span class="pre">EquipmentHandler</span></code>, we shouldn’t need to worry about item-slots anymore - the handler ‘handles’ all
 the details for us. As long as we call its methods, the details can be forgotten about.</p>
@@ -689,16 +689,16 @@ generation - where players get to make their own character!</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Chargen.html" title="Character Generation"
+          <a href="Beginner-Tutorial-Chargen.html" title="6. Character Generation"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Objects.html" title="In-game Objects and items"
+          <a href="Beginner-Tutorial-Objects.html" title="4. In-game Objects and items"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Handling Equipment</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">5. </span>Handling Equipment</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

@@ -24,27 +24,7 @@ these concepts in the context of Evennia before.
 ## Lessons
 
 ```{toctree}
-:maxdepth: 1
 :numbered:
-
-Beginner-Tutorial-Building-Quickstart
-Beginner-Tutorial-Tutorial-World
-Beginner-Tutorial-Python-basic-introduction
-Beginner-Tutorial-Gamedir-Overview
-Beginner-Tutorial-Python-classes-and-objects
-Beginner-Tutorial-Evennia-Library-Overview
-Beginner-Tutorial-Learning-Typeclasses
-Beginner-Tutorial-Adding-Commands
-Beginner-Tutorial-More-on-Commands
-Beginner-Tutorial-Creating-Things
-Beginner-Tutorial-Searching-Things
-Beginner-Tutorial-Django-queries
-
-```
-
-## Table of Contents
-
-```{toctree}
 :maxdepth: 2
 
 Beginner-Tutorial-Building-Quickstart
@@ -59,5 +39,6 @@ Beginner-Tutorial-More-on-Commands
 Beginner-Tutorial-Creating-Things
 Beginner-Tutorial-Searching-Things
 Beginner-Tutorial-Django-queries
+Beginner-Tutorial-Making-A-Sittable-Object
 
 ```

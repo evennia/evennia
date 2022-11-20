@@ -66,7 +66,14 @@
   <ul>
 <li><a class="reference internal" href="#">10. Creating things</a><ul>
 <li><a class="reference internal" href="#creating-objects">10.1. Creating Objects</a></li>
-<li><a class="reference internal" href="#creating-accounts">10.2. Creating Accounts</a></li>
+<li><a class="reference internal" href="#creating-rooms-characters-and-exits">10.2. Creating Rooms, Characters and Exits</a><ul>
+<li><a class="reference internal" href="#linking-exits-and-rooms-in-code">10.2.1. Linking Exits and Rooms in code</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#creating-accounts">10.3. Creating Accounts</a></li>
+<li><a class="reference internal" href="#creating-channels">10.4. Creating Channels</a></li>
+<li><a class="reference internal" href="#creating-scripts">10.5. Creating Scripts</a></li>
+<li><a class="reference internal" href="#conclusion">10.6. Conclusion</a></li>
 </ul>
 </li>
 </ul>
@@ -109,9 +116,46 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="creating-things">
 <h1><span class="section-number">10. </span>Creating things<a class="headerlink" href="#creating-things" title="Permalink to this headline">¶</a></h1>
-<p>We have already created some things - dragons for example. There are many different things to create
-in Evennia though. In the last lesson we learned about typeclasses, the way to make objects persistent in the database.</p>
-<p>Given the path to a Typeclass, there are three ways to create an instance of it:</p>
+<p>We have already created some things - dragons for example. There are many different things to create in Evennia though. In the <a class="reference internal" href="Beginner-Tutorial-Learning-Typeclasses.html"><span class="doc std std-doc">Typeclasses tutorial</span></a>,  we noted that there are 7 default Typeclasses coming with Evennia out of the box:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Evennia base typeclass</p></th>
+<th class="head"><p>mygame.typeclasses child</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultObject</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code></p></td>
+<td><p>Everything with a location</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultCharacter</span></code> (child of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.characters.Character</span></code></p></td>
+<td><p>Player avatars</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultRoom</span></code> (child of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.rooms.Room</span></code></p></td>
+<td><p>In-game locations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultExit</span></code> (chld of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.exits.Exit</span></code></p></td>
+<td><p>Links between rooms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultAccount</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.accounts.Account</span></code></p></td>
+<td><p>A player account</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultChannel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.channels.Channel</span></code></p></td>
+<td><p>In-game comms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">evennia.DefaultScript</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">typeclasses.scripts.Script</span></code></p></td>
+<td><p>Entities with no location</p></td>
+</tr>
+</tbody>
+</table>
+<p>Given you have an imported Typeclass, there are four ways to create an instance of it:</p>
 <ul>
 <li><p>Firstly, you can call the class directly, and then <code class="docutils literal notranslate"><span class="pre">.save()</span></code> it:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  obj = SomeTypeClass(db_key=...)
@@ -119,42 +163,142 @@ in Evennia though. In the last lesson we learned about typeclasses, the way to m
 </pre></div>
 </div>
 <p>This has the drawback of being two operations; you must also import the class and have to pass
-the actual database field names, such as <code class="docutils literal notranslate"><span class="pre">db_key</span></code>  instead of <code class="docutils literal notranslate"><span class="pre">key</span></code> as keyword arguments.</p>
+the actual database field names, such as <code class="docutils literal notranslate"><span class="pre">db_key</span></code>  instead of <code class="docutils literal notranslate"><span class="pre">key</span></code> as keyword arguments. This is closest to how a ‘normal’ Python class works, but is not recommended.</p>
 </li>
 <li><p>Secondly you can use the Evennia creation helpers:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  obj = evennia.create_object(SomeTypeClass, key=...)
 </pre></div>
 </div>
-<p>This is the recommended way if you are trying to create things in Python. The first argument can either be
-the class <em>or</em> the python-path to the typeclass, like <code class="docutils literal notranslate"><span class="pre">&quot;path.to.SomeTypeClass&quot;</span></code>. It can also be <code class="docutils literal notranslate"><span class="pre">None</span></code> in which
-case the Evennia default will be used. While all the creation methods
-are available on <code class="docutils literal notranslate"><span class="pre">evennia</span></code>, they are actually implemented in <a class="reference internal" href="../../../api/evennia.utils.create.html"><span class="doc std std-doc">evennia/utils/create.py</span></a>.</p>
+<p>This is the recommended way if you are trying to create things in Python. The first argument can either be  the class <em>or</em> the python-path to the typeclass, like <code class="docutils literal notranslate"><span class="pre">&quot;path.to.SomeTypeClass&quot;</span></code>. It can also be <code class="docutils literal notranslate"><span class="pre">None</span></code> in which  case the Evennia default will be used. While all the creation methods
+are available on <code class="docutils literal notranslate"><span class="pre">evennia</span></code>, they are actually implemented in <a class="reference internal" href="../../../api/evennia.utils.create.html"><span class="doc std std-doc">evennia/utils/create.py</span></a>. Each of  the different base classes have their own creation function, like <code class="docutils literal notranslate"><span class="pre">create_account</span></code> and <code class="docutils literal notranslate"><span class="pre">create_script</span></code> etc.</p>
 </li>
-<li><p>Finally, you can create objects using an in-game command, such as</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  create/drop obj:path.to.SomeTypeClass
+<li><p>Thirdly, you can use the <code class="docutils literal notranslate"><span class="pre">.create</span></code> method on the Typeclass itself:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">SomeTypeClass</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">key</span><span class="o">=...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>As a developer you are usually best off using the two other methods, but a command is usually the only way
-to let regular players or builders without Python-access help build the game world.</p>
+<p>Since <code class="docutils literal notranslate"><span class="pre">.create</span></code> is a method on the typeclass, this form is useful if you want to customize how the creation process works for your custom typeclasses. Note that it returns <em>two</em> values - the <code class="docutils literal notranslate"><span class="pre">obj</span></code> is  either the new object or <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case <code class="docutils literal notranslate"><span class="pre">err</span></code> should be a list of error-strings detailing what went wrong.</p>
+</li>
+<li><p>Finally, you can create objects using an in-game command, such as</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  create obj:path.to.SomeTypeClass
+</pre></div>
+</div>
+<p>As a developer you are usually best off using the other methods, but a command is usually the only way  to let regular players or builders without Python-access help build the game world.</p>
 </li>
 </ul>
 <section id="creating-objects">
 <h2><span class="section-number">10.1. </span>Creating Objects<a class="headerlink" href="#creating-objects" title="Permalink to this headline">¶</a></h2>
-<p>This is one of the most common creation-types. These are entities that inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> at any distance.
-They have an existence in the game world and includes rooms, characters, exits, weapons, flower pots and castles.</p>
+<p>An <a class="reference internal" href="../../../Components/Objects.html"><span class="doc std std-doc">Object</span></a> is one of the most common creation-types. These are entities that inherits from <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> at any distance. They have an existence in the game world and includes rooms, characters, exits, weapons, flower pots and castles.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py
 &gt; import evennia 
 &gt; rose = evennia.create_object(key=&quot;rose&quot;)
 </pre></div>
 </div>
-<p>Since we didn’t specify the <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> as the first argument, the default given by <code class="docutils literal notranslate"><span class="pre">settings.BASE_OBJECT_TYPECLASS</span></code>
-(<code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code>) will be used.</p>
+<p>Since we didn’t specify the <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> as the first argument, the default given by <code class="docutils literal notranslate"><span class="pre">settings.BASE_OBJECT_TYPECLASS</span></code>  (<code class="docutils literal notranslate"><span class="pre">typeclasses.objects.Object</span></code> out of the box) will be used.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">create_object</span></code> has <a class="reference internal" href="../../../api/evennia.utils.create.html#evennia.utils.create.create_object" title="evennia.utils.create.create_object"><span class="xref myst py py-func">a lot of options</span></a>. A more detailed example in code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span><span class="p">,</span> <span class="n">search_object</span>
+
+<span class="n">meadow</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;Meadow&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">lasgun</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="s2">&quot;typeclasses.objects.guns.LasGun&quot;</span><span class="p">,</span> 
+					   <span class="n">key</span><span class="o">=</span><span class="s2">&quot;lasgun&quot;</span><span class="p">,</span> 
+					   <span class="n">location</span><span class="o">=</span><span class="n">meadow</span><span class="p">,</span>
+					   <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="s2">&quot;A fearsome Lasgun.&quot;</span><span class="p">)])</span>
+
+</pre></div>
+</div>
+<p>Here we set the location of a weapon as well as gave it an <a class="reference internal" href="../../../Components/Attributes.html"><span class="doc std std-doc">Attribute</span></a> <code class="docutils literal notranslate"><span class="pre">desc</span></code>, which is what the <code class="docutils literal notranslate"><span class="pre">look</span></code> command will use when looking this and other things.</p>
+</section>
+<section id="creating-rooms-characters-and-exits">
+<h2><span class="section-number">10.2. </span>Creating Rooms, Characters and Exits<a class="headerlink" href="#creating-rooms-characters-and-exits" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Characters</span></code>, <code class="docutils literal notranslate"><span class="pre">Rooms</span></code> and <code class="docutils literal notranslate"><span class="pre">Exits</span></code> are all subclasses of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code>. So there is for example no separate <code class="docutils literal notranslate"><span class="pre">create_character</span></code>, you just create characters with <code class="docutils literal notranslate"><span class="pre">create_object</span></code> pointing to the <code class="docutils literal notranslate"><span class="pre">Character</span></code> typeclass.</p>
+<section id="linking-exits-and-rooms-in-code">
+<h3><span class="section-number">10.2.1. </span>Linking Exits and Rooms in code<a class="headerlink" href="#linking-exits-and-rooms-in-code" title="Permalink to this headline">¶</a></h3>
+<p>An <code class="docutils literal notranslate"><span class="pre">Exit</span></code> is a one-way link between rooms. For example, <code class="docutils literal notranslate"><span class="pre">east</span></code> could be an <code class="docutils literal notranslate"><span class="pre">Exit</span></code> between the <code class="docutils literal notranslate"><span class="pre">Forest</span></code> room and the <code class="docutils literal notranslate"><span class="pre">Meadow</span></code> room.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Meadow -&gt; east -&gt; Forest 
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">east</span></code> exit has a <code class="docutils literal notranslate"><span class="pre">key</span></code> of <code class="docutils literal notranslate"><span class="pre">east</span></code>, a <code class="docutils literal notranslate"><span class="pre">location</span></code> of <code class="docutils literal notranslate"><span class="pre">Meadow</span></code> and a <code class="docutils literal notranslate"><span class="pre">destination</span></code> of <code class="docutils literal notranslate"><span class="pre">Forest</span></code>. If you wanted to be able to go back from Forest to Meadow, you’d need to create a new <code class="docutils literal notranslate"><span class="pre">Exit</span></code>, say, <code class="docutils literal notranslate"><span class="pre">west</span></code>, where <code class="docutils literal notranslate"><span class="pre">location</span></code> is <code class="docutils literal notranslate"><span class="pre">Forest</span></code> and <code class="docutils literal notranslate"><span class="pre">destination</span></code> is <code class="docutils literal notranslate"><span class="pre">Meadow</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Meadow -&gt; east -&gt; Forest 
+Forest -&gt; west -&gt; Meadow
+</pre></div>
+</div>
+<p>In-game you do this with <code class="docutils literal notranslate"><span class="pre">tunnel</span></code> and <code class="docutils literal notranslate"><span class="pre">dig</span></code> commands, bit if you want to ever set up these links in code, you can do it like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_object</span> 
+<span class="kn">from</span> <span class="nn">mygame.typeclasses</span> <span class="kn">import</span> <span class="n">rooms</span><span class="p">,</span> <span class="n">exits</span> 
+
+<span class="c1"># rooms</span>
+<span class="n">meadow</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Meadow&quot;</span><span class="p">)</span>
+<span class="n">forest</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span><span class="n">rooms</span><span class="o">.</span><span class="n">Room</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Forest&quot;</span><span class="p">)</span>
+
+<span class="c1"># exits </span>
+<span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;east&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">meadow</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">forest</span><span class="p">)</span>
+<span class="n">create_object</span><span class="p">(</span><span class="n">exits</span><span class="o">.</span><span class="n">Exit</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;west&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">forest</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">meadow</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="creating-accounts">
-<h2><span class="section-number">10.2. </span>Creating Accounts<a class="headerlink" href="#creating-accounts" title="Permalink to this headline">¶</a></h2>
-<p>An <em>Account</em> is an out-of-character (OOC) entity, with no existence in the game world.
+<h2><span class="section-number">10.3. </span>Creating Accounts<a class="headerlink" href="#creating-accounts" title="Permalink to this headline">¶</a></h2>
+<p>An <a class="reference internal" href="../../../Components/Accounts.html"><span class="doc std std-doc">Account</span></a> is an out-of-character (OOC) entity, with no existence in the game world.
 You can find the parent class for Accounts in <code class="docutils literal notranslate"><span class="pre">typeclasses/accounts.py</span></code>.</p>
-<p><em>TODO</em></p>
+<p>Normally, you want to create the Account when a user authenticates. By default, this happens in the <code class="docutils literal notranslate"><span class="pre">create</span> <span class="pre">account</span></code> and <code class="docutils literal notranslate"><span class="pre">login</span></code> default commands in the <code class="docutils literal notranslate"><span class="pre">UnloggedInCmdSet</span></code>. This means that customizing this just means replacing those commands!</p>
+<p>So normally you’d modify those commands rather than make something from scratch. But here’s the principle:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_account</span> 
+
+<span class="n">new_account</span> <span class="o">=</span> <span class="n">create_account</span><span class="p">(</span>
+            <span class="n">accountname</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> 
+            <span class="n">permissions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Player&quot;</span><span class="p">],</span> 
+            <span class="n">typeclass</span><span class="o">=</span><span class="s2">&quot;typeclasses.accounts.MyAccount&quot;</span>
+ <span class="p">)</span>
+</pre></div>
+</div>
+<p>The inputs are usually taken from the player via the command. The <code class="docutils literal notranslate"><span class="pre">email</span></code> must be given, but can be <code class="docutils literal notranslate"><span class="pre">None</span></code> if you are not using it. The <code class="docutils literal notranslate"><span class="pre">accountname</span></code> must be globally unique on the server. The <code class="docutils literal notranslate"><span class="pre">password</span></code> is stored encrypted in the database.  If <code class="docutils literal notranslate"><span class="pre">typeclass</span></code> is not given, the <code class="docutils literal notranslate"><span class="pre">settings.BASE_ACCOUNT_TYPECLASS</span></code> will be used (<code class="docutils literal notranslate"><span class="pre">typeclasses.accounts.Account</span></code>).</p>
+</section>
+<section id="creating-channels">
+<h2><span class="section-number">10.4. </span>Creating Channels<a class="headerlink" href="#creating-channels" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="../../../Components/Channels.html"><span class="doc std std-doc">Channel</span></a> acts like a switchboard for sending in-game messages between users; like an IRC- or discord channel but inside the game.</p>
+<p>Users interact with channels via the <code class="docutils literal notranslate"><span class="pre">channel</span></code> command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>channel/all 
+channel/create channelname 
+channel/who channelname 
+channel/sub channel name 
+...
+(see &#39;help channel&#39;)
+</pre></div>
+</div>
+<p>If a channel named, say, <code class="docutils literal notranslate"><span class="pre">myguild</span></code> exists, a user can send a message to it just by writing the channel name:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; myguild Hello! I have some questions ... 
+</pre></div>
+</div>
+<p>Creating channels follows a familiar syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_channel</span>
+
+<span class="n">new_channel</span> <span class="o">=</span> <span class="n">create_channel</span><span class="p">(</span><span class="n">channelname</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Channels can also be auto-created by the server by setting the <code class="docutils literal notranslate"><span class="pre">DEFAULT_CHANNELS</span></code> setting. See <a class="reference internal" href="../../../Components/Channels.html"><span class="doc std std-doc">Channels documentation</span></a> for details.</p>
+</section>
+<section id="creating-scripts">
+<h2><span class="section-number">10.5. </span>Creating Scripts<a class="headerlink" href="#creating-scripts" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> is an entity that has no in-game location. It can be used to store arbitrary data and is often used for game systems that need persistent storage but which you can’t ‘look’ at in-game. Examples are economic systems, weather and combat handlers.</p>
+<p>Scripts are multi-use and depending on what they do, a given script can either be ‘global’ or be attached “to” another object (like a Room or Character).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">create_script</span><span class="p">,</span> <span class="n">search_object</span> 
+<span class="c1"># global script </span>
+<span class="n">new_script</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;typeclasses.scripts.MyScript&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;myscript&quot;</span><span class="p">)</span>
+
+<span class="c1"># on-object script </span>
+<span class="n">meadow</span> <span class="o">=</span> <span class="n">search_object</span><span class="p">(</span><span class="s2">&quot;Meadow&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">new_script</span> <span class="o">=</span> <span class="n">create_script</span><span class="p">(</span><span class="s2">&quot;typeclasses.scripts.MyScripts&quot;</span><span class="p">,</span> 
+						   <span class="n">key</span><span class="s2">&quot;myscript2&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">meadow</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>A convenient way to create global scripts is define them in the <code class="docutils literal notranslate"><span class="pre">GLOBAL_SCRIPTS</span></code> setting; Evennia will then make sure to initialize them. Scripts also have an optional ‘timer’ component. See the dedicated <a class="reference internal" href="../../../Components/Scripts.html"><span class="doc std std-doc">Script</span></a> documentation for more info.</p>
+</section>
+<section id="conclusion">
+<h2><span class="section-number">10.6. </span>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>Any game will need peristent storage of data. This was a quick run-down of how to create each default type of typeclassed entity.  If you make your own typeclasses (as children of the default ones), you create them in the same way.</p>
+<p>Next we’ll learn how to find them again by <em>searching</em> for them in the database.</p>
 </section>
 </section>
 

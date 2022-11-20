@@ -350,3 +350,13 @@ object seeing the relationship may not reliably update but will still see its ol
 Due to typeclasses staying so long in memory, stale caches of such relationships could be more
 visible than common in Django. See the [closed issue #1098 and its
 comments](https://github.com/evennia/evennia/issues/1098) for examples and solutions.
+
+## Will I run out of dbrefs? 
+
+Evennia does not re-use its `#dbrefs`. This means new objects get an ever-increasing `#dbref`, also if you delete older objects. There are technical and safety reasons for this. But you may wonder if this means you have to worry about a big game 'running out' of dbref integers eventually.
+
+The answer is simply **no**. 
+
+For example, the max dbref value for the default sqlite3 database is `2**64`. If you *created 10 000 new objects every second of every minute of every day of the year it would take about **60 million years** for you to run out of dbref numbers*. That's a database of 140 TeraBytes, just to store the dbrefs, no other data. 
+
+If you are still using Evennia at that point and has this concern, get back to us and we can discuss adding dbref reuse then.

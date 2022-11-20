@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>In-game Objects and items &#8212; Evennia 1.0-dev documentation</title>
+    <title>4. In-game Objects and items &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Handling Equipment" href="Beginner-Tutorial-Equipment.html" />
-    <link rel="prev" title="Player Characters" href="Beginner-Tutorial-Characters.html" /> 
+    <link rel="next" title="5. Handling Equipment" href="Beginner-Tutorial-Equipment.html" />
+    <link rel="prev" title="3. Player Characters" href="Beginner-Tutorial-Characters.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,16 +30,16 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Equipment.html" title="Handling Equipment"
+          <a href="Beginner-Tutorial-Equipment.html" title="5. Handling Equipment"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Characters.html" title="Player Characters"
+          <a href="Beginner-Tutorial-Characters.html" title="3. Player Characters"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">In-game Objects and items</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>In-game Objects and items</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,30 +64,30 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">In-game Objects and items</a><ul>
-<li><a class="reference internal" href="#new-enums">New Enums</a></li>
-<li><a class="reference internal" href="#the-base-object">The base object</a><ul>
-<li><a class="reference internal" href="#using-attributes-or-not">Using Attributes or not</a></li>
-<li><a class="reference internal" href="#creating-tags-in-at-object-creation">Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code></a></li>
+<li><a class="reference internal" href="#">4. In-game Objects and items</a><ul>
+<li><a class="reference internal" href="#new-enums">4.1. New Enums</a></li>
+<li><a class="reference internal" href="#the-base-object">4.2. The base object</a><ul>
+<li><a class="reference internal" href="#using-attributes-or-not">4.2.1. Using Attributes or not</a></li>
+<li><a class="reference internal" href="#creating-tags-in-at-object-creation">4.2.2. Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#other-object-types">Other object types</a></li>
-<li><a class="reference internal" href="#consumables">Consumables</a></li>
-<li><a class="reference internal" href="#weapons">Weapons</a></li>
-<li><a class="reference internal" href="#magic">Magic</a></li>
-<li><a class="reference internal" href="#armor">Armor</a></li>
-<li><a class="reference internal" href="#your-bare-hands">Your Bare hands</a></li>
-<li><a class="reference internal" href="#testing-and-extra-credits">Testing and Extra credits</a></li>
+<li><a class="reference internal" href="#other-object-types">4.3. Other object types</a></li>
+<li><a class="reference internal" href="#consumables">4.4. Consumables</a></li>
+<li><a class="reference internal" href="#weapons">4.5. Weapons</a></li>
+<li><a class="reference internal" href="#magic">4.6. Magic</a></li>
+<li><a class="reference internal" href="#armor">4.7. Armor</a></li>
+<li><a class="reference internal" href="#your-bare-hands">4.8. Your Bare hands</a></li>
+<li><a class="reference internal" href="#testing-and-extra-credits">4.9. Testing and Extra credits</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Characters.html"
-                        title="previous chapter">Player Characters</a></p>
+                        title="previous chapter"><span class="section-number">3. </span>Player Characters</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Equipment.html"
-                        title="next chapter">Handling Equipment</a></p>
+                        title="next chapter"><span class="section-number">5. </span>Handling Equipment</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -119,7 +119,7 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="in-game-objects-and-items">
-<h1>In-game Objects and items<a class="headerlink" href="#in-game-objects-and-items" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">4. </span>In-game Objects and items<a class="headerlink" href="#in-game-objects-and-items" title="Permalink to this headline">¶</a></h1>
 <p>In the previous lesson we established what a ‘Character’ is in our game. Before we continue
 we also need to have a notion what an ‘item’ or ‘object’ is.</p>
 <p>Looking at <em>Knave</em>’s item lists, we can get some ideas of what we need to track:</p>
@@ -132,7 +132,7 @@ only belong in the backpack.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">obj_type</span></code> - Which ‘type’ of item this is.</p></li>
 </ul>
 <section id="new-enums">
-<h2>New Enums<a class="headerlink" href="#new-enums" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.1. </span>New Enums<a class="headerlink" href="#new-enums" title="Permalink to this headline">¶</a></h2>
 <p>We added a few enumberations for Abilities back in the <a class="reference internal" href="Beginner-Tutorial-Utilities.html"><span class="doc std std-doc">Utilities tutorial</span></a>.
 Before we continue, let’s expand with enums for use-slots and object types.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/enums.py</span>
@@ -164,7 +164,7 @@ Before we continue, let’s expand with enums for use-slots and object types.</p
 <p>Once we have these enums, we will use them for referencing things.</p>
 </section>
 <section id="the-base-object">
-<h2>The base object<a class="headerlink" href="#the-base-object" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.2. </span>The base object<a class="headerlink" href="#the-base-object" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/objects.py</span></code></p>
 </div></blockquote>
@@ -209,7 +209,7 @@ child classes to represent the relevant types:</p>
 </pre></div>
 </div>
 <section id="using-attributes-or-not">
-<h3>Using Attributes or not<a class="headerlink" href="#using-attributes-or-not" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.2.1. </span>Using Attributes or not<a class="headerlink" href="#using-attributes-or-not" title="Permalink to this headline">¶</a></h3>
 <p>In theory, <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code> does not change and <em>could</em> also be just set as a regular Python
 property on the class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">EvAdventureObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
@@ -237,7 +237,7 @@ the database for all objects with <code class="docutils literal notranslate"><sp
 all objects of a particular size. So we should be safe.</p>
 </section>
 <section id="creating-tags-in-at-object-creation">
-<h3>Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code><a class="headerlink" href="#creating-tags-in-at-object-creation" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.2.2. </span>Creating tags in <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code><a class="headerlink" href="#creating-tags-in-at-object-creation" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> is a method Evennia calls on every child of <code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code> whenever it is
 first created.</p>
 <p>We do a tricky thing here, converting our <code class="docutils literal notranslate"><span class="pre">.obj_type</span></code> to one or more <a class="reference internal" href="../../../Components/Tags.html"><span class="doc std std-doc">Tags</span></a>. Tagging the
@@ -256,7 +256,7 @@ is also Magical, for example.</p>
 </section>
 </section>
 <section id="other-object-types">
-<h2>Other object types<a class="headerlink" href="#other-object-types" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.3. </span>Other object types<a class="headerlink" href="#other-object-types" title="Permalink to this headline">¶</a></h2>
 <p>Some of the other object types are very simple so far.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
 
@@ -280,7 +280,7 @@ is also Magical, for example.</p>
 </div>
 </section>
 <section id="consumables">
-<h2>Consumables<a class="headerlink" href="#consumables" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.4. </span>Consumables<a class="headerlink" href="#consumables" title="Permalink to this headline">¶</a></h2>
 <p>A ‘consumable’ is an item that has a certain number of ‘uses’. Once fully consumed, it can’t be used
 anymore. An example would be a health potion.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
@@ -315,7 +315,7 @@ anymore. An example would be a health potion.</p>
 later, overriding <code class="docutils literal notranslate"><span class="pre">at_use</span></code> with different effects.</p>
 </section>
 <section id="weapons">
-<h2>Weapons<a class="headerlink" href="#weapons" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.5. </span>Weapons<a class="headerlink" href="#weapons" title="Permalink to this headline">¶</a></h2>
 <p>All weapons need properties that describe how efficient they are in battle.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mygame/evadventure/objects.py </span>
 
@@ -341,7 +341,7 @@ a weapon’s quality will go down. When it reaches 0, it will break.</p>
 <p>The attack/defend type tracks how we resolve attacks with the weapon, like <code class="docutils literal notranslate"><span class="pre">roll</span> <span class="pre">+</span> <span class="pre">STR</span> <span class="pre">vs</span> <span class="pre">ARMOR</span> <span class="pre">+</span> <span class="pre">10</span></code>.</p>
 </section>
 <section id="magic">
-<h2>Magic<a class="headerlink" href="#magic" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.6. </span>Magic<a class="headerlink" href="#magic" title="Permalink to this headline">¶</a></h2>
 <p>In <em>Knave</em>, anyone can use magic if they are wielding a rune stone (our name for spell books) in both
 hands. You can only use a rune stone once per rest. So a rune stone is an example of a ‘magical weapon’
 that is also a ‘consumable’ of sorts.</p>
@@ -388,7 +388,7 @@ base class. Since magic in <em>Knave</em> tends to be pretty custom, it makes se
 of custom code.</p>
 </section>
 <section id="armor">
-<h2>Armor<a class="headerlink" href="#armor" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.7. </span>Armor<a class="headerlink" href="#armor" title="Permalink to this headline">¶</a></h2>
 <p>Armor, shields and helmets increase the <code class="docutils literal notranslate"><span class="pre">ARMOR</span></code> stat of the character. In <em>Knave</em>, what is stored is the
 defense value of the armor (values 11-20). We will instead store the ‘armor bonus’ (1-10). As we know,
 defending is always <code class="docutils literal notranslate"><span class="pre">bonus</span> <span class="pre">+</span> <span class="pre">10</span></code>, so the result will be the same - this means
@@ -418,7 +418,7 @@ we can use <code class="docutils literal notranslate"><span class="pre">Ability.
 </div>
 </section>
 <section id="your-bare-hands">
-<h2>Your Bare hands<a class="headerlink" href="#your-bare-hands" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.8. </span>Your Bare hands<a class="headerlink" href="#your-bare-hands" title="Permalink to this headline">¶</a></h2>
 <p>This is a ‘dummy’ object that is not stored in the database. We will use this in the upcoming
 <a class="reference internal" href="Beginner-Tutorial-Equipment.html"><span class="doc std std-doc">Equipment tutorial lesson</span></a> to represent when you have ‘nothing’
 in your hands. This way we don’t need to add any special case for this.</p>
@@ -437,7 +437,7 @@ in your hands. This way we don’t need to add any special case for this.</p>
 </div>
 </section>
 <section id="testing-and-extra-credits">
-<h2>Testing and Extra credits<a class="headerlink" href="#testing-and-extra-credits" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.9. </span>Testing and Extra credits<a class="headerlink" href="#testing-and-extra-credits" title="Permalink to this headline">¶</a></h2>
 <p>Remember the <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> function from the <a class="reference internal" href="Beginner-Tutorial-Utilities.html"><span class="doc std std-doc">Utility Tutorial</span></a> earlier?
 We had to use dummy-values since we didn’t yet know how we would store properties on Objects in the game.</p>
 <p>Well, we just figured out all we need! You can go back and update <code class="docutils literal notranslate"><span class="pre">get_obj_stats</span></code> to properly read the data
@@ -465,16 +465,16 @@ to <code class="docutils literal notranslate"><span class="pre">get_obj_stats</s
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Equipment.html" title="Handling Equipment"
+          <a href="Beginner-Tutorial-Equipment.html" title="5. Handling Equipment"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Characters.html" title="Player Characters"
+          <a href="Beginner-Tutorial-Characters.html" title="3. Player Characters"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">In-game Objects and items</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>In-game Objects and items</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

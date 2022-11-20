@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Planning our tutorial game &#8212; Evennia 1.0-dev documentation</title>
+    <title>3. Planning our tutorial game &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Part 3: How we get there" href="../Part3/Beginner-Tutorial-Part3-Intro.html" />
-    <link rel="prev" title="On Planning a Game" href="Beginner-Tutorial-Game-Planning.html" /> 
+    <link rel="next" title="Part 3: How we get there (example game)" href="../Part3/Beginner-Tutorial-Part3-Intro.html" />
+    <link rel="prev" title="2. On Planning a Game" href="Beginner-Tutorial-Game-Planning.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,16 +30,16 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Part3/Beginner-Tutorial-Part3-Intro.html" title="Part 3: How we get there"
+          <a href="../Part3/Beginner-Tutorial-Part3-Intro.html" title="Part 3: How we get there (example game)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Game-Planning.html" title="On Planning a Game"
+          <a href="Beginner-Tutorial-Game-Planning.html" title="2. On Planning a Game"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part2-Intro.html" accesskey="U">Part 2: What we want</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Planning our tutorial game</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>Planning our tutorial game</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,69 +64,69 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Planning our tutorial game</a><ul>
-<li><a class="reference internal" href="#game-concept">Game concept</a></li>
-<li><a class="reference internal" href="#administration">Administration</a><ul>
-<li><a class="reference internal" href="#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters">Should your game rules be enforced by coded systems by human game masters?</a></li>
-<li><a class="reference internal" href="#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else">What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?</a></li>
-<li><a class="reference internal" href="#should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards">Should players be able to post out-of-characters on channels and via other means like bulletin-boards?</a></li>
+<li><a class="reference internal" href="#">3. Planning our tutorial game</a><ul>
+<li><a class="reference internal" href="#game-concept">3.1. Game concept</a></li>
+<li><a class="reference internal" href="#administration">3.2. Administration</a><ul>
+<li><a class="reference internal" href="#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters">3.2.1. Should your game rules be enforced by coded systems by human game masters?</a></li>
+<li><a class="reference internal" href="#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else">3.2.2. What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?</a></li>
+<li><a class="reference internal" href="#should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards">3.2.3. Should players be able to post out-of-characters on channels and via other means like bulletin-boards?</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#building">Building</a><ul>
-<li><a class="reference internal" href="#how-will-the-world-be-built">How will the world be built?</a></li>
-<li><a class="reference internal" href="#can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability">Can only privileged Builders create things or should regular players also have limited build-capability?</a></li>
+<li><a class="reference internal" href="#building">3.3. Building</a><ul>
+<li><a class="reference internal" href="#how-will-the-world-be-built">3.3.1. How will the world be built?</a></li>
+<li><a class="reference internal" href="#can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability">3.3.2. Can only privileged Builders create things or should regular players also have limited build-capability?</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#systems">Systems</a><ul>
-<li><a class="reference internal" href="#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own">Do you base your game off an existing RPG system or make up your own?</a></li>
-<li><a class="reference internal" href="#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails">What are the game mechanics? How do you decide if an action succeeds or fails?</a></li>
-<li><a class="reference internal" href="#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons">Does the flow of time matter in your game - does night and day change? What about seasons?</a></li>
-<li><a class="reference internal" href="#do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay">Do you want changing, global weather or should weather just be set manually in roleplay?</a></li>
-<li><a class="reference internal" href="#do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all">Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?</a></li>
-<li><a class="reference internal" href="#do-you-have-concepts-like-reputation-and-influence">Do you have concepts like reputation and influence?</a></li>
-<li><a class="reference internal" href="#will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance">Will your characters be known by their name or only by their physical appearance?</a></li>
+<li><a class="reference internal" href="#systems">3.4. Systems</a><ul>
+<li><a class="reference internal" href="#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own">3.4.1. Do you base your game off an existing RPG system or make up your own?</a></li>
+<li><a class="reference internal" href="#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails">3.4.2. What are the game mechanics? How do you decide if an action succeeds or fails?</a></li>
+<li><a class="reference internal" href="#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons">3.4.3. Does the flow of time matter in your game - does night and day change? What about seasons?</a></li>
+<li><a class="reference internal" href="#do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay">3.4.4. Do you want changing, global weather or should weather just be set manually in roleplay?</a></li>
+<li><a class="reference internal" href="#do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all">3.4.5. Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?</a></li>
+<li><a class="reference internal" href="#do-you-have-concepts-like-reputation-and-influence">3.4.6. Do you have concepts like reputation and influence?</a></li>
+<li><a class="reference internal" href="#will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance">3.4.7. Will your characters be known by their name or only by their physical appearance?</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#rooms">Rooms</a><ul>
-<li><a class="reference internal" href="#is-a-simple-room-description-enough-or-should-the-description-be-able-to-change">Is a simple room description enough or should the description be able to change?</a></li>
-<li><a class="reference internal" href="#should-the-room-have-different-statuses">Should the room have different statuses?</a></li>
-<li><a class="reference internal" href="#can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room">Can objects be hidden in the room? Can a person hide in the room?</a></li>
+<li><a class="reference internal" href="#rooms">3.5. Rooms</a><ul>
+<li><a class="reference internal" href="#is-a-simple-room-description-enough-or-should-the-description-be-able-to-change">3.5.1. Is a simple room description enough or should the description be able to change?</a></li>
+<li><a class="reference internal" href="#should-the-room-have-different-statuses">3.5.2. Should the room have different statuses?</a></li>
+<li><a class="reference internal" href="#can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room">3.5.3. Can objects be hidden in the room? Can a person hide in the room?</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#objects">Objects</a><ul>
-<li><a class="reference internal" href="#how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props">How numerous are your objects? Do you want large loot-lists or are objects just role playing props?</a></li>
-<li><a class="reference internal" href="#is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value">Is each coin a separate object or do you just store a bank account value?</a></li>
-<li><a class="reference internal" href="#do-multiple-similar-objects-form-stack-and-how-are-those-stacks-handled-in-that-case">Do multiple similar objects form stack and how are those stacks handled in that case?</a></li>
-<li><a class="reference internal" href="#does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them">Does an object have weight or volume (so you cannot carry an infinite amount of them)?</a></li>
-<li><a class="reference internal" href="#can-objects-be-broken-can-they-be-repaired">Can objects be broken? Can they be repaired?</a></li>
-<li><a class="reference internal" href="#can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing">Can you fight with a chair or a flower or must you use a special ‘weapon’ kind of thing?</a></li>
-<li><a class="reference internal" href="#will-characters-be-able-to-craft-new-objects">Will characters be able to craft new objects?</a></li>
-<li><a class="reference internal" href="#should-mobs-npcs-have-some-sort-of-ai">Should mobs/NPCs have some sort of AI?</a></li>
-<li><a class="reference internal" href="#are-npcs-and-mobs-different-entities-how-do-they-differ">Are NPCs and mobs different entities? How do they differ?</a></li>
-<li><a class="reference internal" href="#should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status">_Should there be NPCs giving quests? If so, how do you track Quest status?</a></li>
+<li><a class="reference internal" href="#objects">3.6. Objects</a><ul>
+<li><a class="reference internal" href="#how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props">3.6.1. How numerous are your objects? Do you want large loot-lists or are objects just role playing props?</a></li>
+<li><a class="reference internal" href="#is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value">3.6.2. Is each coin a separate object or do you just store a bank account value?</a></li>
+<li><a class="reference internal" href="#do-multiple-similar-objects-form-stack-and-how-are-those-stacks-handled-in-that-case">3.6.3. Do multiple similar objects form stack and how are those stacks handled in that case?</a></li>
+<li><a class="reference internal" href="#does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them">3.6.4. Does an object have weight or volume (so you cannot carry an infinite amount of them)?</a></li>
+<li><a class="reference internal" href="#can-objects-be-broken-can-they-be-repaired">3.6.5. Can objects be broken? Can they be repaired?</a></li>
+<li><a class="reference internal" href="#can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing">3.6.6. Can you fight with a chair or a flower or must you use a special ‘weapon’ kind of thing?</a></li>
+<li><a class="reference internal" href="#will-characters-be-able-to-craft-new-objects">3.6.7. Will characters be able to craft new objects?</a></li>
+<li><a class="reference internal" href="#should-mobs-npcs-have-some-sort-of-ai">3.6.8. Should mobs/NPCs have some sort of AI?</a></li>
+<li><a class="reference internal" href="#are-npcs-and-mobs-different-entities-how-do-they-differ">3.6.9. Are NPCs and mobs different entities? How do they differ?</a></li>
+<li><a class="reference internal" href="#should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status">3.6.10. _Should there be NPCs giving quests? If so, how do you track Quest status?</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#characters">Characters</a><ul>
-<li><a class="reference internal" href="#can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play">Can players have more than one Character active at a time or are they allowed to multi-play?</a></li>
-<li><a class="reference internal" href="#how-does-the-character-generation-work">How does the character-generation work?</a></li>
-<li><a class="reference internal" href="#how-do-you-implement-different-classes-or-races">How do you implement different “classes” or “races”?</a></li>
-<li><a class="reference internal" href="#if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected">If a Character can hide in a room, what skill will decide if they are detected?</a></li>
-<li><a class="reference internal" href="#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying">What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?</a></li>
-<li><a class="reference internal" href="#may-player-characters-attack-each-other-pvp">May player-characters attack each other (PvP)?</a></li>
-<li><a class="reference internal" href="#what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison">What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?</a></li>
+<li><a class="reference internal" href="#characters">3.7. Characters</a><ul>
+<li><a class="reference internal" href="#can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play">3.7.1. Can players have more than one Character active at a time or are they allowed to multi-play?</a></li>
+<li><a class="reference internal" href="#how-does-the-character-generation-work">3.7.2. How does the character-generation work?</a></li>
+<li><a class="reference internal" href="#how-do-you-implement-different-classes-or-races">3.7.3. How do you implement different “classes” or “races”?</a></li>
+<li><a class="reference internal" href="#if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected">3.7.4. If a Character can hide in a room, what skill will decide if they are detected?</a></li>
+<li><a class="reference internal" href="#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying">3.7.5. What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?</a></li>
+<li><a class="reference internal" href="#may-player-characters-attack-each-other-pvp">3.7.6. May player-characters attack each other (PvP)?</a></li>
+<li><a class="reference internal" href="#what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison">3.7.7. What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#conclusions">Conclusions</a></li>
+<li><a class="reference internal" href="#conclusions">3.8. Conclusions</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Game-Planning.html"
-                        title="previous chapter">On Planning a Game</a></p>
+                        title="previous chapter"><span class="section-number">2. </span>On Planning a Game</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="../Part3/Beginner-Tutorial-Part3-Intro.html"
-                        title="next chapter">Part 3: How we get there</a></p>
+                        title="next chapter">Part 3: How we get there (example game)</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -158,7 +158,7 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="planning-our-tutorial-game">
-<h1>Planning our tutorial game<a class="headerlink" href="#planning-our-tutorial-game" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">3. </span>Planning our tutorial game<a class="headerlink" href="#planning-our-tutorial-game" title="Permalink to this headline">¶</a></h1>
 <p>Using the general plan from last lesson we’ll now establish what kind of game we want to create for this tutorial.  We’ll call it … <em>EvAdventure</em>.
 Remembering that we need to keep the scope down, let’s establish some parameters.</p>
 <ul class="simple">
@@ -173,7 +173,7 @@ Remembering that we need to keep the scope down, let’s establish some paramete
 <li><p>We want some sort of quest system and merchants to buy stuff from.</p></li>
 </ul>
 <section id="game-concept">
-<h2>Game concept<a class="headerlink" href="#game-concept" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.1. </span>Game concept<a class="headerlink" href="#game-concept" title="Permalink to this headline">¶</a></h2>
 <p>With these points in mind, here’s a quick blurb for our game:</p>
 <p><em>Recently, the nearby village discovered that the old abandoned well contained a dark secret. The bottom of the well led to a previously undiscovered dungeon of ever shifting passages. No one knew why it was there or what its purpose was, but local rumors abound. The first adventurer that went down didn’t come back. The second … brought back a handful of glittering riches.</em></p>
 <p><em>Now the rush is on - there’s a dungeon to explore and coin to earn. Knaves, cutthroats, adventurers and maybe even a hero or two are coming from all over the realm to challenge whatever lurks at the bottom of that well.</em></p>
@@ -188,9 +188,9 @@ Remembering that we need to keep the scope down, let’s establish some paramete
 <p>For the rest of this lesson we’ll answer and reason around the specific questions posed in the previous <a class="reference internal" href="Beginner-Tutorial-Game-Planning.html"><span class="doc std std-doc">Game Planning</span></a> lesson.</p>
 </section>
 <section id="administration">
-<h2>Administration<a class="headerlink" href="#administration" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2. </span>Administration<a class="headerlink" href="#administration" title="Permalink to this headline">¶</a></h2>
 <section id="should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters">
-<h3>Should your game rules be enforced by coded systems by human game masters?<a class="headerlink" href="#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.2.1. </span>Should your game rules be enforced by coded systems by human game masters?<a class="headerlink" href="#should-your-game-rules-be-enforced-by-coded-systems-by-human-game-masters" title="Permalink to this headline">¶</a></h3>
 <p>Generally, the more work you expect human staffers/GMs to do, the less your code needs to work. To support GMs you’d need to design commands to support GM-specific actions and the type of game-mastering you want them to do. You may need to expand communication channels so you can easily talk to groups people in private and split off gaming groups from each other. RPG rules could be as simple
 as the GM sitting with the rule books and using a dice-roller for visibility.</p>
 <p>GM:ing is work-intensive however, and even the most skilled and enthusiastic GM can’t be awake all hours of the day to serve an international player base. The computer never needs sleep, so having the ability for players to “self-serve” their RP itch when no GMs are around is a good idea even for the most GM-heavy games.</p>
@@ -200,7 +200,7 @@ players is low.</p>
 <p>We want EvAdventure to work entirely without depending on human GMs. That said, there’d be nothing stopping a GM from stepping in and run an adventure for some players should they want to.</p>
 </section>
 <section id="what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else">
-<h3>What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?<a class="headerlink" href="#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.2.2. </span>What is the staff hierarchy in your game? Is vanilla Evennia roles enough or do you need something else?<a class="headerlink" href="#what-is-the-staff-hierarchy-in-your-game-is-vanilla-evennia-roles-enough-or-do-you-need-something-else" title="Permalink to this headline">¶</a></h3>
 <p>The default hierarchy is</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Player</span></code>  - regular players</p></li>
@@ -215,7 +215,7 @@ goes outside the regular hierarchy and should usually only.</p>
 <p>We are okay with keeping the default permission structure for our game.</p>
 </section>
 <section id="should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards">
-<h3>Should players be able to post out-of-characters on channels and via other means like bulletin-boards?<a class="headerlink" href="#should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.2.3. </span>Should players be able to post out-of-characters on channels and via other means like bulletin-boards?<a class="headerlink" href="#should-players-be-able-to-post-out-of-characters-on-channels-and-via-other-means-like-bulletin-boards" title="Permalink to this headline">¶</a></h3>
 <p>Evennia’s <em>Channels</em> are by default only available between <em>Accounts</em>. That is, for players to communicate with each
 other. By default, the <code class="docutils literal notranslate"><span class="pre">public</span></code> channel is created for general discourse.
 Channels are logged to a file and when you are coming back to the game you can view the history of a channel in case you missed something.</p>
@@ -235,9 +235,9 @@ Channels are logged to a file and when you are coming back to the game you can v
 </section>
 </section>
 <section id="building">
-<h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.3. </span>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
 <section id="how-will-the-world-be-built">
-<h3>How will the world be built?<a class="headerlink" href="#how-will-the-world-be-built" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.3.1. </span>How will the world be built?<a class="headerlink" href="#how-will-the-world-be-built" title="Permalink to this headline">¶</a></h3>
 <p>There are two main ways to handle this:</p>
 <ul class="simple">
 <li><p>Traditionally, from in-game with build-commands:  This means builders creating content in their game   client. This has the advantage of not requiring Python skills nor server access. This can often be a quite  intuitive way to build since you are sort-of walking around in your creation as you build it. However, the  developer (you) must make sure to provide build-commands that are flexible enough for builders to be able to  create the content you want for your game.</p></li>
@@ -250,7 +250,7 @@ allows Evennia to apply and re-apply build-scripts that are raw Python modules. 
 <p>For EvAdventure, we will build the above-ground part of the game world using batch-scripts. The world below-ground we will build procedurally, using raw code.</p>
 </section>
 <section id="can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability">
-<h3>Can only privileged Builders create things or should regular players also have limited build-capability?<a class="headerlink" href="#can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.3.2. </span>Can only privileged Builders create things or should regular players also have limited build-capability?<a class="headerlink" href="#can-only-privileged-builders-create-things-or-should-regular-players-also-have-limited-build-capability" title="Permalink to this headline">¶</a></h3>
 <p>In some game styles, players have the ability to create objects and even script them. While giving regular users the ability to create objects with in-built commands is easy and safe, actual code-creation (aka <em>softcode</em> ) is not something Evennia supports natively.</p>
 <p>Regular, untrusted users should never be allowed to execute raw Python
 code (such as what you can do with the <code class="docutils literal notranslate"><span class="pre">py</span></code> command). You can
@@ -260,9 +260,9 @@ code (such as what you can do with the <code class="docutils literal notranslate
 </section>
 </section>
 <section id="systems">
-<h2>Systems<a class="headerlink" href="#systems" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.4. </span>Systems<a class="headerlink" href="#systems" title="Permalink to this headline">¶</a></h2>
 <section id="do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own">
-<h3>Do you base your game off an existing RPG system or make up your own?<a class="headerlink" href="#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.4.1. </span>Do you base your game off an existing RPG system or make up your own?<a class="headerlink" href="#do-you-base-your-game-off-an-existing-rpg-system-or-make-up-your-own" title="Permalink to this headline">¶</a></h3>
 <p>There is a plethora of options out there, and what you choose depends on the game you want. It can be tempting to grab a short free-form ruleset, but remember that the computer does not have any intuitiion or common sense to interpret the rules like a human GM could. Conversely, if you pick a very ‘crunchy’ game system, with detailed simulation of the real world, remember that you’ll need to actually <em>code</em> all those exceptions and tables yourself.</p>
 <p>For speediest development, what you want is a game with a <em>consolidated</em> resolution mechanic - one you can code once and then use in a lot of situations. But you still want enough rules to help telling the computer how various situations should be resolved (combat is the most common system that needs such structure).</p>
 <p><strong>EvAdventure Answer</strong></p>
@@ -270,7 +270,7 @@ code (such as what you can do with the <code class="docutils literal notranslate
 <p><em>Knave</em> is available under a Creative Commons Attributions 4.0 License, meaning it can be used for derivative work (even commercially). The above link allows you to purchase the PDF and supporting the author. Alternatively you can find unofficial fan releases of the rules <a class="reference external" href="https://dungeonsandpossums.com/2020/04/some-great-knave-rpg-resources/">on this page</a>.</p>
 </section>
 <section id="what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails">
-<h3>What are the game mechanics? How do you decide if an action succeeds or fails?<a class="headerlink" href="#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.4.2. </span>What are the game mechanics? How do you decide if an action succeeds or fails?<a class="headerlink" href="#what-are-the-game-mechanics-how-do-you-decide-if-an-action-succeeds-or-fails" title="Permalink to this headline">¶</a></h3>
 <p>This follows from the RPG system decided upon in the previous question.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p><em>Knave</em> gives every character a set of six traditional stats: Strength, Intelligence, Dexterity, Constitution, Intelligence, Wisdom and Charisma. Each has a value from +1 to +10. To find its “Defense” value, you add 10.</p>
@@ -290,7 +290,7 @@ You can have <em>advantage</em> or <em>disadvantage</em> on a roll. This means r
 </div></blockquote>
 </section>
 <section id="does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons">
-<h3>Does the flow of time matter in your game - does night and day change? What about seasons?<a class="headerlink" href="#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.4.3. </span>Does the flow of time matter in your game - does night and day change? What about seasons?<a class="headerlink" href="#does-the-flow-of-time-matter-in-your-game-does-night-and-day-change-what-about-seasons" title="Permalink to this headline">¶</a></h3>
 <p>Most commonly, game-time runs faster than real-world time. There are
 a few advantages with this:</p>
 <ul class="simple">
@@ -303,27 +303,27 @@ a few advantages with this:</p>
 <p>The passage of time will have no impact on our particular game example, so we’ll go with Evennia’s default, which is that the game-time runs two times faster than real time.</p>
 </section>
 <section id="do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay">
-<h3>Do you want changing, global weather or should weather just be set manually in roleplay?<a class="headerlink" href="#do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.4.4. </span>Do you want changing, global weather or should weather just be set manually in roleplay?<a class="headerlink" href="#do-you-want-changing-global-weather-or-should-weather-just-be-set-manually-in-roleplay" title="Permalink to this headline">¶</a></h3>
 <p>A weather system is a good example of a game-global system that affects a subset of game entities (outdoor rooms).</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We’ll not change the weather, but will add some random messages to echo through
 the game world at random intervals just to show the principle.</p>
 </section>
 <section id="do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all">
-<h3>Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?<a class="headerlink" href="#do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.4.5. </span>Do you want a coded world-economy or just a simple barter system? Or no formal economy at all?<a class="headerlink" href="#do-you-want-a-coded-world-economy-or-just-a-simple-barter-system-or-no-formal-economy-at-all" title="Permalink to this headline">¶</a></h3>
 <p>This is a big question and depends on how deep and interconnected the virtual transactions are that are happening in the game. Shop prices could rice and drop due to supply and demand, supply chains could involve crafting and production. One also could consider adding money sinks and manipulate the in-game market to combat inflation.</p>
 <p>The <a class="reference internal" href="../../../Contribs/Contrib-Barter.html"><span class="doc std std-doc">Barter</span></a> contrib provides a full interface for trading with another player in a safe way.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We will not deal with any of this complexity. We will allow for players to buy from npc sellers and players will be able to trade using the normal <code class="docutils literal notranslate"><span class="pre">give</span></code> command.</p>
 </section>
 <section id="do-you-have-concepts-like-reputation-and-influence">
-<h3>Do you have concepts like reputation and influence?<a class="headerlink" href="#do-you-have-concepts-like-reputation-and-influence" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.4.6. </span>Do you have concepts like reputation and influence?<a class="headerlink" href="#do-you-have-concepts-like-reputation-and-influence" title="Permalink to this headline">¶</a></h3>
 <p>These are useful things for a more social-interaction heavy game.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We will not include them for this tutorial. Adding the Barter contrib is simple though.</p>
 </section>
 <section id="will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance">
-<h3>Will your characters be known by their name or only by their physical appearance?<a class="headerlink" href="#will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.4.7. </span>Will your characters be known by their name or only by their physical appearance?<a class="headerlink" href="#will-your-characters-be-known-by-their-name-or-only-by-their-physical-appearance" title="Permalink to this headline">¶</a></h3>
 <p>This is a common thing in RP-heavy games. Others will only see you as “The tall woman” until you introduce yourself and they ‘recognize’ you with a name. Linked to this is the concept of more complex emoting and posing.</p>
 <p>Implementing such a system is not trivial, but the <a class="reference internal" href="../../../Contribs/Contrib-RPSystem.html"><span class="doc std std-doc">RPsystem</span></a> Evennia contrib offers a ready system with everything needed for free emoting, recognizing people by their appearance and more.</p>
 <p><strong>EvAdventure Answer</strong></p>
@@ -331,69 +331,69 @@ the game world at random intervals just to show the principle.</p>
 </section>
 </section>
 <section id="rooms">
-<h2>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.5. </span>Rooms<a class="headerlink" href="#rooms" title="Permalink to this headline">¶</a></h2>
 <section id="is-a-simple-room-description-enough-or-should-the-description-be-able-to-change">
-<h3>Is a simple room description enough or should the description be able to change?<a class="headerlink" href="#is-a-simple-room-description-enough-or-should-the-description-be-able-to-change" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.5.1. </span>Is a simple room description enough or should the description be able to change?<a class="headerlink" href="#is-a-simple-room-description-enough-or-should-the-description-be-able-to-change" title="Permalink to this headline">¶</a></h3>
 <p>Changing room descriptions for day and night, winder and summer is actually quite easy to do, but looks very impressive. We happen to know there is also a contrib that helps with this, so we’ll show how to include that.</p>
 <p>There is an <a class="reference internal" href="../../../Contribs/Contrib-Extended-Room.html"><span class="doc std std-doc">Extended Room</span></a> contrib that adds a Room type that is aware of the time-of-day as well as seasonal variations.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We will stick to a normal room in this tutorial and let the world be in a perpetual daylight. Making Rooms into ExtendedRooms is not hard though.</p>
 </section>
 <section id="should-the-room-have-different-statuses">
-<h3>Should the room have different statuses?<a class="headerlink" href="#should-the-room-have-different-statuses" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.5.2. </span>Should the room have different statuses?<a class="headerlink" href="#should-the-room-have-different-statuses" title="Permalink to this headline">¶</a></h3>
 <p>One could picture weather making outdoor rooms wet, cold or burnt. In rain, bow strings could get wet and fireballs fizz out. In a hot room, characters could require drinking more water, or even take damage if not finding shelter.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>For the above-ground we need to be able to disable combat all rooms except for the PvP location. We also need to consider how to auto-generate the rooms under ground. So we probably will need some statuses to control that.</p>
 <p>Since each room under ground should present some sort of challenge, we may need a few different room types different from the above-ground Rooms.</p>
 </section>
 <section id="can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room">
-<h3>Can objects be hidden in the room? Can a person hide in the room?<a class="headerlink" href="#can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.5.3. </span>Can objects be hidden in the room? Can a person hide in the room?<a class="headerlink" href="#can-objects-be-hidden-in-the-room-can-a-person-hide-in-the-room" title="Permalink to this headline">¶</a></h3>
 <p>This ties into if you have hide/stealth mechanics. Maybe you could evesdrop or attack out of hiding.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We will not model hiding and stealth. This will be a game of honorable face-to-face conflict.</p>
 </section>
 </section>
 <section id="objects">
-<h2>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.6. </span>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h2>
 <section id="how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props">
-<h3>How numerous are your objects? Do you want large loot-lists or are objects just role playing props?<a class="headerlink" href="#how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.1. </span>How numerous are your objects? Do you want large loot-lists or are objects just role playing props?<a class="headerlink" href="#how-numerous-are-your-objects-do-you-want-large-loot-lists-or-are-objects-just-role-playing-props" title="Permalink to this headline">¶</a></h3>
 <p>This also depends on the type of game. In a pure freeform RPG, most objects may be ‘imaginary’ and just appearing in fiction. If the game is more coded, you want objects with properties that the computer can measure, track and calculate. In many roleplaying-heavy games, you find a mixture of the two, with players imagining items for roleplaying scenes, but only using ‘real’ objects to resolve conflicts.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We will want objects with properties, like weapons and potions and such. Monsters should drop loot even though our list of objects will not be huge in this example game.</p>
 </section>
 <section id="is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value">
-<h3>Is each coin a separate object or do you just store a bank account value?<a class="headerlink" href="#is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.2. </span>Is each coin a separate object or do you just store a bank account value?<a class="headerlink" href="#is-each-coin-a-separate-object-or-do-you-just-store-a-bank-account-value" title="Permalink to this headline">¶</a></h3>
 <p>The advantage of having multiple items is that it can be more immersive. The drawback is that it’s also very fiddly to deal with individual coins, especially if you have to deal with different currencies.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p><em>Knave</em> uses the “copper” as the base coin and so will we. Knave considers the weight of coin and one inventory “slot” can hold 100 coins. So we’ll implement a “coin item” to represent many coins.</p>
 </section>
 <section id="do-multiple-similar-objects-form-stack-and-how-are-those-stacks-handled-in-that-case">
-<h3>Do multiple similar objects form stack and how are those stacks handled in that case?<a class="headerlink" href="#do-multiple-similar-objects-form-stack-and-how-are-those-stacks-handled-in-that-case" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.3. </span>Do multiple similar objects form stack and how are those stacks handled in that case?<a class="headerlink" href="#do-multiple-similar-objects-form-stack-and-how-are-those-stacks-handled-in-that-case" title="Permalink to this headline">¶</a></h3>
 <p>If you drop two identical apples on the ground, Evennia will default to show this in the room as “two apples”, but this is just a visual effect - there are still two apple-objects in the room. One could picture instead merging the two into a single object “X nr of apples” when you drop the apples.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We will keep Evennia’s default.</p>
 </section>
 <section id="does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them">
-<h3>Does an object have weight or volume (so you cannot carry an infinite amount of them)?<a class="headerlink" href="#does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.4. </span>Does an object have weight or volume (so you cannot carry an infinite amount of them)?<a class="headerlink" href="#does-an-object-have-weight-or-volume-so-you-cannot-carry-an-infinite-amount-of-them" title="Permalink to this headline">¶</a></h3>
 <p>Limiting carrying weight is one way to stop players from hoarding. It also makes it more important for players to pick only the equipment they need. Carrying limits can easily come across as annoying to players though, so one needs to be careful with it.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p><em>Knave</em> limits your inventory to <code class="docutils literal notranslate"><span class="pre">Constitution</span> <span class="pre">+</span> <span class="pre">10</span></code> “slots”, where most items take up one slot and some large things, like armor, uses two. Small items (like rings) can fit 2-10 per slot and you can fit 100 coins in a slot.  This is an important game mechanic to limit players from hoarding. Especially since you need coin to level up.</p>
 </section>
 <section id="can-objects-be-broken-can-they-be-repaired">
-<h3>Can objects be broken? Can they be repaired?<a class="headerlink" href="#can-objects-be-broken-can-they-be-repaired" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.5. </span>Can objects be broken? Can they be repaired?<a class="headerlink" href="#can-objects-be-broken-can-they-be-repaired" title="Permalink to this headline">¶</a></h3>
 <p>Item breakage is very useful for a game economy; breaking weapons adds tactical considerations (if it’s not too common, then it becomes annoying) and repairing things gives work for crafting players.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>In <em>Knave</em>, items will break if you make a critical failure on using them (rolls a native 1 on d20). This means they lose a level of <code class="docutils literal notranslate"><span class="pre">quality</span></code> and once at 0, it’s unusable. We will not allow players to repair, but we could allow merchants to repair items for a fee.</p>
 </section>
 <section id="can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing">
-<h3>Can you fight with a chair or a flower or must you use a special ‘weapon’ kind of thing?<a class="headerlink" href="#can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.6. </span>Can you fight with a chair or a flower or must you use a special ‘weapon’ kind of thing?<a class="headerlink" href="#can-you-fight-with-a-chair-or-a-flower-or-must-you-use-a-special-weapon-kind-of-thing" title="Permalink to this headline">¶</a></h3>
 <p>Traditionally, only ‘weapons’ could be used to fight with. In the past this was a useful
 simplification, but with Python classes and inheritance, it’s not actually more work to just let all items in game work as a weapon in a pinch.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>Since <em>Knave</em> deals with weapon lists and positions where items can be wielded, we will have a separate “Weapon” class for everything you can use for fighting. So, you won’t be able to fight with a chair (unless we make it a weapon-inherited chair).</p>
 </section>
 <section id="will-characters-be-able-to-craft-new-objects">
-<h3>Will characters be able to craft new objects?<a class="headerlink" href="#will-characters-be-able-to-craft-new-objects" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.7. </span>Will characters be able to craft new objects?<a class="headerlink" href="#will-characters-be-able-to-craft-new-objects" title="Permalink to this headline">¶</a></h3>
 <p>Crafting is a common feature in multiplayer games. In code it usually means using a skill-check to combine base ingredients from a fixed recipe in order to create a new item. The classic example is to combine <em>leather straps</em>, a <em>hilt</em>, a <em>pommel</em> and a <em>blade</em> to make a new <em>sword</em>.</p>
 <p>A full-fledged crafting system could require multiple levels of crafting, including having to mine for ore or cut down trees for wood.</p>
 <p>Evennia’s <a class="reference internal" href="../../../Contribs/Contrib-Crafting.html"><span class="doc std std-doc">Crafting</span></a> contrib adds a full crafting system to any game. It’s based on <a class="reference internal" href="../../../Components/Tags.html"><span class="doc std std-doc">Tags</span></a>, meaning that pretty much any object can be made usable for crafting, even used in an unexpected way.</p>
@@ -401,29 +401,29 @@ simplification, but with Python classes and inheritance, it’s not actually mor
 <p>In our case we will not add any crafting in order to limit the scope of our game. Maybe NPCs will be able to repair items - for a cost?</p>
 </section>
 <section id="should-mobs-npcs-have-some-sort-of-ai">
-<h3>Should mobs/NPCs have some sort of AI?<a class="headerlink" href="#should-mobs-npcs-have-some-sort-of-ai" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.8. </span>Should mobs/NPCs have some sort of AI?<a class="headerlink" href="#should-mobs-npcs-have-some-sort-of-ai" title="Permalink to this headline">¶</a></h3>
 <p>As a rule, you should not hope to fool anyone into thinking your AI is actually intelligent. The best you will be able to do is to give interesting results and unless you have a side-gig as an AI researcher, users will likely not notice any practical difference between a simple state-machine and you spending a lot of time learning
 how to train a neural net.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>For this tutorial, we will show how to add a simple state-machine AI for monsters. NPCs will only be shop-keepers and quest-gives so they won’t need any real AI to speak of.</p>
 </section>
 <section id="are-npcs-and-mobs-different-entities-how-do-they-differ">
-<h3>Are NPCs and mobs different entities? How do they differ?<a class="headerlink" href="#are-npcs-and-mobs-different-entities-how-do-they-differ" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.9. </span>Are NPCs and mobs different entities? How do they differ?<a class="headerlink" href="#are-npcs-and-mobs-different-entities-how-do-they-differ" title="Permalink to this headline">¶</a></h3>
 <p>“Mobs” or “mobiles” are things that move around. This is traditionally monsters you can fight with, but could also be city guards or the baker going to chat with the neighbor. Back in the day, they were often fundamentally different these days it’s often easier to just make NPCs and mobs essentially the same thing.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>In EvAdventure, Monsters and NPCs do very different things, so they will be different classes, sharing some code where possible.</p>
 </section>
 <section id="should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status">
-<h3>_Should there be NPCs giving quests? If so, how do you track Quest status?<a class="headerlink" href="#should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.6.10. </span>_Should there be NPCs giving quests? If so, how do you track Quest status?<a class="headerlink" href="#should-there-be-npcs-giving-quests-if-so-how-do-you-track-quest-status" title="Permalink to this headline">¶</a></h3>
 <p>Quests are a staple of many classic RPGs.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>We will design a simple quest system with some simple conditions for success, like carrying the right item or items back to the quest giver.</p>
 </section>
 </section>
 <section id="characters">
-<h2>Characters<a class="headerlink" href="#characters" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.7. </span>Characters<a class="headerlink" href="#characters" title="Permalink to this headline">¶</a></h2>
 <section id="can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play">
-<h3>Can players have more than one Character active at a time or are they allowed to multi-play?<a class="headerlink" href="#can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.7.1. </span>Can players have more than one Character active at a time or are they allowed to multi-play?<a class="headerlink" href="#can-players-have-more-than-one-character-active-at-a-time-or-are-they-allowed-to-multi-play" title="Permalink to this headline">¶</a></h3>
 <p>Since Evennia differentiates between <code class="docutils literal notranslate"><span class="pre">Sessions</span></code> (the client-connection to the game), <code class="docutils literal notranslate"><span class="pre">Accounts</span></code> and <code class="docutils literal notranslate"><span class="pre">Character</span></code>s, it natively supports multi-play. This is controlled by the <code class="docutils literal notranslate"><span class="pre">MULTISESSION_MODE</span></code> setting, which has a value from <code class="docutils literal notranslate"><span class="pre">0</span></code> (default) to <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>- One Character per Account and one Session per Account. This means that if you login to the same
@@ -443,7 +443,7 @@ can control each Character from multiple clients, seeing the same output from ea
 <p>Due to the nature of <em>Knave</em>, characters are squishy and probably short-lived. So it makes little sense to keep a stable of them. We’ll use use mode 0 or 1.</p>
 </section>
 <section id="how-does-the-character-generation-work">
-<h3>How does the character-generation work?<a class="headerlink" href="#how-does-the-character-generation-work" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.7.2. </span>How does the character-generation work?<a class="headerlink" href="#how-does-the-character-generation-work" title="Permalink to this headline">¶</a></h3>
 <p>There are a few common ways to do character generation:</p>
 <ul class="simple">
 <li><p>Rooms. This is the traditional way. Each room’s description tells you what command to use to modify   your character. When you are done you move to the next room. Only use this if you have another reason for   using a room, like having a training dummy to test skills on, for example.</p></li>
@@ -456,14 +456,14 @@ using custom commands they will likely never use again after this.</p></li>
 <p>Knave randomizes almost aspects of the Character generation. We’ll use a menu to let the player add their name and sex as well as do the minor re-assignment of stats allowed by the rules.</p>
 </section>
 <section id="how-do-you-implement-different-classes-or-races">
-<h3>How do you implement different “classes” or “races”?<a class="headerlink" href="#how-do-you-implement-different-classes-or-races" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.7.3. </span>How do you implement different “classes” or “races”?<a class="headerlink" href="#how-do-you-implement-different-classes-or-races" title="Permalink to this headline">¶</a></h3>
 <p>The way classes and races work in most RPGs is that they act as static ‘templates’ that inform which bonuses and special abilities you have. Much of this only comes into play during character generation or when leveling up.</p>
 <p>Often all we need to store on the Character is <em>which</em> class and <em>which</em> race they have; the actual logic can sit in Python code and just be looked up when we need it.</p>
 <p><strong>EvAdventure Answer</strong></p>
 <p>There are no races and no classes in <em>Knave</em>. Every character is a human.</p>
 </section>
 <section id="if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected">
-<h3>If a Character can hide in a room, what skill will decide if they are detected?<a class="headerlink" href="#if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.7.4. </span>If a Character can hide in a room, what skill will decide if they are detected?<a class="headerlink" href="#if-a-character-can-hide-in-a-room-what-skill-will-decide-if-they-are-detected" title="Permalink to this headline">¶</a></h3>
 <p>Hiding means a few things.</p>
 <ul class="simple">
 <li><p>The Character should not appear in the room’s description / character list</p></li>
@@ -477,7 +477,7 @@ find the person (probably based on skill checks).</p></li>
 <p>We will not be including a hide-mechanic in EvAdventure.</p>
 </section>
 <section id="what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying">
-<h3>What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?<a class="headerlink" href="#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.7.5. </span>What does the skill tree look like? Can a Character gain experience to improve? By killing enemies? Solving quests? By roleplaying?<a class="headerlink" href="#what-does-the-skill-tree-look-like-can-a-character-gain-experience-to-improve-by-killing-enemies-solving-quests-by-roleplaying" title="Permalink to this headline">¶</a></h3>
 <p>Gaining experience points (XP) and improving one’s character is a staple of roleplaying games. There are many
 ways to implement this:</p>
 <ul class="simple">
@@ -500,7 +500,7 @@ you gain XP only for running when you run, XP for your axe skill when you fight 
 <p>We will use an alternative rule in <em>Knave</em>, where Characters gain XP by spending coins they carry back from their adventures. The above-ground merchants will allow you to spend your coins and exchange them for XP 1:1. Each level costs 1000 coins. Every level you have <code class="docutils literal notranslate"><span class="pre">1d8</span>&#160; <span class="pre">*</span> <span class="pre">new</span> <span class="pre">level</span></code> (minimum what you had before + 1) HP, and can raise 3 different ability scores by 1 (max +10). There are no skills in <em>Knave</em>, but the principle of increasing them would be the same.</p>
 </section>
 <section id="may-player-characters-attack-each-other-pvp">
-<h3>May player-characters attack each other (PvP)?<a class="headerlink" href="#may-player-characters-attack-each-other-pvp" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.7.6. </span>May player-characters attack each other (PvP)?<a class="headerlink" href="#may-player-characters-attack-each-other-pvp" title="Permalink to this headline">¶</a></h3>
 <p>Deciding this affects the style of your entire game. PvP makes for exciting gameplay but it opens a whole new can of worms when it comes to “fairness”. Players will usually accept dying to an overpowered NPC dragon. They will not be as accepting if they perceive another player as being overpowered. PvP means that you
 have to be very careful to balance the game - all characters does not have to be exactly equal but they should all be viable to play a fun game with.</p>
 <p>PvP does not only mean combat though. Players can compete in all sorts of ways, including gaining influence in a political game or gaining market share when selling their crafted merchandise.</p>
@@ -508,7 +508,7 @@ have to be very careful to balance the game - all characters does not have to be
 <p>We will allow PvP only in one place - a special Dueling location where players can play-fight each other for training and prestige, but not actually get killed. Otherwise no PvP will be allowed. Note that without a full Barter system in place (just regular <code class="docutils literal notranslate"><span class="pre">give</span></code>, it makes it theoretically easier for players to scam one another.</p>
 </section>
 <section id="what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison">
-<h3>What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?<a class="headerlink" href="#what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.7.7. </span>What are the penalties of defeat? Permanent death? Quick respawn? Time in prison?<a class="headerlink" href="#what-are-the-penalties-of-defeat-permanent-death-quick-respawn-time-in-prison" title="Permalink to this headline">¶</a></h3>
 <p>This is another big decision that strongly affects the mood and style of your game.</p>
 <p>Perma-death means that once your character dies, it’s gone and you have to make a new one.</p>
 <ul class="simple">
@@ -546,7 +546,7 @@ randomized).</p>
 </section>
 </section>
 <section id="conclusions">
-<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.8. </span>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>Going through the questions has helped us get a little bit more of a feel for the game we want to do. There are many, many other things we could ask ourselves, but if we can cover these points we will be a good way towards a complete,
 playable game!</p>
 <p>In the last of these planning lessons we’ll sketch out how these ideas will map to Evennia.</p>
@@ -569,16 +569,16 @@ playable game!</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../Part3/Beginner-Tutorial-Part3-Intro.html" title="Part 3: How we get there"
+          <a href="../Part3/Beginner-Tutorial-Part3-Intro.html" title="Part 3: How we get there (example game)"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Game-Planning.html" title="On Planning a Game"
+          <a href="Beginner-Tutorial-Game-Planning.html" title="2. On Planning a Game"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part2-Intro.html" >Part 2: What we want</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Planning our tutorial game</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>Planning our tutorial game</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

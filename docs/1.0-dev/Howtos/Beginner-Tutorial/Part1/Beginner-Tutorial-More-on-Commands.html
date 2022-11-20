@@ -122,7 +122,7 @@
 also learn how to add, modify and extend Evennia’s default commands.</p>
 <section id="more-advanced-parsing">
 <h2><span class="section-number">9.1. </span>More advanced parsing<a class="headerlink" href="#more-advanced-parsing" title="Permalink to this headline">¶</a></h2>
-<p>In the last lesson we made a <code class="docutils literal notranslate"><span class="pre">hit</span></code> Command and hit a dragon with it. You should have the code
+<p>In the <a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">last lesson</span></a> we made a <code class="docutils literal notranslate"><span class="pre">hit</span></code> Command and struck a dragon with it. You should have the code
 from that still around.</p>
 <p>Let’s expand our simple <code class="docutils literal notranslate"><span class="pre">hit</span></code> command to accept a little more complex input:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>hit &lt;target&gt; [[with] &lt;weapon&gt;]
@@ -135,9 +135,50 @@ hit target with weapon
 </pre></div>
 </div>
 <p>If you don’t specify a weapon you’ll use your fists. It’s also nice to be able to skip “with” if
-you are in a hurry. Time to modify <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> again. Let us break out the parsing
-a little, in a new method <code class="docutils literal notranslate"><span class="pre">parse</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#...</span>
+you are in a hurry. Time to modify <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> again. Let us break out the parsing a little, in a new method <code class="docutils literal notranslate"><span class="pre">parse</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1">#...</span>
 
 <span class="k">class</span> <span class="nc">CmdHit</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -150,12 +191,12 @@ a little, in a new method <code class="docutils literal notranslate"><span class
     <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;hit&quot;</span>
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; with &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
-            <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">weapon</span><span class="p">:</span>
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span class="hll">        <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; with &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="hll">        <span class="k">if</span> <span class="ow">not</span> <span class="n">weapon</span><span class="p">:</span>
+</span>            <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span>        <span class="k">if</span> <span class="n">weapon</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span> <span class="o">=</span> <span class="n">weapon</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -165,28 +206,24 @@ a little, in a new method <code class="docutils literal notranslate"><span class
             <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Who do you want to hit?&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="c1"># get the target for the hit</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+<span class="hll">        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+</span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># get and handle the weapon</span>
         <span class="n">weapon</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">:</span>
-            <span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">weapon</span><span class="p">:</span>
+<span class="hll">            <span class="n">weapon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weapon</span><span class="p">)</span>
+</span>        <span class="k">if</span> <span class="n">weapon</span><span class="p">:</span>
             <span class="n">weaponstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">weapon</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">weaponstr</span> <span class="o">=</span> <span class="s2">&quot;bare fists&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You hit </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+</span>        <span class="n">target</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You got hit by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">weaponstr</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
 <span class="c1"># ...</span>
-
-</pre></div>
+</pre></div></td></tr></table></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">parse</span></code> method is called before <code class="docutils literal notranslate"><span class="pre">func</span></code> and has access to all the same on-command variables as in <code class="docutils literal notranslate"><span class="pre">func</span></code>. Using
-<code class="docutils literal notranslate"><span class="pre">parse</span></code> not only makes things a little easier to read, it also means you can easily let other Commands <em>inherit</em>
-your parsing - if you wanted some other Command to also understand input on the form <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span> <span class="pre">with</span> <span class="pre">&lt;arg&gt;</span></code> you’d inherit
-from this class and just implement the <code class="docutils literal notranslate"><span class="pre">func</span></code> needed for that command without implementing <code class="docutils literal notranslate"><span class="pre">parse</span></code> anew.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">parse</span></code> method is a special one Evennia knows to call <em>before</em> <code class="docutils literal notranslate"><span class="pre">func</span></code>. At this time it has access to all the same on-command variables as <code class="docutils literal notranslate"><span class="pre">func</span></code> does. Using <code class="docutils literal notranslate"><span class="pre">parse</span></code> not only makes things a little easier to read, it also means you can easily let other Commands <em>inherit</em> your parsing - if you wanted some other Command to also understand input on the form <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span> <span class="pre">with</span> <span class="pre">&lt;arg&gt;</span></code> you’d inherit from this class and just implement the <code class="docutils literal notranslate"><span class="pre">func</span></code> needed for that command without implementing <code class="docutils literal notranslate"><span class="pre">parse</span></code> anew.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Tuples and Lists</p>
 <ul class="simple">
@@ -233,25 +270,27 @@ for these local variables to made available in <code class="docutils literal not
 before running <code class="docutils literal notranslate"><span class="pre">strip()</span></code> on it. This is because we know that if it’s falsy, it’s an empty list <code class="docutils literal notranslate"><span class="pre">[]</span></code> and lists
 don’t have the <code class="docutils literal notranslate"><span class="pre">.strip()</span></code> method on them (so if we tried to use it, we’d get an error).</p></li>
 </ul>
-<p>Now onto the <code class="docutils literal notranslate"><span class="pre">func</span></code> method. The main difference is we now have <code class="docutils literal notranslate"><span class="pre">self.target</span></code> and <code class="docutils literal notranslate"><span class="pre">self.weapon</span></code> available for
-convenient use.</p>
-<ul class="simple">
+<p>Now onto the <code class="docutils literal notranslate"><span class="pre">func</span></code> method. The main difference is we now have <code class="docutils literal notranslate"><span class="pre">self.target</span></code> and <code class="docutils literal notranslate"><span class="pre">self.weapon</span></code> available for convenient use.</p>
+<aside class="sidebar">
+<p>Here we create the messages to send to each side of the fight explicitly. Later we’ll find out how to use Evennia’s <a class="reference internal" href="../../../Components/FuncParser.html"><span class="doc std std-doc">inline functions</span></a> to send a single string that looks different depending on who sees it.</p>
+</aside>
+<ul>
 <li><p><strong>Lines 29 and 35</strong> - We make use of the previously parsed search terms for the target and weapon to find the
 respective resource.</p></li>
 <li><p><strong>Lines 34-39</strong> - Since the weapon is optional, we need to supply a default (use our fists!) if it’s not set. We
 use this to create a <code class="docutils literal notranslate"><span class="pre">weaponstr</span></code> that is different depending on if we have a weapon or not.</p></li>
-<li><p><strong>Lines 41-42</strong> - We merge the <code class="docutils literal notranslate"><span class="pre">weaponstr</span></code> with our attack text.</p></li>
+<li><p><strong>Lines 41-42</strong> - We merge the <code class="docutils literal notranslate"><span class="pre">weaponstr</span></code> with our attack texts and send it to attacker and target respectively.
+Let’s try it out!</p>
+<blockquote>
+<div><p>reload
+hit smaug with sword
+Could not find ‘sword’.
+You hit smaug with bare fists!</p>
+</div></blockquote>
+</li>
 </ul>
-<p>Let’s try it out!</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; reload
-&gt; hit smaug with sword
-Could not find &#39;sword&#39;.
-You hit smaug with bare fists!
-</pre></div>
-</div>
-<p>Oops, our <code class="docutils literal notranslate"><span class="pre">self.caller.search(self.weapon)</span></code> is telling us that it found no sword. Since we are not <code class="docutils literal notranslate"><span class="pre">return</span></code>ing
-in this situation (like we do if failing to find <code class="docutils literal notranslate"><span class="pre">target</span></code>) we still continue fighting with our bare hands.
-This won’t do. Let’s make ourselves a sword.</p>
+<p>Oops, our <code class="docutils literal notranslate"><span class="pre">self.caller.search(self.weapon)</span></code> is telling us that it found no sword. This is reasonable (we don’t have a sword). Since we are not <code class="docutils literal notranslate"><span class="pre">return</span></code>ing when failing to find a weapon in the way we do if we find no <code class="docutils literal notranslate"><span class="pre">target</span></code>,  we still continue fighting with our bare hands.</p>
+<p>This won’t do. Let’s make ourselves a sword:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; create sword
 </pre></div>
 </div>
@@ -262,13 +301,16 @@ change (no code changed, only stuff in the database).</p>
 You hit smaug with sword!
 </pre></div>
 </div>
+<p>Poor Smaug.</p>
 </section>
 <section id="adding-a-command-to-an-object">
 <h2><span class="section-number">9.2. </span>Adding a Command to an object<a class="headerlink" href="#adding-a-command-to-an-object" title="Permalink to this headline">¶</a></h2>
-<p>The commands of a cmdset attached to an object with <code class="docutils literal notranslate"><span class="pre">obj.cmdset.add()</span></code> will by default be made available to that object
-but <em>also to those in the same location as that object</em>. If you did the <a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html"><span class="doc std std-doc">Building introduction</span></a>
-you’ve seen an example of this with the “Red Button” object. The <a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html"><span class="doc std std-doc">Tutorial world</span></a>
-also has many examples of objects with commands on them.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Command Sets on Characters </p>
+<p>In case you wonder, the ‘Character CmdSet’ on <code class="docutils literal notranslate"><span class="pre">Characters</span></code> is configured to be available to <em>only</em> that Character. If not, you’d get command multi-matches for things like <code class="docutils literal notranslate"><span class="pre">look</span></code> whenever you were in the same room with another character using the same command set. See <a class="reference internal" href="../../../Components/Command-Sets.html"><span class="doc std std-doc">Command Sets</span></a> docs for more info.</p>
+</aside>
+<p>As we learned in the lesson about <a class="reference internal" href="Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">Adding commands</span></a>, Commands are are grouped in Command Sets. Such Command Sets are attached to an object with <code class="docutils literal notranslate"><span class="pre">obj.cmdset.add()</span></code> and will then be available for that object to use.</p>
+<p>What we didn’t mention  before is that by default those commands are <em>also available to those in the same location as that object</em>. If you did the <a class="reference internal" href="Beginner-Tutorial-Building-Quickstart.html"><span class="doc std std-doc">Building quickstart lesson</span></a> you’ve seen an example of this with the “Red Button” object. The <a class="reference internal" href="Beginner-Tutorial-Tutorial-World.html"><span class="doc std std-doc">Tutorial world</span></a> also has many examples of objects with commands on them.</p>
 <p>To show how this could work, let’s put our ‘hit’ Command on our simple <code class="docutils literal notranslate"><span class="pre">sword</span></code> object from the previous section.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; self.search(&quot;sword&quot;).cmdset.add(&quot;commands.mycommands.MyCmdSet&quot;, persistent=True)
 </pre></div>
@@ -284,12 +326,9 @@ hit-2
 </div>
 <aside class="sidebar">
 <p class="sidebar-title">Multi-matches</p>
-<p>Some game engines will just pick the first hit when finding more than one. Evennia will always give you a choice. The reason for this is that Evennia cannot know if <code class="docutils literal notranslate"><span class="pre">hit</span></code> and <code class="docutils literal notranslate"><span class="pre">hit</span></code> are different or the same - maybe it behaves differently depending on the object it sits on? Besides, imagine if you had a red and a blue button both with the command <code class="docutils literal notranslate"><span class="pre">push</span></code> on it. Now you just write <code class="docutils literal notranslate"><span class="pre">push</span></code>. Wouldn’t you prefer to be asked <code class="docutils literal notranslate"><span class="pre">which</span></code> button you really wanted to push?</p>
+<p>Some game engines will just pick the first hit when finding more than one. Evennia will always give you a choice. The reason for this is that Evennia cannot know if <code class="docutils literal notranslate"><span class="pre">hit</span></code> and <code class="docutils literal notranslate"><span class="pre">hit</span></code> are different or the same - maybe it behaves differently depending on the object it sits on? Besides, imagine if you had a red and a blue button both with the command <code class="docutils literal notranslate"><span class="pre">push</span></code> on it. Now you just write <code class="docutils literal notranslate"><span class="pre">push</span></code>. Wouldn’t you prefer to be asked <em>which</em> button you really wanted to push?</p>
 </aside>
-<p>Woah, that didn’t go as planned. Evennia actually found <em>two</em> <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands to didn’t know which one to use
-(<em>we</em> know they are the same, but Evennia can’t be sure of that). As we can see, <code class="docutils literal notranslate"><span class="pre">hit-1</span></code> is the one found on
-the sword. The other one is from adding <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> to ourself earlier. It’s easy enough to tell Evennia which
-one you meant:</p>
+<p>Woah, that didn’t go as planned. Evennia actually found <em>two</em> <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands and didn’t know which one to use (<em>we</em> know they are the same, but Evennia can’t be sure of that). As we can see, <code class="docutils literal notranslate"><span class="pre">hit-1</span></code> is the one found on the sword. The other one is from adding <code class="docutils literal notranslate"><span class="pre">MyCmdSet</span></code> to ourself earlier. It’s easy enough to tell Evennia which one you meant:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; hit-1
 Who do you want to hit?
 &gt; hit-2
@@ -302,7 +341,7 @@ Who do you want to hit?
 Who do you want to hit?
 </pre></div>
 </div>
-<p>Now try this:</p>
+<p>Now try making a new location and then drop the sword in it.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; tunnel n = kitchen
 &gt; n
 &gt; drop sword
@@ -314,24 +353,19 @@ Command &#39;hit&#39; is not available. Maybe you meant ...
 Who do you want to hit?
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">hit</span></code> command is now only available if you hold or are in the same room as the sword.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">hit</span></code> command is only available if you hold <em>or</em> are in the same room as the sword.</p>
 <section id="you-need-to-hold-the-sword">
 <h3><span class="section-number">9.2.1. </span>You need to hold the sword!<a class="headerlink" href="#you-need-to-hold-the-sword" title="Permalink to this headline">¶</a></h3>
-<p>Let’s get a little ahead of ourselves and make it so you have to <em>hold</em> the sword for the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command to
-be available. This involves a <em>Lock</em>. We’ve cover locks in more detail later, just know that they are useful
-for limiting the kind of things you can do with an object, including limiting just when you can call commands on
-it.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Locks</p>
 <p>Evennia Locks are defined as a mini-language defined in <code class="docutils literal notranslate"><span class="pre">lockstrings</span></code>. The lockstring is on a form <code class="docutils literal notranslate"><span class="pre">&lt;situation&gt;:&lt;lockfuncs&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">situation</span></code> determines when this lock applies and the <code class="docutils literal notranslate"><span class="pre">lockfuncs</span></code> (there can be more than one) are run to determine if the lock-check passes or not depending on circumstance.</p>
 </aside>
+<p>Let’s get a little ahead of ourselves and make it so you have to <em>hold</em> the sword for the <code class="docutils literal notranslate"><span class="pre">hit</span></code> command to be available. This involves a <a class="reference internal" href="../../../Components/Locks.html"><span class="doc std std-doc">Lock</span></a>. We’ve cover locks in more detail later, just know that they are useful for limiting the kind of things you can do with an object, including limiting just when you can call commands on it.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; py self.search(&quot;sword&quot;).locks.add(&quot;call:holds()&quot;)
 </pre></div>
 </div>
-<p>We added a new lock to the sword. The <em>lockstring</em> <code class="docutils literal notranslate"><span class="pre">&quot;call:holds()&quot;</span></code> means that you can only <em>call</em> commands on
-this object if you are <em>holding</em> the object (that is, it’s in your inventory).</p>
-<p>For locks to work, you cannot be <em>superuser</em>, since the superuser passes all locks. You need to <code class="docutils literal notranslate"><span class="pre">quell</span></code> yourself
-first:</p>
+<p>We added a new lock to the sword. The <em>lockstring</em> <code class="docutils literal notranslate"><span class="pre">&quot;call:holds()&quot;</span></code> means that you can only <em>call</em> commands on this object if you are <em>holding</em> the object (that is, it’s in your inventory).</p>
+<p>For locks to work, you cannot be <em>superuser</em>, since the superuser passes all locks. You need to <code class="docutils literal notranslate"><span class="pre">quell</span></code> yourself first:</p>
 <aside class="sidebar">
 <p class="sidebar-title">quell/unquell</p>
 <p>Quelling allows you as a developer to take on the role of players with less priveleges. This is useful for testing and debugging, in particular since a superuser has a little <code class="docutils literal notranslate"><span class="pre">too</span></code> much power sometimes. Use <code class="docutils literal notranslate"><span class="pre">unquell</span></code> to get back to your normal self.</p>
@@ -347,8 +381,7 @@ Command &#39;hit&#39; is not available. ..
 &gt; Who do you want to hit?
 </pre></div>
 </div>
-<p>Finally, we get rid of ours sword so we have a clean slate with no more <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands floating around.
-We can do that in two ways:</p>
+<p>Finally, we get rid of ours sword so we have a clean slate with no more <code class="docutils literal notranslate"><span class="pre">hit</span></code> commands floating around. We can do that in two ways:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>delete sword
 </pre></div>
 </div>
@@ -360,17 +393,7 @@ We can do that in two ways:</p>
 </section>
 <section id="adding-the-command-to-a-default-cmdset">
 <h2><span class="section-number">9.3. </span>Adding the Command to a default Cmdset<a class="headerlink" href="#adding-the-command-to-a-default-cmdset" title="Permalink to this headline">¶</a></h2>
-<p>As we have seen we can use <code class="docutils literal notranslate"><span class="pre">obj.cmdset.add()</span></code> to add a new cmdset to objects, whether that object
-is ourself (<code class="docutils literal notranslate"><span class="pre">self</span></code>) or other objects like the <code class="docutils literal notranslate"><span class="pre">sword</span></code>.</p>
-<p>This is how all commands in Evennia work, including default commands like <code class="docutils literal notranslate"><span class="pre">look</span></code>, <code class="docutils literal notranslate"><span class="pre">dig</span></code>, <code class="docutils literal notranslate"><span class="pre">inventory</span></code> and so on.
-All these commands are in just loaded on the default objects that Evennia provides out of the box.</p>
-<ul class="simple">
-<li><p>Characters (that is ‘you’ in the gameworld) has the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>.</p></li>
-<li><p>Accounts (the thing that represents your out-of-character existence on the server) has the <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code></p></li>
-<li><p>Sessions (representing one single client connection) has the <code class="docutils literal notranslate"><span class="pre">SessionCmdSet</span></code></p></li>
-<li><p>Before you log in (at the connection screen) you’ll have access to the <code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet</span></code>.</p></li>
-</ul>
-<p>The thing must commonly modified is the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>.</p>
+<p>As we have seen we can use <code class="docutils literal notranslate"><span class="pre">obj.cmdset.add()</span></code> to add a new cmdset to objects, whether that object is ourself (<code class="docutils literal notranslate"><span class="pre">self</span></code>) or other objects like the <code class="docutils literal notranslate"><span class="pre">sword</span></code>. Doing this this way is a little cumbersome though. It would be better to add this to all characters.</p>
 <p>The default cmdset are defined in <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>. Open that file now:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">(module docstring)</span>
@@ -427,14 +450,15 @@ All these commands are in just loaded on the default objects that Evennia provid
 <p class="sidebar-title">super()</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">super()</span></code> function refers to the parent of the current class and is commonly used to call same-named methods on the parent.</p>
 </aside>
-<p><code class="docutils literal notranslate"><span class="pre">evennia.default_cmds</span></code> is a container that holds all of Evennia’s default commands and cmdsets. In this module
-we can see that this was imported and then a new child class was made for each cmdset. Each class looks familiar
-(except the <code class="docutils literal notranslate"><span class="pre">key</span></code>, that’s mainly used to easily identify the cmdset in listings). In each <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code> all
-we do is call <code class="docutils literal notranslate"><span class="pre">super().at_cmdset_creation</span></code> which means that we call `at_cmdset_creation() on the <em>parent</em> CmdSet.
+<p><code class="docutils literal notranslate"><span class="pre">evennia.default_cmds</span></code> is a container that holds all of Evennia’s default commands and cmdsets. In this module we can see that this was imported and then a new child class was made for each cmdset. Each class looks familiar (except the <code class="docutils literal notranslate"><span class="pre">key</span></code>, that’s mainly used to easily identify the cmdset in listings). In each <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code> all we do is call <code class="docutils literal notranslate"><span class="pre">super().at_cmdset_creation</span></code> which means that we call `at_cmdset_creation() on the <em>parent</em> CmdSet.
 This is what adds all the default commands to each CmdSet.</p>
-<p>To add even more Commands to a default cmdset, we can just add them below the <code class="docutils literal notranslate"><span class="pre">super()</span></code> line. Usefully, if we were to
-add a Command with the same <code class="docutils literal notranslate"><span class="pre">.key</span></code> as a default command, it would completely replace that original. So if you were
-to add a command with a key <code class="docutils literal notranslate"><span class="pre">look</span></code>, the original <code class="docutils literal notranslate"><span class="pre">look</span></code> command would be replaced by your own version.</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code> (or a child of it) is created, you’ll find that the equivalence of  <code class="docutils literal notranslate"><span class="pre">self.cmdset.add(&quot;default_cmdsets.CharacterCmdSet,</span> <span class="pre">persistent=True&quot;)</span></code> gets called. This means that all new Characters get this cmdset. After adding more commands to it, you just need to reload to have all characters see it.</p>
+<ul class="simple">
+<li><p>Characters (that is ‘you’ in the gameworld) has the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>.</p></li>
+<li><p>Accounts (the thing that represents your out-of-character existence on the server) has the <code class="docutils literal notranslate"><span class="pre">AccountCmdSet</span></code></p></li>
+<li><p>Sessions (representing one single client connection) has the <code class="docutils literal notranslate"><span class="pre">SessionCmdSet</span></code></p></li>
+<li><p>Before you log in (at the connection screen) your Session have access to the <code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet</span></code>.</p></li>
+</ul>
 <p>For now, let’s add our own <code class="docutils literal notranslate"><span class="pre">hit</span></code> and <code class="docutils literal notranslate"><span class="pre">echo</span></code> commands to the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 
@@ -460,8 +484,7 @@ to add a command with a key <code class="docutils literal notranslate"><span cla
 Who do you want to hit?
 </pre></div>
 </div>
-<p>Your new commands are now available for all player characters in the game. There is another way to add a bunch
-of commands at once, and that is to add a <em>CmdSet</em> to the other cmdset. All commands in that cmdset will then be added:</p>
+<p>Your new commands are now available for all player characters in the game. There is another way to add a bunch of commands at once, and that is to add your own <em>CmdSet</em> to the other cmdset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
 <span class="k">class</span> <span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
@@ -485,7 +508,7 @@ this is practical. A Command can be a part of any number of different CmdSets.</
 <code class="docutils literal notranslate"><span class="pre">mygame/commands/default_cmdsets.py</span></code>. But what if you want to remove a default command?</p>
 <p>We already know that we use <code class="docutils literal notranslate"><span class="pre">cmdset.remove()</span></code> to remove a cmdset. It turns out you can
 do the same in <code class="docutils literal notranslate"><span class="pre">at_cmdset_creation</span></code>. For example, let’s remove the default <code class="docutils literal notranslate"><span class="pre">get</span></code> Command
-from Evennia. We happen to know this can be found as <code class="docutils literal notranslate"><span class="pre">default_cmds.CmdGet</span></code>.</p>
+from Evennia. If you investigate the <code class="docutils literal notranslate"><span class="pre">default_cmds.CharacterCmdSet</span></code> parent, you’ll find that its class is <code class="docutils literal notranslate"><span class="pre">default_cmds.CmdGet</span></code> (the ‘real’ location is <code class="docutils literal notranslate"><span class="pre">evennia.commands.default.general.CmdGet</span></code>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...</span>
 <span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">mycommands</span>
 
@@ -515,23 +538,28 @@ Command &#39;get&#39; is not available ...
 <h2><span class="section-number">9.4. </span>Replace a default command<a class="headerlink" href="#replace-a-default-command" title="Permalink to this headline">¶</a></h2>
 <p>At this point you already have all the pieces for how to do this! We just need to add a new
 command with the same <code class="docutils literal notranslate"><span class="pre">key</span></code> in the <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code> to replace the default one.</p>
-<p>Let’s combine this with what we know about classes and
-how to <em>override</em> a parent class. Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> and lets override
-that <code class="docutils literal notranslate"><span class="pre">CmdGet</span></code> command.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># up top, by the other imports</span>
-<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
-
+<p>Let’s combine this with what we know about classes and how to <em>override</em> a parent class. Open <code class="docutils literal notranslate"><span class="pre">mygame/commands/mycommands.py</span></code> and make a new <code class="docutils literal notranslate"><span class="pre">get</span></code> command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><span class="c1"># up top, by the other imports</span>
+<span class="hll"><span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span>
+</span>
 <span class="c1"># somewhere below</span>
 <span class="k">class</span> <span class="nc">MyCmdGet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CmdGet</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span><span class="p">))</span>
-
-</pre></div>
+<span class="hll">    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="hll">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+</span><span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span><span class="p">))</span>
+</span></pre></div></td></tr></table></div>
 </div>
 <ul class="simple">
-<li><p><strong>Line2</strong>: We import <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> so we can get the parent class.
+<li><p><strong>Line 2</strong>: We import <code class="docutils literal notranslate"><span class="pre">default_cmds</span></code> so we can get the parent class.
 We made a new class and we make it <em>inherit</em> <code class="docutils literal notranslate"><span class="pre">default_cmds.CmdGet</span></code>. We don’t
 need to set <code class="docutils literal notranslate"><span class="pre">.key</span></code> or <code class="docutils literal notranslate"><span class="pre">.parse</span></code>, that’s already handled by the parent.
 In <code class="docutils literal notranslate"><span class="pre">func</span></code> we call <code class="docutils literal notranslate"><span class="pre">super().func()</span></code> to let the parent do its normal thing,</p></li>
@@ -565,6 +593,7 @@ has a special function <code class="docutils literal notranslate"><span class="p
 <span class="c1"># ...</span>
 </pre></div>
 </div>
+<p>We don’t need to use <code class="docutils literal notranslate"><span class="pre">self.remove()</span></code> first; just adding a command with the same <code class="docutils literal notranslate"><span class="pre">key</span></code> (<code class="docutils literal notranslate"><span class="pre">get</span></code>) will replace the default <code class="docutils literal notranslate"><span class="pre">get</span></code> we had from before.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Another way</p>
 <p>Instead of adding <code class="docutils literal notranslate"><span class="pre">MyCmdGet</span></code> explicitly in default_cmdset.py, you could also add it to <code class="docutils literal notranslate"><span class="pre">mycommands.MyCmdSet</span></code> and let it be added automatically here for you.</p>
@@ -575,14 +604,12 @@ Get What?
 [smaug, fluffy, YourName, ...]
 </pre></div>
 </div>
-<p>We just made a new <code class="docutils literal notranslate"><span class="pre">get</span></code>-command that tells us everything we could pick up (well, we can’t pick up ourselves, so
-there’s some room for improvement there).</p>
+<p>We just made a new <code class="docutils literal notranslate"><span class="pre">get</span></code>-command that tells us everything we could pick up (well, we can’t pick up ourselves, so there’s some room for improvement there …).</p>
 </section>
 <section id="summary">
 <h2><span class="section-number">9.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>In this lesson we got into some more advanced string formatting - many of those tricks will help you a lot in
-the future! We also made a functional sword. Finally we got into how to add to, extend and replace a default
-command on ourselves.</p>
+<p>In this lesson we got into some more advanced string formatting - many of those tricks will help you a lot in the future! We also made a functional sword. Finally we got into how to add to, extend and replace a default command on ourselves. Knowing to add commands is a big part of making a game!</p>
+<p>We have been beating on poor Smaug for too long. Next we’ll create more things to play around with.</p>
 </section>
 </section>
 

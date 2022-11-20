@@ -6,13 +6,18 @@ All Evennia tutorials. They will often refer to the [components](../Components/C
 
 Recommended starting point! This will take you from absolute beginner to making
 a small, but full, game with Evennia. Even if you have a very different game style
-in mind for your own game, this will give you a good start.
+in mind for your own game, this will give you a good start. 
+
+> The latter parts of the beginner tutorial are still being worked on.
 
 ```{toctree}
-:maxdepth: 1
-
+:maxdepth: 3
 ./Beginner-Tutorial/Beginner-Tutorial-Intro
-
+./Beginner-Tutorial/Part1/Beginner-Tutorial-Part1-Intro
+./Beginner-Tutorial/Part2/Beginner-Tutorial-Part2-Intro
+./Beginner-Tutorial/Part3/Beginner-Tutorial-Part3-Intro
+./Beginner-Tutorial/Part4/Beginner-Tutorial-Part4-Intro
+./Beginner-Tutorial/Part5/Beginner-Tutorial-Part5-Intro
 ```
 
 ## Howto's
@@ -20,13 +25,10 @@ in mind for your own game, this will give you a good start.
 ```{toctree}
 :maxdepth: 1
 
-Coding-FAQ.md
-Command-Prompt.md
-Command-Cooldown.md
-Command-Duration.md
-Default-Exit-Errors.md
-Manually-Configuring-Color.md
-Tutorial-Tweeting-Game-Stats.md
+Howto-Command-Prompt.md
+Howto-Command-Cooldown.md
+Howto-Command-Duration.md
+Howto-Default-Exit-Errors.md
 
 ```
 ## Mobs and NPCs
@@ -54,13 +56,13 @@ Tutorial-Vehicles.md
 
 Tutorial-Persistent-Handler.md
 Gametime-Tutorial.md
-Help-System-Tutorial.md
 Mass-and-weight-for-objects.md
 Weather-Tutorial.md
-Coordinates.md
+Tutorial-Coordinates.md
 Dynamic-In-Game-Map.md
 Static-In-Game-Map.md
 Arxcode-Installation.md
+Tutorial-Tweeting-Game-Stats.md
 
 ```
 
@@ -69,9 +71,10 @@ Arxcode-Installation.md
 ```{toctree}
 :maxdepth: 1
 
-Add-a-wiki-on-your-website.md
+Web-Add-a-wiki.md
 Web-Character-Generation.md
 Web-Character-View-Tutorial.md
+Web-Help-System-Tutorial.md
 
 ```
 ## Deep-dives
@@ -80,11 +83,10 @@ Web-Character-View-Tutorial.md
 :maxdepth: 1
 
 Parsing-commands-tutorial.md
-Understanding-Color-Tags.md
+Tutorial-Understanding-Color-Tags.md
 Evennia-for-roleplaying-sessions.md
 Evennia-for-Diku-Users.md
 Evennia-for-MUSH-Users.md
-Tutorial-for-basic-MUSH-like-game.md
 ```
 
 ## Old tutorials
@@ -96,7 +98,5 @@ These will be replaced by the Beginner Tutorial, but remain here until that is c
 
 Implementing-a-game-rule-system.md
 Turn-based-Combat-System.md
-A-Sittable-Object.md
-
-
+Tutorial-for-basic-MUSH-like-game.md
 ```

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Add a simple new web page &#8212; Evennia 1.0-dev documentation</title>
+    <title>1. Add a simple new web page &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,7 +17,7 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Web Tutorial" href="Web-Tutorial.html" />
+    <link rel="next" title="2. Web Tutorial" href="Web-Tutorial.html" />
     <link rel="prev" title="Part 5: Showing the world" href="Beginner-Tutorial-Part5-Intro.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,7 +30,7 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Web-Tutorial.html" title="Web Tutorial"
+          <a href="Web-Tutorial.html" title="2. Web Tutorial"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Beginner-Tutorial-Part5-Intro.html" title="Part 5: Showing the world"
@@ -39,7 +39,7 @@
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part5-Intro.html" accesskey="U">Part 5: Showing the world</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Add a simple new web page</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Add a simple new web page</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,10 +64,10 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Add a simple new web page</a><ul>
-<li><a class="reference internal" href="#create-the-view">Create the view</a></li>
-<li><a class="reference internal" href="#the-html-page">The HTML page</a></li>
-<li><a class="reference internal" href="#the-url">The URL</a></li>
+<li><a class="reference internal" href="#">1. Add a simple new web page</a><ul>
+<li><a class="reference internal" href="#create-the-view">1.1. Create the view</a></li>
+<li><a class="reference internal" href="#the-html-page">1.2. The HTML page</a></li>
+<li><a class="reference internal" href="#the-url">1.3. The URL</a></li>
 </ul>
 </li>
 </ul>
@@ -77,7 +77,7 @@
                         title="previous chapter">Part 5: Showing the world</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Web-Tutorial.html"
-                        title="next chapter">Web Tutorial</a></p>
+                        title="next chapter"><span class="section-number">2. </span>Web Tutorial</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -109,7 +109,7 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="add-a-simple-new-web-page">
-<h1>Add a simple new web page<a class="headerlink" href="#add-a-simple-new-web-page" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">1. </span>Add a simple new web page<a class="headerlink" href="#add-a-simple-new-web-page" title="Permalink to this headline">¶</a></h1>
 <p>Evennia leverages <a class="reference external" href="https://docs.djangoproject.com">Django</a> which is a web development framework.
 Huge professional websites are made in Django and there is extensive documentation (and books) on it
 . You are encouraged to at least look at the Django basic tutorials. Here we will just give a brief
@@ -119,7 +119,7 @@ box. You can get to that by entering <code class="docutils literal notranslate">
 welcome page with some game statistics and a link to the web client. Let us add a new page that you
 can get to by going to <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/story</span></code>.</p>
 <section id="create-the-view">
-<h2>Create the view<a class="headerlink" href="#create-the-view" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.1. </span>Create the view<a class="headerlink" href="#create-the-view" title="Permalink to this headline">¶</a></h2>
 <p>A django “view” is a normal Python function that django calls to render the HTML page you will see
 in the web browser. Here we will just have it spit back the raw html, but Django can do all sorts of
 cool stuff with the page in the view, like adding dynamic content or change it on the fly. Open
@@ -138,7 +138,7 @@ Python you can import from the new folder). Here’s how it looks:</p>
 template some information from the request, for instance, the game name, and then renders it.</p>
 </section>
 <section id="the-html-page">
-<h2>The HTML page<a class="headerlink" href="#the-html-page" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.2. </span>The HTML page<a class="headerlink" href="#the-html-page" title="Permalink to this headline">¶</a></h2>
 <p>We need to find a place where Evennia (and Django) looks for html files (called <em>templates</em> in
 Django parlance). You can specify such places in your settings (see the <code class="docutils literal notranslate"><span class="pre">TEMPLATES</span></code> variable in
 <code class="docutils literal notranslate"><span class="pre">default_settings.py</span></code> for more info), but here we’ll use an existing one. Go to
@@ -170,7 +170,7 @@ Django parlance). You can specify such places in your settings (see the <code cl
 </div>
 </section>
 <section id="the-url">
-<h2>The URL<a class="headerlink" href="#the-url" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.3. </span>The URL<a class="headerlink" href="#the-url" title="Permalink to this headline">¶</a></h2>
 <p>When you enter the address <code class="docutils literal notranslate"><span class="pre">http://localhost:4001/story</span></code> in your web browser, Django will parse that
 field to figure out which page you want to go to. You tell it which patterns are relevant in the
 file
@@ -212,7 +212,7 @@ to.</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Web-Tutorial.html" title="Web Tutorial"
+          <a href="Web-Tutorial.html" title="2. Web Tutorial"
              >next</a> |</li>
         <li class="right" >
           <a href="Beginner-Tutorial-Part5-Intro.html" title="Part 5: Showing the world"
@@ -221,7 +221,7 @@ to.</p>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part5-Intro.html" >Part 5: Showing the world</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Add a simple new web page</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1. </span>Add a simple new web page</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

@@ -62,11 +62,13 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Understanding Color Tags</a></li>
+<li><a class="reference internal" href="#">Understanding Color Tags</a><ul>
 <li><a class="reference internal" href="#evennia-ansi-and-xterm256">Evennia, ANSI and Xterm256</a></li>
 <li><a class="reference internal" href="#ansi">ANSI</a></li>
 <li><a class="reference internal" href="#xterm256">Xterm256</a></li>
 <li><a class="reference internal" href="#ansi-color-tags-in-evennia">ANSI Color Tags in Evennia</a></li>
+</ul>
+</li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -78,7 +80,7 @@
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Howtos/Understanding-Color-Tags.md.txt"
+      <li><a href="../_sources/Howtos/Tutorial-Understanding-Color-Tags.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -94,7 +96,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Understanding-Color-Tags.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Tutorial-Understanding-Color-Tags.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -108,15 +110,11 @@
   <section class="tex2jax_ignore mathjax_ignore" id="understanding-color-tags">
 <h1>Understanding Color Tags<a class="headerlink" href="#understanding-color-tags" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial aims at dispelling confusions regarding the use of color tags within Evennia.</p>
-<p>Correct understanding of this topic requires having read the <a class="reference internal" href="../Concepts/TextTags.html"><span class="doc std std-doc">TextTags</span></a> page and learned
-Evennia’s color tags. Here we’ll explain by examples the reasons behind the unexpected (or
-apparently incoherent) behaviors of some color tags, as mentioned <em>en passant</em> in the
-<a class="reference internal" href="../Concepts/TextTags.html"><span class="doc std std-doc">TextTags</span></a> page.</p>
+<p>Correct understanding of this topic requires having read the  Evennia’s color tags. Here we’ll explain by examples the reasons behind the unexpected (or apparently incoherent) behaviors of some color tags, as mentioned <em>en passant</em> in the <a class="reference internal" href="../Concepts/Colors.html"><span class="doc std std-doc">Colors</span></a> page.</p>
 <p>All you’ll need for this tutorial is access to a running instance of Evennia via a color-enabled
 client. The examples provided are just commands that you can type in your client.</p>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="evennia-ansi-and-xterm256">
-<h1>Evennia, ANSI and Xterm256<a class="headerlink" href="#evennia-ansi-and-xterm256" title="Permalink to this headline">¶</a></h1>
+<section id="evennia-ansi-and-xterm256">
+<h2>Evennia, ANSI and Xterm256<a class="headerlink" href="#evennia-ansi-and-xterm256" title="Permalink to this headline">¶</a></h2>
 <p>All modern MUD clients support colors; nevertheless, the standards to which all clients abide dates
 back to old day of terminals, and when it comes to colors we are dealing with ANSI and Xterm256
 standards.</p>
@@ -132,8 +130,8 @@ pitfalls. ANSI and Xterm256 coexist without conflicts in Evennia, but in many wa
 each other: ANSI-specific color tags will have no effect on Xterm-defined colors, as we shall see
 here.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="ansi">
-<h1>ANSI<a class="headerlink" href="#ansi" title="Permalink to this headline">¶</a></h1>
+<section id="ansi">
+<h2>ANSI<a class="headerlink" href="#ansi" title="Permalink to this headline">¶</a></h2>
 <p>ANSI has a set of 16 colors, to be more precise: ANSI has 8 basic colors which come in <em>dark</em> and
 <em>bright</em> flavours—with <em>dark</em> being <em>normal</em>. The colors are: red, green, yellow, blue, magenta,
 cyan, white and black. White in its dark version is usually referred to as gray, and black in its
@@ -147,16 +145,16 @@ behavior of ANSI tags, as we shall see.</p>
 always customize their appearance—he might decide to have green show as red, and dark green as blue,
 etc.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="xterm256">
-<h1>Xterm256<a class="headerlink" href="#xterm256" title="Permalink to this headline">¶</a></h1>
+<section id="xterm256">
+<h2>Xterm256<a class="headerlink" href="#xterm256" title="Permalink to this headline">¶</a></h2>
 <p>The 16 colors of ANSI should be more than enough to handle simple coloring of text. But when an
 author wants to be sure that a given color will show as he intended it, she might choose to rely on
 Xterm256 colors.</p>
 <p>Xterm256 doesn’t rely on a palette of named colors, it instead represent colors by their values. So,
 a red color could be <code class="docutils literal notranslate"><span class="pre">|[500</span></code> (bright and pure red), or <code class="docutils literal notranslate"><span class="pre">|[300</span></code> (darker red), and so on.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="ansi-color-tags-in-evennia">
-<h1>ANSI Color Tags in Evennia<a class="headerlink" href="#ansi-color-tags-in-evennia" title="Permalink to this headline">¶</a></h1>
+<section id="ansi-color-tags-in-evennia">
+<h2>ANSI Color Tags in Evennia<a class="headerlink" href="#ansi-color-tags-in-evennia" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>NOTE: for ease of reading, the examples contain extra white spaces after the
 color tags (eg: <code class="docutils literal notranslate"><span class="pre">|g</span> <span class="pre">green</span> <span class="pre">|b</span> <span class="pre">blue</span></code> ). This is done only so that it’s easier
@@ -262,9 +260,9 @@ avoiding the pitfalls of Xterm-ANSI promisquity.</p>
 <p>Shows that <code class="docutils literal notranslate"><span class="pre">|*</span></code> only works once in a row and will not (and should not!) revert back if used again.
 Nor it will have any effect until the <code class="docutils literal notranslate"><span class="pre">|n</span></code> tag is called to “reset” ANSI back to normal. This is how
 it is meant to work.</p>
-<p>ANSI operates according to a simple states-based mechanism, and it’s important to understand the
-positive effect of resetting with the <code class="docutils literal notranslate"><span class="pre">|n</span></code> tag, and not try to
+<p>ANSI operates according to a simple states-based mechanism, and it’s important to understand the positive effect of resetting with the <code class="docutils literal notranslate"><span class="pre">|n</span></code> tag, and not try to
 push it over the limit, so to speak.</p>
+</section>
 </section>
 
 

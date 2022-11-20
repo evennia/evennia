@@ -72,6 +72,7 @@
 <li><a class="reference internal" href="#swap-typeclass">Swap typeclass</a></li>
 <li><a class="reference internal" href="#how-typeclasses-actually-work">How typeclasses actually work</a></li>
 <li><a class="reference internal" href="#caveats">Caveats</a></li>
+<li><a class="reference internal" href="#will-i-run-out-of-dbrefs">Will I run out of dbrefs?</a></li>
 </ul>
 </li>
 </ul>
@@ -422,6 +423,13 @@ object seeing the relationship may not reliably update but will still see its ol
 Due to typeclasses staying so long in memory, stale caches of such relationships could be more
 visible than common in Django. See the <a class="reference external" href="https://github.com/evennia/evennia/issues/1098">closed issue #1098 and its
 comments</a> for examples and solutions.</p>
+</section>
+<section id="will-i-run-out-of-dbrefs">
+<h2>Will I run out of dbrefs?<a class="headerlink" href="#will-i-run-out-of-dbrefs" title="Permalink to this headline">¶</a></h2>
+<p>Evennia does not re-use its <code class="docutils literal notranslate"><span class="pre">#dbrefs</span></code>. This means new objects get an ever-increasing <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>, also if you delete older objects. There are technical and safety reasons for this. But you may wonder if this means you have to worry about a big game ‘running out’ of dbref integers eventually.</p>
+<p>The answer is simply <strong>no</strong>.</p>
+<p>For example, the max dbref value for the default sqlite3 database is <code class="docutils literal notranslate"><span class="pre">2**64</span></code>. If you <em>created 10 000 new objects every second of every minute of every day of the year it would take about <strong>60 million years</strong> for you to run out of dbref numbers</em>. That’s a database of 140 TeraBytes, just to store the dbrefs, no other data.</p>
+<p>If you are still using Evennia at that point and has this concern, get back to us and we can discuss adding dbref reuse then.</p>
 </section>
 </section>
 

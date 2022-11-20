@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Default Exit Errors" href="Default-Exit-Errors.html" />
-    <link rel="prev" title="Command Cooldown" href="Command-Cooldown.html" /> 
+    <link rel="next" title="Default Exit Errors" href="Howto-Default-Exit-Errors.html" />
+    <link rel="prev" title="Command Cooldown" href="Howto-Command-Cooldown.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Default-Exit-Errors.html" title="Default Exit Errors"
+          <a href="Howto-Default-Exit-Errors.html" title="Default Exit Errors"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Command-Cooldown.html" title="Command Cooldown"
+          <a href="Howto-Command-Cooldown.html" title="Command Cooldown"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
@@ -76,15 +76,15 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Command-Cooldown.html"
+  <p class="topless"><a href="Howto-Command-Cooldown.html"
                         title="previous chapter">Command Cooldown</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Default-Exit-Errors.html"
+  <p class="topless"><a href="Howto-Default-Exit-Errors.html"
                         title="next chapter">Default Exit Errors</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Howtos/Command-Duration.md.txt"
+      <li><a href="../_sources/Howtos/Howto-Command-Duration.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -100,7 +100,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Command-Duration.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Howto-Command-Duration.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -290,8 +290,7 @@ some cases this is not what you want however. Some commands should simply “blo
 while they are running. If you are in the process of crafting a helmet you shouldn’t be able to also
 start crafting a shield at the same time, or if you just did a huge power-swing with your weapon you
 should not be able to do it again immediately.</p>
-<p>The simplest way of implementing blocking is to use the technique covered in the <a class="reference internal" href="Command-Cooldown.html"><span class="doc std std-doc">Command
-Cooldown</span></a> tutorial. In that tutorial we implemented cooldowns by having the
+<p>The simplest way of implementing blocking is to use the technique covered in the <a class="reference internal" href="Howto-Command-Cooldown.html"><span class="doc std std-doc">Command Cooldown</span></a> tutorial. In that tutorial we implemented cooldowns by having the
 Command store the current time. Next time the Command was called, we compared the current time to
 the stored time to determine if enough time had passed for a renewed use. This is a <em>very</em>
 efficient, reliable and passive solution. The drawback is that there is nothing to tell the Player
@@ -516,10 +515,10 @@ callback when the server comes back up (it will resume the countdown and ignore 
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Default-Exit-Errors.html" title="Default Exit Errors"
+          <a href="Howto-Default-Exit-Errors.html" title="Default Exit Errors"
              >next</a> |</li>
         <li class="right" >
-          <a href="Command-Cooldown.html" title="Command Cooldown"
+          <a href="Howto-Command-Cooldown.html" title="Command Cooldown"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>

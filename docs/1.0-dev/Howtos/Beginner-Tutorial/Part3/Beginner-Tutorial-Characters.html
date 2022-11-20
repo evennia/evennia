@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Player Characters &#8212; Evennia 1.0-dev documentation</title>
+    <title>3. Player Characters &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="In-game Objects and items" href="Beginner-Tutorial-Objects.html" />
-    <link rel="prev" title="Rules and dice rolling" href="Beginner-Tutorial-Rules.html" /> 
+    <link rel="next" title="4. In-game Objects and items" href="Beginner-Tutorial-Objects.html" />
+    <link rel="prev" title="2. Rules and dice rolling" href="Beginner-Tutorial-Rules.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,16 +30,16 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Objects.html" title="In-game Objects and items"
+          <a href="Beginner-Tutorial-Objects.html" title="4. In-game Objects and items"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Rules.html" title="Rules and dice rolling"
+          <a href="Beginner-Tutorial-Rules.html" title="2. Rules and dice rolling"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Player Characters</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>Player Characters</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,28 +64,28 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Player Characters</a><ul>
-<li><a class="reference internal" href="#inheritance-structure">Inheritance structure</a></li>
-<li><a class="reference internal" href="#living-mixin-class">Living mixin class</a></li>
-<li><a class="reference internal" href="#character-class">Character class</a><ul>
-<li><a class="reference internal" href="#funcparser-inlines">Funcparser inlines</a></li>
-<li><a class="reference internal" href="#backtracking">Backtracking</a></li>
+<li><a class="reference internal" href="#">3. Player Characters</a><ul>
+<li><a class="reference internal" href="#inheritance-structure">3.1. Inheritance structure</a></li>
+<li><a class="reference internal" href="#living-mixin-class">3.2. Living mixin class</a></li>
+<li><a class="reference internal" href="#character-class">3.3. Character class</a><ul>
+<li><a class="reference internal" href="#funcparser-inlines">3.3.1. Funcparser inlines</a></li>
+<li><a class="reference internal" href="#backtracking">3.3.2. Backtracking</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#connecting-the-character-with-evennia">Connecting the Character with Evennia</a></li>
-<li><a class="reference internal" href="#unit-testing">Unit Testing</a></li>
-<li><a class="reference internal" href="#about-races-and-classes">About races and classes</a></li>
-<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#connecting-the-character-with-evennia">3.4. Connecting the Character with Evennia</a></li>
+<li><a class="reference internal" href="#unit-testing">3.5. Unit Testing</a></li>
+<li><a class="reference internal" href="#about-races-and-classes">3.6. About races and classes</a></li>
+<li><a class="reference internal" href="#summary">3.7. Summary</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Rules.html"
-                        title="previous chapter">Rules and dice rolling</a></p>
+                        title="previous chapter"><span class="section-number">2. </span>Rules and dice rolling</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Objects.html"
-                        title="next chapter">In-game Objects and items</a></p>
+                        title="next chapter"><span class="section-number">4. </span>In-game Objects and items</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -117,7 +117,7 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="player-characters">
-<h1>Player Characters<a class="headerlink" href="#player-characters" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">3. </span>Player Characters<a class="headerlink" href="#player-characters" title="Permalink to this headline">¶</a></h1>
 <p>In the <a class="reference internal" href="Beginner-Tutorial-Rules.html"><span class="doc std std-doc">previous lesson about rules and dice rolling</span></a> we made some
 assumptions about the “Player Character” entity:</p>
 <ul class="simple">
@@ -129,7 +129,7 @@ should be able to be changed over time. It makes sense to base it off Evennia’
 <a class="reference internal" href="../../../Components/Typeclasses.html"><span class="doc std std-doc">DefaultCharacter Typeclass</span></a>. The Character class is like a ‘character sheet’ in a tabletop
 RPG, it will hold everything relevant to that PC.</p>
 <section id="inheritance-structure">
-<h2>Inheritance structure<a class="headerlink" href="#inheritance-structure" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.1. </span>Inheritance structure<a class="headerlink" href="#inheritance-structure" title="Permalink to this headline">¶</a></h2>
 <p>Player Characters (PCs) are not the only “living” things in our world. We also have <em>NPCs</em>
 (like shopkeepers and other friendlies) as well as <em>monsters</em> (mobs) that can attack us.</p>
 <p>In code, there are a few ways we could structure this. If NPCs/monsters were just special cases of PCs,
@@ -198,7 +198,7 @@ extra functionality all living things should be able to do. This is an example o
 since it can also get confusing to follow the code.</p>
 </section>
 <section id="living-mixin-class">
-<h2>Living mixin class<a class="headerlink" href="#living-mixin-class" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2. </span>Living mixin class<a class="headerlink" href="#living-mixin-class" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/characters.py</span></code></p>
 </div></blockquote>
@@ -260,7 +260,7 @@ since it can also get confusing to follow the code.</p>
 in the mixin means we can expect these methods to be available for all living things.</p>
 </section>
 <section id="character-class">
-<h2>Character class<a class="headerlink" href="#character-class" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.3. </span>Character class<a class="headerlink" href="#character-class" title="Permalink to this headline">¶</a></h2>
 <p>We will now start making the basic Character class, based on what we need from <em>Knave</em>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/characters.py</span>
 
@@ -326,7 +326,7 @@ this makes it easier to handle barter and trading later.</p>
 <p>We implement the Player Character versions of <code class="docutils literal notranslate"><span class="pre">at_defeat</span></code> and <code class="docutils literal notranslate"><span class="pre">at_death</span></code>. We also make use of <code class="docutils literal notranslate"><span class="pre">.heal()</span></code>
 from the <code class="docutils literal notranslate"><span class="pre">LivingMixin</span></code> class.</p>
 <section id="funcparser-inlines">
-<h3>Funcparser inlines<a class="headerlink" href="#funcparser-inlines" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.3.1. </span>Funcparser inlines<a class="headerlink" href="#funcparser-inlines" title="Permalink to this headline">¶</a></h3>
 <p>This piece of code is worth some more explanation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
     <span class="s2">&quot;$You() $conj(collapse) in a heap, alive but beaten.&quot;</span><span class="p">,</span>
@@ -348,7 +348,7 @@ The <code class="docutils literal notranslate"><span class="pre">$conj()</span><
 <p>Note how <code class="docutils literal notranslate"><span class="pre">$conj()</span></code> chose <code class="docutils literal notranslate"><span class="pre">collapse/collapses</span></code> to make the sentences grammatically correct.</p>
 </section>
 <section id="backtracking">
-<h3>Backtracking<a class="headerlink" href="#backtracking" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">3.3.2. </span>Backtracking<a class="headerlink" href="#backtracking" title="Permalink to this headline">¶</a></h3>
 <p>We make our first use of the <code class="docutils literal notranslate"><span class="pre">rules.dice</span></code> roller to roll on the death table! As you may recall, in the
 previous lesson, we didn’t know just what to do when rolling ‘dead’ on this table. Now we know - we
 should be calling <code class="docutils literal notranslate"><span class="pre">at_death</span></code> on the character. So let’s add that where we had TODOs before:</p>
@@ -377,7 +377,7 @@ should be calling <code class="docutils literal notranslate"><span class="pre">a
 </section>
 </section>
 <section id="connecting-the-character-with-evennia">
-<h2>Connecting the Character with Evennia<a class="headerlink" href="#connecting-the-character-with-evennia" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.4. </span>Connecting the Character with Evennia<a class="headerlink" href="#connecting-the-character-with-evennia" title="Permalink to this headline">¶</a></h2>
 <p>You can easily make yourself an <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> in-game by using the
 <code class="docutils literal notranslate"><span class="pre">type</span></code> command:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>type self = evadventure.characters.EvAdventureCharacter
@@ -403,7 +403,7 @@ instead.</p>
 </div>
 </section>
 <section id="unit-testing">
-<h2>Unit Testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.5. </span>Unit Testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/tests/test_characters.py</span></code></p>
 </div></blockquote>
@@ -455,7 +455,7 @@ tests for other methods as practice. Refer to previous lessons for details.</p>
 </div>
 </section>
 <section id="about-races-and-classes">
-<h2>About races and classes<a class="headerlink" href="#about-races-and-classes" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.6. </span>About races and classes<a class="headerlink" href="#about-races-and-classes" title="Permalink to this headline">¶</a></h2>
 <p><em>Knave</em> doesn’t have any D&amp;D-style <em>classes</em> (like Thief, Fighter etc). It also does not bother with
 <em>races</em> (like dwarves, elves etc). This makes the tutorial shorter, but you may ask yourself how you’d
 add these functions.</p>
@@ -481,7 +481,7 @@ an Attribute on your Character:</p>
 <a class="reference internal" href="Beginner-Tutorial-Chargen.html"><span class="doc std std-doc">character generation</span></a> to check and include what these classes mean.</p>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.7. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>With the <code class="docutils literal notranslate"><span class="pre">EvAdventureCharacter</span></code> class in place, we have a better understanding of how our PCs will look
 like under <em>Knave</em>.</p>
 <p>For now, we only have bits and pieces and haven’t been testing this code in-game. But if you want
@@ -521,16 +521,16 @@ then on.</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Objects.html" title="In-game Objects and items"
+          <a href="Beginner-Tutorial-Objects.html" title="4. In-game Objects and items"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Rules.html" title="Rules and dice rolling"
+          <a href="Beginner-Tutorial-Rules.html" title="2. Rules and dice rolling"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Player Characters</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>Player Characters</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

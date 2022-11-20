@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Web Tutorial &#8212; Evennia 1.0-dev documentation</title>
+    <title>2. Web Tutorial &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Coding FAQ" href="../../Coding-FAQ.html" />
-    <link rel="prev" title="Add a simple new web page" href="Add-a-simple-new-web-page.html" /> 
+    <link rel="next" title="Command Prompt" href="../../Howto-Command-Prompt.html" />
+    <link rel="prev" title="1. Add a simple new web page" href="Add-a-simple-new-web-page.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,16 +30,16 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../../Coding-FAQ.html" title="Coding FAQ"
+          <a href="../../Howto-Command-Prompt.html" title="Command Prompt"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Add-a-simple-new-web-page.html" title="Add a simple new web page"
+          <a href="Add-a-simple-new-web-page.html" title="1. Add a simple new web page"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part5-Intro.html" accesskey="U">Part 5: Showing the world</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Web Tutorial</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>Web Tutorial</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,21 +64,21 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Web Tutorial</a><ul>
-<li><a class="reference internal" href="#a-basic-overview">A Basic Overview</a></li>
-<li><a class="reference internal" href="#changing-the-logo-on-the-front-page">Changing the logo on the front page</a></li>
-<li><a class="reference internal" href="#changing-the-front-pages-text">Changing the Front Page’s Text</a></li>
-<li><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li><a class="reference internal" href="#">2. Web Tutorial</a><ul>
+<li><a class="reference internal" href="#a-basic-overview">2.1. A Basic Overview</a></li>
+<li><a class="reference internal" href="#changing-the-logo-on-the-front-page">2.2. Changing the logo on the front page</a></li>
+<li><a class="reference internal" href="#changing-the-front-pages-text">2.3. Changing the Front Page’s Text</a></li>
+<li><a class="reference internal" href="#further-reading">2.4. Further reading</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Add-a-simple-new-web-page.html"
-                        title="previous chapter">Add a simple new web page</a></p>
+                        title="previous chapter"><span class="section-number">1. </span>Add a simple new web page</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../../Coding-FAQ.html"
-                        title="next chapter">Coding FAQ</a></p>
+  <p class="topless"><a href="../../Howto-Command-Prompt.html"
+                        title="next chapter">Command Prompt</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -110,7 +110,7 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="web-tutorial">
-<h1>Web Tutorial<a class="headerlink" href="#web-tutorial" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">2. </span>Web Tutorial<a class="headerlink" href="#web-tutorial" title="Permalink to this headline">¶</a></h1>
 <p>Evennia uses the <a class="reference external" href="https://www.djangoproject.com/">Django</a> web framework as the basis of both its
 database configuration and the website it provides. While a full understanding of Django requires
 reading the Django documentation, we have provided this tutorial to get you running with the basics
@@ -118,7 +118,7 @@ and how they pertain to Evennia. This text details getting everything set up. Th
 <a class="reference internal" href="../../Web-Character-View-Tutorial.html"><span class="doc std std-doc">Web-based Character view Tutorial</span></a> gives a more explicit example of making a
 custom web page connected to your game, and you may want to read that after finishing this guide.</p>
 <section id="a-basic-overview">
-<h2>A Basic Overview<a class="headerlink" href="#a-basic-overview" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.1. </span>A Basic Overview<a class="headerlink" href="#a-basic-overview" title="Permalink to this headline">¶</a></h2>
 <p>Django is a web framework. It gives you a set of development tools for building a website quickly
 and easily.</p>
 <p>Django projects are split up into <em>apps</em> and these apps all contribute to one project. For instance,
@@ -138,7 +138,7 @@ for storing information in the database. We will not change any models here, tak
 default URLs for you. This is located in <code class="docutils literal notranslate"><span class="pre">web/urls.py</span></code>.</p>
 </section>
 <section id="changing-the-logo-on-the-front-page">
-<h2>Changing the logo on the front page<a class="headerlink" href="#changing-the-logo-on-the-front-page" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.2. </span>Changing the logo on the front page<a class="headerlink" href="#changing-the-logo-on-the-front-page" title="Permalink to this headline">¶</a></h2>
 <p>Evennia’s default logo is a fun little googly-eyed snake wrapped around a gear globe. As cute as it
 is, it probably doesn’t represent your game. So one of the first things you may wish to do is
 replace it with a logo of your own.</p>
@@ -187,7 +187,7 @@ scratch.</p>
 </div></blockquote>
 </section>
 <section id="changing-the-front-pages-text">
-<h2>Changing the Front Page’s Text<a class="headerlink" href="#changing-the-front-pages-text" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.3. </span>Changing the Front Page’s Text<a class="headerlink" href="#changing-the-front-pages-text" title="Permalink to this headline">¶</a></h2>
 <p>The default front page for Evennia contains information about the Evennia project. You’ll probably
 want to replace this information with information about your own project. Changing the page template
 is done in a similar way to changing static resources.</p>
@@ -209,7 +209,7 @@ web/template_overrides<code class="docutils literal notranslate"><span class="pr
 original file already has all the markup and tags, ready for editing.</p>
 </section>
 <section id="further-reading">
-<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.4. </span>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
 <p>For further hints on working with the web presence, you could now continue to the
 <a class="reference internal" href="../../Web-Character-View-Tutorial.html"><span class="doc std std-doc">Web-based Character view Tutorial</span></a> where you learn to make a web page that
 displays in-game character stats. You can also look at <a class="reference external" href="https://docs.djangoproject.com/en/1.7/intro/tutorial01/">Django’s own
@@ -234,16 +234,16 @@ works and what possibilities exist.</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../../Coding-FAQ.html" title="Coding FAQ"
+          <a href="../../Howto-Command-Prompt.html" title="Command Prompt"
              >next</a> |</li>
         <li class="right" >
-          <a href="Add-a-simple-new-web-page.html" title="Add a simple new web page"
+          <a href="Add-a-simple-new-web-page.html" title="1. Add a simple new web page"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part5-Intro.html" >Part 5: Showing the world</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Web Tutorial</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>Web Tutorial</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

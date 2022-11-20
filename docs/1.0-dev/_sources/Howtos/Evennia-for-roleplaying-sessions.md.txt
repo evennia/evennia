@@ -266,7 +266,7 @@ We will here show two examples using the *EvTable* and *EvForm* utilities.Later 
 Commands to edit and display the output from those utilities.
 
 > Note that due to the limitations of the wiki, no color is used in any of the examples. See 
-> [the text tag documentation](../Concepts/TextTags.md) for how to add color to the tables and forms.
+> [the text tag documentation](../Concepts/Inline-Tags-and-Functions.md) for how to add color to the tables and forms.
 
 #### Making a sheet with EvTable
 

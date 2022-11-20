@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Web Character Generation" href="Web-Character-Generation.html" />
-    <link rel="prev" title="Arxcode installing help" href="Arxcode-Installation.html" /> 
+    <link rel="prev" title="Tutorial Tweeting Game Stats" href="Tutorial-Tweeting-Game-Stats.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -33,7 +33,7 @@
           <a href="Web-Character-Generation.html" title="Web Character Generation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Arxcode-Installation.html" title="Arxcode installing help"
+          <a href="Tutorial-Tweeting-Game-Stats.html" title="Tutorial Tweeting Game Stats"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
@@ -81,15 +81,15 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Arxcode-Installation.html"
-                        title="previous chapter">Arxcode installing help</a></p>
+  <p class="topless"><a href="Tutorial-Tweeting-Game-Stats.html"
+                        title="previous chapter">Tutorial Tweeting Game Stats</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Web-Character-Generation.html"
                         title="next chapter">Web Character Generation</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
-      <li><a href="../_sources/Howtos/Add-a-wiki-on-your-website.md.txt"
+      <li><a href="../_sources/Howtos/Web-Add-a-wiki.md.txt"
             rel="nofollow">Show Page Source</a></li>
     </ul>
    </div><h3>Links</h3>
@@ -105,7 +105,7 @@
 </ul>
 <h3>Versions</h3>
 <ul>
-  <li><a href="Add-a-wiki-on-your-website.html">1.0-dev (develop branch)</a></li>
+  <li><a href="Web-Add-a-wiki.html">1.0-dev (develop branch)</a></li>
  <ul>
   <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
 
@@ -125,8 +125,7 @@
 Fortunately, you don’t have to create the features manually, since it has been done by others, and
 we can integrate their work quite easily with Django.  I have decided to focus on
 the <a class="reference external" href="https://django-wiki.readthedocs.io/">Django-wiki</a>.</p>
-<p>The <a class="reference external" href="https://django-wiki.readthedocs.io/">Django-wiki</a> offers a lot of features associated with
-wikis, is actively maintained (at this time, anyway), and isn’t too difficult to install in Evennia.  You can
+<p>The <a class="reference external" href="https://django-wiki.readthedocs.io/">Django-wiki</a> offers a lot of features associated with wikis, is actively maintained (at this time, anyway), and isn’t too difficult to install in Evennia.  You can
 see a <a class="reference external" href="https://demo.django-wiki.org">demonstration of Django-wiki here</a>.</p>
 <section id="basic-installation">
 <h2>Basic installation<a class="headerlink" href="#basic-installation" title="Permalink to this headline">¶</a></h2>
@@ -253,8 +252,7 @@ tied to Evennia’s permissions system in your settings file.</p>
 always have read/write permissions on that article. Additionally, the article will have Group-based
 permissions and general permissions.</p>
 <p>By default, Evennia’s permission groups <em>won’t</em> be recognized by the wiki, so you’ll have to create your own.
-Go to the Groups page of your game’s Django admin panel (e.g. <a class="reference external" href="http://localhost:4001/admin/auth/group">http://localhost:4001/admin/auth/group</a> )
-and add whichever permission groups you want for your wiki here.</p>
+Go to the Groups page of your game’s Django admin panel  and add whichever permission groups you want for your wiki here.</p>
 <p><em><strong>Note:</strong></em> <em>If you want to connect those groups to your game’s permission levels, you’ll need to modify the game to apply both to accounts.</em></p>
 <p>Once you’ve added those groups, they’ll be usable in your wiki right away!</p>
 </section>
@@ -308,8 +306,7 @@ solution for connecting the Evennia permission levels to wiki access, this is th
 <span class="n">WIKI_ANONYMOUS_WRITE</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>The permission functions can check anything you like on the accessing user, so long as the function
-returns either True (they’re allowed) or False (they’re not).</p>
+<p>The permission functions can check anything you like on the accessing user, so long as the function returns either True (they’re allowed) or False (they’re not).</p>
 <p>For a full list of possible settings, you can check out <a class="reference external" href="https://django-wiki.readthedocs.io/en/latest/settings.html">the django-wiki documentation</a>.</p>
 </section>
 </section>
@@ -334,7 +331,7 @@ returns either True (they’re allowed) or False (they’re not).</p>
           <a href="Web-Character-Generation.html" title="Web Character Generation"
              >next</a> |</li>
         <li class="right" >
-          <a href="Arxcode-Installation.html" title="Arxcode installing help"
+          <a href="Tutorial-Tweeting-Game-Stats.html" title="Tutorial Tweeting Game Stats"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>

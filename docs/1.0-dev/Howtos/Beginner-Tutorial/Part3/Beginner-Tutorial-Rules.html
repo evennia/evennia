@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Rules and dice rolling &#8212; Evennia 1.0-dev documentation</title>
+    <title>2. Rules and dice rolling &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Player Characters" href="Beginner-Tutorial-Characters.html" />
-    <link rel="prev" title="Code structure and Utilities" href="Beginner-Tutorial-Utilities.html" /> 
+    <link rel="next" title="3. Player Characters" href="Beginner-Tutorial-Characters.html" />
+    <link rel="prev" title="1. Code structure and Utilities" href="Beginner-Tutorial-Utilities.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,16 +30,16 @@
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Characters.html" title="Player Characters"
+          <a href="Beginner-Tutorial-Characters.html" title="3. Player Characters"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Utilities.html" title="Code structure and Utilities"
+          <a href="Beginner-Tutorial-Utilities.html" title="1. Code structure and Utilities"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Rules and dice rolling</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" accesskey="U">Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>Rules and dice rolling</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -64,35 +64,35 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../../../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Rules and dice rolling</a><ul>
-<li><a class="reference internal" href="#summary-of-knave-rules">Summary of <em>Knave</em> rules</a></li>
-<li><a class="reference internal" href="#making-a-rule-module">Making a rule module</a></li>
-<li><a class="reference internal" href="#rolling-dice">Rolling dice</a><ul>
-<li><a class="reference internal" href="#generic-dice-roller">Generic dice roller</a></li>
-<li><a class="reference internal" href="#rolling-with-advantage">Rolling with advantage</a></li>
-<li><a class="reference internal" href="#saving-throws">Saving throws</a></li>
-<li><a class="reference internal" href="#opposed-saving-throw">Opposed saving throw</a></li>
-<li><a class="reference internal" href="#morale-check">Morale check</a></li>
-<li><a class="reference internal" href="#roll-for-healing">Roll for Healing</a></li>
-<li><a class="reference internal" href="#rolling-on-a-table">Rolling on a table</a></li>
-<li><a class="reference internal" href="#roll-for-death">Roll for death</a></li>
+<li><a class="reference internal" href="#">2. Rules and dice rolling</a><ul>
+<li><a class="reference internal" href="#summary-of-knave-rules">2.1. Summary of <em>Knave</em> rules</a></li>
+<li><a class="reference internal" href="#making-a-rule-module">2.2. Making a rule module</a></li>
+<li><a class="reference internal" href="#rolling-dice">2.3. Rolling dice</a><ul>
+<li><a class="reference internal" href="#generic-dice-roller">2.3.1. Generic dice roller</a></li>
+<li><a class="reference internal" href="#rolling-with-advantage">2.3.2. Rolling with advantage</a></li>
+<li><a class="reference internal" href="#saving-throws">2.3.3. Saving throws</a></li>
+<li><a class="reference internal" href="#opposed-saving-throw">2.3.4. Opposed saving throw</a></li>
+<li><a class="reference internal" href="#morale-check">2.3.5. Morale check</a></li>
+<li><a class="reference internal" href="#roll-for-healing">2.3.6. Roll for Healing</a></li>
+<li><a class="reference internal" href="#rolling-on-a-table">2.3.7. Rolling on a table</a></li>
+<li><a class="reference internal" href="#roll-for-death">2.3.8. Roll for death</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#testing">Testing</a><ul>
-<li><a class="reference internal" href="#mocking-and-patching">Mocking and patching</a></li>
+<li><a class="reference internal" href="#testing">2.4. Testing</a><ul>
+<li><a class="reference internal" href="#mocking-and-patching">2.4.1. Mocking and patching</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#summary">2.5. Summary</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Utilities.html"
-                        title="previous chapter">Code structure and Utilities</a></p>
+                        title="previous chapter"><span class="section-number">1. </span>Code structure and Utilities</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Beginner-Tutorial-Characters.html"
-                        title="next chapter">Player Characters</a></p>
+                        title="next chapter"><span class="section-number">3. </span>Player Characters</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -124,13 +124,13 @@
           <div class="body" role="main">
             
   <section class="tex2jax_ignore mathjax_ignore" id="rules-and-dice-rolling">
-<h1>Rules and dice rolling<a class="headerlink" href="#rules-and-dice-rolling" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">2. </span>Rules and dice rolling<a class="headerlink" href="#rules-and-dice-rolling" title="Permalink to this headline">¶</a></h1>
 <p>In <em>EvAdventure</em> we have decided to use the <a class="reference external" href="https://www.drivethrurpg.com/product/250888/Knave">Knave</a>
 RPG ruleset. This is commercial, but released under Creative Commons 4.0, meaning it’s okay to share and
 adapt <em>Knave</em> for any purpose, even commercially. If you don’t want to buy it but still follow
 along, you can find a <a class="reference external" href="http://abominablefancy.blogspot.com/2018/10/knaves-fancypants.html">free fan-version here</a>.</p>
 <section id="summary-of-knave-rules">
-<h2>Summary of <em>Knave</em> rules<a class="headerlink" href="#summary-of-knave-rules" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.1. </span>Summary of <em>Knave</em> rules<a class="headerlink" href="#summary-of-knave-rules" title="Permalink to this headline">¶</a></h2>
 <p>Knave, being inspired by early Dungeons &amp; Dragons, is very simple.</p>
 <ul class="simple">
 <li><p>It uses six Ability bonuses
@@ -165,7 +165,7 @@ hitting 0. Death, if it happens, is permanent.</p></li>
 </ul>
 </section>
 <section id="making-a-rule-module">
-<h2>Making a rule module<a class="headerlink" href="#making-a-rule-module" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.2. </span>Making a rule module<a class="headerlink" href="#making-a-rule-module" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Create a new module mygame/evadventure/rules.py</p>
 </div></blockquote>
@@ -183,7 +183,7 @@ hitting 0. Death, if it happens, is permanent.</p></li>
 in a rulebook.</p>
 </section>
 <section id="rolling-dice">
-<h2>Rolling dice<a class="headerlink" href="#rolling-dice" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.3. </span>Rolling dice<a class="headerlink" href="#rolling-dice" title="Permalink to this headline">¶</a></h2>
 <p>We will start by making a dice roller. Let’s group all of our dice rolling into a structure like this
 (not functional code yet):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">EvAdventureRollEngine</span><span class="p">:</span>
@@ -231,7 +231,7 @@ modules:</p>
 </pre></div>
 </div>
 <section id="generic-dice-roller">
-<h3>Generic dice roller<a class="headerlink" href="#generic-dice-roller" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.3.1. </span>Generic dice roller<a class="headerlink" href="#generic-dice-roller" title="Permalink to this headline">¶</a></h3>
 <p>We want to be able to do <code class="docutils literal notranslate"><span class="pre">roll(&quot;1d20&quot;)</span></code> and get a random result back from the roll.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
@@ -296,7 +296,7 @@ much more - We would have to make sure that <code class="docutils literal notran
 crazy big so the loop takes forever!</p>
 </section>
 <section id="rolling-with-advantage">
-<h3>Rolling with advantage<a class="headerlink" href="#rolling-with-advantage" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.3.2. </span>Rolling with advantage<a class="headerlink" href="#rolling-with-advantage" title="Permalink to this headline">¶</a></h3>
 <p>Now that we have the generic roller, we can start using it to do a more complex roll.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/evadventure/rules.py </span>
 
@@ -325,7 +325,7 @@ crazy big so the loop takes forever!</p>
 of two arguments.</p>
 </section>
 <section id="saving-throws">
-<h3>Saving throws<a class="headerlink" href="#saving-throws" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.3.3. </span>Saving throws<a class="headerlink" href="#saving-throws" title="Permalink to this headline">¶</a></h3>
 <p>We want the saving throw to itself figure out if it succeeded or not. This means it needs to know
 the Ability bonus (like STR <code class="docutils literal notranslate"><span class="pre">+1</span></code>). It would be convenient if we could just pass the entity
 doing the saving throw to this method, tell it what type of save was needed, and then
@@ -397,7 +397,7 @@ Attribute is available as <code class="docutils literal notranslate"><span class
 off an object and getting a default value if the attribute is not defined.</p>
 </section>
 <section id="opposed-saving-throw">
-<h3>Opposed saving throw<a class="headerlink" href="#opposed-saving-throw" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.3.4. </span>Opposed saving throw<a class="headerlink" href="#opposed-saving-throw" title="Permalink to this headline">¶</a></h3>
 <p>With the building pieces we already created, this method is simple. Remember that the defense you have
 to beat is always the relevant bonus + 10 in <em>Knave</em>. So if the enemy defends with <code class="docutils literal notranslate"><span class="pre">STR</span> <span class="pre">+3</span></code>, you must
 roll higher than <code class="docutils literal notranslate"><span class="pre">13</span></code>.</p>
@@ -429,7 +429,7 @@ roll higher than <code class="docutils literal notranslate"><span class="pre">13
 </div>
 </section>
 <section id="morale-check">
-<h3>Morale check<a class="headerlink" href="#morale-check" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.3.5. </span>Morale check<a class="headerlink" href="#morale-check" title="Permalink to this headline">¶</a></h3>
 <p>We will make the assumption that the <code class="docutils literal notranslate"><span class="pre">morale</span></code> value is available from the creature simply as
 <code class="docutils literal notranslate"><span class="pre">monster.morale</span></code> - we need to remember to make this so later!</p>
 <p>In <em>Knave</em>, a creature have roll with <code class="docutils literal notranslate"><span class="pre">2d6</span></code> equal or under its morale to not flee or surrender
@@ -447,7 +447,7 @@ when things go south. The standard morale value is 9.</p>
 </div>
 </section>
 <section id="roll-for-healing">
-<h3>Roll for Healing<a class="headerlink" href="#roll-for-healing" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.3.6. </span>Roll for Healing<a class="headerlink" href="#roll-for-healing" title="Permalink to this headline">¶</a></h3>
 <p>To be able to handle healing, we need to make some more assumptions about how we store
 health on game entities. We will need <code class="docutils literal notranslate"><span class="pre">hp_max</span></code> (the total amount of available HP) and <code class="docutils literal notranslate"><span class="pre">hp</span></code>
 (the current health value). We again assume these will be available as <code class="docutils literal notranslate"><span class="pre">obj.hp</span></code> and <code class="docutils literal notranslate"><span class="pre">obj.hp_max</span></code>.</p>
@@ -479,7 +479,7 @@ problem. We will make sure to implement the matching <em>Character</em> class ne
 </div></blockquote>
 </section>
 <section id="rolling-on-a-table">
-<h3>Rolling on a table<a class="headerlink" href="#rolling-on-a-table" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.3.7. </span>Rolling on a table<a class="headerlink" href="#rolling-on-a-table" title="Permalink to this headline">¶</a></h3>
 <p>We occasionally need to roll on a ‘table’ - a selection of choices. There are two main table-types
 we need to support:</p>
 <p>Simply one element per row of the table (same odds to get each result).</p>
@@ -593,7 +593,7 @@ So the result for <code class="docutils literal notranslate"><span class="pre">1
 <code class="docutils literal notranslate"><span class="pre">&quot;5&quot;</span></code> or the value of <code class="docutils literal notranslate"><span class="pre">minval</span></code>.</p>
 </section>
 <section id="roll-for-death">
-<h3>Roll for death<a class="headerlink" href="#roll-for-death" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.3.8. </span>Roll for death<a class="headerlink" href="#roll-for-death" title="Permalink to this headline">¶</a></h3>
 <p>While original Knave suggests hitting 0 HP means insta-death, we will grab the optional “death table”
 from the “prettified” Knave’s optional rules to make it a little less punishing. We also changed the
 result of <code class="docutils literal notranslate"><span class="pre">2</span></code> to ‘dead’ since we don’t simulate ‘dismemberment’ in this tutorial:</p>
@@ -694,7 +694,7 @@ character!</p>
 </section>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.4. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Make a new module <code class="docutils literal notranslate"><span class="pre">mygame/evadventure/tests/test_rules.py</span></code></p>
 </div></blockquote>
@@ -726,7 +726,7 @@ character!</p>
 </pre></div>
 </div>
 <section id="mocking-and-patching">
-<h3>Mocking and patching<a class="headerlink" href="#mocking-and-patching" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">2.4.1. </span>Mocking and patching<a class="headerlink" href="#mocking-and-patching" title="Permalink to this headline">¶</a></h3>
 <aside class="sidebar">
 <p>In <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.tests.test_rules.html"><span class="doc std std-doc">evennia/contrib/tutorials/evadventure/tests/test_rules.py</span></a>
 has a complete example of rule testing.</p>
@@ -751,7 +751,7 @@ them for further help.</p>
 </section>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>This concludes all the core rule mechanics of <em>Knave</em> - the rules used during play. We noticed here
 that we are going to soon need to establish how our <em>Character</em> actually stores data. So we will
 address that next.</p>
@@ -774,16 +774,16 @@ address that next.</p>
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Characters.html" title="Player Characters"
+          <a href="Beginner-Tutorial-Characters.html" title="3. Player Characters"
              >next</a> |</li>
         <li class="right" >
-          <a href="Beginner-Tutorial-Utilities.html" title="Code structure and Utilities"
+          <a href="Beginner-Tutorial-Utilities.html" title="1. Code structure and Utilities"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Intro.html" >Beginner Tutorial</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Rules and dice rolling</a></li> 
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Intro.html" >Part 3: How we get there (example game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2. </span>Rules and dice rolling</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

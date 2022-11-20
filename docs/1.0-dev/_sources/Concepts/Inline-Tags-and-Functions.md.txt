@@ -7,9 +7,7 @@ Evennia understands various extra information embedded in text:
 - [Clickable links](./Clickable-Links.md) - This allows you to provide a text the user can click to execute an
   in-game command. This is on the form `|lc command |lt text |le`.
 - [FuncParser callables](../Components/FuncParser.md) - These are full-fledged function calls on the form `$funcname(args, kwargs)`
-  that lead to calls to Python functions. The parser can be run with different available callables in different
-  circumstances. The parser is run on all outgoing messages if `settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED=True`
-  (disabled by default).
+  that lead to calls to Python functions. The parser can be run with different available callables in different circumstances. The parser is run on all outgoing messages if `settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED=True` (disabled by default).
   
 ```{toctree}
 :hidden"
