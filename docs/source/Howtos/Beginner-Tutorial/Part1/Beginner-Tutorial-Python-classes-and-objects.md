@@ -5,16 +5,16 @@ We have also taken a look at what our game dir looks and what is where. Now we'l
 
 ## Importing things
 
-No one writes something as big as an online game in one single huge file. Instead one breaks up the
-code into separate files (modules). Each module is dedicated to different purposes. Not only does
-it make things cleaner, organized and easier to understand. It also makes it easier to re-use code -
-you just import the resources you need and know you only get just what you requested. This makes
-it much easier to find errors and to know what code is good and which has issues.
+In a [previous lesson](./Beginner-Tutorial-Python-basic-introduction.md#importing-code-from-other-modules) we already learned how to import resources into our code. Now we'll dive a little deeper. 
+
+No one writes something as big as an online game in one single huge file. Instead one breaks up the code into separate files (modules). Each module is dedicated to different purposes. Not only does it make things cleaner, organized and easier to understand. 
+
+Splitting code also makes it easier to re-use - you just import the resources you need and know you only get just what you requested. This makes it easier to spot errors and to know what code is good and which has issues.
 
 > Evennia itself uses your code in the same way - you just tell it where a particular type of code is,
 and it will import and use it (often instead of its defaults).
 
-We have already successfully imported things, for example:
+Here's a familiar example: 
 
     > py import world.test ; world.test.hello_world(me)
     Hello World!
@@ -44,10 +44,7 @@ def hello_world(who):
 - Anything on a line after a `#` is a `comment`, ignored by Python
 ```
 
-The _python_path_ describes the relation between Python resources, both between and inside
-Python _modules_ (that is, files ending with .py). A python-path separates each part of the
-path `.` and always skips the `.py` file endings. Also, Evennia already knows to start looking
-for python resources inside `mygame/` so this should never be specified. Hence
+To reiterate, the _python_path_ describes the relation between Python resources, both between and inside Python _modules_ (that is, files ending with .py).  Paths use `.` and always skips the `.py` file endings. Also, Evennia already knows to start looking for python resources inside `mygame/` so this should never be included.
 
     import world.test
 
@@ -57,7 +54,7 @@ this module to get to the function you want:
     world.test.hello_world(me)
 
 Using `import` like this means that you have to specify the full `world.test` every time you want
-to get to your function. Here's a more powerful form of import:
+to get to your function. Here's an alternative:
 
     from world.test import hello_world
 
@@ -127,6 +124,12 @@ module docstring
 """
 from evennia import DefaultObject
 
+class ObjectParent:
+    """
+    class docstring 
+    """
+    pass
+
 class Object(DefaultObject):
     """
     class docstring
@@ -136,7 +139,7 @@ class Object(DefaultObject):
 
 ```{sidebar} Docstrings vs Comments
 
-A docstring is not the same as a comment (created by `#`). A docstring is not ignored by Python but is an integral part of the thing it is documenting (the module and the class in this case).
+A docstring is not the same as a comment (created by `#`). A docstring is not ignored by Python but is an integral part of the thing it is documenting (the module and the class in this case). For example, we read docstrings to help text for [API documentation](../../../Evennia-API.md); we could not do that with comments.
 ```
 The real file is much longer but we can ignore the multi-line strings (`""" ... """`). These serve
 as documentation-strings, or _docstrings_ for the module (at the top) and the `class` below.
@@ -145,13 +148,12 @@ Below the module doc string we have the import. In this case we are importing a 
 from the core `evennia` library itself. We will dive into this later, for now we just treat this
 as a black box.
 
-Next we have a `class` named `Object`, which _inherits_ from `DefaultObject`. This class doesn't
-actually do anything on its own, its only code (except the docstring) is `pass` which means,
-well, to pass and don't do anything.
+Next we have an empty `class` named `ObjectParent`. It doesn't do anything, its only code (except the docstring) is `pass` which means, well, to pass and don't do anything. Since it also doesn't _inherit_ from anything, it's just an empty container. We will not concern ourselves with it for this tutorial.
 
-We will get back to this module in the [next lesson](./Beginner-Tutorial-Learning-Typeclasses.md). First we need to do a
-little detour to understand what a 'class', an 'object' or 'instance' is. These are fundamental
-things to understand before you can use Evennia efficiently.
+The `class` named `Object`_ inherits_ from `ObjectParent` and  `DefaultObject`.  Since we see that `ObjectParent` is empty, what is interesting is `DefaultObject`. Again, the  `Object` class doesn't
+actually do anything on its own right now, but because of it being a child of `DefaultObject`, it's actually providing a lot of functionality! If this is confusing, read on.
+
+We will get back to this module in the [next lesson](./Beginner-Tutorial-Learning-Typeclasses.md). First we need to do a little detour to understand what a 'class', an 'object' or 'instance' is. These are fundamental things to understand before you can use Evennia efficiently.
 ```{sidebar} OOP
 
 Classes, objects, instances and inheritance are fundamental to Python. This and some other concepts are often clumped together under the term Object-Oriented-Programming (OOP).
@@ -159,9 +161,7 @@ Classes, objects, instances and inheritance are fundamental to Python. This and 
 
 ### Classes and instances
 
-A 'class' can be seen as a 'template' for a 'type' of object. The class describes the basic functionality
-of everyone of that class. For example, we could have a class `Monster` which has resources for moving itself
-from room to room.
+A 'class' can be seen as a 'template' for a 'type' of object. The class describes the basic functionality of everyone of that class. For example, we could have a class `Monster` which has resources for moving itself from room to room.
 
 Open a new file `mygame/typeclasses/monsters.py`. Add the following simple class:
 
@@ -185,11 +185,11 @@ back to the `key` on the class.
 ```{sidebar} Terms
 
 - A `class` is a code template describing a 'type' of something
-- An `object` is an `instance` of a `class`. Like using a mold to cast in soldiers, one class can be `instantiated` into any number of object-instances.
+- An `object` is an `instance` of a `class`. Like using a mold to cast tin soldiers, one class can be `instantiated` into any number of object-instances. Each instance does not need to be identical (much like each tin soldier can be painted differently).
 
 ```
 A class is just a template. Before it can be used, we must create an _instance_ of the class. If
-`Monster` is a class, then an instance is Fluffy, the individual red dragon. You instantiate
+`Monster` is a class, then an instance is `Fluffy`, a specific dragon individual. You instantiate
 by _calling_ the class, much like you would a function:
 
     fluffy = Monster()
@@ -216,8 +216,7 @@ Let's create the sibling of Fluffy, Cuddly:
     Monster is moving!
 
 We now have two dragons and they'll hang around until with call `quit()` to exit this Python
-instance. We can have them move as many times as we want. But no matter how many dragons we
-create, they will all show the same printout since `key` is always fixed as "Monster".
+instance. We can have them move as many times as we want. But no matter how many dragons we create, they will all show the same printout since `key` is always fixed as "Monster".
 
 Let's make the class a little more flexible:
 
@@ -259,13 +258,11 @@ Either way you'll need to go into `py` again:
     fluffy.move_around()
     Fluffy is moving!
 
-Now we passed `"Fluffy"` as an argument to the class. This went into `__init__` and set `self.key`, which we
-later used to print with the right name! Again, note that we didn't include `self` when calling.
+Now we passed `"Fluffy"` as an argument to the class. This went into `__init__` and set `self.key`, which we later used to print with the right name! 
 
 ### What's so good about objects?
 
-So far all we've seen a class do is to behave our first `hello_world` function but more complex. We
-could just have made a function:
+So far all we've seen a class do is to behave like our first `hello_world` function but being more complex. We could just have made a function:
 
 ```python
      def monster_move_around(key):
@@ -276,13 +273,12 @@ The difference between the function and an instance of a class (the object), is 
 object retains _state_. Once you called the function it forgets everything about what you called
 it with last time. The object, on the other hand, remembers changes:
 
-    > fluffy.key = "Cuddly"
+    > fluffy.key = "Fluffy, the red dragon"
     > fluffy.move_around()
-    Cuddly is moving!
+    Fluffy, the red dragon is moving!
 
-The `fluffy` object's `key` was changed to "Cuddly" for as long as it's around. This makes objects
-extremely useful for representing and remembering collections of data - some of which can be other
-objects in turn:
+The `fluffy` object's `key` was changed for as long as it's around. This makes objects extremely useful for representing and remembering collections of data - some of which can be other
+objects in turn. Some examples:
 
 - A player character with all its stats
 - A monster with HP
@@ -295,8 +291,7 @@ objects in turn:
 
 ### Classes can have children
 
-Classes can _inherit_ from each other. A "child" class will inherit everything from its "parent" class. But if
-the child adds something with the same name as its parent, it will _override_ whatever it got from its parent.
+Classes can _inherit_ from each other. A "child" class will inherit everything from its "parent" class. But if the child adds something with the same name as its parent, it will _override_ whatever it got from its parent. 
 
 Let's expand `mygame/typeclasses/monsters.py` with another class:
 
@@ -316,7 +311,7 @@ class Monster:
 
 class Dragon(Monster):
     """
-    This is a dragon-specific monster.
+    This is a dragon monster.
     """
 
     def move_around(self):
@@ -330,8 +325,7 @@ class Dragon(Monster):
 
 ```
 
-We added some docstrings for clarity. It's always a good idea to add doc strings; you can do so also for methods,
-as exemplified for the new `firebreath` method.
+We added some docstrings for clarity. It's always a good idea to add doc strings; you can do so also for methods, as exemplified for the new `firebreath` method.
 
 We created the new class `Dragon` but we also specified that `Monster` is the _parent_ of `Dragon` but adding
 the parent in parenthesis. `class Classname(Parent)` is the way to do this.
@@ -342,7 +336,7 @@ It's possible to add more comma-separated parents to a class. You should usually
 
 ```
 
-Let's try out our new class. First `reload` the server and the do
+Let's try out our new class. First `reload` the server and then:
 
     > py
     > from typeclasses.monsters import Dragon
@@ -352,13 +346,9 @@ Let's try out our new class. First `reload` the server and the do
     > smaug.firebreath()
     Smaug breathes fire!
 
-Because we didn't implement `__init__` in `Dragon`, we got the one from `Monster` instead. But since we
-implemented our own `move_around` in `Dragon`, it _overrides_ the one in `Monster`. And `firebreath` is only
-available for `Dragon`s of course. Having that on `Monster` would not have made much sense, since not every monster
-can breathe fire.
+Because we didn't (re)implement `__init__` in `Dragon`, we got the one from `Monster`. We did implement our own `move_around` in `Dragon`, so it _overrides_ the one in `Monster`. And `firebreath` is only available for `Dragon`s. Having that on `Monster` would not have made much sense, since not every monster can breathe fire.
 
-One can also force a class to use resources from the parent even if you are overriding some of it. This is done
-with the `super()` method. Modify your `Dragon` class as follows:
+One can also force a class to use resources from the parent even if you are overriding some of it. This is done with the `super()` method. Modify your `Dragon` class as follows:
 
 
 ```python
@@ -372,13 +362,12 @@ class Dragon(Monster):
 
     # ...
 ```
-> Keep `Monster` and the `firebreath` method, `# ...` indicates the rest of the code is untouched.
->
 
-The `super().move_around()` line means that we are calling `move_around()` on the parent of the class. So in this
-case, we will call `Monster.move_around` first, before doing our own thing.
+> Keep `Monster` and the `firebreath` method. The  `# ...` above indicates the rest of the code is unchanged.
 
-Now `reload` the server and then:
+The `super().move_around()` line means that we are calling `move_around()` on the parent of the class. So in this case, we will call `Monster.move_around` first, before doing our own thing.
+
+To see, `reload` the server and then:
 
     > py
     > from typeclasses.monsters import Dragon
@@ -387,18 +376,13 @@ Now `reload` the server and then:
     Smaug is moving!
     The world trembles.
 
-We can see that `Monster.move_around()` is calls first and prints "Smaug is moving!", followed by the extra bit
-about the trembling world we added in the `Dragon` class.
+We can see that `Monster.move_around()` is called first and prints "Smaug is moving!", followed by the extra bit about the trembling world from the `Dragon` class.
 
-Inheritance is very powerful because it allows you to organize and re-use code while only adding the special things
-you want to change. Evennia uses this concept a lot.
+Inheritance is a powerful concept. It allows you to organize and re-use code while only adding the special things you want to change. Evennia uses this a lot.
 
 ## Summary
 
-We have created our first dragons from classes. We have learned a little about how you _instantiate_ a class
-into an _object_. We have seen some examples of _inheritance_ and we tested to _override_ a method in the parent
-with one in the child class. We also used `super()` to good effect.
+We have created our first dragons from classes. We have learned a little about how you _instantiate_ a class into an _object_. We have seen some examples of _inheritance_ and we tested to _override_ a method in the parent with one in the child class. We also used `super()` to good effect.
 
-We have used pretty much raw Python so far. In the coming lessons we'll start to look at the extra bits that Evennia
-provides. But first we need to learn just where to find everything.
+We have used pretty much raw Python so far. In the coming lessons we'll start to look at the extra bits that Evennia provides. But first we need to learn just where to find everything.
 

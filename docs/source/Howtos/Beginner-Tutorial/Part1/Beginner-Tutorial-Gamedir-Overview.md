@@ -1,31 +1,25 @@
 # Overview of your new Game Dir
 
-Next we will take a little detour to look at the _Tutorial World_. This is a little solo adventure
-that comes with Evennia, a showcase for some of the things that are possible. 
+Until now we have 'run the game' a bit and started playing with Python inside Evennia.
+It is time to start to look at how things look 'outside of the game'. 
 
-Now we have 'run the game' a bit and started with our forays into Python from inside Evennia.
-It is time to start to look at how things look 'outside of the game'. Let's do a tour of your game-dir 
-Like everywhere in the docs we'll assume it's called `mygame`. 
+Let's do a tour of your game-dir (we assume it's called `mygame`). 
 
 > When looking through files, ignore files ending with `.pyc` and the
 `__pycache__` folder if it exists. This is internal Python compilation files that you should never 
 > need to touch. Files `__init__.py` is also often empty and can be ignored (they have to do with
 > Python package management).
 
-You may have noticed when we were building things in-game that we would often refer to code through 
-"python paths", such as 
+You may have noticed when we were building things in-game that we would often refer to code through  "python paths", such as 
+
+    create/drop button:tutorial_examples.red_button.RedButton
+	
+This is a fundamental aspect of coding Evennia - _you create code and then you tell Evennia where that code is and when it should be used_. Above we told it to create a red button by pulling from specific code  in the `contrib/` folder. The same principle is true everywhere. So it's important to know where code is and how you point to it correctly.
 
 ```{sidebar} Python-paths
-
 A 'python path' uses '.' instead of '/' or '`\\`' and skips the `.py` ending of files. It can also point to  the code contents of python files. Since Evennia is already  looking for code in your game dir, your python paths can start  from there. So a path `/home/foo/devel/mygame/commands/command.py` would translate to a Python-path `commands.command`. 
 ```
 
-    create/drop button:tutorial_examples.red_button.RedButton
-
-This is a fundamental aspect of coding Evennia - _you create code and then you tell Evennia where that
-code is and when it should be used_. Above we told it to create a red button by pulling from specific code 
-in the `contribs/` folder but the same principle is true everywhere. So it's important to know where code is
-and how you point to it correctly.
 
  - `mygame/`
     - `commands/` - This holds all your custom commands (user-input handlers). You both add your own
@@ -42,11 +36,8 @@ and how you point to it correctly.
     - `world/` - this is a "miscellaneous" folder holding everything related to the world you are
     building, such as build scripts and rules modules that don't fit with one of the other folders.
 
-> The `server/` subfolder should remain the way it is - Evennia expects this. But you could in 
-> principle change the structure of the rest of your game dir as best fits your preference. 
-> Maybe you don't need a world/ folder but prefer many folders with different aspects of your world?
-> Or a new folder 'rules' for your RPG rules? This is fine. If you move things around you just need 
-> to update Evennia's default settings to point to the right places in the new structure. 
+> The `server/` subfolder should remain the way it is - Evennia expects this. But you can change the structure of the rest of your game dir as best fits your preferences. 
+>  Maybe you don't want a single world/ folder but prefer many folders with different aspects of your world? A new folder 'rules' for your RPG rules? Group your commands with your objects instead of having them separate? This is fine. If you move things around you just need  to update Evennia's default settings to point to the right places in the new structure. 
 
 ## commands/
 
@@ -91,9 +82,8 @@ Common for the settings is that you generally will never them directly via their
 knows where they are and will read them to configure itself at startup. 
 
 - `settings.py` - this is by far the most important file. It's nearly empty by default, rather you
-  are expected to copy&paste the changes you need from [evennia/default_settings.py](github:evennia/default_settings.py).
-  The default settings file is extensively documented. Importing/accessing the values in the settings
-  file is done in a special way, like this: 
+  are expected to copy&paste the changes you need from [evennia/default_settings.py](../../../Setup/Settings-Default.md).
+  The default settings file is extensively documented. Importing/accessing the values in the settings file is done in a special way, like this: 
             
         from django.conf import settings 
 
@@ -101,8 +91,7 @@ knows where they are and will read them to configure itself at startup.
     
         telnet_port = settings.TELNET_PORT
         
-    You cannot assign to the settings file dynamically; you must change the `settings.py` file directly to 
-    change a setting.
+    You cannot assign to the settings file dynamically; you must change the `settings.py` file directly to  change a setting. See [Settings](../../../Setup/Settings.md) documentation for more details.
 - `secret_settings.py` - If you are making your code effort public, you may not want to share all settings online. 
     There may be server-specific secrets or just fine-tuning for your game systems that you prefer be kept secret
     from the players. Put such settings in here, it will override values in `settings.py` and not be included in 
@@ -162,13 +151,11 @@ be the same after a server reboot.
     [Exits](../../../Components/Objects.md#exits) is another subclass of Object. Exits link one Room to another. 
 - [scripts.py](github:evennia/game_template/typeclasses/scripts.py) (Python-path: `typeclasses.scripts`) - 
     [Scripts](../../../Components/Scripts.md) are 'out-of-character' objects. They have no location in-game and can serve as basis for 
-    anything that needs database persistence, such as combat, weather, or economic systems. They also
-    have the ability to execute code repeatedly, on a timer. 
+    anything that needs database persistence, such as combat, weather, or economic systems. They also have the ability to execute code repeatedly, on a timer. 
     
 ### web/
 
-This folder contains folders for overriding the default web-presence of Evennia with your own designs.
-Most of these folders are empty except for a README file or a subset of other empty folders. 
+This folder contains folders for overriding the default web-presence of Evennia with your own designs. Most of these folders are empty except for a README file or a subset of other empty folders. See [the Web overview](../../../Components/Components-Overview.md#web-components) for more details (we'll also get back to the web later in this beginner tutorial).
 
 - `media/` - this empty folder is where you can place your own images or other media files you want the
     web server to serve. If you are releasing your game with a lot of media (especially if you want videos) you 
@@ -192,8 +179,5 @@ people change and re-structure this in various ways to better fit their ideas.
 - [batch_cmds.ev](github:evennia/game_template/world/batch_cmds.ev) - This is an `.ev` file, which is essentially
     just a list of Evennia commands to execute in sequence. This one is empty and ready to expand on. The 
     [Tutorial World](./Beginner-Tutorial-Tutorial-World.md) was built with such a batch-file.
-- [prototypes.py](github:evennia/game_template/world/prototypes.py) - A [prototype](../../../Components/Prototypes.md) is a way
-    to easily vary objects without changing their base typeclass. For example, one could use prototypes to 
-    tell that Two goblins, while both of the class 'Goblin' (so they follow the same code logic), should have different 
-    equipment, stats and looks.
+- [prototypes.py](github:evennia/game_template/world/prototypes.py) - A [prototype](../../../Components/Prototypes.md) is a way to easily vary objects without changing their base typeclass. For example, one could use prototypes to  tell that Two goblins, while both of the class 'Goblin' (so they follow the same code logic), should have different  equipment, stats and looks.
     
