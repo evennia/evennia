@@ -74,7 +74,7 @@ is to use the `.format` _method_ of the string:
     This is a good idea!
 
 ```{sidebar} Functions and Methods
-- Function: Something that performs and action when you `call` it with zero or more `arguments`. A function is stand-alone in a python module, like `print()`
+- Function: Something that performs and action when you call it with zero or more `arguments`. A function is stand-alone in a python module, like `print()`
 - Method: A function that sits "on" an object, like `obj.msg()`.
 
 ```
@@ -119,8 +119,7 @@ trouble, use the Evennia web client.
 
 What happened here was that we _assigned_ the string `"awesome sauce"` to a _variable_ we chose
 to name `a`. In the next statement, Python remembered what `a` was and we passed that into `format()`
-to get the output. If you replaced the value of `a` with something else in between, _that_ would be printed
-instead.
+to get the output. If you replaced the value of `a` with something else in between, _that_ would be printed instead.
 
 Here's the stat-example again, moving the stats to variables (here we just set them, but in a real
 game they may be changed over time, or modified by circumstance):
@@ -128,13 +127,18 @@ game they may be changed over time, or modified by circumstance):
     > py stren, dext, intel = 13, 14, 8 ; print("STR: {}, DEX: {}, INT: {}".format(stren, dext, intel))
     STR: 13, DEX: 14, INT: 8
 
-The point is that even if the values of the stats change, the print() statement would not change - it just keeps
-pretty-printing whatever is given to it.
+The point is that even if the values of the stats change, the print() statement would not change - it just keeps pretty-printing whatever is given to it.
+
+You can also use named markers, like this: 
+
+     > py print("STR: {stren}, INT: {intel}, STR again: {stren}".format(dext=10, intel=18, stren=9))
+     STR: 9, INT: 18, Str again: 9
+
+the `key=value` pairs we add are called _keyword arguments_ for the `format()` method. Each named argument will go to the matching `{key}` in the string. When using keywords, the order we add them doesn't matter. We have no `{dext}` and two `{stren}` in the string, and that works fine.
 
 ### f-strings
 
-Using `.format()` is convenient (and there is a [lot more](https://www.w3schools.com/python/ref_string_format.asp)
-you can do with it). But the _f-string_ can be even more convenient. An
+Using `.format()` is convenient (and there is a [lot more](https://www.w3schools.com/python/ref_string_format.asp) you can do with it). But the _f-string_ can be even more convenient. An
 f-string looks like a normal string ... except there is an `f` front of it, like this:
 
     f"this is now an f-string."
@@ -144,7 +148,7 @@ An f-string on its own is just like any other string. But let's redo the example
     > py a = "awesome sauce" ; print(f"This is {a}!")
     This is awesome sauce!
 
-We could just insert that `a` variable directly into the f-string using `{a}`. Fewer parentheses to
+We insert that `a` variable directly into the f-string using `{a}`. Fewer parentheses to
 remember and arguable easier to read as well.
 
     > py stren, dext, intel = 13, 14, 8 ; print(f"STR: {stren}, DEX: {dext}, INT: {intel}")
@@ -168,7 +172,7 @@ gives the normal text color. You can also use RGB (Red-Green-Blue) values from 0
 > If you don't see the expected color, your client or terminal may not support Xterm256 (or
   color at all). Use the Evennia webclient.
 
-Use the commands `color ansi` or `color xterm` to see which colors are available. Experiment!
+Use the commands `color ansi` or `color xterm` to see which colors are available. Experiment! You can also read a lot more in the [Colors](../../../Concepts/Colors.md) documentation.
 
 ## Importing code from other modules
 
@@ -209,11 +213,9 @@ If you make some error (we'll cover how to handle errors below), fix the error i
 run the `reload` command in-game for your changes to take effect.
 
 So importing `world.test` actually means importing `world/test.py`. Think of the period `.` as
-replacing `/` (or `\` for Windows) in your path. The `.py` ending of `test.py` is also never
-included in this "Python-path", but _only_ files with that ending can be imported this way.
-Where is `mygame` in that Python-path? The answer is that Evennia has already told Python that
-your `mygame` folder is a good place to look for imports. So we don't include `mygame` in the
-path - Evennia handles this for us.
+replacing `/` (or `\` for Windows) in your path. 
+
+The `.py` ending of `test.py` is never included in this "Python-path", but _only_ files with that ending can be imported this way. Where is `mygame` in that Python-path? The answer is that Evennia has already told Python that your `mygame` folder is a good place to look for imports. So we should not  include `mygame` in the path - Evennia handles this for us.
 
 When you import the module, the top "level" of it will execute. In this case, it will immediately
 print "Hello World".
@@ -222,10 +224,7 @@ Now try to run this a second time:
 
     > py import world.test
 
-You will *not* see any output this second time or any subsequent times! This is not a bug. Rather
-it is because of how Python importing works - it stores all imported modules and will
-avoid importing them more than once. So your `print` will only run the first time, when the module
-is first imported.
+You will *not* see any output this or any subsequent times! This is not a bug. Rather it is because of how Python importing works - it stores all imported modules and will avoid importing them more than once. So your `print` will only run the first time, when the module is first imported.
 
 Try this:
 
@@ -240,8 +239,7 @@ Now we see it again. The `reload` wiped the server's memory of what was imported
 import it anew. You'd have to do this every time you wanted the print to show though, which is
 not very useful.
 
-> We'll get back to more advanced ways to import code in later tutorial sections - this is an
-> important topic. But for now, let's press on and resolve this particular problem.
+> We'll get back to more advanced ways to import code in [a later lesson](./Beginner-Tutorial-Python-classes-and-objects.md#importing-things) - this is an important topic. But for now, let's press on and resolve this particular problem.
 
 
 ### Our first own function
@@ -434,8 +432,8 @@ On the game command-line, let's create a mirror:
 ```{sidebar} Creating objects
 
 The `create` command was first used to create boxes in the
-`Building Stuff <Building-Quickstart>`_ tutorial. Note how it
-uses a "python-path" to describe where to load the mirror's code from.
+[Building Stuff](./Beginner-Tutorial-Building-Quickstart.md) tutorial. You should now recognize 
+that it uses a "python-path" to tell Evennia where to load the mirror's code from.
 ```
 
 A mirror should appear in your location.
@@ -498,7 +496,7 @@ inside Evennia.
 
     > py
     Evennia Interactive Python mode
-    Python 3.7.1 (default, Oct 22 2018, 11:21:55)
+    Python 3.11.0 (default, Nov 22 2022, 11:21:55)
     [GCC 8.2.0] on Linux
     [py mode - quit() to exit]
 
@@ -512,15 +510,13 @@ commands).
     Hello World
     [py mode - quit() to exit]
 
-Note that we didn't need to put `py` in front now. The system will also echo your input (that's the bit after
-the `>>>`). For brevity in this tutorual we'll turn the echo off. First exit `py` and then start again with the
-`/noecho` flag.
+Note that we didn't need to put `py` in front now. The system will also echo your input (that's the bit after the `>>>`). For brevity in this tutorual we'll turn the echo off. First exit `py` and then start again with the `/noecho` flag.
 
     > quit()
     Closing the Python console.
     > py/noecho
     Evennia Interactive Python mode (no echoing of prompts)
-    Python 3.7.1 (default, Oct 22 2018, 11:21:55)
+    Python 3.11.0 (default, Nov 22 2022, 11:21:56)
     [GCC 8.2.0] on Linux
     [py mode - quit() to exit]
 
@@ -528,14 +524,14 @@ the `>>>`). For brevity in this tutorual we'll turn the echo off. First exit `py
 
 - Start with `py`.
 - Use `py/noecho` if you don't want your input to be echoed for every line.
-- All your inputs will now be interpreted as Python code.
+- _All_ your inputs will now be interpreted as Python code.
 - Exit with `quit()`.
 ```
 
 We can now enter multi-line Python code:
 
     > a = "Test"
-    > print(f"This is a {a}."}
+    > print(f"This is a {a}.")
     This is a Test.
 
 Let's try to define a function:
@@ -554,8 +550,7 @@ Some important things above:
   for Python to know it's part of the function body.
 - We expand the `hello_world` function with another argument `txt`. This allows us to send any text, not just
   "Hello World" over and over.
-- To tell `py` that no more lines will be added to the function body, we end with an empty input. When
-  the normal prompt on how to exit returns, we know we are done.
+- To tell `py` that no more lines will be added to the function body, we end with an empty input. When the normal prompt returns, we know we are done.
 
 Now we have defined a new function. Let's try it out:
 
@@ -645,5 +640,4 @@ first function, fixed an error and even searched and talked to a mirror! Being a
 python inside and outside of the game is an important skill for testing and debugging, but in
 practice you will be writing most your code in Python modules.
 
-To that end we also created a first new Python module in the `mygame/` game dir, then imported and used it.
-Now let's look at the rest of the stuff you've got going on inside that `mygame/` folder ...
+To that end we also created a first new Python module in the `mygame/` game dir, then imported and used it. Now let's look at the rest of the stuff you've got going on inside that `mygame/` folder ...
