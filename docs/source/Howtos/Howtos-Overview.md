@@ -72,6 +72,7 @@ Web-Add-a-wiki.md
 Web-Character-Generation.md
 Web-Character-View-Tutorial.md
 Web-Help-System-Tutorial.md
+Web-Extending-the-REST-API
 
 ```
 ## Deep-dives
