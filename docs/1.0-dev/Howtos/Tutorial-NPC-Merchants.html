@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>NPC merchants &#8212; Evennia 1.0-dev documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Building a mech tutorial" href="Building-a-mech-tutorial.html" />
+    <link rel="prev" title="NPCs reacting to your presence" href="Tutorial-NPC-Reacting.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Building-a-mech-tutorial.html" title="Building a mech tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Tutorial-NPC-Reacting.html" title="NPCs reacting to your presence"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">NPC merchants</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>  
+
+    <div class="document">
+
+      <div class="documentwrapper">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">NPC merchants</a><ul>
+<li><a class="reference internal" href="#making-the-merchant-class">Making the merchant class</a></li>
+<li><a class="reference internal" href="#coding-the-shopping-menu">Coding the shopping menu</a></li>
+<li><a class="reference internal" href="#the-shop-is-open-for-business">The shop is open for business!</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Tutorial-NPC-Reacting.html"
+                        title="previous chapter">NPCs reacting to your presence</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Building-a-mech-tutorial.html"
+                        title="next chapter">Building a mech tutorial</a></p>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Howtos/Tutorial-NPC-Merchants.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com">Home page</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Evennia Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Versions</h3>
+<ul>
+  <li><a href="Tutorial-NPC-Merchants.html">1.0-dev (develop branch)</a></li>
+ <ul>
+  <li><a href="../0.9.5/index.html">0.9.5 (v0.9.5 branch)</a></li>
+
+</ul>
+
+        </div>
+      </div>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="npc-merchants">
+<h1>NPC merchants<a class="headerlink" href="#npc-merchants" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>*** Welcome to ye Old Sword shop! ***
+   Things for sale (choose 1-3 to inspect, quit to exit):
+_________________________________________________________
+1. A rusty sword (5 gold)
+2. A sword with a leather handle (10 gold)
+3. Excalibur (100 gold)
+</pre></div>
+</div>
+<p>This will introduce an NPC able to sell things. In practice this means that when you interact with them you’ll get shown a <em>menu</em> of choices. Evennia  provides the <a class="reference internal" href="../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a> utility to easily create in-game menus.</p>
+<p>We will store all the merchant’s wares in their inventory. This means that they may stand in an actual shop room, at a market or wander the road.  We will also use ‘gold’ as an example currency.<br />
+To enter the shop, you’ll just need to stand in the same room and use the <code class="docutils literal notranslate"><span class="pre">buy/shop</span></code> command.</p>
+<section id="making-the-merchant-class">
+<h2>Making the merchant class<a class="headerlink" href="#making-the-merchant-class" title="Permalink to this headline">¶</a></h2>
+<p>The merchant will respond to you giving the <code class="docutils literal notranslate"><span class="pre">shop</span></code> or <code class="docutils literal notranslate"><span class="pre">buy</span></code> command in their presence.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in for example mygame/typeclasses/merchants.py </span>
+
+<span class="kn">from</span> <span class="nn">typeclasses.objects</span> <span class="kn">import</span> <span class="n">Object</span>
+<span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">CmdSet</span><span class="p">,</span> <span class="n">EvMenu</span>
+
+<span class="k">class</span> <span class="nc">CmdOpenShop</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Open the shop! </span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        shop/buy </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;shop&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;buy&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># this will sit on the Merchant, which is self.obj. </span>
+        <span class="c1"># the self.caller is the player wanting to buy stuff.    </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="p">)</span>
+        
+
+<span class="k">class</span> <span class="nc">MerchantCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdOpenShop</span><span class="p">())</span>
+
+
+<span class="k">class</span> <span class="nc">NPCMerchant</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+
+     <span class="k">def</span> <span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">cmdset</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">MerchantCmdSet</span><span class="p">)</span>
+
+     <span class="k">def</span> <span class="nf">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shopper</span><span class="p">):</span>
+         <span class="n">menunodes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># TODO! </span>
+         <span class="n">shopname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">shopname</span> <span class="ow">or</span> <span class="s2">&quot;The shop&quot;</span>
+         <span class="n">EvMenu</span><span class="p">(</span><span class="n">shopper</span><span class="p">,</span> <span class="n">menunodes</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;shop_start&quot;</span><span class="p">,</span> 
+                <span class="n">shopname</span><span class="o">=</span><span class="n">shopname</span><span class="p">,</span> <span class="n">shopkeeper</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">wares</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>We could also have put the commands in a separate module, but for compactness, we put it all with the merchant typeclass.</p>
+<p>Note that we make the merchant an <code class="docutils literal notranslate"><span class="pre">Object</span></code>! Since we don’t give them any other commands, it makes little sense to let them be a <code class="docutils literal notranslate"><span class="pre">Character</span></code>.</p>
+<p>We make a very simple <code class="docutils literal notranslate"><span class="pre">shop</span></code>/<code class="docutils literal notranslate"><span class="pre">buy</span></code> Command and make sure to add it on the merchant in its own cmdset.</p>
+<p>We initialize <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> on the <code class="docutils literal notranslate"><span class="pre">shopper</span></code> but we haven’t created any <code class="docutils literal notranslate"><span class="pre">menunodes</span></code> yet, so this will not actually do much at this point. It’s important that we we pass <code class="docutils literal notranslate"><span class="pre">shopname</span></code>, <code class="docutils literal notranslate"><span class="pre">shopkeeper</span></code> and <code class="docutils literal notranslate"><span class="pre">wares</span></code> into the menu, it means they will be made available as properties on the EvMenu instance - we will be able to access them from inside the menu.</p>
+</section>
+<section id="coding-the-shopping-menu">
+<h2>Coding the shopping menu<a class="headerlink" href="#coding-the-shopping-menu" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../Components/EvMenu.html"><span class="doc std std-doc">EvMenu</span></a> splits the menu into <em>nodes</em> represented by Python functions. Each node represents a stop in the menu where the user has to make a choice.</p>
+<p>For simplicity, we’ll code the shop interface above the <code class="docutils literal notranslate"><span class="pre">NPCMerchant</span></code> class in the same module.</p>
+<p>The start node of the shop named “ye Old Sword shop!” will look like this if there are only 3 wares to sell:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>*** Welcome to ye Old Sword shop! ***
+   Things for sale (choose 1-3 to inspect, quit to exit):
+_________________________________________________________
+1. A rusty sword (5 gold)
+2. A sword with a leather handle (10 gold)
+3. Excalibur (100 gold)
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/merchants.py</span>
+
+<span class="c1"># top of module, above NPCMerchant class.</span>
+
+<span class="k">def</span> <span class="nf">node_shopfront</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;This is the top-menu screen.&quot;</span>
+
+    <span class="c1"># made available since we passed them to EvMenu on start </span>
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">ndb</span><span class="o">.</span><span class="n">_evmenu</span>
+    <span class="n">shopname</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">shopname</span>
+    <span class="n">shopkeeper</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">shopkeeper</span> 
+    <span class="n">wares</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">wares</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;*** Welcome to </span><span class="si">{</span><span class="n">shopname</span><span class="si">}</span><span class="s2">! ***</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">wares</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   Things for sale (choose 1-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">wares</span><span class="p">)</span><span class="si">}</span><span class="s2"> to inspect); quit to exit:&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;   There is nothing for sale; quit to exit.&quot;</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ware</span> <span class="ow">in</span> <span class="n">wares</span><span class="p">:</span>
+        <span class="c1"># add an option for every ware in store</span>
+        <span class="n">gold_val</span> <span class="o">=</span> <span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">gold_val</span><span class="si">}</span><span class="s2"> gold)&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;inspect_and_buy&quot;</span><span class="p">,</span> 
+                                 <span class="p">{</span><span class="s2">&quot;selected_ware&quot;</span><span class="p">:</span> <span class="n">ware</span><span class="p">})</span>
+                       <span class="p">})</span>
+                       
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+</pre></div>
+</div>
+<p>Inside the node we can access the menu on the caller as <code class="docutils literal notranslate"><span class="pre">caller.ndb._evmenu</span></code>. The extra keywords we passed into <code class="docutils literal notranslate"><span class="pre">EvMenu</span></code> are available on this menu instance. Armed with this we can easily present a shop interface. Each option will become a numbered choice on this screen.</p>
+<p>Note how we pass the <code class="docutils literal notranslate"><span class="pre">ware</span></code> with each option and label it <code class="docutils literal notranslate"><span class="pre">selected_ware</span></code>. This will be accessible in the next node’s <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> argument</p>
+<p>If a player choose one of the wares, they should be able to inspect it. Here’s how it should look if they selected <code class="docutils literal notranslate"><span class="pre">1</span></code> in ye Old Sword shop:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">You</span> <span class="n">inspect</span> <span class="n">A</span> <span class="n">rusty</span> <span class="n">sword</span><span class="p">:</span>
+
+<span class="n">This</span> <span class="ow">is</span> <span class="n">an</span> <span class="n">old</span> <span class="n">weapon</span> <span class="n">maybe</span> <span class="n">once</span> <span class="n">used</span> <span class="n">by</span> <span class="n">soldiers</span> <span class="ow">in</span> <span class="n">some</span>
+<span class="n">long</span> <span class="n">forgotten</span> <span class="n">army</span><span class="o">.</span> <span class="n">It</span> <span class="ow">is</span> <span class="n">rusty</span> <span class="ow">and</span> <span class="ow">in</span> <span class="n">bad</span> <span class="n">condition</span><span class="o">.</span>
+<span class="n">__________________________________________________________</span>
+<span class="mf">1.</span> <span class="n">Buy</span> <span class="n">A</span> <span class="n">rusty</span> <span class="n">sword</span> <span class="p">(</span><span class="mi">5</span> <span class="n">gold</span><span class="p">)</span>
+<span class="mf">2.</span> <span class="n">Look</span> <span class="k">for</span> <span class="n">something</span> <span class="k">else</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If you buy, you’ll see</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>You pay 5 gold and purchase A rusty sword!
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>You cannot afford 5 gold for A rusty sword!
+</pre></div>
+</div>
+<p>Either way you should end up back at the top level of the shopping menu again and can continue browsing or quit the menu with <code class="docutils literal notranslate"><span class="pre">quit</span></code>.</p>
+<p>Here’s how it looks in code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/typeclasses/merchants.py </span>
+
+<span class="c1"># right after the other node</span>
+
+<span class="k">def</span> <span class="nf">_buy_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;Called if buyer chooses to buy&quot;</span>
+    <span class="n">selected_ware</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;selected_ware&quot;</span><span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">selected_ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span>
+    <span class="n">wealth</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold</span> <span class="ow">or</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">wealth</span> <span class="o">&gt;=</span> <span class="n">value</span><span class="p">:</span>
+        <span class="n">rtext</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You pay </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> gold and purchase </span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">!&quot;</span>
+        <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold</span> <span class="o">-=</span> <span class="n">value</span>
+        <span class="n">move_to</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">move_type</span><span class="o">=</span><span class="s2">&quot;buy&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rtext</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You cannot afford </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> gold for </span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">!&quot;</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">rtext</span><span class="p">)</span>
+    <span class="c1"># no matter what, we return to the top level of the shop</span>
+    <span class="k">return</span> <span class="s2">&quot;shopfront&quot;</span>
+
+<span class="k">def</span> <span class="nf">node_inspect_and_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="s2">&quot;Sets up the buy menu screen.&quot;</span>
+
+    <span class="c1"># passed from the option we chose </span>
+    <span class="n">selected_ware</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;selected_ware&quot;</span><span class="p">]</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">selected_ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;You inspect </span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">:</span><span class="se">\n\n</span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">gold_val</span> <span class="o">=</span> <span class="n">ware</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">gold_value</span> <span class="ow">or</span> <span class="mi">1</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="p">({</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Buy </span><span class="si">{</span><span class="n">ware</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">gold_val</span><span class="si">}</span><span class="s2"> gold&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">_buy_item</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Look for something else&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;goto&quot;</span><span class="p">:</span> <span class="s2">&quot;shopfront&quot;</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">options</span>
+</pre></div>
+</div>
+<p>In this node we grab the <code class="docutils literal notranslate"><span class="pre">selected_ware</span></code> from <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> - this we pased along from the option on the previous node. We display its description and value. If the user buys, we reroute through the <code class="docutils literal notranslate"><span class="pre">_buy_item</span></code> helper function (this is not a node, it’s just a callable that must return the name of the next node to go to.). In <code class="docutils literal notranslate"><span class="pre">_buy_item</span></code> we check if the buyer can affort the ware, and if it can we move it to their inventory. Either way, this method returns <code class="docutils literal notranslate"><span class="pre">shop_front</span></code> as the next node.</p>
+<p>We have been referring to two nodes here: <code class="docutils literal notranslate"><span class="pre">&quot;shopfront&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;inspect_and_buy&quot;</span></code> , we should map them to the code in the menu. Scroll down to the <code class="docutils literal notranslate"><span class="pre">NPCMerchant</span></code> class in the same module and find that unfinished <code class="docutils literal notranslate"><span class="pre">open_shop</span></code> method again:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in /mygame/typeclasses/merchants.py</span>
+
+<span class="k">def</span> <span class="nf">node_shopfront</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># ... </span>
+
+<span class="k">def</span> <span class="nf">_buy_item</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+<span class="k">def</span> <span class="nf">node_inspect_and_buy</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">raw_string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># ... </span>
+
+<span class="k">class</span> <span class="nc">NPCMerchant</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+
+     <span class="c1"># ...</span>
+
+     <span class="k">def</span> <span class="nf">open_shop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shopper</span><span class="p">):</span>
+         <span class="n">menunodes</span> <span class="o">=</span> <span class="p">{</span>
+             <span class="s2">&quot;shopfront&quot;</span><span class="p">:</span> <span class="n">node_shopfront</span><span class="p">,</span>
+             <span class="s2">&quot;inspect_and_buy&quot;</span><span class="p">:</span> <span class="n">node_inspect_and_buy</span>
+         <span class="p">}</span>
+         <span class="n">shopname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">shopname</span> <span class="ow">or</span> <span class="s2">&quot;The shop&quot;</span>
+         <span class="n">EvMenu</span><span class="p">(</span><span class="n">shopper</span><span class="p">,</span> <span class="n">menunodes</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;shop_start&quot;</span><span class="p">,</span> 
+                <span class="n">shopname</span><span class="o">=</span><span class="n">shopname</span><span class="p">,</span> <span class="n">shopkeeper</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">wares</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>We now added the nodes to the Evmenu under their right labels. The merchant is now ready!</p>
+</section>
+<section id="the-shop-is-open-for-business">
+<h2>The shop is open for business!<a class="headerlink" href="#the-shop-is-open-for-business" title="Permalink to this headline">¶</a></h2>
+<p>Make sure to <code class="docutils literal notranslate"><span class="pre">reload</span></code>.</p>
+<p>Let’s try it out by creating the merchant and a few wares in-game. Remember that we also must create some gold get this economy going.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="nb">set</span> <span class="bp">self</span><span class="o">/</span><span class="n">gold</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">Stan</span> <span class="n">S</span><span class="o">.</span> <span class="n">Stanman</span><span class="p">;</span><span class="n">stan</span><span class="p">:</span><span class="n">typeclasses</span><span class="o">.</span><span class="n">merchants</span><span class="o">.</span><span class="n">NPCMerchant</span>
+<span class="o">&gt;</span> <span class="nb">set</span> <span class="n">stan</span><span class="o">/</span><span class="n">shopname</span> <span class="o">=</span> <span class="n">Stan</span><span class="s1">&#39;s previously owned vessles</span>
+
+<span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">A</span> <span class="n">proud</span> <span class="n">vessel</span><span class="p">;</span><span class="n">ship</span> 
+<span class="o">&gt;</span> <span class="nb">set</span> <span class="n">ship</span><span class="o">/</span><span class="n">desc</span> <span class="o">=</span> <span class="n">The</span> <span class="n">thing</span> <span class="n">has</span> <span class="n">holes</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span>
+<span class="o">&gt;</span> <span class="nb">set</span> <span class="n">ship</span><span class="o">/</span><span class="n">gold_value</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="o">&gt;</span> <span class="n">create</span><span class="o">/</span><span class="n">drop</span> <span class="n">A</span> <span class="n">classic</span> <span class="n">speedster</span><span class="p">;</span><span class="n">rowboat</span> 
+<span class="o">&gt;</span> <span class="nb">set</span> <span class="n">rowboat</span><span class="o">/</span><span class="n">gold_value</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="o">&gt;</span> <span class="nb">set</span> <span class="n">rowboat</span><span class="o">/</span><span class="n">desc</span> <span class="o">=</span> <span class="n">It</span><span class="s1">&#39;s not going anywhere fast.</span>
+</pre></div>
+</div>
+<p>Note that a builder without any access to Python code can now set up a personalized merchant with just in-game commands.  With the shop all set up, we just need to be in the same room to start consuming!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; buy
+*** Welcome to Stan&#39;s previously owned vessels! ***
+   Things for sale (choose 1-3 to inspect, quit to exit):
+_________________________________________________________
+1. A proud vessel (5 gold)
+2. A classic speedster (2 gold)
+
+&gt; 1 
+
+You inspect A proud vessel:
+
+The thing has holes in it.
+__________________________________________________________
+1. Buy A proud vessel (5 gold)
+2. Look for something else.
+
+&gt; 1
+You pay 5 gold and purchase A proud vessel!
+
+*** Welcome to Stan&#39;s previously owned vessels! ***
+   Things for sale (choose 1-3 to inspect, quit to exit):
+_________________________________________________________
+1. A classic speedster (2 gold)
+
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Building-a-mech-tutorial.html" title="Building a mech tutorial"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Tutorial-NPC-Reacting.html" title="NPCs reacting to your presence"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">NPC merchants</a></li> 
+      </ul>
+        <div class="develop">develop branch</div>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

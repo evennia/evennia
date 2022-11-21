@@ -116,8 +116,7 @@
 <section id="beginner-tutorial">
 <h2>Beginner Tutorial<a class="headerlink" href="#beginner-tutorial" title="Permalink to this headline">¶</a></h2>
 <p>Recommended starting point! This will take you from absolute beginner to making
-a small, but full, game with Evennia. Even if you have a very different game style
-in mind for your own game, this will give you a good start.</p>
+a small but full game with Evennia. Other tutorials and howto’s tend to assume you are already familiar with the concepts explained in the Beginning tutorial.</p>
 <blockquote>
 <div><p>The latter parts of the beginner tutorial are still being worked on.</p>
 </div></blockquote>
@@ -201,10 +200,31 @@ in mind for your own game, this will give you a good start.</p>
 <h2>Howto’s<a class="headerlink" href="#howtos" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Howto-Command-Prompt.html">Command Prompt</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Howto-Command-Cooldown.html">Command Cooldown</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Howto-Command-Duration.html">Command Duration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Howto-Default-Exit-Errors.html">Default Exit Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Howto-Command-Prompt.html">Adding a Command Prompt</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Command-Prompt.html#a-fixed-location-prompt">A fixed-location prompt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Command-Prompt.html#a-prompt-with-every-command">A prompt with every command</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Howto-Command-Cooldown.html">Adding Command Cooldowns</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Command-Cooldown.html#an-efficient-cooldown">An efficient cooldown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Command-Cooldown.html#make-a-cooldown-aware-command-parent">Make a cooldown-aware command parent</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Howto-Command-Duration.html">Commands that take time to finish</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Command-Duration.html#pause-commands-with-yield">Pause commands with <code class="docutils literal notranslate"><span class="pre">yield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Command-Duration.html#pause-commands-with-utils-delay">Pause commands with <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Command-Duration.html#making-a-blocking-command">Making a blocking command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Command-Duration.html#make-a-command-possible-to-abort">Make a Command possible to Abort</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Howto-Default-Exit-Errors.html">Return custom errors on missing Exits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Default-Exit-Errors.html#why-not-a-single-command">Why not a single command?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Howto-Add-Object-Weight.html">Give objects weight</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Howto-Add-Object-Weight.html#limit-inventory-by-weight-carried">Limit inventory by weight carried</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -212,9 +232,9 @@ in mind for your own game, this will give you a good start.</p>
 <h2>Mobs and NPCs<a class="headerlink" href="#mobs-and-npcs" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Tutorial-NPCs-listening.html">Tutorial NPCs listening</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tutorial-Aggressive-NPCs.html">Tutorial Aggressive NPCs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="NPC-shop-Tutorial.html">NPC shop Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial-NPC-Listening.html">NPCs that listen to what is said</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial-NPC-Reacting.html">NPCs reacting to your presence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial-NPC-Merchants.html">NPC merchants</a></li>
 </ul>
 </div>
 </section>
@@ -233,13 +253,11 @@ in mind for your own game, this will give you a good start.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Tutorial-Persistent-Handler.html">Making a Persistent object Handler</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Gametime-Tutorial.html">Gametime Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Mass-and-weight-for-objects.html">Mass and weight for objects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Weather-Tutorial.html">Weather Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Tutorial-Coordinates.html">Coordinates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Tutorial-Coordinates.html#adding-room-coordinates-in-your-game">Adding room coordinates in your game</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Dynamic-In-Game-Map.html">Dynamic In Game Map</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Static-In-Game-Map.html">Static In Game Map</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Arxcode-Installation.html">Arxcode installing help</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Tutorial-Tweeting-Game-Stats.html">Tutorial Tweeting Game Stats</a></li>
 </ul>
 </div>
@@ -264,6 +282,7 @@ in mind for your own game, this will give you a good start.</p>
 <li class="toctree-l1"><a class="reference internal" href="Evennia-for-roleplaying-sessions.html">Evennia for roleplaying sessions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Evennia-for-Diku-Users.html">Evennia for Diku Users</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Evennia-for-MUSH-Users.html">Evennia for MUSH Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Arxcode-Installation.html">Arxcode installing help</a></li>
 </ul>
 </div>
 </section>

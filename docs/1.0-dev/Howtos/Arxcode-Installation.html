@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial Tweeting Game Stats" href="Tutorial-Tweeting-Game-Stats.html" />
-    <link rel="prev" title="Static In Game Map" href="Static-In-Game-Map.html" /> 
+    <link rel="next" title="Implementing a game rule system" href="Implementing-a-game-rule-system.html" />
+    <link rel="prev" title="Evennia for MUSH Users" href="Evennia-for-MUSH-Users.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Tutorial-Tweeting-Game-Stats.html" title="Tutorial Tweeting Game Stats"
+          <a href="Implementing-a-game-rule-system.html" title="Implementing a game rule system"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Static-In-Game-Map.html" title="Static In Game Map"
+          <a href="Evennia-for-MUSH-Users.html" title="Evennia for MUSH Users"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
@@ -78,11 +78,11 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="Static-In-Game-Map.html"
-                        title="previous chapter">Static In Game Map</a></p>
+  <p class="topless"><a href="Evennia-for-MUSH-Users.html"
+                        title="previous chapter">Evennia for MUSH Users</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Tutorial-Tweeting-Game-Stats.html"
-                        title="next chapter">Tutorial Tweeting Game Stats</a></p>
+  <p class="topless"><a href="Implementing-a-game-rule-system.html"
+                        title="next chapter">Implementing a game rule system</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -115,33 +115,27 @@
             
   <section class="tex2jax_ignore mathjax_ignore" id="arxcode-installing-help">
 <h1>Arxcode installing help<a class="headerlink" href="#arxcode-installing-help" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://play.arxmush.org/">Arx - After the Reckoning</a> is a big and very popular
-<a class="reference external" href="https://www.evennia.com">Evennia</a>-based game. Arx is heavily roleplaying-centric, relying on game
-masters to drive the story. Technically it’s maybe best described as “a MUSH, but with more coded
-systems”. In August of 2018, the game’s developer, Tehom, generously released the <a class="reference external" href="https://github.com/Arx-Game/arxcode">source code of
-Arx on github</a>. This is a treasure-trove for developers wanting
-to pick ideas or even get a starting game to build on.</p>
-<blockquote>
-<div><p>These instructions are based on the Arx-code released as of <em>Aug 12, 2018</em>. They will probably
-not work 100% out of the box anymore. Report any differences and changes needed.</p>
-</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Arxcode is separately maintained.</p>
+<p>While Arxcode uses Evennia, it is <em>not</em> part of Evennia itself; we include this documentation only as a service to users. Also, while Arxcode is still actively maintained (2022), these instructions are based on the Arx-code released as of <em>Aug 12, 2018</em>. They will probably not work 100% out of the box anymore.</p>
+<p>Arxcode bugs should be directed to <a class="reference external" href="https://github.com/Arx-Game/arxcode/issues">the Arxcode github issue tracker</a>.</p>
+</div>
+<p><a class="reference external" href="https://play.arxmush.org/">Arx - After the Reckoning</a> is a big and very popular <a class="reference external" href="https://www.evennia.com">Evennia</a>-based game. Arx is heavily roleplaying-centric, relying on game masters to drive the story. Technically it’s maybe best described as “a MUSH, but with more coded systems”. In August of 2018, the game’s developer, Tehom, generously released the <a class="reference external" href="https://github.com/Arx-Game/arxcode">source code of Arx on github</a>. This is a treasure-trove for developers wanting to pick ideas or even get a starting game to build on.</p>
 <p>It’s not too hard to run Arx from the sources (of course you’ll start with an empty database) but
 since part of Arx has grown organically, it doesn’t follow standard Evennia paradigms everywhere.
-This page covers one take on installing and setting things up while making your new Arx-based game
-better match with the vanilla Evennia install.</p>
+This page covers one take on installing and setting things up while making your new Arx-based game better match with the vanilla Evennia install.</p>
 <section id="installing-evennia">
 <h2>Installing Evennia<a class="headerlink" href="#installing-evennia" title="Permalink to this headline">¶</a></h2>
 <p>Firstly, set aside a folder/directory on your drive for everything to follow.</p>
-<p>You need to start by installing <a class="reference external" href="https://www.evennia.com">Evennia</a> by following most of the
-<a class="reference internal" href="../Setup/Installation-Git.html"><span class="doc std std-doc">Git-installation instructions</span></a> for your OS. The difference is that you
-need to <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/TehomCD/evennia.git</span></code> instead of Evennia’s repo because Arx
-uses TehomCD’s older Evennia 0.8 <a class="reference external" href="https://github.com/TehomCD/evennia">fork</a>, notably still using
-Python2. This detail is important if referring to newer Evennia documentation.</p>
-<p>If you are new to Evennia it’s <em>highly</em> recommended that you run through the normal install
-instructions in full - including initializing and starting a new empty game and connecting to it.
+<p>You need to start by installing <a class="reference external" href="https://www.evennia.com">Evennia</a> by following most of the <a class="reference internal" href="../Setup/Installation-Git.html"><span class="doc std std-doc">Git-installation instructions</span></a> for your OS. The difference is that instead of cloning from upstream Evennia, you should do</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/TehomCD/evennia.git
+</pre></div>
+</div>
+<p>This is because Arx  uses TehomCD’s older Evennia 0.8 <a class="reference external" href="https://github.com/TehomCD/evennia">fork</a>, notably still using  Python2. This detail is important if referring to newer Evennia documentation.</p>
+<p>If you are new to Evennia it’s <em>highly</em> recommended that you run through the normal install instructions in full - including initializing and starting a new empty game and connecting to it.
 That way you can be sure Evennia works correctly as a baseline.</p>
-<p>After installing you should have a <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> running and you should have the following file
-structure in your set-aside folder:</p>
+<p>After installing you should have a <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> running and you should have the following file structure in your set-aside folder:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">muddev</span><span class="o">/</span>
    <span class="n">vienv</span><span class="o">/</span>
    <span class="n">evennia</span><span class="o">/</span>
@@ -161,8 +155,7 @@ to compare to.</p>
 </div>
 <p>A new folder <code class="docutils literal notranslate"><span class="pre">myarx</span></code> should appear next to the ones you already had. You could rename this to
 something else if you want.</p>
-<p><code class="docutils literal notranslate"><span class="pre">cd</span></code> into <code class="docutils literal notranslate"><span class="pre">myarx</span></code>. If you wonder about the structure of the game dir, you can
-<a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Gamedir-Overview.html"><span class="doc std std-doc">read more about it here</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cd</span></code> into <code class="docutils literal notranslate"><span class="pre">myarx</span></code>. If you wonder about the structure of the game dir, you can <a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Gamedir-Overview.html"><span class="doc std std-doc">read more about it here</span></a>.</p>
 <section id="clean-up-settings">
 <h3>Clean up settings<a class="headerlink" href="#clean-up-settings" title="Permalink to this headline">¶</a></h3>
 <p>Arx has split evennia’s normal settings into <code class="docutils literal notranslate"><span class="pre">base_settings.py</span></code> and <code class="docutils literal notranslate"><span class="pre">production_settings.py</span></code>. It
@@ -184,27 +177,18 @@ way but we’ll remove the secret-handling and replace it with the normal Evenni
 </pre></div>
 </div>
 <blockquote>
-<div><p>Note: Indents and capitalization matter in Python. Make indents 4 spaces (not tabs) for your own
-sanity. If you want a starter on Python in Evennia, [you can look here](Python-basic-
-introduction).</p>
+<div><p>Note: Indents and capitalization matter in Python. Make indents 4 spaces (not tabs) for your own sanity. If you want a starter on Python in Evennia, [you can look here](Beginner-Tutorial-Python-basic- introduction).</p>
 </div></blockquote>
-<p>This will import Arx’ base settings and override them with the Evennia-default telnet port and give
-the game a name. The slogan changes the sub-text shown under the name of your game in the website
-header. You can tweak these to your own liking later.</p>
+<p>This will import Arx’ base settings and override them with the Evennia-default telnet port and give the game a name. The slogan changes the sub-text shown under the name of your game in the website header. You can tweak these to your own liking later.</p>
 <p>Next, create a new, empty file <code class="docutils literal notranslate"><span class="pre">secret_settings.py</span></code> in the same location as the <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file.
 This can just contain the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="s2">&quot;sefsefiwwj3 jnwidufhjw4545_oifej whewiu hwejfpoiwjrpw09&amp;4er43233fwefwfw&quot;</span>
 
 </pre></div>
 </div>
-<p>Replace the long random string with random ASCII characters of your own. The secret key should not
-be shared.</p>
-<p>Next, open <code class="docutils literal notranslate"><span class="pre">myarx/server/conf/base_settings.py</span></code> in your text editor. We want to remove/comment out
-all mentions of the <code class="docutils literal notranslate"><span class="pre">decouple</span></code> package, which Evennia doesn’t use (we use <code class="docutils literal notranslate"><span class="pre">private_settings.py</span></code> to
-hide away settings that should not be shared).</p>
-<p>Comment out <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">decouple</span> <span class="pre">import</span> <span class="pre">config</span></code> by adding a <code class="docutils literal notranslate"><span class="pre">#</span></code> to the start of the line: <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">from</span> <span class="pre">decouple</span> <span class="pre">import</span> <span class="pre">config</span></code>. Then search for <code class="docutils literal notranslate"><span class="pre">config(</span></code> in the file and comment out all lines where this is used.
-Many of these are specific to the server environment where the original Arx runs, so is not that
-relevant to us.</p>
+<p>Replace the long random string with random ASCII characters of your own. The secret key should not be shared.</p>
+<p>Next, open <code class="docutils literal notranslate"><span class="pre">myarx/server/conf/base_settings.py</span></code> in your text editor. We want to remove/comment out all mentions of the <code class="docutils literal notranslate"><span class="pre">decouple</span></code> package, which Evennia doesn’t use (we use <code class="docutils literal notranslate"><span class="pre">private_settings.py</span></code> to hide away settings that should not be shared).</p>
+<p>Comment out <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">decouple</span> <span class="pre">import</span> <span class="pre">config</span></code> by adding a <code class="docutils literal notranslate"><span class="pre">#</span></code> to the start of the line: <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">from</span> <span class="pre">decouple</span> <span class="pre">import</span> <span class="pre">config</span></code>. Then search for <code class="docutils literal notranslate"><span class="pre">config(</span></code> in the file and comment out all lines where this is used. Many of these are specific to the server environment where the original Arx runs, so is not that relevant to us.</p>
 </section>
 <section id="install-arx-dependencies">
 <h3>Install Arx dependencies<a class="headerlink" href="#install-arx-dependencies" title="Permalink to this headline">¶</a></h3>
@@ -241,10 +225,7 @@ mkdir server\logs
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia start
 </pre></div>
 </div>
-<p>If all goes well Evennia will now start up, running Arx! You can connect to it on <code class="docutils literal notranslate"><span class="pre">localhost</span></code> (or
-<code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> if your platform doesn’t alias <code class="docutils literal notranslate"><span class="pre">localhost</span></code>), port <code class="docutils literal notranslate"><span class="pre">4000</span></code> using a Telnet client.
-Alternatively, you can use your web browser to browse to <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code> to see the game’s
-website and get to the web client.</p>
+<p>If all goes well Evennia will now start up, running Arx! You can connect to it on <code class="docutils literal notranslate"><span class="pre">localhost</span></code> (or <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> if your platform doesn’t alias <code class="docutils literal notranslate"><span class="pre">localhost</span></code>), port <code class="docutils literal notranslate"><span class="pre">4000</span></code> using a Telnet client. Alternatively, you can use your web browser to browse to <code class="docutils literal notranslate"><span class="pre">http://localhost:4001</span></code> to see the game’s website and get to the web client.</p>
 <p>When you log in you’ll get the standard Evennia greeting (since the database is empty), but you can
 try <code class="docutils literal notranslate"><span class="pre">help</span></code> to see that it’s indeed Arx that is running.</p>
 </section>
@@ -261,86 +242,89 @@ run steps 7-8 and 10 to create and connect to your in-came Character.</p>
 <li><p>Navigate to the <code class="docutils literal notranslate"><span class="pre">Accounts</span></code> section.</p></li>
 <li><p>Add a new Account named for the new staffer. Use a place holder password and dummy e-mail
 address.</p></li>
-<li><p>Flag account as <code class="docutils literal notranslate"><span class="pre">Staff</span></code> and apply the <code class="docutils literal notranslate"><span class="pre">Admin</span></code> permission group (This assumes you have already set
-up an Admin Group in Django).</p></li>
+<li><p>Flag account as <code class="docutils literal notranslate"><span class="pre">Staff</span></code> and apply the <code class="docutils literal notranslate"><span class="pre">Admin</span></code> permission group (This assumes you have already set up an Admin Group in Django).</p></li>
 <li><p>Add Tags named <code class="docutils literal notranslate"><span class="pre">player</span></code> and <code class="docutils literal notranslate"><span class="pre">developer</span></code>.</p></li>
-<li><p>Log into the game using the web client (or a third-party telnet client) using your superuser
-account. Move to where you want the new staffer character to appear.</p></li>
-<li><p>In the game client, run <code class="docutils literal notranslate"><span class="pre">&#64;create/drop</span> <span class="pre">&lt;staffername&gt;:typeclasses.characters.Character</span></code>, where
-<code class="docutils literal notranslate"><span class="pre">&lt;staffername&gt;</span></code> is usually the same name you used for the Staffer account you created in the
-Admin earlier (if you are creating a Character for your superuser, use your superuser account
-name).
-This creates a new in-game Character and places it in your current location.</p></li>
+<li><p>Log into the game using the web client (or a third-party telnet client) using your superuser account. Move to where you want the new staffer character to appear.</p></li>
+<li><p>In the game client, run <code class="docutils literal notranslate"><span class="pre">&#64;create/drop</span> <span class="pre">&lt;staffername&gt;:typeclasses.characters.Character</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;staffername&gt;</span></code> is usually the same name you used for the Staffer account you created in the Admin earlier (if you are creating a Character for your superuser, use your superuser account name). This creates a new in-game Character and places it in your current location.</p></li>
 <li><p>Have the new Admin player log into the game.</p></li>
 <li><p>Have the new Admin puppet the character with <code class="docutils literal notranslate"><span class="pre">&#64;ic</span> <span class="pre">StafferName</span></code>.</p></li>
 <li><p>Have the new Admin change their password - <code class="docutils literal notranslate"><span class="pre">&#64;password</span> <span class="pre">&lt;old</span> <span class="pre">password&gt;</span> <span class="pre">=</span> <span class="pre">&lt;new</span> <span class="pre">password&gt;</span></code>.</p></li>
 </ol>
-<p>Now that you have a Character and an Account object, there’s a few additional things you may need to
-do in order for some commands to function properly. You can either execute these as in-game commands
-while <code class="docutils literal notranslate"><span class="pre">ic</span></code> (controlling your character object).</p>
-<ol class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">from</span> <span class="pre">web.character.models</span> <span class="pre">import</span> <span class="pre">RosterEntry;RosterEntry.objects.create(player=self.player,</span> <span class="pre">character=self)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">py</span> <span class="pre">from</span> <span class="pre">world.dominion.models</span> <span class="pre">import</span> <span class="pre">PlayerOrNpc,</span> <span class="pre">AssetOwner;dompc</span> <span class="pre">=</span> <span class="pre">PlayerOrNpc.objects.create(player</span> <span class="pre">=</span> <span class="pre">self.player);AssetOwner.objects.create(player=dompc)</span></code></p></li>
-</ol>
-<p>Those steps will give you a ‘RosterEntry’, ‘PlayerOrNpc’, and ‘AssetOwner’ objects. RosterEntry
+<p>Now that you have a Character and an Account object, there’s a few additional things you may need to do in order for some commands to function properly. You can either execute these as in-game commands while <code class="docutils literal notranslate"><span class="pre">ic</span></code> (controlling your character object).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>py from web.character.models import RosterEntry;RosterEntry.objects.create(player=self.player, character=self)
+
+py from world.dominion.models import PlayerOrNpc, AssetOwner;dompc = PlayerOrNpc.objects.create(player=self.player);AssetOwner.objects.create(player=dompc)
+</pre></div>
+</div>
+<p>Those steps will give you ‘RosterEntry’, ‘PlayerOrNpc’, and ‘AssetOwner’ objects. RosterEntry
 explicitly connects a character and account object together, even while offline, and contains
 additional information about a character’s current presence in game (such as which ‘roster’ they’re
-in, if you choose to use an active roster of characters). PlayerOrNpc are more character extensions,
-as well as support for npcs with no in-game presence and just represented by a name which can be
-offscreen members of a character’s family. It also allows for membership in Organizations.
-AssetOwner holds information about a character or organization’s money and resources.</p>
+in, if you choose to use an active roster of characters). PlayerOrNpc are more character extensions, as well as support for npcs with no in-game presence and just represented by a name which can be offscreen members of a character’s family. It also allows for membership in Organizations. AssetOwner holds information about a character or organization’s money and resources.</p>
 </section>
 </section>
 <section id="alternate-windows-install-guide">
 <h2>Alternate Windows install guide<a class="headerlink" href="#alternate-windows-install-guide" title="Permalink to this headline">¶</a></h2>
 <p><em>Contributed by Pax</em></p>
-<p>If for some reason you cannot use the Windows Subsystem for Linux (which would use instructions
-identical to the ones above), it’s possible to get Evennia/Arx running under Anaconda for Windows. The
-process is a little bit trickier.</p>
+<p>If for some reason you cannot use the Windows Subsystem for Linux (which would use instructions identical to the ones above), it’s possible to get Evennia/Arx running under Anaconda for Windows. The process is a little bit trickier.</p>
 <p>Make sure you have:</p>
-<ul class="simple">
+<ul>
 <li><p>Git for Windows               <a class="reference external" href="https://git-scm.com/download/win">https://git-scm.com/download/win</a></p></li>
 <li><p>Anaconda for Windows          <a class="reference external" href="https://www.anaconda.com/distribution/">https://www.anaconda.com/distribution/</a></p></li>
-<li><p>VC++ Compiler for Python 2.7  <a class="reference external" href="https://aka.ms/vcpython27">https://aka.ms/vcpython27</a></p></li>
-</ul>
+<li><p>VC++ Compiler for Python 2.7  <a class="reference external" href="https://aka.ms/vcpython27">https://aka.ms/vcpython27</a></p>
 <p>conda update conda
 conda create -n arx python=2.7
 source activate arx</p>
+</li>
+</ul>
 <p>Set up a convenient repository place for things.</p>
-<p>cd ~
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd ~
 mkdir Source
 cd Source
 mkdir Arx
-cd Arx</p>
+cd Arx
+</pre></div>
+</div>
 <p>Replace the SSH git clone links below with your own github forks.
 If you don’t plan to change Evennia at all, you can use the
 evennia/evennia.git repo instead of a forked one.</p>
-<p>git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:<youruser>/evennia.git
-git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:<youruser>/arxcode.git</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:&lt;youruser&gt;/evennia.git
+git clone git@github.com:&lt;youruser&gt;/arxcode.git
+</pre></div>
+</div>
 <p>Evennia is a package itself, so we want to install it and all of its
 prerequisites, after switching to the appropriately-tagged branch for
 Arxcode.</p>
-<p>cd evennia
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd evennia
 git checkout tags/v0.7 -b arx-master
-pip install -e .</p>
+pip install -e .
+</pre></div>
+</div>
 <p>Arx has some dependencies of its own, so now we’ll go install them
 As it is not a package, we’ll use the normal requirements file.</p>
-<p>cd …/arxcode
-pip install -r requirements.txt</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd ../arxcode
+pip install -r requirements.txt
+</pre></div>
+</div>
 <p>The git repo doesn’t include the empty log directory and Evennia is unhappy if you
 don’t have it, so while still in the arxcode directory…</p>
-<p>mkdir server/logs</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mkdir server/logs
+</pre></div>
+</div>
 <p>Now hit <a class="reference external" href="https://github.com/evennia/evennia/wiki/Arxcode-installing-help">https://github.com/evennia/evennia/wiki/Arxcode-installing-help</a> and
 change the setup stuff as in the ‘Clean up settings’ section.</p>
 <p>Then we will create our default database…</p>
-<p>…/evennia/bin/windows/evennia.bat migrate</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>../evennia/bin/windows/evennia.bat migrate
+</pre></div>
+</div>
 <p>…and do the first run. You need winpty because Windows does not have a TTY/PTY
 by default, and so the Python console input commands (used for prompts on first
 run) will fail and you will end up in an unhappy place. Future runs, you should
 not need winpty.</p>
-<p>winpty …/evennia/bin/windows/evennia.bat start</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>winpty ../evennia/bin/windows/evennia.bat start
+</pre></div>
+</div>
 <p>Once this is done, you should have your Evennia server running Arxcode up
-on localhost at port 4000, and the webserver at <a class="reference external" href="http://localhost:4001/">http://localhost:4001/</a></p>
+on localhost at port 4000, and the webserver at <a class="reference external" href="http://localhost:4001/">http://localhost:4001/</a>.</p>
 </section>
 </section>
 
@@ -360,10 +344,10 @@ on localhost at port 4000, and the webserver at <a class="reference external" hr
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Tutorial-Tweeting-Game-Stats.html" title="Tutorial Tweeting Game Stats"
+          <a href="Implementing-a-game-rule-system.html" title="Implementing a game rule system"
              >next</a> |</li>
         <li class="right" >
-          <a href="Static-In-Game-Map.html" title="Static In Game Map"
+          <a href="Evennia-for-MUSH-Users.html" title="Evennia for MUSH Users"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>

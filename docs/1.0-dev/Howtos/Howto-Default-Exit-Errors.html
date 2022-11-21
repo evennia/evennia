@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Default Exit Errors &#8212; Evennia 1.0-dev documentation</title>
+    <title>Return custom errors on missing Exits &#8212; Evennia 1.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,8 +17,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial NPCs listening" href="Tutorial-NPCs-listening.html" />
-    <link rel="prev" title="Command Duration" href="Howto-Command-Duration.html" /> 
+    <link rel="next" title="Give objects weight" href="Howto-Add-Object-Weight.html" />
+    <link rel="prev" title="Commands that take time to finish" href="Howto-Command-Duration.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,14 +30,14 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Tutorial-NPCs-listening.html" title="Tutorial NPCs listening"
+          <a href="Howto-Add-Object-Weight.html" title="Give objects weight"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Howto-Command-Duration.html" title="Command Duration"
+          <a href="Howto-Command-Duration.html" title="Commands that take time to finish"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" accesskey="U">Tutorials and Howto’s</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Default Exit Errors</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Return custom errors on missing Exits</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>  
@@ -62,8 +62,7 @@
 <script>$('#searchbox').show(0);</script>
 <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Default Exit Errors</a><ul>
-<li><a class="reference internal" href="#adding-default-error-commands">Adding default error commands</a></li>
+<li><a class="reference internal" href="#">Return custom errors on missing Exits</a><ul>
 <li><a class="reference internal" href="#why-not-a-single-command">Why not a single command?</a></li>
 </ul>
 </li>
@@ -71,10 +70,10 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="Howto-Command-Duration.html"
-                        title="previous chapter">Command Duration</a></p>
+                        title="previous chapter">Commands that take time to finish</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="Tutorial-NPCs-listening.html"
-                        title="next chapter">Tutorial NPCs listening</a></p>
+  <p class="topless"><a href="Howto-Add-Object-Weight.html"
+                        title="next chapter">Give objects weight</a></p>
   <div role="note" aria-label="source link">
     <!--h3>This Page</h3-->
     <ul class="this-page-menu">
@@ -105,36 +104,34 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="default-exit-errors">
-<h1>Default Exit Errors<a class="headerlink" href="#default-exit-errors" title="Permalink to this headline">¶</a></h1>
-<p>Evennia allows for exits to have any name. The command “kitchen” is a valid exit name as well as “jump out the window”
-or “north”. An exit actually consists of two parts: an <a class="reference internal" href="../Components/Objects.html"><span class="doc std std-doc">Exit Object</span></a> and
+  <section class="tex2jax_ignore mathjax_ignore" id="return-custom-errors-on-missing-exits">
+<h1>Return custom errors on missing Exits<a class="headerlink" href="#return-custom-errors-on-missing-exits" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; north
+Ouch! You bump into a wall!
+&gt; out 
+ But you are already outside ...? 
+</pre></div>
+</div>
+<p>Evennia allows for exits to have any name. The command “kitchen” is a valid exit name as well as “jump out the window” or “north”. An exit actually consists of two parts: an <a class="reference internal" href="../Components/Objects.html"><span class="doc std std-doc">Exit Object</span></a> and
 an <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">Exit Command</span></a> stored on said exit object. The command has the same key and aliases as the
 exit-object, which is why you can see the exit in the room and just write its name to traverse it.</p>
-<p>So if you try to enter the name of a non-existing exit, Evennia treats is the same way as if you were trying to
-use a non-existing command:</p>
+<p>So if you try to enter the name of a non-existing exit, Evennia treats is the same way as if you were trying to  use a non-existing command:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; jump out the window
  Command &#39;jump out the window&#39; is not available. Type &quot;help&quot; for help.
 </pre></div>
 </div>
-<p>Many games don’t need this type of freedom however. They define only the cardinal directions as valid exit names (
-Evennia’s <code class="docutils literal notranslate"><span class="pre">tunnel</span></code> command also offers this functionality). In this case, the error starts to look less logical:</p>
+<p>Many games don’t need this type of freedom. They define only the cardinal directions as valid exit names ( Evennia’s <code class="docutils literal notranslate"><span class="pre">tunnel</span></code> command also offers this functionality). In this case, the error starts to look less logical:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; west
  Command &#39;west&#39; is not available. Maybe you meant &quot;set&quot; or &quot;reset&quot;?
 </pre></div>
 </div>
-<p>Since we for our particular game <em>know</em> that west is an exit direction, it would be better if the error message just
-told us that we couldn’t go there.</p>
+<p>Since we for our particular game <em>know</em> that west is an exit direction, it would be better if the error message just told us that we couldn’t go there.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; west 
  You cannot move west.
 </pre></div>
 </div>
-<section id="adding-default-error-commands">
-<h2>Adding default error commands<a class="headerlink" href="#adding-default-error-commands" title="Permalink to this headline">¶</a></h2>
-<p>The way to do this is to give Evennia an <em>alternative</em> Command to use when no Exit-Command is found
-in the room. See <a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">Adding Commands</span></a> for more info about the
-process of adding new Commands to Evennia.</p>
-<p>In this example all we’ll do is echo an error message.</p>
+<p>The way to do this is to give Evennia an <em>alternative</em> Command to use when no Exit-Command is found in the room. See <a class="reference internal" href="Beginner-Tutorial/Part1/Beginner-Tutorial-Adding-Commands.html"><span class="doc std std-doc">Adding Commands</span></a> for more info about the  process of adding new Commands to Evennia.</p>
+<p>In this example we will just echo an error message, but you could do everything (maybe you lose health if you bump into a wall?)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># for example in a file mygame/commands/movecommands.py</span>
 
 <span class="kn">from</span> <span class="nn">evennia</span> <span class="kn">import</span> <span class="n">default_cmds</span><span class="p">,</span> <span class="n">CmdSet</span>
@@ -177,9 +174,7 @@ process of adding new Commands to Evennia.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdExitErrorSouth</span><span class="p">())</span> 
 </pre></div>
 </div>
-<p>We pack our commands in a new little cmdset; if we add this to our
-<code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>, we can just add more errors to <code class="docutils literal notranslate"><span class="pre">MovementFailCmdSet</span></code>
-later without having to change code in two places.</p>
+<p>We pack our commands in a new little cmdset; if we add this to our  <code class="docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code>, we can just add more errors to <code class="docutils literal notranslate"><span class="pre">MovementFailCmdSet</span></code>  later without having to change code in two places.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
 
 <span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="n">movecommands</span>
@@ -193,16 +188,12 @@ later without having to change code in two places.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">movecommands</span><span class="o">.</span><span class="n">MovementFailCmdSet</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">reload</span></code> the server. What happens henceforth is that if you are in a room with an Exitobject (let’s say it’s “north”),
-the proper Exit-command will <em>overload</em> your error command (also named “north”). But if you enter a direction without
-having a matching exit for it, you will fall back to your default error commands:</p>
+<p><code class="docutils literal notranslate"><span class="pre">reload</span></code> the server. What happens henceforth is that if you are in a room with an Exitobject (let’s say it’s “north”), the proper Exit-command will <em>overload</em> your error command (also named “north”). But if you enter a direction without having a matching exit for it, you will fall back to your default error commands:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &gt; east
  You cannot move east.
 </pre></div>
 </div>
-<p>Further expansions by the exit system (including manipulating the way the Exit command itself is created) can be done by
-modifying the <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Exit typeclass</span></a> directly.</p>
-</section>
+<p>Further expansions by the exit system (including manipulating the way the Exit command itself is created) can be done by modifying the <a class="reference internal" href="../Components/Typeclasses.html"><span class="doc std std-doc">Exit typeclass</span></a> directly.</p>
 <section id="why-not-a-single-command">
 <h2>Why not a single command?<a class="headerlink" href="#why-not-a-single-command" title="Permalink to this headline">¶</a></h2>
 <p>So why didn’t we create a single error command above? Something like this:</p>
@@ -216,14 +207,9 @@ modifying the <a class="reference internal" href="../Components/Typeclasses.html
     <span class="c1">#[...]</span>
 </pre></div>
 </div>
-<p>The reason is that this would <em>not</em> work. Understanding why is important.</p>
-<p>Evennia’s <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">command system</span></a> compares commands by key and/or aliases. If <em>any</em> key or alias
-match, the two commands are considered <em>identical</em>. When the cmdsets merge, priority will then decide which of these
-‘identical’ commandss replace which.</p>
-<p>So the above example would work fine as long as there were <em>no Exits at all</em> in the room. But when we enter
-a room with an exit “north”, its Exit-command (which has a higher priority) will override the single <code class="docutils literal notranslate"><span class="pre">CmdExitError</span></code>
-with its alias ‘north’. So the <code class="docutils literal notranslate"><span class="pre">CmdExitError</span></code> will be gone and while “north” will work, we’ll again get the normal
-“Command not recognized” error for the other directions.</p>
+<p>This would <em>not</em> work the way we want. Understanding why is important.</p>
+<p>Evennia’s <a class="reference internal" href="../Components/Commands.html"><span class="doc std std-doc">command system</span></a> compares commands by key and/or aliases. If <em>any</em> key or alias match, the two commands are considered <em>identical</em>. When the cmdsets merge, priority will then decide which of these ‘identical’ commandss replace which.</p>
+<p>So the above example would work fine as long as there were <em>no Exits at all</em> in the room. But when we enter a room with an exit “north”, its Exit-command (which has a higher priority) will override the single <code class="docutils literal notranslate"><span class="pre">CmdExitError</span></code> with its alias ‘north’. So the <code class="docutils literal notranslate"><span class="pre">CmdExitError</span></code> will be gone and while “north” will work, we’ll again get the normal  “Command not recognized” error for the other directions.</p>
 </section>
 </section>
 
@@ -243,14 +229,14 @@ with its alias ‘north’. So the <code class="docutils literal notranslate"><s
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Tutorial-NPCs-listening.html" title="Tutorial NPCs listening"
+          <a href="Howto-Add-Object-Weight.html" title="Give objects weight"
              >next</a> |</li>
         <li class="right" >
-          <a href="Howto-Command-Duration.html" title="Command Duration"
+          <a href="Howto-Command-Duration.html" title="Commands that take time to finish"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Evennia 1.0-dev</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="Howtos-Overview.html" >Tutorials and Howto’s</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Default Exit Errors</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Return custom errors on missing Exits</a></li> 
       </ul>
         <div class="develop">develop branch</div>
     </div>

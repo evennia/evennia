@@ -1,24 +1,41 @@
-# Command Duration
+# Commands that take time to finish
 
-
-Before reading this tutorial, if you haven't done so already, you might want to
-read [the documentation on commands](../Components/Commands.md) to get a basic understanding of
-how commands work in Evennia.
+    > craft fine sword 
+    You start crafting a fine sword. 
+    > north 
+    You are too focused on your crafting, and can't move!
+    You create the blade of the sword. 
+    You create the pommel of the sword. 
+    You finish crafting a Fine Sword.
 
 In some types of games a command should not start and finish immediately.
+
 Loading a crossbow might take a bit of time to do - time you don't have when
 the enemy comes rushing at you. Crafting that armour will not be immediate
 either. For some types of games the very act of moving or changing pose all
 comes with a certain time associated with it. 
 
-## The simple way to pause commands with yield
+There are two main suitable ways to introduce a 'delay' in a [Command](../Components/Commands.md)'s execution:
 
-Evennia allows a shortcut in syntax to create simple pauses in commands.  This
-syntax uses the `yield` keyword.  The `yield` keyword is used in Python to
-create generators, although you don't need to know what generators are to use
-this syntax.  A short example will probably make it clear:
+- Using `yield` in the Command's `func` method. 
+- Using the  `evennia.utils.delay` utility function.
 
-```python
+We'll simplify both below.
+
+## Pause commands with `yield`
+
+The `yield` keyword is a reserved word in Python. It's used to create [generators](https://realpython.com/introduction-to-python-generators/), which are interesting in their own right. For the purpose of this howto though, we just need to know that Evennia will use it to 'pause' the execution of the command for a certain time.
+
+```{sidebar} This only works in Command.func!
+
+This `yield` functionality will *only* work in the `func` method of
+Commands. It works because Evennia has especially catered for it as a convenient shortcut. Trying to  use it elsewhere will not work. If you want the same functionality  elsewhere you should look up the [interactive decorator](../Concepts/Async-Process.md#the-interactive-decorator).
+```
+
+```{code-block} python
+:linenos:
+:emphasize-lines: 15
+
 class CmdTest(Command):
 
     """
@@ -30,53 +47,55 @@ class CmdTest(Command):
     """
 
     key = "test"
-    locks = "cmd:all()"
 
     def func(self):
         self.msg("Before ten seconds...")
         yield 10
         self.msg("Afterwards.")
 ```
-> Important: The `yield` functionality will *only* work in the `func` method of
-> Commands. It only works because Evennia has especially
-> catered for it in Commands. If you want the same functionality elsewhere you
-> must use the [interactive decorator](../Concepts/Async-Process.md#the-interactive-decorator).
 
-The important line is the `yield 10`.  It tells Evennia to "pause" the command
+- **Line 15** : This is the important line.  The `yield 10` tells Evennia to "pause" the command
 and to wait for 10 seconds to execute the rest.  If you add this command and
 run it, you'll see the first message, then, after a pause of ten seconds, the
 next message.  You can use `yield` several times in your command.
 
-This syntax will not "freeze" all commands.  While the command is "pausing",
-     you can execute other commands (or even call the same command again).  And
-     other players aren't frozen either.
+This syntax will not "freeze" all commands.  While the command is "pausing", you can execute other commands (or even call the same command again).  And other players aren't frozen either.
 
-> Note: this will not save anything in the database.  If you reload the game
-> while a command is "paused", it will not resume after the server has
-> reloaded.
+> Using `yield` is non-persistent. If you `reload` the game while a command is "paused", that pause state is lost and it will _not_ resume after the server has  reloaded. 
 
+## Pause commands with `utils.delay`
 
-## The more advanced way with utils.delay
+The `yield` syntax is easy to read, easy to understand, easy to use.  But it's non-persistent and not that flexible if you want more advanced options. 
 
-The `yield` syntax is easy to read, easy to understand, easy to use.  But it's not that flexible if
-you want more advanced options.  Learning to use alternatives might be much worth it in the end.
+The `evennia.utils.delay` represents is a more powerful way to introduce delays. Unlike `yield`, it  
+can be made persistent and also works outside of `Command.func`.  It's however a little more cumbersome to write since unlike `yield` it will not actually stop at the line it's called. 
 
-Below is a simple command example for adding a duration for a command to finish.
+```{code-block} python
+:linenos:
+:emphasize-lines: 14,30
 
-```python
 from evennia import default_cmds, utils
     
 class CmdEcho(default_cmds.MuxCommand):
     """
-    wait for an echo
+    Wait for an echo
     
     Usage: 
       echo <string>
     
-    Calls and waits for an echo
+    Calls and waits for an echo.
     """
     key = "echo"
-    locks = "cmd:all()"
+    
+    def echo(self):
+        "Called after 10 seconds."
+        shout = self.args
+        self.caller.msg(
+            "You hear an echo: "
+            f"{shout.upper()} ... "
+            f"{shout.capitalize()} ... "
+            f"{shout.lower()}"
+        )
     
     def func(self):
         """
@@ -86,50 +105,39 @@ class CmdEcho(default_cmds.MuxCommand):
         # this waits non-blocking for 10 seconds, then calls self.echo
         utils.delay(10, self.echo) # call echo after 10 seconds
     
-    def echo(self):
-        "Called after 10 seconds."
-        shout = self.args
-        self.caller.msg(
-            f"You hear an echo: {shout.upper()} ... {shout.capitalize()} ... {shout.lower()}"
-        )
 ```
 
-Import this new echo command into the default command set and reload the server. You will find that
-it will take 10 seconds before you see your shout coming back. You will also find that this is a
-*non-blocking* effect; you can issue other commands in the interim and the game will go on as usual.
-The echo will come back to you in its own time.
+Import this new echo command into the default command set and reload the server. You will find that it will take 10 seconds before you see your shout coming back. 
 
-### About utils.delay()
+- **Line 14**: We add a new method `echo`. This is a _callback_ - a method/function we will call after a certain time. 
+- **Line 30**: Here we use `utils.delay` to tell Evennia "Please wait for 10 seconds, then call "`self.echo`". Note how we pass `self.echo` and _not_ `self.echo()`!  If we did the latter, `echo` would fire _immediately_. Instead we let Evennia do this call for us ten seconds later.
 
-`utils.delay(timedelay, callback, persistent=False, *args, **kwargs)` is a useful function.  It will
-wait `timedelay` seconds, then call the `callback` function, optionally passing to it the arguments
-provided to utils.delay by way of *args and/or **kwargs`.
+You will also find that this is a *non-blocking* effect; you can issue other commands in the interim and the game will go on as usual. The echo will come back to you in its own time.
 
-> Note: The callback argument should be provided with a python path to the desired function, for
-instance `my_object.my_function` instead of `my_object.my_function()`. Otherwise my_function would
-get called and run immediately upon attempting to pass it to the delay function.
-If you want to provide arguments for utils.delay to use, when calling your callback function, you
-have to do it separatly, for instance using the utils.delay *args and/or **kwargs, as mentioned
-above.
+The call signature for `utils.delay` is: 
 
-> If you are not familiar with the syntax `*args` and `**kwargs`, [see the Python documentation
-here](https://docs.python.org/2/tutorial/controlflow.html#arbitrary-argument-lists).
+```python
+utils.delay(timedelay, callback, persistent=False, *args, **kwargs) 
+```
 
-Looking at it you might think that `utils.delay(10, callback)` in the code above is just an
-alternative to some more familiar thing like `time.sleep(10)`. This is *not* the case. If you do
-`time.sleep(10)` you will in fact freeze the *entire server* for ten seconds! The `utils.delay()`is
-a thin wrapper around a Twisted
-[Deferred](https://twistedmatrix.com/documents/11.0.0/core/howto/defer.html) that will delay
-execution until 10 seconds have passed, but will do so asynchronously, without bothering anyone else
-(not even you - you can continue to do stuff normally while it waits to continue).
+```{sidebar} *args and **kwargs 
 
-The point to remember here is that the `delay()` call will not "pause" at that point when it is
+These are used to indicate any number of arguments or keyword-arguments should be picked up here. In code they are treated as a `tuple` and a `dict` respectively. 
+
+`*args` and `**kwargs` are used in many places in Evennia. [See an online tutorial here](https://realpython.com/python-kwargs-and-args).
+```
+If you set `persistent=True`, this delay will survive a `reload`. If you pass `*args` and/or `**kwargs`, they will be passed on into the `callback`. So this way you can pass more complex arguments to the delayed function. 
+
+It's important to remember that the `delay()` call will not "pause" at that point when it is
 called (the way `yield` does in the previous section). The lines after the `delay()` call will
 actually execute *right away*. What you must do is to tell it which function to call *after the time
 has passed* (its "callback"). This may sound strange at first, but it is normal practice in
-asynchronous systems. You can also link such calls together as seen below:
+asynchronous systems. You can also link such calls together:
 
-```python
+```{code-block}
+:linenos:
+:emphasize-lines: 19,22,28,34
+
 from evennia import default_cmds, utils
     
 class CmdEcho(default_cmds.MuxCommand):
@@ -142,7 +150,6 @@ class CmdEcho(default_cmds.MuxCommand):
     Calls and waits for an echo
     """
     key = "echo"
-    locks = "cmd:all()"
     
     def func(self):
         "This sets off a chain of delayed calls"
@@ -172,25 +179,36 @@ class CmdEcho(default_cmds.MuxCommand):
 The above version will have the echoes arrive one after another, each separated by a two second
 delay.
 
-    > echo Hello!
-    ... HELLO!
-    ... Hello!
-    ... hello! ...
+- **Line 19**: This sets off the chain, telling Evennia to wait 2 seconds before calling `self.echo1`.
+- **Line 22**: This is called after 2 seconds. It tells Evennia to wait another 2 seconds before calling `self.echo2`.
+- **Line 28**: This is called after yet another 2 seonds (4s total). It tells Evennia to wait another 2 seconds before calling, `self.echo3`.
+- **Line34** Called after another 2 seconds (6s total). This ends  the delay-chain.
 
-## Blocking commands
+```
+> echo Hello!
+... HELLO!
+... Hello!
+... hello! ...
+```
 
-As mentioned, a great thing about the delay introduced by `yield` or `utils.delay()` is that it does
-not block. It just goes on in the background and you are free to play normally in the interim. In
-some cases this is not what you want however. Some commands should simply "block" other commands
-while they are running. If you are in the process of crafting a helmet you shouldn't be able to also
-start crafting a shield at the same time, or if you just did a huge power-swing with your weapon you
-should not be able to do it again immediately.
+```{warning} What about time.sleep?
 
-The simplest way of implementing blocking is to use the technique covered in the [](Howto-Command-Cooldown.md) tutorial. In that tutorial we implemented cooldowns by having the
-Command store the current time. Next time the Command was called, we compared the current time to
-the stored time to determine if enough time had passed for a renewed use. This is a *very*
-efficient, reliable and passive solution. The drawback is that there is nothing to tell the Player
-when enough time has passed unless they keep trying.
+You may be aware of the `time.sleep` function coming with Python. Doing `time.sleep(10) pauses Python for 10 seconds. **Do not use this**, it will not work with Evennia. If you use it, you will block the _entire server_ (everyone!) for ten seconds! 
+
+If you want specifics, `utils.delay` is a thin wrapper around a [Twisted Deferred](https://docs.twisted.org/en/twisted-22.1.0/core/howto/defer.html). This is an [asynchronous concept](../Concepts/Async-Process.md).
+```
+
+## Making a blocking command
+
+Both `yield` or `utils.delay()` pauses the command but allows the user to use other commands while the first one waits to finish. 
+
+In some cases you want to instead have that command 'block' other commands from running. An example is crafting a helmet: most likely you should not be able to start crafting a shield at the same time. Or even walk out of the smithy. 
+
+The simplest way of implementing blocking is to use the technique covered in the [How to implement a Command Cooldown](./Howto-Command-Cooldown.md) tutorial. In that tutorial we cooldowns are implemented by comparing the current time with the last time the command was used. This is the best approach if you can get away with it. It could work well for our crafting example ... _if_ you don't want to automatically update the player on their progress. 
+
+In short: 
+    - If you are fine with the player making an active input to check their status, compare timestamps as done in the Command-cooldown tutorial. On-demand is by far the most efficent.
+    - If you want Evennia to tell the user their status without them taking a further action, you need to use `yield` , `delay` (or some other active time-keeping method).
 
 Here is an example where we will use `utils.delay` to tell the player when the cooldown has passed:
 
@@ -238,11 +256,9 @@ Note how, after the cooldown, the user will get a message telling them they are 
 another swing.
 
 By storing the `off_balance` flag on the character (rather than on, say, the Command instance
-itself) it can be accessed by other Commands too. Other attacks may also not work when you are off
-balance. You could also have an enemy Command check your `off_balance` status to gain bonuses, to
-take another example.
+itself) it can be accessed by other Commands too. Other attacks may also not work when you are off balance. You could also have an enemy Command check your `off_balance` status to gain bonuses, to take another example.
 
-## Abortable commands
+## Make a Command possible to Abort
 
 One can imagine that you will want to abort a long-running command before it has a time to finish.
 If you are in the middle of crafting your armor you will probably want to stop doing that when a
@@ -345,58 +361,3 @@ class CmdAttack(default_cmds.MuxCommand):
 The above code creates a delayed crafting command that will gradually create the armour. If the
 `attack` command is issued during this process it will set a flag that causes the crafting to be
 quietly canceled next time it tries to update.
-
-## Persistent delays
-
-In the latter examples above we used `.ndb` storage. This is fast and easy but it will reset all
-cooldowns/blocks/crafting etc if you reload the server. If you don't want that you can replace
-`.ndb` with `.db`. But even this won't help because the `yield` keyword is not persisent and nor is
-the use of `delay` shown above. To resolve this you can use `delay` with the `persistent=True`
-keyword. But wait! Making something persistent will add some extra complications, because now you
-must make sure Evennia can properly store things to the database.
-
-Here is the original echo-command reworked to function with persistence: 
-```python
-from evennia import default_cmds, utils
-    
-# this is now in the outermost scope and takes two args! 
-def echo(caller, args):
-    "Called after 10 seconds."
-    shout = args
-    caller.msg(
-        f"You hear an echo: {shout.upper()} ... {shout.capitalize()} ... {shout.lower()}"
-    )
-
-class CmdEcho(default_cmds.MuxCommand):
-    """
-    wait for an echo
-    
-    Usage: 
-      echo <string>
-    
-    Calls and waits for an echo
-    """
-    key = "echo"
-    locks = "cmd:all()"
-    
-    def func(self):
-        """
-         This is called at the initial shout.            
-        """
-        self.caller.msg(f"You shout '{self.args}' and wait for an echo ...")
-        # this waits non-blocking for 10 seconds, then calls echo(self.caller, self.args)
-        utils.delay(10, echo, self.caller, self.args, persistent=True) # changes! 
-    
-```
-
-Above you notice two changes: 
-- The callback (`echo`) was moved out of the class and became its own stand-alone function in the
-outermost scope of the module. It also now takes `caller` and `args` as arguments (it doesn't have
-access to them directly since this is now a stand-alone function).
-- `utils.delay` specifies the `echo` function (not `self.echo` - it's no longer a method!) and sends
-`self.caller` and `self.args` as arguments for it to use. We also set `persistent=True`.
-
-The reason for this change is because Evennia needs to `pickle` the callback into storage and it
-cannot do this correctly when the method sits on the command class. Now this behave the same as the
-first version except if you reload (or even shut down) the server mid-delay it will still fire the
-callback when the server comes back up (it will resume the countdown and ignore the downtime).
