@@ -24,8 +24,8 @@ This is the manual of [Evennia](https://www.evennia.com), the open source Python
 
 ## Tutorials and Howtos
 
-- [The Beginner Tutorial](Howtos/Beginner-Tutorial/Beginner-Tutorial-Intro.md) - learn the basics and build a small game (in progress)
-- [Tutorials and Howto's](Howtos/Howtos-Overview.md) - mixed tutorials to learn Evennia
+- [The Beginner Tutorial](Howtos/Howtos-Overview.md#beginner-tutorial) - learn the basics and build a small game (in progress)
+- [Tutorials and Howto's](Howtos/Howtos-Overview.md#howtos) - mixed tutorials and help articles to learn Evennia
 
 ## Developing with Evennia
 
