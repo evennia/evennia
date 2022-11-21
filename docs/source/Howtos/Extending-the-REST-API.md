@@ -416,6 +416,12 @@ class CharacterViewSet(ObjectDBViewSet):
         return Response( InventorySerializer(obj).data, status=status.HTTP_200_OK )
 ```
 
-One last `evennia reboot` - now you should be able to get `/api/characters/1/inventory` and see everything your character has, neatly divided into worn and carried.
+One last `evennia reboot` - now you should be able to get `/api/characters/1/inventory` and see everything your character has, neatly divided into "worn" and "carried".
 
-And that's it!
+## Next Steps
+
+That's it! You've learned how to customize your own REST endpoint for Evennia, add new endpoint details, and serialize data from your game's objects for the REST API. With those tools, you can take any in-game data you want and make it available - or even modifiable - with the API.
+
+If you want a challenge, try taking what you learned and implementing a new `desc` detail that will `GET` the existing character desc, or `PUT` a new desc. (Tip: check out how evennia's REST permissions module works, and the `set_attribute` methods in the default evennia REST API views.)
+
+> For a more in-depth look at the django REST framework, you can go through [their tutorial](https://www.django-rest-framework.org/tutorial/1-serialization/) or straight to [the django REST framework API docs](https://www.django-rest-framework.org/api-guide/requests/)
