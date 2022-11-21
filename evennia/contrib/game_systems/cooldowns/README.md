@@ -13,8 +13,7 @@ state. They do not fire callbacks, so are not a good fit for use cases
 where something needs to happen on a specific schedule (use delay or
 a TickerHandler for that instead).
 
-See also the evennia documentation for command cooldowns
-(https://github.com/evennia/evennia/wiki/Command-Cooldown) for more information
+See also the evennia [howto](Howto-Command-Cooldown) for more information
 about the concept.
 
 ## Installation

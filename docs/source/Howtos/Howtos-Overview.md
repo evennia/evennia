@@ -5,8 +5,7 @@ All Evennia tutorials. They will often refer to the [components](../Components/C
 ## Beginner Tutorial
 
 Recommended starting point! This will take you from absolute beginner to making
-a small, but full, game with Evennia. Even if you have a very different game style
-in mind for your own game, this will give you a good start. 
+a small but full game with Evennia. Other tutorials and howto's tend to assume you are already familiar with the concepts explained in the Beginning tutorial.
 
 > The latter parts of the beginner tutorial are still being worked on.
 
@@ -20,25 +19,26 @@ in mind for your own game, this will give you a good start.
 ./Beginner-Tutorial/Part5/Beginner-Tutorial-Part5-Intro
 ```
 
+
 ## Howto's
 
 ```{toctree}
-:maxdepth: 1
+:maxdepth: 2
 
 Howto-Command-Prompt.md
 Howto-Command-Cooldown.md
 Howto-Command-Duration.md
 Howto-Default-Exit-Errors.md
-
+Howto-Add-Object-Weight.md
 ```
 ## Mobs and NPCs
 
 ```{toctree}
 :maxdepth: 1
 
-Tutorial-NPCs-listening.md
-Tutorial-Aggressive-NPCs.md
-NPC-shop-Tutorial.md
+Tutorial-NPC-Listening.md
+Tutorial-NPC-Reacting.md
+Tutorial-NPC-Merchants.md
 ```
 
 ## Vehicles
@@ -56,14 +56,11 @@ Tutorial-Vehicles.md
 
 Tutorial-Persistent-Handler.md
 Gametime-Tutorial.md
-Mass-and-weight-for-objects.md
 Weather-Tutorial.md
 Tutorial-Coordinates.md
 Dynamic-In-Game-Map.md
 Static-In-Game-Map.md
-Arxcode-Installation.md
 Tutorial-Tweeting-Game-Stats.md
-
 ```
 
 ## Web-related tutorials
@@ -87,6 +84,7 @@ Tutorial-Understanding-Color-Tags.md
 Evennia-for-roleplaying-sessions.md
 Evennia-for-Diku-Users.md
 Evennia-for-MUSH-Users.md
+Arxcode-Installation.md
 ```
 
 ## Old tutorials
