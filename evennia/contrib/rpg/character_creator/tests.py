@@ -9,7 +9,7 @@ from evennia.utils.test_resources import BaseEvenniaCommandTest
 from . import character_creator
 
 
-class TestAccount(BaseEvenniaCommandTest):
+class TestCharacterCreator(BaseEvenniaCommandTest):
     def setUp(self):
         super().setUp()
         self.account.swap_typeclass(character_creator.ContribChargenAccount)
