@@ -210,6 +210,7 @@ class InventorySerializer(TypeclassSerializerMixin, serializers.ModelSerializer)
     Serializing an inventory
     """
     
+    # these define the groups of items
     worn = serializers.SerializerMethodField()
     carried = serializers.SerializerMethodField()
     
@@ -217,7 +218,7 @@ class InventorySerializer(TypeclassSerializerMixin, serializers.ModelSerializer)
         model = DefaultObject
         fields = [
             "id", # required field
-            # these define the groups of items
+            # add these to match the properties you defined
             "worn",
             "carried",
         ]
@@ -225,7 +226,7 @@ class InventorySerializer(TypeclassSerializerMixin, serializers.ModelSerializer)
 ```
 The `Meta` class defines which fields will be used in the final serialized string. The `id` field is from the base ModelSerializer, but you'll notice that the two others - `worn` and `carried` - are defined as properties to `SerializerMethodField`. That tells the framework to look for matching method names in the form `get_X` when serializing.
 
-Which is why our next step is to add them! We'll be making them static methods since they don't need to reference the serializer itself.
+Which is why our next step is to add those methods! We defined the properties `worn` and `carried`, so the methods we'll add are `get_worn` and `get_carried`. They'll be static methods - that is, they don't include `self` - since they don't need to reference the serializer class itself.
 
 ```python
     # these methods filter the character's contents based on the `worn` attribute
@@ -269,6 +270,7 @@ class InventorySerializer(TypeclassSerializerMixin, serializers.ModelSerializer)
     Serializing an inventory
     """
     
+    # these define the groups of items
     worn = serializers.SerializerMethodField()
     carried = serializers.SerializerMethodField()
     
@@ -276,7 +278,7 @@ class InventorySerializer(TypeclassSerializerMixin, serializers.ModelSerializer)
         model = DefaultObject
         fields = [
             "id", # required field
-            # these define the groups of items
+            # add these to match the properties you defined
             "worn",
             "carried",
         ]
@@ -349,13 +351,13 @@ class CharacterViewSet(ObjectDBViewSet):
 
 That'll use our new serializer to get our character's inventory. Except... not quite.
 
-Go ahead and try it: `evennia reboot` and then `/api/characters/1/inventory` like before. Instead of returning the string "your inventory", you should get an error saying you don't have permission.
+Go ahead and try it: `evennia reboot` and then `/api/characters/1/inventory` like before. Instead of returning the string "your inventory", you should get an error saying you don't have permission. Don't worry - that means it's successfully referencing the new serializer. We just haven't given it permission to access the objects yet.
 
 ## Customizing API permissions
 
-Evennia comes with its own custom API permissions class, connecting the API permissions to the in-game permission hierarchy and locks system. Since we're trying to access the object's data now, we need to pass the `has_object_permission` check as well as the general permission check - and that default permission class hardcodes the actions into the object permission checks.
+Evennia comes with its own custom API permissions class, connecting the API permissions to the in-game permission hierarchy and locks system. Since we're trying to access the object's data now, we need to pass the `has_object_permission` check as well as the general permission check - and that default permission class hardcodes actions into the object permission checks.
 
-Since we've added a new action - `inventory` - to our characters endpoint, we need to use our own custom permissions on our characters endpoint. Create one more module file: `mygame/web/api/permissions.py`
+Since we've added a new action - `inventory` - to our characters endpoint, we need to use our own custom permissions on our characters endpoint as well. Create one more module file: `mygame/web/api/permissions.py`
 
 Like with the previous classes, we'll be inheriting from the original and extending it to take advantage of all the work Evennia already does for us.
 
@@ -422,6 +424,6 @@ One last `evennia reboot` - now you should be able to get `/api/characters/1/inv
 
 That's it! You've learned how to customize your own REST endpoint for Evennia, add new endpoint details, and serialize data from your game's objects for the REST API. With those tools, you can take any in-game data you want and make it available - or even modifiable - with the API.
 
-If you want a challenge, try taking what you learned and implementing a new `desc` detail that will `GET` the existing character desc, or `PUT` a new desc. (Tip: check out how evennia's REST permissions module works, and the `set_attribute` methods in the default evennia REST API views.)
+If you want a challenge, try taking what you learned and implementing a new `desc` detail that will let you `GET` the existing character desc _or_ `PUT` a new desc. (Tip: check out how evennia's REST permissions module works, and the `set_attribute` methods in the default evennia REST API views.)
 
 > For a more in-depth look at the django REST framework, you can go through [their tutorial](https://www.django-rest-framework.org/tutorial/1-serialization/) or straight to [the django REST framework API docs](https://www.django-rest-framework.org/api-guide/requests/)
